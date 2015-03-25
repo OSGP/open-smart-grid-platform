@@ -1,0 +1,38 @@
+package com.alliander.osgp.domain.core.repositories;
+
+import java.net.InetAddress;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Organisation;
+
+@Repository
+public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecificationExecutor<Device> {
+    Device findByDeviceIdentification(String deviceIdentification);
+
+    List<Device> findByNetworkAddress(InetAddress address);
+
+    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id " + "	FROM d.authorizations auth "
+            + "	WHERE auth.organisation = ?1" + ")")
+    Page<Device> findAllAuthorized(Organisation organisation, Pageable request);
+
+    @Query("SELECT d " + "FROM Device d " + "WHERE NOT EXISTS " + "(" + "	SELECT auth.id "
+            + "	FROM d.authorizations auth "
+            + "	WHERE auth.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER" + ")")
+    List<Device> findDevicesWithNoOwner();
+
+    @Query("SELECT d " + "FROM Device d " + "WHERE EXISTS " + "(" + "	SELECT auth.id " + "	FROM d.authorizations auth "
+            + "	WHERE auth.organisation = ?1 AND "
+            + "		(auth.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER OR "
+            + "		 auth.functionGroup = com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.INSTALLATION)"
+            + ") AND " + "d.modificationTime >= ?2")
+    List<Device> findRecentDevices(Organisation organisation, Date fromDate);
+}

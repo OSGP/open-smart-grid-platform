@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa
+		http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/web-services
+		http://www.springframework.org/schema/web-services/web-services-2.0.xsd">
+
+    <sws:annotation-driven/>
+
+ 	<sws:static-wsdl id="TariffSwitchingAdHocManagement" location="/WEB-INF/wsdl/tariffswitching/TariffSwitchingAdHocManagement.wsdl"/>
+ 	<sws:static-wsdl id="TariffSwitchingScheduleManagement" location="/WEB-INF/wsdl/tariffswitching/TariffSwitchingScheduleManagement.wsdl"/>
+ 	
+ 	<bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/tariffswitching/schemas/common.xsd" />
+    </bean>
+    
+    <bean id="ts-adhocmanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/tariffswitching/schemas/ts-adhocmanagement.xsd" />
+    </bean>
+
+    <bean id="ts-schedulemanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/tariffswitching/schemas/ts-schedulemanagement.xsd" />
+    </bean>
+    
+
+	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
+		<property name="schemas">
+			<list>
+				<value>/WEB-INF/wsdl/tariffswitching/schemas/*.xsd</value>
+			</list>			
+		</property>
+		<property name="validateRequest" value="true" />
+		<property name="validateResponse" value="false" />	
+	</bean>
+
+    <sws:interceptors>
+        <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
+        <ref bean="organisationIdentificationInterceptor"/>
+        <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
+        <ref bean="payloadValidatingInterceptor"/>
+        <ref bean="webServiceMonitorInterceptor" />
+    </sws:interceptors>
+    
+</beans>

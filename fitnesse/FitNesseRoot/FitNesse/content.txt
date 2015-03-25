@@ -1,0 +1,3 @@
+!contents -R2 -g -p -f -h
+
+!2 Welcome to FitNesse

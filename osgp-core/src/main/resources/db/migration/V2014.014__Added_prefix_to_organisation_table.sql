@@ -1,0 +1,1 @@
+ALTER TABLE organisation ADD COLUMN prefix character varying(5);

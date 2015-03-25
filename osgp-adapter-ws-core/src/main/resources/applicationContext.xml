@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:sws="http://www.springframework.org/schema/web-services"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa
+		http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/web-services
+		http://www.springframework.org/schema/web-services/web-services-2.0.xsd">
+
+    <sws:annotation-driven/>
+
+ 	<sws:static-wsdl id="AdHocManagement" location="/WEB-INF/wsdl/common/AdHocManagement.wsdl"/>
+ 	<sws:static-wsdl id="DeviceInstallation" location="/WEB-INF/wsdl/common/DeviceInstallation.wsdl"/>
+ 	<sws:static-wsdl id="DeviceManagement" location="/WEB-INF/wsdl/common/DeviceManagement.wsdl"/>
+ 	<sws:static-wsdl id="FirmwareManagement" location="/WEB-INF/wsdl/common/FirmwareManagement.wsdl"/>
+ 	<sws:static-wsdl id="ConfigurationManagement" location="/WEB-INF/wsdl/common/ConfigurationManagement.wsdl"/>
+
+    <bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/common.xsd" />
+    </bean>
+
+    <bean id="adhocmanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/adhocmanagement.xsd" />
+    </bean>
+
+    <bean id="configurationmanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/configurationmanagement.xsd" />
+    </bean>
+
+    <bean id="deviceinstallation" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/deviceinstallation.xsd" />
+    </bean>
+    
+    <bean id="devicemanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/devicemanagement.xsd" />
+    </bean>
+    
+    <bean id="firmwaremanagement" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/common/schemas/firmwaremanagement.xsd" />
+    </bean>    
+
+	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
+		<property name="schemas">
+			<list>
+				<value>/WEB-INF/wsdl/common/schemas/*.xsd</value>
+			</list>			
+		</property>
+		<property name="validateRequest" value="true" />
+		<property name="validateResponse" value="false" />	
+	</bean>
+
+    <sws:interceptors>
+        <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
+        <ref bean="organisationIdentificationInterceptor"/>
+        <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
+        <ref bean="payloadValidatingInterceptor"/>
+        <ref bean="webServiceMonitorInterceptor" />
+    </sws:interceptors>
+    
+</beans>

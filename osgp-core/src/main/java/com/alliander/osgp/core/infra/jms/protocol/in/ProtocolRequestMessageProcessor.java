@@ -1,0 +1,54 @@
+package com.alliander.osgp.core.infra.jms.protocol.in;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.infra.jms.MessageProcessor;
+
+/**
+ * Base class for MessageProcessor implementations. Each MessageProcessor
+ * implementation should be annotated with @Component. Further the MessageType
+ * the MessageProcessor implementation can process should be passed in at
+ * construction. The Singleton instance is added to the HashMap of
+ * MessageProcessors after dependency injection has completed.
+ * 
+ * @author CGI
+ * 
+ */
+public abstract class ProtocolRequestMessageProcessor implements MessageProcessor {
+
+    /**
+     * The hash map of message processor instances.
+     */
+    @Autowired
+    protected ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+
+    /**
+     * The message type that a message processor implementation can handle.
+     */
+    protected DeviceFunction deviceFunction;
+
+    /**
+     * Construct a message processor instance by passing in the message type.
+     * 
+     * @param deviceFunction
+     *            The message type a message processor can handle.
+     */
+    protected ProtocolRequestMessageProcessor(final DeviceFunction deviceFunction) {
+        this.deviceFunction = deviceFunction;
+    }
+
+    /**
+     * Initialization function executed after dependency injection has finished.
+     * The MessageProcessor Singleton is added to the HashMap of
+     * MessageProcessors. The key for the HashMap is the integer value of the
+     * enumeration member.
+     */
+    @PostConstruct
+    public void init() {
+        this.protocolRequestMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
+                this.deviceFunction.name(), this);
+    }
+}
