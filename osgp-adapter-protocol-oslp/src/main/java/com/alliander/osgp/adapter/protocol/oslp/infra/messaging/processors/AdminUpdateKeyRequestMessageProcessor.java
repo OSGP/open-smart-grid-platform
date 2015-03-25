@@ -1,0 +1,83 @@
+package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
+
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.adapter.protocol.oslp.application.services.DeviceManagementService;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.shared.infra.jms.Constants;
+
+/**
+ * Class for processing common update key request messages
+ * 
+ * @author CGI
+ * 
+ */
+@Component("oslpAdminUpdateKeyRequestMessageProcessor")
+public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageProcessor {
+    /**
+     * Logger for this class
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdminUpdateKeyRequestMessageProcessor.class);
+
+    public AdminUpdateKeyRequestMessageProcessor() {
+        super(DeviceRequestMessageType.UPDATE_KEY);
+    }
+
+    /**
+     * Autowired field device management application service
+     */
+    @Autowired
+    // @Qualifier(value = "oslpDeviceManagementService")
+    private DeviceManagementService deviceManagementService;
+
+    @Override
+    public void processMessage(final ObjectMessage message) {
+        LOGGER.debug("Processing admin update key message");
+
+        String correlationUid = null;
+        String domain = null;
+        String domainVersion = null;
+        String messageType = null;
+        String organisationIdentification = null;
+        String deviceIdentification = null;
+
+        try {
+            correlationUid = message.getJMSCorrelationID();
+            domain = message.getStringProperty(Constants.DOMAIN);
+            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
+            messageType = message.getJMSType();
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("domain: {}", domain);
+            LOGGER.debug("domainVersion: {}", domainVersion);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            return;
+        }
+
+        try {
+            final String publicKey = (String) message.getObject();
+
+            LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain,
+                    domainVersion);
+
+            this.deviceManagementService.updateKey(organisationIdentification, deviceIdentification, correlationUid,
+                    this.responseMessageSender, domain, domainVersion, messageType, publicKey);
+
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType);
+        }
+    }
+}

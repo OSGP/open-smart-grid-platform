@@ -1,0 +1,64 @@
+package com.alliander.osgp.adapter.protocol.oslp.infra.networking;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Utility class for converting sequence number value from Integer to byte array
+ * and vice versa.
+ * 
+ * @author CGI
+ * 
+ */
+public class SequenceNumberUtils {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SequenceNumberUtils.class);
+    private static final boolean IS_LOGGING_ENABLED = false;
+
+    /**
+     * Private constructor for utility class.
+     */
+    private SequenceNumberUtils() {
+        // Nothing needed here.
+    }
+
+    /**
+     * Convert an Integer object's value into a byte array of size 2. The range
+     * of the value can be from 0 to 65535, equal to a 16 bit unsigned value.
+     * 
+     * @param value
+     *            The integer value to convert into the byte array.
+     * 
+     * @return Byte array of size 2.
+     */
+    public static byte[] convertIntegerToByteArray(final Integer value) {
+        final byte[] bytes = new byte[2];
+        bytes[0] = (byte) (value >>> 8);
+        bytes[1] = (byte) (value >>> 0);
+        if (IS_LOGGING_ENABLED) {
+            LOGGER.info(
+                    "platform.SequenceNumberUtils.convertIntegerToByteArray() byte[0]: {} byte[1]: {} Integer value: {}",
+                    bytes[0], bytes[1], value);
+        }
+        return bytes;
+    }
+
+    /**
+     * Convert a byte array of size 2 into an Integer object. The range of the
+     * value can be from 0 to 65535, equal to a 16 bit unsigned value.
+     * 
+     * @param array
+     *            The byte array of size 2 to convert into an Integer object.
+     * 
+     * @return The Integer object.
+     */
+    public static Integer convertByteArrayToInteger(final byte[] array) {
+        final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF) << 0;
+        if (IS_LOGGING_ENABLED) {
+            LOGGER.info(
+                    "platform.SequenceNumberUtils.convertByteArrayToInteger() byte[0]: {} byte[1]: {} Integer value: {}",
+                    array[0], array[1], value);
+        }
+        return value;
+    }
+}
