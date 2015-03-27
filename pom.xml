@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.alliander</groupId>
+	<artifactId>osgp</artifactId>
+	<version>0.11.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>oslp</module>
+        <module>parent</module>
+        <module>platform-ws-generated</module>        
+        <module>shared</module>
+        <module>osgp-dto</module>
+
+        <module>osgp-domain-core</module>
+        <module>osgp-domain-publiclighting</module>
+        <module>osgp-domain-tariffswitching</module>
+
+		<module>osgp-adapter-domain-shared</module>
+
+		<module>osgp-adapter-domain-admin</module>
+        <module>osgp-adapter-domain-core</module>
+		<module>osgp-adapter-domain-publiclighting</module>
+		<module>osgp-adapter-domain-tariffswitching</module>
+
+        <module>osgp-adapter-ws-shared</module>
+        <module>osgp-adapter-ws-shared-db</module>
+        <module>osgp-adapter-ws-core</module>
+        <module>osgp-adapter-ws-admin</module>
+		<module>osgp-adapter-ws-publiclighting</module>
+        <module>osgp-adapter-ws-tariffswitching</module>
+
+		<module>web-service-logging</module>
+        <module>web-device-simulator</module>
+        <module>web-operator</module>
+        <module>web-owner</module>
+        <module>web-api-installation</module>
+        <module>web-installation</module>
+        <module>web-api-user-management</module>
+        <module>web-api-net-management</module>
+        <module>web-net-management</module>
+        <module>osgp-adapter-protocol-oslp</module>
+
+        <module>osgp-core</module>
+		<module>osgp-core-db-api</module>
+        
+		<!-- Fitnesse Acceptance Test Project -->
+        <module>osgp-platform-test</module>
+	</modules>
+</project>
