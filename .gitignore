@@ -32,5 +32,7 @@ local.properties
 .buildpath
 
 #FitNesse data
-KahaDB/
 fitnesse/FitNesseRoot/files/
+fitnesse/FitNesseRoot/ErrorLogs/
+fitnesse/activemq-data/
+fitnesse/velocity.log
