@@ -1,9 +1,0 @@
-!2 Narrative
-As an operator I want to change the data of a user
-
-!2 Scenario: Operator successfully changes the data of a user
-|given|a change user request for an organisation user                               |
-|and  |the change user request refers to an organisation that is authorised         |
-|when |changing the data of a user                                                  |
-|then |the user data will be changed in the WebUserManagement database              |
-|and  |the change user request should return the new user's data (refresh user list)|

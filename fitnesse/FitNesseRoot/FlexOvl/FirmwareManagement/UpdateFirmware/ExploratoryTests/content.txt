@@ -1,1 +1,0 @@
-1 - Send a valid update firmware request for a device and check if the correct data are received at the simulator side.

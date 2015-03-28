@@ -1,3 +1,0 @@
-!1 Device management
-
-!3 !contents -R1 -g -p -f -h

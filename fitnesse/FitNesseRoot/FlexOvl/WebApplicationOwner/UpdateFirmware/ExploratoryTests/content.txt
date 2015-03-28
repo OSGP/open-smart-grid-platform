@@ -1,9 +1,0 @@
-1 - Send updateFirmware request for an not registered device
-
-2 - Send (via SOAPUI) updateFirmware requests for a not authorised organisation.
-
-3 - Send (via SOAPUI) updateFirmware requests for unknown device, unknown organsisation.
-
-4 - Send (via SOAPUI) updateFirmware requests with empty device, empty organisation or empty firmwareIdentication  
-
-5 - Send (via SOAPUI) updateFirmware requests with only spaces in device, organisation or firmwareIdentication  

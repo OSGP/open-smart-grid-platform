@@ -1,3 +1,0 @@
-!1 Platform web service monitoring and logging
-
-!contents -R2 -g -p -f -h

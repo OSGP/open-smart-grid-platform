@@ -1,5 +1,0 @@
-| import |
-| com.alliander.osp.platform.acceptancetests |
-
-| script |
-| start | scoped giv wen zen for slim | organisations |
