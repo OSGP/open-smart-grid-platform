@@ -9,43 +9,41 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>oslp</module>
-        <module>parent</module>
-        <module>platform-ws-generated</module>        
-        <module>shared</module>
-        <module>osgp-dto</module>
+		<!-- Shared -->
+        <module>Shared/shared</module>
+        <module>Shared/osgp-dto</module>
+		
+		<!-- Protocol-Adapter-OSLP -->
+		<module>Protocol-Adapter-OSLP/oslp</module>
+		<!-- need to fix the parent problem (there's also a parent in Platform... ) -->
+        <module>Protocol-Adapter-OSLP/parent</module>
+		<module>Protocol-Adapter-OSLP/web-device-simulator</module>
+        <module>Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp</module>
 
-        <module>osgp-domain-core</module>
-        <module>osgp-domain-publiclighting</module>
-        <module>osgp-domain-tariffswitching</module>
+		<!-- Platform -->
+        <module>Platform/osgp-domain-core</module>
+        <module>Platform/osgp-domain-publiclighting</module>
+        <module>Platform/osgp-domain-tariffswitching</module>
 
-		<module>osgp-adapter-domain-shared</module>
+		<module>Platform/osgp-adapter-domain-shared</module>
 
-		<module>osgp-adapter-domain-admin</module>
-        <module>osgp-adapter-domain-core</module>
-		<module>osgp-adapter-domain-publiclighting</module>
-		<module>osgp-adapter-domain-tariffswitching</module>
+		<module>Platform/osgp-adapter-domain-admin</module>
+        <module>Platform/osgp-adapter-domain-core</module>
+		<module>Platform/osgp-adapter-domain-publiclighting</module>
+		<module>Platform/osgp-adapter-domain-tariffswitching</module>
 
-        <module>osgp-adapter-ws-shared</module>
-        <module>osgp-adapter-ws-shared-db</module>
-        <module>osgp-adapter-ws-core</module>
-        <module>osgp-adapter-ws-admin</module>
-		<module>osgp-adapter-ws-publiclighting</module>
-        <module>osgp-adapter-ws-tariffswitching</module>
-
-		<module>web-service-logging</module>
-        <module>web-device-simulator</module>
-        <module>web-operator</module>
-        <module>web-owner</module>
-        <module>web-api-installation</module>
-        <module>web-installation</module>
-        <module>web-api-user-management</module>
-        <module>web-api-net-management</module>
-        <module>web-net-management</module>
-        <module>osgp-adapter-protocol-oslp</module>
-
-        <module>osgp-core</module>
-		<module>osgp-core-db-api</module>
+        <module>Platform/osgp-adapter-ws-shared</module>
+        <module>Platform/osgp-adapter-ws-shared-db</module>
+		
+        <module>Platform/osgp-adapter-ws-core</module>
+        <module>Platform/osgp-adapter-ws-admin</module>
+		<module>Platform/osgp-adapter-ws-publiclighting</module>
+        <module>Platform/osgp-adapter-ws-tariffswitching</module>
+		        
+        <module>Platform/osgp-core</module>
+		<module>Platform/osgp-core-db-api</module>
+				
+		<module>Platform/web-service-logging</module>
         
 		<!-- Fitnesse Acceptance Test Project -->
         <module>osgp-platform-test</module>

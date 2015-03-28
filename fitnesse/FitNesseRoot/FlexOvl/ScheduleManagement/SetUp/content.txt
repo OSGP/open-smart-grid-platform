@@ -1,0 +1,5 @@
+|import|
+|com.alliander.osgp.acceptancetests|
+
+|script|
+|start|scoped giv wen zen for slim|schedulemanagement|
