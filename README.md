@@ -1,5 +1,4 @@
-# Shared Component for OSGP and Protocol Adapters.
----
+# Shared Component for OSGP and Protocol Adapters
 
 These components are used as sub modules by other repositories.
 
