@@ -1,0 +1,17 @@
+package com.alliander.osgp.shared.infra.jms;
+
+public class ResponseMessageException extends Exception {
+
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 5651554598195858729L;
+
+    public ResponseMessageException(final String message) {
+        super(message);
+    }
+
+    public ResponseMessageException(final String message, final Throwable throwable) {
+        super(message, throwable);
+    }
+}
