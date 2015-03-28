@@ -15,8 +15,7 @@
 		
 		<!-- Protocol-Adapter-OSLP -->
 		<module>Protocol-Adapter-OSLP/oslp</module>
-		<!-- need to fix the parent problem (there's also a parent in Platform... ) -->
-        <module>Protocol-Adapter-OSLP/parent</module>
+		<module>parent</module>
 		<module>Protocol-Adapter-OSLP/web-device-simulator</module>
         <module>Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp</module>
 
