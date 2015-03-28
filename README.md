@@ -1,5 +1,4 @@
 # OSGP Components
----
 
 The OSGP components implement SOAP web services, domain logic and message routing to Protocol Adapters.
 
