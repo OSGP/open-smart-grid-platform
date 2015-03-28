@@ -1,0 +1,9 @@
+[submodule "Shared"]
+	path = Shared
+	url = https://github.com/OSGP/Shared.git
+[submodule "Protocol-Adapter-OSLP"]
+	path = Protocol-Adapter-OSLP
+	url = https://github.com/OSGP/Protocol-Adapter-OSLP.git
+[submodule "Platform"]
+	path = Platform
+	url = https://github.com/OSGP/Platform.git
