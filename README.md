@@ -1,4 +1,4 @@
-# Integration Test for OSGP Components and Protocol Adapters
+# Integration Tests for OSGP Components and Protocol Adapters
 
 This behaviour driven test suite uses FitNesse and mock frameworks.
 
