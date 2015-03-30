@@ -12,8 +12,8 @@
 	    <!-- Shared Libs -->
         <module>parent</module>
 		<module>oslp</module>      
-        <module>shared</module>
-        <module>osgp-dto</module>
+        <module>Shared/shared</module>
+        <module>Shared/osgp-dto</module>
 
 		<!-- Webapp, Dev-Sim for Protocol Adapter OSLP -->
         <module>web-device-simulator</module>
