@@ -11,8 +11,8 @@
 	<modules>  
         <!-- Shared Libs -->
 		<module>parent</module>
-		<module>shared</module>
-        <module>osgp-dto</module>
+		<module>Shared/shared</module>
+        <module>Shared/osgp-dto</module>
 
 		<!-- Domain -->
         <module>osgp-domain-core</module>
