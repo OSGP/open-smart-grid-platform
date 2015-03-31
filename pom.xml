@@ -10,7 +10,7 @@
 
 	<modules>  
         <!-- Shared Libs -->
-		<module>parent</module>
+		<module>parent-platform</module>
 		<module>Shared/shared</module>
         <module>Shared/osgp-dto</module>
 
