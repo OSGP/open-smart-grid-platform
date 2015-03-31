@@ -10,8 +10,8 @@
 
 	<modules>
 	    <!-- Shared Libs -->
-        <module>parent</module>
-		<module>oslp</module>      
+        <module>parent-pa-oslp</module>
+		<module>oslp</module>
         <module>Shared/shared</module>
         <module>Shared/osgp-dto</module>
 
