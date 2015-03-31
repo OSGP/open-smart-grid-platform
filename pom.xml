@@ -10,12 +10,12 @@
 
 	<modules>
 		<!-- Shared -->
+		<module>parent-integration-tests</module>
         <module>Shared/shared</module>
         <module>Shared/osgp-dto</module>
 		
 		<!-- Protocol-Adapter-OSLP -->
 		<module>Protocol-Adapter-OSLP/oslp</module>
-		<module>parent</module>
 		<module>Protocol-Adapter-OSLP/web-device-simulator</module>
         <module>Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp</module>
 
