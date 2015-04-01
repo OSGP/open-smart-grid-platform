@@ -10,7 +10,7 @@
 
 	<modules>  
         <!-- Shared Libs -->
-		<module>parent</module>
+		<module>parent-platform</module>
 		<module>Shared/shared</module>
         <module>Shared/osgp-dto</module>
 
@@ -37,6 +37,5 @@
 		<!-- Core -->
 		<module>web-service-logging</module>
         <module>osgp-core</module>
-		<module>osgp-core-db-api</module>
 	</modules>
 </project>
