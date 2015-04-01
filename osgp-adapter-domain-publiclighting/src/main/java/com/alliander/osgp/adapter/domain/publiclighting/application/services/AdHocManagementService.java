@@ -36,6 +36,8 @@ import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -108,15 +110,16 @@ public class AdHocManagementService extends AbstractService {
 
     public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatus deviceStatusDto, final DomainType allowedDomainType,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final String errorDescription) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || StringUtils.isNotEmpty(errorDescription)) {
-                throw new PlatformException("Device Response not ok.");
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException!=null) {
+            	LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
             }
 
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
@@ -137,10 +140,10 @@ public class AdHocManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, description,
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
                 deviceStatusMapped));
     }
 

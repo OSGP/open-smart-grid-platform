@@ -19,7 +19,10 @@ import com.alliander.osgp.domain.core.valueobjects.PowerUsageHistoryResponse;
 import com.alliander.osgp.domain.core.valueobjects.TimePeriod;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -56,17 +59,18 @@ public class DeviceMonitoringService extends AbstractService {
 
     public void handleGetActualPowerUsageResponse(final com.alliander.osgp.dto.valueobjects.PowerUsageData actualPowerUsageDataDto,
             final String organisationIdentification, final String deviceIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final String errorDescription) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleGetActualPowerUsageResponse called for device: {} for organisation: {}", deviceIdentification, organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException = exception;
         PowerUsageData actualPowerUsageData = null;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || StringUtils.isNotEmpty(errorDescription)) {
-                throw new PlatformException("Response not ok.");
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException!=null) {
+            	LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
             }
 
             actualPowerUsageData = this.domainCoreMapper.map(actualPowerUsageDataDto, PowerUsageData.class);
@@ -74,10 +78,10 @@ public class DeviceMonitoringService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, description,
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
                 actualPowerUsageData));
     }
 
@@ -105,17 +109,18 @@ public class DeviceMonitoringService extends AbstractService {
 
     public void handleGetPowerUsageHistoryResponse(final PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainerDto,
             final String organisationIdentification, final String deviceIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final String errorDescription) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleGetPowerUsageHistoryResponse called for device: {} for organisation: {}", deviceIdentification, organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException = exception;
         PowerUsageHistoryResponse powerUsageHistoryResponse = null;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || StringUtils.isNotEmpty(errorDescription)) {
-                throw new PlatformException("Response not ok.");
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException!=null) {
+            	LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
             }
 
             powerUsageHistoryResponse = new PowerUsageHistoryResponse(this.domainCoreMapper.mapAsList(
@@ -124,10 +129,10 @@ public class DeviceMonitoringService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, description,
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
                 powerUsageHistoryResponse), this.getPowerUsageHistoryResponseTimeToLive);
     }
 }

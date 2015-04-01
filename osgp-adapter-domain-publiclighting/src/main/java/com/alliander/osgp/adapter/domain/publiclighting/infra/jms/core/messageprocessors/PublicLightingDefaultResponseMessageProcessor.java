@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.publiclighting.application.services.DefaultDeviceResponseService;
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -50,7 +51,7 @@ public class PublicLightingDefaultResponseMessageProcessor extends OsgpCoreRespo
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
-        String description = null;
+        OsgpException osgpException = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -60,7 +61,7 @@ public class PublicLightingDefaultResponseMessageProcessor extends OsgpCoreRespo
 
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
-            description = responseMessage.getDescription();
+            osgpException = responseMessage.getOsgpException();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -69,7 +70,7 @@ public class PublicLightingDefaultResponseMessageProcessor extends OsgpCoreRespo
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("description: {}", description);
+            LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
 
@@ -77,7 +78,7 @@ public class PublicLightingDefaultResponseMessageProcessor extends OsgpCoreRespo
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, description);
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
