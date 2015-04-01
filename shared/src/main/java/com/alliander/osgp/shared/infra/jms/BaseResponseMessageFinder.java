@@ -87,16 +87,11 @@ public abstract class BaseResponseMessageFinder {
      */
     protected void checkResponseMessage(final ResponseMessage responseMessage) throws OsgpException {
         if (responseMessage.getResult().equals(ResponseMessageResultType.NOT_OK)) {
-            if (responseMessage.getDataObject() instanceof OsgpException) {
-                throw (OsgpException) responseMessage.getDataObject();
-            } else {
-                // Should not get here, since all exceptions in the response messages should be osgp exceptions
-                Exception ex = null;
-                if (responseMessage.getDataObject() instanceof Exception) {
-                    ex = (Exception) responseMessage.getDataObject();
-                    LOGGER.error("Unexpected exception: ", ex);
-                }
-                throw new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", ex);
+        		if ( responseMessage.getOsgpException() != null)
+        		{
+        			LOGGER.error("Unexpected exception: ", responseMessage.getOsgpException().getCause());
+        			throw responseMessage.getOsgpException();
+                //throw new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", ex);
             }
         }
     }
@@ -109,7 +104,7 @@ public abstract class BaseResponseMessageFinder {
      * @return An empty not found message.
      */
     protected ResponseMessage createEmptyMessage(final String correlationUid) {
-        return new ResponseMessage(correlationUid, null, null, ResponseMessageResultType.NOT_FOUND, "", null);
+        return new ResponseMessage(correlationUid, null, null, ResponseMessageResultType.NOT_FOUND, null, null);
     }
 
 }

@@ -1,5 +1,9 @@
 package com.alliander.osgp.shared.infra.jms;
 
+import java.io.Serializable;
+
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+
 public class ResponseMessage implements java.io.Serializable {
 
     /**
@@ -11,21 +15,21 @@ public class ResponseMessage implements java.io.Serializable {
     private final String organisationIdentification;
     private final String deviceIdentification;
     private final ResponseMessageResultType result;
-    private final String description;
+    private final OsgpException osgpException;
     private final Object dataObject;
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final ResponseMessageResultType result, final String description,
+            final String deviceIdentification, final ResponseMessageResultType result, final OsgpException osgpException,
             final Object dataObject) {
         this.correlationUid = correlationUid;
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.result = result;
-        this.description = description;
+        this.osgpException = osgpException;
         this.dataObject = dataObject;
     }
 
-    public String getCorrelationUid() {
+	public String getCorrelationUid() {
         return this.correlationUid;
     }
 
@@ -41,8 +45,8 @@ public class ResponseMessage implements java.io.Serializable {
         return this.result;
     }
 
-    public String getDescription() {
-        return this.description;
+    public OsgpException getOsgpException() {
+        return this.osgpException;
     }
 
     public Object getDataObject() {

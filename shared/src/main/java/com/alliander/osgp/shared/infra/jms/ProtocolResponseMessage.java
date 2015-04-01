@@ -2,6 +2,8 @@ package com.alliander.osgp.shared.infra.jms;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+
 public class ProtocolResponseMessage extends ResponseMessage {
 
     /**
@@ -17,24 +19,24 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final String description, final Serializable dataObject,
+            final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final int retryCount) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, description, dataObject, false, retryCount);
+                result, osgpException, dataObject, false, retryCount);
     }
 
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final String errorMessage, final Serializable dataObject) {
+            final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, errorMessage, dataObject, false);
+                result, osgpException, dataObject, false);
     }
 
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final String description, final Serializable dataObject,
+            final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled, final int retryCount) {
-        super(correlationUid, organisationIdentification, deviceIdentification, result, description, dataObject);
+        super(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject);
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.messageType = messageType;
@@ -44,9 +46,9 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final String errorMessage, final Serializable dataObject,
+            final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled) {
-        super(correlationUid, organisationIdentification, deviceIdentification, result, errorMessage, dataObject);
+        super(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject);
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.messageType = messageType;
