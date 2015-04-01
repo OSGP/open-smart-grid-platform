@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.tariffswitching.application.services.DefaultDeviceResponseService;
 import com.alliander.osgp.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -49,7 +50,7 @@ public class TariffSwitchingSetScheduleResponseMessageProcessor extends OsgpCore
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
-        String description = null;
+        OsgpException osgpException = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -59,7 +60,7 @@ public class TariffSwitchingSetScheduleResponseMessageProcessor extends OsgpCore
 
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
-            description = responseMessage.getDescription();
+            osgpException = responseMessage.getOsgpException();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -68,7 +69,7 @@ public class TariffSwitchingSetScheduleResponseMessageProcessor extends OsgpCore
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("description: {}", description);
+            LOGGER.debug("description: {}", osgpException);
             return;
         }
 
@@ -76,7 +77,7 @@ public class TariffSwitchingSetScheduleResponseMessageProcessor extends OsgpCore
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, description);
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
