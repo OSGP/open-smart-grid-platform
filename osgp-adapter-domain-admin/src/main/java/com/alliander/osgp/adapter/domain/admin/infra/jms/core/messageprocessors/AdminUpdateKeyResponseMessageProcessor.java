@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.admin.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.domain.admin.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -48,7 +49,7 @@ public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMess
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
-        String description = null;
+        OsgpException osgpException=null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -58,7 +59,7 @@ public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMess
 
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
-            description = responseMessage.getDescription();
+            osgpException = responseMessage.getOsgpException();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -67,7 +68,7 @@ public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMess
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("description: {}", description);
+            LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
 
@@ -75,7 +76,7 @@ public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMess
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             this.deviceManagementService.handleUpdateKeyResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, description);
+                    correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.adapter.domain.admin.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -107,8 +110,9 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
+        OsgpException osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.NOT_OK, e.getMessage(), e));
+                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
     }
 }
