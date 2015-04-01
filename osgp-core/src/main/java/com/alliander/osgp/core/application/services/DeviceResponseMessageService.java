@@ -79,7 +79,7 @@ public class DeviceResponseMessageService {
             // TODO:delete the completed schedule from the database
             // this.scheduledTaskRepository.delete(scheduledTask)
         } else {
-            scheduledTask.setFailed(message.getDescription());
+            scheduledTask.setFailed(message.getOsgpException().getCause().getMessage());
         }
         this.scheduledTaskRepository.save(scheduledTask);
     }

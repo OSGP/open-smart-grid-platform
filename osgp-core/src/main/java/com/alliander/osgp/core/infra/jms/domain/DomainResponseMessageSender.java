@@ -12,6 +12,8 @@ import org.springframework.jms.core.MessageCreator;
 import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -63,7 +65,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
                         message.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, message.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, message.getResult().toString());
-                objectMessage.setStringProperty(Constants.DESCRIPTION, message.getDescription());
+                objectMessage.setStringProperty(Constants.DESCRIPTION, message.getOsgpException().getMessage());
                 return objectMessage;
             }
         });
@@ -73,13 +75,14 @@ public class DomainResponseMessageSender implements DomainResponseService {
         return new ResponseMessage(protocolResponseMessage.getCorrelationUid(),
                 protocolResponseMessage.getOrganisationIdentification(),
                 protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(),
-                protocolResponseMessage.getDescription(), protocolResponseMessage.getDataObject());
+                protocolResponseMessage.getOsgpException(), protocolResponseMessage.getDataObject());
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
+    	TechnicalException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         return new ResponseMessage(protocolRequestMessage.getCorrelationUid(),
                 protocolRequestMessage.getOrganisationIdentification(),
-                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, e.getMessage(),
-                null);
+                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex,
+                e);
     }
 }

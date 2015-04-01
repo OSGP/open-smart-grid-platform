@@ -11,8 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.core.application.services.DeviceResponseMessageService;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 // This class should fetch incoming messages from a responses queue.
@@ -39,7 +41,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
             LOGGER.debug("Domain                    : [{}]", protocolResponseMessage.getDomain());
             LOGGER.debug("DomainVersion             : [{}]", protocolResponseMessage.getDomainVersion());
             LOGGER.debug("Result                    : [{}]", protocolResponseMessage.getResult());
-            LOGGER.debug("Description               : [{}]", protocolResponseMessage.getDescription());
+            LOGGER.debug("Description               : [{}]", protocolResponseMessage.getOsgpException());
 
             this.deviceResponseMessageService.processMessage(protocolResponseMessage);
 
@@ -49,21 +51,24 @@ public class ProtocolResponseMessageListener implements MessageListener {
     }
 
     private ProtocolResponseMessage createResponseMessage(final Message message) throws JMSException {
-        final String correlationUid = message.getJMSCorrelationID();
-        final String messageType = message.getJMSType();
-        final String domain = message.getStringProperty(Constants.DOMAIN);
-        final String domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-        final String organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        final String deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(message
+
+    	final ResponseMessage responseMessage =(ResponseMessage)((ObjectMessage) message).getObject();
+        final ObjectMessage objectMessage = (ObjectMessage) message;
+        final OsgpException osgpException = responseMessage.getOsgpException() == null ? null : responseMessage.getOsgpException();
+        final String correlationUid = objectMessage.getJMSCorrelationID();
+        final String messageType = objectMessage.getJMSType();
+        final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
+        final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);
+        final String organisationIdentification = objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+        final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+        final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(objectMessage
                 .getStringProperty(Constants.RESULT));
-        final String description = message.getStringProperty(Constants.DESCRIPTION);
-        final Serializable dataObject = ((ObjectMessage) message).getObject();
-        final boolean scheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+        final Serializable dataObject = (Serializable) (responseMessage.getDataObject() == null ? null : responseMessage.getDataObject());
+        final boolean scheduled = objectMessage.propertyExists(Constants.IS_SCHEDULED) ? objectMessage
                 .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-        final int retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+        final int retryCount = objectMessage.getIntProperty(Constants.RETRY_COUNT);
         return new ProtocolResponseMessage(domain, domainVersion, messageType, correlationUid,
-                organisationIdentification, deviceIdentification, responseMessageResultType, description, dataObject,
+                organisationIdentification, deviceIdentification, responseMessageResultType, osgpException, dataObject,
                 scheduled, retryCount);
     }
 }
