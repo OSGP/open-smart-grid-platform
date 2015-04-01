@@ -10,15 +10,16 @@
 
 	<modules>
 	    <!-- Shared Libs -->
-        <module>parent</module>
-		<module>oslp</module>      
+        <module>parent-pa-oslp</module>
+		<module>oslp</module>
         <module>Shared/shared</module>
         <module>Shared/osgp-dto</module>
 
 		<!-- Webapp, Dev-Sim for Protocol Adapter OSLP -->
         <module>web-device-simulator</module>
 
-		<!-- Protocol Adapter OSLP -->
+		<!-- Protocol Adapter OSLP -->		
+		<module>osgp-core-db-api</module>
         <module>osgp-adapter-protocol-oslp</module>
 	</modules>
 </project>

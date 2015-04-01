@@ -1,45 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-
-	<artifactId>osgp-protocol-adapter-oslp</artifactId>
-	<packaging>war</packaging>
-
-    <parent>
+  <modelVersion>4.0.0</modelVersion>
+  
+	<artifactId>osgp-core-db-api</artifactId>
+	<packaging>jar</packaging>
+  
+	<parent>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>parent-pa-oslp</artifactId>
         <version>0.11.0-SNAPSHOT</version>
         <relativePath>../parent-pa-oslp/pom.xml</relativePath>
     </parent>
-
-	<properties>
+    
+   	<properties>
 		<display.version>${project.version}-${BUILD_TAG}</display.version>
 	</properties>
-
+	
 	<build>
 		<plugins>
-		
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<attachClasses>true</attachClasses>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<nonFilteredFileExtensions>
-						<nonFilteredFileExtension>gif</nonFilteredFileExtension>
-						<nonFilteredFileExtension>ico</nonFilteredFileExtension>
-						<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-						<nonFilteredFileExtension>png</nonFilteredFileExtension>
-						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-					</nonFilteredFileExtensions>
-<!-- 					<webResources> -->
-<!-- 						<resource> -->
-<!-- 							<directory>src/main/webapp</directory> -->
-<!-- 							<filtering>true</filtering> -->
-<!-- 						</resource> -->
-<!-- 					</webResources> -->
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
@@ -52,16 +29,11 @@
 					<verbose>true</verbose>
 				</configuration>
 			</plugin>				
-		
 		</plugins>
 	</build>
 	
 	<dependencies>
 		<!-- Alliander -->
-		<dependency>
-			<groupId>com.alliander.osgp</groupId>
-			<artifactId>oslp</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>osgp-dto</artifactId>
@@ -70,11 +42,7 @@
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>shared</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.alliander.osgp</groupId>
-			<artifactId>osgp-core-db-api</artifactId>
-		</dependency>
-
+		
 		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -105,27 +73,13 @@
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 		
-		<!-- Spring WS -->
-		<dependency>
-			<groupId>org.springframework.ws</groupId>
-			<artifactId>spring-ws-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>	
-		<dependency>
-			<groupId>org.springframework.ws</groupId>
-			<artifactId>spring-ws-support</artifactId>
-		</dependency>
-
         <!-- Spring Data -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
         </dependency>
-
-		<!-- Joda Time (Date/Time util) -->
+        
+      	<!-- Joda Time (Date/Time util) -->
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
@@ -145,13 +99,14 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-		</dependency>
-
-		<!-- Flyway (DB Migration) -->
-		<dependency>
-			<groupId>com.googlecode.flyway</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
+		</dependency>	
+		
+		<!-- Servlet API 3.0 -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>javax.servlet</groupId> -->
+<!-- 			<artifactId>javax.servlet-api</artifactId> -->
+<!-- 			<scope>provided</scope> -->
+<!-- 		</dependency> -->
 
 		<!-- Logging -->
 		 <dependency>
@@ -166,47 +121,6 @@
             <groupId>org.logback-extensions</groupId>
             <artifactId>logback-ext-spring</artifactId>
         </dependency>
-		
-		<!-- Servlet API 3.0 -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Jakarta commons codec -->
-		<dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		</dependency>
-
-		<!-- Apache commons -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		
-		<!-- Orika (mapping framework) -->
-		<dependency>
-		   <groupId>ma.glasnost.orika</groupId>
-		   <artifactId>orika-core</artifactId>
-		</dependency>
-
-		<!-- Netty -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty</artifactId>
-        </dependency>
-        
-		<!--  Apache ActiveMQ -->	
-        <dependency> 
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-spring</artifactId>
-        </dependency>
         
         <!-- Testing dependencies -->
         <dependency>
@@ -217,5 +131,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
         </dependency>
-    </dependencies>
+	</dependencies>
+  
 </project>
