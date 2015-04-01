@@ -17,7 +17,10 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -109,15 +112,16 @@ public class ConfigurationManagementService extends AbstractService {
 
     public void handleGetConfigurationResponse(final com.alliander.osgp.dto.valueobjects.Configuration configurationDto, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final String errorDescription) {
+            final OsgpException exception) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException = exception;
         Configuration configuration = null;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || StringUtils.isNotEmpty(errorDescription)) {
-                throw new PlatformException("Device Response not ok.");
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+            	LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
             }
 
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -142,10 +146,10 @@ public class ConfigurationManagementService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, description,
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
                 configuration));
     }
 }

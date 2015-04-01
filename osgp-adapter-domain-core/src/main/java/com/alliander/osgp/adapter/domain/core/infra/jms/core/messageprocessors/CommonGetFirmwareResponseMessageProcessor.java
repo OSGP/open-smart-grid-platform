@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.core.application.services.FirmwareManagementService;
 import com.alliander.osgp.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -48,7 +49,7 @@ public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseM
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
-        String description = null;
+        OsgpException osgpException = null;
         Object dataObject = null;
 
         try {
@@ -59,7 +60,7 @@ public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseM
 
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
-            description = responseMessage.getDescription();
+            osgpException = responseMessage.getOsgpException();
             dataObject = responseMessage.getDataObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -69,7 +70,7 @@ public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseM
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("description: {}", description);
+            LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
 
@@ -79,7 +80,7 @@ public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseM
             final String firmwareVersion = (String) dataObject;
 
             this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersion, deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, description);
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

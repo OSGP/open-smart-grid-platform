@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
@@ -21,22 +24,23 @@ public class DefaultDeviceResponseService {
 
     public void handleDefaultDeviceResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final String errorDescription) {
+            final OsgpException exception) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException = exception;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || StringUtils.isNotEmpty(errorDescription)) {
-                throw new PlatformException("Device Response not ok.");
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+            	LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
             }
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, description, null));
+                deviceIdentification, result, osgpException, null));
     }
 }
