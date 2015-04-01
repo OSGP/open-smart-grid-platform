@@ -14,6 +14,9 @@ import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetConfiguratio
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -130,7 +133,7 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException=null;
         Configuration configuration = null;
 
         try {
@@ -140,12 +143,13 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+
+		final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, description, configuration, retryCount);
+                deviceResponse.getDeviceIdentification(), result, osgpException, configuration, retryCount);
 
         responseMessageSender.send(responseMessage);
     }

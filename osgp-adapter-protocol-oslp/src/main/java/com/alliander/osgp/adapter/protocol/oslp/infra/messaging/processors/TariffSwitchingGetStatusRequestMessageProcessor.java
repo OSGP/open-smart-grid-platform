@@ -15,6 +15,9 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.dto.valueobjects.DomainType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -129,7 +132,7 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceReque
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException = null;
         DeviceStatus status = null;
 
         try {
@@ -138,12 +141,12 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceReque
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, description, status, retryCount);
+                deviceResponse.getDeviceIdentification(), result, osgpException, status, retryCount);
 
         responseMessageSender.send(responseMessage);
     }

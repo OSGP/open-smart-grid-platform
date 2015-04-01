@@ -18,6 +18,9 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -128,7 +131,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             final boolean isScheduled, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException osgpException = null;
         PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainerDto = null;
         Serializable dataObject;
 
@@ -141,11 +144,11 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
             dataObject = messageData;
-            description = e.getMessage();
+            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType, deviceResponse.getCorrelationUid(),
-                deviceResponse.getOrganisationIdentification(), deviceResponse.getDeviceIdentification(), result, description, dataObject, isScheduled,
+                deviceResponse.getOrganisationIdentification(), deviceResponse.getDeviceIdentification(), result, osgpException, dataObject, isScheduled,
                 retryCount);
 
         responseMessageSender.send(responseMessage);
