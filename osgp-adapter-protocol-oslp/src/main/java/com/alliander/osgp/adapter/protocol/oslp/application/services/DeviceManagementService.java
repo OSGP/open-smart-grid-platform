@@ -14,6 +14,9 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpRequestMessa
 import com.alliander.osgp.dto.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.EventNotification;
 import com.alliander.osgp.dto.valueobjects.EventType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -91,13 +94,14 @@ public class DeviceManagementService {
             this.oslpDeviceSettingsService.updateDevice(oslpDevice);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, "", responseMessageSender);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during updateKey", e);
+        	TechnicalException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, e.getMessage(), responseMessageSender);
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
@@ -121,23 +125,23 @@ public class DeviceManagementService {
             this.oslpDeviceSettingsService.updateDevice(oslpDevice);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, "", responseMessageSender);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during revokeKey", e);
-
+        	TechnicalException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, e.getMessage(), responseMessageSender);
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final String description,
+            final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender) {
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                correlationUid, organisationIdentification, deviceIdentification, result, description, null);
+                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null);
 
         responseMessageSender.send(responseMessage);
     }

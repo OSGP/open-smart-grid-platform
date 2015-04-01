@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -78,8 +79,7 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
-                final ObjectMessage objectMessage = session.createObjectMessage((Serializable) responseMessage
-                        .getDataObject());
+            	final ObjectMessage objectMessage = session.createObjectMessage((Serializable) responseMessage);                
                 objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.DOMAIN, responseMessage.getDomain());
                 objectMessage.setStringProperty(Constants.DOMAIN_VERSION, responseMessage.getDomainVersion());
@@ -89,7 +89,9 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
-                objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getDescription());
+                if (responseMessage.getOsgpException() != null) {
+                	objectMessage.setStringProperty(Constants.DESCRIPTION, ((OsgpException) responseMessage.getOsgpException()).getMessage());
+                }
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, responseMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, responseMessage.getRetryCount());
                 return objectMessage;

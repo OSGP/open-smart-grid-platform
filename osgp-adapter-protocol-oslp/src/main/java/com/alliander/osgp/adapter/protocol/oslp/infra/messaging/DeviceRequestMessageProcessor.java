@@ -13,6 +13,9 @@ import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.DeviceService;
 import com.alliander.osgp.adapter.protocol.oslp.services.DeviceResponseService;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -79,7 +82,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException ex = null;
 
         try {
             final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
@@ -87,12 +90,12 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, description, null, retryCount);
+                deviceResponse.getDeviceIdentification(), result, ex, null, retryCount);
 
         responseMessageSender.send(responseMessage);
     }
@@ -102,7 +105,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String description = "";
+        OsgpException ex = null;
 
         try {
             final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
@@ -110,12 +113,12 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            description = e.getMessage();
+            ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, description, null, isScheduled, retryCount);
+                deviceResponse.getDeviceIdentification(), result, ex, null, isScheduled, retryCount);
 
         responseMessageSender.send(responseMessage);
     }
@@ -124,10 +127,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String deviceIdentification, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
         LOGGER.error("Error while processing message", e);
+        OsgpException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, e.getMessage(), null, retryCount);
+                ResponseMessageResultType.NOT_OK, ex, null, retryCount);
 
         this.responseMessageSender.send(protocolResponseMessage);
     }
@@ -135,10 +139,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
         LOGGER.error("Error while processing message", e);
+        OsgpException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, e.getMessage(), null);
+                ResponseMessageResultType.NOT_OK, ex, null);
 
         this.responseMessageSender.send(protocolResponseMessage);
     }
@@ -149,11 +154,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final String description = t.getMessage();
+        OsgpException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", t);
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, description, messageData, isScheduled, retryCount);
+                deviceResponse.getDeviceIdentification(), result, ex, messageData, isScheduled, retryCount);
 
         this.responseMessageSender.send(responseMessage);
     }
