@@ -37,6 +37,5 @@
 		<!-- Core -->
 		<module>web-service-logging</module>
         <module>osgp-core</module>
-		<module>osgp-core-db-api</module>
 	</modules>
 </project>
