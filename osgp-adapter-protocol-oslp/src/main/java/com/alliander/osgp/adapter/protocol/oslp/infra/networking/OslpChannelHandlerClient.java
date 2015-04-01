@@ -33,8 +33,6 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     @Autowired
     private DeviceRegistrationService deviceRegistrationService;
 
-    private final ConcurrentMap<Integer, OslpCallbackHandler> callbackHandlers = new ConcurrentHashMap<>();
-
     public void setDeviceRegistrationService(final DeviceRegistrationService deviceRegistrationService) {
         this.deviceRegistrationService = deviceRegistrationService;
     }
@@ -63,11 +61,6 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
-        final int channelId = e.getChannel().getId();
-        if (this.callbackHandlers.containsKey(channelId)) {
-            this.callbackHandlers.get(channelId).getDeviceResponseHandler().handleException(new NoDeviceResponseException());
-            this.callbackHandlers.remove(channelId);
-        }
         super.exceptionCaught(ctx, e);
     }
 

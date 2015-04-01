@@ -2,6 +2,8 @@ package com.alliander.osgp.adapter.protocol.oslp.infra.networking;
 
 import java.io.IOException;
 import java.security.PrivateKey;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.Resource;
 
@@ -42,6 +44,8 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
 
     @Autowired
     private OslpLogItemRequestMessageSender oslpLogItemRequestMessageSender;
+    
+    protected final ConcurrentMap<Integer, OslpCallbackHandler> callbackHandlers = new ConcurrentHashMap<>();
 
     protected OslpChannelHandler(final Logger logger) {
         this.logger = logger;
@@ -90,6 +94,7 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
             this.logger.info("{} Connection was (as expected) reset by the device.", channelId);
         } else {
             this.logger.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
+            this.callbackHandlers.get(channelId).getDeviceResponseHandler().handleException(e.getCause());
         }
         e.getChannel().close();
     }
