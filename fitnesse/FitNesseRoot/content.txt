@@ -47,8 +47,8 @@
 !path ../Platform/osgp-core/target/test-classes
 !path ../osgp-platform-test/target/test-classes
 
-!path ../Platform/osgp-core-db-api/target/classes
-!path ../Platform/osgp-core-db-api/target/test-classes
+!path ../Protocol-Adapter-OSLP/osgp-core-db-api/target/classes
+!path ../Protocol-Adapter-OSLP/osgp-core-db-api/target/test-classes
 
 !path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/classes
 !path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/test-classes
