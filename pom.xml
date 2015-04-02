@@ -17,6 +17,7 @@
 		<!-- Protocol-Adapter-OSLP -->
 		<module>Protocol-Adapter-OSLP/oslp</module>
 		<module>Protocol-Adapter-OSLP/web-device-simulator</module>
+		<module>Protocol-Adapter-OSLP/osgp-core-db-api</module>
         <module>Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp</module>
 
 		<!-- Platform -->
@@ -40,7 +41,6 @@
         <module>Platform/osgp-adapter-ws-tariffswitching</module>
 		        
         <module>Platform/osgp-core</module>
-		<module>Platform/osgp-core-db-api</module>
 				
 		<module>Platform/web-service-logging</module>
         
