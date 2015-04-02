@@ -104,10 +104,6 @@
     
     <dependencies>
     	<!-- Alliander -->
-    	<dependency>
-			<groupId>com.alliander.osgp</groupId>
-			<artifactId>oslp</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>shared</artifactId>
