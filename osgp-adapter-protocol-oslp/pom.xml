@@ -16,8 +16,7 @@
 	</properties>
 
 	<build>
-		<plugins>
-		
+		<plugins>		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -32,27 +31,8 @@
 						<nonFilteredFileExtension>png</nonFilteredFileExtension>
 						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
 					</nonFilteredFileExtensions>
-<!-- 					<webResources> -->
-<!-- 						<resource> -->
-<!-- 							<directory>src/main/webapp</directory> -->
-<!-- 							<filtering>true</filtering> -->
-<!-- 						</resource> -->
-<!-- 					</webResources> -->
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<configuration>
-					<excludeRoots>
-						<excludeRoot>
-							target/generated-sources/jaxb
-						</excludeRoot>
-					</excludeRoots>					
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>				
-		
+			</plugin>	
 		</plugins>
 	</build>
 	
@@ -110,10 +90,6 @@
 			<groupId>org.springframework.ws</groupId>
 			<artifactId>spring-ws-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>	
 		<dependency>
 			<groupId>org.springframework.ws</groupId>
 			<artifactId>spring-ws-support</artifactId>
@@ -212,10 +188,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -99,14 +99,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-		</dependency>	
-		
-		<!-- Servlet API 3.0 -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>javax.servlet</groupId> -->
-<!-- 			<artifactId>javax.servlet-api</artifactId> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
+		</dependency>
 
 		<!-- Logging -->
 		 <dependency>
@@ -126,10 +119,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
         </dependency>
 	</dependencies>
   
