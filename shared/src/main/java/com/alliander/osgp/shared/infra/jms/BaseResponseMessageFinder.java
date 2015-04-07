@@ -6,15 +6,13 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 /**
  * Base class for retrieving response messages from a queue by correlation UID.
- * 
+ *
  * @author CGI
- * 
+ *
  */
 public abstract class BaseResponseMessageFinder {
 
@@ -28,7 +26,7 @@ public abstract class BaseResponseMessageFinder {
 
     /**
      * Method for retrieving messages by correlation UID.
-     * 
+     *
      * @param correlationUid
      *            The correlation UID of the message to find.
      * @return A response message.
@@ -49,7 +47,8 @@ public abstract class BaseResponseMessageFinder {
                 responseJmsMessage = this.createEmptyMessage(correlationUid);
             }
         } else {
-            LOGGER.info("No message with correlationUID: {} has been found, NOT_FOUND will be returned.", correlationUid);
+            LOGGER.info("No message with correlationUID: {} has been found, NOT_FOUND will be returned.",
+                    correlationUid);
             responseJmsMessage = this.createEmptyMessage(correlationUid);
         }
 
@@ -57,9 +56,10 @@ public abstract class BaseResponseMessageFinder {
     }
 
     /**
-     * Receive an object message from the JMS Template. This method has to be implemented for specific queues by classes
-     * that extend this abstract class.
-     * 
+     * Receive an object message from the JMS Template. This method has to be
+     * implemented for specific queues by classes that extend this abstract
+     * class.
+     *
      * @param correlationUid
      *            The correlation UID of the message to receive.
      * @return An object message or null.
@@ -68,7 +68,7 @@ public abstract class BaseResponseMessageFinder {
 
     /**
      * Get a JMSCorrelationID for a correlation UID.
-     * 
+     *
      * @param correlationUid
      *            The correlation UID of the message.
      * @return A JMSCorrelationID.
@@ -79,7 +79,7 @@ public abstract class BaseResponseMessageFinder {
 
     /**
      * Check if the response message contains an error message.
-     * 
+     *
      * @param responseMessage
      *            The response message to check.
      * @throws ResponseMessageException
@@ -87,18 +87,19 @@ public abstract class BaseResponseMessageFinder {
      */
     protected void checkResponseMessage(final ResponseMessage responseMessage) throws OsgpException {
         if (responseMessage.getResult().equals(ResponseMessageResultType.NOT_OK)) {
-        		if ( responseMessage.getOsgpException() != null)
-        		{
-        			LOGGER.error("Unexpected exception: ", responseMessage.getOsgpException().getCause());
-        			throw responseMessage.getOsgpException();
-                //throw new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", ex);
+            if (responseMessage.getOsgpException() != null) {
+                LOGGER.error("Unexpected exception: ", responseMessage.getOsgpException().getCause());
+                throw responseMessage.getOsgpException();
+                // throw new TechnicalException(ComponentType.UNKNOWN,
+                // "Unexpected exception while retrieving response message",
+                // ex);
             }
         }
     }
 
     /**
      * Method for creating an empty not found response message.
-     * 
+     *
      * @param correlationUid
      *            The correlation UID of the message.
      * @return An empty not found message.
