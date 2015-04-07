@@ -13,6 +13,7 @@ import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
@@ -72,10 +73,11 @@ public class DomainResponseMessageSender implements DomainResponseService {
     }
 
     private ResponseMessage createResponseMessage(final ProtocolResponseMessage protocolResponseMessage) {
+        final OsgpException osgpException = protocolResponseMessage.getOsgpException() == null ? null : protocolResponseMessage.getOsgpException();
         return new ResponseMessage(protocolResponseMessage.getCorrelationUid(),
                 protocolResponseMessage.getOrganisationIdentification(),
                 protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(),
-                protocolResponseMessage.getOsgpException(), protocolResponseMessage.getDataObject());
+                osgpException, protocolResponseMessage.getDataObject());
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
