@@ -39,18 +39,6 @@
 					</webResources>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<configuration>
-					<excludeRoots>
-						<excludeRoot>
-							target/generated-sources/jaxb
-						</excludeRoot>
-					</excludeRoots>					
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>				
 		</plugins>
 	</build>
   
@@ -160,17 +148,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
         
-       <!-- New for splitting platform into webservice tiers -->
-			
+       <!-- New for splitting platform into webservice tiers -->			
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>osgp-domain-core</artifactId>
 		</dependency>
-    </dependencies>
-	  
+    </dependencies>	  
 </project>

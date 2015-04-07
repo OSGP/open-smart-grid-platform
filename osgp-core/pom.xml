@@ -34,18 +34,18 @@
 					</nonFilteredFileExtensions>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<configuration>
-					<excludeRoots>
-						<excludeRoot>
-							target/generated-sources/jaxb
-						</excludeRoot>
-					</excludeRoots>					
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>				
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-pmd-plugin</artifactId> -->
+<!-- 				<configuration> -->
+<!-- 					<excludeRoots> -->
+<!-- 						<excludeRoot> -->
+<!-- 							target/generated-sources/jaxb -->
+<!-- 						</excludeRoot> -->
+<!-- 					</excludeRoots>					 -->
+<!-- 					<verbose>true</verbose> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin>				 -->
 		
 		</plugins>
 	</build>
@@ -53,10 +53,6 @@
 
 	<dependencies>
 		<!-- Alliander -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.alliander.osgp</groupId> -->
-<!-- 			<artifactId>oslp</artifactId> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>osgp-dto</artifactId>
@@ -195,10 +191,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
         </dependency>
     </dependencies>
 </project>

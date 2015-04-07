@@ -4,6 +4,8 @@
   
     <artifactId>web-service-logging</artifactId>
 	<packaging>war</packaging>
+    <name>web-service-logging</name>
+    <url>http://maven.apache.org</url>
 	
 	<parent>
         <groupId>com.alliander.osgp</groupId>
@@ -12,23 +14,12 @@
         <relativePath>../parent-platform/pom.xml</relativePath>
     </parent>
 
-  <name>web-service-logging</name>
-  <url>http://maven.apache.org</url>
-
   	<properties>
 		<display.version>${project.version}-${BUILD_TAG}</display.version>
-	</properties>
-	
+	</properties>	
 		
 	<build>
 		<plugins>
-		    <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -48,6 +39,7 @@
 	</build>
 	
   <dependencies>
+        <!-- Alliander -->
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>shared</artifactId>
@@ -140,7 +132,6 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-spring</artifactId>
-        </dependency>
-        
+        </dependency>        
     </dependencies>
 </project>

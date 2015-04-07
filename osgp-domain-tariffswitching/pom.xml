@@ -39,36 +39,18 @@
 					</webResources>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<configuration>
-					<excludeRoots>
-						<excludeRoot>
-							target/generated-sources/jaxb
-						</excludeRoot>
-					</excludeRoots>					
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>				
 		</plugins>
 	</build>
 	<dependencies>
+	    <!-- Alliander -->
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>shared</artifactId>
 		</dependency>
-		<!-- New for splitting platform into webservice tiers -->
 		<dependency>
 			<groupId>com.alliander.osgp</groupId>
 			<artifactId>osgp-domain-core</artifactId>
-		</dependency>
-		
-		<dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-        </dependency>
-      
+		</dependency>      
         
 		<!-- Spring Framework -->
 		<dependency>
@@ -98,17 +80,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
-		</dependency>
-
-		<!-- REQUIRED FOR FITNESSE -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-        </dependency>    
-		<dependency>
-		    <groupId>org.apache.activemq.protobuf</groupId>
-		    <artifactId>activemq-protobuf</artifactId>
-		    <version>1.1</version>
 		</dependency>
 		
         <!-- Spring Data -->
@@ -151,12 +122,6 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-		</dependency>
-
-		<!-- BoneCP (Connection Pooling) -->
-		<dependency>
-			<groupId>com.jolbox</groupId>
-			<artifactId>bonecp</artifactId>
 		</dependency>
 
 		<!-- Flyway (DB Migration) -->
@@ -209,12 +174,6 @@
 		   <groupId>ma.glasnost.orika</groupId>
 		   <artifactId>orika-core</artifactId>
 		</dependency>
-
-		<!-- Netty -->
-<!--         <dependency> -->
-<!--             <groupId>io.netty</groupId> -->
-<!--             <artifactId>netty</artifactId> -->
-<!--         </dependency> -->
         
 		<!--  Apache ActiveMQ -->	
         <dependency> 
@@ -231,10 +190,5 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
-    </dependencies>
-    
+    </dependencies>    
 </project>

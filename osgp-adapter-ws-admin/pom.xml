@@ -65,18 +65,6 @@
 					</webResources>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<configuration>
-					<excludeRoots>
-						<excludeRoot>
-							target/generated-sources/jaxb
-						</excludeRoot>
-					</excludeRoots>					
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>				
 		</plugins>
 	</build>
 	
@@ -169,12 +157,6 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
-		<!-- BoneCP (Connection Pooling) -->
-		<dependency>
-			<groupId>com.jolbox</groupId>
-			<artifactId>bonecp</artifactId>
-		</dependency>
-
 		<!-- Flyway (DB Migration) -->
 		<dependency>
 			<groupId>com.googlecode.flyway</groupId>
@@ -241,10 +223,5 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-        </dependency>
-    </dependencies>
-	
+    </dependencies>	
 </project>
