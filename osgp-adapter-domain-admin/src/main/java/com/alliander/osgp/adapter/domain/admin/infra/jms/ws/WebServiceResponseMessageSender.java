@@ -37,7 +37,9 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
-                objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException().getMessage());
+                if (responseMessage.getOsgpException() !=null){
+                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException().getMessage());                	
+                }
                 return objectMessage;
             }
         });

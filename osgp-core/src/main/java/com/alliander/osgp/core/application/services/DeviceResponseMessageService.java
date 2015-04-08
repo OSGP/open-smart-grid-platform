@@ -18,6 +18,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -79,7 +80,8 @@ public class DeviceResponseMessageService {
             // TODO:delete the completed schedule from the database
             // this.scheduledTaskRepository.delete(scheduledTask)
         } else {
-            scheduledTask.setFailed(message.getOsgpException().getCause().getMessage());
+            String errorMessage= message.getOsgpException() ==null? "" : message.getOsgpException().getCause().getMessage();
+            scheduledTask.setFailed(errorMessage);
         }
         this.scheduledTaskRepository.save(scheduledTask);
     }

@@ -66,7 +66,9 @@ public class DomainResponseMessageSender implements DomainResponseService {
                         message.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, message.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, message.getResult().toString());
-                objectMessage.setStringProperty(Constants.DESCRIPTION, message.getOsgpException().getMessage());
+                if (message.getOsgpException() != null) {
+                	objectMessage.setStringProperty(Constants.DESCRIPTION, ((OsgpException) message.getOsgpException()).getMessage());
+                }
                 return objectMessage;
             }
         });
