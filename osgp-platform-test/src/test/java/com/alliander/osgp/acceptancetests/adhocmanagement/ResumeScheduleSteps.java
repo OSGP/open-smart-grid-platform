@@ -64,6 +64,7 @@ import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
@@ -240,11 +241,13 @@ public class ResumeScheduleSteps {
 
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
+                OsgpException exception=null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
                     dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
+                    exception=(OsgpException) dataObject;
                 }
                 final ResponseMessage message = new ResponseMessage(correlationId, this.organisation.getOrganisationIdentification(), deviceId, result,
-                        qdescription, dataObject);
+                		exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 e.printStackTrace();

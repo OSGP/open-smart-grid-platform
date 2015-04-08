@@ -487,7 +487,7 @@ public class GetPowerUsageHistorySteps {
                         powerUsageDatas);
 
                 final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, ResponseMessageResultType.valueOf(qresult),
-                        qdescription, powerUsageHistoryResponse);
+                        null, powerUsageHistoryResponse);
 
                 when(messageMock.getObject()).thenReturn(message);
 

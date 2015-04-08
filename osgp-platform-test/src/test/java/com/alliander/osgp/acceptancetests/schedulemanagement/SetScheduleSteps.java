@@ -70,6 +70,7 @@ import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
@@ -256,11 +257,13 @@ public class SetScheduleSteps {
 
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
+                OsgpException exception=null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
                     dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, null, new ValidationException());
+                    exception=(OsgpException) dataObject;
                 }
                 final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, ResponseMessageResultType.valueOf(qresult),
-                        qdescription, dataObject);
+                		exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 e.printStackTrace();
@@ -365,8 +368,8 @@ public class SetScheduleSteps {
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();
-
-            LOGGER.info("THEN: message description: " + argument.getValue().getDescription());
+            
+            LOGGER.info("THEN: message description: " + (argument.getValue().getOsgpException() == null ? "" : argument.getValue().getOsgpException().getMessage()));
 
             Assert.assertTrue("Invalid result, found: " + actual + " , expected: " + expected, actual.equals(expected));
 

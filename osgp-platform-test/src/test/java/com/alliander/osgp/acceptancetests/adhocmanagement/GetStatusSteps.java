@@ -77,6 +77,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Configurable
 @DomainSteps
@@ -324,6 +325,7 @@ public class GetStatusSteps {
 
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
                     dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
+                    message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, (OsgpException) dataObject, dataObject);
                 } else {
                     if (domainType.equals(DomainType.PUBLIC_LIGHTING.name())) {
                         // DomainType.PUBLIC_LIGHTING
@@ -332,8 +334,8 @@ public class GetStatusSteps {
                         // DomainType.TARIFF_SWITCHING
                         dataObject = new DeviceStatusMapped(null, null, prefLinkType, actLinkType, lt, mask);
                     }
+                    message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, null, dataObject);
                 }
-                message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, qdescription, dataObject);
 
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
@@ -455,7 +457,7 @@ public class GetStatusSteps {
 
             // Check the description.
             expected = description.equals(NULL) ? null : description;
-            actual = argument.getValue().getDescription();
+            actual = argument.getValue().getOsgpException() ==null ? "" : argument.getValue().getOsgpException().getMessage();
 
             Assert.assertTrue("Invalid description, found: " + actual + " , expected: " + expected, actual.equals(expected));
 
