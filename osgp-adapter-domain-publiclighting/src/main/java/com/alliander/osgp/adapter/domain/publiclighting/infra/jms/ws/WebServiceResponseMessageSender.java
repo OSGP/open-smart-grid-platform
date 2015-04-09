@@ -24,7 +24,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
     /**
      * Send a response message to the web service adapter using a custom time to
      * live.
-     * 
+     *
      * @param responseMessage
      *            The response message to send.
      * @param timeToLive
@@ -50,8 +50,9 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
-                if (responseMessage.getOsgpException() !=null){
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException().getMessage());                	
+                if (responseMessage.getOsgpException() != null) {
+                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
+                            .getMessage());
                 }
                 return objectMessage;
             }
