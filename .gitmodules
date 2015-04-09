@@ -1,0 +1,3 @@
+[submodule "Shared"]
+	path = Shared
+	url = https://github.com/OSGP/Shared.git
