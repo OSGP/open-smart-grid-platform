@@ -182,31 +182,37 @@ public class StopDeviceTestSteps {
     public void givenAnAuthorisedOrganisation(final String organisation) {
         LOGGER.info("GIVEN: the stop device test request refers to a organisation {}.", organisation);
 
-        this.organisation = new Organisation(organisation, organisation, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
+        this.organisation = new Organisation(organisation, organisation, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
 
-        if (organisation.equals(ORGANISATION_ID_UNKNOWN) || organisation.equals(ORGANISATION_ID_EMPTY) || organisation.equals(ORGANISATION_ID_SPACES)) {
+        if (organisation.equals(ORGANISATION_ID_UNKNOWN) || organisation.equals(ORGANISATION_ID_EMPTY)
+                || organisation.equals(ORGANISATION_ID_SPACES)) {
             when(this.organisationRepositoryMock.findByOrganisationIdentification(organisation)).thenReturn(null);
         } else {
-            when(this.organisationRepositoryMock.findByOrganisationIdentification(organisation)).thenReturn(this.organisation);
+            when(this.organisationRepositoryMock.findByOrganisationIdentification(organisation)).thenReturn(
+                    this.organisation);
         }
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.INSTALLATION).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+                .thenReturn(authorizations);
     }
 
     @DomainStep("the stop device test oslp message from the device")
     public void givenTheOslpResponse() {
         LOGGER.info("GIVEN: the stop device test oslp message from the device.");
 
-        final com.alliander.osgp.oslp.Oslp.StopSelfTestResponse stopDeviceTestResponse = com.alliander.osgp.oslp.Oslp.StopSelfTestResponse.newBuilder()
-                .setStatus(Status.OK).setSelfTestResult(ByteString.copyFrom(new byte[] { 0 })).build();
+        final com.alliander.osgp.oslp.Oslp.StopSelfTestResponse stopDeviceTestResponse = com.alliander.osgp.oslp.Oslp.StopSelfTestResponse
+                .newBuilder().setStatus(Status.OK).setSelfTestResult(ByteString.copyFrom(new byte[] { 0 })).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
-                .withPayloadMessage(Message.newBuilder().setStopSelfTestResponse(stopDeviceTestResponse).build()).build();
+                .withPayloadMessage(Message.newBuilder().setStopSelfTestResponse(stopDeviceTestResponse).build())
+                .build();
 
-        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse, this.channelMock, this.device.getNetworkAddress());
+        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
+                this.channelMock, this.device.getNetworkAddress());
         this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
         this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
     }
@@ -219,7 +225,8 @@ public class StopDeviceTestSteps {
 
     @DomainStep("a stop device test response request with correlationId (.*) and deviceId (.*)")
     public void givenAStopDeviceTestResponseRequest(final String correlationId, final String deviceId) {
-        LOGGER.info("a stop device test response request with correlationId {} and deviceId {}.", correlationId, deviceId);
+        LOGGER.info("a stop device test response request with correlationId {} and deviceId {}.", correlationId,
+                deviceId);
 
         this.setUp();
 
@@ -233,26 +240,29 @@ public class StopDeviceTestSteps {
     }
 
     @DomainStep("a stop device test response message with correlationId (.*), deviceId (.*), qresult (.*) and qdescription (.*) is found in the queue (.*)")
-    public void givenAStopDeviceTestResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final Boolean isFound) {
-        LOGGER.info("a stop device test response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found in the queue {}",
+    public void givenAStopDeviceTestResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId,
+            final String qresult, final String qdescription, final Boolean isFound) {
+        LOGGER.info(
+                "a stop device test response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found in the queue {}",
                 correlationId, deviceId, qresult, qdescription, isFound);
         if (isFound) {
             final ObjectMessage messageMock = mock(ObjectMessage.class);
 
             try {
                 when(messageMock.getJMSCorrelationID()).thenReturn(correlationId);
-                when(messageMock.getStringProperty("OrganisationIdentification")).thenReturn(this.organisation.getOrganisationIdentification());
+                when(messageMock.getStringProperty("OrganisationIdentification")).thenReturn(
+                        this.organisation.getOrganisationIdentification());
                 when(messageMock.getStringProperty("DeviceIdentification")).thenReturn(deviceId);
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    exception = (OsgpException) dataObject;
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, this.organisation.getOrganisationIdentification(), deviceId, result,
-                		exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId,
+                        this.organisation.getOrganisationIdentification(), deviceId, result, exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 // TODO Auto-generated catch block
@@ -272,7 +282,8 @@ public class StopDeviceTestSteps {
         LOGGER.info("WHEN: the stop device test request is received.");
 
         try {
-            this.stopDeviceTestAsyncResponse = this.deviceInstallationEndpoint.stopDeviceTest(this.organisation.getOrganisationIdentification(), this.request);
+            this.stopDeviceTestAsyncResponse = this.deviceInstallationEndpoint.stopDeviceTest(
+                    this.organisation.getOrganisationIdentification(), this.request);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -284,8 +295,8 @@ public class StopDeviceTestSteps {
         LOGGER.info("WHEN: \"the stop device test response request is received\".");
 
         try {
-            this.response = this.deviceInstallationEndpoint.getStopDeviceTestResponse(this.organisation.getOrganisationIdentification(),
-                    this.stopDeviceTestAsyncRequest);
+            this.response = this.deviceInstallationEndpoint.getStopDeviceTestResponse(
+                    this.organisation.getOrganisationIdentification(), this.stopDeviceTestAsyncRequest);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -296,12 +307,16 @@ public class StopDeviceTestSteps {
 
     @DomainStep("the stop device test request should return an async response with a correlationId and deviceId (.*)")
     public boolean thenStopDeviceTestShouldReturnAsyncResponse(final String deviceId) {
-        LOGGER.info("THEN: \"the stop device test request should return an async response with a correlationId and deviceId {}\".", deviceId);
+        LOGGER.info(
+                "THEN: \"the stop device test request should return an async response with a correlationId and deviceId {}\".",
+                deviceId);
 
         try {
             Assert.assertNotNull("asyncResponse should not be null", this.stopDeviceTestAsyncResponse);
-            Assert.assertNotNull("CorrelationId should not be null", this.stopDeviceTestAsyncResponse.getAsyncResponse().getCorrelationUid());
-            Assert.assertNotNull("DeviceId should not be null", this.stopDeviceTestAsyncResponse.getAsyncResponse().getDeviceId());
+            Assert.assertNotNull("CorrelationId should not be null", this.stopDeviceTestAsyncResponse
+                    .getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("DeviceId should not be null", this.stopDeviceTestAsyncResponse.getAsyncResponse()
+                    .getDeviceId());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -323,7 +338,8 @@ public class StopDeviceTestSteps {
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
 
-                Assert.assertTrue("Message should contain stop device test request.", this.oslpRequest.getPayloadMessage().hasStopSelfTestRequest());
+                Assert.assertTrue("Message should contain stop device test request.", this.oslpRequest
+                        .getPayloadMessage().hasStopSelfTestRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -393,15 +409,18 @@ public class StopDeviceTestSteps {
     }
 
     @DomainStep("the stop device test response request should return a stop device test response with result (.*) and description (.*)")
-    public boolean thenTheStopDeviceTestResponseRequestShouldReturnAGetFirmwareVersionResponse(final String result, final String description) {
-        LOGGER.info("THEN: \"the stop device test response request should return a stop device test response with result {} and description {}", result,
-                description);
+    public boolean thenTheStopDeviceTestResponseRequestShouldReturnAGetFirmwareVersionResponse(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"the stop device test response request should return a stop device test response with result {} and description {}",
+                result, description);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 Assert.assertNotNull("Response should not be null", this.response);
@@ -422,10 +441,12 @@ public class StopDeviceTestSteps {
     // === Private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.oslpLogItemRepositoryMock, this.channelMock,
+                this.webServiceResponseMessageSenderMock });
 
-        this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService, new DeviceInstallationMapper());
+        this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService,
+                new DeviceInstallationMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -438,9 +459,12 @@ public class StopDeviceTestSteps {
 
     private void createDevice(final String deviceIdentification, final boolean activated) {
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 }

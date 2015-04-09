@@ -75,9 +75,9 @@ import com.alliander.osgp.oslp.OslpUtils;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Configurable
 @DomainSteps
@@ -169,7 +169,8 @@ public class GetStatusSteps {
 
     @DomainStep("a get get status response request with correlationId (.*) and deviceId (.*)")
     public void givenAGetGetStatusResponseRequest(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: a get get status response request with correlationId {} and deviceId {}", correlationId, deviceId);
+        LOGGER.info("GIVEN: a get get status response request with correlationId {} and deviceId {}", correlationId,
+                deviceId);
 
         this.setUp();
 
@@ -181,8 +182,11 @@ public class GetStatusSteps {
     }
 
     @DomainStep("the get status request refers to a device (.*) with status (.*) which is configured with relayType (.*)")
-    public void givenADeviceWithStausAndRelayType(final String device, final String status, final String relayType) throws Exception {
-        LOGGER.info("GIVEN: the get status request refers to a device {} with status {} which is configured with relayType {}.", device, status, relayType);
+    public void givenADeviceWithStausAndRelayType(final String device, final String status, final String relayType)
+            throws Exception {
+        LOGGER.info(
+                "GIVEN: the get status request refers to a device {} with status {} which is configured with relayType {}.",
+                device, status, relayType);
 
         if (!relayType.equals(NULL)) {
             this.deviceRelayType = RelayType.valueOf(relayType);
@@ -212,20 +216,24 @@ public class GetStatusSteps {
     public void givenAnAuthorisedOrganisation() {
         LOGGER.info("GIVEN: the get status request refers to an organisation that is authorised.");
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+                .thenReturn(authorizations);
     }
 
     @DomainStep("the get status oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), and (.*)")
-    public void givenAnOslpResponse(final String preferredLinkType, final String actualLinkType, final String lightType, final String eventNotifications,
-            final String index, final Boolean on, final String dimValue) {
-        LOGGER.info("GIVEN: the get status oslp message from the device contains {}, {}, {}, {}, {}, {}, and {}.", new Object[] { preferredLinkType,
-                actualLinkType, lightType, eventNotifications, index, on, dimValue });
+    public void givenAnOslpResponse(final String preferredLinkType, final String actualLinkType,
+            final String lightType, final String eventNotifications, final String index, final Boolean on,
+            final String dimValue) {
+        LOGGER.info("GIVEN: the get status oslp message from the device contains {}, {}, {}, {}, {}, {}, and {}.",
+                new Object[] { preferredLinkType, actualLinkType, lightType, eventNotifications, index, on, dimValue });
 
         // final OslpUtils oslpUtils = new OslpUtils();
 
@@ -251,15 +259,20 @@ public class GetStatusSteps {
                 .newBuilder()
                 .setStatus(Status.OK)
                 .setPreferredLinktype(
-                        StringUtils.isBlank(preferredLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(Oslp.LinkType.class, preferredLinkType))
-                .setActualLinktype(StringUtils.isBlank(actualLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(Oslp.LinkType.class, actualLinkType))
-                .setLightType(StringUtils.isBlank(lightType) ? Oslp.LightType.LT_NOT_SET : Enum.valueOf(Oslp.LightType.class, lightType))
-                .setEventNotificationMask(mask).addValue(lightValueBuilder).build();
+                        StringUtils.isBlank(preferredLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
+                                Oslp.LinkType.class, preferredLinkType))
+                .setActualLinktype(
+                        StringUtils.isBlank(actualLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
+                                Oslp.LinkType.class, actualLinkType))
+                .setLightType(
+                        StringUtils.isBlank(lightType) ? Oslp.LightType.LT_NOT_SET : Enum.valueOf(Oslp.LightType.class,
+                                lightType)).setEventNotificationMask(mask).addValue(lightValueBuilder).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetStatusResponse(getStatusResponse).build()).build();
 
-        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse, this.channelMock, this.device.getNetworkAddress());
+        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
+                this.channelMock, this.device.getNetworkAddress());
         this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
         this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
     }
@@ -278,22 +291,25 @@ public class GetStatusSteps {
             lightValues.add(lightValueBuilder.build());
         }
 
-        final com.alliander.osgp.oslp.Oslp.GetStatusResponse getStatusResponse = com.alliander.osgp.oslp.Oslp.GetStatusResponse.newBuilder()
-                .setStatus(Status.OK).setPreferredLinktype(Oslp.LinkType.LINK_NOT_SET).setActualLinktype(Oslp.LinkType.LINK_NOT_SET)
-                .setLightType(Oslp.LightType.LT_NOT_SET).setEventNotificationMask(0).addAllValue(lightValues).build();
+        final com.alliander.osgp.oslp.Oslp.GetStatusResponse getStatusResponse = com.alliander.osgp.oslp.Oslp.GetStatusResponse
+                .newBuilder().setStatus(Status.OK).setPreferredLinktype(Oslp.LinkType.LINK_NOT_SET)
+                .setActualLinktype(Oslp.LinkType.LINK_NOT_SET).setLightType(Oslp.LightType.LT_NOT_SET)
+                .setEventNotificationMask(0).addAllValue(lightValues).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetStatusResponse(getStatusResponse).build()).build();
 
-        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse, this.channelMock, this.device.getNetworkAddress());
+        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
+                this.channelMock, this.device.getNetworkAddress());
         this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
         this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
     }
 
     @DomainStep("a get status response message for domainType (.*) with correlationId (.*), deviceId (.*), qresult (.*), qdescription (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) is found in the queue (.*)")
-    public void givenAGetStatusResponseMessageIsFoundInQueue(final String domainType, final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final String preferredLinkType, final String actualLinkType, final String lightType, final String eventNotifications,
-            final String index, final String on, final String dimValue, final Boolean isFound) {
+    public void givenAGetStatusResponseMessageIsFoundInQueue(final String domainType, final String correlationId,
+            final String deviceId, final String qresult, final String qdescription, final String preferredLinkType,
+            final String actualLinkType, final String lightType, final String eventNotifications, final String index,
+            final String on, final String dimValue, final Boolean isFound) {
         LOGGER.info(
                 "GIVEN: \"a get status response message for domainType {} with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
                 domainType, correlationId, deviceId, qresult, qdescription, isFound);
@@ -306,8 +322,10 @@ public class GetStatusSteps {
                 when(messageMock.getStringProperty("OrganisationIdentification")).thenReturn(ORGANISATION_ID);
                 when(messageMock.getStringProperty("DeviceIdentification")).thenReturn(deviceId);
 
-                final LinkType prefLinkType = StringUtils.isBlank(preferredLinkType) ? null : Enum.valueOf(LinkType.class, preferredLinkType);
-                final LinkType actLinkType = StringUtils.isBlank(actualLinkType) ? null : Enum.valueOf(LinkType.class, actualLinkType);
+                final LinkType prefLinkType = StringUtils.isBlank(preferredLinkType) ? null : Enum.valueOf(
+                        LinkType.class, preferredLinkType);
+                final LinkType actLinkType = StringUtils.isBlank(actualLinkType) ? null : Enum.valueOf(LinkType.class,
+                        actualLinkType);
                 final LightType lt = StringUtils.isBlank(lightType) ? null : Enum.valueOf(LightType.class, lightType);
 
                 // EventNotificationTypes
@@ -324,8 +342,10 @@ public class GetStatusSteps {
                 Object dataObject = null;
 
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, (OsgpException) dataObject, dataObject);
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result,
+                            (OsgpException) dataObject, dataObject);
                 } else {
                     if (domainType.equals(DomainType.PUBLIC_LIGHTING.name())) {
                         // DomainType.PUBLIC_LIGHTING
@@ -367,7 +387,8 @@ public class GetStatusSteps {
         LOGGER.info("WHEN: the get status request is received.");
 
         try {
-            this.response = this.adHocManagementEndpoint.getGetStatusResponse(ORGANISATION_ID, this.getStatusAsyncRequest);
+            this.response = this.adHocManagementEndpoint.getGetStatusResponse(ORGANISATION_ID,
+                    this.getStatusAsyncRequest);
 
             Assert.assertNotNull("Response should not be null", this.response);
         } catch (final Throwable t) {
@@ -380,11 +401,14 @@ public class GetStatusSteps {
 
     @DomainStep("the get status request should return an async response with a correlationId and deviceId (.*)")
     public boolean thenTheGetStatusRequestShouldReturnAnAsyncResponseWithACorrelationIdAndDeviceId(final String deviceId) {
-        LOGGER.info("THEN: the get status request should return an async response with a correlationId and deviceId {}.", deviceId);
+        LOGGER.info(
+                "THEN: the get status request should return an async response with a correlationId and deviceId {}.",
+                deviceId);
 
         try {
             Assert.assertNotNull("Response should not be null", this.getStatusAsyncResponse);
-            Assert.assertNotNull("CorrelationId should not be null", this.getStatusAsyncResponse.getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("CorrelationId should not be null", this.getStatusAsyncResponse.getAsyncResponse()
+                    .getCorrelationUid());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -406,7 +430,8 @@ public class GetStatusSteps {
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
 
-                Assert.assertTrue("Message should contain get status request.", this.oslpRequest.getPayloadMessage().hasGetStatusRequest());
+                Assert.assertTrue("Message should contain get status request.", this.oslpRequest.getPayloadMessage()
+                        .hasGetStatusRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -416,7 +441,8 @@ public class GetStatusSteps {
     }
 
     @DomainStep("an ovl get status result message with result (.*) and description (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlGetStatusResultMessageShouldBeSentToTheOvlOutQueue(final String result, final String description) {
+    public boolean thenAnOvlGetStatusResultMessageShouldBeSentToTheOvlOutQueue(final String result,
+            final String description) {
         LOGGER.info("THEN: an ovl get status result message with result {} should be sent to the ovl out queue", result);
 
         try {
@@ -436,9 +462,10 @@ public class GetStatusSteps {
     }
 
     @DomainStep("an ovl get status result message with result (.*), description (.*), (.*), (.*), (.*), (.*), (.*), (.*), and (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlGetStatusResultMessageWithResultShouldBeSentToTheOvlOutQueue(final String result, final String description,
-            final String preferredLinktype, final String actualLinktype, final String lighttype, final String eventnotifications, final String index,
-            final String on, final String dimValue) {
+    public boolean thenAnOvlGetStatusResultMessageWithResultShouldBeSentToTheOvlOutQueue(final String result,
+            final String description, final String preferredLinktype, final String actualLinktype,
+            final String lighttype, final String eventnotifications, final String index, final String on,
+            final String dimValue) {
         LOGGER.info("THEN: an ovl get status result message with result {} should be sent to the ovl out queue", result);
 
         String expected;
@@ -457,9 +484,11 @@ public class GetStatusSteps {
 
             // Check the description.
             expected = description.equals(NULL) ? null : description;
-            actual = argument.getValue().getOsgpException() ==null ? "" : argument.getValue().getOsgpException().getMessage();
+            actual = argument.getValue().getOsgpException() == null ? "" : argument.getValue().getOsgpException()
+                    .getMessage();
 
-            Assert.assertTrue("Invalid description, found: " + actual + " , expected: " + expected, actual.equals(expected));
+            Assert.assertTrue("Invalid description, found: " + actual + " , expected: " + expected,
+                    actual.equals(expected));
 
             if (argument.getValue().getResult().getValue().equals("OK")) {
                 deviceStatus = (DeviceStatus) argument.getValue().getDataObject();
@@ -468,22 +497,27 @@ public class GetStatusSteps {
                 Assert.assertNotNull("DeviceStatus is null", deviceStatus);
 
                 // Check the preferredLinktype.
-                expected = preferredLinktype.equals(NULL) || preferredLinktype.equals(LINK_NOT_SET) ? EMPTY : preferredLinktype;
-                actual = deviceStatus.getPreferredLinkType() == null ? EMPTY : deviceStatus.getPreferredLinkType().toString();
+                expected = preferredLinktype.equals(NULL) || preferredLinktype.equals(LINK_NOT_SET) ? EMPTY
+                        : preferredLinktype;
+                actual = deviceStatus.getPreferredLinkType() == null ? EMPTY : deviceStatus.getPreferredLinkType()
+                        .toString();
 
-                Assert.assertTrue("Invalid preferredLinktype, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                Assert.assertTrue("Invalid preferredLinktype, found: " + actual + " , expected: " + expected,
+                        actual.equals(expected));
 
                 // Check the actualLinktype.
                 expected = actualLinktype.equals(NULL) || actualLinktype.equals(LINK_NOT_SET) ? EMPTY : actualLinktype;
                 actual = deviceStatus.getActualLinkType() == null ? EMPTY : deviceStatus.getActualLinkType().toString();
 
-                Assert.assertTrue("Invalid actualLinktype, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                Assert.assertTrue("Invalid actualLinktype, found: " + actual + " , expected: " + expected,
+                        actual.equals(expected));
 
                 // Check the lighttype.
                 expected = lighttype.equals(NULL) || lighttype.equals(LT_NOT_SET) ? EMPTY : lighttype;
                 actual = deviceStatus.getLightType() == null ? EMPTY : deviceStatus.getLightType().toString();
 
-                Assert.assertTrue("Invalid lighttype, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                Assert.assertTrue("Invalid lighttype, found: " + actual + " , expected: " + expected,
+                        actual.equals(expected));
 
                 // Check the eventnotifications.
                 final HashSet<EventNotificationType> expectedEventNotificationTypes = new HashSet<>();
@@ -492,12 +526,15 @@ public class GetStatusSteps {
                         expectedEventNotificationTypes.add(Enum.valueOf(EventNotificationType.class, event));
                     }
                 }
-                final HashSet<EventNotificationType> actualEventNotificationTypes = new HashSet<>(deviceStatus.getEventNotifications());
+                final HashSet<EventNotificationType> actualEventNotificationTypes = new HashSet<>(
+                        deviceStatus.getEventNotifications());
 
-                Assert.assertEquals("Event notifications should equal expected value", expectedEventNotificationTypes, actualEventNotificationTypes);
+                Assert.assertEquals("Event notifications should equal expected value", expectedEventNotificationTypes,
+                        actualEventNotificationTypes);
 
                 // Get the list of LightValues.
-                final List<com.alliander.osgp.domain.core.valueobjects.LightValue> lightValues = deviceStatus.getLightValues();
+                final List<com.alliander.osgp.domain.core.valueobjects.LightValue> lightValues = deviceStatus
+                        .getLightValues();
 
                 // Check if the lightValues list is not null.
                 Assert.assertNotNull("lightValues list is null", lightValues);
@@ -510,22 +547,26 @@ public class GetStatusSteps {
                     expected = on.equals(NULL) ? null : on;
                     actual = lightValue.isOn() + "";
 
-                    Assert.assertTrue("Invalid lightValue.isOn, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                    Assert.assertTrue("Invalid lightValue.isOn, found: " + actual + " , expected: " + expected,
+                            actual.equals(expected));
 
                     // Check the dimValue.
                     expected = dimValue.equals(NULL) ? EMPTY : dimValue;
                     actual = lightValue.getDimValue() == null ? EMPTY : lightValue.getDimValue().toString();
 
-                    Assert.assertTrue("Invalid lightValue.dimValue, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                    Assert.assertTrue("Invalid lightValue.dimValue, found: " + actual + " , expected: " + expected,
+                            actual.equals(expected));
 
                     // Check the index.
                     expected = index.equals(NULL) ? null : index;
                     actual = lightValue.getIndex() == null ? EMPTY : lightValue.getIndex().toString();
 
-                    Assert.assertTrue("Invalid lightValue.index, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                    Assert.assertTrue("Invalid lightValue.index, found: " + actual + " , expected: " + expected,
+                            actual.equals(expected));
                 }
 
-                final List<com.alliander.osgp.domain.core.valueobjects.TariffValue> tariffValues = ((DeviceStatusMapped) deviceStatus).getTariffValues();
+                final List<com.alliander.osgp.domain.core.valueobjects.TariffValue> tariffValues = ((DeviceStatusMapped) deviceStatus)
+                        .getTariffValues();
 
                 Assert.assertNotNull("tariffValues is null", tariffValues);
 
@@ -557,18 +598,21 @@ public class GetStatusSteps {
     }
 
     @DomainStep("the get get status response request should return a get status response with result (.*), description (.*), (.*), (.*), (.*), (.*), (.*), (.*), and (.*)")
-    public boolean thenTheGetGetStatusResponseRequestShouldReturnAGetStatusResponse(final String result, final String description,
-            final String preferredLinktype, final String actualLinktype, final String lighttype, final String eventnotifications, final String index,
-            final String on, final String dimValue) {
+    public boolean thenTheGetGetStatusResponseRequestShouldReturnAGetStatusResponse(final String result,
+            final String description, final String preferredLinktype, final String actualLinktype,
+            final String lighttype, final String eventnotifications, final String index, final String on,
+            final String dimValue) {
         LOGGER.info(
                 "THEN: the get get status response request should return a get status response with result: {}, description: {}, preferredLinktype: {}, actualLinktype: {}, lighttype: {}, eventnotification: {}, index: {}, on: {}, dimValue: {}",
-                result, description, preferredLinktype, actualLinktype, lighttype, eventnotifications, index, on, dimValue);
+                result, description, preferredLinktype, actualLinktype, lighttype, eventnotifications, index, on,
+                dimValue);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 // Check if the GetStatusResponse is not null.
@@ -578,7 +622,8 @@ public class GetStatusSteps {
                 String expected = result.equals(NULL) ? null : result;
                 String actual = this.response.getResult().toString();
 
-                Assert.assertTrue("Invalid result, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                Assert.assertTrue("Invalid result, found: " + actual + " , expected: " + expected,
+                        actual.equals(expected));
 
                 if (this.response.getResult().equals("OK")) {
                     // Check if the DeviceStatus is not null.
@@ -587,10 +632,11 @@ public class GetStatusSteps {
                     try {
                         // Check the preferredLinktype.
                         expected = preferredLinktype.equals(NULL) ? null : preferredLinktype;
-                        actual = this.response.getDeviceStatus().getPreferredLinkType() == null ? null : this.response.getDeviceStatus().getPreferredLinkType()
-                                .toString();
+                        actual = this.response.getDeviceStatus().getPreferredLinkType() == null ? null : this.response
+                                .getDeviceStatus().getPreferredLinkType().toString();
 
-                        Assert.assertTrue("Invalid preferredLinktype, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                        Assert.assertTrue("Invalid preferredLinktype, found: " + actual + " , expected: " + expected,
+                                actual.equals(expected));
                     } catch (final Exception e) {
 
                     }
@@ -598,10 +644,11 @@ public class GetStatusSteps {
                     try {
                         // Check the actualLinktype.
                         expected = actualLinktype.equals(NULL) ? null : actualLinktype;
-                        actual = this.response.getDeviceStatus().getActualLinkType() == null ? null : this.response.getDeviceStatus().getActualLinkType()
-                                .toString();
+                        actual = this.response.getDeviceStatus().getActualLinkType() == null ? null : this.response
+                                .getDeviceStatus().getActualLinkType().toString();
 
-                        Assert.assertTrue("Invalid actualLinktype, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                        Assert.assertTrue("Invalid actualLinktype, found: " + actual + " , expected: " + expected,
+                                actual.equals(expected));
                     } catch (final Exception e) {
 
                     }
@@ -609,9 +656,11 @@ public class GetStatusSteps {
                     try {
                         // Check the lighttype.
                         expected = lighttype.equals(NULL) ? null : lighttype;
-                        actual = this.response.getDeviceStatus().getLightType() == null ? null : this.response.getDeviceStatus().getLightType().toString();
+                        actual = this.response.getDeviceStatus().getLightType() == null ? null : this.response
+                                .getDeviceStatus().getLightType().toString();
 
-                        Assert.assertTrue("Invalid lighttype, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                        Assert.assertTrue("Invalid lighttype, found: " + actual + " , expected: " + expected,
+                                actual.equals(expected));
                     } catch (final Exception e) {
 
                     }
@@ -620,14 +669,18 @@ public class GetStatusSteps {
                     final HashSet<com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType> expectedEventNotificationTypes = new HashSet<>();
                     if (StringUtils.isNotBlank(eventnotifications)) {
                         for (final String event : eventnotifications.split(",")) {
-                            expectedEventNotificationTypes.add(Enum.valueOf(
-                                    com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType.class, event));
+                            expectedEventNotificationTypes
+                                    .add(Enum
+                                            .valueOf(
+                                                    com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType.class,
+                                                    event));
                         }
                     }
                     final HashSet<com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType> actualEventNotificationTypes = new HashSet<>(
                             this.response.getDeviceStatus().getEventNotifications());
 
-                    Assert.assertEquals("Event notifications should equal expected value", expectedEventNotificationTypes, actualEventNotificationTypes);
+                    Assert.assertEquals("Event notifications should equal expected value",
+                            expectedEventNotificationTypes, actualEventNotificationTypes);
 
                     final List<LightValue> lightValues = this.response.getDeviceStatus().getLightValues();
 
@@ -639,19 +692,22 @@ public class GetStatusSteps {
                         expected = on.equals(NULL) ? null : on;
                         actual = lightValue.isOn() + "";
 
-                        Assert.assertTrue("Invalid lightValue.isOn, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                        Assert.assertTrue("Invalid lightValue.isOn, found: " + actual + " , expected: " + expected,
+                                actual.equals(expected));
 
                         // Check the dimValue.
                         expected = dimValue.equals(NULL) ? null : dimValue;
                         actual = lightValue.getDimValue().toString();
 
-                        Assert.assertTrue("Invalid lightValue.dimValue, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                        Assert.assertTrue("Invalid lightValue.dimValue, found: " + actual + " , expected: " + expected,
+                                actual.equals(expected));
 
                         // Check the index.
                         expected = index.equals(NULL) ? null : index;
                         actual = lightValue.getIndex().toString();
 
-                        Assert.assertTrue("Invalid lightValue.index, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                        Assert.assertTrue("Invalid lightValue.index, found: " + actual + " , expected: " + expected,
+                                actual.equals(expected));
                     }
                 }
             }
@@ -666,10 +722,12 @@ public class GetStatusSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.oslpLogItemRepositoryMock, this.channelMock,
+                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
-        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService, new AdHocManagementMapper());
+        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService,
+                new AdHocManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -684,9 +742,12 @@ public class GetStatusSteps {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 }

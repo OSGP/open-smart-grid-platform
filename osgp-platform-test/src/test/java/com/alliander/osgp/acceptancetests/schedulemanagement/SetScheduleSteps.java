@@ -149,11 +149,13 @@ public class SetScheduleSteps {
     // === GIVEN ===
 
     @DomainStep("a set schedule request for device (.*) with (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")
-    public void givenASetScheduleRequest(final String deviceIdentification, final String weekday, final String startday, final String endday,
-            final String actiontime, final String time, final String triggerwindow, final String lightvalue, final String triggertype) throws Exception {
+    public void givenASetScheduleRequest(final String deviceIdentification, final String weekday,
+            final String startday, final String endday, final String actiontime, final String time,
+            final String triggerwindow, final String lightvalue, final String triggertype) throws Exception {
 
-        LOGGER.info(String.format("GIVEN: \"a set schedule request for device {} with {}, {}, {}, {}, {}, {}, {}, and {}\".", this.device, weekday, startday,
-                endday, actiontime, time, triggerwindow, lightvalue, triggertype));
+        LOGGER.info(String.format(
+                "GIVEN: \"a set schedule request for device {} with {}, {}, {}, {}, {}, {}, {}, and {}\".",
+                this.device, weekday, startday, endday, actiontime, time, triggerwindow, lightvalue, triggertype));
 
         this.setUp();
 
@@ -175,27 +177,29 @@ public class SetScheduleSteps {
     }
 
     @DomainStep("the set schedule request refers to device (.*) with status (.*) which always returns (.*)")
-    public void givenTheSetScheduleRequestRefersToDeviceWithStatus(final String deviceIdentification, final String status, final String response)
-            throws Exception {
-        LOGGER.info("GIVEN: \"the set schedule request refers to a device {} with status {} and response {}\".", new Object[] { deviceIdentification, status,
-                response });
+    public void givenTheSetScheduleRequestRefersToDeviceWithStatus(final String deviceIdentification,
+            final String status, final String response) throws Exception {
+        LOGGER.info("GIVEN: \"the set schedule request refers to a device {} with status {} and response {}\".",
+                new Object[] { deviceIdentification, status, response });
 
         switch (status.toUpperCase()) {
         case "ACTIVE":
             this.createDevice(deviceIdentification, true);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
-            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.oslpDevice);
+            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(
+                    this.oslpDevice);
             when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
 
             // create oslp response
-            final com.alliander.osgp.oslp.Oslp.SetScheduleResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetScheduleResponse.newBuilder()
-                    .setStatus(Status.valueOf(response)).build();
+            final com.alliander.osgp.oslp.Oslp.SetScheduleResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetScheduleResponse
+                    .newBuilder().setStatus(Status.valueOf(response)).build();
 
             this.oslpEnvelope = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                     .withSequenceNumber(SequenceNumberUtils.convertIntegerToByteArray(NEXT_SEQUENCE_NUMBER))
                     .withPayloadMessage(Message.newBuilder().setSetScheduleResponse(oslpResponse).build()).build();
 
-            this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpEnvelope, this.channelMock, this.device.getNetworkAddress());
+            this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpEnvelope,
+                    this.channelMock, this.device.getNetworkAddress());
             this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
             this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
 
@@ -216,19 +220,23 @@ public class SetScheduleSteps {
     public void givenTheSetScheduleRequestRefersToAnAuthorisedOrganisation() {
         LOGGER.info("GIVEN: \"the set schedule request refers to an authorised organisation\".");
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.SCHEDULING).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+                .thenReturn(authorizations);
 
     }
 
     @DomainStep("a get set schedule response request with correlationId (.*) and deviceId (.*)")
     public void givenAGetSetScheduleResultRequestWithCorrelationId(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: \"a get set schedule response with correlationId {} and deviceId {}\".", correlationId, deviceId);
+        LOGGER.info("GIVEN: \"a get set schedule response with correlationId {} and deviceId {}\".", correlationId,
+                deviceId);
 
         this.setUp();
 
@@ -242,9 +250,10 @@ public class SetScheduleSteps {
     }
 
     @DomainStep("a set schedule response message with correlationId (.*), deviceId (.*), qresult (.*) and qdescription (.*) is found in the queue (.*)")
-    public void givenAScheduleLightResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final Boolean isFound) {
-        LOGGER.info("GIVEN: \"a set schedule response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
+    public void givenAScheduleLightResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId,
+            final String qresult, final String qdescription, final Boolean isFound) {
+        LOGGER.info(
+                "GIVEN: \"a set schedule response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
                 correlationId, deviceId, qresult, qdescription, isFound);
 
         if (isFound) {
@@ -257,13 +266,14 @@ public class SetScheduleSteps {
 
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, null, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, null,
+                            new ValidationException());
+                    exception = (OsgpException) dataObject;
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, ResponseMessageResultType.valueOf(qresult),
-                		exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId,
+                        ResponseMessageResultType.valueOf(qresult), exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 e.printStackTrace();
@@ -283,7 +293,8 @@ public class SetScheduleSteps {
 
         try {
 
-            this.setScheduleAsyncResponse = this.scheduleManagementEndpoint.setLightSchedule(ORGANISATION_ID, this.request);
+            this.setScheduleAsyncResponse = this.scheduleManagementEndpoint.setLightSchedule(ORGANISATION_ID,
+                    this.request);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -295,7 +306,8 @@ public class SetScheduleSteps {
         LOGGER.info("WHEN: \"the set schedule request is received\".");
 
         try {
-            this.response = this.scheduleManagementEndpoint.getSetLightScheduleResponse(ORGANISATION_ID, this.setScheduleAsyncRequest);
+            this.response = this.scheduleManagementEndpoint.getSetLightScheduleResponse(ORGANISATION_ID,
+                    this.setScheduleAsyncRequest);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -305,14 +317,18 @@ public class SetScheduleSteps {
     // === THEN ===
 
     @DomainStep("the set schedule request should return an async response with a correlationId and deviceId (.*)")
-    public boolean thenTheSetScheduleRequestShouldReturnAnAsyncResponseWithACorrelationIdAndDeviceId(final String deviceId) {
-        LOGGER.info("THEN: \"the set schedule request should return a async response with a correlationId and deviceId {}\".", deviceId);
+    public boolean thenTheSetScheduleRequestShouldReturnAnAsyncResponseWithACorrelationIdAndDeviceId(
+            final String deviceId) {
+        LOGGER.info(
+                "THEN: \"the set schedule request should return a async response with a correlationId and deviceId {}\".",
+                deviceId);
 
         // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Schedule Async Response should not be null", this.setScheduleAsyncResponse);
             Assert.assertNotNull("Async Response should not be null", this.setScheduleAsyncResponse.getAsyncResponse());
-            Assert.assertNotNull("CorrelationId should not be null", this.setScheduleAsyncResponse.getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("CorrelationId should not be null", this.setScheduleAsyncResponse.getAsyncResponse()
+                    .getCorrelationUid());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -336,8 +352,10 @@ public class SetScheduleSteps {
     }
 
     @DomainStep("a set schedule oslp message is sent to device (.*) should be (.*)")
-    public boolean thenASetScheduleOslpMessageShouldBeSent(final String deviceIdentification, final Boolean isMessageSent) {
-        LOGGER.info("THEN: \"a set schedule oslp message is sent to device [{}] should be [{}]\".", deviceIdentification, isMessageSent);
+    public boolean thenASetScheduleOslpMessageShouldBeSent(final String deviceIdentification,
+            final Boolean isMessageSent) {
+        LOGGER.info("THEN: \"a set schedule oslp message is sent to device [{}] should be [{}]\".",
+                deviceIdentification, isMessageSent);
 
         final int count = isMessageSent ? 1 : 0;
 
@@ -348,7 +366,8 @@ public class SetScheduleSteps {
             if (isMessageSent) {
                 this.oslpMessage = argument.getValue();
 
-                Assert.assertTrue("Message should contain set schedule request.", this.oslpMessage.getPayloadMessage().hasSetScheduleRequest());
+                Assert.assertTrue("Message should contain set schedule request.", this.oslpMessage.getPayloadMessage()
+                        .hasSetScheduleRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -358,9 +377,11 @@ public class SetScheduleSteps {
     }
 
     @DomainStep("an ovl set schedule result message with result (.*) and description (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlSetScheduleResultMessageShouldBeSentToTheOvlOutQueue(final String result, final String description) {
-        LOGGER.info("THEN: \"an ovl set schedule result message with result [{}] and description [{}] should be sent to the ovl out queue\".", result,
-                description);
+    public boolean thenAnOvlSetScheduleResultMessageShouldBeSentToTheOvlOutQueue(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"an ovl set schedule result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
+                result, description);
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
@@ -368,8 +389,10 @@ public class SetScheduleSteps {
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();
-            
-            LOGGER.info("THEN: message description: " + (argument.getValue().getOsgpException() == null ? "" : argument.getValue().getOsgpException().getMessage()));
+
+            LOGGER.info("THEN: message description: "
+                    + (argument.getValue().getOsgpException() == null ? "" : argument.getValue().getOsgpException()
+                            .getMessage()));
 
             Assert.assertTrue("Invalid result, found: " + actual + " , expected: " + expected, actual.equals(expected));
 
@@ -381,23 +404,26 @@ public class SetScheduleSteps {
     }
 
     @DomainStep("the get set schedule response request should return a set schedule response with result (.*) and description (.*)")
-    public boolean thenTheGetSetScheduleResultRequestShouldReturnAGetSetScheduleResultResponseWithResult(final String result, final String description) {
-        LOGGER.info("THEN: \"the get set schedule result request should return a get set schedule response with result {} and description {}\".", result,
-                description);
+    public boolean thenTheGetSetScheduleResultRequestShouldReturnAGetSetScheduleResultResponseWithResult(
+            final String result, final String description) {
+        LOGGER.info(
+                "THEN: \"the get set schedule result request should return a get set schedule response with result {} and description {}\".",
+                result, description);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
                 Assert.assertNotNull("Response should not be null", this.response);
 
                 final String expectedResult = result.equals("NULL") ? null : result;
                 final String actualResult = this.response.getResult().toString();
 
-                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult, (actualResult == null && expectedResult == null)
-                        || actualResult.equals(expectedResult));
+                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
+                        (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
 
                 // TODO: check description
             }
@@ -411,10 +437,12 @@ public class SetScheduleSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.logItemRepositoryMock, this.channelMock,
-                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.logItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock,
+                this.oslpDeviceRepositoryMock });
 
-        this.scheduleManagementEndpoint = new PublicLightingScheduleManagementEndpoint(this.scheduleManagementService, new ScheduleManagementMapper());
+        this.scheduleManagementEndpoint = new PublicLightingScheduleManagementEndpoint(this.scheduleManagementService,
+                new ScheduleManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -479,9 +507,12 @@ public class SetScheduleSteps {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 }
