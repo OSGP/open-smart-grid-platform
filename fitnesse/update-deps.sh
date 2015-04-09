@@ -4,7 +4,7 @@
 
 CLASSPATH_PAGE=FitNesseRoot/content.txt
 # POM_FILE=../../implementation/main/java/osgp/pom.xml
-POM_FILE=../../java/osgp/pom.xml
+POM_FILE=../pom.xml
 
 echo "Updating the Maven dependencies in FitNesse."
 echo "    Using classpath page: $CLASSPATH_PAGE"
@@ -31,31 +31,48 @@ echo "!**> setup test system
 
 
 
-!path ../../java/osgp/osgp-adapter-ws-core/target/classes
-!path ../../java/osgp/osgp-adapter-ws-core/target/test-classes
-!path ../../java/osgp/osgp-adapter-ws-admin/target/classes
-!path ../../java/osgp/osgp-adapter-ws-admin/target/test-classes
-!path ../../java/osgp/osgp-adapter-ws-publiclighting/target/classes
-!path ../../java/osgp/osgp-adapter-ws-publiclighting/target/test-classes
-!path ../../java/osgp/osgp-adapter-ws-shared/target/classes
-!path ../../java/osgp/osgp-adapter-ws-shared/target/test-classes
-!path ../../java/osgp/osgp-adapter-ws-tariffswitching/target/classes
-!path ../../java/osgp/osgp-adapter-ws-tariffswitching/target/test-classes
+!path ../Platform/osgp-adapter-ws-core/target/classes
+!path ../Platform/osgp-adapter-ws-core/target/test-classes
+!path ../Platform/osgp-adapter-ws-admin/target/classes
+!path ../Platform/osgp-adapter-ws-admin/target/test-classes
+!path ../Platform/osgp-adapter-ws-publiclighting/target/classes
+!path ../Platform/osgp-adapter-ws-publiclighting/target/test-classes
+!path ../Platform/osgp-adapter-ws-tariffswitching/target/classes
+!path ../Platform/osgp-adapter-ws-tariffswitching/target/test-classes
+!path ../Platform/osgp-adapter-ws-shared/target/classes
+!path ../Platform/osgp-adapter-ws-shared/target/test-classes
+!path ../Platform/osgp-adapter-ws-shared-db/target/classes
+!path ../Platform/osgp-adapter-ws-shared-db/target/test-classes
 
-!path ../../java/osgp/osgp-domain-publiclighting/target/classes
-!path ../../java/osgp/osgp-domain-publiclighting/target/test-classes
-!path ../../java/osgp/osgp-domain-tariffswitching/target/classes
-!path ../../java/osgp/osgp-domain-tariffswitching/target/test-classes
-!path ../../java/osgp/osgp-domain-core/target/classes
-!path ../../java/osgp/osgp-domain-core/target/test-classes
+!path ../Platform/osgp-adapter-domain-admin/target/classes
+!path ../Platform/osgp-adapter-domain-core/target/classes
+!path ../Platform/osgp-adapter-domain-publiclighting/target/classes
+!path ../Platform/osgp-adapter-domain-tariffswitching/target/classes
+!path ../Shared/osgp-dto/target/classes
 
-!path ../../java/osgp/shared/target/classes
-!path ../../java/osgp/shared/target/test-classes
-!path ../../java/osgp/osgp-core/target/classes
-!path ../../java/osgp/osgp-core/target/test-classes
-!path ../../java/osgp/osgp-platform-test/target/test-classes
-!path ../../java/osgp/osgp-adapter-protocol-oslp/target/classes
-!path ../../java/osgp/osgp-adapter-protocol-oslp/target/test-classes
+!path ../Platform/osgp-domain-publiclighting/target/classes
+!path ../Platform/osgp-domain-publiclighting/target/test-classes
+!path ../Platform/osgp-domain-tariffswitching/target/classes
+!path ../Platform/osgp-domain-tariffswitching/target/test-classes
+!path ../Platform/osgp-domain-core/target/classes
+!path ../Platform/osgp-domain-core/target/test-classes
+
+!path ../Shared/shared/target/classes
+!path ../Shared/shared/target/test-classes
+
+!path ../Platform/osgp-core/target/classes
+!path ../Platform/osgp-core/target/test-classes
+!path ../osgp-platform-test/target/test-classes
+
+!path ../Protocol-Adapter-OSLP/osgp-core-db-api/target/classes
+!path ../Protocol-Adapter-OSLP/osgp-core-db-api/target/test-classes
+
+!path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/classes
+!path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/test-classes
+
+!path ../Protocol-Adapter-OSLP/oslp/target/classes
+!path ../Protocol-Adapter-OSLP/oslp/target/test-classes
+
 " > $CLASSPATH_PAGE
 
 echo "Re-initialized classpath page."
