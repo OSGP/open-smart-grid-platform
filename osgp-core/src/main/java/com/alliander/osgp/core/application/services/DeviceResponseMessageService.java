@@ -45,7 +45,25 @@ public class DeviceResponseMessageService {
 
         try {
 
-            if (message.getResult() == ResponseMessageResultType.NOT_OK && message.getRetryCount() < 3) {
+            final int RETRY_MAX_COUNT = 3;
+
+            // The List of exceptions which as to be retried.
+            final String retryExceptions[] = { "Unable to connect", "ConnectException",
+                    "Failed to receive response within timelimit" };
+            Boolean retryMessage = false;
+
+            // Validate the actual exception with the list of exception to be
+            // retried.
+            if (message.getOsgpException() != null) {
+                for (final String retryException : retryExceptions) {
+                    if (message.getOsgpException().getCause().toString().contains(retryException)) {
+                        retryMessage = true;
+                    }
+                }
+            }
+
+            if (message.getResult() == ResponseMessageResultType.NOT_OK && message.getRetryCount() < RETRY_MAX_COUNT
+                    && retryMessage == true) {
                 LOGGER.info("Retrying: {} for {} time", message.getMessageType(), message.getRetryCount() + 1);
                 final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
