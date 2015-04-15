@@ -40,12 +40,13 @@ public class DeviceResponseMessageService {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Autowired
+    private int getMaxRetryCount;
+
     public void processMessage(final ProtocolResponseMessage message) {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
-
-            final int RETRY_MAX_COUNT = 3;
 
             // The List of exceptions which as to be retried.
             final String retryExceptions[] = { "Unable to connect", "ConnectException",
@@ -62,8 +63,8 @@ public class DeviceResponseMessageService {
                 }
             }
 
-            if (message.getResult() == ResponseMessageResultType.NOT_OK && message.getRetryCount() < RETRY_MAX_COUNT
-                    && retryMessage == true) {
+            if (message.getResult() == ResponseMessageResultType.NOT_OK
+                    && message.getRetryCount() < this.getMaxRetryCount && retryMessage == true) {
                 LOGGER.info("Retrying: {} for {} time", message.getMessageType(), message.getRetryCount() + 1);
                 final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
