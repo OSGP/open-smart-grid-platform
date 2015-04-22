@@ -115,32 +115,6 @@
                 <artifactId>spring-tx</artifactId>
                 <version>${spring.version}</version>
             </dependency>
-<!--             <dependency> -->
-<!--                 <groupId>org.springframework</groupId> -->
-<!--                 <artifactId>spring-web</artifactId> -->
-<!--                 <version>${spring.version}</version> -->
-<!--             </dependency> -->
-<!--             <dependency> -->
-<!--                 <groupId>org.springframework</groupId> -->
-<!--                 <artifactId>spring-webmvc</artifactId> -->
-<!--                 <version>${spring.version}</version> -->
-<!--             </dependency> -->
-<!--             Spring WS -->
-<!--             <dependency> -->
-<!--                 <groupId>org.springframework.ws</groupId> -->
-<!--                 <artifactId>spring-ws-core</artifactId> -->
-<!--                 <version>${spring.ws.version}</version> -->
-<!--             </dependency> -->
-<!--             <dependency> -->
-<!--             	<groupId>org.springframework.ws</groupId> -->
-<!--             	<artifactId>spring-ws-security</artifactId> -->
-<!--                 <version>${spring.ws.version}</version> -->
-<!--             </dependency> -->
-<!--             <dependency> -->
-<!--                 <groupId>org.springframework.ws</groupId> -->
-<!--                 <artifactId>spring-ws-support</artifactId> -->
-<!--                 <version>${spring.ws.version}</version> -->
-<!--             </dependency> -->
 
 			<!-- Spring JMS -->
 			<dependency>
@@ -168,12 +142,6 @@
                 <artifactId>jstl</artifactId>
                 <version>${servlet.jstl.version}</version>
             </dependency>
-<!--             CG Lib (Required to process @Configuration classes) -->
-<!--             <dependency> -->
-<!--                 <groupId>cglib</groupId> -->
-<!--                 <artifactId>cglib</artifactId> -->
-<!--                 <version>${cglib.version}</version> -->
-<!--             </dependency> -->
 
             <!-- Joda Time (Date/Time functions) -->
             <dependency>
@@ -194,33 +162,12 @@
                 <version>${hibernate.version}</version>
             </dependency>
 
-<!--             Hibernate validator -->
-<!--             <dependency> -->
-<!--                 <groupId>org.hibernate</groupId> -->
-<!--                 <artifactId>hibernate-validator</artifactId> -->
-<!--                 <version>${hibernate.validator.version}</version> -->
-<!--             </dependency> -->
-
 			<!-- Flyway (DB Migration) -->
 			<dependency>
 				<groupId>com.googlecode.flyway</groupId>
 				<artifactId>flyway-core</artifactId>
 				<version>${flyway.version}</version>
 			</dependency>
-
-<!--             Jakarta commons codec -->
-<!--             <dependency> -->
-<!--                 <groupId>commons-codec</groupId> -->
-<!--                 <artifactId>commons-codec</artifactId> -->
-<!--                 <version>${commons.codec.version}</version> -->
-<!--             </dependency> -->
-
-			<!-- Apache HTTP client -->
-<!-- 			<dependency> -->
-<!-- 			    <groupId>org.apache.httpcomponents</groupId> -->
-<!-- 			    <artifactId>httpclient</artifactId> -->
-<!-- 			    <version>${apache.httpcomponents.version}</version> -->
-<!-- 			</dependency> -->
 
             <!-- Apache MQ client -->
 			<dependency>

@@ -78,16 +78,6 @@
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 
-		<!-- Spring WS -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.ws</groupId> -->
-<!-- 			<artifactId>spring-ws-core</artifactId> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework.ws</groupId> -->
-<!-- 			<artifactId>spring-ws-support</artifactId> -->
-<!-- 		</dependency> -->
-
 		<!-- Spring Data -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -109,12 +99,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 		</dependency>
-
-		<!-- Hibernate validator -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.hibernate</groupId> -->
-<!-- 			<artifactId>hibernate-validator</artifactId> -->
-<!-- 		</dependency> -->
 
 		<!-- Flyway (DB Migration) -->
 		<dependency>
@@ -143,12 +127,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Jakarta commons codec -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>commons-codec</groupId> -->
-<!-- 			<artifactId>commons-codec</artifactId> -->
-<!-- 		</dependency> -->
-
 		<!-- Apache commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -160,12 +138,6 @@
 			<groupId>ma.glasnost.orika</groupId>
 			<artifactId>orika-core</artifactId>
 		</dependency>
-
-		<!-- Netty -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>io.netty</groupId> -->
-<!-- 			<artifactId>netty</artifactId> -->
-<!-- 		</dependency> -->
 
 		<!-- Apache ActiveMQ -->
 		<dependency>
