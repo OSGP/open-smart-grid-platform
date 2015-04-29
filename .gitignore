@@ -33,3 +33,6 @@ local.properties
 
 #Spring MVC webapp
 .springBeans
+
+#Linux
+.directory
