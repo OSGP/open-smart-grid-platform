@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>osgp-dlms</artifactId>
+  
+  	<parent>
+		<groupId>org.osgp</groupId>
+		<artifactId>parent-pa-dlms</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../parent-pa-dlms/pom.xml</relativePath>
+	</parent>
+
+	<properties>
+		<display.version>${project.version}-${BUILD_TAG}</display.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>gurux</groupId>
+			<artifactId>gurux-dlms</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>gurux</groupId>
+			<artifactId>gurux-common</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>gurux</groupId>
+			<artifactId>gurux-net</artifactId>
+		</dependency>		
+	</dependencies>
+</project>

@@ -10,6 +10,7 @@
     <properties>
         <module.baseUri>${project.baseUri}/../</module.baseUri>
         <osgp.version>0.11.0-SNAPSHOT</osgp.version>
+        <osgp.protocol.adapter.dlms.version>0.0.1-SNAPSHOT</osgp.protocol.adapter.dlms.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring.version>3.2.10.RELEASE</spring.version>
@@ -21,7 +22,7 @@
         <protobuf.version>2.4.1</protobuf.version>
         <hibernate.version>4.2.16.Final</hibernate.version>
         <hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.12</junit.version>
         <joda.version>2.4</joda.version>
         <flyway.version>2.3.1</flyway.version>
         <slf4j.version>1.7.7</slf4j.version>
@@ -42,12 +43,18 @@
 		<apache.commons.schema>2.0.3</apache.commons.schema>
 		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
 		<guava.version>18.0</guava.version>
+		<gurux.version>0.1.0</gurux.version>
     </properties>
 
     <repositories>
+		<repository>
+			<id>local-repo</id>
+			<name>local-repo</name>
+			<url>file://${project.basedir}/../parent-pa-dlms/repo</url>
+		</repository>    
     	<repository>
     		<id>fuse-repo</id>
-    		<name>Fuse Source</name>    		
+    		<name>Fuse Source</name>
     		<url>http://repo.fusesource.com/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
@@ -56,10 +63,28 @@
                 <enabled>true</enabled>
             </snapshots>
     	</repository>
-    </repositories>
 
+	</repositories>
+	
     <dependencyManagement>
         <dependencies>
+        	<!--  GuruX -->
+			<dependency>
+				<groupId>gurux</groupId>
+				<artifactId>gurux-common</artifactId>
+				<version>${gurux.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>gurux</groupId>
+				<artifactId>gurux-net</artifactId>
+				<version>${gurux.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>gurux</groupId>
+				<artifactId>gurux-dlms</artifactId>
+				<version>${gurux.version}</version>
+			</dependency>
+        
             <!-- Alliander -->
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
@@ -75,10 +100,17 @@
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>osgp-protocol-adapter-dlms</artifactId>
-                <version>${osgp.version}</version>
+                <version>${osgp.protocol.adapter.dlms.version}</version>
                 <classifier>classes</classifier>
-            </dependency>
-
+            </dependency>            
+            
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>osgp-device-simulator-dlms</artifactId>
+                <version>${osgp.protocol.adapter.dlms.version}</version>
+                <classifier>classes</classifier>
+            </dependency>            
+            
             <!-- Spring Framework -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -235,13 +267,6 @@
                 <artifactId>commons-pool</artifactId>
                 <version>${commons.pool.version}</version>
             </dependency>
-            
-			<!-- REQUIRED FOR FITNESSE -->
-<!-- 			<dependency> -->
-<!-- 			    <groupId>org.apache.activemq</groupId> -->
-<!-- 			    <artifactId>activemq-kahadb-store</artifactId> -->
-<!-- 			    <version>${apache.activemq.version}</version> -->
-<!-- 			</dependency>     -->
 
             <!-- Orika (mapping framework) -->
             <dependency>
@@ -287,12 +312,6 @@
 	            <version>${logback.ext.version}</version>
 	        </dependency>
 
-<!--             <dependency> -->
-<!--                 <groupId>io.netty</groupId> -->
-<!--                 <artifactId>netty</artifactId> -->
-<!--                 <version>${netty.version}</version> -->
-<!--                 <scope>compile</scope> -->
-<!--             </dependency> -->
         </dependencies>
     </dependencyManagement>
 
@@ -331,3 +350,4 @@
         </plugins>
     </reporting>	
 </project>
+

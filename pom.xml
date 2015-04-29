@@ -8,5 +8,8 @@
   
   <modules>
   	<module>parent-pa-dlms</module>
+  	<module>osgp-protocol-adapter-dlms</module>
+  	<module>osgp-device-simulator-dlms</module>
+  	<module>osgp-dlms</module>
   </modules>
 </project>
