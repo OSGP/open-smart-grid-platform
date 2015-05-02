@@ -1,3 +1,3 @@
 [submodule "Shared"]
 	path = Shared
-	url = ssh://kevinsmeets@github.com/OSGP/Shared.git
+	url = http://jenkins-ip-10-4-24-184:BnnLzV6PFcrN@github.com/OSGP/Shared.git
