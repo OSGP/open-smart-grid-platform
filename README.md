@@ -4,7 +4,7 @@
 
 [![Build Status](http://54.77.62.182/buildStatus/icon?job=OSGP_Shared_development)](http://54.77.62.182/job/OSGP_Shared_development/)
 
-## Component Descriptions
+### Component Description
 
 These components are used as sub modules by other repositories.
 
