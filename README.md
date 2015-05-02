@@ -1,5 +1,11 @@
 # OSGP Components
 
+### Build Status
+
+[![Build Status](http://54.77.62.182/job/OSGP_Platform_master/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_master)
+
+### Component Description
+
 The OSGP components implement SOAP web services, domain logic and message routing to Protocol Adapters.
 
 Web Service Layer
