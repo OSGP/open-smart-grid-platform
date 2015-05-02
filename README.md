@@ -2,13 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/buildStatus/icon?job=OSGP_Shared_master)](http://54.77.62.182/job/OSGP_Shared_master/)
-
-
-[![Build Status](http://54.77.62.182/buildStatus/icon?job=OSGP_Shared_master&build=33)](http://54.77.62.182/job/OSGP_Shared_master/33/)
-
-
-![alt text](http://54.77.62.182/buildStatus/icon?job=OSGP_Shared_master&build=33 "Build Status")
+![alt text](http://54.77.62.182/buildStatus/icon?job=OSGP_Shared_master "Build Status")
 
 ### Component Descriptions
 
