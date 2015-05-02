@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/buildStatus/icon?job=OSGP_Platform_master)](http://54.77.62.182/job/OSGP_Platform_master)
+[![Build Status](http://54.77.62.182/job/OSGP_Platform_master/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_master)
 
 ### Component Description
 
