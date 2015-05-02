@@ -12,7 +12,7 @@ public class LoggingRequestMessage {
     private final String className;
     private final String methodName;
     private final String deviceID;
-    private final String responseResult;
+    private String responseResult;
     private final int resposeDataSize;
 
     // Logging items.
@@ -70,5 +70,9 @@ public class LoggingRequestMessage {
 
     public int getResposeDataSize() {
         return this.resposeDataSize;
+    }
+
+    public void setResponseResult(final String responseResult) {
+        this.responseResult = responseResult;
     }
 }
