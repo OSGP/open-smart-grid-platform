@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/job/OSGP_Protocol-Adapter-OSLP_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_master)
+[![Build Status](http://54.77.62.182/job/OSGP_Protocol-Adapter-OSLP_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_development)
 
 ### Component Description
 
