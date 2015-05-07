@@ -47,11 +47,6 @@
     </properties>
 
     <repositories>
-		<repository>
-			<id>local-repo</id>
-			<name>local-repo</name>
-			<url>file://${project.basedir}/../parent-pa-dlms/repo</url>
-		</repository>    
     	<repository>
     		<id>fuse-repo</id>
     		<name>Fuse Source</name>
@@ -63,9 +58,13 @@
                 <enabled>true</enabled>
             </snapshots>
     	</repository>
-
+		<repository>
+			<id>local-repo</id>
+			<name>local-repo</name>
+			<url>file://${project.basedir}/../parent-pa-dlms/repo</url>
+		</repository>    
 	</repositories>
-	
+
     <dependencyManagement>
         <dependencies>
         	<!--  GuruX -->
