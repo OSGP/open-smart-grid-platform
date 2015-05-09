@@ -34,7 +34,8 @@ public class TestApplicationContext {
 
     protected static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
     protected static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
-    protected static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis()) / DateTimeConstants.MILLIS_PER_MINUTE;
+    protected static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
+            / DateTimeConstants.MILLIS_PER_MINUTE;
 
     private static final int PAGING_MAXIMUM_PAGE_SIZE = 30;
     private static final int PAGING_DEFAULT_PAGE_SIZE = 15;
@@ -47,6 +48,8 @@ public class TestApplicationContext {
     private static final String DEFAULT_PROTOCOL = "OSLP";
     private static final String DEFAULT_PROTOCOL_VERSION = "1.0";
     private static final Integer RECENT_DEVICES_PERIOD = 3;
+    private static final int MAX_RETRY_COUNT = 3;
+
     @Resource
     Environment environment;
 
@@ -79,17 +82,20 @@ public class TestApplicationContext {
 
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
+                ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
-        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID, X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
+        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
-        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     // === Time zone config ===
@@ -122,6 +128,11 @@ public class TestApplicationContext {
     @Bean
     public Integer recentDevicesPeriod() {
         return RECENT_DEVICES_PERIOD;
+    }
+
+    @Bean
+    public int getMaxRetryCount() {
+        return MAX_RETRY_COUNT;
     }
 
 }
