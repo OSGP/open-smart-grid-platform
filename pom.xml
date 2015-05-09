@@ -1,17 +1,18 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
   
-  <groupId>org.osgp</groupId>
-  <artifactId>protocol-adapter-dlms</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>org.osgp</groupId>
+    <artifactId>protocol-adapter-dlms</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
   
-  <modules>
-  	<module>parent-pa-dlms</module>
-  	<module>osgp-protocol-adapter-dlms</module>
-  	<module>osgp-device-simulator-dlms</module>
-  	<module>osgp-dlms</module>
-  	<module>Shared/shared</module>
-  	<module>Shared/osgp-dto</module>
-  </modules>
-</project>l
+    <modules>
+  	  <module>parent-pa-dlms</module>
+  	  <module>osgp-protocol-adapter-dlms</module>
+  	  <module>osgp-device-simulator-dlms</module>
+  	  <module>osgp-dlms</module>
+  	  <module>Shared/shared</module>
+  	  <module>Shared/osgp-dto</module>
+    </modules>
+</project>
