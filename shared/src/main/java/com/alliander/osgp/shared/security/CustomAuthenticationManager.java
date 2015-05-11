@@ -18,7 +18,7 @@ import com.alliander.osgp.shared.usermanagement.LoginResponse;
 /**
  * Authentication manager class that offers login and authentication token
  * validation for web applications.
- * 
+ *
  * The web application must create an instance of CustomAuthenticationManager
  * using an AuthenticationClient instance and a member of enumeration
  * com.alliander.osp.usermanagementweb.domain.Application as application String.
@@ -28,9 +28,9 @@ import com.alliander.osgp.shared.usermanagement.LoginResponse;
  * as argument for the function validateToken(CustomAuthentication) to validate
  * the authentication token. After each validation, a new authentication token
  * is set in the CustomAuthentication instance.
- * 
+ *
  * @author CGI
- * 
+ *
  */
 public final class CustomAuthenticationManager implements AuthenticationManager {
 
@@ -54,7 +54,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
      * com.alliander.osgp.shared.usermanagement.AuthenticationClient and
      * com.alliander.osgp.usermanagementweb.domain.Application as application
      * String
-     * 
+     *
      * @param authenticationClient
      *            The AuthenticationClient instance.
      * @param application
@@ -70,10 +70,10 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
      * to the user name and the credentials set to the password. Authentication
      * will be granted if the user is permitted for an/this application, the
      * user name is registered and the password matches.
-     * 
+     *
      * @param authentication
      *            An Authentication instance containing user name and password.
-     * 
+     *
      * @return An CustomAuthentication instance containing user name, users
      *         organisation identification, platform domains, user role, user
      *         applications and an authentication token.
@@ -81,33 +81,43 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
     @Override
     public Authentication authenticate(final Authentication authentication) {
 
-        // Check if user has authentication instance.
-        this.checkAuthenticationInstance(authentication);
+        if (authentication.isAuthenticated() == true) {
 
-        // Get user name and password.
-        final String username = authentication.getName();
-        final String password = (String) authentication.getCredentials();
+            final CustomAuthentication customAuthentication = (CustomAuthentication) authentication;
+            return customAuthentication;
 
-        // Check user name and password.
-        this.checkUsernameAndPasswordForEmptiness(username, password);
+        } else {
 
-        // Prepare LoginRequest and LoginResponse.
-        final LoginRequest loginRequest = new LoginRequest(username, password, this.application);
-        LoginResponse loginResponse = null;
+            // Check if user has authentication instance.
+            this.checkAuthenticationInstance(authentication);
 
-        // Try to login.
-        try {
-            loginResponse = this.authenticationClient.login(loginRequest);
-        } catch (final Exception e) {
-            LOGGER.debug(LOGIN_ATTEMPT_FAILED, e);
-            throw new BadCredentialsException(LOGIN_ATTEMPT_FAILED, e);
+            // Get user name and password.
+            final String username = authentication.getName();
+            final String password = (String) authentication.getCredentials();
+
+            // Check user name and password.
+            this.checkUsernameAndPasswordForEmptiness(username, password);
+
+            // Prepare LoginRequest and LoginResponse.
+            final LoginRequest loginRequest = new LoginRequest(username, password, this.application);
+            LoginResponse loginResponse = null;
+
+            // Try to login.
+            try {
+
+                loginResponse = this.authenticationClient.login(loginRequest);
+            } catch (final Exception e) {
+                LOGGER.debug(LOGIN_ATTEMPT_FAILED, e);
+                throw new BadCredentialsException(LOGIN_ATTEMPT_FAILED, e);
+            }
+
+            // Check the response.
+            this.checkLoginResponse(loginResponse);
+
+            // Create the CustomAuthentication instance.
+            return this.createCustomAuthenticationInstance(username, loginResponse);
         }
 
-        // Check the response.
-        this.checkLoginResponse(loginResponse);
-
-        // Create the CustomAuthentication instance.
-        return this.createCustomAuthenticationInstance(username, loginResponse);
     }
 
     private void checkAuthenticationInstance(final Authentication authentication) {
@@ -163,11 +173,11 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
 
     /**
      * Check the validity of an authentication token.
-     * 
+     *
      * @param authentication
      *            The CustomAuthentication instance obtained by successful
      *            authentication.
-     * 
+     *
      * @throws AuthenticationClientException
      *             In case the organisationIdentification or token are an empty
      *             string, the token is not valid, the response is null, the
