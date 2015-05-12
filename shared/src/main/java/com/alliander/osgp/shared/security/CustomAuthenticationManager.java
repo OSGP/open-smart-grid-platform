@@ -81,43 +81,34 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
     @Override
     public Authentication authenticate(final Authentication authentication) {
 
-        if (authentication.isAuthenticated() == true) {
+        // Check if user has authentication instance.
+        this.checkAuthenticationInstance(authentication);
 
-            final CustomAuthentication customAuthentication = (CustomAuthentication) authentication;
-            return customAuthentication;
+        // Get user name and password.
+        final String username = authentication.getName();
+        final String password = (String) authentication.getCredentials();
 
-        } else {
+        // Check user name and password.
+        this.checkUsernameAndPasswordForEmptiness(username, password);
 
-            // Check if user has authentication instance.
-            this.checkAuthenticationInstance(authentication);
+        // Prepare LoginRequest and LoginResponse.
+        final LoginRequest loginRequest = new LoginRequest(username, password, this.application);
+        LoginResponse loginResponse = null;
 
-            // Get user name and password.
-            final String username = authentication.getName();
-            final String password = (String) authentication.getCredentials();
+        // Try to login.
+        try {
 
-            // Check user name and password.
-            this.checkUsernameAndPasswordForEmptiness(username, password);
-
-            // Prepare LoginRequest and LoginResponse.
-            final LoginRequest loginRequest = new LoginRequest(username, password, this.application);
-            LoginResponse loginResponse = null;
-
-            // Try to login.
-            try {
-
-                loginResponse = this.authenticationClient.login(loginRequest);
-            } catch (final Exception e) {
-                LOGGER.debug(LOGIN_ATTEMPT_FAILED, e);
-                throw new BadCredentialsException(LOGIN_ATTEMPT_FAILED, e);
-            }
-
-            // Check the response.
-            this.checkLoginResponse(loginResponse);
-
-            // Create the CustomAuthentication instance.
-            return this.createCustomAuthenticationInstance(username, loginResponse);
+            loginResponse = this.authenticationClient.login(loginRequest);
+        } catch (final Exception e) {
+            LOGGER.debug(LOGIN_ATTEMPT_FAILED, e);
+            throw new BadCredentialsException(LOGIN_ATTEMPT_FAILED, e);
         }
 
+        // Check the response.
+        this.checkLoginResponse(loginResponse);
+
+        // Create the CustomAuthentication instance.
+        return this.createCustomAuthenticationInstance(username, loginResponse);
     }
 
     private void checkAuthenticationInstance(final Authentication authentication) {
