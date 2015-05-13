@@ -25,6 +25,7 @@
         <module>osgp-adapter-domain-core</module>
 		<module>osgp-adapter-domain-publiclighting</module>
 		<module>osgp-adapter-domain-tariffswitching</module>
+        <module>osgp-adapter-domain-smartmetering</module>
 
 		<!-- Webservice -->
         <module>osgp-adapter-ws-shared</module>
