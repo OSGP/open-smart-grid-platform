@@ -1,9 +1,12 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://jenkins-ip-10-4-24-184:BnnLzV6PFcrN@github.com/OSGP/Shared.git
+	branch = development
 [submodule "Protocol-Adapter-OSLP"]
 	path = Protocol-Adapter-OSLP
 	url = https://jenkins-ip-10-4-24-184:BnnLzV6PFcrN@github.com/OSGP/Protocol-Adapter-OSLP.git
+	branch = development
 [submodule "Platform"]
 	path = Platform
 	url = https://jenkins-ip-10-4-24-184:BnnLzV6PFcrN@github.com/OSGP/Platform.git
+	branch = development
