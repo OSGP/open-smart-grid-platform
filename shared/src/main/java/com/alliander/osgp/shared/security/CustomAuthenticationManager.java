@@ -18,7 +18,7 @@ import com.alliander.osgp.shared.usermanagement.LoginResponse;
 /**
  * Authentication manager class that offers login and authentication token
  * validation for web applications.
- * 
+ *
  * The web application must create an instance of CustomAuthenticationManager
  * using an AuthenticationClient instance and a member of enumeration
  * com.alliander.osp.usermanagementweb.domain.Application as application String.
@@ -28,9 +28,9 @@ import com.alliander.osgp.shared.usermanagement.LoginResponse;
  * as argument for the function validateToken(CustomAuthentication) to validate
  * the authentication token. After each validation, a new authentication token
  * is set in the CustomAuthentication instance.
- * 
+ *
  * @author CGI
- * 
+ *
  */
 public final class CustomAuthenticationManager implements AuthenticationManager {
 
@@ -54,7 +54,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
      * com.alliander.osgp.shared.usermanagement.AuthenticationClient and
      * com.alliander.osgp.usermanagementweb.domain.Application as application
      * String
-     * 
+     *
      * @param authenticationClient
      *            The AuthenticationClient instance.
      * @param application
@@ -70,10 +70,10 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
      * to the user name and the credentials set to the password. Authentication
      * will be granted if the user is permitted for an/this application, the
      * user name is registered and the password matches.
-     * 
+     *
      * @param authentication
      *            An Authentication instance containing user name and password.
-     * 
+     *
      * @return An CustomAuthentication instance containing user name, users
      *         organisation identification, platform domains, user role, user
      *         applications and an authentication token.
@@ -97,6 +97,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
 
         // Try to login.
         try {
+
             loginResponse = this.authenticationClient.login(loginRequest);
         } catch (final Exception e) {
             LOGGER.debug(LOGIN_ATTEMPT_FAILED, e);
@@ -163,11 +164,11 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
 
     /**
      * Check the validity of an authentication token.
-     * 
+     *
      * @param authentication
      *            The CustomAuthentication instance obtained by successful
      *            authentication.
-     * 
+     *
      * @throws AuthenticationClientException
      *             In case the organisationIdentification or token are an empty
      *             string, the token is not valid, the response is null, the
