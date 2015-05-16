@@ -19,12 +19,15 @@
             <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
         </license>
     </licenses>
-    <url>http://localhost/shared-components</url>
+    <url>http://54.77.62.182/job/OSGP_Shared_development/site/</url>
     <distributionManagement>
         <site>
             <id>shared-components</id>
             <name>shared-components</name>
-            <url>http://localhost/shared-components</url>
+            <!-- <url>Use this example url to generate maven site locally and have it deployed to a folder using: mvn site site:deploy -->
+            <!-- <url>file:///C:/Users/Kevin/Desktop/shared-components</url> -->
+            <!-- <url>Use this url to generate maven site on buildserver -->
+            <url>file:////mnt/data/jenkins/jobs/OSGP_Shared_development/site/</url>
         </site>
     </distributionManagement>
 
