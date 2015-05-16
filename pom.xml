@@ -1,17 +1,39 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.alliander.osgp</groupId>
-	<artifactId>shared-components</artifactId>
-	<version>0.11.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <groupId>com.alliander.osgp</groupId>
+    <artifactId>shared-components</artifactId>
+    <version>0.11.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>shared</name>
 
-	<modules>  
+    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Shared Components for OSGP and Protocol Adapters.</description>
+    <organization>
+        <name>OSGP</name>
+        <url>https://osgplatform.wordpress.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>APACHE 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+
+    <url>http://localhost/shared</url>
+    <distributionManagement>
+        <site>
+            <id>site</id>
+            <name>site</name>
+            <url>http://localhost/shared</url>
+        </site>
+    </distributionManagement>
+
+    <modules>
         <!-- Shared Libs -->
-		<module>parent-shared</module>
-		<module>shared</module>
+        <module>parent-shared</module>
+        <module>shared</module>
         <module>osgp-dto</module>
-	</modules>
+    </modules>
 </project>

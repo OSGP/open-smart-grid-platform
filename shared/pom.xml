@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>shared</artifactId>
+    <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Shared module.</description>
 
     <parent>
         <groupId>com.alliander.osgp</groupId>
@@ -12,9 +13,8 @@
         <version>0.11.0-SNAPSHOT</version>
         <relativePath>../parent-shared/pom.xml</relativePath>
     </parent>
-    
-    <dependencies>
-    
+
+    <dependencies>    
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
@@ -23,15 +23,15 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
         </dependency>   
-		<dependency>
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -45,59 +45,57 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-        	<groupId>ma.glasnost.orika</groupId>
-        	<artifactId>orika-core</artifactId>
+            <groupId>ma.glasnost.orika</groupId>
+            <artifactId>orika-core</artifactId>
         </dependency>
         <dependency>
-        	<groupId>joda-time</groupId>
-        	<artifactId>joda-time</artifactId>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
         </dependency>
-   		<!-- Apache CXF RESTfull WS WebClient -->
-		<dependency>
-		  <groupId>org.apache.cxf</groupId>
-		  <artifactId>cxf-rt-rs-client</artifactId>
-		  <version>${cxf.version}</version>
-		</dependency>	
-		<dependency>
-		  <groupId>org.apache.cxf</groupId>
-		  <artifactId>cxf-rt-transports-http-hc</artifactId>
-		  <!-- 2.7.8 or 3.0.0-milestone1 -->
-		  <version>${cxf.version}</version>
-		</dependency>	    
-	    <dependency>
-	       <groupId>org.apache.cxf</groupId>
-	       <artifactId>cxf-rt-rs-extension-search</artifactId>
-	       <version>${cxf.version}</version>
-	       <scope>provided</scope>
-	    </dependency>	     
-	    <dependency>
-	       <groupId>org.apache.cxf</groupId>
-	       <artifactId>cxf-rt-rs-extension-providers</artifactId>
-	       <version>${cxf.version}</version>
-	       <scope>provided</scope>
-	    </dependency>	      
-	    <dependency>
-	    	<groupId>com.fasterxml.jackson.jaxrs</groupId>
-       		<artifactId>jackson-jaxrs-json-provider</artifactId>
-       		<version>${jackson.version}</version>
-	    </dependency> 
-	
-	    <!-- Spring Security -->
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>	
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-	    </dependency>
-	    
-	    <!--  Apache ActiveMQ -->	
+        <!-- Apache CXF RESTfull WS WebClient -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-hc</artifactId>
+            <!-- 2.7.8 or 3.0.0-milestone1 -->
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+           <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-rs-extension-search</artifactId>
+           <version>${cxf.version}</version>
+           <scope>provided</scope>
+        </dependency>
+        <dependency>
+           <groupId>org.apache.cxf</groupId>
+           <artifactId>cxf-rt-rs-extension-providers</artifactId>
+           <version>${cxf.version}</version>
+           <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>${jackson.version}</version>
+        </dependency> 
+
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+
+        <!--  Apache ActiveMQ -->
         <dependency> 
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-client</artifactId>
         </dependency>
-        
-        
     </dependencies>
 </project>
