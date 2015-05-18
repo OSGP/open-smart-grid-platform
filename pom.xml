@@ -20,7 +20,7 @@
         </license>
     </licenses>
     <!-- URL is passed in as a maven argument: -Durl=http://my/url/for/the/site -->
-    <url>${url}</url>
+    <url>${project.url}</url>
     <distributionManagement>
         <site>
             <id>shared-components</id>
@@ -28,7 +28,7 @@
             <!-- <url>Use this example URL to generate maven site locally and have it deployed to a folder using: mvn site site:deploy or mvn site site:stage -->
             <!-- <url>file:///C:/Users/Kevin/Desktop/shared-components</url> -->
             <!-- URL is passed in as a maven argument: -DdistributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
-            <url>${distributionManagement.site.url}</url>
+            <url>${project.distributionManagement.site.url}</url>
         </site>
     </distributionManagement>
 
