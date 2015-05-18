@@ -8,6 +8,8 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -15,6 +17,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.OsgpCoreRequestMessageListener;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageListener;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageListener;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -190,13 +197,9 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    /*
-     * @Autowired
-     *
-     * @Qualifier("domainSmartMeteringIncomingWebServiceRequestMessageListener")
-     * private WebServiceRequestMessageListener
-     * incomingWebServiceRequestMessageListener;
-     */
+    @Autowired
+    @Qualifier("domainSmartMeteringIncomingWebServiceRequestMessageListener")
+    private WebServiceRequestMessageListener incomingWebServiceRequestMessageListener;
 
     @Bean(name = "domainSmartMeteringIncomingWebServiceRequestMessageListenerContainer")
     public DefaultMessageListenerContainer incomingWebServiceRequestsMessageListenerContainer() {
@@ -207,7 +210,7 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_WS_REQUESTS_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_WS_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
-        // messageListenerContainer.setMessageListener(this.incomingWebServiceRequestMessageListener);
+        messageListenerContainer.setMessageListener(this.incomingWebServiceRequestMessageListener);
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
@@ -254,12 +257,10 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    /*
-     * @Bean(name =
-     * "domainSmartMeteringOutgoingWebServiceResponseMessageSender") public
-     * WebServiceResponseMessageSender outgoingWebServiceResponseMessageSender()
-     * { return new WebServiceResponseMessageSender(); }
-     */
+    @Bean(name = "domainSmartMeteringOutgoingWebServiceResponseMessageSender")
+    public WebServiceResponseMessageSender outgoingWebServiceResponseMessageSender() {
+        return new WebServiceResponseMessageSender();
+    }
 
     // JMS SETTINGS: OUTGOING OSGP CORE REQUESTS (Sending requests to osgp core)
 
@@ -340,18 +341,14 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_OSGP_CORE_RESPONSES_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_OSGP_CORE_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
-        // messageListenerContainer.setMessageListener(this.incomingOsgpCoreResponseMessageListener);
+        messageListenerContainer.setMessageListener(this.incomingOsgpCoreResponseMessageListener);
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
 
-    /*
-     * @Autowired
-     *
-     * @Qualifier("domainSmartMeteringIncomingOsgpCoreResponseMessageListener")
-     * private OsgpCoreResponseMessageListener
-     * incomingOsgpCoreResponseMessageListener;
-     */
+    @Autowired
+    @Qualifier("domainSmartMeteringIncomingOsgpCoreResponseMessageListener")
+    private OsgpCoreResponseMessageListener incomingOsgpCoreResponseMessageListener;
 
     // JMS SETTINGS: INCOMING OSGP CORE REQUESTS (receiving requests from osgp
     // core)
@@ -390,18 +387,14 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_OSGP_CORE_REQUESTS_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_OSGP_CORE_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
-        // messageListenerContainer.setMessageListener(this.incomingOsgpCoreRequestMessageListener);
+        messageListenerContainer.setMessageListener(this.incomingOsgpCoreRequestMessageListener);
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
 
-    /*
-     * @Autowired
-     *
-     * @Qualifier("domainSmartMeteringIncomingOsgpCoreRequestMessageListener")
-     * private OsgpCoreRequestMessageListener
-     * incomingOsgpCoreRequestMessageListener;
-     */
+    @Autowired
+    @Qualifier("domainSmartMeteringIncomingOsgpCoreRequestMessageListener")
+    private OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener;
 
     // JMS SETTINGS: OUTGOING OSGP CORE RESPONSES (sending responses to osgp
     // core)
