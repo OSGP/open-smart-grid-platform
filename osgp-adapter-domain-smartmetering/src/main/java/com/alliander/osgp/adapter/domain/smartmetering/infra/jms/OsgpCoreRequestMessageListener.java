@@ -21,7 +21,7 @@ public class OsgpCoreRequestMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
 
     @Autowired
-    @Qualifier(value = "domainPublicLightingIncomingOsgpCoreRequestMessageProcessor")
+    @Qualifier(value = "domainSmartMeteringIncomingOsgpCoreRequestMessageProcessor")
     private OsgpCoreRequestMessageProcessor osgpCoreRequestMessageProcessor;
 
     @Override

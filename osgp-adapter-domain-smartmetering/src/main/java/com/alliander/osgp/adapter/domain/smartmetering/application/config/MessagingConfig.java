@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
@@ -149,10 +148,10 @@ public class MessagingConfig {
                 this.outgoingWebServiceResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.outgoingOsgpCoreRequestsQueue(), this.outgoingOsgpCoreRequestsRedeliveryPolicy());
         redeliveryPolicyMap
-                .put(this.incomingOsgpCoreResponsesQueue(), this.incomingOsgpCoreResponsesRedeliveryPolicy());
+        .put(this.incomingOsgpCoreResponsesQueue(), this.incomingOsgpCoreResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.incomingOsgpCoreRequestsQueue(), this.incomingOsgpCoreRequestsRedeliveryPolicy());
         redeliveryPolicyMap
-                .put(this.outgoingOsgpCoreResponsesQueue(), this.outgoingOsgpCoreResponsesRedeliveryPolicy());
+        .put(this.outgoingOsgpCoreResponsesQueue(), this.outgoingOsgpCoreResponsesRedeliveryPolicy());
         return redeliveryPolicyMap;
     }
 
@@ -223,7 +222,7 @@ public class MessagingConfig {
     }
 
     @Bean(name = "domainSmartMeteringOutgoingWebServiceResponsesJmsTemplate")
-    public JmsOperations outgoingWebServiceResponsesJmsTemplate() {
+    public JmsTemplate outgoingWebServiceResponsesJmsTemplate() {
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(this.outgoingWebServiceResponsesQueue());
         jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
