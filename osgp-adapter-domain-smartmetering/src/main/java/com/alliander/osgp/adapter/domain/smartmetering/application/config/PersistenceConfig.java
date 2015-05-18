@@ -97,7 +97,7 @@ public class PersistenceConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_ADAPTER_PUBLICLIGHTING");
+        entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_ADAPTER_SMARTMETERING");
         entityManagerFactoryBean.setDataSource(this.dataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
