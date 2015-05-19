@@ -34,6 +34,7 @@
         <module>osgp-adapter-ws-admin</module>
 		<module>osgp-adapter-ws-publiclighting</module>
         <module>osgp-adapter-ws-tariffswitching</module>
+        <module>osgp-adapter-ws-smartmetering</module>
 
 		<!-- Core -->
 		<module>web-service-logging</module>

@@ -280,12 +280,6 @@
                 <artifactId>jstl</artifactId>
                 <version>${servlet.jstl.version}</version>
             </dependency>
-            <!-- CG Lib (Required to process @Configuration classes) -->
-            <dependency>
-                <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
-                <version>${cglib.version}</version>
-            </dependency>
 
             <!-- Joda Time (Date/Time functions) -->
             <dependency>
