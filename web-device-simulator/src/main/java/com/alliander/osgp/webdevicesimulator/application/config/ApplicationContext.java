@@ -49,6 +49,7 @@ import com.alliander.osgp.oslp.OslpEncoder;
 import com.alliander.osgp.shared.security.CertificateHelper;
 import com.alliander.osgp.webdevicesimulator.service.OslpChannelHandler;
 import com.alliander.osgp.webdevicesimulator.service.OslpSecurityHandler;
+import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
 import com.googlecode.flyway.core.Flyway;
 
 /**
@@ -109,7 +110,7 @@ public class ApplicationContext {
 
     /**
      * Method for creating the Data Source.
-     * 
+     *
      * @return DataSource
      */
     public DataSource dataSource() {
@@ -129,7 +130,7 @@ public class ApplicationContext {
 
     /**
      * Method for creating the Transaction Manager.
-     * 
+     *
      * @return JpaTransactionManager
      * @throws ClassNotFoundException
      *             when class not found
@@ -160,7 +161,7 @@ public class ApplicationContext {
 
     /**
      * Method for creating the Entity Manager Factory Bean.
-     * 
+     *
      * @return LocalContainerEntityManagerFactoryBean
      * @throws ClassNotFoundException
      *             when class not found
@@ -193,7 +194,7 @@ public class ApplicationContext {
 
     /**
      * Method for creating the Message Source.
-     * 
+     *
      * @return MessageSource
      */
     @Bean
@@ -209,7 +210,7 @@ public class ApplicationContext {
 
     /**
      * Method for resolving views.
-     * 
+     *
      * @return ViewResolver
      */
     @Bean
@@ -368,6 +369,11 @@ public class ApplicationContext {
     @Bean
     public Integer sequenceNumberMaximum() {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM));
+    }
+
+    @Bean
+    public RegisterDevice registerDevice() {
+        return new RegisterDevice();
     }
 
     @Bean
