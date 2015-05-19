@@ -1,18 +1,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-  
+
     <groupId>org.osgp</groupId>
     <artifactId>protocol-adapter-dlms</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Protocol Adapter for DLMS smart devices.</description>
+    <organization>
+        <name>OSGP</name>
+        <url>https://osgplatform.wordpress.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>APACHE 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+    <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+    <url>${maven.site.url}</url>
+    <distributionManagement>
+        <site>
+            <id>pa-dlms</id>
+            <name>pa-dlms</name>
+            <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+            <url>${maven.site.distributionManagement.site.url}</url>
+        </site>
+    </distributionManagement>
   
     <modules>
-  	  <module>parent-pa-dlms</module>
-  	  <module>osgp-protocol-adapter-dlms</module>
-  	  <module>osgp-device-simulator-dlms</module>
-  	  <module>osgp-dlms</module>
-  	  <module>Shared/shared</module>
-  	  <module>Shared/osgp-dto</module>
+        <module>parent-pa-dlms</module>
+        <module>osgp-protocol-adapter-dlms</module>
+        <module>osgp-device-simulator-dlms</module>
+        <module>osgp-dlms</module>
+        <module>Shared/shared</module>
+        <module>Shared/osgp-dto</module>
     </modules>
 </project>

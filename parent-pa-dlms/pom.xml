@@ -1,12 +1,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>parent-pa-dlms</artifactId>
-	<groupId>org.osgp</groupId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	
+    <artifactId>parent-pa-dlms</artifactId>
+    <groupId>org.osgp</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>parent-pa-dlms</name>
+    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Shared components.</description>
+    <organization>
+        <name>OSGP</name>
+        <url>https://osgplatform.wordpress.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>APACHE 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+    <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+    <url>${maven.site.url}</url>
+    <distributionManagement>
+        <site>
+            <id>pa-dlms</id>
+            <name>pa-dlms</name>
+            <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+            <url>${maven.site.distributionManagement.site.url}</url>
+        </site>
+    </distributionManagement>
+
     <properties>
         <module.baseUri>${project.baseUri}/../</module.baseUri>
         <osgp.version>0.11.0-SNAPSHOT</osgp.version>
@@ -24,55 +47,56 @@
         <slf4j.version>1.7.7</slf4j.version>
         <apache.commons.lang.version>3.3.2</apache.commons.lang.version>
         <orika.version>1.4.5</orika.version>
-        <jxr.version>2.4</jxr.version>
+        <jxr.version>2.5</jxr.version>
+        <maven.project.info.reports.plugin.version>2.8</maven.project.info.reports.plugin.version>
         <apache.activemq.version>5.10.0</apache.activemq.version>
         <commons.pool.version>1.6</commons.pool.version>
         <proton-jms.version>0.7</proton-jms.version>
         <logback.version>1.1.2</logback.version>
         <logback.ext.version>0.1.2</logback.ext.version>
-		<mockito.version>1.9.5</mockito.version>
-		<apache.commons.schema>2.0.3</apache.commons.schema>
-		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
-		<gurux.version>0.1.0</gurux.version>
+        <mockito.version>1.9.5</mockito.version>
+        <apache.commons.schema>2.0.3</apache.commons.schema>
+        <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
+        <gurux.version>0.1.0</gurux.version>
     </properties>
 
     <repositories>
-    	<repository>
-    		<id>fuse-repo</id>
-    		<name>Fuse Source</name>
-    		<url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+        <repository>
+            <id>fuse-repo</id>
+            <name>Fuse Source</name>
+            <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-    	</repository>
-		<repository>
-			<id>local-repo</id>
-			<name>local-repo</name>
-			<url>file://${project.basedir}/../parent-pa-dlms/repo</url>
-		</repository>    
-	</repositories>
+        </repository>
+        <repository>
+            <id>local-repo</id>
+            <name>local-repo</name>
+            <url>file://${project.basedir}/../parent-pa-dlms/repo</url>
+        </repository>    
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
-        	<!--  GuruX -->
-			<dependency>
-				<groupId>gurux</groupId>
-				<artifactId>gurux-common</artifactId>
-				<version>${gurux.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>gurux</groupId>
-				<artifactId>gurux-net</artifactId>
-				<version>${gurux.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>gurux</groupId>
-				<artifactId>gurux-dlms</artifactId>
-				<version>${gurux.version}</version>
-			</dependency>
+            <!--  GuruX -->
+            <dependency>
+                <groupId>gurux</groupId>
+                <artifactId>gurux-common</artifactId>
+                <version>${gurux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>gurux</groupId>
+                <artifactId>gurux-net</artifactId>
+                <version>${gurux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>gurux</groupId>
+                <artifactId>gurux-dlms</artifactId>
+                <version>${gurux.version}</version>
+            </dependency>
         
             <!-- Alliander -->
             <dependency>
@@ -137,13 +161,13 @@
                 <version>${spring.version}</version>
             </dependency>
 
-			<!-- Spring JMS -->
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jms</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-			
+            <!-- Spring JMS -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jms</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            
             <!-- Spring Data -->
             <dependency>
                 <groupId>org.springframework.data</groupId>
@@ -183,74 +207,74 @@
                 <version>${hibernate.version}</version>
             </dependency>
 
-			<!-- Flyway (DB Migration) -->
-			<dependency>
-				<groupId>com.googlecode.flyway</groupId>
-				<artifactId>flyway-core</artifactId>
-				<version>${flyway.version}</version>
-			</dependency>
+            <!-- Flyway (DB Migration) -->
+            <dependency>
+                <groupId>com.googlecode.flyway</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
 
             <!-- Apache MQ client -->
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-client</artifactId>
-				<version>${apache.activemq.version}</version>
-				<!-- Exclude the non-client JAR files -->
-				<exclusions>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-context</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activeio-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>kahadb</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.jasypt</groupId>
-						<artifactId>jasypt</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.activemq.protobuf</groupId>
-						<artifactId>activemq-protobuf</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>commons-net</groupId>
-						<artifactId>commons-net</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.osgi</groupId>
-						<artifactId>org.osgi.core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-context</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.fusesource.mqtt-client</groupId>
-						<artifactId>mqtt-client</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.fusesource.fuse-extra</groupId>
-						<artifactId>fusemq-leveldb</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-client</artifactId>
+                <version>${apache.activemq.version}</version>
+                <!-- Exclude the non-client JAR files -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>activeio-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>kahadb</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jasypt</groupId>
+                        <artifactId>jasypt</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq.protobuf</groupId>
+                        <artifactId>activemq-protobuf</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-net</groupId>
+                        <artifactId>commons-net</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.osgi</groupId>
+                        <artifactId>org.osgi.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.fusesource.mqtt-client</groupId>
+                        <artifactId>mqtt-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.fusesource.fuse-extra</groupId>
+                        <artifactId>fusemq-leveldb</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>activemq-spring</artifactId>
                 <version>${apache.activemq.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>activemq-pool</artifactId>
                 <version>${apache.activemq.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
@@ -272,11 +296,11 @@
                 <scope>test</scope>
             </dependency>
 
-	        <dependency>
-	            <groupId>org.mockito</groupId>
-	            <artifactId>mockito-all</artifactId>
-	            <version>${mockito.version}</version>
-	        </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -290,16 +314,16 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-	        <dependency>
-	            <groupId>ch.qos.logback</groupId>
-	            <artifactId>logback-classic</artifactId>
-	            <version>${logback.version}</version>
-	        </dependency>       
-	        <dependency>
-	            <groupId>org.logback-extensions</groupId>
-	            <artifactId>logback-ext-spring</artifactId>
-	            <version>${logback.ext.version}</version>
-	        </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>       
+            <dependency>
+                <groupId>org.logback-extensions</groupId>
+                <artifactId>logback-ext-spring</artifactId>
+                <version>${logback.ext.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -308,9 +332,19 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-	                <groupId>org.apache.maven.plugins</groupId>
-	                <artifactId>maven-compiler-plugin</artifactId>
-	                <version>${maven.compiler.plugin.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>${maven.project.info.reports.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jxr-plugin</artifactId>
+                    <version>${jxr.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -321,7 +355,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
-					<executable>${JAVA_1_7_HOME}/bin/javac</executable>
+                    <executable>${JAVA_1_7_HOME}/bin/javac</executable>
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
@@ -333,9 +367,18 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven.project.info.reports.plugin.version}</version>
+                <configuration>
+                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${jxr.version}</version>
             </plugin>
         </plugins>
-    </reporting>	
+    </reporting>
 </project>
