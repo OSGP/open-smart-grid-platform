@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<artifactId>web-device-simulator</artifactId>
-	<name>osgp-web-device-simulator</name>
-	<packaging>war</packaging>
-	
+    <artifactId>web-device-simulator</artifactId>
+    <name>osgp-web-device-simulator</name>
+    <packaging>war</packaging>
+    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Device simulator for OSLP smart devices.</description>
+
     <parent>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>parent-pa-oslp</artifactId>
         <version>0.11.0-SNAPSHOT</version>
         <relativePath>../parent-pa-oslp/pom.xml</relativePath>
     </parent>
-	
-	<properties>
-		<display.version>${project.version}-${BUILD_TAG}</display.version>
-	</properties>
 
-	<dependencies>
+    <properties>
+        <display.version>${project.version}-${BUILD_TAG}</display.version>
+    </properties>
+
+    <dependencies>
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -58,18 +60,18 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
         </dependency>
-        
+
         <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
         </dependency>
-        
-		<!-- Guava for Joiner class -->
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
+
+        <!-- Guava for Joiner class -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
         <!-- Hibernate -->
         <dependency>
@@ -81,11 +83,11 @@
             <artifactId>hibernate-entitymanager</artifactId>
         </dependency>
 
-		<!-- Flyway (DB Migration) -->
-		<dependency>
-			<groupId>com.googlecode.flyway</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
+        <!-- Flyway (DB Migration) -->
+        <dependency>
+            <groupId>com.googlecode.flyway</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
 
         <!-- Servlet API 3.0 -->
         <dependency>
@@ -97,7 +99,7 @@
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
         </dependency>
-        
+
         <!-- Logging dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -111,37 +113,37 @@
             <groupId>org.logback-extensions</groupId>
             <artifactId>logback-ext-spring</artifactId>
         </dependency>
-        
+
         <!-- Testing Dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-		
-		<!-- Joda time -->
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>		
-		</dependency>
-		
-		<!-- Jakarta commons codec -->
-		<dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		</dependency>
-		
-		<!-- OSGP -->
-		<dependency>
-			<groupId>com.alliander.osgp</groupId>
-			<artifactId>oslp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.alliander.osgp</groupId>
-			<artifactId>shared</artifactId>
-		</dependency>
-		
-	</dependencies>
+
+        <!-- Joda time -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>        
+        </dependency>
+
+        <!-- Jakarta commons codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+        <!-- OSGP -->
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>oslp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>shared</artifactId>
+        </dependency>
+
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -177,27 +179,27 @@
                     <mainClass>org.test.int1.Main</mainClass>
                 </configuration>
             </plugin>
-		      <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-war-plugin</artifactId>
-		        <version>2.4</version>
-		        <configuration>
-		          <failOnMissingWebXml>false</failOnMissingWebXml>
-					<nonFilteredFileExtensions>
-						<nonFilteredFileExtension>gif</nonFilteredFileExtension>
-						<nonFilteredFileExtension>ico</nonFilteredFileExtension>
-						<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-						<nonFilteredFileExtension>png</nonFilteredFileExtension>
-						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-					</nonFilteredFileExtensions>
-					<webResources>
-						<resource>
-							<directory>src/main/webapp</directory>
-							<filtering>true</filtering>
-						</resource>
-					</webResources>
-		        </configuration>
-		      </plugin>                        
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                  <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>gif</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>png</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                    </webResources>
+                </configuration>
+              </plugin>
         </plugins>
     </build>
 </project>
