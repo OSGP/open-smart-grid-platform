@@ -1,41 +1,62 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.alliander.osgp</groupId>
-	<artifactId>platform</artifactId>
-	<version>0.11.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <groupId>com.alliander.osgp</groupId>
+    <artifactId>platform</artifactId>
+    <version>0.11.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Main Components of OSGP and Protocol Adapters.</description>
+    <organization>
+        <name>OSGP</name>
+        <url>https://osgplatform.wordpress.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>APACHE 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+    <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+    <url>${maven.site.url}</url>
+    <distributionManagement>
+        <site>
+            <id>platform</id>
+            <name>platform</name>
+            <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+            <url>${maven.site.distributionManagement.site.url}</url>
+        </site>
+    </distributionManagement>
 
-	<modules>  
+    <modules>  
         <!-- Shared Libs -->
-		<module>parent-platform</module>
-		<module>Shared/shared</module>
+        <module>parent-platform</module>
+        <module>Shared/shared</module>
         <module>Shared/osgp-dto</module>
 
-		<!-- Domain -->
+        <!-- Domain -->
         <module>osgp-domain-core</module>
         <module>osgp-domain-publiclighting</module>
         <module>osgp-domain-tariffswitching</module>
 
-		<module>osgp-adapter-domain-shared</module>
+        <module>osgp-adapter-domain-shared</module>
 
-		<module>osgp-adapter-domain-admin</module>
+        <module>osgp-adapter-domain-admin</module>
         <module>osgp-adapter-domain-core</module>
-		<module>osgp-adapter-domain-publiclighting</module>
-		<module>osgp-adapter-domain-tariffswitching</module>
+        <module>osgp-adapter-domain-publiclighting</module>
+        <module>osgp-adapter-domain-tariffswitching</module>
 
-		<!-- Webservice -->
+        <!-- Webservice -->
         <module>osgp-adapter-ws-shared</module>
         <module>osgp-adapter-ws-shared-db</module>
         <module>osgp-adapter-ws-core</module>
         <module>osgp-adapter-ws-admin</module>
-		<module>osgp-adapter-ws-publiclighting</module>
+        <module>osgp-adapter-ws-publiclighting</module>
         <module>osgp-adapter-ws-tariffswitching</module>
 
-		<!-- Core -->
-		<module>web-service-logging</module>
+        <!-- Core -->
+        <module>web-service-logging</module>
         <module>osgp-core</module>
-	</modules>
+    </modules>
 </project>
