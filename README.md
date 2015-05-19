@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/job/OSGP_Platform_master/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_master)
+[![Build Status](http://54.77.62.182/job/OSGP_Platform_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_development)
 
 ### Component Description
 
@@ -14,6 +14,7 @@ Web Service Layer
 - ospg-adapter-ws-core, Generic functions web service
 - osgp-adapter-ws-public-lighting, Public Lighting functions web service
 - osgp-adapter-ws-tariff-switching, Tariff Switching function web service
+- osgp-adapter-ws-smart-metering, Smart Metering function web service
 - osgp-adapter-ws-shared, Common classes used by these components
 
 Domain Layer
@@ -22,6 +23,7 @@ Domain Layer
 - osgp-adapter-domain-core, Generic functions domain logic
 - osgp-adapter-domain-public-lighting, Public Lighting functions domain logic
 - osgp-adapter-domain-tariff-switching, Tariff Switching functions domain logic
+- osgp-adapter-domain-smart-metering, Smart Metering functions domain logic
 - osgp-adapter-domain-shared, Common classes used by these components
 - osgp-domain-core, Generic domain classes
 - osgp-domain-public-lighting, Public Lighting domain classes
