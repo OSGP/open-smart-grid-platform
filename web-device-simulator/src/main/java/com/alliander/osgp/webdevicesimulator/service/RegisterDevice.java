@@ -38,16 +38,6 @@ public class RegisterDevice {
     protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_REGISTERED_CONFIRM = "feedback.message.device.registered.confirm";
     protected static final String FEEDBACK_MESSAGE_KEY_DEVICE_ERROR = "feedback.message.device.error";
 
-    private static final String FEEDBACK_MESSAGE_KEY_EVENTNOTIFICATION_SENT = "feedback.message.eventnotification.sent";
-
-    private static final String ADDING_ERROR_MESSAGE_WITH_CODE = "adding error message with code: ";
-    private static final String AND_PARAMS = " and params: ";
-    private static final String PARAM = "param";
-    private static final String CURRENT_LOCALE = "Current locale is ";
-    private static final String LOCALIZED_MESSAGE_IS = "Localized message is: ";
-
-    private static final String FAILURE_URL = "failure";
-
     @Autowired
     private DeviceManagementService deviceManagementService;
 
@@ -84,6 +74,7 @@ public class RegisterDevice {
         // Find device
         Device device = this.deviceManagementService.findDevice(deviceId);
         if (device == null) {
+            // Set the DeviceMessageStatus NOT_FOUND as the Device is NOT_FOUND
             return DeviceMessageStatus.NOT_FOUND;
         }
 
@@ -156,14 +147,19 @@ public class RegisterDevice {
 
             // Save the entity
             device = this.deviceManagementService.updateDevice(device);
+
+            // Set the DeviceMessageStatus OK as the registration is success
             return DeviceMessageStatus.OK;
         } catch (final UnknownHostException ex) {
             LOGGER.error("incorrect IP address format", ex);
         } catch (final Exception e) {
             LOGGER.error("register device exception", e);
             this.errorMessage = e.getMessage();
+            // Set the DeviceMessageStatus FAILURE as the registration is NOT
+            // success
             return DeviceMessageStatus.FAILURE;
         }
+
         return DeviceMessageStatus.NOT_FOUND;
     }
 
@@ -172,6 +168,7 @@ public class RegisterDevice {
         // Find device
         Device device = this.deviceManagementService.findDevice(deviceId);
         if (device == null) {
+            // Set the DeviceMessageStatus NOT_FOUND as the device is NOT_FOUND
             return DeviceMessageStatus.NOT_FOUND;
         }
         this.errorMessage = "";
@@ -221,10 +218,16 @@ public class RegisterDevice {
                 // if no more events are present in the list
                 outOfSequenceEvent = this.oslpChannelHandler.hasOutOfSequenceEventForDevice(device.getId());
             }
+
+            // Set the DeviceMessageStatus OK as the confirm registration is
+            // success
             return DeviceMessageStatus.OK;
         } catch (final Exception e) {
             LOGGER.error("confirm device registration exception", e);
             this.errorMessage = e.getMessage();
+
+            // Set the DeviceMessageStatus FAILURE as the confirm registration
+            // is NOT success
             return DeviceMessageStatus.FAILURE;
 
         }
@@ -235,6 +238,8 @@ public class RegisterDevice {
         // Find device
         Device device = this.deviceManagementService.findDevice(id);
         if (device == null) {
+
+            // Set the DeviceMessageStatus NOT_FOUND as the device is NOT_FOUND
             return DeviceMessageStatus.NOT_FOUND;
         }
         this.errorMessage = "";
@@ -286,10 +291,15 @@ public class RegisterDevice {
             // Success
             device.setSequenceNumber(sequenceNumber);
             device = this.deviceManagementService.updateDevice(device);
+
+            // Set the DeviceMessageStatus OK as the SendEvent is Success.
             return DeviceMessageStatus.OK;
         } catch (final Exception e) {
             LOGGER.error("send event notification exception", e);
             this.errorMessage = e.getMessage();
+
+            // Set the DeviceMessageStatus FAILURE as the SendEvent is NOT
+            // Success.
             return DeviceMessageStatus.FAILURE;
 
         }

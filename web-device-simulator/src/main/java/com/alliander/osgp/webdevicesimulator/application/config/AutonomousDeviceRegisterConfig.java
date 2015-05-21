@@ -40,17 +40,17 @@ public class AutonomousDeviceRegisterConfig {
     }
 
     @Bean(destroyMethod = "shutdown")
-    public TaskScheduler taskScheduler() {
-        final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(Integer.parseInt(this.environment
+    public TaskScheduler deviceRegistrationTaskScheduler() {
+        final ThreadPoolTaskScheduler deviceRegistrationTaskScheduler = new ThreadPoolTaskScheduler();
+        deviceRegistrationTaskScheduler.setPoolSize(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_POOL_SIZE)));
-        taskScheduler.setThreadNamePrefix(this.environment
+        deviceRegistrationTaskScheduler.setThreadNamePrefix(this.environment
                 .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_THREAD_NAME_PREFIX));
-        taskScheduler.setWaitForTasksToCompleteOnShutdown(false);
-        taskScheduler.setAwaitTerminationSeconds(10);
-        taskScheduler.initialize();
-        taskScheduler.schedule(this.autonomousDeviceRegister, this.autonomousDeviceRegisterTrigger());
-        return taskScheduler;
+        deviceRegistrationTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
+        deviceRegistrationTaskScheduler.setAwaitTerminationSeconds(10);
+        deviceRegistrationTaskScheduler.initialize();
+        deviceRegistrationTaskScheduler.schedule(this.autonomousDeviceRegister, this.autonomousDeviceRegisterTrigger());
+        return deviceRegistrationTaskScheduler;
     }
 
 }
