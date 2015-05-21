@@ -440,6 +440,9 @@
                             <exclude>**/README.md</exclude>
                             <exclude>src/test/resources/**</exclude>
                             <exclude>src/main/resources/**</exclude>
+                            <exclude>src/main/webapp/static/css/bootstrap*</exclude>
+                            <exclude>src/main/webapp/static/js/bootstrap*</exclude>
+                            <exclude>src/main/webapp/static/js/jquery*</exclude>
                         </excludes>
                     </configuration>
                     <executions>
