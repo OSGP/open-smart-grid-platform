@@ -9,9 +9,6 @@ package com.alliander.osgp.shared.infra.jms;
 
 /**
  * Collection of JMS message field names.
- * 
- * @author CGI
- * 
  */
 public class Constants {
 

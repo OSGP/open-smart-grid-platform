@@ -35,9 +35,6 @@ import com.alliander.osgp.shared.usermanagement.LoginResponse;
  * as argument for the function validateToken(CustomAuthentication) to validate
  * the authentication token. After each validation, a new authentication token
  * is set in the CustomAuthentication instance.
- *
- * @author CGI
- *
  */
 public final class CustomAuthenticationManager implements AuthenticationManager {
 

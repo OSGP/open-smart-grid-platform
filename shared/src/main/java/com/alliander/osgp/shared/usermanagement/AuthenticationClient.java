@@ -30,9 +30,6 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 /**
  * This class offers a web client for the web-api-user-management web service.
  * Login and authenticate functionality.
- * 
- * @author CGI
- * 
  */
 public class AuthenticationClient extends AbstractClient {
 
@@ -56,7 +53,7 @@ public class AuthenticationClient extends AbstractClient {
 
     /**
      * Construct an AuthenticationClient instance.
-     * 
+     *
      * @param keystoreLocation
      *            The location of the key store.
      * @param keystorePassword
@@ -65,7 +62,7 @@ public class AuthenticationClient extends AbstractClient {
      *            The type of the key store.
      * @param baseAddress
      *            The base address or URL for the AuthenticationClient.
-     * 
+     *
      * @throws AuthenticationClientException
      *             In case the construction fails, an
      *             AuthenticationClientException will be thrown.
@@ -125,13 +122,13 @@ public class AuthenticationClient extends AbstractClient {
 
     /**
      * Login to the user management API.
-     * 
+     *
      * @param loginRequest
      *            The LoginRequest containing user name and password.
-     * 
+     *
      * @return A LoginResponse containing feedback message, error message and
      *         authentication token.
-     * 
+     *
      * @throws AuthenticationClientException
      *             In case the LoginRequest argument is null, the user name or
      *             password are an empty string, the response is null, the HTTP
@@ -177,16 +174,16 @@ public class AuthenticationClient extends AbstractClient {
 
     /**
      * Check the validity of an authentication token.
-     * 
+     *
      * @param organisationIdentification
      *            The organisation identification of the organisation issuing
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return An AuthenticationResponse containing feedback message, error
      *         message and new authentication token.
-     * 
+     *
      * @throws AuthenticationClientException
      *             In case the organisationIdentification or token are an empty
      *             string, the token is not valid, the response is null, the

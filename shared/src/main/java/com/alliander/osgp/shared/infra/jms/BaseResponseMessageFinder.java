@@ -17,9 +17,6 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Base class for retrieving response messages from a queue by correlation UID.
- *
- * @author CGI
- *
  */
 public abstract class BaseResponseMessageFinder {
 

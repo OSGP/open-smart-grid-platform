@@ -20,9 +20,6 @@ import com.alliander.osgp.shared.usermanagement.PlatformDomain;
 
 /**
  * Simple authentication class.
- * 
- * @author CGI
- * 
  */
 public final class CustomAuthentication implements Authentication {
 
