@@ -31,9 +31,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 /**
  * Class for processing common get configuration request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonGetConfigurationRequestMessageProcessor")
 public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -140,7 +137,7 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException=null;
+        OsgpException osgpException = null;
         Configuration configuration = null;
 
         try {
@@ -150,11 +147,11 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
-
-		final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getDeviceIdentification(), result, osgpException, configuration, retryCount);
 

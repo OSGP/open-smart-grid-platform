@@ -23,9 +23,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common stop device test request message
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonStopDeviceTestRequestMessageProcessor")
 public class CommonStopDeviceTestRequestMessageProcessor extends DeviceRequestMessageProcessor {

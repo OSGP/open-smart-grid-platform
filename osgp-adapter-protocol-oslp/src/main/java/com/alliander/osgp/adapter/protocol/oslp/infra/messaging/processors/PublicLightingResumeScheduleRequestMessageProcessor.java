@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing public lighting resume schedule request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpPublicLightingResumeScheduleRequestMessageProcessor")
 public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor {

@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing public lighting set transition request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpPublicLightingSetTransitionRequestMessageProcessor")
 public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRequestMessageProcessor {

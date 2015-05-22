@@ -22,9 +22,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common revoke key request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpAdminRevokeKeyRequestMessageProcessor")
 public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageProcessor {

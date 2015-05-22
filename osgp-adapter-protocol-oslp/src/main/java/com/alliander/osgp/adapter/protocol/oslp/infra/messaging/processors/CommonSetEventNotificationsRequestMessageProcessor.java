@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common set event notifications request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonSetEventNotificationsRequestMessageProcessor")
 public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor {

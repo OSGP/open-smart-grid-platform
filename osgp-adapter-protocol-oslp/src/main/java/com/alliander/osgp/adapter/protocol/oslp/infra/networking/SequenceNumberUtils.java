@@ -13,9 +13,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class for converting sequence number value from Integer to byte array
  * and vice versa.
- * 
- * @author CGI
- * 
  */
 public class SequenceNumberUtils {
 
@@ -32,10 +29,10 @@ public class SequenceNumberUtils {
     /**
      * Convert an Integer object's value into a byte array of size 2. The range
      * of the value can be from 0 to 65535, equal to a 16 bit unsigned value.
-     * 
+     *
      * @param value
      *            The integer value to convert into the byte array.
-     * 
+     *
      * @return Byte array of size 2.
      */
     public static byte[] convertIntegerToByteArray(final Integer value) {
@@ -53,10 +50,10 @@ public class SequenceNumberUtils {
     /**
      * Convert a byte array of size 2 into an Integer object. The range of the
      * value can be from 0 to 65535, equal to a 16 bit unsigned value.
-     * 
+     *
      * @param array
      *            The byte array of size 2 to convert into an Integer object.
-     * 
+     *
      * @return The Integer object.
      */
     public static Integer convertByteArrayToInteger(final byte[] array) {

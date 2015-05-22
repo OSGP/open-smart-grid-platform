@@ -32,9 +32,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 /**
  * Class for processing common get status request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonGetStatusRequestMessageProcessor")
 public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -146,7 +143,8 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,

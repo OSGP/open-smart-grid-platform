@@ -25,16 +25,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing tariff switching set schedule request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpTariffSwitchingSetScheduleRequestMessageProcessor")
 public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingSetScheduleRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(TariffSwitchingSetScheduleRequestMessageProcessor.class);
 
     public TariffSwitchingSetScheduleRequestMessageProcessor() {
         super(DeviceRequestMessageType.SET_TARIFF_SCHEDULE);
@@ -79,7 +77,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         }
 
         try {
-            final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) message.getObject();
+            final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) message
+                    .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
@@ -88,10 +87,14 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
                 @Override
                 public void handleResponse(final DeviceResponse deviceResponse) {
                     try {
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(deviceResponse,
-                                TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(
+                                deviceResponse,
+                                TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
                                         .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
@@ -102,11 +105,18 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
                 @Override
                 public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                     try {
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                                scheduleMessageDataContainer, TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                                message.getStringProperty(Constants.DOMAIN), message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false,
-                                message.getIntProperty(Constants.RETRY_COUNT));
+                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
+                                deviceResponse,
+                                t,
+                                scheduleMessageDataContainer,
+                                TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender,
+                                deviceResponse,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                                        .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
                     }
@@ -114,13 +124,15 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
                 }
             };
 
-            final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification, deviceIdentification, correlationUid,
-                    scheduleMessageDataContainer.getScheduleList(), RelayType.TARIFF);
+            final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
+                    deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
+                    RelayType.TARIFF);
 
             this.deviceService.setSchedule(deviceRequest, deviceResponseHandler, ipAddress);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
         }
     }
 }

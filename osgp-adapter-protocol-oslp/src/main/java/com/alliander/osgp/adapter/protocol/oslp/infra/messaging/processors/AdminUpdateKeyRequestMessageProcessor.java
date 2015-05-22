@@ -22,9 +22,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common update key request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpAdminUpdateKeyRequestMessageProcessor")
 public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageProcessor {

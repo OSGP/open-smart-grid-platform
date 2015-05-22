@@ -23,9 +23,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common start device test request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonStartDeviceTestRequestMessageProcessor")
 public class CommonStartDeviceTestRequestMessageProcessor extends DeviceRequestMessageProcessor {

@@ -25,16 +25,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing public lighting set schedule request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpPublicLightingSetScheduleRequestMessageProcessor")
 public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingSetScheduleRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PublicLightingSetScheduleRequestMessageProcessor.class);
 
     public PublicLightingSetScheduleRequestMessageProcessor() {
         super(DeviceRequestMessageType.SET_LIGHT_SCHEDULE);
@@ -79,7 +77,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         }
 
         try {
-            final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) message.getObject();
+            final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) message
+                    .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
@@ -88,10 +87,14 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 @Override
                 public void handleResponse(final DeviceResponse deviceResponse) {
                     try {
-                        PublicLightingSetScheduleRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(deviceResponse,
-                                PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                        PublicLightingSetScheduleRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(
+                                deviceResponse,
+                                PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
                                         .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
@@ -102,11 +105,18 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 @Override
                 public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                     try {
-                        PublicLightingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t,
-                                scheduleMessageDataContainer, PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                                message.getStringProperty(Constants.DOMAIN), message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false,
-                                message.getIntProperty(Constants.RETRY_COUNT));
+                        PublicLightingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
+                                deviceResponse,
+                                t,
+                                scheduleMessageDataContainer,
+                                PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender,
+                                deviceResponse,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                                        .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
                     }
@@ -114,13 +124,15 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                 }
             };
 
-            final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification, deviceIdentification, correlationUid,
-                    scheduleMessageDataContainer.getScheduleList(), RelayType.LIGHT);
+            final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
+                    deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
+                    RelayType.LIGHT);
 
             this.deviceService.setSchedule(deviceRequest, deviceResponseHandler, ipAddress);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
         }
     }
 }

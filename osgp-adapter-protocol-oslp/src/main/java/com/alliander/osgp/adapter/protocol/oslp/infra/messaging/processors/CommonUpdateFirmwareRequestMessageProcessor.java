@@ -27,9 +27,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common update firmware request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonUpdateFirmwareRequestMessageProcessor")
 public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -104,10 +101,14 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
                 @Override
                 public void handleResponse(final DeviceResponse deviceResponse) {
                     try {
-                        CommonUpdateFirmwareRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(deviceResponse,
-                                CommonUpdateFirmwareRequestMessageProcessor.this.responseMessageSender, message.getStringProperty(Constants.DOMAIN), message
-                                        .getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                        CommonUpdateFirmwareRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(
+                                deviceResponse,
+                                CommonUpdateFirmwareRequestMessageProcessor.this.responseMessageSender,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
                                         .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
@@ -118,11 +119,18 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
                 @Override
                 public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                     try {
-                        CommonUpdateFirmwareRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t, null,
-                                CommonUpdateFirmwareRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                                message.getStringProperty(Constants.DOMAIN), message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false,
-                                message.getIntProperty(Constants.RETRY_COUNT));
+                        CommonUpdateFirmwareRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
+                                deviceResponse,
+                                t,
+                                null,
+                                CommonUpdateFirmwareRequestMessageProcessor.this.responseMessageSender,
+                                deviceResponse,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                                        .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
                     }
@@ -130,13 +138,15 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
                 }
             };
 
-            final UpdateFirmwareDeviceRequest deviceRequest = new UpdateFirmwareDeviceRequest(organisationIdentification, deviceIdentification, correlationUid,
+            final UpdateFirmwareDeviceRequest deviceRequest = new UpdateFirmwareDeviceRequest(
+                    organisationIdentification, deviceIdentification, correlationUid,
                     this.firmwareLocation.getDomain(), this.firmwareLocation.getFullPath(firmwareIdentification));
 
             this.deviceService.updateFirmware(deviceRequest, deviceResponseHandler, ipAddress);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
         }
     }
 

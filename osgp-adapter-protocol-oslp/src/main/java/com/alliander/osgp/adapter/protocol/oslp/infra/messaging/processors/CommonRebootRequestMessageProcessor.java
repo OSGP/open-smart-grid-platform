@@ -23,9 +23,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common reboot request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonRebootRequestMessageProcessor")
 public class CommonRebootRequestMessageProcessor extends DeviceRequestMessageProcessor {

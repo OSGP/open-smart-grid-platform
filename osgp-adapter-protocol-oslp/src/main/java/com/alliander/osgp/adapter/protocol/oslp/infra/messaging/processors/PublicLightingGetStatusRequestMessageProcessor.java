@@ -32,9 +32,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 /**
  * Class for processing public lighting get status request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpPublicLightingGetStatusRequestMessageProcessor")
 public class PublicLightingGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -148,7 +145,8 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
