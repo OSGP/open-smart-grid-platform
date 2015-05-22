@@ -20,9 +20,6 @@ import com.alliander.osgp.shared.infra.jms.BaseResponseMessageFinder;
 /**
  * Class for retrieving response messages from the tariff switching responses
  * queue by correlation UID.
- * 
- * @author CGI
- * 
  */
 public class TariffSwitchingResponseMessageFinder extends BaseResponseMessageFinder {
 

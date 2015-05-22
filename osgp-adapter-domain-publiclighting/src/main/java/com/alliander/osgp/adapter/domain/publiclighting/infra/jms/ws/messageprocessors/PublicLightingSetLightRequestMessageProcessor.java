@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing public lighting set light request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainPublicLightingSetLightRequestMessageProcessor")
 public class PublicLightingSetLightRequestMessageProcessor extends WebServiceRequestMessageProcessor {

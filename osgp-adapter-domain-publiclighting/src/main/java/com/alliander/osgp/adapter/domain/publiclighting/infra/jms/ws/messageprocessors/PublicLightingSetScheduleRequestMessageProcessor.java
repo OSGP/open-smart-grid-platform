@@ -24,16 +24,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing public lighting set schedule request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainPublicLightingSetScheduleRequestMessageProcessor")
 public class PublicLightingSetScheduleRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingSetScheduleRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PublicLightingSetScheduleRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainPublicLightingScheduleManagementService")
@@ -77,8 +75,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends WebService
 
             final ScheduleMessageDataContainer lightScheduleMessageDataContainer = (ScheduleMessageDataContainer) dataObject;
 
-            this.scheduleManagementService.setLightSchedule(organisationIdentification, deviceIdentification, correlationUid,
-                    lightScheduleMessageDataContainer.getScheduleList(), scheduleTime, messageType);
+            this.scheduleManagementService.setLightSchedule(organisationIdentification, deviceIdentification,
+                    correlationUid, lightScheduleMessageDataContainer.getScheduleList(), scheduleTime, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

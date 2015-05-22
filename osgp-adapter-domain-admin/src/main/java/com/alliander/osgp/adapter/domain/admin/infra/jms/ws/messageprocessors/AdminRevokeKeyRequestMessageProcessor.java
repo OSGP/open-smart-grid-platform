@@ -23,9 +23,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing admin revoke key request messages
- * 
- * @author CGI
- * 
  */
 @Component
 public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {

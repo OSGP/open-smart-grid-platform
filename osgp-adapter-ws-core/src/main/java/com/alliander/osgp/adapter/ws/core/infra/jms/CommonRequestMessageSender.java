@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for sending common request messages to a queue
- * 
- * @author CGI
- * 
  */
 public class CommonRequestMessageSender {
     /**
@@ -43,7 +40,7 @@ public class CommonRequestMessageSender {
 
     /**
      * Method for sending a request message to the queue
-     * 
+     *
      * @param requestMessage
      *            The CommonRequestMessage request message to send.
      */
@@ -73,7 +70,7 @@ public class CommonRequestMessageSender {
     /**
      * Method for sending a request message to the public lighting requests
      * queue
-     * 
+     *
      * @param requestMessage
      *            The CommonRequestMessage request message to send.
      */
@@ -93,7 +90,7 @@ public class CommonRequestMessageSender {
                         requestMessage.getDeviceIdentification());
                 if (requestMessage.getScheduleTime() != null) {
                     objectMessage
-                            .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
+                    .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
                 }
                 return objectMessage;
             }

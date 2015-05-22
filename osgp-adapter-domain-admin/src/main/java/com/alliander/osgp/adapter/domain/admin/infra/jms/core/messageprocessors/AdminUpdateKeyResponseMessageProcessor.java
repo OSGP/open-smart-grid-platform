@@ -26,9 +26,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing admin revoke key messages
- * 
- * @author CGI
- * 
  */
 @Component("domainAdminUpdateKeyResponseMessageProcessor")
 public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -56,7 +53,7 @@ public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMess
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException=null;
+        OsgpException osgpException = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();

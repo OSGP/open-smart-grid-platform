@@ -24,16 +24,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing public lighting get power usage history request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainPublicLightingGetPowerUsageHistoryRequestMessageProcessor")
 public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PublicLightingGetPowerUsageHistoryRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PublicLightingGetPowerUsageHistoryRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainPublicLightingDeviceMonitoringService")
@@ -77,9 +75,9 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends W
 
             final PowerUsageHistoryMessageDataContainer powerUsageHistoryMessageDataContainer = (PowerUsageHistoryMessageDataContainer) dataObject;
 
-            this.deviceMonitoringService.getPowerUsageHistory(organisationIdentification, deviceIdentification, correlationUid,
-                    powerUsageHistoryMessageDataContainer.getTimePeriod(), powerUsageHistoryMessageDataContainer.getHistoryTermType(), scheduleTime,
-                    messageType);
+            this.deviceMonitoringService.getPowerUsageHistory(organisationIdentification, deviceIdentification,
+                    correlationUid, powerUsageHistoryMessageDataContainer.getTimePeriod(),
+                    powerUsageHistoryMessageDataContainer.getHistoryTermType(), scheduleTime, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

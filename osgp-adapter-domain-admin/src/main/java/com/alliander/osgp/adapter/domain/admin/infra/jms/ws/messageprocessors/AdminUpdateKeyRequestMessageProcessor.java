@@ -23,9 +23,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing admin update key request messages
- * 
- * @author CGI
- * 
  */
 @Component
 public class AdminUpdateKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {

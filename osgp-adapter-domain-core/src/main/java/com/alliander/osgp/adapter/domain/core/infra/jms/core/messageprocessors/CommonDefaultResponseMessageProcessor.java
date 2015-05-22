@@ -26,9 +26,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing common default response messages
- * 
- * @author CGI
- * 
  */
 @Component("domainCoreCommonDefaultResponseMessageProcessor")
 public class CommonDefaultResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {

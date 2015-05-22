@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for sending public lighting request messages to a queue
- *
- * @author CGI
- *
  */
 public class PublicLightingRequestMessageSender {
     /**
@@ -93,7 +90,7 @@ public class PublicLightingRequestMessageSender {
                         requestMessage.getDeviceIdentification());
                 if (requestMessage.getScheduleTime() != null) {
                     objectMessage
-                            .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
+                    .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
                 }
                 return objectMessage;
             }

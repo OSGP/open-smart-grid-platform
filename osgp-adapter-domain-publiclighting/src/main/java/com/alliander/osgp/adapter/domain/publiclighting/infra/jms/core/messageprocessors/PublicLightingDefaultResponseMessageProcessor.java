@@ -26,9 +26,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing public lighting default response messages
- * 
- * @author CGI
- * 
  */
 @Component("domainPublicLightingDefaultResponseMessageProcessor")
 public class PublicLightingDefaultResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {

@@ -26,9 +26,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing common get firmware response messages
- * 
- * @author CGI
- * 
  */
 @Component("domainCoreCommonGetFirmwareResponseMessageProcessor")
 public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {

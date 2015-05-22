@@ -28,9 +28,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing tariff switching get status response messages
- * 
- * @author CGI
- * 
  */
 @Component("domainTariffSwitchingGetStatusResponseMessageProcessor")
 public class TariffSwitchingGetStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {

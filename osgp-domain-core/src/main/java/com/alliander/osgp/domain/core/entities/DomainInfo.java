@@ -14,9 +14,6 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 /**
  * Class containing information about a domain and the domain's destination
  * queues.
- * 
- * @author CGI
- * 
  */
 @Entity
 public class DomainInfo extends AbstractEntity {
@@ -40,7 +37,7 @@ public class DomainInfo extends AbstractEntity {
 
     /**
      * Construct a DomainInfo instance.
-     * 
+     *
      * @param domain
      *            The name of the domain.
      * @param version
@@ -79,7 +76,7 @@ public class DomainInfo extends AbstractEntity {
 
     /**
      * The name of the domain.
-     * 
+     *
      * @return The name of the domain.
      */
     public String getDomain() {
@@ -88,7 +85,7 @@ public class DomainInfo extends AbstractEntity {
 
     /**
      * The version of the domain.
-     * 
+     *
      * @return The version of the domain.
      */
     public String getDomainVersion() {
@@ -96,8 +93,9 @@ public class DomainInfo extends AbstractEntity {
     }
 
     /**
-     * The queue where the domain request message listener will listen for received domain requests.
-     * 
+     * The queue where the domain request message listener will listen for
+     * received domain requests.
+     *
      * @return The queue where incoming domain requests will be send to.
      */
     public String getIncomingDomainRequestsQueue() {
@@ -105,8 +103,9 @@ public class DomainInfo extends AbstractEntity {
     }
 
     /**
-     * The queue where the domain response message sender will send domain responses to.
-     * 
+     * The queue where the domain response message sender will send domain
+     * responses to.
+     *
      * @return The queue where outgoing domain responses will be send to.
      */
     public String getOutgoingDomainResponsesQueue() {
@@ -114,8 +113,9 @@ public class DomainInfo extends AbstractEntity {
     }
 
     /**
-     * The queue where the domain request message sender will send domain requests to.
-     * 
+     * The queue where the domain request message sender will send domain
+     * requests to.
+     *
      * @return The queue where outgoing domain requests will be send to.
      */
     public String getOutgoingDomainRequestsQueue() {
@@ -123,8 +123,9 @@ public class DomainInfo extends AbstractEntity {
     }
 
     /**
-     * The queue where the domain response message listener will listen for received domain responses.
-     * 
+     * The queue where the domain response message listener will listen for
+     * received domain responses.
+     *
      * @return The queue where incoming domain responses will be received.
      */
     public String getIncomingDomainResponsesQueue() {

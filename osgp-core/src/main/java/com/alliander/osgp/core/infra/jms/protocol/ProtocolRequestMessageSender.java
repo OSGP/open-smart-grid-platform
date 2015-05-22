@@ -27,9 +27,6 @@ import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 /**
  * This class sends protocol request messages to the requests queue for the
  * specific version of the protocol
- * 
- * @author CGI
- * 
  */
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 

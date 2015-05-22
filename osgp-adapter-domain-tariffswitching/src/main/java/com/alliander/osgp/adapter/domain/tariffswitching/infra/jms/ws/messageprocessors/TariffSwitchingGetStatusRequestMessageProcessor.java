@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing tariff switching get status request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainTariffSwitchingGetStatusRequestMessageProcessor")
 public class TariffSwitchingGetStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {

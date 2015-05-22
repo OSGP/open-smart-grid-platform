@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing public lighting get status request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainPublicLightingGetStatusRequestMessageProcessor")
 public class PublicLightingGetStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {

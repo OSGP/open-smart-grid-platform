@@ -24,9 +24,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for sending common request messages to a queue
- * 
- * @author CGI
- * 
  */
 public class AdminRequestMessageSender {
     /**
@@ -43,7 +40,7 @@ public class AdminRequestMessageSender {
 
     /**
      * Method for sending a request message to the queue
-     * 
+     *
      * @param requestMessage
      *            The adminRequestMessage request message to send.
      */
@@ -72,7 +69,7 @@ public class AdminRequestMessageSender {
 
     /**
      * Method for sending a request message to the admin requests queue
-     * 
+     *
      * @param requestMessage
      *            The CommonRequestMessage request message to send.
      */
