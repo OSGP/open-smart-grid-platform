@@ -90,6 +90,7 @@ public class RegisterDevice {
             // register of the device.
             // However, NOTE: THIS BEHAVIOUR IS NOT EQUAL TO THE REAL SSLD/PSLD.
             device.setDeviceUid(this.createRandomDeviceUid());
+            device = this.deviceManagementService.updateDevice(device);
 
             // Generate random sequence number and random device number
             final Integer sequenceNumber = device.doGenerateRandomNumber();
@@ -391,6 +392,13 @@ public class RegisterDevice {
 
     public String getErrorMessage() {
         return this.errorMessage;
+    }
+
+    public void tariffSwitchOn(final long deviceId, final Boolean switchOn) {
+        // Find device
+        Device device = this.deviceManagementService.findDevice(deviceId);
+        device.setTariffOn(switchOn);
+        device = this.deviceManagementService.updateDevice(device);
     }
 
 }
