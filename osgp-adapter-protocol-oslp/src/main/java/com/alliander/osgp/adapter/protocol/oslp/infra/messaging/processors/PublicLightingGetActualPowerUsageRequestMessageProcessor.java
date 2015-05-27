@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
 
 import javax.jms.JMSException;
@@ -24,9 +31,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing public lighting get power usage request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpPublicLightingGetActualPowerUsageRequestMessageProcessor")
 public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -83,12 +87,12 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
                 public void handleResponse(final DeviceResponse deviceResponse) {
                     try {
                         PublicLightingGetActualPowerUsageRequestMessageProcessor.this
-                                .handleGetActualPowerUsageDeviceResponse(
-                                        deviceResponse,
-                                        PublicLightingGetActualPowerUsageRequestMessageProcessor.this.responseMessageSender,
-                                        message.getStringProperty(Constants.DOMAIN),
-                                        message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                        message.getIntProperty(Constants.RETRY_COUNT));
+                        .handleGetActualPowerUsageDeviceResponse(
+                                deviceResponse,
+                                PublicLightingGetActualPowerUsageRequestMessageProcessor.this.responseMessageSender,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
+                                message.getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
                     }
@@ -99,18 +103,18 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
                 public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                     try {
                         PublicLightingGetActualPowerUsageRequestMessageProcessor.this
-                                .handleUnableToConnectDeviceResponse(
-                                        deviceResponse,
-                                        t,
-                                        null,
-                                        PublicLightingGetActualPowerUsageRequestMessageProcessor.this.responseMessageSender,
-                                        deviceResponse,
-                                        message.getStringProperty(Constants.DOMAIN),
-                                        message.getStringProperty(Constants.DOMAIN_VERSION),
-                                        message.getJMSType(),
-                                        message.propertyExists(Constants.IS_SCHEDULED) ? message
-                                                .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
-                                                .getIntProperty(Constants.RETRY_COUNT));
+                        .handleUnableToConnectDeviceResponse(
+                                deviceResponse,
+                                t,
+                                null,
+                                PublicLightingGetActualPowerUsageRequestMessageProcessor.this.responseMessageSender,
+                                deviceResponse,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                                        .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
                     }
@@ -144,7 +148,8 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,

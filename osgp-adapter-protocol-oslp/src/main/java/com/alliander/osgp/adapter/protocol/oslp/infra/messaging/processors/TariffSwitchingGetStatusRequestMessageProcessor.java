@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
 
 import javax.jms.JMSException;
@@ -25,9 +32,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 /**
  * Class for processing tariff switching get status request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpTariffSwitchingGetStatusRequestMessageProcessor")
 public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -141,7 +145,8 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceReque
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,

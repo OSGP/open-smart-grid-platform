@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
 
 import javax.jms.JMSException;
@@ -16,9 +23,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common set configuration request messages
- * 
- * @author CGI
- * 
  */
 @Component("oslpCommonSetConfigurationRequestMessageProcessor")
 public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -70,7 +74,8 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
         }
 
         try {
-            final com.alliander.osgp.dto.valueobjects.Configuration configuration = (com.alliander.osgp.dto.valueobjects.Configuration) message.getObject();
+            final com.alliander.osgp.dto.valueobjects.Configuration configuration = (com.alliander.osgp.dto.valueobjects.Configuration) message
+                    .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
@@ -79,10 +84,14 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
                 @Override
                 public void handleResponse(final DeviceResponse deviceResponse) {
                     try {
-                        CommonSetConfigurationRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(deviceResponse,
-                                CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, message.getStringProperty(Constants.DOMAIN), message
-                                        .getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                        CommonSetConfigurationRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(
+                                deviceResponse,
+                                CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
                                         .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
@@ -93,24 +102,32 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
                 @Override
                 public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                     try {
-                        CommonSetConfigurationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse, t, configuration,
-                                CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                                message.getStringProperty(Constants.DOMAIN), message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message.getBooleanProperty(Constants.IS_SCHEDULED) : false,
-                                message.getIntProperty(Constants.RETRY_COUNT));
+                        CommonSetConfigurationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
+                                deviceResponse,
+                                t,
+                                configuration,
+                                CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender,
+                                deviceResponse,
+                                message.getStringProperty(Constants.DOMAIN),
+                                message.getStringProperty(Constants.DOMAIN_VERSION),
+                                message.getJMSType(),
+                                message.propertyExists(Constants.IS_SCHEDULED) ? message
+                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
+                                        .getIntProperty(Constants.RETRY_COUNT));
                     } catch (final JMSException e) {
                         LOGGER.error("JMSException", e);
                     }
                 }
             };
 
-            final SetConfigurationDeviceRequest deviceRequest = new SetConfigurationDeviceRequest(organisationIdentification, deviceIdentification,
-                    correlationUid, configuration);
+            final SetConfigurationDeviceRequest deviceRequest = new SetConfigurationDeviceRequest(
+                    organisationIdentification, deviceIdentification, correlationUid, configuration);
 
             this.deviceService.setConfiguration(deviceRequest, deviceResponseHandler, ipAddress);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion, messageType, retryCount);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
         }
     }
 }

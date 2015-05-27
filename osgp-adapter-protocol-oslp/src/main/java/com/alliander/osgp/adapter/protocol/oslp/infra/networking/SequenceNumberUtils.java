@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.oslp.infra.networking;
 
 import org.slf4j.Logger;
@@ -6,9 +13,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class for converting sequence number value from Integer to byte array
  * and vice versa.
- * 
- * @author CGI
- * 
  */
 public class SequenceNumberUtils {
 
@@ -25,10 +29,10 @@ public class SequenceNumberUtils {
     /**
      * Convert an Integer object's value into a byte array of size 2. The range
      * of the value can be from 0 to 65535, equal to a 16 bit unsigned value.
-     * 
+     *
      * @param value
      *            The integer value to convert into the byte array.
-     * 
+     *
      * @return Byte array of size 2.
      */
     public static byte[] convertIntegerToByteArray(final Integer value) {
@@ -46,10 +50,10 @@ public class SequenceNumberUtils {
     /**
      * Convert a byte array of size 2 into an Integer object. The range of the
      * value can be from 0 to 65535, equal to a 16 bit unsigned value.
-     * 
+     *
      * @param array
      *            The byte array of size 2 to convert into an Integer object.
-     * 
+     *
      * @return The Integer object.
      */
     public static Integer convertByteArrayToInteger(final byte[] array) {

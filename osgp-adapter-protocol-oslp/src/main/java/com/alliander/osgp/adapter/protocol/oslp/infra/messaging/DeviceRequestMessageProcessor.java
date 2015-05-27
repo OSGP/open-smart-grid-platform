@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging;
 
 import java.io.Serializable;
@@ -28,9 +35,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  * the MessageProcessor implementation can process should be passed in at
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
- * 
- * @author CGI
- * 
  */
 public abstract class DeviceRequestMessageProcessor implements MessageProcessor {
 
@@ -53,7 +57,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     /**
      * Each MessageProcessor should register it's MessageType at construction.
-     * 
+     *
      * @param deviceRequestMessageType
      *            The MessageType the MessageProcessor implementation can
      *            process.
@@ -90,7 +94,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -113,7 +118,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -127,7 +133,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String deviceIdentification, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
         LOGGER.error("Error while processing message", e);
-        OsgpException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN,
+                "Unexpected exception while retrieving response message", e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -139,7 +146,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
         LOGGER.error("Error while processing message", e);
-        OsgpException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN,
+                "Unexpected exception while retrieving response message", e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -154,7 +162,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        OsgpException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", t);
+        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN,
+                "Unexpected exception while retrieving response message", t);
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
