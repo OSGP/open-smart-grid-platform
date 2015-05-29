@@ -408,4 +408,11 @@ public class RegisterDevice {
         device = this.deviceManagementService.updateDevice(device);
     }
 
+    public void lightSwitchOn(final long deviceId, final Boolean switchOn) {
+        // Find device
+        Device device = this.deviceManagementService.findDevice(deviceId);
+        device.setLightOn(switchOn);
+        device = this.deviceManagementService.updateDevice(device);
+    }
+
 }
