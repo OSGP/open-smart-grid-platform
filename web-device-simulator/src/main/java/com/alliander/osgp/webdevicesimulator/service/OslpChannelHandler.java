@@ -68,6 +68,7 @@ import com.alliander.osgp.oslp.Oslp.SetLightRequest;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
+import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.SsldData;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
@@ -188,10 +189,10 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     /**
      * Get an OutOfSequenceEvent for given device id. The OutOfSequenceEvent
      * instance will be removed from the list, before the instance is returned.
-     * 
+     *
      * @param deviceId
      *            The id of the device.
-     * 
+     *
      * @return An OutOfSequenceEvent instance, or null.
      */
     public OutOfSequenceEvent hasOutOfSequenceEventForDevice(final Long deviceId) {
@@ -500,6 +501,9 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasSetRebootRequest()) {
             response = createSetRebootResponse();
         } else if (request.hasSetTransitionRequest()) {
+
+            this.handleSetTransitionRequest(device, request.getSetTransitionRequest());
+
             response = createSetTransitionResponse();
         } else if (request.hasConfirmRegisterDeviceRequest()) {
             response = createConfirmRegisterDeviceResponse(request.getConfirmRegisterDeviceRequest().getRandomDevice(),
@@ -925,6 +929,15 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         } else {
             device.setDimValue(null);
         }
+    }
+
+    private void handleSetTransitionRequest(final Device device, final SetTransitionRequest request) {
+        // Device simulator will only use first light value,
+        // other light values will be ignored
+
+        // reverse the light.
+        device.setLightOn(!device.isLightOn());
+
     }
 
     private void handleSetEventNotificationsRequest(final Device device, final SetEventNotificationsRequest request) {

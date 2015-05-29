@@ -57,6 +57,7 @@ import com.alliander.osgp.shared.security.CertificateHelper;
 import com.alliander.osgp.webdevicesimulator.service.OslpChannelHandler;
 import com.alliander.osgp.webdevicesimulator.service.OslpSecurityHandler;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
+import com.alliander.osgp.webdevicesimulator.service.SwitchingServices;
 import com.googlecode.flyway.core.Flyway;
 
 /**
@@ -381,6 +382,11 @@ public class ApplicationContext {
     @Bean
     public RegisterDevice registerDevice() {
         return new RegisterDevice();
+    }
+
+    @Bean
+    public SwitchingServices switchingServices() {
+        return new SwitchingServices();
     }
 
     @Bean

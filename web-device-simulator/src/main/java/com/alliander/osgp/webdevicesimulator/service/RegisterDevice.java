@@ -401,18 +401,4 @@ public class RegisterDevice {
         return this.errorMessage;
     }
 
-    public void tariffSwitchOn(final long deviceId, final Boolean switchOn) {
-        // Find device
-        Device device = this.deviceManagementService.findDevice(deviceId);
-        device.setTariffOn(switchOn);
-        device = this.deviceManagementService.updateDevice(device);
-    }
-
-    public void lightSwitchOn(final long deviceId, final Boolean switchOn) {
-        // Find device
-        Device device = this.deviceManagementService.findDevice(deviceId);
-        device.setLightOn(switchOn);
-        device = this.deviceManagementService.updateDevice(device);
-    }
-
 }

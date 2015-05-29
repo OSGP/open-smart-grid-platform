@@ -11,6 +11,7 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.DeviceRepository;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
+import com.alliander.osgp.webdevicesimulator.service.SwitchingServices;
 
 @Component
 public class LightSwitchingOff implements Runnable {
@@ -21,11 +22,14 @@ public class LightSwitchingOff implements Runnable {
     private DeviceRepository deviceRepository;
 
     @Autowired
+    private SwitchingServices switchingServices;
+
+    @Autowired
     private RegisterDevice registerDevice;
 
     @Override
     public void run() {
-        LOGGER.info("Registering devices");
+        LOGGER.info("PublicLighting Switching off for devices");
 
         final List<Device> devices = this.deviceRepository.findAll();
 
@@ -33,7 +37,7 @@ public class LightSwitchingOff implements Runnable {
             LOGGER.info("Light switching for : {}: {} ", device.getId(), device.getDeviceIdentification());
 
             // Switching off Light
-            this.registerDevice.lightSwitchOn(device.getId(), false);
+            this.switchingServices.lightSwitchOff(device.getId());
 
             // Send EventNotifications for LightSwitching Off
             LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF event for device : {}: {} ", device.getId(),

@@ -11,11 +11,12 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.DeviceRepository;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
+import com.alliander.osgp.webdevicesimulator.service.SwitchingServices;
 
 @Component
-public class TariffSwitchingOn implements Runnable {
+public class TariffSwitchingLow implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingOn.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingLow.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -23,23 +24,26 @@ public class TariffSwitchingOn implements Runnable {
     @Autowired
     private RegisterDevice registerDevice;
 
+    @Autowired
+    private SwitchingServices switchingServices;
+
     @Override
     public void run() {
-        LOGGER.info("Registering devices");
+        LOGGER.info("traiff Switching off for devices");
 
         final List<Device> devices = this.deviceRepository.findAll();
 
         for (final Device device : devices) {
-            LOGGER.info("Tariff switching on for : {}: {} ", device.getId(), device.getDeviceIdentification());
+            LOGGER.info("Tariff switching for : {}: {} ", device.getId(), device.getDeviceIdentification());
 
-            // Switching on Tariff
-            this.registerDevice.tariffSwitchOn(device.getId(), true);
+            // Switching off Tariff
+            this.switchingServices.tariffSwitchLow(device.getId());
 
             // Send EventNotifications for TariffSwitching Off
-            LOGGER.info("Sending TARIFF_EVENTS_TARIFF_ON event for device : {}: {} ", device.getId(),
+            LOGGER.info("Sending TARIFF_EVENTS_TARIFF_OFF event for device : {}: {} ", device.getId(),
                     device.getDeviceIdentification());
-            this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.TARIFF_EVENTS_TARIFF_ON_VALUE,
-                    "TARIFF_EVENTS_TARIFF_ON event occurred on Tariff Switching on ", null);
+            this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.TARIFF_EVENTS_TARIFF_OFF_VALUE,
+                    "TARIFF_EVENTS_TARIFF_OFF event occurred on Tariff Switching off ", null);
         }
     }
 }
