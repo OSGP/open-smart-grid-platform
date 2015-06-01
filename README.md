@@ -1,6 +1,6 @@
 # Integration Tests for OSGP Components and Protocol Adapters
 
-License information: Apache 2.0. The code files on this master brach don't have a license header yet. Soon we will merge development branch into master branch. Then all code files will have a licence header.
+License information: Apache 2.0. The code files on this master branch don't have a license header yet. Soon we will merge development branch into master branch. Then all code files will have a licence header.
 
 ### Build Status
 
