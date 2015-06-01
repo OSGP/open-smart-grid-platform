@@ -97,6 +97,7 @@ public class RegisterDevice {
             // register of the device.
             // However, NOTE: THIS BEHAVIOUR IS NOT EQUAL TO THE REAL SSLD/PSLD.
             device.setDeviceUid(this.createRandomDeviceUid());
+            device = this.deviceManagementService.updateDevice(device);
 
             // Generate random sequence number and random device number
             final Integer sequenceNumber = device.doGenerateRandomNumber();
