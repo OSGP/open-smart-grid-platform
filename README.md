@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/job/OSGP_Platform_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_development) [![Stories in Ready](https://badge.waffle.io/osgp/platform.png?label=ready&title=Ready)](http://waffle.io/osgp/platform)
+[![Build Status](http://54.77.62.182/job/OSGP_Platform_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_development) [![Stories in Done](https://badge.waffle.io/osgp/platform.png?label=done&title=Done)](http://waffle.io/osgp/platform)
 
 ### Component Description
 
