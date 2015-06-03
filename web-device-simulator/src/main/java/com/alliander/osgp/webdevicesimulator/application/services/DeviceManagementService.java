@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.webdevicesimulator.application.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.DeviceRepository;
+import com.alliander.osgp.webdevicesimulator.domain.valueobjects.EventNotificationToBeSent;
 
 @Service
 public class DeviceManagementService {
@@ -23,6 +25,8 @@ public class DeviceManagementService {
     @Resource
     @Autowired
     private DeviceRepository deviceRepository;
+
+    public List<EventNotificationToBeSent> listeventNotificationToBeSent = new ArrayList<>();
 
     protected void setDeviceRepository(final DeviceRepository deviceRepository) {
         this.deviceRepository = deviceRepository;

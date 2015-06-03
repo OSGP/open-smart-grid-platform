@@ -68,7 +68,6 @@ import com.alliander.osgp.oslp.Oslp.SetLightRequest;
 import com.alliander.osgp.oslp.Oslp.SetLightResponse;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleResponse;
-import com.alliander.osgp.oslp.Oslp.SetTransitionRequest;
 import com.alliander.osgp.oslp.Oslp.SsldData;
 import com.alliander.osgp.oslp.Oslp.StartSelfTestResponse;
 import com.alliander.osgp.oslp.Oslp.StopSelfTestResponse;
@@ -81,6 +80,7 @@ import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.entities.DeviceOutputSetting;
 import com.alliander.osgp.webdevicesimulator.domain.entities.OslpLogItem;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.OslpLogItemRepository;
+import com.alliander.osgp.webdevicesimulator.domain.valueobjects.EventNotificationToBeSent;
 import com.alliander.osgp.webdevicesimulator.domain.valueobjects.LightType;
 import com.alliander.osgp.webdevicesimulator.domain.valueobjects.LinkType;
 import com.alliander.osgp.webdevicesimulator.domain.valueobjects.OutputType;
@@ -161,6 +161,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     @Autowired
     private Long responseDelayTime;
+
+    private EventNotificationToBeSent eventNotificationToBeSent;
 
     public static class OutOfSequenceEvent {
         public Long deviceId;
@@ -502,7 +504,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             response = createSetRebootResponse();
         } else if (request.hasSetTransitionRequest()) {
 
-            this.handleSetTransitionRequest(device, request.getSetTransitionRequest());
+            this.handleSetTransitionRequest(device);
 
             response = createSetTransitionResponse();
         } else if (request.hasConfirmRegisterDeviceRequest()) {
@@ -931,13 +933,16 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         }
     }
 
-    private void handleSetTransitionRequest(final Device device, final SetTransitionRequest request) {
+    private void handleSetTransitionRequest(final Device device) {
         // Device simulator will only use first light value,
         // other light values will be ignored
 
         // reverse the light.
         device.setLightOn(!device.isLightOn());
 
+        final EventNotificationToBeSent eventNotificationToBeSent = new EventNotificationToBeSent(device.getId(),
+                device.isLightOn());
+        this.deviceManagementService.listeventNotificationToBeSent.add(eventNotificationToBeSent);
     }
 
     private void handleSetEventNotificationsRequest(final Device device, final SetEventNotificationsRequest request) {

@@ -43,7 +43,7 @@ public class TariffSwitchingLow implements Runnable {
             LOGGER.info("Sending TARIFF_EVENTS_TARIFF_OFF event for device : {}: {} ", device.getId(),
                     device.getDeviceIdentification());
             this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.TARIFF_EVENTS_TARIFF_OFF_VALUE,
-                    "TARIFF_EVENTS_TARIFF_OFF event occurred on Tariff Switching off ", null);
+                    "TARIFF_EVENTS_TARIFF_OFF event occurred on Tariff Switching low ", null);
         }
     }
 }
