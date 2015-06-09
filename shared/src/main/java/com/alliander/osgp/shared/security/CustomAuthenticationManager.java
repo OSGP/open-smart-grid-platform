@@ -112,7 +112,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         this.checkLoginResponse(loginResponse);
 
         // Create the CustomAuthentication instance.
-        return this.createCustomAuthenticationInstance(username, loginResponse);
+        return this.createCustomAuthenticationInstance(username, password, loginResponse);
     }
 
     private void checkAuthenticationInstance(final Authentication authentication) {
@@ -148,13 +148,14 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         }
     }
 
-    private CustomAuthentication createCustomAuthenticationInstance(final String username,
+    private CustomAuthentication createCustomAuthenticationInstance(final String username, final String password,
             final LoginResponse loginResponse) {
 
         // Create the instance.
         final CustomAuthentication customAuthentication = new CustomAuthentication();
         customAuthentication.setAuthenticated(true);
         customAuthentication.setUserName(username);
+        customAuthentication.setCredentials(password);
         customAuthentication.setOrganisationIdentification(loginResponse.getOrganisationIdentification());
         customAuthentication.setDomains(loginResponse.getDomains());
         customAuthentication.getAuthorities().clear();

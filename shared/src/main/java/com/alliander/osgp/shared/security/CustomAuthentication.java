@@ -28,6 +28,7 @@ public final class CustomAuthentication implements Authentication {
      */
     private static final long serialVersionUID = 1L;
     private transient String userName;
+    private transient String password;
     private transient String organisationIdentification;
     private transient List<String> applications;
     private transient boolean authenticated;
@@ -85,7 +86,11 @@ public final class CustomAuthentication implements Authentication {
 
     @Override
     public Object getCredentials() {
-        return this.userName + " is web-api-user-management authenticated user";
+        return this.password;
+    }
+
+    public void setCredentials(final String password) {
+        this.password = password;
     }
 
     @Override
