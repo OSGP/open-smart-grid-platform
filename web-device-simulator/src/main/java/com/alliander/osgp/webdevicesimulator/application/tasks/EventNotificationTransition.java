@@ -27,8 +27,6 @@ public class EventNotificationTransition implements Runnable {
 
     @Override
     public void run() {
-        LOGGER.info("Event Notification for device Transition");
-
         // The original list with listofeventtobesent
         final List<EventNotificationToBeSent> listeventNotificationToBeSent = this.deviceManagementService.listeventNotificationToBeSent;
 
