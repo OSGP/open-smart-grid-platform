@@ -186,7 +186,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         this.checkAuthenticationInstance(authentication);
 
         // Set authenticated to false.
-        authentication.setAuthenticated(false);
+        // authentication.setAuthenticated(false);
 
         final String organisationIdentification = authentication.getOrganisationIdentification();
         final String token = authentication.getToken();
@@ -195,7 +195,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
                 organisationIdentification, token);
 
         // Check the response.
-        this.checkAuthenticationResponse(authenticationResponse);
+        this.checkAuthenticationResponse(authenticationResponse, authentication);
 
         // Set authenticated to true, set the new token and user name.
         authentication.setToken(authenticationResponse.getToken());
@@ -203,18 +203,22 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         authentication.setAuthenticated(true);
     }
 
-    private void checkAuthenticationResponse(final AuthenticationResponse authenticationResponse)
-            throws AuthenticationClientException {
+    private void checkAuthenticationResponse(final AuthenticationResponse authenticationResponse,
+            final CustomAuthentication authentication) throws AuthenticationClientException {
 
         // Check if the response equals null.
         if (authenticationResponse == null) {
             LOGGER.debug(AUTHENTICATION_RESPONSE_IS_NULL);
+            // Set authenticated to false.
+            authentication.setAuthenticated(false);
             throw new AuthenticationClientException(AUTHENTICATION_RESPONSE_IS_NULL);
         }
 
         // Check if the response is OK.
         if (!authenticationResponse.getFeedbackMessage().equals(OK)) {
             LOGGER.debug(AUTHENTICATION_RESPONSE_IS_NOT_OK);
+            // Set authenticated to false.
+            authentication.setAuthenticated(false);
             throw new AuthenticationClientException(AUTHENTICATION_RESPONSE_IS_NOT_OK);
         }
     }
