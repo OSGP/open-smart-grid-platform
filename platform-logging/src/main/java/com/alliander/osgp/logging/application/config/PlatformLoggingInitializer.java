@@ -27,7 +27,7 @@ import ch.qos.logback.ext.spring.LogbackConfigurer;
  * Web application Java configuration class. The usage of web application
  * initializer requires Spring Framework 3.1 and Servlet 3.0.
  */
-public class WebServiceLoggingInitializer implements WebApplicationInitializer {
+public class PlatformLoggingInitializer implements WebApplicationInitializer {
 
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {

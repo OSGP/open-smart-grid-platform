@@ -11,8 +11,6 @@ import javax.annotation.Resource;
 
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
-import org.apache.activemq.command.ActiveMQDestination;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
@@ -23,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import com.alliander.osgp.core.infra.jms.JmsTemplateSettings;
 import com.alliander.osgp.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
@@ -31,7 +28,6 @@ import com.alliander.osgp.core.infra.jms.protocol.ProtocolResponseMessageListene
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageListenerContainerFactory;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessorMap;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageJmsTemplateFactory;
-import com.alliander.osgp.core.infra.jms.protocol.logging.ProtocolLogItemRequestMessageListener;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 
@@ -57,11 +53,6 @@ public class ProtocolMessagingConfig {
     // JMS Settings: Incoming protocol responses (receive)
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_RESPONSES_CONCURRENT_CONSUMERS = "jms.incoming.protocol.responses.concurrent.consumers";
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_RESPONSES_MAX_CONCURRENT_CONSUMERS = "jms.incoming.protocol.responses.max.concurrent.consumers";
-
-    // JMS Settings: Incoming protocol log item requests (receive)
-    private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_QUEUE = "jms.incoming.protocol.log.item.requests.queue";
-    private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_CONCURRENT_CONSUMERS = "jms.incoming.protocol.log.item.requests.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_MAX_CONCURRENT_CONSUMERS = "jms.incoming.protocol.log.item.requests.max.concurrent.consumers";
 
     // JMS Settings: Incoming protocol requests (receive)
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_REQUESTS_CONCURRENT_CONSUMERS = "jms.incoming.protocol.requests.concurrent.consumers";
@@ -169,34 +160,6 @@ public class ProtocolMessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
 
         return messageListenerContainer;
-    }
-
-    // === INCOMING PROTOCOL LOG ITEM REQUESTS ===
-    // beans used for receiving protocol log item request messages
-
-    @Bean
-    public ActiveMQDestination protocolLogItemRequestsQueue() {
-        return new ActiveMQQueue(
-                this.environment.getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_QUEUE));
-    }
-
-    @Bean
-    public DefaultMessageListenerContainer protocolLogItemRequestsMessageListenerContainer() {
-        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
-        messageListenerContainer.setConnectionFactory(this.protocolPooledConnectionFactory());
-        messageListenerContainer.setDestination(this.protocolLogItemRequestsQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMessageListener(this.protocolLogItemRequestMessageListener());
-        messageListenerContainer.setSessionTransacted(true);
-        return messageListenerContainer;
-    }
-
-    @Bean
-    public ProtocolLogItemRequestMessageListener protocolLogItemRequestMessageListener() {
-        return new ProtocolLogItemRequestMessageListener();
     }
 
     // === INCOMING PROTOCOL REQUESTS ===

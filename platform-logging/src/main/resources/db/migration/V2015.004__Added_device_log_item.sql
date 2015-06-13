@@ -1,8 +1,8 @@
 --
--- Add table device_log
+-- Add table device_log_item
 --
 
-CREATE TABLE device_log
+CREATE TABLE device_log_item
 (
   id bigserial NOT NULL,
   creation_time timestamp without time zone NOT NULL,
@@ -16,14 +16,14 @@ CREATE TABLE device_log
   organisation_identification character varying(255),
   valid boolean NOT NULL,
   data_size integer NOT NULL,
-  CONSTRAINT device_log_pkey PRIMARY KEY (id)
+  CONSTRAINT device_log_item_pkey PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
 );
 
-ALTER TABLE device_log OWNER TO osp_admin;
+ALTER TABLE device_log_item OWNER TO osp_admin;
 
-GRANT ALL ON TABLE device_log TO osp_admin;
+GRANT ALL ON TABLE device_log_item TO osp_admin;
 
-GRANT SELECT ON TABLE device_log TO osgp_read_only_ws_user;
+GRANT SELECT ON TABLE device_log_item TO osgp_read_only_ws_user;
