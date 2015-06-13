@@ -37,7 +37,7 @@ import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
 @ComponentScan(basePackageClasses = { WebServiceMonitorLogItem.class, LoggingMessageListener.class })
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @EnableTransactionManagement
-@PropertySource("file:${osp/webServiceLogging/config}")
+@PropertySource("file:${osp/platformLogging/config}")
 @Import(LoggingConfig.class)
 public class ApplicationContext {
 

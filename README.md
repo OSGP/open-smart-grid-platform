@@ -26,7 +26,8 @@ Domain Layer
 - osgp-domain-core, Generic domain classes
 - osgp-domain-public-lighting, Public Lighting domain classes
 - osgp-domain-tariff-switching, Tariff Switching domain classes
-- web-service-logging, Logging incoming request and outgoing response of Web Service Layer
+- platform-logging, Logging incoming requests and outgoing responses of the
+  Web Service Layer and logging calls to and from devices
 
 Message Routing Layer
 

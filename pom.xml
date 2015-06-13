@@ -65,7 +65,7 @@
         <module>osgp-adapter-ws-tariffswitching</module>
 
         <!-- Core -->
-        <module>web-service-logging</module>
+        <module>platform-logging</module>
         <module>osgp-core</module>
     </modules>
 </project>

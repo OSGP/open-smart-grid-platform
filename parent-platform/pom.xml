@@ -199,7 +199,7 @@
             </dependency>
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
-                <artifactId>web-service-logging</artifactId>
+                <artifactId>platform-logging</artifactId>
                 <version>${osgp.version}</version>
             </dependency>
                         

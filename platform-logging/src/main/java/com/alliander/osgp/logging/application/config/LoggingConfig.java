@@ -30,7 +30,7 @@ import com.googlecode.flyway.core.Flyway;
 
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @Configuration
-@PropertySource("file:${osp/webServiceLogging/config}")
+@PropertySource("file:${osp/platformLogging/config}")
 public class LoggingConfig {
 
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
@@ -56,7 +56,7 @@ public class LoggingConfig {
 
     /**
      * Method for creating the Data Source.
-     * 
+     *
      * @return DataSource
      */
     public DataSource dataSource() {
@@ -76,7 +76,7 @@ public class LoggingConfig {
 
     /**
      * Method for creating the Transaction Manager.
-     * 
+     *
      * @return JpaTransactionManager
      * @throws ClassNotFoundException
      *             when class not found
@@ -117,7 +117,7 @@ public class LoggingConfig {
 
     /**
      * Method for creating the Entity Manager Factory Bean.
-     * 
+     *
      * @return LocalContainerEntityManagerFactoryBean
      * @throws ClassNotFoundException
      *             when class not found
@@ -127,7 +127,7 @@ public class LoggingConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_WS_LOGGING");
+        entityManagerFactoryBean.setPersistenceUnitName("PLATFORM_LOGGING");
         entityManagerFactoryBean.setDataSource(this.dataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
