@@ -26,7 +26,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import com.alliander.osgp.logging.infra.jms.ProtocolLogItemRequestMessageListener;
 
 @Configuration
-@PropertySource("file:${osp/platformLogging/config}")
+@PropertySource("file:${osp/osgpLogging/config}")
 public class ProtocolMessagingConfig {
 
     // JMS Settings

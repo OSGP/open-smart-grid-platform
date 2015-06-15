@@ -30,7 +30,7 @@ import com.googlecode.flyway.core.Flyway;
 
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @Configuration
-@PropertySource("file:${osp/platformLogging/config}")
+@PropertySource("file:${osp/osgpLogging/config}")
 public class LoggingConfig {
 
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
@@ -127,7 +127,7 @@ public class LoggingConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
-        entityManagerFactoryBean.setPersistenceUnitName("PLATFORM_LOGGING");
+        entityManagerFactoryBean.setPersistenceUnitName("OSGP_LOGGING");
         entityManagerFactoryBean.setDataSource(this.dataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
