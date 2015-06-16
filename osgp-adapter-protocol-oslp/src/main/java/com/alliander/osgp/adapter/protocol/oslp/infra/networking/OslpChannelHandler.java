@@ -27,6 +27,8 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpLogItemRequestMessage;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpLogItemRequestMessageSender;
+import com.alliander.osgp.core.db.api.application.services.DeviceDataService;
+import com.alliander.osgp.core.db.api.entities.Device;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
 
@@ -51,6 +53,9 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
 
     @Autowired
     private OslpLogItemRequestMessageSender oslpLogItemRequestMessageSender;
+    
+    @Autowired
+    private DeviceDataService deviceDataService;
     
     protected final ConcurrentMap<Integer, OslpCallbackHandler> callbackHandlers = new ConcurrentHashMap<>();
 
@@ -110,17 +115,26 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
 
         final String deviceUid = Base64.encodeBase64String(message.getDeviceId());
         String deviceIdentification = this.getDeviceIdentificationFromMessage(message.getPayloadMessage());
+        String organisationIdentification = null;
+        
         // Assume outgoing messages always valid.
         final boolean isValid = incoming ? message.isValid() : true;
 
         if (StringUtils.isEmpty(deviceIdentification)) {
+        	//Getting the deviceIdentification from the oslpDevice instance
             final OslpDevice oslpDevice = this.oslpDeviceRepository.findByDeviceUid(deviceUid);
             if (oslpDevice != null) {
                 deviceIdentification = oslpDevice.getDeviceIdentification();
             }
+            
+          //Getting the organisationIdentification from the Device instance
+            final Device device = this.deviceDataService.findDevice(deviceIdentification);
+            if (device != null) {
+            	organisationIdentification = device.getOrganisation().getOrganisationIdentification();
+            }
         }
 
-        final OslpLogItemRequestMessage oslpLogItemRequestMessage = new OslpLogItemRequestMessage(null, deviceUid, deviceIdentification, incoming, isValid,
+        final OslpLogItemRequestMessage oslpLogItemRequestMessage = new OslpLogItemRequestMessage(organisationIdentification, deviceUid, deviceIdentification, incoming, isValid,
                 message.getPayloadMessage(), message.getSize());
 
         this.oslpLogItemRequestMessageSender.send(oslpLogItemRequestMessage);
