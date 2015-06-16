@@ -48,10 +48,6 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
 
         final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         String organisationIdentification = objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        // TODO: zorgen dat organisatie al in het bericht zit
-        if (StringUtils.isEmpty(organisationIdentification)) {
-            organisationIdentification = "to do, zorgen dat dit veld vantevoren al is gevuld";
-        }
 
         final DeviceLogItem deviceLogItem = new DeviceLogItem(organisationIdentification,
                 objectMessage.getStringProperty(Constants.DEVICE_UID), deviceIdentification,
