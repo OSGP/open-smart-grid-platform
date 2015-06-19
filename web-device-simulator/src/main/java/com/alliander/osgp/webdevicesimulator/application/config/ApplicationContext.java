@@ -110,6 +110,8 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM = "oslp.sequence.number.maximum";
 
     private static final String PROPERTY_NAME_RESPONSE_DELAY_TIME = "response.delay.time";
+    private static final String PROPERTY_NAME_RESPONSE_START_RANGE_DELAY_TIME = "response.delay.start.range";
+    private static final String PROPERTY_NAME_RESPONSE_END_RANGE_DELAY_TIME = "response.delay.end.range";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
@@ -392,12 +394,46 @@ public class ApplicationContext {
     @Bean
     public Long responseDelayTime() {
         final String propertyValue = this.environment.getProperty(PROPERTY_NAME_RESPONSE_DELAY_TIME);
+
         final Long value = propertyValue == null ? null : Long.parseLong(propertyValue);
         if (value == null) {
             LOGGER.info("response delay time in milliseconds is not set using property: {}",
                     PROPERTY_NAME_RESPONSE_DELAY_TIME);
         } else {
+
             LOGGER.info("response delay time in milliseconds: {}", value);
+        }
+
+        return value;
+    }
+
+    @Bean
+    public Long responseEndDelayTime() {
+        final String propertyValue = this.environment.getProperty(PROPERTY_NAME_RESPONSE_END_RANGE_DELAY_TIME);
+
+        final Long value = propertyValue == null ? null : Long.parseLong(propertyValue);
+        if (value == null) {
+            LOGGER.info("response end delay time in milliseconds is not set using property: {}",
+                    PROPERTY_NAME_RESPONSE_END_RANGE_DELAY_TIME);
+        } else {
+
+            LOGGER.info("response end delay time in milliseconds: {}", value);
+        }
+
+        return value;
+    }
+
+    @Bean
+    public Long responseStartDelayTime() {
+        final String propertyValue = this.environment.getProperty(PROPERTY_NAME_RESPONSE_START_RANGE_DELAY_TIME);
+
+        final Long value = propertyValue == null ? null : Long.parseLong(propertyValue);
+        if (value == null) {
+            LOGGER.info("response start delay time in milliseconds is not set using property: {}",
+                    PROPERTY_NAME_RESPONSE_START_RANGE_DELAY_TIME);
+        } else {
+
+            LOGGER.info("response start delay time in milliseconds: {}", value);
         }
 
         return value;
