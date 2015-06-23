@@ -73,6 +73,16 @@ body {
 							<spring:message code="device.list.page.title" />
 						</h1>
 						<a href="/web-device-simulator/devices/create" class="btn btn-primary"><spring:message code="device.create.link.label" /></a>
+							<spring:message code="device.edit.page.device.registration" />
+							<input id="devRegistration" name="devRegistration" type="checkbox"/>
+							<spring:message code="device.edit.page.device.reboot" />
+							<input id="devReboot" name="devReboot" type="checkbox"/>
+							<spring:message code="device.edit.page.device.tariff.switching" />
+							<input id="tariffSwitching" name="tariffSwitching" type="checkbox"/>
+							<spring:message code="device.edit.page.device.light.switching" />
+							<input id="lightSwitching" name="lightSwitching" type="checkbox"/>
+							<spring:message code="device.edit.page.device.event.notification" />
+							<input id="eventListener" name="eventListener" type="checkbox"/>
 					</div>
 				</div>
 
@@ -128,7 +138,87 @@ body {
 	<script type="text/javascript">
         $(document).ready(
                 function() {
+                	
+                	$('#devRegistration').change(function() {
+                		
+                	    var request = new Object();
+                	    request.autonomousStatus = $('#devRegistration').prop('checked');
+                		
+                	    $.ajax({
+                	        type : 'POST',
+                	        url : '/web-device-simulator/devices/deviceRegistrationCheck',
+                	        contentType : 'application/json',
+                	        dataType : 'json',
+                	        data : JSON.stringify(request),
+                	        async : true
+                	    });
 
+                		});
+                	
+                	$('#devReboot').change(function() {
+                		
+                	    var request = new Object();
+                	    request.autonomousStatus = $('#devReboot').prop('checked');
+                		
+                	    $.ajax({
+                	        type : 'POST',
+                	        url : '/web-device-simulator/devices/deviceRebootCheck',
+                	        contentType : 'application/json',
+                	        dataType : 'json',
+                	        data : JSON.stringify(request),
+                	        async : true
+                	    });
+
+                		});
+                	
+                	$('#tariffSwitching').change(function() {
+                		
+                	    var request = new Object();
+                	    request.autonomousStatus = $('#tariffSwitching').prop('checked');
+                		
+                	    $.ajax({
+                	        type : 'POST',
+                	        url : '/web-device-simulator/devices/tariffSwitchingCheck',
+                	        contentType : 'application/json',
+                	        dataType : 'json',
+                	        data : JSON.stringify(request),
+                	        async : true
+                	    });
+
+                		});
+                	
+                	$('#lightSwitching').change(function() {
+                		
+                	    var request = new Object();
+                	    request.autonomousStatus = $('#lightSwitching').prop('checked');
+                		
+                	    $.ajax({
+                	        type : 'POST',
+                	        url : '/web-device-simulator/devices/lightSwitchingCheck',
+                	        contentType : 'application/json',
+                	        dataType : 'json',
+                	        data : JSON.stringify(request),
+                	        async : true
+                	    });
+
+                		});
+                	
+                	$('#eventListener').change(function() {
+                		
+                	    var request = new Object();
+                	    request.autonomousStatus = $('#eventListener').prop('checked');
+                		
+                	    $.ajax({
+                	        type : 'POST',
+                	        url : '/web-device-simulator/devices/eventNotificationCheck',
+                	        contentType : 'application/json',
+                	        dataType : 'json',
+                	        data : JSON.stringify(request),
+                	        async : true
+                	    });
+
+                		});
+                	
                     refreshLightStates();
                     setInterval(refreshLightStates, 4000);
 
@@ -138,7 +228,7 @@ body {
                             url : '/web-device-simulator/devices/json',
                             dataType : 'json',
                             contentType : 'application/json',
-                            async : false,
+                            async : true,
                             cache : false,
                             success : function(data) {
                                 for (var i = 0; i < data.length; i++) {

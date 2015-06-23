@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.webdevicesimulator.application.services.DeviceManagementService;
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.DeviceRepository;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
@@ -30,38 +31,46 @@ public class AutonomousDeviceReboot implements Runnable {
     @Autowired
     private RegisterDevice registerDevice;
 
+    @Autowired
+    private DeviceManagementService deviceManagementService;
+
     @Override
     public void run() {
-        LOGGER.info("Rebooting devices");
+        if (this.deviceManagementService.getDevReboot()) {
+            LOGGER.info("Rebooting devices");
 
-        final List<Device> devices = this.deviceRepository.findAll();
+            final List<Device> devices = this.deviceRepository.findAll();
 
-        for (final Device device : devices) {
-            LOGGER.info("Autonomous device reboot for : {}: {} ", device.getId(), device.getDeviceIdentification());
+            for (final Device device : devices) {
+                LOGGER.info("Autonomous device reboot for : {}: {} ", device.getId(), device.getDeviceIdentification());
 
-            // registering device with hasSchedule as false
-            LOGGER.info("device registration for : {}: {} ", device.getId(), device.getDeviceIdentification());
-            this.registerDevice.sendRegisterDeviceCommand(device.getId(), false);
+                // registering device with hasSchedule as false
+                LOGGER.info("device registration for : {}: {} ", device.getId(), device.getDeviceIdentification());
+                this.registerDevice.sendRegisterDeviceCommand(device.getId(), false);
 
-            // Confirm device registration
-            LOGGER.info("device register confirmation for : {}: {} ", device.getId(), device.getDeviceIdentification());
-            this.registerDevice.sendConfirmDeviceRegistrationCommand(device.getId());
+                // Confirm device registration
+                LOGGER.info("device register confirmation for : {}: {} ", device.getId(),
+                        device.getDeviceIdentification());
+                this.registerDevice.sendConfirmDeviceRegistrationCommand(device.getId());
 
-            // Sending events on device reboot
-            LOGGER.info("Sending TARIFF_EVENTS_TARIFF_OFF event for device : {}: {} ", device.getId(),
-                    device.getDeviceIdentification());
-            this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.TARIFF_EVENTS_TARIFF_OFF_VALUE,
-                    "TARIFF_EVENTS_TARIFF_OFF_VALUE event occurred on Device reboot ", null);
+                // Sending events on device reboot
+                LOGGER.info("Sending TARIFF_EVENTS_TARIFF_OFF event for device : {}: {} ", device.getId(),
+                        device.getDeviceIdentification());
+                this.registerDevice.sendEventNotificationCommand(device.getId(),
+                        Oslp.Event.TARIFF_EVENTS_TARIFF_OFF_VALUE,
+                        "TARIFF_EVENTS_TARIFF_OFF_VALUE event occurred on Device reboot ", null);
 
-            LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF event for device : {}: {} ", device.getId(),
-                    device.getDeviceIdentification());
-            this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
-                    "LIGHT_EVENTS_LIGHT_OFF event occurred on Device reboot ", null);
+                LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF event for device : {}: {} ", device.getId(),
+                        device.getDeviceIdentification());
+                this.registerDevice.sendEventNotificationCommand(device.getId(),
+                        Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
+                        "LIGHT_EVENTS_LIGHT_OFF event occurred on Device reboot ", null);
 
-            LOGGER.info("Sending DIAG_EVENTS_GENERAL event for device : {}: {} ", device.getId(),
-                    device.getDeviceIdentification());
-            this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.DIAG_EVENTS_GENERAL_VALUE,
-                    "DIAG_EVENTS_GENERAL event occurred on Device reboot ", null);
+                LOGGER.info("Sending DIAG_EVENTS_GENERAL event for device : {}: {} ", device.getId(),
+                        device.getDeviceIdentification());
+                this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.DIAG_EVENTS_GENERAL_VALUE,
+                        "DIAG_EVENTS_GENERAL event occurred on Device reboot ", null);
+            }
         }
     }
 
