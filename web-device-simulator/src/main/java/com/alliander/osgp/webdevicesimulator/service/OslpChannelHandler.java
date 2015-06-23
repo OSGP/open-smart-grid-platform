@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -93,6 +94,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpChannelHandler.class);
 
+    private Long sleepTime = (long) 0;
+
     private static class Callback {
 
         private final CountDownLatch latch = new CountDownLatch(1);
@@ -161,6 +164,12 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     @Autowired
     private Long responseDelayTime;
+
+    @Autowired
+    private Long responseStartDelayTime;
+
+    @Autowired
+    private Long responseEndDelayTime;
 
     private EventNotificationToBeSent eventNotificationToBeSent;
 
@@ -442,9 +451,25 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                     + message.getPayloadMessage().toString());
         }
 
+        // Check if the fixed delay is present
         if (this.responseDelayTime != null) {
+            this.sleepTime = this.responseDelayTime;
+        }
+
+        // Check if the range delay is present
+        if (this.responseStartDelayTime != null && this.responseEndDelayTime != null) {
+            final Random random = new Random();
+            final Long startTime = this.responseStartDelayTime;
+            final Long endTime = this.responseEndDelayTime;
+            final Long range = endTime - startTime;
+            final long fraction = (long) (range * random.nextDouble());
+            this.sleepTime = this.sleepTime + startTime + fraction;
+        }
+
+        if (this.sleepTime != null) {
             try {
-                Thread.sleep(this.responseDelayTime);
+                Thread.sleep(this.sleepTime);
+                this.sleepTime = (long) 0;
             } catch (final InterruptedException e) {
                 LOGGER.info("InterruptedException", e);
             }
