@@ -11,11 +11,11 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>osgp-logging</artifactId>
-    <name>osgp-logging</name>
-    <packaging>war</packaging>
+    <artifactId>osgp-domain-logging</artifactId>
+    <name>osgp-domain-logging</name>
+    <packaging>jar</packaging>
     <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
-    <description>Web service logging module.</description>
+    <description>Domain entities module for common domain.</description>
 
     <parent>
         <groupId>com.alliander.osgp</groupId>
@@ -24,10 +24,10 @@
         <relativePath>../parent-platform/pom.xml</relativePath>
     </parent>
 
-      <properties>
+    <properties>
         <display.version>${project.version}-${BUILD_TAG}</display.version>
     </properties>
-
+    
     <build>
         <plugins>
             <plugin>
@@ -35,14 +35,20 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <attachClasses>true</attachClasses>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-<!--                     <webResources> -->
-<!--                         <resource> -->
-<!--                             <directory>src/main/webapp</directory> -->
-<!--                             <filtering>true</filtering> -->
-<!--                         </resource> -->
-<!--                     </webResources> -->
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>gif</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>png</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
         </plugins>
@@ -55,11 +61,6 @@
             <artifactId>shared</artifactId>
         </dependency>
         
-       <dependency>
-           <groupId>com.alliander.osgp</groupId>
-           <artifactId>osgp-domain-logging</artifactId>
-       </dependency>
-
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -89,24 +90,31 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
         </dependency>
-
+        
         <!-- Spring Data -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
         </dependency>
 
-        <!-- Spring JMS -->
+        <!-- Spring WS -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jms</artifactId>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-core</artifactId>
         </dependency>
-    
-        <!-- Servlet API 3.0 -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>    
+        <dependency>
+            <groupId>org.springframework.ws</groupId>
+            <artifactId>spring-ws-support</artifactId>
+        </dependency>
+        
+        <!-- Joda Time (Date/Time util) -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
         </dependency>
 
         <!-- Hibernate -->
@@ -119,6 +127,12 @@
             <artifactId>hibernate-entitymanager</artifactId>
         </dependency>
         
+        <!-- Hibernate validator -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
         <!-- Flyway (DB Migration) -->
         <dependency>
             <groupId>com.googlecode.flyway</groupId>
@@ -139,6 +153,37 @@
             <artifactId>logback-ext-spring</artifactId>
         </dependency>
         
+        <!-- Servlet API 3.0 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Jakarta commons codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+        <!-- Apache commons -->
+        <dependency>
+            <groupId>org.apache.ws.xmlschema</groupId>
+            <artifactId>xmlschema-core</artifactId>
+            <version>${apache.commons.schema}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        
+        <!-- Orika (mapping framework) -->
+        <dependency>
+           <groupId>ma.glasnost.orika</groupId>
+           <artifactId>orika-core</artifactId>
+        </dependency>
+        
         <!--  Apache ActiveMQ -->
         <dependency> 
             <groupId>org.apache.activemq</groupId>
@@ -147,6 +192,12 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-spring</artifactId>
+        </dependency>
+        
+        <!-- Testing dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
 </project>

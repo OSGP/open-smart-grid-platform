@@ -12,13 +12,12 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
-import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
+import com.alliander.osgp.domain.logging.entities.DeviceLogItem;
+import com.alliander.osgp.domain.logging.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 //This class should fetch incoming messages from a logging requests queue.

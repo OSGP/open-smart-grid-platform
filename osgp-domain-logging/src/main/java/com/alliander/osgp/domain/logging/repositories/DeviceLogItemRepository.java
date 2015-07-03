@@ -5,14 +5,16 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.logging.domain.repositories;
+package com.alliander.osgp.domain.logging.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.domain.logging.entities.DeviceLogItem;
 
 @Repository
 public interface DeviceLogItemRepository extends JpaRepository<DeviceLogItem, Long> {
-
+    Page<DeviceLogItem> findByDeviceIdentification(String deviceIdentification, Pageable pagable);
 }

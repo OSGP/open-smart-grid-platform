@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.domain.core.entities;
+package com.alliander.osgp.domain.logging.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +13,7 @@ import javax.persistence.Entity;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
-public class OslpLogItem extends AbstractEntity {
+public class DeviceLogItem extends AbstractEntity {
     /**
      * Serial Version UID.
      */
@@ -41,11 +41,11 @@ public class OslpLogItem extends AbstractEntity {
     private int payloadMessageSerializedSize;
 
     @SuppressWarnings("unused")
-    private OslpLogItem() {
+    private DeviceLogItem() {
         // Empty constructor for Hibernate.
     }
 
-    public OslpLogItem(final String organisationIdentification, final String deviceUid,
+    public DeviceLogItem(final String organisationIdentification, final String deviceUid,
             final String deviceIdentification, final boolean incoming, final boolean valid,
             final String encodedMessage, final String decodedMessage, final int payloadMessageSerializedSize) {
         this.organisationIdentification = organisationIdentification;
