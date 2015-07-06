@@ -120,7 +120,7 @@ public class DeviceResponseMessageService {
 
         return new ProtocolRequestMessage(message.getDomain(), message.getDomainVersion(), message.getMessageType(),
                 message.getCorrelationUid(), message.getOrganisationIdentification(),
-                message.getDeviceIdentification(), device.getNetworkAddress().toString(), messageData,
-                message.isScheduled(), message.getRetryCount() + 1);
+                message.getDeviceIdentification(), device.getIpAddress(), messageData, message.isScheduled(),
+                message.getRetryCount() + 1);
     }
 }

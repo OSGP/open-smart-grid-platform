@@ -37,16 +37,18 @@ public class AdHocManagementService extends AbstractService {
 
     // === SET REBOOT ===
 
-    public void setReboot(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            final String correlationUid, final String messageType) throws FunctionalException {
+    public void setReboot(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType)
+                    throws FunctionalException {
 
-        LOGGER.debug("set reboot called for device {} with organisation {}", deviceIdentification, organisationIdentification);
+        LOGGER.debug("set reboot called for device {} with organisation {}", deviceIdentification,
+                organisationIdentification);
 
         this.findOrganisation(organisationIdentification);
 
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType, device
-                .getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, device.getIpAddress());
     }
 }

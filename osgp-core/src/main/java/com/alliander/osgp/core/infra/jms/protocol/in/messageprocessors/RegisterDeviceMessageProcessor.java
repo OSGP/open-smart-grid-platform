@@ -67,9 +67,8 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
     // === REGISTER DEVICE ===
 
     /**
-     * Update device registration data (ipaddress, etc). Device is added
-     * (without an owner) when not exist yet.
-     * 
+     * Update device registration data (ipaddress, etc). Device is added (without an owner) when not exist yet.
+     *
      * @param deviceIdentification
      *            The device identification.
      * @param ipAddress
@@ -78,9 +77,9 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
      *            The type of the device, SSLD or PSLD.
      * @param hasSchedule
      *            In case the device has a schedule, this will be true.
-     * 
+     *
      * @return Device with updated data
-     * 
+     *
      * @throws UnknownHostException
      */
     @Transactional(value = "transactionManager")
@@ -114,7 +113,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
         final List<Device> devices = this.deviceRepository.findByNetworkAddress(address);
 
         for (final Device device : devices) {
-            if (!LOCAL_HOST.equals(device.getNetworkAddress().getHostAddress())) {
+            if (!LOCAL_HOST.equals(device.getIpAddress())) {
                 if (!device.getDeviceIdentification().equals(deviceIdentification)) {
                     device.clearNetworkAddress();
                     this.deviceRepository.save(device);
