@@ -1,4 +1,4 @@
 [submodule "Shared"]
 	path = Shared
-	url = https://jenkins-ip-10-4-24-184:BnnLzV6PFcrN@github.com/OSGP/Shared.git
+	url = https://github.com/OSGP/Shared.git
 	branch = development
