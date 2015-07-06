@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -67,28 +65,30 @@ public class AdHocManagementService extends AbstractService {
 
     // === SET LIGHT ===
 
-    public void setLight(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final List<LightValue> lightValues, final String messageType) throws FunctionalException {
+    public void setLight(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final List<LightValue> lightValues, final String messageType)
+                    throws FunctionalException {
 
-        LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification, organisationIdentification);
+        LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
+                organisationIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.LightValue> lightValuesDto = this.domainCoreMapper.mapAsList(lightValues,
-                com.alliander.osgp.dto.valueobjects.LightValue.class);
-        final LightValueMessageDataContainer lightValueMessageDataContainer = new LightValueMessageDataContainer(lightValuesDto);
+        final List<com.alliander.osgp.dto.valueobjects.LightValue> lightValuesDto = this.domainCoreMapper.mapAsList(
+                lightValues, com.alliander.osgp.dto.valueobjects.LightValue.class);
+        final LightValueMessageDataContainer lightValueMessageDataContainer = new LightValueMessageDataContainer(
+                lightValuesDto);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                lightValueMessageDataContainer), messageType, device.getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, lightValueMessageDataContainer), messageType, device.getIpAddress());
     }
 
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting
-     * or TariffSwitching)
-     * 
+     * Retrieve status of device and provide a mapped response (PublicLighting or TariffSwitching)
+     *
      * @param organisationIdentification
      *            identification of organisation
      * @param deviceIdentification
@@ -102,21 +102,23 @@ public class AdHocManagementService extends AbstractService {
      * @throws NotAuthorizedException
      * @throws IOException
      */
-    public void getStatus(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final DomainType allowedDomainType, final String messageType) throws FunctionalException {
+    public void getStatus(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final DomainType allowedDomainType, final String messageType)
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainType allowedDomainTypeDto = this.domainCoreMapper.map(allowedDomainType,
-                com.alliander.osgp.dto.valueobjects.DomainType.class);
+        final com.alliander.osgp.dto.valueobjects.DomainType allowedDomainTypeDto = this.domainCoreMapper.map(
+                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainType.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, allowedDomainTypeDto),
-                messageType, device.getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatus deviceStatusDto, final DomainType allowedDomainType,
-            final String deviceIdentification, final String organisationIdentification, final String correlationUid, final String messageType,
+    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatus deviceStatusDto,
+            final DomainType allowedDomainType, final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
@@ -124,8 +126,8 @@ public class AdHocManagementService extends AbstractService {
         DeviceStatusMapped deviceStatusMapped = null;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException!=null) {
-            	LOGGER.error("Device Response not ok.", osgpException);
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
 
@@ -140,72 +142,78 @@ public class AdHocManagementService extends AbstractService {
                 dosMap.put(dos.getInternalId(), dos);
             }
 
-            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap, allowedDomainType), filterLightValues(
-                    status.getLightValues(), dosMap, allowedDomainType), status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
+                    allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
+                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
                     status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                deviceStatusMapped));
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, deviceStatusMapped));
     }
 
     // === RESUME SCHEDULE ===
 
-    public void resumeSchedule(final String organisationIdentification, final String deviceIdentification, final String correlationUid, final Integer index,
-            final boolean isImmediate, final String messageType) throws FunctionalException {
+    public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
         if (!device.getHasSchedule()) {
-            throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(
-                    String.format("Device %1$s does not have a schedule.", deviceIdentification)));
+            throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
+                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(String.format(
+                            "Device %1$s does not have a schedule.", deviceIdentification)));
         }
 
-        final ResumeScheduleMessageDataContainer resumeScheduleMessageDataContainerDto = new ResumeScheduleMessageDataContainer(index, isImmediate);
+        final ResumeScheduleMessageDataContainer resumeScheduleMessageDataContainerDto = new ResumeScheduleMessageDataContainer(
+                index, isImmediate);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                resumeScheduleMessageDataContainerDto), messageType, device.getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, resumeScheduleMessageDataContainerDto), messageType, device.getIpAddress());
     }
 
     // === SET TRANSITION ===
 
-    public void setTransition(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            @NotNull final TransitionType transitionType, final DateTime transitionTime, final String messageType) throws FunctionalException {
+    public void setTransition(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, @NotNull final TransitionType transitionType, final DateTime transitionTime,
+            final String messageType) throws FunctionalException {
 
-        LOGGER.debug("setTransition called for device {} with organisation {}", deviceIdentification, organisationIdentification);
+        LOGGER.debug("setTransition called for device {} with organisation {}", deviceIdentification,
+                organisationIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final TransitionMessageDataContainer transitionMessageDataContainerDto = new TransitionMessageDataContainer(this.domainCoreMapper.map(transitionType,
-                com.alliander.osgp.dto.valueobjects.TransitionType.class), transitionTime);
+        final TransitionMessageDataContainer transitionMessageDataContainerDto = new TransitionMessageDataContainer(
+                this.domainCoreMapper.map(transitionType, com.alliander.osgp.dto.valueobjects.TransitionType.class),
+                transitionTime);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                transitionMessageDataContainerDto), messageType, device.getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, transitionMessageDataContainerDto), messageType, device.getIpAddress());
     }
 
     // === CUSTOM STATUS FILTER FUNCTIONS ===
 
     /**
-     * Filter light values based on PublicLighting domain. Only matching values
-     * will be returned.
-     * 
+     * Filter light values based on PublicLighting domain. Only matching values will be returned.
+     *
      * @param source
      *            list to filter
      * @param dosMap
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
+     * @return list with filtered values or empty list when domain is not allowed.
      */
-    public static List<LightValue> filterLightValues(final List<LightValue> source, final Map<Integer, DeviceOutputSetting> dosMap,
-            final DomainType allowedDomainType) {
+    public static List<LightValue> filterLightValues(final List<LightValue> source,
+            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
 
         final List<LightValue> filteredValues = new ArrayList<>();
         if (allowedDomainType != DomainType.PUBLIC_LIGHTING) {
@@ -214,7 +222,8 @@ public class AdHocManagementService extends AbstractService {
         }
 
         for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex()) && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
+            if (dosMap.containsKey(lv.getIndex())
+                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
                 filteredValues.add(lv);
             }
         }
@@ -223,20 +232,18 @@ public class AdHocManagementService extends AbstractService {
     }
 
     /**
-     * Filter light values based on TariffSwitching domain. Only matching values
-     * will be returned.
-     * 
+     * Filter light values based on TariffSwitching domain. Only matching values will be returned.
+     *
      * @param source
      *            list to filter
      * @param dosMap
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not
-     *         allowed.
+     * @return list with filtered values or empty list when domain is not allowed.
      */
-    public static List<TariffValue> filterTariffValues(final List<LightValue> source, final Map<Integer, DeviceOutputSetting> dosMap,
-            final DomainType allowedDomainType) {
+    public static List<TariffValue> filterTariffValues(final List<LightValue> source,
+            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
 
         final List<TariffValue> filteredValues = new ArrayList<>();
         if (allowedDomainType != DomainType.TARIFF_SWITCHING) {
@@ -245,7 +252,8 @@ public class AdHocManagementService extends AbstractService {
         }
 
         for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex()) && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
+            if (dosMap.containsKey(lv.getIndex())
+                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
                 // Map light value to tariff value
                 final TariffValue tf = new TariffValue();
                 tf.setIndex(lv.getIndex());

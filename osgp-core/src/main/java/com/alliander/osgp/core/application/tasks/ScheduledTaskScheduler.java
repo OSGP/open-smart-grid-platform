@@ -70,6 +70,6 @@ public class ScheduledTaskScheduler implements Runnable {
         return new ProtocolRequestMessage(scheduledTask.getDomain(), scheduledTask.getDomainVersion(),
                 scheduledTask.getMessageType(), scheduledTask.getCorrelationId(),
                 scheduledTask.getOrganisationIdentification(), scheduledTask.getDeviceIdentification(), device
-                        .getNetworkAddress().toString(), scheduledTask.getMessageData(), true, 0);
+                .getNetworkAddress().getHostAddress(), scheduledTask.getMessageData(), true, 0);
     }
 }

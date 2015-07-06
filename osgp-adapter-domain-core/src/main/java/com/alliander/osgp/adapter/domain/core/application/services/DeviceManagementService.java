@@ -44,19 +44,22 @@ public class DeviceManagementService extends AbstractService {
 
     // === SET EVENT NOTIFICATIONS ===
 
-    public void setEventNotifications(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final List<EventNotificationType> eventNotifications, final String messageType) throws FunctionalException {
+    public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType)
+                    throws FunctionalException {
 
-        LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.EventNotificationType> eventNotificationsDto = this.domainCoreMapper.mapAsList(eventNotifications,
-                com.alliander.osgp.dto.valueobjects.EventNotificationType.class);
-        final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = new EventNotificationMessageDataContainer(eventNotificationsDto);
+        final List<com.alliander.osgp.dto.valueobjects.EventNotificationType> eventNotificationsDto = this.domainCoreMapper
+                .mapAsList(eventNotifications, com.alliander.osgp.dto.valueobjects.EventNotificationType.class);
+        final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = new EventNotificationMessageDataContainer(
+                eventNotificationsDto);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                eventNotificationMessageDataContainer), messageType, device.getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, eventNotificationMessageDataContainer), messageType, device.getIpAddress());
     }
 }
