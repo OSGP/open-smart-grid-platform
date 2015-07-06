@@ -110,6 +110,7 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_OSLP_SEQUENCE_NUMBER_MAXIMUM = "oslp.sequence.number.maximum";
 
     private static final String PROPERTY_NAME_RESPONSE_DELAY_TIME = "response.delay.time";
+    private static final String PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE = "response.delay.random.range";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
@@ -240,7 +241,7 @@ public class ApplicationContext {
         final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-                    NoSuchProviderException {
+            NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
 
                 LOGGER.info("Created new client pipeline");
@@ -270,7 +271,7 @@ public class ApplicationContext {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-                    NoSuchProviderException {
+            NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
                 LOGGER.info("Created new server pipeline");
 
@@ -287,7 +288,7 @@ public class ApplicationContext {
     }
 
     private ChannelPipeline createPipeLine() throws NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchProviderException, IOException {
+    NoSuchProviderException, IOException {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, false));
@@ -307,13 +308,13 @@ public class ApplicationContext {
 
     @Bean
     public OslpDecoder oslpDecoder() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
     @Bean
     public PublicKey publicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return CertificateHelper.createPublicKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -322,7 +323,7 @@ public class ApplicationContext {
 
     @Bean
     public PrivateKey privateKey() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return CertificateHelper.createPrivateKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -392,12 +393,30 @@ public class ApplicationContext {
     @Bean
     public Long responseDelayTime() {
         final String propertyValue = this.environment.getProperty(PROPERTY_NAME_RESPONSE_DELAY_TIME);
+
         final Long value = propertyValue == null ? null : Long.parseLong(propertyValue);
         if (value == null) {
             LOGGER.info("response delay time in milliseconds is not set using property: {}",
                     PROPERTY_NAME_RESPONSE_DELAY_TIME);
         } else {
+
             LOGGER.info("response delay time in milliseconds: {}", value);
+        }
+
+        return value;
+    }
+
+    @Bean
+    public Long reponseDelayRandomRange() {
+        final String propertyValue = this.environment.getProperty(PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE);
+
+        final Long value = propertyValue == null ? null : Long.parseLong(propertyValue);
+        if (value == null) {
+            LOGGER.info("response end delay time in milliseconds is not set using property: {}",
+                    PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE);
+        } else {
+
+            LOGGER.info("response end delay time in milliseconds: {}", value);
         }
 
         return value;

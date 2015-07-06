@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -162,7 +163,10 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     @Autowired
     private Long responseDelayTime;
 
-    private EventNotificationToBeSent eventNotificationToBeSent;
+    @Autowired
+    private Long reponseDelayRandomRange;
+
+    private final Random random = new Random();
 
     public static class OutOfSequenceEvent {
         public Long deviceId;
@@ -290,8 +294,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
                 // Build the OslpEnvelope with the incremented sequence number.
                 final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
-                        .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                        .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
+                .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
+                .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
 
                 // Pass the incremented sequence number to the handleRequest()
                 // function for checking.
@@ -356,7 +360,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
     }
 
     public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request) throws IOException,
-            DeviceSimulatorException {
+    DeviceSimulatorException {
         LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
 
         final Callback callback = new Callback(this.connectionTimeout);
@@ -408,6 +412,18 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 || envelope.getPayloadMessage().hasEventNotificationResponse();
     }
 
+    private void sleep(final Long sleepTime) {
+        if (sleepTime == null || sleepTime == 0) {
+            return;
+        }
+        try {
+            LOGGER.info("Sleeping for {} milliseconds", sleepTime);
+            Thread.sleep(sleepTime);
+        } catch (final InterruptedException e) {
+            LOGGER.info("InterruptedException", e);
+        }
+    }
+
     private Oslp.Message handleRequest(final OslpEnvelope message, final int sequenceNumber)
             throws DeviceSimulatorException, IOException, ParseException {
         final Oslp.Message request = message.getPayloadMessage();
@@ -442,12 +458,13 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                     + message.getPayloadMessage().toString());
         }
 
-        if (this.responseDelayTime != null) {
-            try {
-                Thread.sleep(this.responseDelayTime);
-            } catch (final InterruptedException e) {
-                LOGGER.info("InterruptedException", e);
-            }
+        // If responseDelayTime (and optional responseDelayRandomRange) are set,
+        // sleep for a little while
+        if (this.responseDelayTime != null && this.reponseDelayRandomRange == null) {
+            this.sleep(this.responseDelayTime);
+        } else if (this.responseDelayTime != null && this.reponseDelayRandomRange != null) {
+            final Long randomDelay = (long) (this.reponseDelayRandomRange * this.random.nextDouble());
+            this.sleep(this.responseDelayTime + randomDelay);
         }
 
         // Handle only expected messages
@@ -530,7 +547,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         ConfirmRegisterDeviceResponse.newBuilder().setRandomDevice(randomDevice)
-                                .setRandomPlatform(randomPlatform).setStatus(Oslp.Status.OK)).build();
+                        .setRandomPlatform(randomPlatform).setStatus(Oslp.Status.OK)).build();
     }
 
     private void handleSetScheduleRequest(final Device device, final SetScheduleRequest setScheduleRequest) {
@@ -547,7 +564,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .newBuilder()
                 .setStopSelfTestResponse(
                         StopSelfTestResponse.newBuilder().setStatus(Oslp.Status.OK)
-                                .setSelfTestResult(ByteString.copyFrom(new byte[] { 0 }))).build();
+                        .setSelfTestResult(ByteString.copyFrom(new byte[] { 0 }))).build();
     }
 
     private static Message createSetLightResponse() throws IOException {
@@ -592,57 +609,57 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .newBuilder()
                 .setGetActualPowerUsageResponse(
                         GetActualPowerUsageResponse
+                        .newBuilder()
+                        .setPowerUsageData(
+                                PowerUsageData
                                 .newBuilder()
-                                .setPowerUsageData(
-                                        PowerUsageData
-                                                .newBuilder()
-                                                .setRecordTime(utcTimestamp)
-                                                .setMeterType(MeterType.P1)
-                                                .setTotalConsumedEnergy(actualConsumedPower * 2)
-                                                .setActualConsumedPower(actualConsumedPower)
-                                                .setPsldData(
-                                                        PsldData.newBuilder().setTotalLightingHours(
-                                                                actualConsumedPower * 3))
+                                .setRecordTime(utcTimestamp)
+                                .setMeterType(MeterType.P1)
+                                .setTotalConsumedEnergy(actualConsumedPower * 2)
+                                .setActualConsumedPower(actualConsumedPower)
+                                .setPsldData(
+                                        PsldData.newBuilder().setTotalLightingHours(
+                                                actualConsumedPower * 3))
                                                 .setSsldData(
                                                         SsldData.newBuilder()
-                                                                .setActualCurrent1(1)
-                                                                .setActualCurrent2(2)
-                                                                .setActualCurrent3(3)
-                                                                .setActualPower1(1)
-                                                                .setActualPower2(2)
-                                                                .setActualPower3(3)
-                                                                .setAveragePowerFactor1(1)
-                                                                .setAveragePowerFactor2(2)
-                                                                .setAveragePowerFactor3(3)
-                                                                .addRelayData(
-                                                                        Oslp.RelayData
+                                                        .setActualCurrent1(1)
+                                                        .setActualCurrent2(2)
+                                                        .setActualCurrent3(3)
+                                                        .setActualPower1(1)
+                                                        .setActualPower2(2)
+                                                        .setActualPower3(3)
+                                                        .setAveragePowerFactor1(1)
+                                                        .setAveragePowerFactor2(2)
+                                                        .setAveragePowerFactor3(3)
+                                                        .addRelayData(
+                                                                Oslp.RelayData
+                                                                .newBuilder()
+                                                                .setIndex(
+                                                                        ByteString
+                                                                        .copyFrom(new byte[] { 1 }))
+                                                                        .setTotalLightingMinutes(480))
+                                                                        .addRelayData(
+                                                                                Oslp.RelayData
                                                                                 .newBuilder()
                                                                                 .setIndex(
                                                                                         ByteString
-                                                                                                .copyFrom(new byte[] { 1 }))
-                                                                                .setTotalLightingMinutes(480))
-                                                                .addRelayData(
-                                                                        Oslp.RelayData
-                                                                                .newBuilder()
-                                                                                .setIndex(
-                                                                                        ByteString
-                                                                                                .copyFrom(new byte[] { 2 }))
-                                                                                .setTotalLightingMinutes(480))
-                                                                .addRelayData(
-                                                                        Oslp.RelayData
-                                                                                .newBuilder()
-                                                                                .setIndex(
-                                                                                        ByteString
-                                                                                                .copyFrom(new byte[] { 3 }))
-                                                                                .setTotalLightingMinutes(480))
-                                                                .addRelayData(
-                                                                        Oslp.RelayData
-                                                                                .newBuilder()
-                                                                                .setIndex(
-                                                                                        ByteString
-                                                                                                .copyFrom(new byte[] { 4 }))
-                                                                                .setTotalLightingMinutes(480))))
-                                .setStatus(Oslp.Status.OK)).build();
+                                                                                        .copyFrom(new byte[] { 2 }))
+                                                                                        .setTotalLightingMinutes(480))
+                                                                                        .addRelayData(
+                                                                                                Oslp.RelayData
+                                                                                                .newBuilder()
+                                                                                                .setIndex(
+                                                                                                        ByteString
+                                                                                                        .copyFrom(new byte[] { 3 }))
+                                                                                                        .setTotalLightingMinutes(480))
+                                                                                                        .addRelayData(
+                                                                                                                Oslp.RelayData
+                                                                                                                .newBuilder()
+                                                                                                                .setIndex(
+                                                                                                                        ByteString
+                                                                                                                        .copyFrom(new byte[] { 4 }))
+                                                                                                                        .setTotalLightingMinutes(480))))
+                                                                                                                        .setStatus(Oslp.Status.OK)).build();
     }
 
     private static final int CUMALATIVE_BURNING_MINUTES = 600;
@@ -717,40 +734,40 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                     .setPsldData(PsldData.newBuilder().setTotalLightingHours((int) random * 3))
                     .setSsldData(
                             SsldData.newBuilder()
-                                    .setActualCurrent1(10)
-                                    .setActualCurrent2(20)
-                                    .setActualCurrent3(30)
-                                    .setActualPower1(10)
-                                    .setActualPower2(20)
-                                    .setActualPower3(30)
-                                    .setAveragePowerFactor1(10)
-                                    .setAveragePowerFactor2(20)
-                                    .setAveragePowerFactor3(30)
-                                    .addRelayData(
-                                            Oslp.RelayData
-                                                    .newBuilder()
-                                                    .setIndex(ByteString.copyFrom(new byte[] { 1 }))
-                                                    .setTotalLightingMinutes(
-                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
-                                    .addRelayData(
-                                            Oslp.RelayData
+                            .setActualCurrent1(10)
+                            .setActualCurrent2(20)
+                            .setActualCurrent3(30)
+                            .setActualPower1(10)
+                            .setActualPower2(20)
+                            .setActualPower3(30)
+                            .setAveragePowerFactor1(10)
+                            .setAveragePowerFactor2(20)
+                            .setAveragePowerFactor3(30)
+                            .addRelayData(
+                                    Oslp.RelayData
+                                    .newBuilder()
+                                    .setIndex(ByteString.copyFrom(new byte[] { 1 }))
+                                    .setTotalLightingMinutes(
+                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
+                                            .addRelayData(
+                                                    Oslp.RelayData
                                                     .newBuilder()
                                                     .setIndex(ByteString.copyFrom(new byte[] { 2 }))
                                                     .setTotalLightingMinutes(
                                                             INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
-                                    .addRelayData(
-                                            Oslp.RelayData
-                                                    .newBuilder()
-                                                    .setIndex(ByteString.copyFrom(new byte[] { 3 }))
-                                                    .setTotalLightingMinutes(
-                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
-                                    .addRelayData(
-                                            Oslp.RelayData
-                                                    .newBuilder()
-                                                    .setIndex(ByteString.copyFrom(new byte[] { 4 }))
-                                                    .setTotalLightingMinutes(
-                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes)))
-                    .build();
+                                                            .addRelayData(
+                                                                    Oslp.RelayData
+                                                                    .newBuilder()
+                                                                    .setIndex(ByteString.copyFrom(new byte[] { 3 }))
+                                                                    .setTotalLightingMinutes(
+                                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes))
+                                                                            .addRelayData(
+                                                                                    Oslp.RelayData
+                                                                                    .newBuilder()
+                                                                                    .setIndex(ByteString.copyFrom(new byte[] { 4 }))
+                                                                                    .setTotalLightingMinutes(
+                                                                                            INITIAL_BURNING_MINUTES - randomCumulativeMinutes)))
+                                                                                            .build();
 
             powerUsageDataList.add(powerUsageData);
             pageStartTime = pageStartTime.minusMinutes(intervalMinutes);
@@ -780,11 +797,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .newBuilder()
                 .setGetPowerUsageHistoryResponse(
                         GetPowerUsageHistoryResponse
-                                .newBuilder()
-                                .addAllPowerUsageData(powerUsageDataList)
-                                .setPageInfo(
-                                        PageInfo.newBuilder().setCurrentPage(currentPageNumber)
-                                                .setPageSize(itemsPerPage).setTotalPages(numberOfPages))
+                        .newBuilder()
+                        .addAllPowerUsageData(powerUsageDataList)
+                        .setPageInfo(
+                                PageInfo.newBuilder().setCurrentPage(currentPageNumber)
+                                .setPageSize(itemsPerPage).setTotalPages(numberOfPages))
                                 .setStatus(Oslp.Status.OK)).build();
 
     }
@@ -800,8 +817,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .newBuilder()
                 .addAddressMap(
                         IndexAddressMap.newBuilder().setIndex(ByteString.copyFrom(new byte[] { 1 }))
-                                .setAddress(ByteString.copyFrom(new byte[] { 1 })).setRelayType(RelayType.RT_NOT_SET))
-                .setNumberOfLights(ByteString.copyFrom(new byte[] { 1 }));
+                        .setAddress(ByteString.copyFrom(new byte[] { 1 })).setRelayType(RelayType.RT_NOT_SET))
+                        .setNumberOfLights(ByteString.copyFrom(new byte[] { 1 }));
 
         final Oslp.GetConfigurationResponse.Builder configuration = Oslp.GetConfigurationResponse.newBuilder()
                 .setStatus(Oslp.Status.OK)
@@ -893,11 +910,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 .newBuilder()
                 .setGetStatusResponse(
                         GetStatusResponse
-                                .newBuilder()
-                                .setStatus(Oslp.Status.OK)
-                                .addAllValue(outputValues)
-                                .setPreferredLinktype(
-                                        Enum.valueOf(Oslp.LinkType.class, device.getPreferredLinkType().name()))
+                        .newBuilder()
+                        .setStatus(Oslp.Status.OK)
+                        .addAllValue(outputValues)
+                        .setPreferredLinktype(
+                                Enum.valueOf(Oslp.LinkType.class, device.getPreferredLinkType().name()))
                                 .setActualLinktype(Enum.valueOf(Oslp.LinkType.class, device.getActualLinkType().name()))
                                 .setLightType(Enum.valueOf(Oslp.LightType.class, device.getLightType().name()))
                                 .setEventNotificationMask(device.getEventNotificationMask())).build();

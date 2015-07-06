@@ -375,7 +375,11 @@ enum Event {
     // 4000 - 4999
     MONITOR_EVENTS_LONG_BUFFER_FULL = 4000; // Long term monitoring buffer overrun occurred
     MONITOR_FAILURE_P1_COMMUNICATION = 4500; // P1 meter could not be read
- 
+    MONITOR_SHORT_DETECTED = 4600;
+    MONITOR_SHORT_RESOLVED = 4601;
+    MONITOR_DOOR_OPENED = 4700;
+    MONITOR_DOOR_CLOSED = 4701;
+     
     // 5000 - 5999 Firmware Events
     FIRMWARE_EVENTS_ACTIVATING = 5000; // Start activating new firmware, after downloading
     FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND = 5501; // Download of firmware failed, i.e. location incorrect

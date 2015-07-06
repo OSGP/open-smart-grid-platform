@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.oslp.Oslp;
+import com.alliander.osgp.webdevicesimulator.application.services.DeviceManagementService;
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.DeviceRepository;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
@@ -27,23 +28,30 @@ public class TariffSwitchingHigh implements Runnable {
     @Autowired
     private SwitchingServices switchingServices;
 
+    @Autowired
+    private DeviceManagementService deviceManagementService;
+
     @Override
     public void run() {
-        LOGGER.info("TariffSwitching on for devices");
 
-        final List<Device> devices = this.deviceRepository.findAll();
+        if (this.deviceManagementService.getTariffSwitching()) {
+            LOGGER.info("TariffSwitching on for devices");
 
-        for (final Device device : devices) {
-            LOGGER.info("Tariff switching on for : {}: {} ", device.getId(), device.getDeviceIdentification());
+            final List<Device> devices = this.deviceRepository.findAll();
 
-            // Switching on Tariff
-            this.switchingServices.tariffSwitchHigh(device.getId());
+            for (final Device device : devices) {
+                LOGGER.info("Tariff switching on for : {}: {} ", device.getId(), device.getDeviceIdentification());
 
-            // Send EventNotifications for TariffSwitching Off
-            LOGGER.info("Sending TARIFF_EVENTS_TARIFF_ON event for device : {}: {} ", device.getId(),
-                    device.getDeviceIdentification());
-            this.registerDevice.sendEventNotificationCommand(device.getId(), Oslp.Event.TARIFF_EVENTS_TARIFF_ON_VALUE,
-                    "TARIFF_EVENTS_TARIFF_ON event occurred on Tariff Switching high ", null);
+                // Switching on Tariff
+                this.switchingServices.tariffSwitchHigh(device.getId());
+
+                // Send EventNotifications for TariffSwitching Off
+                LOGGER.info("Sending TARIFF_EVENTS_TARIFF_ON event for device : {}: {} ", device.getId(),
+                        device.getDeviceIdentification());
+                this.registerDevice.sendEventNotificationCommand(device.getId(),
+                        Oslp.Event.TARIFF_EVENTS_TARIFF_ON_VALUE,
+                        "TARIFF_EVENTS_TARIFF_ON event occurred on Tariff Switching high ", 3);
+            }
         }
     }
 }

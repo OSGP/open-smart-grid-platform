@@ -27,44 +27,48 @@ public class EventNotificationTransition implements Runnable {
 
     @Override
     public void run() {
-        // The original list with listofeventtobesent
-        final List<EventNotificationToBeSent> listeventNotificationToBeSent = this.deviceManagementService.listeventNotificationToBeSent;
 
-        // The local list of events
-        final List<EventNotificationToBeSent> listOfEvents = new ArrayList<>();
+        if (this.deviceManagementService.getEventNotification()) {
+            // The original list with listofeventtobesent
+            final List<EventNotificationToBeSent> listeventNotificationToBeSent = this.deviceManagementService.listeventNotificationToBeSent;
 
-        // add content of the original list into the local list of events
-        listOfEvents.addAll(listeventNotificationToBeSent);
+            // The local list of events
+            final List<EventNotificationToBeSent> listOfEvents = new ArrayList<>();
 
-        // run through the list of events and send each
-        for (final EventNotificationToBeSent event : listOfEvents) {
+            // add content of the original list into the local list of events
+            listOfEvents.addAll(listeventNotificationToBeSent);
 
-            DeviceMessageStatus status;
+            // run through the list of events and send each
+            for (final EventNotificationToBeSent event : listOfEvents) {
 
-            if (event.getLightOn()) {
-                // Send EventNotifications for Light Transition ON
-                LOGGER.info("Sending LIGHT_EVENTS_LIGHT_ON_VALUE event for device : {}: {} ", event.getdeviceId());
-                status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
-                        Oslp.Event.LIGHT_EVENTS_LIGHT_ON_VALUE,
-                        "LIGHT_EVENTS_LIGHT_ON_VALUE event occurred on Light Switching on ", null);
+                DeviceMessageStatus status;
 
-            } else {
-                // Send EventNotifications for Light Transition OFF
-                LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF_VALUE event for device : {}: {} ", event.getdeviceId());
-                status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
-                        Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
-                        "LIGHT_EVENTS_LIGHT_OFF_VALUE event occurred on light Switching off ", null);
+                if (event.getLightOn()) {
+                    // Send EventNotifications for Light Transition ON
+                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_ON_VALUE event for device : {}: {} ", event.getdeviceId());
+                    status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
+                            Oslp.Event.LIGHT_EVENTS_LIGHT_ON_VALUE,
+                            "LIGHT_EVENTS_LIGHT_ON_VALUE event occurred on Light Switching on ", null);
+
+                } else {
+                    // Send EventNotifications for Light Transition OFF
+                    LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF_VALUE event for device : {}: {} ", event.getdeviceId());
+                    status = this.registerDevice.sendEventNotificationCommand(event.getdeviceId(),
+                            Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
+                            "LIGHT_EVENTS_LIGHT_OFF_VALUE event occurred on light Switching off ", null);
+                }
+
+                // when the event notification is sent successfully. Remove the
+                // event from original list. If there are multiple event for a
+                // same
+                // device then this doesnt work.
+                if (status == DeviceMessageStatus.OK) {
+                    listeventNotificationToBeSent.remove(event);
+                }
+
             }
-
-            // when the event notification is sent successfully. Remove the
-            // event from original list. If there are multiple event for a same
-            // device then this doesnt work.
-            if (status == DeviceMessageStatus.OK) {
-                listeventNotificationToBeSent.remove(event);
-            }
-
+            // The local list of events
+            listOfEvents.clear();
         }
-        // The local list of events
-        listOfEvents.clear();
     }
 }

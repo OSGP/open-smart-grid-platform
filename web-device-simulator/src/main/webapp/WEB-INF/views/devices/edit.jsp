@@ -222,6 +222,10 @@ body {
 											<option value="3001">TARIFF_EVENTS_TARIFF_OFF</option>
 											<option value="4000">MONITOR_EVENTS_LONG_BUFFER_FULL</option>
 											<option value="4500">MONITOR_FAILURE_P1_COMMUNICATION</option>
+											<option value="4600">MONITOR_SHORT_DETECTED</option>
+											<option value="4601">MONITOR_SHORT_RESOLVED</option>
+											<option value="4700">MONITOR_DOOR_OPENED</option>
+											<option value="4701">MONITOR_DOOR_CLOSED</option>
 											<option value="5000">FIRMWARE_EVENTS_ACTIVATING</option>
 											<option value="5501">FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND</option>
 											<option value="5502">FIRMWARE_EVENTS_DOWNLOAD_FAILED</option>
