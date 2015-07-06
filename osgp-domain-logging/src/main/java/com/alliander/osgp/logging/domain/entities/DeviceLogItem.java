@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.domain.logging.entities;
+package com.alliander.osgp.logging.domain.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

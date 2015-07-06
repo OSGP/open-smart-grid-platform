@@ -31,7 +31,7 @@ import com.alliander.osgp.adapter.ws.shared.db.application.config.WritablePersis
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareLocation;
-import com.alliander.osgp.domain.logging.config.ReadableLoggingConfig;
+import com.alliander.osgp.logging.domain.config.ReadableLoggingConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**

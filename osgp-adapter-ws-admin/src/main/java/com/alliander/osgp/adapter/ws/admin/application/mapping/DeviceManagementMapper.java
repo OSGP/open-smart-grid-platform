@@ -21,7 +21,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.registerClassMap(mapperFactory
-                .classMap(com.alliander.osgp.domain.logging.entities.DeviceLogItem.class,
+                .classMap(com.alliander.osgp.logging.domain.entities.DeviceLogItem.class,
                         com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.MessageLog.class)
                 .field("modificationTime", "timestamp").byDefault().toClassMap());
 

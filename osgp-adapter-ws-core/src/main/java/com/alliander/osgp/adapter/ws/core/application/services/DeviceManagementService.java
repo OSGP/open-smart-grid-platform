@@ -52,8 +52,8 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
-import com.alliander.osgp.domain.logging.entities.DeviceLogItem;
-import com.alliander.osgp.domain.logging.repositories.DeviceLogItemRepository;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -120,6 +120,7 @@ public class DeviceManagementService {
         return this.organisationRepository.findAll();
     }
     
+    //TODO remove
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @Min(value = 0) final int pageNumber) throws FunctionalException {

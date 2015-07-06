@@ -25,9 +25,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.domain.logging.config.ReadableLoggingConfig;
-import com.alliander.osgp.domain.logging.repositories.DeviceLogItemRepository;
+import com.alliander.osgp.logging.domain.config.ReadableLoggingConfig;
 import com.alliander.osgp.logging.domain.entities.WebServiceMonitorLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;
 import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
 
@@ -40,7 +40,7 @@ import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class})
 @EnableTransactionManagement
 @PropertySource("file:${osp/osgpLogging/config}")
-@Import({ LoggingConfig.class, ProtocolMessagingConfig.class, ReadableLoggingConfig.class })
+@Import({ LoggingConfig.class, ProtocolMessagingConfig.class })
 public class ApplicationContext {
 
     private static final String PROPERTY_NAME_JMS_LOGGING_QUEUE = "jms.logging.queue";

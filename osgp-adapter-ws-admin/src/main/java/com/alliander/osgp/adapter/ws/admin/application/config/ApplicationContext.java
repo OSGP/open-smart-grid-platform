@@ -26,7 +26,7 @@ import com.alliander.osgp.adapter.ws.infra.specifications.JpaDeviceSpecification
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
-import com.alliander.osgp.domain.logging.config.ReadableLoggingConfig;
+import com.alliander.osgp.logging.domain.config.ReadableLoggingConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**
