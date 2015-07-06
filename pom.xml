@@ -48,6 +48,7 @@
         <module>osgp-domain-core</module>
         <module>osgp-domain-publiclighting</module>
         <module>osgp-domain-tariffswitching</module>
+        <module>osgp-domain-logging</module>
 
         <module>osgp-adapter-domain-shared</module>
 

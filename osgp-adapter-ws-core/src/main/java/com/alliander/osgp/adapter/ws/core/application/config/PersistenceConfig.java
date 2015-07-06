@@ -102,7 +102,7 @@ public class PersistenceConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-
+        
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_WS_ADAPTER_CORE");
         entityManagerFactoryBean.setDataSource(this.dataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));

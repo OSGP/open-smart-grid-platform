@@ -40,7 +40,6 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.OslpLogItem;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.EmptyOwnerException;
@@ -52,7 +51,6 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
@@ -68,6 +66,8 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -106,7 +106,7 @@ public class DeviceManagementService {
     private DeviceSpecifications deviceSpecifications;
 
     @Autowired
-    private OslpLogItemRepository logItemRepository;
+    private DeviceLogItemRepository logItemRepository;
 
     @Autowired
     private DeviceAuthorizationRepository authorizationRepository;
@@ -330,7 +330,7 @@ public class DeviceManagementService {
         return this.authorizationRepository.findByDeviceForOrganisation(device, organisation);
     }
 
-    public Page<OslpLogItem> findOslpMessages(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
+    public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @Min(value = 0) final int pageNumber) throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] { organisationIdentification,

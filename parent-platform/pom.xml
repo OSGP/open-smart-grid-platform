@@ -119,7 +119,13 @@
                 <artifactId>osgp-domain-core</artifactId>
                 <version>${osgp.version}</version>
             </dependency>
-
+            
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>osgp-domain-logging</artifactId>
+                <version>${osgp.version}</version>
+            </dependency>
+            
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>osgp-domain-publiclighting</artifactId>

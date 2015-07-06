@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.ws.shared.db.application.config;
+package com.alliander.osgp.logging.domain.config;
 
 import java.util.Properties;
 
@@ -25,28 +25,28 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.adapter.ws.shared.db.domain.exceptions.SharedDbException;
-import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "writableEntityManagerFactory", basePackageClasses = { WritableDeviceRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = { DeviceLogItemRepository.class})
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterWsSharedDb/config}")
-public class WritablePersistenceConfig {
+@PropertySource("file:${osp/osgpDomainLogging/config}")
+public class ReadableLoggingConfig {
+    
+    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.readonly.password.domain_logging";
+    private static final String PROPERTY_NAME_DATABASE_URL = "db.url.domain_logging";
+    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.readonly.username.domain_logging";
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
-    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.writable.password";
-    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
-    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.writable.username";
-
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
 
-    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
+    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.domain_logging";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WritablePersistenceConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadableLoggingConfig.class);
 
     @Resource
     private Environment environment;
@@ -56,7 +56,7 @@ public class WritablePersistenceConfig {
      * 
      * @return DataSource
      */
-    public DataSource writableDataSource() {
+    public DataSource readableDataSource() {
         final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
         singleConnectionDataSource.setAutoCommit(false);
         final Properties properties = new Properties();
@@ -79,16 +79,16 @@ public class WritablePersistenceConfig {
      *             when class not found
      */
     @Bean
-    public JpaTransactionManager writableTransactionManager() throws SharedDbException {
+    public JpaTransactionManager readableTransactionManager() throws Exception {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
-            transactionManager.setEntityManagerFactory(this.writableEntityManagerFactory().getObject());
+            transactionManager.setEntityManagerFactory(this.readableEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
-            throw new SharedDbException(msg, e);
+            throw new Exception(msg, e);
         }
 
         return transactionManager;
@@ -102,11 +102,11 @@ public class WritablePersistenceConfig {
      *             when class not found
      */
     @Bean
-    public LocalContainerEntityManagerFactoryBean writableEntityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean readableEntityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
-        
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE_DB_API");
-        entityManagerFactoryBean.setDataSource(this.writableDataSource());
+
+        entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_LOGGING");
+        entityManagerFactoryBean.setDataSource(this.readableDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
