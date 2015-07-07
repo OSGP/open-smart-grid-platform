@@ -161,7 +161,7 @@ public class Device extends AbstractEntity {
     }
 
     public String getIpAddress() {
-        return this.networkAddress.getHostAddress();
+        return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
     }
 
     public boolean isActivated() {
