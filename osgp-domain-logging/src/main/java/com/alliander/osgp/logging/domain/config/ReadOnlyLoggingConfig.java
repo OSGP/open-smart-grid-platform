@@ -32,7 +32,7 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("file:${osp/osgpDomainLogging/config}")
-public class ReadableLoggingConfig {
+public class ReadOnlyLoggingConfig {
     
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.readonly.password.domain_logging";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url.domain_logging";
@@ -46,7 +46,7 @@ public class ReadableLoggingConfig {
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan.domain_logging";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReadableLoggingConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadOnlyLoggingConfig.class);
 
     @Resource
     private Environment environment;

@@ -31,7 +31,7 @@ import com.alliander.osgp.adapter.ws.shared.db.application.config.WritablePersis
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.valueobjects.FirmwareLocation;
-import com.alliander.osgp.logging.domain.config.ReadableLoggingConfig;
+import com.alliander.osgp.logging.domain.config.ReadOnlyLoggingConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**
@@ -41,7 +41,7 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core", "com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadableLoggingConfig.class  })
+@Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class  })
 @PropertySource("file:${osp/osgpAdapterWsCore/config}")
 public class ApplicationContext {
 

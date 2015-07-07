@@ -25,7 +25,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.logging.domain.config.ReadableLoggingConfig;
+import com.alliander.osgp.logging.domain.config.ReadOnlyLoggingConfig;
 import com.alliander.osgp.logging.domain.entities.WebServiceMonitorLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;

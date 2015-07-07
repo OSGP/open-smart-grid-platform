@@ -26,7 +26,7 @@ import com.alliander.osgp.adapter.ws.infra.specifications.JpaDeviceSpecification
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
-import com.alliander.osgp.logging.domain.config.ReadableLoggingConfig;
+import com.alliander.osgp.logging.domain.config.ReadOnlyLoggingConfig;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 
 /**
@@ -36,7 +36,7 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.admin", "com.alliander.osgp.logging.domain"})
 @ImportResource("classpath:applicationContext.xml")
-@Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class, ReadableLoggingConfig.class })
+@Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class, ReadOnlyLoggingConfig.class })
 @PropertySource("file:${osp/osgpAdapterWsAdmin/config}")
 public class ApplicationContext {
 
