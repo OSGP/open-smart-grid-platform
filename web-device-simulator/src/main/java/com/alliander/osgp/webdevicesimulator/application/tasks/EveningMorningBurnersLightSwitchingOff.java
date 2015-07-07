@@ -15,18 +15,18 @@ import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
 import com.alliander.osgp.webdevicesimulator.service.SwitchingServices;
 
 @Component
-public class LightSwitchingOn implements Runnable {
+public class EveningMorningBurnersLightSwitchingOff implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightSwitchingOn.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EveningMorningBurnersLightSwitchingOff.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private RegisterDevice registerDevice;
+    private SwitchingServices switchingServices;
 
     @Autowired
-    private SwitchingServices switchingServices;
+    private RegisterDevice registerDevice;
 
     @Autowired
     private DeviceManagementService deviceManagementService;
@@ -35,22 +35,23 @@ public class LightSwitchingOn implements Runnable {
     public void run() {
 
         if (this.deviceManagementService.getLightSwitching()) {
-            LOGGER.info("Publiclighting Switching on for devices without Evening/Morning Burners");
 
-            final List<Device> devices = this.deviceRepository.findByHasEveningMorningBurner(false);
+            LOGGER.info("Publiclighting Switching off for devices with Evening/Morning Burners");
+
+            final List<Device> devices = this.deviceRepository.findByHasEveningMorningBurner(true);
 
             for (final Device device : devices) {
                 LOGGER.info("Light switching for : {}: {} ", device.getId(), device.getDeviceIdentification());
 
-                // Switching on Light
-                this.switchingServices.lightSwitchOn(device.getId());
+                // Switching off Light
+                this.switchingServices.lightSwitchOff(device.getId());
 
-                // Send EventNotifications for LightSwitching on
-                LOGGER.info("Sending LIGHT_EVENTS_LIGHT_ON event for device : {}: {} ", device.getId(),
+                // Send EventNotifications for LightSwitching Off
+                LOGGER.info("Sending LIGHT_EVENTS_LIGHT_OFF event for device : {}: {} ", device.getId(),
                         device.getDeviceIdentification());
                 this.registerDevice.sendEventNotificationCommand(device.getId(),
-                        Oslp.Event.LIGHT_EVENTS_LIGHT_ON_VALUE,
-                        "LIGHT_EVENTS_LIGHT_ON event occurred on Light Switching on ", null);
+                        Oslp.Event.LIGHT_EVENTS_LIGHT_OFF_VALUE,
+                        "LIGHT_EVENTS_LIGHT_OFF event occurred on Light Switching off ", null);
             }
         }
     }
