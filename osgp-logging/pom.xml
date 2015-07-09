@@ -13,7 +13,7 @@
 
     <artifactId>osgp-logging</artifactId>
     <name>osgp-logging</name>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
     <description>Web service logging module.</description>
 
@@ -28,26 +28,6 @@
         <display.version>${project.version}-${BUILD_TAG}</display.version>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <attachClasses>true</attachClasses>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-<!--                     <webResources> -->
-<!--                         <resource> -->
-<!--                             <directory>src/main/webapp</directory> -->
-<!--                             <filtering>true</filtering> -->
-<!--                         </resource> -->
-<!--                     </webResources> -->
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
     <dependencies>
         <!-- Alliander -->
         <dependency>
