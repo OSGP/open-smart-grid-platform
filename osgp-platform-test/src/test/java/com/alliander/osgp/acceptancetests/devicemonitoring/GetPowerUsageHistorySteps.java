@@ -69,10 +69,10 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 //import com.alliander.osgp.domain.core.valueobjects.TimePeriod;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.PowerUsageData;
@@ -134,7 +134,7 @@ public class GetPowerUsageHistorySteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -586,7 +586,7 @@ public class GetPowerUsageHistorySteps {
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.oslpLogItemRepositoryMock, this.channelMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.deviceMonitoringEndpoint = new DeviceMonitoringEndpoint(this.deviceMonitoringService,

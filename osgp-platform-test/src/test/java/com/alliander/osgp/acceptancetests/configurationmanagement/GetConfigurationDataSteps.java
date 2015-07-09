@@ -70,12 +70,12 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.LinkType;
 import com.alliander.osgp.domain.core.valueobjects.LongTermIntervalType;
 import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -87,8 +87,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-
-;
 
 @Configurable
 @DomainSteps
@@ -141,7 +139,7 @@ public class GetConfigurationDataSteps {
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -736,7 +734,7 @@ public class GetConfigurationDataSteps {
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.oslpLogItemRepositoryMock, this.oslpDeviceRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.oslpDeviceRepositoryMock,
                 this.channelMock, this.webServiceResponseMessageSenderMock });
 
         this.configurationManagementEndpoint = new ConfigurationManagementEndpoint(this.configurationManagementService,

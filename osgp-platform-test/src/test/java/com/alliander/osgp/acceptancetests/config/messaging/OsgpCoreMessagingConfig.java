@@ -34,7 +34,8 @@ import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageListe
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessorMap;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageJmsTemplateFactory;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
-import com.alliander.osgp.core.infra.jms.protocol.logging.ProtocolLogItemRequestMessageListener;
+import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
+import com.alliander.osgp.logging.infra.jms.ProtocolLogItemRequestMessageListener;
 
 public class OsgpCoreMessagingConfig {
 

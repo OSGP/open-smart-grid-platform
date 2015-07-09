@@ -68,8 +68,8 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -130,7 +130,7 @@ public class SetEventNotificationsSteps {
     @Autowired
     private DeviceAuthorizationRepository authorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository logItemRepositoryMock;
+    private DeviceLogItemRepository logItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired

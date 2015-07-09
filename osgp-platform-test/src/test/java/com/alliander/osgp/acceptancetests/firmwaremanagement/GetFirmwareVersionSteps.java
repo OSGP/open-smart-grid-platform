@@ -60,9 +60,9 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -122,7 +122,7 @@ public class GetFirmwareVersionSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol adapter fields
     @Autowired
@@ -420,7 +420,7 @@ public class GetFirmwareVersionSteps {
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
+                this.deviceLogItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.firmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService);
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);

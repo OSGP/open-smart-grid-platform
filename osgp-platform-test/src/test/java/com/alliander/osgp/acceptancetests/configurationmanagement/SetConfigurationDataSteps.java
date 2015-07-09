@@ -73,9 +73,9 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -137,7 +137,7 @@ public class SetConfigurationDataSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol adapter fields
     @Autowired
@@ -160,7 +160,7 @@ public class SetConfigurationDataSteps {
         LOGGER.info("Setting up {}", SetConfigurationDataSteps.class.getSimpleName());
 
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.oslpLogItemRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock,
                 this.webServiceResponseMessageSenderMock, this.channelMock });
 
         this.configurationManagementEndpoint = new ConfigurationManagementEndpoint(this.configurationManagementService,

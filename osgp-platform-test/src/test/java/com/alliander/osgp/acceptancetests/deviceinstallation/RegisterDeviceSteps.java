@@ -53,8 +53,8 @@ import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.services.SecurityService;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.DeviceType;
 import com.alliander.osgp.oslp.Oslp.LocationInfo;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -119,7 +119,7 @@ public class RegisterDeviceSteps {
     private DeviceRepository deviceRepositoryMock;
 
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     @Autowired
     private OslpDeviceRepository oslpDeviceRepositoryMock;
@@ -142,7 +142,7 @@ public class RegisterDeviceSteps {
     private final Integer sequenceNumberMaximum = OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW;
 
     private void setup() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.oslpLogItemRepositoryMock, this.channelMock,
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.oslpDeviceRepositoryMock, this.deviceDataRepositoryMock });
 
         OslpTestUtils.configureOslpChannelHandler(this.oslpChannelHandler);

@@ -42,12 +42,12 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.OrganisationBuilder;
-import com.alliander.osgp.domain.core.entities.OslpLogItem;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @Configurable
 @DomainSteps()
@@ -84,7 +84,7 @@ public class VerifyAuthorizePlatformFunctionSteps {
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository logItemRepositoryMock;
+    private DeviceLogItemRepository logItemRepositoryMock;
 
     // Protocol adapter fields
     @Mock
@@ -116,7 +116,7 @@ public class VerifyAuthorizePlatformFunctionSteps {
         this.organisation = new OrganisationBuilder().withOrganisationIdentification(ORGANISATION)
                 .withFunctionGroup(com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.valueOf(group.toUpperCase())).build();
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION)).thenReturn(this.organisation);
-        when(this.logItemRepositoryMock.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<OslpLogItem>()));
+        when(this.logItemRepositoryMock.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<DeviceLogItem>()));
     }
 
     @DomainStep("platform function (.*) is called")

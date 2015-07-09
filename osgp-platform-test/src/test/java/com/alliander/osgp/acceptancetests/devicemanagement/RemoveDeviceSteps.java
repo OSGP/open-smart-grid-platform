@@ -42,10 +42,10 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.OslpEnvelope;
 
 @DomainSteps
@@ -84,7 +84,7 @@ public class RemoveDeviceSteps {
     @Autowired
     private EventRepository eventRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Channel mock
     @Autowired
@@ -261,7 +261,7 @@ public class RemoveDeviceSteps {
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.eventRepositoryMock, this.channelMock });
+                this.deviceLogItemRepositoryMock, this.eventRepositoryMock, this.channelMock });
 
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService, new DeviceManagementMapper());
 

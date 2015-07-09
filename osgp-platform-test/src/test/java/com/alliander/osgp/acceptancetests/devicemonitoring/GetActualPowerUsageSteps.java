@@ -66,7 +66,6 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
@@ -74,6 +73,7 @@ import com.alliander.osgp.domain.core.valueobjects.PowerUsageData;
 import com.alliander.osgp.domain.core.valueobjects.PsldData;
 import com.alliander.osgp.domain.core.valueobjects.RelayData;
 import com.alliander.osgp.domain.core.valueobjects.SsldData;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -135,7 +135,7 @@ public class GetActualPowerUsageSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -629,7 +629,7 @@ public class GetActualPowerUsageSteps {
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.oslpLogItemRepositoryMock, this.channelMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.deviceMonitoringEndpoint = new DeviceMonitoringEndpoint(this.deviceMonitoringService,

@@ -22,20 +22,21 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
+import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;
 
 //@Configuration
 public class PersistenceConfig {
 
     // // WS LOGGING
-    // @Bean
-    // public WebServiceMonitorLogRepository WebServiceLoggingRepository() {
-    // return mock(WebServiceMonitorLogRepository.class);
-    // }
+     @Bean
+     public WebServiceMonitorLogRepository WebServiceLoggingRepository() {
+     return mock(WebServiceMonitorLogRepository.class);
+     }
 
     @Bean
     public WritableDeviceRepository writableDeviceRepositoryMock() {
@@ -84,8 +85,8 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public OslpLogItemRepository oslpLogItemRepositoryMock() {
-        return mock(OslpLogItemRepository.class);
+    public DeviceLogItemRepository deviceLogItemRepositoryMock() {
+        return mock(DeviceLogItemRepository.class);
     }
 
     @Bean
