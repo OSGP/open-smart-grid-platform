@@ -52,11 +52,11 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceA
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.OslpLogItem;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -214,7 +214,7 @@ public class DeviceManagementEndpoint {
         final FindMessageLogsResponse response = new FindMessageLogsResponse();
 
         try {
-            final Page<OslpLogItem> page = this.deviceManagementService.findOslpMessages(organisationIdentification,
+            final Page<DeviceLogItem> page = this.deviceManagementService.findOslpMessages(organisationIdentification,
                     request.getDeviceIdentification(), request.getPage());
 
             // Map to output

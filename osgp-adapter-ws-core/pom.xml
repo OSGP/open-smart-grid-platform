@@ -166,6 +166,10 @@
         </dependency>
         <dependency>
             <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-domain-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-adapter-ws-shared</artifactId>
         </dependency>
         <dependency>
