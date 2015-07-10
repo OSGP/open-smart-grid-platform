@@ -160,6 +160,10 @@ public class Device extends AbstractEntity {
         return this.networkAddress;
     }
 
+    public String getIpAddress() {
+        return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
+    }
+
     public boolean isActivated() {
         return this.isActivated;
     }
@@ -225,7 +229,7 @@ public class Device extends AbstractEntity {
 
     /**
      * Get the owner organisation name of the device.
-     * 
+     *
      * @return The organisation name when an owner was set, "" otherwise.
      */
     public String getOwner() {
@@ -302,9 +306,8 @@ public class Device extends AbstractEntity {
 
     /**
      * Get the organisations that are authorized for this device.
-     * 
-     * @return List of OrganisationIdentification of organisations that are
-     *         authorized for this device.
+     *
+     * @return List of OrganisationIdentification of organisations that are authorized for this device.
      */
     @Transient
     public List<String> getOrganisations() {
@@ -317,7 +320,7 @@ public class Device extends AbstractEntity {
 
     /**
      * Create default configuration for a device (based on type).
-     * 
+     *
      * @return default configuration
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {

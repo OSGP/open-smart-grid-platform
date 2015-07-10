@@ -38,31 +38,35 @@ public class ScheduleManagementService extends AbstractService {
 
     /**
      * Set a light schedule.
-     * 
+     *
      * @throws FunctionalException
      * @throws ValidationException
      */
-    public void setLightSchedule(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final List<Schedule> schedules, final Long scheduleTime, final String messageType) throws FunctionalException {
+    public void setLightSchedule(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final List<Schedule> schedules, final Long scheduleTime,
+            final String messageType) throws FunctionalException {
 
-        LOGGER.info("setSchedule called with organisation {} and device {}.", organisationIdentification, deviceIdentification);
+        LOGGER.info("setSchedule called with organisation {} and device {}.", organisationIdentification,
+                deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.Schedule> schedulesDto = this.domainCoreMapper.mapAsList(schedules,
-                com.alliander.osgp.dto.valueobjects.Schedule.class);
-        final ScheduleMessageDataContainer scheduleMessageDataContainerDto = new ScheduleMessageDataContainer(schedulesDto);
+        final List<com.alliander.osgp.dto.valueobjects.Schedule> schedulesDto = this.domainCoreMapper.mapAsList(
+                schedules, com.alliander.osgp.dto.valueobjects.Schedule.class);
+        final ScheduleMessageDataContainer scheduleMessageDataContainerDto = new ScheduleMessageDataContainer(
+                schedulesDto);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                scheduleMessageDataContainerDto), messageType, device.getNetworkAddress().toString(), scheduleTime);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, scheduleMessageDataContainerDto), messageType, device.getIpAddress(),
+                scheduleTime);
     }
 
     // === SET HAS SCHEDULE ===
 
     /**
      * Method for setting the 'hasSchedule' boolean for a device.
-     * 
+     *
      * @throws FunctionalException
      */
     public void setHasSchedule(final String deviceIdentification, final Boolean hasSchedule) throws FunctionalException {
