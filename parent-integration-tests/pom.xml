@@ -243,6 +243,18 @@
                 <artifactId>osgp-core-db-api</artifactId>
                 <version>${osgp.version}</version>
             </dependency>
+            
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>osgp-logging</artifactId>
+                <version>${osgp.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>osgp-domain-logging</artifactId>
+                <version>${osgp.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
@@ -256,11 +268,6 @@
 <!--                 <version>${osgp.version}</version> -->
 <!--                 <classifier>classes</classifier> -->
 <!--             </dependency> -->
-            <dependency>
-                <groupId>com.alliander.osgp</groupId>
-                <artifactId>web-service-logging</artifactId>
-                <version>${osgp.version}</version>
-            </dependency>
 
             <!-- Spring Framework -->
             <dependency>

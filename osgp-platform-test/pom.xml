@@ -118,6 +118,16 @@
             <artifactId>osgp-core</artifactId>
             <classifier>classes</classifier>
         </dependency>
+        
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-logging</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-domain-logging</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.alliander.osgp</groupId>

@@ -65,9 +65,9 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -123,7 +123,7 @@ public class UpdateFirmwareSteps {
     @Autowired
     private DeviceRepository deviceRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
     private Organisation organisation;
     private Device device;
 
@@ -431,7 +431,7 @@ public class UpdateFirmwareSteps {
 
     private void setUp() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.oslpLogItemRepositoryMock, this.channelMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.firmwareManagementEndpoint = new FirmwareManagementEndpoint(this.wsFirmwareManagementService);

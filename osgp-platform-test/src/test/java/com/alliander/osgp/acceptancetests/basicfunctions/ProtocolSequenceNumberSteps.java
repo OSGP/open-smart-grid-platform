@@ -39,8 +39,8 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpSecurityHan
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.SequenceNumberUtils;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.services.SecurityService;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.ConfirmRegisterDeviceRequest;
 import com.alliander.osgp.oslp.Oslp.DeviceType;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -94,7 +94,7 @@ public class ProtocolSequenceNumberSteps {
     private OslpDeviceRepository oslpDeviceRepositoryMock;
 
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     @Autowired
     private DeviceDataRepository deviceDataRepositoryMock;
@@ -112,7 +112,7 @@ public class ProtocolSequenceNumberSteps {
     private OslpChannelHandlerServer oslpChannelHandler;
 
     private void setup() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.oslpLogItemRepositoryMock, this.channelMock,
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.oslpDeviceRepositoryMock, this.deviceDataRepositoryMock });
 
         OslpTestUtils.configureOslpChannelHandler(this.oslpChannelHandler);

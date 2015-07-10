@@ -99,8 +99,8 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.LightType;
 import com.alliander.osgp.oslp.Oslp.LightValue;
 import com.alliander.osgp.oslp.Oslp.LinkType;
@@ -195,7 +195,7 @@ public class VerifyAuthorizeDeviceFunctionSteps {
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository logItemRepositoryMock;
+    private DeviceLogItemRepository logItemRepositoryMock;
     @Autowired
     private EventRepository eventRepositoryMock;
 
