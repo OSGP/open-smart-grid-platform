@@ -46,7 +46,8 @@ public class ProtocolLogItemRequestMessageListener implements MessageListener {
     private void handleDeviceLogMessage(final ObjectMessage objectMessage) throws JMSException {
 
         final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        String organisationIdentification = objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+        final String organisationIdentification = objectMessage
+                .getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
 
         final DeviceLogItem deviceLogItem = new DeviceLogItem(organisationIdentification,
                 objectMessage.getStringProperty(Constants.DEVICE_UID), deviceIdentification,

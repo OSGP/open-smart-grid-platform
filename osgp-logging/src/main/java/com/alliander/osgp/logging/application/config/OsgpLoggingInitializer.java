@@ -32,7 +32,8 @@ public class OsgpLoggingInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(final ServletContext servletContext) throws ServletException {
         try {
-            // Force the timezone of application to UTC (required for Hibernate/JDBC)
+            // Force the timezone of application to UTC (required for
+            // Hibernate/JDBC)
             TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
             final Context initialContext = new InitialContext();

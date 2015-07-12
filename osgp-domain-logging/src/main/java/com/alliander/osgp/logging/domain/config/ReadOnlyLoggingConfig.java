@@ -25,15 +25,14 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = { DeviceLogItemRepository.class})
+@EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = { DeviceLogItemRepository.class })
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("file:${osp/osgpDomainLogging/config}")
 public class ReadOnlyLoggingConfig {
-    
+
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.readonly.password.domain_logging";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url.domain_logging";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.readonly.username.domain_logging";
@@ -53,7 +52,7 @@ public class ReadOnlyLoggingConfig {
 
     /**
      * Method for creating the Data Source.
-     * 
+     *
      * @return DataSource
      */
     public DataSource readableDataSource() {
@@ -63,7 +62,8 @@ public class ReadOnlyLoggingConfig {
         properties.setProperty("socketTimeout", "0");
         properties.setProperty("tcpKeepAlive", "true");
         singleConnectionDataSource.setConnectionProperties(properties);
-        singleConnectionDataSource.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+        singleConnectionDataSource.setDriverClassName(this.environment
+                .getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
         singleConnectionDataSource.setUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
         singleConnectionDataSource.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
         singleConnectionDataSource.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
@@ -73,7 +73,7 @@ public class ReadOnlyLoggingConfig {
 
     /**
      * Method for creating the Transaction Manager.
-     * 
+     *
      * @return JpaTransactionManager
      * @throws ClassNotFoundException
      *             when class not found
@@ -96,7 +96,7 @@ public class ReadOnlyLoggingConfig {
 
     /**
      * Method for creating the Entity Manager Factory Bean.
-     * 
+     *
      * @return LocalContainerEntityManagerFactoryBean
      * @throws ClassNotFoundException
      *             when class not found
@@ -107,14 +107,19 @@ public class ReadOnlyLoggingConfig {
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_LOGGING");
         entityManagerFactoryBean.setDataSource(this.readableDataSource());
-        entityManagerFactoryBean.setPackagesToScan(this.environment.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPackagesToScan(this.environment
+                .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
 
         final Properties jpaProperties = new Properties();
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT, this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL, this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL));
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY, this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY));
-        jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_DIALECT,
+                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL,
+                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL));
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY,
+                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY));
+        jpaProperties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL,
+                this.environment.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
