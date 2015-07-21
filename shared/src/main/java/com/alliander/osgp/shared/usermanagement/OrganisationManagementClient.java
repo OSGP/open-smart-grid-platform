@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.usermanagement;
 
 import java.io.FileInputStream;
@@ -20,9 +27,6 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 /**
  * This class offers a web client for the web-api-user-management web service.
- * 
- * @author CGI
- * 
  */
 public class OrganisationManagementClient extends AbstractClient {
 
@@ -39,7 +43,7 @@ public class OrganisationManagementClient extends AbstractClient {
 
     /**
      * Construct a UserManagementClient instance.
-     * 
+     *
      * @param keystoreLocation
      *            The location of the key store.
      * @param keystorePassword
@@ -48,7 +52,7 @@ public class OrganisationManagementClient extends AbstractClient {
      *            The type of the key store.
      * @param baseAddress
      *            The base address or URL for the UserManagementClient.
-     * 
+     *
      * @throws OrganisationManagementClientException
      *             In case the construction fails, a
      *             OrganisationManagementClientException will be thrown.
@@ -106,15 +110,15 @@ public class OrganisationManagementClient extends AbstractClient {
 
     /**
      * Get all organisations.
-     * 
+     *
      * @param organisationIdentification
      *            The organisation identification of the organisation issuing
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a list of organisations.
-     * 
+     *
      * @throws OrganisationManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -137,7 +141,7 @@ public class OrganisationManagementClient extends AbstractClient {
 
     /**
      * Get an organisation.
-     * 
+     *
      * @param organisationIdentificationToGet
      *            The organisation identification of the organisation to get.
      * @param organisationIdentification
@@ -145,9 +149,9 @@ public class OrganisationManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing an organisation.
-     * 
+     *
      * @throws OrganisationManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -171,7 +175,7 @@ public class OrganisationManagementClient extends AbstractClient {
 
     /**
      * Add a new organisation.
-     * 
+     *
      * @param newOrganisationIdentification
      *            The organisation identification of the organisation to add.
      * @param name
@@ -187,9 +191,9 @@ public class OrganisationManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a succesMessage or errorMessage.
-     * 
+     *
      * @throws OrganisationManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -216,7 +220,7 @@ public class OrganisationManagementClient extends AbstractClient {
 
     /**
      * Remove a.k.a. deactivate an organisation.
-     * 
+     *
      * @param organisationIdentificationToRemove
      *            The organisation identification of the organisation to remove.
      * @param organisationIdentification
@@ -224,9 +228,9 @@ public class OrganisationManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a succesMessage or errorMessage.
-     * 
+     *
      * @throws OrganisationManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -252,7 +256,7 @@ public class OrganisationManagementClient extends AbstractClient {
 
     /**
      * Activate an organisation.
-     * 
+     *
      * @param organisationIdentificationToActivate
      *            The organisation identification of the organisation to
      *            activate.
@@ -261,9 +265,9 @@ public class OrganisationManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a succesMessage or errorMessage.
-     * 
+     *
      * @throws OrganisationManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -289,7 +293,7 @@ public class OrganisationManagementClient extends AbstractClient {
 
     /**
      * Change an organisations data.
-     * 
+     *
      * @param organisationIdentificationToChange
      *            The organisation identification of the organisation to change.
      * @param newOrganisationIdentification
@@ -303,9 +307,9 @@ public class OrganisationManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a succesMessage or errorMessage.
-     * 
+     *
      * @throws OrganisationManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.

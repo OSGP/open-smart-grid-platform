@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.usermanagement;
 
 import java.io.FileInputStream;
@@ -20,9 +27,6 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 /**
  * This class offers a web client for the web-api-user-management web service.
- * 
- * @author CGI
- * 
  */
 public class UserManagementClient extends AbstractClient {
 
@@ -44,7 +48,7 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Construct a UserManagementClient instance.
-     * 
+     *
      * @param keystoreLocation
      *            The location of the key store.
      * @param keystorePassword
@@ -53,7 +57,7 @@ public class UserManagementClient extends AbstractClient {
      *            The type of the key store.
      * @param baseAddress
      *            The base address or URL for the UserManagementClient.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the construction fails, a
      *             UserManagmentClientException will be thrown.
@@ -111,16 +115,16 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Get all users for all organisations.
-     * 
+     *
      * @param organisationIdentification
      *            The organisation identification of the organisation issuing
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a list of all users for all
      *         organisations.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -143,7 +147,7 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Get the users for an organisation.
-     * 
+     *
      * @param usersForOrganisationIdentification
      *            The organisation identification for which the users are
      *            requested.
@@ -152,10 +156,10 @@ public class UserManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a list of all users for the
      *         organisation.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -179,7 +183,7 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Get a user.
-     * 
+     *
      * @param username
      *            The user name of the user to get.
      * @param organisationIdentification
@@ -187,9 +191,9 @@ public class UserManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a user.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -212,7 +216,7 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Change a user's password.
-     * 
+     *
      * @param organisationIdentificationForUser
      *            The organisation identification of the user.
      * @param username
@@ -224,16 +228,16 @@ public class UserManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a feedback message.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
      */
     public String changePassword(final String organisationIdentificationForUser, final String username,
             final String newPassword, final String organisationIdentification, final String token)
-            throws UserManagementClientException {
+                    throws UserManagementClientException {
 
         final ChangeUserPasswordRequest changeUserPasswordRequest = new ChangeUserPasswordRequest(
                 organisationIdentificationForUser, username, newPassword);
@@ -254,7 +258,7 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Add a new user.
-     * 
+     *
      * @param organisationIdentificationForUser
      *            The organisation identification for the new user.
      * @param username
@@ -270,9 +274,9 @@ public class UserManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing the new user.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -300,7 +304,7 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Remove a user.
-     * 
+     *
      * @param organisationIdentificationForUser
      *            The organisation identification for the user to remove.
      * @param username
@@ -310,9 +314,9 @@ public class UserManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a succesMessage or errorMessage.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -337,7 +341,7 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Change a users data.
-     * 
+     *
      * @param organisationIdentificationForUser
      *            The organisation identification for the user.
      * @param username
@@ -355,9 +359,9 @@ public class UserManagementClient extends AbstractClient {
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing a succesMessage or errorMessage.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -384,15 +388,15 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Get the list of all roles.
-     * 
+     *
      * @param organisationIdentification
      *            The organisation identification of the organisation issuing
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing the list of roles.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
@@ -415,15 +419,15 @@ public class UserManagementClient extends AbstractClient {
 
     /**
      * Get the list of all applications.
-     * 
+     *
      * @param organisationIdentification
      *            The organisation identification of the organisation issuing
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A JSON string containing the list of applications.
-     * 
+     *
      * @throws UserManagementClientException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.

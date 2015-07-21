@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.usermanagement;
 
 import javax.ws.rs.core.MediaType;
@@ -12,9 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Base class for web clients for the web-api-user-management web service.
- * 
- * @author CGI
- * 
  */
 public class AbstractClient {
 
@@ -33,7 +37,7 @@ public class AbstractClient {
 
     /**
      * Get a WebClient instance from the configured WebClient.
-     * 
+     *
      * @return A new WebClient instance.
      */
     protected WebClient getWebClientInstance() {
@@ -44,13 +48,13 @@ public class AbstractClient {
 
     /**
      * Create the headers for a request.
-     * 
+     *
      * @param organisationIdentification
      *            The organisation identification of the organisation issuing
      *            the request.
      * @param token
      *            The authentication token.
-     * 
+     *
      * @return A MultivaluedMap<String, String> containing the headers for the
      *         request.
      */
@@ -64,12 +68,12 @@ public class AbstractClient {
 
     /**
      * Check the response of the User Management API.
-     * 
+     *
      * @param response
      *            The response.
-     * 
+     *
      * @return The body of the response as string.
-     * 
+     *
      * @throws ResponseException
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.

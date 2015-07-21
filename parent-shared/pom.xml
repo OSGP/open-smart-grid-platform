@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parent-shared</artifactId>
     <groupId>com.alliander.osgp</groupId>
     <version>0.11.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>parent-shared</name>
+    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Parent module.</description>
+    <organization>
+        <name>OSGP</name>
+        <url>https://osgplatform.wordpress.com</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>APACHE 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+    <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
+    <url>${maven.site.url}</url>
+    <distributionManagement>
+        <site>
+            <id>shared-components</id>
+            <name>shared-components</name>
+            <!-- <url>Use this example URL to generate maven site locally and have it deployed to a folder using: mvn site site:deploy or mvn site site:stage -->
+            <!-- <url>file:///C:/Users/Kevin/Desktop/shared-components</url> -->
+            <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
+            <url>${maven.site.distributionManagement.site.url}</url>
+        </site>
+    </distributionManagement>
 
     <properties>
         <module.baseUri>${project.baseUri}/../</module.baseUri>
@@ -28,7 +63,8 @@
         <jackson.version>2.4.2</jackson.version>
         <commons.codec.version>1.9</commons.codec.version>
         <orika.version>1.4.5</orika.version>
-        <jxr.version>2.4</jxr.version>
+        <jxr.version>2.5</jxr.version>
+        <maven.project.info.reports.plugin.version>2.8</maven.project.info.reports.plugin.version>
         <apache.activemq.version>5.10.0</apache.activemq.version>
         <commons.pool.version>1.6</commons.pool.version>
         <jackson.jaxrs.version>2.4.2</jackson.jaxrs.version>
@@ -36,22 +72,23 @@
         <cxf.version>3.0.1</cxf.version>
         <logback.version>1.1.2</logback.version>
         <logback.ext.version>0.1.2</logback.ext.version>
-		<apache.commons.schema>2.0.3</apache.commons.schema>
-		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>		
+        <apache.commons.schema>2.0.3</apache.commons.schema>
+        <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
+        <license.maven.plugin>2.11</license.maven.plugin>
     </properties>
 
     <repositories>
-    	<repository>
-    		<id>fuse-repo</id>
-    		<name>Fuse Source</name>    		
-    		<url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+        <repository>
+            <id>fuse-repo</id>
+            <name>Fuse Source</name>
+            <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-    	</repository>
+        </repository>
     </repositories>
 
     <dependencyManagement>
@@ -109,8 +146,8 @@
                 <version>${spring.ws.version}</version>
             </dependency>
             <dependency>
-            	<groupId>org.springframework.ws</groupId>
-            	<artifactId>spring-ws-security</artifactId>
+                <groupId>org.springframework.ws</groupId>
+                <artifactId>spring-ws-security</artifactId>
                 <version>${spring.ws.version}</version>
             </dependency>
             <dependency>
@@ -119,13 +156,13 @@
                 <version>${spring.ws.version}</version>
             </dependency>
 
-			<!-- Spring JMS -->
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-jms</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-			
+            <!-- Spring JMS -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jms</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
             <!-- Spring Data -->
             <dependency>
                 <groupId>org.springframework.data</groupId>
@@ -133,22 +170,22 @@
                 <version>${spring.data.version}</version>
             </dependency>
 
-			<!-- Spring Security -->
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-core</artifactId>
-				<version>${spring.security.version}</version>
-			</dependency>	
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-web</artifactId>
-				<version>${spring.security.version}</version>
-			</dependency>	
-			<dependency>
-				<groupId>org.springframework.security</groupId>
-				<artifactId>spring-security-config</artifactId>
-				<version>${spring.security.version}</version>
-			</dependency>
+            <!-- Spring Security -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-core</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-web</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-config</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
 
             <!-- Servlet API 3.0 -->
             <dependency>
@@ -161,12 +198,6 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>jstl</artifactId>
                 <version>${servlet.jstl.version}</version>
-            </dependency>
-            <!-- CG Lib (Required to process @Configuration classes) -->
-            <dependency>
-                <groupId>cglib</groupId>
-                <artifactId>cglib</artifactId>
-                <version>${cglib.version}</version>
             </dependency>
 
             <!-- Joda Time (Date/Time functions) -->
@@ -196,21 +227,21 @@
             </dependency>
 
             <!-- Jackson (JSON) -->
-	  		<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
 
             <!-- Jakarta commons codec -->
             <dependency>
@@ -219,86 +250,86 @@
                 <version>${commons.codec.version}</version>
             </dependency>
 
-			<!-- Apache HTTP client -->
-			<dependency>
-			    <groupId>org.apache.httpcomponents</groupId>
-			    <artifactId>httpclient</artifactId>
-			    <version>${apache.httpcomponents.version}</version>
-			</dependency>
+            <!-- Apache HTTP client -->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${apache.httpcomponents.version}</version>
+            </dependency>
 
             <!-- Apache MQ client -->
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-client</artifactId>
-				<version>${apache.activemq.version}</version>
-				<!-- Exclude the non-client JAR files -->
-				<exclusions>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-context</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>activeio-core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.activemq</groupId>
-						<artifactId>kahadb</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.jasypt</groupId>
-						<artifactId>jasypt</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.apache.activemq.protobuf</groupId>
-						<artifactId>activemq-protobuf</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>commons-net</groupId>
-						<artifactId>commons-net</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.osgi</groupId>
-						<artifactId>org.osgi.core</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.springframework</groupId>
-						<artifactId>spring-context</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.fusesource.mqtt-client</groupId>
-						<artifactId>mqtt-client</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.fusesource.fuse-extra</groupId>
-						<artifactId>fusemq-leveldb</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-client</artifactId>
+                <version>${apache.activemq.version}</version>
+                <!-- Exclude the non-client JAR files -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>activeio-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq</groupId>
+                        <artifactId>kahadb</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jasypt</groupId>
+                        <artifactId>jasypt</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.apache.activemq.protobuf</groupId>
+                        <artifactId>activemq-protobuf</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>commons-net</groupId>
+                        <artifactId>commons-net</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.osgi</groupId>
+                        <artifactId>org.osgi.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.fusesource.mqtt-client</groupId>
+                        <artifactId>mqtt-client</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.fusesource.fuse-extra</groupId>
+                        <artifactId>fusemq-leveldb</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>activemq-spring</artifactId>
                 <version>${apache.activemq.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.activemq</groupId>
                 <artifactId>activemq-pool</artifactId>
                 <version>${apache.activemq.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-pool</groupId>
                 <artifactId>commons-pool</artifactId>
                 <version>${commons.pool.version}</version>
             </dependency>
-            
-			<!-- REQUIRED FOR FITNESSE -->
-			<dependency>
-			    <groupId>org.apache.activemq</groupId>
-			    <artifactId>activemq-kahadb-store</artifactId>
-			    <version>${apache.activemq.version}</version>
-			</dependency>    
+
+            <!-- REQUIRED FOR FITNESSE -->
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-kahadb-store</artifactId>
+                <version>${apache.activemq.version}</version>
+            </dependency>
 
             <!-- Orika (mapping framework) -->
             <dependency>
@@ -327,16 +358,21 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-	        <dependency>
-	            <groupId>ch.qos.logback</groupId>
-	            <artifactId>logback-classic</artifactId>
-	            <version>${logback.version}</version>
-	        </dependency>       
-	        <dependency>
-	            <groupId>org.logback-extensions</groupId>
-	            <artifactId>logback-ext-spring</artifactId>
-	            <version>${logback.ext.version}</version>
-	        </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.logback-extensions</groupId>
+                <artifactId>logback-ext-spring</artifactId>
+                <version>${logback.ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.maven.plugin}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -344,9 +380,43 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-	                <groupId>org.apache.maven.plugins</groupId>
-	                <artifactId>maven-compiler-plugin</artifactId>
-	                <version>${maven.compiler.plugin.version}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>${maven.project.info.reports.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jxr-plugin</artifactId>
+                    <version>${jxr.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>${license.maven.plugin}</version>
+                    <configuration>
+                        <header>${license.maven.plugin.location}</header>
+                        <properties>
+                            <owner>Mycila</owner>
+                            <email>mathieu.carbou@gmail.com</email>
+                        </properties>
+                        <excludes>
+                            <exclude>**/README.md</exclude>
+                            <exclude>src/test/resources/**</exclude>
+                            <exclude>src/main/resources/**</exclude>
+                        </excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -357,7 +427,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <fork>true</fork>
-					<executable>${JAVA_1_7_HOME}/bin/javac</executable>
+                    <executable>${JAVA_1_7_HOME}/bin/javac</executable>
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
@@ -369,8 +439,17 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven.project.info.reports.plugin.version}</version>
+                <configuration>
+                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>${xjr.version}</version>
+                <version>${jxr.version}</version>
             </plugin>
         </plugins>
     </reporting>
