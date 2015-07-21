@@ -2,7 +2,7 @@
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/job/OSGP_Platform_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_development)
+[![Build Status](http://54.77.62.182/job/OSGP_Platform_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Platform_development) [![Stories in Progress](https://badge.waffle.io/osgp/platform.png?label=in%20progress&title=In%20Progress)](http://waffle.io/osgp/platform)
 
 ### Component Description
 
@@ -28,7 +28,8 @@ Domain Layer
 - osgp-domain-core, Generic domain classes
 - osgp-domain-public-lighting, Public Lighting domain classes
 - osgp-domain-tariff-switching, Tariff Switching domain classes
-- web-service-logging, Logging incoming request and outgoing response of Web Service Layer
+- osgp-logging, Logging incoming requests and outgoing responses of the
+  Web Service Layer and logging calls to and from devices
 
 Message Routing Layer
 

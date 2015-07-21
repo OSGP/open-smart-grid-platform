@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.core.application.services;
 
 import java.util.List;
@@ -37,19 +44,22 @@ public class DeviceManagementService extends AbstractService {
 
     // === SET EVENT NOTIFICATIONS ===
 
-    public void setEventNotifications(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final List<EventNotificationType> eventNotifications, final String messageType) throws FunctionalException {
+    public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType)
+                    throws FunctionalException {
 
-        LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.EventNotificationType> eventNotificationsDto = this.domainCoreMapper.mapAsList(eventNotifications,
-                com.alliander.osgp.dto.valueobjects.EventNotificationType.class);
-        final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = new EventNotificationMessageDataContainer(eventNotificationsDto);
+        final List<com.alliander.osgp.dto.valueobjects.EventNotificationType> eventNotificationsDto = this.domainCoreMapper
+                .mapAsList(eventNotifications, com.alliander.osgp.dto.valueobjects.EventNotificationType.class);
+        final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = new EventNotificationMessageDataContainer(
+                eventNotificationsDto);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                eventNotificationMessageDataContainer), messageType, device.getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, eventNotificationMessageDataContainer), messageType, device.getIpAddress());
     }
 }

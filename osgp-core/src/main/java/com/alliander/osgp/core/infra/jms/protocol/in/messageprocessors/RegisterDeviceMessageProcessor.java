@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
 import java.net.InetAddress;
@@ -60,9 +67,8 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
     // === REGISTER DEVICE ===
 
     /**
-     * Update device registration data (ipaddress, etc). Device is added
-     * (without an owner) when not exist yet.
-     * 
+     * Update device registration data (ipaddress, etc). Device is added (without an owner) when not exist yet.
+     *
      * @param deviceIdentification
      *            The device identification.
      * @param ipAddress
@@ -71,9 +77,9 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
      *            The type of the device, SSLD or PSLD.
      * @param hasSchedule
      *            In case the device has a schedule, this will be true.
-     * 
+     *
      * @return Device with updated data
-     * 
+     *
      * @throws UnknownHostException
      */
     @Transactional(value = "transactionManager")
@@ -107,7 +113,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
         final List<Device> devices = this.deviceRepository.findByNetworkAddress(address);
 
         for (final Device device : devices) {
-            if (!LOCAL_HOST.equals(device.getNetworkAddress().getHostAddress())) {
+            if (!LOCAL_HOST.equals(device.getIpAddress())) {
                 if (!device.getDeviceIdentification().equals(deviceIdentification)) {
                     device.clearNetworkAddress();
                     this.deviceRepository.save(device);

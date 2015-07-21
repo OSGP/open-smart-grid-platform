@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.core.application.services;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
@@ -28,7 +35,6 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.OslpLogItem;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
@@ -36,7 +42,6 @@ import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
@@ -47,6 +52,8 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.shared.application.config.PagingSettings;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -55,7 +62,6 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsCoreDeviceManagementService")
-@Transactional(value = "transactionManager")
 @Validated
 public class DeviceManagementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementService.class);
@@ -79,7 +85,7 @@ public class DeviceManagementService {
     private DeviceSpecifications deviceSpecifications;
 
     @Autowired
-    private OslpLogItemRepository logItemRepository;
+    private DeviceLogItemRepository logItemRepository;
 
     @Autowired
     private EventRepository eventRepository;
@@ -102,7 +108,8 @@ public class DeviceManagementService {
     public DeviceManagementService() {
         // Parameterless constructor required for transactions...
     }
-
+    
+    @Transactional(value = "transactionManager")
     public List<Organisation> findAllOrganisations(@Identification final String organisationIdentification) throws FunctionalException {
 
         LOGGER.debug("findAllOrganisations called with organisation {}", organisationIdentification);
@@ -112,8 +119,10 @@ public class DeviceManagementService {
 
         return this.organisationRepository.findAll();
     }
-
-    public Page<OslpLogItem> findOslpMessages(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
+    
+    //TODO remove
+    @Transactional(value = "readableTransactionManager")
+    public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
             @Min(value = 0) final int pageNumber) throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] { organisationIdentification,
@@ -131,6 +140,7 @@ public class DeviceManagementService {
         return this.logItemRepository.findAll(request);
     }
 
+    @Transactional(value = "transactionManager")
     public Page<Event> findEvents(@Identification final String organisationIdentification, final String deviceIdentification, final Integer pageSize,
             final Integer pageNumber, final DateTime from, final DateTime until) throws FunctionalException {
 
@@ -188,6 +198,7 @@ public class DeviceManagementService {
      * @throws ArgumentNullOrEmptyException
      * @throws FunctionalException
      */
+    @Transactional(value = "transactionManager")
     public Page<Device> findDevices(@Identification final String organisationIdentification, final Integer pageSize, final Integer pageNumber,
             final DeviceFilter deviceFilter) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -225,6 +236,7 @@ public class DeviceManagementService {
         return devices;
     }
 
+    @Transactional(value = "transactionManager")
     private Page<Device> applyFilter(final DeviceFilter deviceFilter, final Organisation organisation, final PageRequest request) {
         Page<Device> devices = null;
 
@@ -277,7 +289,7 @@ public class DeviceManagementService {
     }
 
     // === SET EVENT NOTIFICATIONS ===
-
+    @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications) throws FunctionalException {
 
@@ -300,11 +312,13 @@ public class DeviceManagementService {
         return correlationUid;
     }
 
+    @Transactional(value = "transactionManager")
     public ResponseMessage dequeueSetEventNotificationsResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
 
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
+    @Transactional(value = "transactionManager")
     // === RETRIEVE SCHEDULED TASKS LIST FOR SPECIFIC DEVICE ===
     public List<ScheduledTask> findScheduledTasks(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
             throws FunctionalException {
@@ -317,6 +331,7 @@ public class DeviceManagementService {
         return this.scheduledTaskRepository.findByDeviceIdentification(deviceIdentification);
     }
 
+    @Transactional(value = "transactionManager")
     // === RETRIEVE SCHEDULED TASKS LIST FOR ALL DEVICES ===
     public List<ScheduledTask> findScheduledTasks(@Identification final String organisationIdentification) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);

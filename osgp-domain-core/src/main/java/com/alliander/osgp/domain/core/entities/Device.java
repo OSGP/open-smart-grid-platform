@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.domain.core.entities;
 
 import java.net.InetAddress;
@@ -153,6 +160,10 @@ public class Device extends AbstractEntity {
         return this.networkAddress;
     }
 
+    public String getIpAddress() {
+        return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
+    }
+
     public boolean isActivated() {
         return this.isActivated;
     }
@@ -218,7 +229,7 @@ public class Device extends AbstractEntity {
 
     /**
      * Get the owner organisation name of the device.
-     * 
+     *
      * @return The organisation name when an owner was set, "" otherwise.
      */
     public String getOwner() {
@@ -295,9 +306,8 @@ public class Device extends AbstractEntity {
 
     /**
      * Get the organisations that are authorized for this device.
-     * 
-     * @return List of OrganisationIdentification of organisations that are
-     *         authorized for this device.
+     *
+     * @return List of OrganisationIdentification of organisations that are authorized for this device.
      */
     @Transient
     public List<String> getOrganisations() {
@@ -310,7 +320,7 @@ public class Device extends AbstractEntity {
 
     /**
      * Create default configuration for a device (based on type).
-     * 
+     *
      * @return default configuration
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {

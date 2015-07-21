@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.domain;
 
 import javax.jms.JMSException;
@@ -67,7 +74,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION, message.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, message.getResult().toString());
                 if (message.getOsgpException() != null) {
-                	objectMessage.setStringProperty(Constants.DESCRIPTION, ((OsgpException) message.getOsgpException()).getMessage());
+                    objectMessage.setStringProperty(Constants.DESCRIPTION, message.getOsgpException().getMessage());
                 }
                 return objectMessage;
             }
@@ -75,18 +82,19 @@ public class DomainResponseMessageSender implements DomainResponseService {
     }
 
     private ResponseMessage createResponseMessage(final ProtocolResponseMessage protocolResponseMessage) {
-        final OsgpException osgpException = protocolResponseMessage.getOsgpException() == null ? null : protocolResponseMessage.getOsgpException();
+        final OsgpException osgpException = protocolResponseMessage.getOsgpException() == null ? null
+                : protocolResponseMessage.getOsgpException();
         return new ResponseMessage(protocolResponseMessage.getCorrelationUid(),
                 protocolResponseMessage.getOrganisationIdentification(),
-                protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(),
-                osgpException, protocolResponseMessage.getDataObject());
+                protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(), osgpException,
+                protocolResponseMessage.getDataObject());
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
-    	TechnicalException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+        final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                "Unexpected exception while retrieving response message", e);
         return new ResponseMessage(protocolRequestMessage.getCorrelationUid(),
                 protocolRequestMessage.getOrganisationIdentification(),
-                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex,
-                e);
+                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, e);
     }
 }

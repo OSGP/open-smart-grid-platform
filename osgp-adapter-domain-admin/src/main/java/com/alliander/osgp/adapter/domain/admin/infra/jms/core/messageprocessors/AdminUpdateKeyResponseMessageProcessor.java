@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.admin.infra.jms.core.messageprocessors;
 
 import javax.jms.JMSException;
@@ -19,9 +26,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing admin revoke key messages
- * 
- * @author CGI
- * 
  */
 @Component("domainAdminUpdateKeyResponseMessageProcessor")
 public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -49,7 +53,7 @@ public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMess
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException=null;
+        OsgpException osgpException = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();

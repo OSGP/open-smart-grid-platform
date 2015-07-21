@@ -1,4 +1,7 @@
-CREATE USER osgp_read_only_ws_user WITH ENCRYPTED PASSWORD 'qMB3i7RLRVYH0xM' NOSUPERUSER;
+-- This user should be created by our create database and users script, not using flyway
+
+
+--CREATE USER osgp_read_only_ws_user WITH ENCRYPTED PASSWORD 'qMB3i7RLRVYH0xM' NOSUPERUSER;
 GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO osgp_read_only_ws_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO osgp_read_only_ws_user;
 

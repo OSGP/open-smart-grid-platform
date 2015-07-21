@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol;
 
 import javax.jms.JMSException;
@@ -18,11 +25,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
 /**
- * This class sends protocol request messages to the requests queue for the
- * specific version of the protocol
- * 
- * @author CGI
- * 
+ * This class sends protocol request messages to the requests queue for the specific version of the protocol
  */
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
@@ -71,6 +74,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
+                objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
                 return objectMessage;

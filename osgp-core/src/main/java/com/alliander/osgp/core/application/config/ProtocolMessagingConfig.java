@@ -1,11 +1,16 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.application.config;
 
 import javax.annotation.Resource;
 
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.broker.region.policy.RedeliveryPolicyMap;
-import org.apache.activemq.command.ActiveMQDestination;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
@@ -16,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import com.alliander.osgp.core.infra.jms.JmsTemplateSettings;
 import com.alliander.osgp.core.infra.jms.protocol.ProtocolRequestMessageJmsTemplateFactory;
@@ -24,7 +28,6 @@ import com.alliander.osgp.core.infra.jms.protocol.ProtocolResponseMessageListene
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageListenerContainerFactory;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessorMap;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageJmsTemplateFactory;
-import com.alliander.osgp.core.infra.jms.protocol.logging.ProtocolLogItemRequestMessageListener;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 
@@ -51,11 +54,6 @@ public class ProtocolMessagingConfig {
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_RESPONSES_CONCURRENT_CONSUMERS = "jms.incoming.protocol.responses.concurrent.consumers";
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_RESPONSES_MAX_CONCURRENT_CONSUMERS = "jms.incoming.protocol.responses.max.concurrent.consumers";
 
-    // JMS Settings: Incoming protocol log item requests (receive)
-    private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_QUEUE = "jms.incoming.protocol.log.item.requests.queue";
-    private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_CONCURRENT_CONSUMERS = "jms.incoming.protocol.log.item.requests.concurrent.consumers";
-    private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_MAX_CONCURRENT_CONSUMERS = "jms.incoming.protocol.log.item.requests.max.concurrent.consumers";
-
     // JMS Settings: Incoming protocol requests (receive)
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_REQUESTS_CONCURRENT_CONSUMERS = "jms.incoming.protocol.requests.concurrent.consumers";
     private static final String PROPERTY_NAME_JMS_INCOMING_PROTOCOL_REQUESTS_MAX_CONCURRENT_CONSUMERS = "jms.incoming.protocol.requests.max.concurrent.consumers";
@@ -64,6 +62,8 @@ public class ProtocolMessagingConfig {
     private static final String PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_EXPLICIT_QOS_ENABLED = "jms.outgoing.protocol.responses.explicit.qos.enabled";
     private static final String PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_TIME_TO_LIVE = "jms.outgoing.protocol.responses.time.to.live";
     private static final String PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_DELIVERY_PERSISTENT = "jms.outgoing.protocol.responses.delivery.persistent";
+
+    private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "max.retry.count";
 
     @Resource
     private Environment environment;
@@ -91,7 +91,8 @@ public class ProtocolMessagingConfig {
 
         final ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
         activeMQConnectionFactory.setRedeliveryPolicyMap(this.protocolRedeliveryPolicyMap());
-        activeMQConnectionFactory.setBrokerURL(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
+        activeMQConnectionFactory.setBrokerURL(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL));
 
         activeMQConnectionFactory.setNonBlockingRedelivery(true);
 
@@ -113,13 +114,18 @@ public class ProtocolMessagingConfig {
 
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
 
-        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
-        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
-        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
-        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
-        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
-        redeliveryPolicy
-                .setUseExponentialBackOff(Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
+        redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_INITIAL_REDELIVERY_DELAY)));
+        redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERIES)));
+        redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_MAXIMUM_REDELIVERY_DELAY)));
+        redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_REDELIVERY_DELAY)));
+        redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_BACK_OFF_MULTIPLIER)));
+        redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_JMS_DEFAULT_USE_EXPONENTIAL_BACK_OFF)));
 
         return redeliveryPolicy;
     }
@@ -130,11 +136,14 @@ public class ProtocolMessagingConfig {
     @Bean
     public ProtocolRequestMessageJmsTemplateFactory protocolRequestsJmsTemplate() {
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_EXPLICIT_QOS_ENABLED)), Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_TIME_TO_LIVE)), Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_DELIVERY_PERSISTENT)));
+                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_EXPLICIT_QOS_ENABLED)),
+                Long.parseLong(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_TIME_TO_LIVE)),
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_DELIVERY_PERSISTENT)));
 
-        return new ProtocolRequestMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(), jmsTemplateSettings, this.protocolInfoRepository.findAll());
+        return new ProtocolRequestMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(),
+                jmsTemplateSettings, this.protocolInfoRepository.findAll());
     }
 
     // === INCOMING PROTOCOL RESPONSES ===
@@ -153,40 +162,14 @@ public class ProtocolMessagingConfig {
         return messageListenerContainer;
     }
 
-    // === INCOMING PROTOCOL LOG ITEM REQUESTS ===
-    // beans used for receiving protocol log item request messages
-
-    @Bean
-    public ActiveMQDestination protocolLogItemRequestsQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_QUEUE));
-    }
-
-    @Bean
-    public DefaultMessageListenerContainer protocolLogItemRequestsMessageListenerContainer() {
-        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
-        messageListenerContainer.setConnectionFactory(this.protocolPooledConnectionFactory());
-        messageListenerContainer.setDestination(this.protocolLogItemRequestsQueue());
-        messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_LOG_ITEM_REQUESTS_MAX_CONCURRENT_CONSUMERS)));
-        messageListenerContainer.setMessageListener(this.protocolLogItemRequestMessageListener());
-        messageListenerContainer.setSessionTransacted(true);
-        return messageListenerContainer;
-    }
-
-    @Bean
-    public ProtocolLogItemRequestMessageListener protocolLogItemRequestMessageListener() {
-        return new ProtocolLogItemRequestMessageListener();
-    }
-
     // === INCOMING PROTOCOL REQUESTS ===
     // beans used for receiving incoming protocol request messages
 
     @Bean
     public ProtocolRequestMessageListenerContainerFactory protocolRequestMessageListenerContainer() {
         final ProtocolRequestMessageListenerContainerFactory messageListenerContainer = new ProtocolRequestMessageListenerContainerFactory(
-                this.protocolInfoRepository.findAll(), this.domainInfoRepository.findAll(), this.protocolRequestMessageProcessorMap);
+                this.protocolInfoRepository.findAll(), this.domainInfoRepository.findAll(),
+                this.protocolRequestMessageProcessorMap);
         messageListenerContainer.setConnectionFactory(this.protocolPooledConnectionFactory());
         messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_INCOMING_PROTOCOL_REQUESTS_CONCURRENT_CONSUMERS)));
@@ -206,10 +189,20 @@ public class ProtocolMessagingConfig {
     @Bean
     public ProtocolResponseMessageJmsTemplateFactory protocolResponseJmsTemplateFactory() {
         final JmsTemplateSettings jmsTemplateSettings = new JmsTemplateSettings(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_EXPLICIT_QOS_ENABLED)), Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_TIME_TO_LIVE)), Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_DELIVERY_PERSISTENT)));
+                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_EXPLICIT_QOS_ENABLED)),
+                Long.parseLong(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_TIME_TO_LIVE)),
+                Boolean.parseBoolean(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_DELIVERY_PERSISTENT)));
 
-        return new ProtocolResponseMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(), jmsTemplateSettings, this.protocolInfoRepository.findAll());
+        return new ProtocolResponseMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(),
+                jmsTemplateSettings, this.protocolInfoRepository.findAll());
+    }
+
+    // The Max count to retry a failed response
+
+    @Bean
+    public int getMaxRetryCount() {
+        return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_MAX_RETRY_COUNT));
     }
 }

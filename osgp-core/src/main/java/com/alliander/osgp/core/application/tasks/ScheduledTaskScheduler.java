@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.application.tasks;
 
 import java.sql.Timestamp;
@@ -63,6 +70,6 @@ public class ScheduledTaskScheduler implements Runnable {
         return new ProtocolRequestMessage(scheduledTask.getDomain(), scheduledTask.getDomainVersion(),
                 scheduledTask.getMessageType(), scheduledTask.getCorrelationId(),
                 scheduledTask.getOrganisationIdentification(), scheduledTask.getDeviceIdentification(), device
-                        .getNetworkAddress().toString(), scheduledTask.getMessageData(), true, 0);
+                .getNetworkAddress().getHostAddress(), scheduledTask.getMessageData(), true, 0);
     }
 }

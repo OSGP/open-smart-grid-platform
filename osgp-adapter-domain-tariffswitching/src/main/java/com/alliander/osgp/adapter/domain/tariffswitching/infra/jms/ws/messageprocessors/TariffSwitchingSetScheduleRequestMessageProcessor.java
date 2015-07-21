@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.tariffswitching.infra.jms.ws.messageprocessors;
 
 import javax.jms.JMSException;
@@ -17,16 +24,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing tariff switching set schedule request messages
- * 
- * @author CGI
- * 
  */
 @Component("domainTariffSwitchingSetScheduleRequestMessageProcessor")
 public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(TariffSwitchingSetScheduleRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(TariffSwitchingSetScheduleRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainTariffSwitchingScheduleManagementService")
@@ -70,8 +75,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServic
 
             final ScheduleMessageDataContainer tariffScheduleMessageDataContainer = (ScheduleMessageDataContainer) dataObject;
 
-            this.scheduleManagementService.setTariffSchedule(organisationIdentification, deviceIdentification, correlationUid,
-                    tariffScheduleMessageDataContainer.getScheduleList(), scheduleTime, messageType);
+            this.scheduleManagementService.setTariffSchedule(organisationIdentification, deviceIdentification,
+                    correlationUid, tariffScheduleMessageDataContainer.getScheduleList(), scheduleTime, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
