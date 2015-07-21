@@ -5,6 +5,9 @@
 	<artifactId>osgp-adapter-domain-smartmetering</artifactId>
 	<name>osgp-adapter-domain-smartmetering</name>
 	<packaging>war</packaging>
+	<!-- Description element is needed for the maven-jxr-plugin to generate a maven site -->
+    <description>Domain logic module for smart metering.</description>
+	
 
 	<parent>
 		<groupId>com.alliander.osgp</groupId>
