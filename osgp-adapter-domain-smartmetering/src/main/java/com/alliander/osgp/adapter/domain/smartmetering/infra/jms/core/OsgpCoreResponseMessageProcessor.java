@@ -26,8 +26,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
  *
- * @author CGI
- *
  */
 public abstract class OsgpCoreResponseMessageProcessor implements MessageProcessor {
 

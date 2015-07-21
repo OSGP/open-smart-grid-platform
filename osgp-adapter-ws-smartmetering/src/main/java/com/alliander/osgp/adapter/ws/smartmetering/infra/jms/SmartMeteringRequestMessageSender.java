@@ -18,8 +18,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 /**
  * Class for sending smart metering request messages to a queue
  *
- * @author CGI
- *
  */
 public class SmartMeteringRequestMessageSender {
     /**
@@ -86,7 +84,7 @@ public class SmartMeteringRequestMessageSender {
                         requestMessage.getDeviceIdentification());
                 if (requestMessage.getScheduleTime() != null) {
                     objectMessage
-                    .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
+                            .setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime().getMillis());
                 }
                 return objectMessage;
             }
