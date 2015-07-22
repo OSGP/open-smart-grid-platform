@@ -248,6 +248,7 @@
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>osgp-logging</artifactId>
                 <version>${osgp.version}</version>
+                <classifier>classes</classifier>
             </dependency>
             
             <dependency>
