@@ -297,6 +297,61 @@ body {
                                 }
                             }
                         });
+						$.ajax({
+                            type : 'GET',
+                            url : '/web-device-simulator/devices/deviceRegistrationCheck/json',
+                            dataType : 'json',
+                            contentType : 'application/json',
+                            async : true,
+                            cache : false,
+                            success : function(data) {
+                            	$('#devRegistration').prop("checked" , data);
+							}
+						});
+						$.ajax({
+                            type : 'GET',
+                            url : '/web-device-simulator/devices/deviceRebootCheck/json',
+                            dataType : 'json',
+                            contentType : 'application/json',
+                            async : true,
+                            cache : false,
+                            success : function(data) {
+                            	$('#devReboot').prop("checked" , data);
+							}
+						});
+						$.ajax({
+                            type : 'GET',
+                            url : '/web-device-simulator/devices/tariffSwitchingCheck/json',
+                            dataType : 'json',
+                            contentType : 'application/json',
+                            async : true,
+                            cache : false,
+                            success : function(data) {
+                            	$('#tariffSwitching').prop("checked" , data);
+							}
+						});
+						$.ajax({
+                            type : 'GET',
+                            url : '/web-device-simulator/devices/lightSwitchingCheck/json',
+                            dataType : 'json',
+                            contentType : 'application/json',
+                            async : true,
+                            cache : false,
+                            success : function(data) {
+                            	$('#lightSwitching').prop("checked" , data);
+							}
+						});
+						$.ajax({
+                            type : 'GET',
+                            url : '/web-device-simulator/devices/eventNotificationCheck/json',
+                            dataType : 'json',
+                            contentType : 'application/json',
+                            async : true,
+                            cache : false,
+                            success : function(data) {
+                            	$('#eventListener').prop("checked" , data);
+							}
+						});
                     }
                 });
     </script>

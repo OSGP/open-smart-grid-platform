@@ -52,6 +52,7 @@ public class DeviceManagementController extends AbstractController {
     protected static final String DEVICES_VIEW = "devices/list";
     protected static final String DEVICE_CREATE_VIEW = "devices/create";
     protected static final String DEVICE_EDIT_VIEW = "devices/edit";
+    protected static final String DEVICE_REGISTRATION_VIEW = "devices/deviceRegistrationCheck";
 
     protected static final String COMMAND_REGISTER_URL = "/devices/commands/register";
     protected static final String COMMAND_REGISTER_CONFIRM_URL = "/devices/commands/register/confirm";
@@ -59,6 +60,12 @@ public class DeviceManagementController extends AbstractController {
     protected static final String COMMAND_GET_SEQUENCE_NUMBER_URL = "/devices/commands/get-sequence-number";
     protected static final String COMMAND_SET_SEQUENCE_NUMBER_URL = "/devices/commands/set-sequence-number";
     protected static final String DEVICES_JSON_URL = "/devices/json";
+
+    protected static final String DEVICE_REGISTRATION_CHECK_JSON_URL = "/devices/deviceRegistrationCheck/json";
+    protected static final String DEVICE_REBOOT_CHECK_JSON_URL = "/devices/deviceRebootCheck/json";
+    protected static final String TARIFF_SWITCHING_CHECK_JSON_URL = "/devices/tariffSwitchingCheck/json";
+    protected static final String LIGHT_SWITCHING_CHECK_JSON_URL = "/devices/lightSwitchingCheck/json";
+    protected static final String EVENT_NOTIFICATION_CHECK_JSON_URL = "/devices/eventNotificationCheck/json";
 
     protected static final String DEVICE_REGISTRATION_CHECK_URL = "/devices/deviceRegistrationCheck";
     protected static final String DEVICE_REBOOT_CHECK_URL = "/devices/deviceRebootCheck";
@@ -127,43 +134,66 @@ public class DeviceManagementController extends AbstractController {
     }
 
     @RequestMapping(value = DEVICE_REGISTRATION_CHECK_URL, method = RequestMethod.POST)
-    @ResponseBody
-    public void getDeviceRegistrationValue(@RequestBody final AutonomousRequest request) {
-
+    public void setDeviceRegistrationValue(@RequestBody final AutonomousRequest request) {
         this.deviceManagementService.setdeviceRegistration(request.getAutonomousStatus());
 
     }
 
-    @RequestMapping(value = DEVICE_REBOOT_CHECK_URL, method = RequestMethod.POST)
+    @RequestMapping(value = DEVICE_REGISTRATION_CHECK_JSON_URL, method = RequestMethod.GET)
     @ResponseBody
+    public Boolean getDeviceRegistrationState() {
+        return this.deviceManagementService.getDevRegistration();
+    }
+
+    @RequestMapping(value = DEVICE_REBOOT_CHECK_URL, method = RequestMethod.POST)
     public void getDeviceRebootValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setDeviceReboot(request.getAutonomousStatus());
+    }
 
+    @RequestMapping(value = DEVICE_REBOOT_CHECK_JSON_URL, method = RequestMethod.GET)
+    @ResponseBody
+    public Boolean getDeviceRebootState() {
+        return this.deviceManagementService.getDevReboot();
     }
 
     @RequestMapping(value = TARIFF_SWITCHING_CHECK_URL, method = RequestMethod.POST)
-    @ResponseBody
     public void getTariffSwitchingValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setTariffSwitching(request.getAutonomousStatus());
 
     }
 
-    @RequestMapping(value = LIGHT_SWITCHING_CHECK_URL, method = RequestMethod.POST)
+    @RequestMapping(value = TARIFF_SWITCHING_CHECK_JSON_URL, method = RequestMethod.GET)
     @ResponseBody
+    public Boolean getTariffSwitchingState() {
+        return this.deviceManagementService.getTariffSwitching();
+    }
+
+    @RequestMapping(value = LIGHT_SWITCHING_CHECK_URL, method = RequestMethod.POST)
     public void getLightSwitchingValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setLightSwitching(request.getAutonomousStatus());
 
     }
 
-    @RequestMapping(value = EVENT_NOTIFICATION_CHECK_URL, method = RequestMethod.POST)
+    @RequestMapping(value = LIGHT_SWITCHING_CHECK_JSON_URL, method = RequestMethod.GET)
     @ResponseBody
+    public Boolean getLightSwitchingState() {
+        return this.deviceManagementService.getLightSwitching();
+    }
+
+    @RequestMapping(value = EVENT_NOTIFICATION_CHECK_URL, method = RequestMethod.POST)
     public void getEventNotificationValue(@RequestBody final AutonomousRequest request) {
 
         this.deviceManagementService.setEventNotification(request.getAutonomousStatus());
 
+    }
+
+    @RequestMapping(value = EVENT_NOTIFICATION_CHECK_JSON_URL, method = RequestMethod.GET)
+    @ResponseBody
+    public Boolean getEventNotificationState() {
+        return this.deviceManagementService.getEventNotification();
     }
 
     @RequestMapping(value = DEVICE_CREATE_URL, method = RequestMethod.GET)

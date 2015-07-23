@@ -28,11 +28,20 @@ public class DeviceManagementService {
 
     public List<EventNotificationToBeSent> listeventNotificationToBeSent = new ArrayList<>();
 
-    private Boolean devRegistration = false;
-    private Boolean devReboot = false;
-    private Boolean lightSwitching = false;
-    private Boolean tariffSwitching = false;
-    private Boolean eventNotification = false;
+    @Autowired
+    private Boolean checkboxDeviceRegistrationValue;
+
+    @Autowired
+    private Boolean checkboxDeviceRebootValue;
+
+    @Autowired
+    private Boolean checkboxLightSwitchingValue;
+
+    @Autowired
+    private Boolean checkboxTariffSwitchingValue;
+
+    @Autowired
+    private Boolean checkboxEventNotificationValue;
 
     protected void setDeviceRepository(final DeviceRepository deviceRepository) {
         this.deviceRepository = deviceRepository;
@@ -59,43 +68,43 @@ public class DeviceManagementService {
     }
 
     public Boolean getDevRegistration() {
-        return this.devRegistration;
+        return this.checkboxDeviceRegistrationValue;
     }
 
     public Boolean getTariffSwitching() {
-        return this.tariffSwitching;
+        return this.checkboxTariffSwitchingValue;
     }
 
     public Boolean getLightSwitching() {
-        return this.lightSwitching;
+        return this.checkboxLightSwitchingValue;
     }
 
     public Boolean getDevReboot() {
-        return this.devReboot;
+        return this.checkboxDeviceRebootValue;
     }
 
     public Boolean getEventNotification() {
-        return this.eventNotification;
+        return this.checkboxEventNotificationValue;
     }
 
     public void setdeviceRegistration(final Boolean deviceRegistration) {
-        this.devRegistration = deviceRegistration;
+        this.checkboxDeviceRegistrationValue = deviceRegistration;
     }
 
     public void setDeviceReboot(final Boolean deviceReboot) {
-        this.devReboot = deviceReboot;
+        this.checkboxDeviceRebootValue = deviceReboot;
     }
 
     public void setTariffSwitching(final Boolean tariffSwitching) {
-        this.tariffSwitching = tariffSwitching;
+        this.checkboxTariffSwitchingValue = tariffSwitching;
     }
 
     public void setLightSwitching(final Boolean lightSwitching) {
-        this.lightSwitching = lightSwitching;
+        this.checkboxLightSwitchingValue = lightSwitching;
     }
 
     public void setEventNotification(final Boolean eventNotification) {
-        this.eventNotification = eventNotification;
+        this.checkboxEventNotificationValue = eventNotification;
     }
 
 }
