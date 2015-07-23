@@ -23,4 +23,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     List<Device> findAllOrderById();
 
     Device findByDeviceUid(String deviceUid);
+
+    List<Device> findByHasEveningMorningBurner(Boolean hasEveningMorningBurner);
 }

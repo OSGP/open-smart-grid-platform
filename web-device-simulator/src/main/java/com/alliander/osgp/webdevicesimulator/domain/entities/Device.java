@@ -128,6 +128,9 @@ public class Device extends AbstractEntity {
     @Column(nullable = true)
     private Integer randomPlatform;
 
+    @Column(nullable = false)
+    private boolean hasEveningMorningBurner;
+
     @Transient
     private final SecureRandom random = new SecureRandom();
 
@@ -169,7 +172,7 @@ public class Device extends AbstractEntity {
 
     /**
      * Sets ip address of device
-     * 
+     *
      * @param ipaddress
      */
     public void setIpAddress(final String ipaddress) {
@@ -319,7 +322,7 @@ public class Device extends AbstractEntity {
 
     /**
      * Generate a secure random number within range 0 to 65535.
-     * 
+     *
      * @return The random number.
      */
     public Integer doGenerateRandomNumber() {
@@ -328,7 +331,7 @@ public class Device extends AbstractEntity {
 
     /**
      * Create default configuration for a device (based on type).
-     * 
+     *
      * @return default configuration
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {
