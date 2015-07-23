@@ -112,6 +112,12 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_RESPONSE_DELAY_TIME = "response.delay.time";
     private static final String PROPERTY_NAME_RESPONSE_DELAY_RANDOM_RANGE = "response.delay.random.range";
 
+    private static final String PROPERTY_NAME_CHECKBOX_DEVICE_REGISTRATION_VALUE = "checkbox.device.registration.value";
+    private static final String PROPERTY_NAME_CHECKBOX_DEVICE_REBOOT_VALUE = "checkbox.device.reboot.value";
+    private static final String PROPERTY_NAME_CHECKBOX_LIGHT_SWITCHING_VALUE = "checkbox.light.switching.value";
+    private static final String PROPERTY_NAME_CHECKBOX_TARIFF_SWITCHING_VALUE = "checkbox.tariff.switching.value";
+    private static final String PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE = "checkbox.event.notification.value";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     @Resource
@@ -420,5 +426,33 @@ public class ApplicationContext {
         }
 
         return value;
+    }
+
+    @Bean
+    public Boolean checkboxDeviceRegistrationValue() {
+        return Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_CHECKBOX_DEVICE_REGISTRATION_VALUE));
+    }
+
+    @Bean
+    public Boolean checkboxDeviceRebootValue() {
+        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_DEVICE_REBOOT_VALUE));
+    }
+
+    @Bean
+    public Boolean checkboxLightSwitchingValue() {
+        return Boolean.parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_LIGHT_SWITCHING_VALUE));
+    }
+
+    @Bean
+    public Boolean checkboxTariffSwitchingValue() {
+        return Boolean
+                .parseBoolean(this.environment.getRequiredProperty(PROPERTY_NAME_CHECKBOX_TARIFF_SWITCHING_VALUE));
+    }
+
+    @Bean
+    public Boolean checkboxEventNotificationValue() {
+        return Boolean.parseBoolean(this.environment
+                .getRequiredProperty(PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE));
     }
 }
