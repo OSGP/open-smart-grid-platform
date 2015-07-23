@@ -12,7 +12,7 @@ public class NoDeviceResponseException extends Exception {
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = 5129388216260738123L;
+    private static final long serialVersionUID = 5129388216260738121L;
 
     private static final String MESSAGE = "No response from device";
 
