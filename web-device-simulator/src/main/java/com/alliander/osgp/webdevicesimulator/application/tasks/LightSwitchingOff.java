@@ -35,9 +35,10 @@ public class LightSwitchingOff implements Runnable {
     public void run() {
 
         if (this.deviceManagementService.getLightSwitching()) {
-            LOGGER.info("PublicLighting Switching off for devices");
 
-            final List<Device> devices = this.deviceRepository.findAll();
+            LOGGER.info("Publiclighting Switching off for devices without Evening/Morning Burners");
+
+            final List<Device> devices = this.deviceRepository.findByHasEveningMorningBurner(false);
 
             for (final Device device : devices) {
                 LOGGER.info("Light switching for : {}: {} ", device.getId(), device.getDeviceIdentification());

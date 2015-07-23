@@ -15,18 +15,18 @@ import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
 import com.alliander.osgp.webdevicesimulator.service.SwitchingServices;
 
 @Component
-public class LightSwitchingOn implements Runnable {
+public class EveningMorningBurnersLightSwitchingOn implements Runnable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LightSwitchingOn.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EveningMorningBurnersLightSwitchingOn.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private RegisterDevice registerDevice;
+    private SwitchingServices switchingServices;
 
     @Autowired
-    private SwitchingServices switchingServices;
+    private RegisterDevice registerDevice;
 
     @Autowired
     private DeviceManagementService deviceManagementService;
@@ -35,9 +35,10 @@ public class LightSwitchingOn implements Runnable {
     public void run() {
 
         if (this.deviceManagementService.getLightSwitching()) {
-            LOGGER.info("Publiclighting Switching on for devices without Evening/Morning Burners");
 
-            final List<Device> devices = this.deviceRepository.findByHasEveningMorningBurner(false);
+            LOGGER.info("Publiclighting Switching on for devices with Evening/Morning Burners");
+
+            final List<Device> devices = this.deviceRepository.findByHasEveningMorningBurner(true);
 
             for (final Device device : devices) {
                 LOGGER.info("Light switching for : {}: {} ", device.getId(), device.getDeviceIdentification());
@@ -45,7 +46,7 @@ public class LightSwitchingOn implements Runnable {
                 // Switching on Light
                 this.switchingServices.lightSwitchOn(device.getId());
 
-                // Send EventNotifications for LightSwitching on
+                // Send EventNotifications for LightSwitching On
                 LOGGER.info("Sending LIGHT_EVENTS_LIGHT_ON event for device : {}: {} ", device.getId(),
                         device.getDeviceIdentification());
                 this.registerDevice.sendEventNotificationCommand(device.getId(),
