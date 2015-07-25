@@ -62,6 +62,7 @@
         <module>Platform/osgp-adapter-domain-core</module>
         <module>Platform/osgp-adapter-domain-publiclighting</module>
         <module>Platform/osgp-adapter-domain-tariffswitching</module>
+        <module>Platform/osgp-adapter-domain-smartmetering</module>
 
         <module>Platform/osgp-adapter-ws-shared</module>
         <module>Platform/osgp-adapter-ws-shared-db</module>
@@ -70,6 +71,7 @@
         <module>Platform/osgp-adapter-ws-admin</module>
         <module>Platform/osgp-adapter-ws-publiclighting</module>
         <module>Platform/osgp-adapter-ws-tariffswitching</module>
+        <module>Platform/osgp-adapter-ws-smartmetering</module>
 
         <module>Platform/osgp-core</module>
         <module>Platform/osgp-logging</module>

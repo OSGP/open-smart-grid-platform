@@ -188,6 +188,13 @@
                 <version>${osgp.version}</version>
                 <classifier>classes</classifier>
             </dependency>
+            
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>osgp-adapter-ws-smartmetering</artifactId>
+                <version>${osgp.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
 
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
@@ -228,6 +235,12 @@
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>osgp-adapter-domain-tariffswitching</artifactId>
+                <version>${osgp.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>osgp-adapter-domain-smartmetering</artifactId>
                 <version>${osgp.version}</version>
                 <classifier>classes</classifier>
             </dependency>
