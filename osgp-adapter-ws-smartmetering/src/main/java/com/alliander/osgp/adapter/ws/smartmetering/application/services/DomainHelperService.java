@@ -24,10 +24,10 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
-@Service(value = "wsTariffSwitchingDomainHelperService")
+@Service(value = "wsSmartMeteringDomainHelperService")
 public class DomainHelperService {
 
-    private static ComponentType COMPONENT_TYPE = ComponentType.WS_TARIFF_SWITCHING;
+    private static ComponentType COMPONENT_TYPE = ComponentType.WS_SMART_METERING;
 
     @Autowired
     private DeviceDomainService deviceDomainService;

@@ -13,12 +13,16 @@
 
     <sws:annotation-driven/>
 
+	<sws:static-wsdl id="SmartMeteringInstallation" location="/WEB-INF/wsdl/smartmetering/SmartMeteringInstallation.wsdl"/>
  	<sws:static-wsdl id="SmartMeteringManagement" location="/WEB-INF/wsdl/smartmetering/SmartMeteringManagement.wsdl"/>
- 	
+ 	 	
  	<bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
         <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/common.xsd" />
     </bean>
     
+    <bean id="sm-installation" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-installation.xsd" />
+    </bean>
     <bean id="sm-management" class="org.springframework.xml.xsd.SimpleXsdSchema">
         <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-management.xsd" />
     </bean>

@@ -16,8 +16,7 @@
 			
 			<xsd:import 
 				namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" 
-				schemaLocation="schemas/sm-management.xsd" />
-				
+				schemaLocation="schemas/sm-management.xsd" />				
 		</xsd:schema>
 	</wsdl:types>
 		 

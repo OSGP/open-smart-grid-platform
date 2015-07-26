@@ -1,0 +1,53 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10"
+	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+	attributeFormDefault="unqualified"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10">
+
+	<xsd:import 
+		namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
+		schemaLocation="common.xsd" />
+
+	<xsd:element name="AddMeterRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Meter" type="tns:Meter" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="AddMeterResponse">
+		<xsd:complexType />
+	</xsd:element>
+	
+	<xsd:simpleType name="IPType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="((1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]).){3}(1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:complexType name="Meter">
+		<xsd:sequence>
+			<xsd:element name="MeterUid" type="xsd:string" minOccurs="0" />
+			<xsd:element name="MeterIdentification" type="common:Identification" />
+			<xsd:element name="Owner" type="common:Identification" minOccurs="0" />
+			<xsd:element name="PostalCode" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="City" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Street" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="StreetNumber" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Activated" type="xsd:boolean" minOccurs="0" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

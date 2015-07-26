@@ -10,11 +10,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
@@ -22,31 +18,25 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageFinder;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
-@Service(value = "wsSmartMeteringManagementService")
-@Transactional(value = "transactionManager")
+/**
+ * @author OSGP
+ *
+ */
+@Service(value = "wsSmartMeteringInstallationService")
+// @Transactional(value = "transactionManager")
 @Validated
-public class ManagementService {
+public class InstallationService {
 
-    // TODO refactor
-
-    private static final int PAGE_SIZE = 30;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -57,38 +47,31 @@ public class ManagementService {
     @Autowired
     private SmartMeteringResponseMessageFinder smartMeteringResponseMessageFinder;
 
-    public ManagementService() {
-        // Parameterless constructor required for transactions
-    }
+    // public InstallationService() {
+    // // Parameterless constructor required for transactions
+    // }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
-            throws FunctionalException {
-
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
-                pageNumber);
-
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-
-        final PageRequest request = new PageRequest(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
-        return this.deviceRepository.findAllAuthorized(organisation, request);
-    }
-
-    public String enqueueGetSmartMeterStatusRequest(@Identification final String organisationIdentification,
+    public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification) throws FunctionalException {
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+        // TODO: bypassing authorization logic for now, needs to be fixed.
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_STATUS);
+        // final Organisation organisation =
+        // this.domainHelperService.findOrganisation(organisationIdentification);
+        // final Device device =
+        // this.domainHelperService.findActiveDevice(deviceIdentification);
+        //
+        // this.domainHelperService.isAllowed(organisation, device,
+        // DeviceFunction.GET_STATUS);
 
-        LOGGER.debug("enqueueGetSmartMeterStatusRequest called with organisation {} and device {}",
+        LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SM_REQUEST1, correlationUid, organisationIdentification,
+                SmartMeteringRequestMessageType.ADD_METER, correlationUid, organisationIdentification,
                 deviceIdentification, null, null);
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -96,9 +79,31 @@ public class ManagementService {
         return correlationUid;
     }
 
-    public ResponseMessage dequeueGetSmartMeterStatusResponse(final String organisationIdentification,
+    /**
+     * This function can be used to try to find the response message using
+     * correlation UID.
+     *
+     * @param organisationIdentification
+     *            The organisation identification.
+     * @param correlationUid
+     *            The correlation UID obtained by issuing a request.
+     * @return
+     *
+     * @throws OsgpException
+     */
+    public ResponseMessage dequeueAddSmartMeterResponse(final String organisationIdentification,
             final String correlationUid) throws OsgpException {
 
         return this.smartMeteringResponseMessageFinder.findMessage(correlationUid);
     }
+
+    /**
+     * @param organisationIdentification
+     * @param device
+     * @throws FunctionalException
+     */
+    public String addDevice(final String organisationIdentification, final Device device) throws FunctionalException {
+        return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification());
+    }
+
 }
