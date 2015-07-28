@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DlmsDeviceRepository extends JpaRepository<DlmsDevice, Long> {
-    DlmsDevice findByDeviceUid(String deviceUid);
 
     DlmsDevice findByDeviceIdentification(String deviceIdentification);
 }
