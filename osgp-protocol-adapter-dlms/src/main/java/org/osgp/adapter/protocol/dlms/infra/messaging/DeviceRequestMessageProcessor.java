@@ -14,10 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-//import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
-//import com.alliander.osgp.adapter.protocol.oslp.device.responses.EmptyDeviceResponse;
-//import com.alliander.osgp.adapter.protocol.oslp.infra.networking.DeviceService;
-//import com.alliander.osgp.adapter.protocol.oslp.services.DeviceResponseService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -48,7 +44,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     @Autowired
     @Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
-    protected MessageProcessorMap oslpRequestMessageProcessorMap;
+    protected MessageProcessorMap dlmsRequestMessageProcessorMap;
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
@@ -71,7 +67,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      */
     @PostConstruct
     public void init() {
-        this.oslpRequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
+        this.dlmsRequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
                 this.deviceRequestMessageType.name(), this);
     }
 

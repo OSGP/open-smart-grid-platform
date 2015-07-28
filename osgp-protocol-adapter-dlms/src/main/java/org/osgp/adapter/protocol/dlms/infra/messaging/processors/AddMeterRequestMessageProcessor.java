@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing public lighting set transition request messages
+ * Class for processing padd meter request messages
  */
 @Component("dlmsAddMeterRequestMessageProcessor")
 public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
