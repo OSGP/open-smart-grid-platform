@@ -128,7 +128,7 @@ public class RegisterDevice {
 
             // Send registration message
             final OslpEnvelope response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                    this.oslpPortClient), olspRequest);
+                    this.oslpPortClient), olspRequest, device.getDeviceIdentification());
             LOGGER.debug("Controller Received Send Register Device Command: " + response.getPayloadMessage().toString());
 
             // Write request log
@@ -195,7 +195,7 @@ public class RegisterDevice {
 
             // Send registration confirm message
             final OslpEnvelope response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                    this.oslpPortClient), olspRequest);
+                    this.oslpPortClient), olspRequest, device.getDeviceIdentification());
             LOGGER.debug("Controller Received Send Confirm Device Registration Command: "
                     + response.getPayloadMessage().toString());
 
@@ -284,7 +284,7 @@ public class RegisterDevice {
 
             // Send registration message
             final OslpEnvelope response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                    this.oslpPortClient), request);
+                    this.oslpPortClient), request, device.getDeviceIdentification());
             LOGGER.debug("Controller Received Send Event Notification Command: "
                     + response.getPayloadMessage().toString());
 
