@@ -61,20 +61,23 @@ public class SmartMeteringInstallationEndpoint {
     public AddMeterResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddMeterRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming AddMeterRequest for meter: {}.", request.getMeter().getMeterIdentification());
+        LOGGER.info("Incoming AddMeterRequest for meter: {}.", request.getMeter().getIdentificationNumber());
 
         try {
             // final Device device =
             // this.installationMapper.map(request.getDevice(),
             // Device.class);
 
-            final Device device = new Device(request.getMeter().getMeterIdentification());
+            // Add a mapper as soon as the structure is set
+            // we'll use identificationNumber as deviceIdentification for now
+
+            final Device device = new Device(request.getMeter().getIdentificationNumber());
 
             this.installationService.addDevice(organisationIdentification, device);
         } catch (final MethodConstraintViolationException e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getMeter().getMeterIdentification(), organisationIdentification }, e);
+                    request.getMeter().getIdentificationNumber(), organisationIdentification }, e);
 
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -82,7 +85,7 @@ public class SmartMeteringInstallationEndpoint {
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getMeter().getMeterIdentification(), organisationIdentification }, e);
+                    request.getMeter().getIdentificationNumber(), organisationIdentification }, e);
 
             this.handleException(e);
         }
