@@ -1,4 +1,4 @@
-# Protocol-Adapter-DLMS
+# Protocol Adapter for evice Language Message Specification protocol
 
 ### Build Status
 
@@ -6,4 +6,12 @@
 
 ### Component Description
 
-Protocol adapter and device simulator for Device Language Message Specification protocol.
+These components offer an implementation of DLMS. At the moment, it can send and receive jms message from and to the OSGP platform.
+
+- osgp-adapter-protocol-dlms, Protocol Adapter
+
+The components have dependencies.
+
+- shared, Common classes used by the Protocol Adapter and Device Simulator
+- osgp-dto, Data Transfer Objects
+
