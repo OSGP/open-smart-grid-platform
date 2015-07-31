@@ -61,8 +61,8 @@ public class InstallationService {
     }
 
     public void addMeter(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String messageType)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final String correlationUid, final String deviceType,
+            final String messageType) throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);

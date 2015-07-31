@@ -83,7 +83,7 @@ public class ManagementService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.SM_REQUEST1, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+                deviceIdentification, null, null, null);
 
         this.smartMeteringRequestMessageSender.send(message);
 

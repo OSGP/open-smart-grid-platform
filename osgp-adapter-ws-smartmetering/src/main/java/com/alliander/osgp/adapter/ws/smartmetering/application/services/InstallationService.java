@@ -46,7 +46,8 @@ public class InstallationService {
     // }
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification) throws FunctionalException {
+            @Identification final String deviceIdentification, @Identification final String deviceType)
+            throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -66,7 +67,7 @@ public class InstallationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.ADD_METER, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+                deviceIdentification, null, null, deviceType);
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -79,7 +80,8 @@ public class InstallationService {
      * @throws FunctionalException
      */
     public String addDevice(final String organisationIdentification, final Device device) throws FunctionalException {
-        return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification());
+        return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(),
+                device.getDeviceType());
     }
 
 }

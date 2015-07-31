@@ -17,13 +17,15 @@ public class SmartMeteringRequestMessage extends RequestMessage {
 
     private final SmartMeteringRequestMessageType messageType;
     private final DateTime scheduleTime;
+    private final String deviceType;
 
     public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final Serializable request,
-            final DateTime scheduleTime) {
+            final DateTime scheduleTime, final String deviceType) {
         super(correlationUid, organisationIdentification, deviceIdentification, request);
         this.messageType = messageType;
         this.scheduleTime = scheduleTime;
+        this.deviceType = deviceType;
     }
 
     public SmartMeteringRequestMessageType getMessageType() {
@@ -32,5 +34,9 @@ public class SmartMeteringRequestMessage extends RequestMessage {
 
     public DateTime getScheduleTime() {
         return this.scheduleTime;
+    }
+
+    public String getDeviceType() {
+        return this.deviceType;
     }
 }

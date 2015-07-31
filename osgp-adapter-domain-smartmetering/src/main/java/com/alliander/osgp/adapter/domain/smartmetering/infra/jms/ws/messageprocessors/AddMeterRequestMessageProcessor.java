@@ -43,7 +43,7 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
@@ -55,12 +55,15 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
+        String deviceType = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            deviceType = message.getStringProperty(Constants.DEVICE_TYPE);
+
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -74,12 +77,11 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
             LOGGER.info("Calling application service function: {}", messageType);
 
             this.installationService.addMeter(organisationIdentification, deviceIdentification, correlationUid,
-                    messageType);
+                    deviceType, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
 
     }
-
 }
