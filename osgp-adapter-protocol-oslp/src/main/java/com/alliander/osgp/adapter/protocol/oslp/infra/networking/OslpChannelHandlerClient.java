@@ -9,8 +9,6 @@ package com.alliander.osgp.adapter.protocol.oslp.infra.networking;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -25,10 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.application.services.DeviceRegistrationService;
-import com.alliander.osgp.adapter.protocol.oslp.exceptions.NoDeviceResponseException;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.shared.exceptionhandling.NoDeviceResponseException;
 
 public class OslpChannelHandlerClient extends OslpChannelHandler {
 
@@ -60,7 +58,8 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     public void channelDisconnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
         final int channelId = e.getChannel().getId();
         if (this.callbackHandlers.containsKey(channelId)) {
-            this.callbackHandlers.get(channelId).getDeviceResponseHandler().handleException(new NoDeviceResponseException());
+            this.callbackHandlers.get(channelId).getDeviceResponseHandler()
+                    .handleException(new NoDeviceResponseException());
             this.callbackHandlers.remove(channelId);
         }
         super.channelDisconnected(ctx, e);
@@ -82,7 +81,8 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 LOGGER.info("{} Received OSLP Response (before callback): {}", channelId, message.getPayloadMessage());
 
                 // Check the sequence number
-                final Integer sequenceNumber = SequenceNumberUtils.convertByteArrayToInteger(message.getSequenceNumber());
+                final Integer sequenceNumber = SequenceNumberUtils.convertByteArrayToInteger(message
+                        .getSequenceNumber());
                 this.deviceRegistrationService.checkSequenceNumber(message.getDeviceId(), sequenceNumber);
 
                 final OslpCallbackHandler callbackHandler = this.callbackHandlers.get(channelId);
@@ -91,7 +91,8 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                 callbackHandler.getDeviceResponseHandler().handleResponse(message);
 
             } else {
-                LOGGER.warn("{} Received OSLP Request, which is not expected: {}", channelId, message.getPayloadMessage());
+                LOGGER.warn("{} Received OSLP Request, which is not expected: {}", channelId,
+                        message.getPayloadMessage());
             }
         } else {
             LOGGER.warn("{} Received message wasn't properly secured.", channelId);
@@ -104,7 +105,8 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         return null;
     }
 
-    public void send(final InetSocketAddress address, final OslpEnvelope request, final OslpResponseHandler responseHandler) throws IOException {
+    public void send(final InetSocketAddress address, final OslpEnvelope request,
+            final OslpResponseHandler responseHandler, final String deviceIdentification) throws IOException {
         LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
 
         // Open connection and send message
@@ -124,6 +126,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
                     OslpChannelHandlerClient.this.write(future, address, request, responseHandler, null);
                     future.getChannel().getId();
                 } else {
+                    LOGGER.info("The connection to the device {} is not sucessfull", deviceIdentification);
                     throw new IOException("ChannelFuture - Unable to connect");
                     // this.callbackHandlers.get(channelId).getDeviceResponseHandler().handleException(future.getCause());
                 }
@@ -132,12 +135,14 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
     }
 
     private void write(final ChannelFuture channelFuture, final InetSocketAddress address, final OslpEnvelope request,
-            final OslpResponseHandler responseHandler, final DeviceRequestMessageProcessor processor) throws IOException {
+            final OslpResponseHandler responseHandler, final DeviceRequestMessageProcessor processor)
+            throws IOException {
         final Channel channel = channelFuture.getChannel();
 
         if (channel != null && channel.isConnected()) {
             LOGGER.info("{} Connection established to: {}", channelFuture.getChannel().getId(), address);
         } else {
+            LOGGER.info("The connection for device {} is not successfull", request.getDeviceId());
             LOGGER.warn("{} Unable to connect to: {}", channelFuture.getChannel().getId(), address);
             throw new IOException("Channel - Unable to connect");
         }

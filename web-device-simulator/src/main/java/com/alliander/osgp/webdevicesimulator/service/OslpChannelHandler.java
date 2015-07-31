@@ -106,10 +106,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             this.connectionTimeout = connectionTimeout;
         }
 
-        OslpEnvelope get() throws IOException, DeviceSimulatorException {
+        OslpEnvelope get(final String deviceIdentification) throws IOException, DeviceSimulatorException {
             try {
                 if (!this.latch.await(this.connectionTimeout, TimeUnit.MILLISECONDS)) {
-                    LOGGER.warn("Failed to receive response within timelimit {} ms", this.connectionTimeout);
+                    LOGGER.warn("Failed to receive response from device {} within timelimit {} ms",
+                            deviceIdentification, this.connectionTimeout);
                     throw new IOException("Failed to receive response within timelimit " + this.connectionTimeout
                             + " ms");
                 }
@@ -359,8 +360,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 && e.getMessage().contains("Connection reset by peer");
     }
 
-    public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request) throws IOException,
-    DeviceSimulatorException {
+    public OslpEnvelope send(final InetSocketAddress address, final OslpEnvelope request,
+            final String deviceIdentification) throws IOException, DeviceSimulatorException {
         LOGGER.info("Sending OSLP request: {}", request.getPayloadMessage());
 
         final Callback callback = new Callback(this.connectionTimeout);
@@ -375,6 +376,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             if (channelFuture.getChannel() != null && channelFuture.getChannel().isConnected()) {
                 LOGGER.info("Connection established to: {}", address);
             } else {
+                LOGGER.info("The connnection to the device {} is not successfull", deviceIdentification);
                 LOGGER.warn("Unable to connect to: {}", address);
                 throw new IOException("Unable to connect");
             }
@@ -387,7 +389,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         // wait for response and close connection
         try {
-            final OslpEnvelope response = callback.get();
+            final OslpEnvelope response = callback.get(deviceIdentification);
             LOGGER.info("Received OSLP response (after callback): {}", response.getPayloadMessage());
 
             /*

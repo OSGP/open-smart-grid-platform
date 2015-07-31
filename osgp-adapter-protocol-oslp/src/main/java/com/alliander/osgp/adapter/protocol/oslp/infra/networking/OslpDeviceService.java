@@ -124,7 +124,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, responseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, responseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -150,7 +151,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, responseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, responseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -176,7 +178,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -203,7 +206,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -231,7 +235,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -258,7 +263,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -303,7 +309,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     protected void handleException(final Throwable t, final DeviceRequest deviceRequest,
@@ -351,7 +358,7 @@ public class OslpDeviceService implements DeviceService {
 
     private void processOslpRequestSetSchedulePaged(final SetScheduleDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final Pager pager)
-            throws IOException {
+                    throws IOException {
         LOGGER.debug("Processing paged set schedule request for device: {}, page {} of {}",
                 deviceRequest.getDeviceIdentification(), pager.getCurrentPage(), pager.numberOfPages);
 
@@ -374,7 +381,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     private void handleOslpResponseSetSchedulePaged(final SetScheduleDeviceRequest deviceRequest,
@@ -430,8 +438,8 @@ public class OslpDeviceService implements DeviceService {
                 .addAllSchedules(oslpSchedules)
                 .setScheduleType(
                         this.mapper.map(deviceRequest.getRelayType(), com.alliander.osgp.oslp.Oslp.RelayType.class))
-                .setPageInfo(
-                        Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
+                        .setPageInfo(
+                                Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
                                 .setPageSize(pager.getPageSize()).setTotalPages(pager.getNumberOfPages()));
 
         return this.getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
@@ -553,7 +561,7 @@ public class OslpDeviceService implements DeviceService {
         };
 
         this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
-                oslpResponseHandler);
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -581,7 +589,7 @@ public class OslpDeviceService implements DeviceService {
         };
 
         this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
-                oslpResponseHandler);
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -608,7 +616,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -648,7 +657,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     private void handleOslpResponseGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
@@ -721,10 +731,10 @@ public class OslpDeviceService implements DeviceService {
                 .withPayloadMessage(
                         oslpMessageBuilder.setGetPowerUsageHistoryRequest(
                                 oslpRequestBuilder
-                                        .setTimePeriod(
-                                                oslpTimePeriodBuilder.setStartTime(startTime).setEndTime(endTime))
+                                .setTimePeriod(
+                                        oslpTimePeriodBuilder.setStartTime(startTime).setEndTime(endTime))
                                         .setTermType(oslpHistoryTermType).setPage(pager.getCurrentPage())).build())
-                .build();
+                                        .build();
     }
 
     @Override
@@ -749,7 +759,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, responseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, responseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -776,7 +787,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -802,7 +814,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -829,7 +842,8 @@ public class OslpDeviceService implements DeviceService {
             }
         };
 
-        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler);
+        this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
+                deviceRequest.getDeviceIdentification());
     }
 
     private DeviceResponse buildDeviceResponseGetActualPowerUsage(final DeviceRequest deviceRequest,
@@ -874,8 +888,8 @@ public class OslpDeviceService implements DeviceService {
                 .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
                 .withPayloadMessage(
                         Oslp.Message.newBuilder()
-                                .setGetActualPowerUsageRequest(Oslp.GetActualPowerUsageRequest.newBuilder()).build())
-                .build();
+                        .setGetActualPowerUsageRequest(Oslp.GetActualPowerUsageRequest.newBuilder()).build())
+                        .build();
     }
 
     private OslpEnvelope buildOslpRequestGetConfiguration(final DeviceRequest deviceRequest) {
@@ -893,7 +907,7 @@ public class OslpDeviceService implements DeviceService {
                 .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
                 .withPayloadMessage(
                         Oslp.Message.newBuilder().setGetFirmwareVersionRequest(GetFirmwareVersionRequest.newBuilder())
-                                .build()).build();
+                        .build()).build();
     }
 
     private OslpEnvelope buildOslpRequestGetStatus(final DeviceRequest deviceRequest) {
@@ -917,7 +931,7 @@ public class OslpDeviceService implements DeviceService {
                 .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
                 .withPayloadMessage(
                         Oslp.Message.newBuilder().setResumeScheduleRequest(resumeScheduleRequestBuilder).build())
-                .build();
+                        .build();
     }
 
     private OslpEnvelope buildOslpRequestSetConfiguration(final SetConfigurationDeviceRequest deviceRequest) {
@@ -986,7 +1000,7 @@ public class OslpDeviceService implements DeviceService {
                 .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
                 .withPayloadMessage(
                         Oslp.Message.newBuilder().setStartSelfTestRequest(Oslp.StartSelfTestRequest.newBuilder())
-                                .build()).build();
+                        .build()).build();
     }
 
     private OslpEnvelope buildOslpRequestStopSelfTest(final DeviceRequest deviceRequest) {
@@ -994,7 +1008,7 @@ public class OslpDeviceService implements DeviceService {
                 .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
                 .withPayloadMessage(
                         Oslp.Message.newBuilder().setStopSelfTestRequest(Oslp.StopSelfTestRequest.newBuilder()).build())
-                .build();
+                        .build();
     }
 
     private OslpEnvelope buildOslpRequestUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest) {
@@ -1002,11 +1016,11 @@ public class OslpDeviceService implements DeviceService {
                 .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
                 .withPayloadMessage(
                         Oslp.Message
-                                .newBuilder()
-                                .setUpdateFirmwareRequest(
-                                        UpdateFirmwareRequest.newBuilder()
-                                                .setFirmwareDomain(deviceRequest.getFirmwareDomain())
-                                                .setFirmwareUrl(deviceRequest.getFirmwareUrl())).build()).build();
+                        .newBuilder()
+                        .setUpdateFirmwareRequest(
+                                UpdateFirmwareRequest.newBuilder()
+                                .setFirmwareDomain(deviceRequest.getFirmwareDomain())
+                                .setFirmwareUrl(deviceRequest.getFirmwareUrl())).build()).build();
     }
 
     private void handleOslpResponseGetActualPowerUsage(final DeviceRequest deviceRequest,
@@ -1068,7 +1082,7 @@ public class OslpDeviceService implements DeviceService {
                         LightValue.class), this.mapper.map(getStatusResponse.getPreferredLinktype(), LinkType.class),
                         this.mapper.map(getStatusResponse.getActualLinktype(), LinkType.class), this.mapper.map(
                                 getStatusResponse.getLightType(), LightType.class),
-                        getStatusResponse.getEventNotificationMask());
+                                getStatusResponse.getEventNotificationMask());
             }
         }
 
@@ -1287,7 +1301,7 @@ public class OslpDeviceService implements DeviceService {
 
     /**
      * Return the correct port, depending on loopback or external.
-     * 
+     *
      * @param address
      * @return
      */
