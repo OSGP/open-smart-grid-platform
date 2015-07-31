@@ -152,6 +152,11 @@ public class Constants {
      */
     public static final String IS_SCHEDULED = "Scheduled";
 
+    /**
+     * JMS constant for message field: ScheduleTime.
+     */
+    public static final String DEVICE_TYPE = "DeviceType";
+
     // === DEPRECATED ===
 
     /**
