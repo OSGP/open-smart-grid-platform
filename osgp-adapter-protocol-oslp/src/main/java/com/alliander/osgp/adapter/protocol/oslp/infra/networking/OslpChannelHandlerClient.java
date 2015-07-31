@@ -23,10 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.protocol.oslp.application.services.DeviceRegistrationService;
-import com.alliander.osgp.adapter.protocol.oslp.exceptions.NoDeviceResponseException;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.shared.exceptionhandling.NoDeviceResponseException;
 
 public class OslpChannelHandlerClient extends OslpChannelHandler {
 
@@ -59,7 +59,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
         final int channelId = e.getChannel().getId();
         if (this.callbackHandlers.containsKey(channelId)) {
             this.callbackHandlers.get(channelId).getDeviceResponseHandler()
-            .handleException(new NoDeviceResponseException());
+                    .handleException(new NoDeviceResponseException());
             this.callbackHandlers.remove(channelId);
         }
         super.channelDisconnected(ctx, e);
@@ -136,7 +136,7 @@ public class OslpChannelHandlerClient extends OslpChannelHandler {
 
     private void write(final ChannelFuture channelFuture, final InetSocketAddress address, final OslpEnvelope request,
             final OslpResponseHandler responseHandler, final DeviceRequestMessageProcessor processor)
-                    throws IOException {
+            throws IOException {
         final Channel channel = channelFuture.getChannel();
 
         if (channel != null && channel.isConnected()) {
