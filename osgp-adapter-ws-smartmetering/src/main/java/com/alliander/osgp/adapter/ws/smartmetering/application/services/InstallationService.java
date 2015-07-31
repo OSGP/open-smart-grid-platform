@@ -16,13 +16,10 @@ import org.springframework.validation.annotation.Validated;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageFinder;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 /**
  * @author OSGP
@@ -43,9 +40,6 @@ public class InstallationService {
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
-
-    @Autowired
-    private SmartMeteringResponseMessageFinder smartMeteringResponseMessageFinder;
 
     // public InstallationService() {
     // // Parameterless constructor required for transactions
@@ -77,24 +71,6 @@ public class InstallationService {
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
-    }
-
-    /**
-     * This function can be used to try to find the response message using
-     * correlation UID.
-     *
-     * @param organisationIdentification
-     *            The organisation identification.
-     * @param correlationUid
-     *            The correlation UID obtained by issuing a request.
-     * @return
-     *
-     * @throws OsgpException
-     */
-    public ResponseMessage dequeueAddSmartMeterResponse(final String organisationIdentification,
-            final String correlationUid) throws OsgpException {
-
-        return this.smartMeteringResponseMessageFinder.findMessage(correlationUid);
     }
 
     /**

@@ -15,15 +15,17 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageListener;
 
 @Configuration
 @PropertySource("file:${osp/osgpAdapterWsSmartMetering/config}")
@@ -225,33 +227,12 @@ public class MessagingConfig {
 
     // === JMS SETTINGS: SMART METERING RESPONSES ===
 
-    @Bean
+    @Bean(name = "wsSmartMeteringResponsesQueue")
     public ActiveMQDestination smartMeteringResponsesQueue() {
         return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_QUEUE));
     }
 
-    /**
-     * @return
-     */
-    @Bean(name = "wsSmartMeteringIncomingResponsesJmsTemplate")
-    public JmsTemplate smartMeteringResponsesJmsTemplate() {
-        final JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination(new ActiveMQQueue(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_QUEUE)));
-        // Enable the use of deliveryMode, priority, and timeToLive
-        jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_EXPLICIT_QOS_ENABLED)));
-        jmsTemplate.setTimeToLive(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_TIME_TO_LIVE)));
-        jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_DELIVERY_PERSISTENT)));
-        jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-        jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
-                .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_RECEIVE_TIMEOUT)));
-        return jmsTemplate;
-    }
-
-    @Bean
+    @Bean(name = "wsSmartMeteringResponsesRedeliveryPolicy")
     public RedeliveryPolicy smartMeteringResponsesRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
@@ -262,7 +243,7 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
         redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.smartMeteringRequestsQueue());
+        redeliveryPolicy.setDestination(this.smartMeteringResponsesQueue());
         redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_BACK_OFF_MULTIPLIER)));
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
@@ -270,12 +251,31 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    /**
-     * @return
-     */
-    @Bean(name = "wsSmartMeteringIncomingResponsesMessageFinder")
-    public SmartMeteringResponseMessageFinder smartMeteringResponseMessageFinder() {
-        return new SmartMeteringResponseMessageFinder();
+    @Bean(name = "wsSmartMeteringResponsesMessageListenerContainer")
+    public DefaultMessageListenerContainer smartMeteringResponseMessageListenerContainer() {
+        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+        messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
+        messageListenerContainer.setDestination(this.smartMeteringResponsesQueue());
+
+        //
+        // TODO: add concurrent consumer properties.
+        //
+
+        // messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
+        // .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_CONCURRENT_CONSUMERS)));
+        // messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
+        // .getRequiredProperty(PROPERTY_NAME_JMS_SMART_METERING_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
+        messageListenerContainer.setMessageListener(this.smartMeteringResponseMessageListener);
+        messageListenerContainer.setSessionTransacted(true);
+        return messageListenerContainer;
+    }
+
+    @Autowired
+    public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener;
+
+    @Bean
+    public SmartMeteringResponseMessageListener smartMeteringResponseMessageListener() {
+        return new SmartMeteringResponseMessageListener();
     }
 
     @Bean

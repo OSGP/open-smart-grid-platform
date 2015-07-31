@@ -20,7 +20,6 @@ import org.springframework.validation.annotation.Validated;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringResponseMessageFinder;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -28,8 +27,6 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -53,9 +50,6 @@ public class ManagementService {
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
-
-    @Autowired
-    private SmartMeteringResponseMessageFinder smartMeteringResponseMessageFinder;
 
     public ManagementService() {
         // Parameterless constructor required for transactions
@@ -96,9 +90,4 @@ public class ManagementService {
         return correlationUid;
     }
 
-    public ResponseMessage dequeueGetSmartMeterStatusResponse(final String organisationIdentification,
-            final String correlationUid) throws OsgpException {
-
-        return this.smartMeteringResponseMessageFinder.findMessage(correlationUid);
-    }
 }

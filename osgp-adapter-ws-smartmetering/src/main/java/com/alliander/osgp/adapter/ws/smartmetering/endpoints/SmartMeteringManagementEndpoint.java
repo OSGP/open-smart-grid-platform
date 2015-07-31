@@ -20,25 +20,20 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetStatusRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetStatusResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ManagementService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
-import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
@@ -113,37 +108,6 @@ public class SmartMeteringManagementEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-
-        return response;
-    }
-
-    @PayloadRoot(localPart = "GetStatusAsyncRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public GetStatusResponse getGetStatusResponse(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetStatusAsyncRequest request) throws OsgpException {
-
-        LOGGER.info("Get Status Response received from organisation: {} for correlationUid: {}.",
-                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
-
-        final GetStatusResponse response = new GetStatusResponse();
-
-        try {
-            final ResponseMessage message = this.managementService.dequeueGetSmartMeterStatusResponse(
-                    organisationIdentification, request.getAsyncRequest().getCorrelationUid());
-            if (message != null) {
-                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-
-                if (message.getDataObject() != null) {
-                    final DeviceStatusMapped deviceStatus = (DeviceStatusMapped) message.getDataObject();
-                    if (deviceStatus != null) {
-                        response.setDeviceStatus(this.managementMapper.map(deviceStatus,
-                                com.alliander.osgp.adapter.ws.schema.smartmetering.management.DeviceStatus.class));
-                    }
-                }
-            }
         } catch (final Exception e) {
             this.handleException(e);
         }
