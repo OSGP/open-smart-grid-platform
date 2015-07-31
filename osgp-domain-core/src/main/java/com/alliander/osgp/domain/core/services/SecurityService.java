@@ -58,10 +58,10 @@ public class SecurityService {
                 DeviceFunction.REMOVE_DEVICE, DeviceFunction.GET_ACTUAL_POWER_USAGE,
                 DeviceFunction.GET_POWER_USAGE_HISTORY, DeviceFunction.RESUME_SCHEDULE, DeviceFunction.SET_REBOOT,
                 DeviceFunction.SET_TRANSITION, DeviceFunction.UPDATE_KEY, DeviceFunction.REVOKE_KEY,
-                DeviceFunction.FIND_SCHEDULED_TASKS });
+                DeviceFunction.FIND_SCHEDULED_TASKS, DeviceFunction.ADD_METER });
 
         deviceMapping.put(DeviceFunctionGroup.INSTALLATION, new DeviceFunction[] { DeviceFunction.START_SELF_TEST,
-                DeviceFunction.STOP_SELF_TEST, DeviceFunction.GET_DEVICE_AUTHORIZATION });
+                DeviceFunction.STOP_SELF_TEST, DeviceFunction.GET_DEVICE_AUTHORIZATION, DeviceFunction.ADD_METER });
 
         deviceMapping.put(DeviceFunctionGroup.AD_HOC, new DeviceFunction[] { DeviceFunction.SET_LIGHT,
                 DeviceFunction.GET_STATUS, DeviceFunction.GET_LIGHT_STATUS, DeviceFunction.GET_TARIFF_STATUS,

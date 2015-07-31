@@ -5,13 +5,18 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.ws.smartmetering.infra.jms;
+package com.alliander.osgp.adapter.ws.smartmetering.websocketcontrollers;
 
 /**
- * Enumeration of smart metering request message types
+ * @author OSGP
  *
  */
-public enum SmartMeteringRequestMessageType {
-    // TODO: insert message types for smart metering
-    ADD_METER, SM_REQUEST1, SM_REQUEST2
+public class HelloMessage {
+
+    private String name;
+
+    public String getName() {
+        return this.name;
+    }
+
 }

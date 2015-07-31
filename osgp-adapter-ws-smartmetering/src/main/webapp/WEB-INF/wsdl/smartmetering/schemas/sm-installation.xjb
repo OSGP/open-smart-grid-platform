@@ -16,10 +16,10 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema">
 		<jxb:package name="com.alliander.osgp.adapter.ws.schema.smartmetering.common"></jxb:package>
 	</jxb:schemaBindings>
  </jxb:bindings>
- 
-<jxb:bindings schemaLocation="sm-management.xsd" >
+
+<jxb:bindings schemaLocation="sm-installation.xsd" >
 	<jxb:schemaBindings>
-		<jxb:package name="com.alliander.osgp.adapter.ws.schema.smartmetering.management"></jxb:package>
+		<jxb:package name="com.alliander.osgp.adapter.ws.schema.smartmetering.installation"></jxb:package>
 	</jxb:schemaBindings>
  </jxb:bindings>
 

@@ -39,6 +39,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling
 public class WebServiceConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MANAGEMENT = "jaxb2.marshaller.context.path.smartmetering.management";
+    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_INSTALLATION = "jaxb2.marshaller.context.path.smartmetering.installation";
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
@@ -58,7 +59,7 @@ public class WebServiceConfig {
     // SMART METERING
 
     /**
-     * Method for creating the Marshaller for schedule management.
+     * Method for creating the Marshaller for smart metering management.
      *
      * @return Jaxb2Marshaller
      */
@@ -74,7 +75,7 @@ public class WebServiceConfig {
 
     /**
      * Method for creating the Marshalling Payload Method Processor for Smart
-     * Metering schedule management.
+     * Metering management.
      *
      * @return MarshallingPayloadMethodProcessor
      */
@@ -82,6 +83,35 @@ public class WebServiceConfig {
     public MarshallingPayloadMethodProcessor smartMeteringManagementMarshallingPayloadMethodProcessor() {
         final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
                 this.smartMeteringManagementMarshaller(), this.smartMeteringManagementMarshaller());
+
+        return marshallingPayloadMethodProcessor;
+    }
+
+    /**
+     * Method for creating the Marshaller for smart metering installation.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller smartMeteringInstallationMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_INSTALLATION));
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for Smart
+     * Metering installation.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor smartMeteringInstallationMarshallingPayloadMethodProcessor() {
+        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
+                this.smartMeteringInstallationMarshaller(), this.smartMeteringInstallationMarshaller());
 
         return marshallingPayloadMethodProcessor;
     }
@@ -99,6 +129,7 @@ public class WebServiceConfig {
 
         // SMART METERING
         methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
+        methodArgumentResolvers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
@@ -108,6 +139,7 @@ public class WebServiceConfig {
 
         // SMART METERING
         methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
+        methodReturnValueHandlers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
 
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 

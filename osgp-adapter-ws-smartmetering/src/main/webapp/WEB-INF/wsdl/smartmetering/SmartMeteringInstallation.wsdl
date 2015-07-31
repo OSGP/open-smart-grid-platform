@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Platform version: ${display.version} -->
+
+<wsdl:definitions 
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:sminst="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10"
+    xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0"
+    targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation-v1.0">
+        
+    <wsdl:types>
+        <xsd:schema 
+            targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-installation/imports" 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            
+            <xsd:import 
+                namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10" 
+                schemaLocation="schemas/sm-installation.xsd" />
+        </xsd:schema>
+    </wsdl:types>    
+
+    <wsdl:message name="AddMeterHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="AddMeterResponse">
+        <wsdl:part element="sminst:AddMeterResponse" name="AddMeterResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddMeterRequest">
+        <wsdl:part element="sminst:AddMeterRequest" name="AddMeterRequest">
+        </wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:portType name="SmartmeterInstallationPort">
+   
+        <wsdl:operation name="AddMeter">
+            <wsdl:input message="tns:AddMeterRequest" name="AddMeterRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:AddMeterResponse" name="AddMeterResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:portType>
+    
+    <wsdl:binding name="SmartmeterInstallationPortSoap11" type="tns:SmartmeterInstallationPort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+
+        <wsdl:operation name="AddMeter">
+            <soap:operation soapAction="" />
+            <wsdl:input name="AddMeterRequest">
+                <soap:header message="tns:AddMeterHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:AddMeterHeader" part="UserName" use="literal" />
+				<soap:header message="tns:AddMeterHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="AddMeterResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+    <wsdl:service name="SmartmeterInstallationPortService">
+        <wsdl:port binding="tns:SmartmeterInstallationPortSoap11" name="SmartmeterInstallationPortSoap11">
+            <soap:address
+                location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/installationService/" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

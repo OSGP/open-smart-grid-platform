@@ -1,0 +1,79 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10"
+	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+	attributeFormDefault="unqualified"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10">
+
+	<xsd:import 
+		namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
+		schemaLocation="common.xsd" />
+
+	<xsd:element name="AddMeterRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Meter" type="tns:Meter" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="AddMeterResponse">
+		<xsd:complexType />
+	</xsd:element>
+	
+<!-- 	<xsd:simpleType name="Str8"> -->
+<!-- 	    <xsd:restriction base="xsd:string"> -->
+<!-- 			<xsd:length value="8"/> -->
+<!-- 	    </xsd:restriction> -->
+<!-- 	</xsd:simpleType> -->
+	
+<!-- 	<xsd:simpleType name="StrMax10"> -->
+<!-- 	    <xsd:restriction base="xsd:string"> -->
+<!-- 			<xsd:minLength value="1"/> -->
+<!-- 			<xsd:maxLength value="10"/> -->
+<!-- 	    </xsd:restriction> -->
+<!-- 	</xsd:simpleType> -->
+	
+<!-- 	<xsd:simpleType name="StrMax20"> -->
+<!-- 	    <xsd:restriction base="xsd:string"> -->
+<!-- 			<xsd:minLength value="1"/> -->
+<!-- 			<xsd:maxLength value="20"/> -->
+<!-- 	    </xsd:restriction> -->
+<!-- 	</xsd:simpleType> -->
+	
+<!-- 	<xsd:simpleType name="StrMax50"> -->
+<!-- 	    <xsd:restriction base="xsd:string"> -->
+<!-- 			<xsd:minLength value="1"/> -->
+<!-- 			<xsd:maxLength value="50"/> -->
+<!-- 	    </xsd:restriction> -->
+<!-- 	</xsd:simpleType> -->
+	
+	<xsd:complexType name="Meter">
+		<xsd:sequence>
+			<xsd:element name="Identification_number" type="xsd:string" />
+			<xsd:element name="Company" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="Public_key_Grid_Operator" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Device_type" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Configuration_version" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Communication_method" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Default_encryption_key" type="xsd:string" minOccurs="0" />
+			<xsd:element name="User_key" type="xsd:string" minOccurs="0" />
+			<xsd:element name="ICC_id" type="xsd:string" minOccurs="0" />
+			<xsd:element name="DSMR_version" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Master_key" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Global_encryption_unicast_key" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Authentication_key" type="xsd:string" minOccurs="0" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

@@ -155,10 +155,10 @@ public class MessagingConfig {
                 this.outgoingWebServiceResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.outgoingOsgpCoreRequestsQueue(), this.outgoingOsgpCoreRequestsRedeliveryPolicy());
         redeliveryPolicyMap
-                .put(this.incomingOsgpCoreResponsesQueue(), this.incomingOsgpCoreResponsesRedeliveryPolicy());
+        .put(this.incomingOsgpCoreResponsesQueue(), this.incomingOsgpCoreResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.incomingOsgpCoreRequestsQueue(), this.incomingOsgpCoreRequestsRedeliveryPolicy());
         redeliveryPolicyMap
-                .put(this.outgoingOsgpCoreResponsesQueue(), this.outgoingOsgpCoreResponsesRedeliveryPolicy());
+        .put(this.outgoingOsgpCoreResponsesQueue(), this.outgoingOsgpCoreResponsesRedeliveryPolicy());
         return redeliveryPolicyMap;
     }
 
