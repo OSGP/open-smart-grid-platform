@@ -11,23 +11,22 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.scheduling.annotation.Scheduled;
 
 /**
  * @author OSGP
  *
  */
-public class RedisPublisher {
+public class AddMeterPublisher {
     private final RedisTemplate<String, Object> template;
     private final ChannelTopic topic;
     private final AtomicLong counter = new AtomicLong(0);
 
-    public RedisPublisher(final RedisTemplate<String, Object> template, final ChannelTopic topic) {
+    public AddMeterPublisher(final RedisTemplate<String, Object> template, final ChannelTopic topic) {
         this.template = template;
         this.topic = topic;
     }
 
-    @Scheduled(initialDelay = 60000, fixedDelay = 1000)
+    // @Scheduled(initialDelay = 6000, fixedDelay = 5000)
     public void publish() {
         this.template.convertAndSend(this.topic.getTopic(), "Message " + this.counter.incrementAndGet() + ", "
                 + Thread.currentThread().getName());

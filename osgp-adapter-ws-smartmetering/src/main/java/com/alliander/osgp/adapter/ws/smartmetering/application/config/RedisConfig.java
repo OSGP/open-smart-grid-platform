@@ -7,8 +7,12 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.config;
 
+import javax.annotation.Resource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -18,7 +22,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import redis.clients.jedis.JedisPoolConfig;
 
-import com.alliander.osgp.adapter.ws.smartmetering.redis.RedisPublisher;
+import com.alliander.osgp.adapter.ws.smartmetering.redis.AddMeterPublisher;
 
 /**
  * @author OSGP
@@ -26,13 +30,24 @@ import com.alliander.osgp.adapter.ws.smartmetering.redis.RedisPublisher;
  */
 @Configuration
 // @EnableRedisHttpSession
+@PropertySource("file:${osp/osgpAdapterWsSmartMetering/config}")
 @EnableScheduling
 public class RedisConfig {
+
+    private static final String PROPERTY_NAME_REDIS_HOST = "redis.host";
+    private static final String PROPERTY_NAME_REDIS_PORT = "redis.port";
+
+    private static final String PROPERTY_NAME_REDIS_ADDMETER_TOPIC = "redis.addmeter.topic";
+
+    @Resource
+    private Environment environment;
+
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         final JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(new JedisPoolConfig());
-        jedisConnectionFactory.setHostName("localhost");
-        jedisConnectionFactory.setPort(6379);
+        jedisConnectionFactory.setHostName(this.environment.getRequiredProperty(PROPERTY_NAME_REDIS_HOST));
+        jedisConnectionFactory
+        .setPort(Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_REDIS_PORT)));
         return jedisConnectionFactory;
     }
 
@@ -47,12 +62,12 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisPublisher redisPublisher() {
-        return new RedisPublisher(this.redisTemplate(), this.topic());
+    public AddMeterPublisher addMeterPublisher() {
+        return new AddMeterPublisher(this.redisTemplate(), this.addMeterTopic());
     }
 
     @Bean
-    public ChannelTopic topic() {
-        return new ChannelTopic("pubsub:topic");
+    public ChannelTopic addMeterTopic() {
+        return new ChannelTopic(this.environment.getRequiredProperty(PROPERTY_NAME_REDIS_ADDMETER_TOPIC));
     }
 }

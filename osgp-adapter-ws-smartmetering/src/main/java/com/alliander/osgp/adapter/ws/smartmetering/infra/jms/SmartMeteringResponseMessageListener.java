@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.ws.smartmetering.redis.RedisPublisher;
+import com.alliander.osgp.adapter.ws.smartmetering.redis.AddMeterPublisher;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -28,7 +28,7 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseMessageListener.class);
 
     @Autowired
-    private RedisPublisher redisPublisher;
+    private AddMeterPublisher addMeterPublisher;
 
     public SmartMeteringResponseMessageListener() {
         // empty constructor
@@ -43,11 +43,12 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
 
-            final String feedback = "DeviceIdentification: "
-                    + objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION) + " - RESULT: "
-                    + objectMessage.getStringProperty(Constants.RESULT);
+            final String feedback = "Meter: " + objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION)
+                    + " - RESULT: " + objectMessage.getStringProperty(Constants.RESULT);
 
-            this.redisPublisher.publish(feedback);
+            // This Listener only gets addMeter calls for now, a check will be
+            // needed in the future
+            this.addMeterPublisher.publish(feedback);
 
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
