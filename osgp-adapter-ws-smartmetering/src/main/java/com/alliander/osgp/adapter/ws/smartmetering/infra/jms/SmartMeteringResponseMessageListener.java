@@ -43,7 +43,7 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
 
-            final String feedback = "Meter: " + objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION)
+            final String feedback = "METER: " + objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION)
                     + " - RESULT: " + objectMessage.getStringProperty(Constants.RESULT);
 
             // This Listener only gets addMeter calls for now, a check will be

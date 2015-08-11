@@ -27,10 +27,11 @@ public class AddMeterPublisher {
     }
 
     // @Scheduled(initialDelay = 6000, fixedDelay = 5000)
-    public void publish() {
-        this.template.convertAndSend(this.topic.getTopic(), "Message " + this.counter.incrementAndGet() + ", "
-                + Thread.currentThread().getName());
-    }
+    // public void publish() {
+    // this.template.convertAndSend(this.topic.getTopic(), "Message " +
+    // this.counter.incrementAndGet() + ", "
+    // + Thread.currentThread().getName());
+    // }
 
     public void publish(final String message) {
         this.template.convertAndSend(this.topic.getTopic(), message);
