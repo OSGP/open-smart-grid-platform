@@ -34,7 +34,7 @@ public class LightSwitchingOnConfig {
     private LightSwitchingOn lightSwitchingOn;
 
     @Bean
-    public CronTrigger lightSwitchingOffTrigger() {
+    public CronTrigger lightSwitchingOnTrigger() {
         final String cron = this.environment
                 .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_TASKS_LIGHTSWITCHING_ON_CRON_EXPRESSION);
         return new CronTrigger(cron);
@@ -50,7 +50,7 @@ public class LightSwitchingOnConfig {
         lightSwitchingOnTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
         lightSwitchingOnTaskScheduler.setAwaitTerminationSeconds(10);
         lightSwitchingOnTaskScheduler.initialize();
-        lightSwitchingOnTaskScheduler.schedule(this.lightSwitchingOn, this.lightSwitchingOffTrigger());
+        lightSwitchingOnTaskScheduler.schedule(this.lightSwitchingOn, this.lightSwitchingOnTrigger());
         return lightSwitchingOnTaskScheduler;
     }
 
