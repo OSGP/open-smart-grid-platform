@@ -98,6 +98,12 @@
             <artifactId>spring-data-jpa</artifactId>
         </dependency>
 
+        <!-- Hikari connection pooling -->
+        <dependency>
+          <groupId>com.zaxxer</groupId>
+          <artifactId>HikariCP</artifactId>
+        </dependency>
+ 
         <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
