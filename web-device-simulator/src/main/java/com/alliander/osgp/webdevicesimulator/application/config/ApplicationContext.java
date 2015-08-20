@@ -17,6 +17,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Properties;
 import java.util.concurrent.Executors;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
@@ -43,7 +44,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.web.servlet.ViewResolver;
@@ -59,11 +59,12 @@ import com.alliander.osgp.webdevicesimulator.service.OslpSecurityHandler;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
 import com.alliander.osgp.webdevicesimulator.service.SwitchingServices;
 import com.googlecode.flyway.core.Flyway;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0 or higher with following
- * exceptions:
+ * An application context Java configuration class. The usage of Java configuration requires Spring Framework 3.0 or
+ * higher with following exceptions:
  * <ul>
  * <li>@EnableWebMvc annotation requires Spring Framework 3.1</li>
  * </ul>
@@ -82,6 +83,9 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
+
+    private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
+    private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
@@ -123,24 +127,33 @@ public class ApplicationContext {
     @Resource
     private Environment environment;
 
+    private HikariDataSource dataSource;
+
     /**
      * Method for creating the Data Source.
      *
      * @return DataSource
      */
-    public DataSource dataSource() {
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
-        singleConnectionDataSource.setDriverClassName(this.environment
-                .getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-        singleConnectionDataSource.setUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-        singleConnectionDataSource.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-        singleConnectionDataSource.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
-        singleConnectionDataSource.setSuppressClose(true);
-        return singleConnectionDataSource;
+    // @Bean(destroyMethod = "close")
+    public DataSource getDataSource() {
+        if (this.dataSource == null) {
+            final HikariConfig hikariConfig = new HikariConfig();
+
+            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+
+            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
+            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+
+            this.dataSource = new HikariDataSource(hikariConfig);
+        }
+        return this.dataSource;
+
+        // return new HikariDataSource(hikariConfig);
     }
 
     /**
@@ -169,7 +182,7 @@ public class ApplicationContext {
         flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
-        flyway.setDataSource(this.dataSource());
+        flyway.setDataSource(this.getDataSource());
 
         return flyway;
     }
@@ -187,7 +200,7 @@ public class ApplicationContext {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSPG_DEVICESIMULATOR_WEB");
-        entityManagerFactoryBean.setDataSource(this.dataSource());
+        entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
@@ -247,7 +260,7 @@ public class ApplicationContext {
         final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+                    NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
 
                 LOGGER.info("Created new client pipeline");
@@ -277,7 +290,7 @@ public class ApplicationContext {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+                    NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
                 LOGGER.info("Created new server pipeline");
 
@@ -294,7 +307,7 @@ public class ApplicationContext {
     }
 
     private ChannelPipeline createPipeLine() throws NoSuchAlgorithmException, InvalidKeySpecException,
-    NoSuchProviderException, IOException {
+            NoSuchProviderException, IOException {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, false));
@@ -314,13 +327,13 @@ public class ApplicationContext {
 
     @Bean
     public OslpDecoder oslpDecoder() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-    NoSuchProviderException {
+            NoSuchProviderException {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
     @Bean
     public PublicKey publicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-    NoSuchProviderException {
+            NoSuchProviderException {
         return CertificateHelper.createPublicKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -329,7 +342,7 @@ public class ApplicationContext {
 
     @Bean
     public PrivateKey privateKey() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException,
-    NoSuchProviderException {
+            NoSuchProviderException {
         return CertificateHelper.createPrivateKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -454,5 +467,12 @@ public class ApplicationContext {
     public Boolean checkboxEventNotificationValue() {
         return Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_CHECKBOX_EVENT_NOTIFICATION_VALUE));
+    }
+
+    @PreDestroy
+    public void destroyDataSource() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
+        }
     }
 }

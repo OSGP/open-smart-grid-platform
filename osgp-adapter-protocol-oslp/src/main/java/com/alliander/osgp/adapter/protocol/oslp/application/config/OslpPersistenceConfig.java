@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.protocol.oslp.application.config;
 
 import java.util.Properties;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
@@ -23,7 +24,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -31,10 +31,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
 import com.googlecode.flyway.core.Flyway;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * An application context Java configuration class. The usage of Java
- * configuration requires Spring Framework 3.0
+ * An application context Java configuration class. The usage of Java configuration requires Spring Framework 3.0
  */
 @EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = { OslpDeviceRepository.class })
 @Configuration
@@ -44,8 +45,11 @@ public class OslpPersistenceConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
-    private static final String PROPERTY_NAME_OSLP_DATABASE_URL = "db.url.oslp";
+    private static final String PROPERTY_NAME_DATABASE_URL = "db.url.oslp";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
+
+    private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
+    private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
@@ -63,33 +67,42 @@ public class OslpPersistenceConfig {
     @Resource
     private Environment environment;
 
+    private HikariDataSource dataSource;
+
     public OslpPersistenceConfig() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
     /**
      * Method for creating the Data Source.
-     * 
+     *
      * @return DataSource
      */
-    public DataSource oslpDataSource() {
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
-        singleConnectionDataSource.setDriverClassName(this.environment
-                .getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-        singleConnectionDataSource.setUrl(this.environment.getRequiredProperty(PROPERTY_NAME_OSLP_DATABASE_URL));
-        singleConnectionDataSource.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-        singleConnectionDataSource.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
-        singleConnectionDataSource.setSuppressClose(true);
-        return singleConnectionDataSource;
+    // @Bean(destroyMethod = "close")
+    public DataSource getOslpDataSource() {
+        if (this.dataSource == null) {
+            final HikariConfig hikariConfig = new HikariConfig();
+
+            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+
+            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
+            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+
+            this.dataSource = new HikariDataSource(hikariConfig);
+        }
+        return this.dataSource;
+
+        // return new HikariDataSource(hikariConfig);
     }
 
     /**
      * Method for creating the Transaction Manager.
-     * 
+     *
      * @return JpaTransactionManager
      * @throws ClassNotFoundException
      *             when class not found
@@ -123,14 +136,14 @@ public class OslpPersistenceConfig {
         flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
-        flyway.setDataSource(this.oslpDataSource());
+        flyway.setDataSource(this.getOslpDataSource());
 
         return flyway;
     }
 
     /**
      * Method for creating the Entity Manager Factory Bean.
-     * 
+     *
      * @return LocalContainerEntityManagerFactoryBean
      * @throws ClassNotFoundException
      *             when class not found
@@ -141,7 +154,7 @@ public class OslpPersistenceConfig {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_PROTOCOL_ADAPTER_OSLP_SETTINGS");
-        entityManagerFactoryBean.setDataSource(this.oslpDataSource());
+        entityManagerFactoryBean.setDataSource(this.getOslpDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_OSLP_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
@@ -160,4 +173,12 @@ public class OslpPersistenceConfig {
 
         return entityManagerFactoryBean;
     }
+
+    @PreDestroy
+    public void destroyDataSource() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
+        }
+    }
+
 }
