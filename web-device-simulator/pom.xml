@@ -82,6 +82,13 @@
             <artifactId>guava</artifactId>
         </dependency>
 
+      <!-- Hikari connection pooling -->
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${hikaricp.version}</version>
+      </dependency>
+
         <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
