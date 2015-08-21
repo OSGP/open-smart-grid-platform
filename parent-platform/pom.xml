@@ -46,15 +46,17 @@
 		<osgp.version>0.11.0-SNAPSHOT</osgp.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring.version>4.1.7.RELEASE</spring.version>
+    
+		<spring.version>4.2.0.RELEASE</spring.version>
 		<javax.websocket.api.version>1.1</javax.websocket.api.version>
-		<spring.ws.version>2.1.4.RELEASE</spring.ws.version>
-		<spring.data.version>1.8.1.RELEASE</spring.data.version>
+		<spring.ws.version>2.2.0.RELEASE</spring.ws.version>
+		<spring.data.version>1.8.2.RELEASE</spring.data.version>
 		<spring.session.data.redis>1.0.1.RELEASE</spring.session.data.redis>
 		<spring.data.redis>1.2.1.RELEASE</spring.data.redis>
 		<cglib.nodep>2.2</cglib.nodep>
 		<spring.security.version>4.0.2.RELEASE</spring.security.version>
-		<servlet.version>3.0.1</servlet.version>
+	
+  	<servlet.version>3.0.1</servlet.version>
 		<servlet.jstl.version>1.2</servlet.jstl.version>
 		<hibernate.version>4.2.16.Final</hibernate.version>
 		<hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
