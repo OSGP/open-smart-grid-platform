@@ -45,10 +45,10 @@
         <osgp.version>0.11.0-SNAPSHOT</osgp.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <spring.version>3.2.10.RELEASE</spring.version>
-        <spring.ws.version>2.1.4.RELEASE</spring.ws.version>
-        <spring.data.version>1.6.4.RELEASE</spring.data.version>
-        <spring.security.version>3.2.5.RELEASE</spring.security.version>
+        <spring.version>4.2.0.RELEASE</spring.version>
+        <spring.ws.version>2.2.0.RELEASE</spring.ws.version>
+        <spring.data.version>1.8.2.RELEASE</spring.data.version>
+        <spring.security.version>4.0.2.RELEASE</spring.security.version>
         <servlet.version>3.0.1</servlet.version>
         <servlet.jstl.version>1.2</servlet.jstl.version>
         <protobuf.version>2.4.1</protobuf.version>
