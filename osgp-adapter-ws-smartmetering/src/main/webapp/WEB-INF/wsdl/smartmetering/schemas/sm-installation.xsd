@@ -19,15 +19,15 @@
 		namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
-	<xsd:element name="AddMeterRequest">
+	<xsd:element name="AddDeviceRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Meter" type="tns:Meter" />
+				<xsd:element name="Device" type="tns:Device" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="AddMeterResponse">
+	<xsd:element name="AddDeviceResponse">
 		<xsd:complexType />
 	</xsd:element>
 	
@@ -58,7 +58,7 @@
 <!-- 	    </xsd:restriction> -->
 <!-- 	</xsd:simpleType> -->
 	
-	<xsd:complexType name="Meter">
+	<xsd:complexType name="Device">
 		<xsd:sequence>
 			<xsd:element name="Identification_number" type="xsd:string" />
 			<xsd:element name="Company" type="xsd:string" minOccurs="0"/>
