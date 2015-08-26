@@ -8,9 +8,11 @@
 package com.alliander.osgp.core.db.api.domain.entities;
 
 import com.alliander.osgp.core.db.api.entities.Device;
+import com.alliander.osgp.core.db.api.entities.Organisation;
 
 public class DeviceDataBuilder {
     private String deviceIdentification;
+    private Organisation organisation;
     private Float gpsLatitude;
     private Float gpsLongitude;
 
@@ -24,6 +26,11 @@ public class DeviceDataBuilder {
         return this;
     }
 
+    public DeviceDataBuilder withOrganisation(final Organisation organisation) {
+        this.organisation = organisation;
+        return this;
+    }
+
     public DeviceDataBuilder withGps(final Float latitude, final Float longitude) {
         this.gpsLatitude = latitude;
         this.gpsLongitude = longitude;
@@ -32,7 +39,8 @@ public class DeviceDataBuilder {
     }
 
     public Device build() {
-        final Device device = new Device(this.deviceIdentification, this.gpsLatitude, this.gpsLongitude);
+        final Device device = new Device(this.deviceIdentification, this.organisation, this.gpsLatitude,
+                this.gpsLongitude);
 
         return device;
     }

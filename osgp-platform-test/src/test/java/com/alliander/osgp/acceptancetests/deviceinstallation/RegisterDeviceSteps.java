@@ -49,6 +49,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpSecurityHandler;
 import com.alliander.osgp.core.db.api.domain.entities.DeviceDataBuilder;
+import com.alliander.osgp.core.db.api.entities.Organisation;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
@@ -105,6 +106,7 @@ public class RegisterDeviceSteps {
 
     private OslpDevice oslpDevice;
     private com.alliander.osgp.core.db.api.entities.Device deviceData;
+    private Organisation organisation = new Organisation("LianderNetManagement");
 
     @Autowired
     private ChannelHandlerContext channelHandlerContextMock;
@@ -121,6 +123,9 @@ public class RegisterDeviceSteps {
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
+    /*
+     * this one has a different name now
+     */
     @Autowired
     private OslpDeviceRepository oslpDeviceRepositoryMock;
 
@@ -162,7 +167,7 @@ public class RegisterDeviceSteps {
     // === GIVEN ===
     @DomainStep("a valid register device OSLP message")
     public void givenAValidRegisterDeviceRequest() throws NoSuchAlgorithmException, InvalidKeySpecException,
-            IOException {
+    IOException {
         LOGGER.info("GIVEN: \"a valid register device OSLP message\".");
 
         this.setup();
@@ -188,7 +193,7 @@ public class RegisterDeviceSteps {
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(DEVICE_ID).withDeviceUid(DEVICE_UID)
                 .withPublicKey(OslpTestUtils.PUBLIC_KEY_BASE_64).build();
         this.deviceData = new DeviceDataBuilder().withDeviceIdentification(DEVICE_ID)
-                .withGps(DEVICE_GPS_LAT, DEVICE_GPS_LONG).build();
+                .withOrganisation(this.organisation).withGps(DEVICE_GPS_LAT, DEVICE_GPS_LONG).build();
         when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.save(this.oslpDevice)).thenReturn(this.oslpDevice);
@@ -206,7 +211,7 @@ public class RegisterDeviceSteps {
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(DEVICE_ID)
                 .withDeviceIdentification(DEVICE_UID).withPublicKey(OslpTestUtils.PUBLIC_KEY_BASE_64).build();
         this.deviceData = new DeviceDataBuilder().withDeviceIdentification(DEVICE_ID)
-                .withGps(DEVICE_GPS_LAT, DEVICE_GPS_LONG).build();
+                .withOrganisation(this.organisation).withGps(DEVICE_GPS_LAT, DEVICE_GPS_LONG).build();
         when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.save(this.oslpDevice)).thenReturn(this.oslpDevice);
