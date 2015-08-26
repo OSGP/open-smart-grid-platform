@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.core.db.api.entities;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -17,7 +16,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 public class Organisation extends AbstractEntity {
 
     /**
-     * SerialVersionID for serrialization
+     * SerialVersionID for serialization
      */
     private static final long serialVersionUID = -1097307978466479033L;
 
@@ -33,8 +32,8 @@ public class Organisation extends AbstractEntity {
     }
 
     /**
-     * Gets the organisations identification
-     * 
+     * Gets the organisation's identification
+     *
      * @return the identification
      */
     public String getOrganisationIdentification() {
