@@ -31,8 +31,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.logging.LoggingHandler;
-import org.jboss.netty.logging.InternalLogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -63,8 +61,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * An application context Java configuration class. The usage of Java configuration requires Spring Framework 3.0 or
- * higher with following exceptions:
+ * An application context Java configuration class. The usage of Java
+ * configuration requires Spring Framework 3.0 or higher with following
+ * exceptions:
  * <ul>
  * <li>@EnableWebMvc annotation requires Spring Framework 3.1</li>
  * </ul>
@@ -309,8 +308,6 @@ public class ApplicationContext {
     private ChannelPipeline createPipeLine() throws NoSuchAlgorithmException, InvalidKeySpecException,
             NoSuchProviderException, IOException {
         final ChannelPipeline pipeline = Channels.pipeline();
-
-        pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, false));
 
         pipeline.addLast("oslpEncoder", new OslpEncoder());
         pipeline.addLast("oslpDecoder", new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider()));

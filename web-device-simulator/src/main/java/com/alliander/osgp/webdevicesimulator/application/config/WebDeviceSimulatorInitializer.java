@@ -17,6 +17,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -46,6 +48,7 @@ public class WebDeviceSimulatorInitializer implements WebApplicationInitializer 
             final String logLocation = (String) initialContext
                     .lookup("java:comp/env/osp/webDeviceSimulator/log-config");
             LogbackConfigurer.initLogging(logLocation);
+            InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
 
             final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
             rootContext.register(ApplicationContext.class);
