@@ -42,7 +42,6 @@
         <ref bean="organisationIdentificationInterceptor"/>
         <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
         <ref bean="payloadValidatingInterceptor"/>
-        <ref bean="webServiceMonitorInterceptor" />
     </sws:interceptors>
     
 </beans>
