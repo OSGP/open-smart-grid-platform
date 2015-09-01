@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.adapter.ws.smartmetering.redis.AddMeterPublisher;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -29,6 +30,9 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
     @Autowired
     private AddMeterPublisher addMeterPublisher;
+
+    @Autowired
+    private SendNotificationServiceClient sendNotificationServiceClient;
 
     public SmartMeteringResponseMessageListener() {
         // empty constructor
@@ -48,7 +52,20 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             // This Listener only gets addMeter calls for now, a check will be
             // needed in the future
+            // Redis call
             this.addMeterPublisher.publish(feedback);
+
+            // WS call
+            try {
+                this.sendNotificationServiceClient.sendNotification("LianderNetManagement",
+                        "Message from the ws adapter");
+            } catch (final Exception e) {
+                LOGGER.error("Add device exception", e);
+
+                // TODO put Serive in here?
+                // throw new OsgpException(ComponentType.WS_SMART_METERING,
+                // e.getMessage(), e.getCause());
+            }
 
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
