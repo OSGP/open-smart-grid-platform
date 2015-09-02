@@ -49,18 +49,10 @@ public class WebServiceConfig {
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
 
-    private static final String USER_NAME_HEADER = "UserName";
-
-    private static final String APPLICATION_NAME_HEADER = "ApplicationName";
-
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
     private static final String PROPERTY_NAME_APPLICATION_NAME = "application.name";
-
-    private static final String PROPERTY_NAME_WEBSERVICETEMPLATE_BASE_URI = "base.uri";
-    // TODO save in database
-    private static final String PROPERTY_NAME_WEBSERVICETEMPLATE_DEFAULT_URI_SMARTMETERING_NOTIFICATION = "web.service.template.default.uri.smartmetering.notification";
 
     private static final String PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_LOCATION = "web.service.truststore.location";
     private static final String PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_PASSWORD = "web.service.truststore.password";
@@ -106,16 +98,12 @@ public class WebServiceConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(
-                PROPERTY_NAME_WEBSERVICETEMPLATE_BASE_URI,
-                PROPERTY_NAME_WEBSERVICETEMPLATE_DEFAULT_URI_SMARTMETERING_NOTIFICATION,
-                this.notificationSenderMarshaller()), this.notificationMapper());
+        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
+                .notificationSenderMarshaller()), this.notificationMapper());
     }
 
-    private WebServiceTemplateFactory createWebServiceTemplateFactory(final String baseUriKey, final String uriKey,
-            final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.environment
-                .getProperty(baseUriKey).concat(this.environment.getProperty(uriKey)),
+    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new WebServiceTemplateFactory(marshaller, this.messageFactory(),
                 this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_TYPE),
                 this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_LOCATION),
                 this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_PASSWORD),

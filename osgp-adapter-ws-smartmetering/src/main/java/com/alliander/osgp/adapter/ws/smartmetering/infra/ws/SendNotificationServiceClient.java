@@ -33,7 +33,8 @@ public class SendNotificationServiceClient {
      *            The device to add.
      * @throws Exception
      */
-    public void sendNotification(final String organisationIdentification, final String message) throws Exception {
+    public void sendNotification(final String organisationIdentification, final String message,
+            final String notificationUrl) throws Exception {
 
         // TODO use NotificationModel?
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
@@ -44,7 +45,7 @@ public class SendNotificationServiceClient {
         sendNotificationRequest.setNotification(notification);
 
         // TODO send username
-        this.webServiceTemplateFactory.getTemplate(organisationIdentification, "LianderNetManagement")
+        this.webServiceTemplateFactory.getTemplate(organisationIdentification, "LianderNetManagement", notificationUrl)
                 .marshalSendAndReceive(sendNotificationRequest);
 
         // TODO return something

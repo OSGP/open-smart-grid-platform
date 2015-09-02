@@ -56,6 +56,10 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
+                // TODO real value
+                objectMessage
+                        .setStringProperty(Constants.NOTIFICATION_URL,
+                                "https://localhost:443/web-api-smartmeter/smartMetering/notificationService/SmartMeteringNotification");
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
                     objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()

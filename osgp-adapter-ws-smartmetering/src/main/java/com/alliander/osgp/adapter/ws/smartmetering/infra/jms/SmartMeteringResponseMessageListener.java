@@ -47,6 +47,7 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
 
+            // REDIS
             final String feedback = "METER: " + objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION)
                     + " - RESULT: " + objectMessage.getStringProperty(Constants.RESULT);
 
@@ -58,13 +59,9 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
             // WS call
             try {
                 this.sendNotificationServiceClient.sendNotification("LianderNetManagement",
-                        "Message from the ws adapter");
+                        "Message from the ws adapter", objectMessage.getStringProperty(Constants.NOTIFICATION_URL));
             } catch (final Exception e) {
                 LOGGER.error("Add device exception", e);
-
-                // TODO put Serive in here?
-                // throw new OsgpException(ComponentType.WS_SMART_METERING,
-                // e.getMessage(), e.getCause());
             }
 
         } catch (final JMSException ex) {
