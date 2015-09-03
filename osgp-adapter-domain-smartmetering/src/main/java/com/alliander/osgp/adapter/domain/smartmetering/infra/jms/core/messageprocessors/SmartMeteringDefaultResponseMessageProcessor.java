@@ -50,7 +50,6 @@ public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreRespon
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        String notificationURL = null;
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
@@ -61,7 +60,6 @@ public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreRespon
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            notificationURL = message.getStringProperty(Constants.NOTIFICATION_URL);
 
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
@@ -82,8 +80,7 @@ public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreRespon
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException,
-                    notificationURL);
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

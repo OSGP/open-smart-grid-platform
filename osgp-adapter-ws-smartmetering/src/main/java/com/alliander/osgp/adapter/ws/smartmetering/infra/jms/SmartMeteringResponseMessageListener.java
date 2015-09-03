@@ -16,8 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.redis.AddMeterPublisher;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -32,7 +33,7 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
     private AddMeterPublisher addMeterPublisher;
 
     @Autowired
-    private SendNotificationServiceClient sendNotificationServiceClient;
+    private NotificationService notificationService;
 
     public SmartMeteringResponseMessageListener() {
         // empty constructor
@@ -47,24 +48,12 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
 
-            // REDIS
-            final String feedback = "METER: " + objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION)
-                    + " - RESULT: " + objectMessage.getStringProperty(Constants.RESULT);
-
-            // This Listener only gets addMeter calls for now, a check will be
-            // needed in the future
-            // Redis call
-            this.addMeterPublisher.publish(feedback);
-
             // WS call
-            try {
-                this.sendNotificationServiceClient.sendNotification("LianderNetManagement",
-                        "Message from the ws adapter", objectMessage.getStringProperty(Constants.NOTIFICATION_URL));
-            } catch (final Exception e) {
-                LOGGER.error("Add device exception", e);
-            }
+            this.notificationService.sendNotification(
+                    objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION),
+                    "Message from the ws adapter");
 
-        } catch (final JMSException ex) {
+        } catch (final JMSException | FunctionalException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         }
     }

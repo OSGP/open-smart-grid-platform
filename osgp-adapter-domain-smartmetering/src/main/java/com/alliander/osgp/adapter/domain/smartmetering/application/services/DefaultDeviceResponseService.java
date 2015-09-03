@@ -29,7 +29,7 @@ public class DefaultDeviceResponseService {
 
     public void handleDefaultDeviceResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception, final String notificationURL) {
+            final OsgpException exception) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
