@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.redis.AddMeterPublisher;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -28,9 +28,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 public class SmartMeteringResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseMessageListener.class);
-
-    @Autowired
-    private AddMeterPublisher addMeterPublisher;
 
     @Autowired
     private NotificationService notificationService;
@@ -48,10 +45,15 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
 
+            // TODO error handling
+            final NotificationType notificationType = NotificationType.valueOf(message.getJMSType());
+
             // WS call
             this.notificationService.sendNotification(
                     objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION),
-                    "Message from the ws adapter");
+                    objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION),
+                    objectMessage.getStringProperty(Constants.RESULT), objectMessage.getJMSCorrelationID(),
+                    objectMessage.getStringProperty(Constants.DESCRIPTION), notificationType);
 
         } catch (final JMSException | FunctionalException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);

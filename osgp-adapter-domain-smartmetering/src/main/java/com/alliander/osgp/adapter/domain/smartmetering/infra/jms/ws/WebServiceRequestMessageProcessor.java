@@ -107,6 +107,6 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
         final OsgpException osgpException = new TechnicalException(ComponentType.UNKNOWN,
                 "Unexpected exception while retrieving response message", e);
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
+                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e), messageType);
     }
 }

@@ -42,7 +42,7 @@ public class SendNotificationServiceClient {
 
         // TODO send username
         this.webServiceTemplateFactory.getTemplate(organisationIdentification, "LianderNetManagement", notificationURL)
-        .marshalSendAndReceive(sendNotificationRequest);
+                .marshalSendAndReceive(sendNotificationRequest);
 
         // TODO return something
         // return new SaveDeviceResponse(OsgpResultType.OK, null);

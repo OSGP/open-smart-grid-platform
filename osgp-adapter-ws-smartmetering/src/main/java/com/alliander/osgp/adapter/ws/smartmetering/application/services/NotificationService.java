@@ -15,12 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -29,21 +27,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 @Validated
 public class NotificationService {
 
-    private static final int PAGE_SIZE = 30;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
-
-    @Autowired
-    private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DeviceRepository deviceRepository;
-
-    @Autowired
-    private CorrelationIdProviderService correlationIdProviderService;
-
-    @Autowired
-    private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     @Autowired
     private SendNotificationServiceClient sendNotificationServiceClient;
@@ -55,11 +39,17 @@ public class NotificationService {
         // Parameterless constructor required for transactions
     }
 
-    public void sendNotification(@Identification final String organisationIdentification, final String message)
-            throws FunctionalException {
+    public void sendNotification(@Identification final String organisationIdentification,
+            final String identificationNumber, final String result, final String correlationUid, final String message,
+            final NotificationType notificationType) throws FunctionalException {
 
         final Notification notification = new Notification();
+        // TODO message is null, unless an error occurred
         notification.setMessage(message);
+        notification.setResult(result);
+        notification.setIdentificationNumber(identificationNumber);
+        notification.setCorrelationUid(correlationUid);
+        notification.setNotificationType(notificationType);
 
         final Organisation organisation = this.organisationRepository
                 .findByOrganisationIdentification(organisationIdentification);

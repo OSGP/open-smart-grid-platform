@@ -47,6 +47,6 @@ public class DefaultDeviceResponseService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null));
+                deviceIdentification, result, osgpException, null), messageType);
     }
 }

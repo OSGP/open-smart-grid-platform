@@ -50,9 +50,6 @@
 		<javax.websocket.api.version>1.1</javax.websocket.api.version>
 		<spring.ws.version>2.1.4.RELEASE</spring.ws.version>
 		<spring.data.version>1.8.1.RELEASE</spring.data.version>
-		<spring.session.data.redis>1.0.1.RELEASE</spring.session.data.redis>
-		<spring.data.redis>1.2.1.RELEASE</spring.data.redis>
-		<cglib.nodep>2.2</cglib.nodep>
 		<spring.security.version>4.0.2.RELEASE</spring.security.version>
 		<servlet.version>3.0.1</servlet.version>
 		<servlet.jstl.version>1.2</servlet.jstl.version>
@@ -330,25 +327,6 @@
 				<artifactId>javax.websocket-api</artifactId>
 				<version>${javax.websocket.api.version}</version>
 				<scope>provided</scope>
-			</dependency>
-
-			<!-- Spring Data Redis -->
-			<dependency>
-				<groupId>org.springframework.session</groupId>
-				<artifactId>spring-session-data-redis</artifactId>
-				<version>${spring.session.data.redis}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-redis</artifactId>
-				<version>${spring.data.redis}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>cglib</groupId>
-				<artifactId>cglib-nodep</artifactId>
-				<version>${cglib.nodep}</version>
 			</dependency>
 
 			<!-- Servlet API 3.0 -->
