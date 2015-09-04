@@ -210,22 +210,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Spring Data Redis -->
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-data-redis</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-redis</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib-nodep</artifactId>
-		</dependency>
-
 		<!-- Joda Time (Date/Time util) -->
 		<dependency>
 			<groupId>joda-time</groupId>

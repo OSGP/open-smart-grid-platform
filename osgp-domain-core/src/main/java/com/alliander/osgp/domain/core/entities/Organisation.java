@@ -65,6 +65,9 @@ public class Organisation extends AbstractEntity {
     @Column(nullable = false)
     private boolean enabled;
 
+    @Column(nullable = false)
+    private String notificationURL;
+
     public Organisation() {
         // Default constructor
     }
@@ -87,7 +90,7 @@ public class Organisation extends AbstractEntity {
 
     /**
      * Gets the organisations identification
-     * 
+     *
      * @return the identification
      */
     public String getOrganisationIdentification() {
@@ -96,7 +99,7 @@ public class Organisation extends AbstractEntity {
 
     /**
      * Gets the organisations name
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -105,7 +108,7 @@ public class Organisation extends AbstractEntity {
 
     /**
      * Gets the organisations prefix
-     * 
+     *
      * @return the prefix
      */
     public String getPrefix() {
@@ -199,6 +202,10 @@ public class Organisation extends AbstractEntity {
 
     public void setIsEnabled(final boolean value) {
         this.enabled = value;
+    }
+
+    public String getNotificationURL() {
+        return this.notificationURL;
     }
 
     public void setDomains(final List<PlatformDomain> domains) {

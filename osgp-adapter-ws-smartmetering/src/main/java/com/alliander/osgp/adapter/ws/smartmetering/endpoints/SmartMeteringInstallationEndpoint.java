@@ -17,6 +17,7 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
@@ -63,6 +64,8 @@ public class SmartMeteringInstallationEndpoint {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getIdentificationNumber());
 
+        final AddDeviceResponse response = new AddDeviceResponse();
+
         try {
             // final Device device =
             // this.installationMapper.map(request.getDevice(),
@@ -73,7 +76,13 @@ public class SmartMeteringInstallationEndpoint {
 
             final Device device = new Device(request.getDevice().getIdentificationNumber());
 
-            this.installationService.addDevice(organisationIdentification, device);
+            final String correlationUid = this.installationService.addDevice(organisationIdentification, device);
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDevice().getIdentificationNumber());
+            response.setAsyncResponse(asyncResponse);
+
         } catch (final MethodConstraintViolationException e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
@@ -90,7 +99,7 @@ public class SmartMeteringInstallationEndpoint {
             this.handleException(e);
         }
 
-        return new AddDeviceResponse();
+        return response;
     }
 
     private void handleException(final Exception e) throws OsgpException {

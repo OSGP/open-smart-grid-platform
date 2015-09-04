@@ -32,7 +32,6 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgume
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
@@ -58,10 +57,6 @@ public class WebServiceConfig {
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
     private static final String PROPERTY_NAME_APPLICATION_NAME = "application.name";
-
-    private static final String PROPERTY_NAME_WEBSERVICETEMPLATE_BASE_URI = "base.uri";
-    // TODO save in database
-    private static final String PROPERTY_NAME_WEBSERVICETEMPLATE_DEFAULT_URI_SMARTMETERING_NOTIFICATION = "web.service.template.default.uri.smartmetering.notification";
 
     private static final String PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_LOCATION = "web.service.truststore.location";
     private static final String PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_PASSWORD = "web.service.truststore.password";
@@ -107,16 +102,12 @@ public class WebServiceConfig {
 
     @Bean
     public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
-        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(
-                PROPERTY_NAME_WEBSERVICETEMPLATE_BASE_URI,
-                PROPERTY_NAME_WEBSERVICETEMPLATE_DEFAULT_URI_SMARTMETERING_NOTIFICATION,
-                this.notificationSenderMarshaller()), this.notificationMapper());
+        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
+                .notificationSenderMarshaller()), this.notificationMapper());
     }
 
-    private WebServiceTemplateFactory createWebServiceTemplateFactory(final String baseUriKey, final String uriKey,
-            final Jaxb2Marshaller marshaller) {
-        return new WebServiceTemplateFactory(marshaller, this.messageFactory(), this.environment
-                .getProperty(baseUriKey).concat(this.environment.getProperty(uriKey)),
+    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new WebServiceTemplateFactory(marshaller, this.messageFactory(),
                 this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_TYPE),
                 this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_LOCATION),
                 this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_PASSWORD),
@@ -256,12 +247,6 @@ public class WebServiceConfig {
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
-    }
-
-    @Bean
-    public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
-                APPLICATION_NAME_HEADER);
     }
 
 }

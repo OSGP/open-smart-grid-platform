@@ -33,8 +33,18 @@
 	
 	<xsd:complexType name="Notification">
 		<xsd:sequence>
-			<xsd:element name="message" type="xsd:string" />
+			<xsd:element name="message" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="result" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="identificationNumber" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="correlationUid" type="common:CorrelationUid" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="NotificationType" type="tns:NotificationType" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	<xsd:simpleType name="NotificationType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ADD_METER" />
+		</xsd:restriction>
+	</xsd:simpleType>
 
 </xsd:schema>
