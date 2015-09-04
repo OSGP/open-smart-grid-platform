@@ -32,7 +32,6 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgume
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
@@ -248,12 +247,6 @@ public class WebServiceConfig {
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
-    }
-
-    @Bean
-    public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
-                APPLICATION_NAME_HEADER);
     }
 
 }
