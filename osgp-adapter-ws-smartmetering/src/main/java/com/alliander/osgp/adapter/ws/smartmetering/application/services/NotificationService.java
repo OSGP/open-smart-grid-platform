@@ -40,14 +40,14 @@ public class NotificationService {
     }
 
     public void sendNotification(@Identification final String organisationIdentification,
-            final String identificationNumber, final String result, final String correlationUid, final String message,
+            final String deviceIdentification, final String result, final String correlationUid, final String message,
             final NotificationType notificationType) throws FunctionalException {
 
         final Notification notification = new Notification();
         // TODO message is null, unless an error occurred
         notification.setMessage(message);
         notification.setResult(result);
-        notification.setIdentificationNumber(identificationNumber);
+        notification.setDeviceIdentification(deviceIdentification);
         notification.setCorrelationUid(correlationUid);
         notification.setNotificationType(notificationType);
 

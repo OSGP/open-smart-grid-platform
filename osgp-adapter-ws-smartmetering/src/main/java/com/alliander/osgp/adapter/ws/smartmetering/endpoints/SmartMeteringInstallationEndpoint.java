@@ -62,7 +62,7 @@ public class SmartMeteringInstallationEndpoint {
     public AddDeviceResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getIdentificationNumber());
+        LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
         final AddDeviceResponse response = new AddDeviceResponse();
 
@@ -72,21 +72,20 @@ public class SmartMeteringInstallationEndpoint {
             // Device.class);
 
             // Add a mapper as soon as the structure is set
-            // we'll use identificationNumber as deviceIdentification for now
 
-            final Device device = new Device(request.getDevice().getIdentificationNumber());
+            final Device device = new Device(request.getDevice().getDeviceIdentification());
 
             final String correlationUid = this.installationService.addDevice(organisationIdentification, device);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDevice().getIdentificationNumber());
+            asyncResponse.setDeviceId(request.getDevice().getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
         } catch (final MethodConstraintViolationException e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getDevice().getIdentificationNumber(), organisationIdentification }, e);
+                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -94,7 +93,7 @@ public class SmartMeteringInstallationEndpoint {
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getDevice().getIdentificationNumber(), organisationIdentification }, e);
+                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
         }

@@ -37,7 +37,7 @@
 	
 	<xsd:complexType name="Device">
 		<xsd:sequence>
-			<xsd:element name="Identification_number" type="xsd:string" />
+			<xsd:element name="Device_Identification" type="xsd:string" />
 			<xsd:element name="Company" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="Public_key_Grid_Operator" type="xsd:string" minOccurs="0" />
 			<xsd:element name="Device_type" type="xsd:string" minOccurs="0" />
