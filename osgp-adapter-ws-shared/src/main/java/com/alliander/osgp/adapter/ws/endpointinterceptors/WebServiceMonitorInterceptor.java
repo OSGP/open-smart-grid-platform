@@ -167,20 +167,13 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
      */
     private Map<String, Object> parseSoapMessage(final SoapMessage soapMessage) {
         try {
-            // Create a stream and write the message to the stream.
+            // Determine the data size of the message (stream).
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             soapMessage.writeTo(outputStream);
-            // Determine the data size of the message (stream).
             final int dataSize = outputStream.size();
-            // Get the XML from the message (stream).
-            final String xml = new String(outputStream.toByteArray(), UTF_8);
-
-            // Create a document of the XML.
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final Document document = factory.newDocumentBuilder().parse(
-                    new InputSource(new ByteArrayInputStream(xml.getBytes(UTF_8))));
 
             // Try to find the desired XML elements in the document.
+            final Document document = soapMessage.getDocument();
             final String correlationUid = this.evaluateXPathExpression(document, XML_ELEMENT_CORRELATION_UID);
             final String deviceId = this.evaluateXPathExpression(document, XML_ELEMENT_DEVICE_ID);
             final String result = this.evaluateXPathExpression(document, XML_ELEMENT_OSP_RESULT_TYPE);
