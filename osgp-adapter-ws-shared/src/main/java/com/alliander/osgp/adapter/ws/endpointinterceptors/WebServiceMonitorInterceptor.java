@@ -7,14 +7,12 @@
  */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -36,7 +34,6 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingRequestMessage;
@@ -61,8 +58,6 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     private static final String XML_ELEMENT_CORRELATION_UID = "CorrelationUid";
     private static final String XML_ELEMENT_DEVICE_ID = "DeviceId";
     private static final String XML_ELEMENT_OSP_RESULT_TYPE = "Result";
-
-    private static final String UTF_8 = "UTF-8";
 
     private final String organisationIdentification;
     private final String userName;
