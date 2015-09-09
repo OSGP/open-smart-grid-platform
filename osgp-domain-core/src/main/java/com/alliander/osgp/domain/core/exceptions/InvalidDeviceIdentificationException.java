@@ -14,12 +14,12 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class InvalidDeviceIdentificationException extends Exception {
 
     /**
-     * 
+     * Serial Verion UID.
      */
     private static final long serialVersionUID = 4766085145882763249L;
-    private static final String message = "Invalid Device Identification";
+    private static final String MESSAGE = "Invalid Device Identification";
 
     public InvalidDeviceIdentificationException() {
-        super(message);
+        super(MESSAGE);
     }
 }

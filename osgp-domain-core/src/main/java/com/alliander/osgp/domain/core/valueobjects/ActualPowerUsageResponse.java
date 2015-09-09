@@ -13,6 +13,9 @@ import com.alliander.osgp.domain.core.entities.DeviceMessageStatus;
 
 public class ActualPowerUsageResponse implements Serializable {
 
+    /**
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = 3873494432836212279L;
 
     private DeviceMessageStatus status;

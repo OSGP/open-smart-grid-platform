@@ -17,8 +17,9 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class DeviceAuthorization extends AbstractEntity {
+
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 1468328289658974067L;
 
@@ -61,13 +62,10 @@ public class DeviceAuthorization extends AbstractEntity {
         if (this == o) {
             return true;
         }
-
         if (!(o instanceof DeviceAuthorization)) {
             return false;
         }
-
         final DeviceAuthorization authorization = (DeviceAuthorization) o;
-
         // Only comparing the device and organisation identifications (and not
         // the complete objects) to prevent stack
         // overflow errors when comparing devices (which contain device

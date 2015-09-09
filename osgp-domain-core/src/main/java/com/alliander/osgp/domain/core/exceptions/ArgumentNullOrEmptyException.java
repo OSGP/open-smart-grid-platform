@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class ArgumentNullOrEmptyException extends PlatformException {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -2507623526972653558L;
     private static final String MESSAGE = "Argument [%1$s] is null or empty";

@@ -24,7 +24,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 public class ScheduledTask extends AbstractEntity {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -77027372763748726L;
 

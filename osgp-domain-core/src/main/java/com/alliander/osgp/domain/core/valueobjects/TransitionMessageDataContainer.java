@@ -14,7 +14,7 @@ import org.joda.time.DateTime;
 public class TransitionMessageDataContainer implements Serializable {
 
     /**
-     * Serial version ID.
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -6687122715307445705L;
     private TransitionType transitionType;

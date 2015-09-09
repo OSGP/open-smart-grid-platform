@@ -12,6 +12,9 @@ import java.util.List;
 
 public class DeviceStatus implements java.io.Serializable {
 
+    /**
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = -6922074543798047230L;
 
     private List<LightValue> lightValues;

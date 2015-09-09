@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects;
 
-public enum HistoryTermType {
-    Short, Long
+public enum HistoryTermType implements java.io.Serializable {
+    SHORT,
+    LONG
 }
