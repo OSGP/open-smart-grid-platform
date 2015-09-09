@@ -29,8 +29,8 @@ public class SoapHeaderEndpointInterceptor implements EndpointInterceptor {
     private final String organisationIdentificationHeaderName;
     private final String contextPropertyName;
 
-    private final String userNameHeaderName = "UserName";
-    private final String applicationNameHeaderName = "ApplicationName";
+    private static final String USER_NAME_HEADER_NAME = "UserName";
+    private static final String APPLICTION_NAME_HEADER_NAME = "ApplicationName";
 
     public SoapHeaderEndpointInterceptor(final String headerName, final String contextPropertyName) {
         this.organisationIdentificationHeaderName = headerName;
@@ -47,8 +47,8 @@ public class SoapHeaderEndpointInterceptor implements EndpointInterceptor {
         // Try to get the values from the Soap Header.
         final String organisationIdentification = this.getHeaderValue(soapHeader,
                 this.organisationIdentificationHeaderName);
-        final String userName = this.getHeaderValue(soapHeader, this.userNameHeaderName);
-        final String applicationName = this.getHeaderValue(soapHeader, this.applicationNameHeaderName);
+        final String userName = this.getHeaderValue(soapHeader, this.USER_NAME_HEADER_NAME);
+        final String applicationName = this.getHeaderValue(soapHeader, this.APPLICTION_NAME_HEADER_NAME);
 
         // Check if the values are empty, if so, throw exception.
         if (StringUtils.isEmpty(organisationIdentification)) {

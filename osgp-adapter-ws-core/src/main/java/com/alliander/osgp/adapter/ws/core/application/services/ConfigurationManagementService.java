@@ -67,51 +67,56 @@ public class ConfigurationManagementService {
      * @throws NotAuthorizedException
      * @throws FunctionalException
      */
-    public String enqueueSetConfigurationRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            @Valid final Configuration configuration, final DateTime scheduledTime) throws FunctionalException {
+    public String enqueueSetConfigurationRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @Valid final Configuration configuration,
+            final DateTime scheduledTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_CONFIGURATION);
 
-        LOGGER.debug("enqueueSetConfigurationRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueSetConfigurationRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_CONFIGURATION, correlationUid, organisationIdentification,
-                deviceIdentification, configuration, scheduledTime);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_CONFIGURATION,
+                correlationUid, organisationIdentification, deviceIdentification, configuration, scheduledTime);
 
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueSetConfigurationResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueSetConfigurationResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
-    public String enqueueGetConfigurationRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueGetConfigurationRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_CONFIGURATION);
 
-        LOGGER.debug("enqueueGetConfigurationRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueGetConfigurationRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_CONFIGURATION, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_CONFIGURATION,
+                correlationUid, organisationIdentification, deviceIdentification, null, null);
 
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueGetConfigurationResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueGetConfigurationResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 

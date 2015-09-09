@@ -59,28 +59,32 @@ public class ScheduleManagementService {
         // Parameterless constructor required for transactions...
     }
 
-    public String enqueueSetLightSchedule(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            @Valid final List<Schedule> mapAsList, final DateTime scheduledTime) throws FunctionalException {
+    public String enqueueSetLightSchedule(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @Valid final List<Schedule> mapAsList,
+            final DateTime scheduledTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT_SCHEDULE);
 
-        LOGGER.debug("enqueueSetLightSchedule called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueSetLightSchedule called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final ScheduleMessageDataContainer scheduleMessageDataContainer = new ScheduleMessageDataContainer(mapAsList);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(PublicLightingRequestMessageType.SET_LIGHT_SCHEDULE, correlationUid,
-                organisationIdentification, deviceIdentification, scheduleMessageDataContainer, scheduledTime);
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
+                PublicLightingRequestMessageType.SET_LIGHT_SCHEDULE, correlationUid, organisationIdentification,
+                deviceIdentification, scheduleMessageDataContainer, scheduledTime);
 
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueSetLightScheduleResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueSetLightScheduleResponse(final String correlationUid) throws OsgpException {
 
         return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
     }

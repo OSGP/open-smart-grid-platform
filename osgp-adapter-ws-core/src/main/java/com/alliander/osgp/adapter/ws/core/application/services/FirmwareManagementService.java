@@ -23,7 +23,6 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
-import com.alliander.osgp.domain.core.services.SecurityService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -40,9 +39,6 @@ public class FirmwareManagementService {
     private DomainHelperService domainHelperService;
 
     @Autowired
-    private SecurityService securityService;
-
-    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
@@ -51,47 +47,52 @@ public class FirmwareManagementService {
     @Autowired
     private CommonResponseMessageFinder commonResponseMessageFinder;
 
-    public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            @NotBlank final String firmwareIdentification, final DateTime scheduledTime) throws FunctionalException {
+    public String enqueueUpdateFirmwareRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @NotBlank final String firmwareIdentification,
+            final DateTime scheduledTime) throws FunctionalException {
         LOGGER.debug("Queue update firmware request");
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.UPDATE_FIRMWARE);
 
-        LOGGER.debug("enqueueUpdateFirmwareRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueUpdateFirmwareRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.UPDATE_FIRMWARE, correlationUid, organisationIdentification,
-                deviceIdentification, firmwareIdentification, scheduledTime);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.UPDATE_FIRMWARE,
+                correlationUid, organisationIdentification, deviceIdentification, firmwareIdentification, scheduledTime);
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueUpdateFirmwareResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueUpdateFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
-    public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueGetFirmwareRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
         LOGGER.debug("Queue get firmware request");
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_FIRMWARE_VERSION);
 
-        LOGGER.debug("enqueueGetFirmwareRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueGetFirmwareRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_FIRMWARE_VERSION, correlationUid,
-                organisationIdentification, deviceIdentification, null, null);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_FIRMWARE_VERSION,
+                correlationUid, organisationIdentification, deviceIdentification, null, null);
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueGetFirmwareResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
