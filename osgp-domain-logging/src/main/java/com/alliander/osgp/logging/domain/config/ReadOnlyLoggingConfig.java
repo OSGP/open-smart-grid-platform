@@ -62,7 +62,6 @@ public class ReadOnlyLoggingConfig {
      *
      * @return DataSource
      */
-    // @Bean(destroyMethod = "close")
     public DataSource getReadableDataSource() {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
@@ -81,7 +80,6 @@ public class ReadOnlyLoggingConfig {
         }
 
         return this.dataSource;
-        // return new HikariDataSource(hikariConfig);
     }
 
     /**
@@ -92,7 +90,7 @@ public class ReadOnlyLoggingConfig {
      *             when class not found
      */
     @Bean
-    public JpaTransactionManager readableTransactionManager() throws Exception {
+    public JpaTransactionManager readableTransactionManager() throws ClassNotFoundException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
@@ -101,7 +99,7 @@ public class ReadOnlyLoggingConfig {
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
-            throw new Exception(msg, e);
+            throw e;
         }
 
         return transactionManager;
