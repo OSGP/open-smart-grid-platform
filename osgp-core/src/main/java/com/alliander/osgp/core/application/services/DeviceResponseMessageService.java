@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
@@ -55,9 +54,9 @@ public class DeviceResponseMessageService {
 
         try {
 
-            // The List of exceptions which as to be retried.
-            final String retryExceptions[] = { "Unable to connect", "ConnectException",
-                    "Failed to receive response within timelimit" };
+            // The array of exceptions which have to be retried.
+            final String[] retryExceptions = { "Unable to connect", "ConnectException",
+            "Failed to receive response within timelimit" };
             Boolean retryMessage = false;
 
             // Validate the actual exception with the list of exception to be
@@ -71,7 +70,7 @@ public class DeviceResponseMessageService {
             }
 
             if (message.getResult() == ResponseMessageResultType.NOT_OK
-                    && message.getRetryCount() < this.getMaxRetryCount && retryMessage == true) {
+                    && message.getRetryCount() < this.getMaxRetryCount && retryMessage) {
                 LOGGER.info("Retrying: {} for {} time", message.getMessageType(), message.getRetryCount() + 1);
                 final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
@@ -84,7 +83,7 @@ public class DeviceResponseMessageService {
                     this.domainResponseMessageSender.send(message);
                 }
             }
-        } catch (JMSException | FunctionalException | OsgpCoreException e) {
+        } catch (JMSException | FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
     }

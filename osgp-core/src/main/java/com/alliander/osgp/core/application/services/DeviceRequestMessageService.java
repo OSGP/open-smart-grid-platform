@@ -18,9 +18,10 @@ import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
 @Service
@@ -38,27 +39,31 @@ public class DeviceRequestMessageService {
     @Autowired
     private ProtocolRequestService protocolRequestMessageSender;
 
-    public void processMessage(final ProtocolRequestMessage message) throws FunctionalException, OsgpCoreException {
+    public void processMessage(final ProtocolRequestMessage message) throws FunctionalException {
 
         try {
-            final Organisation organisation = this.domainHelperService.findOrganisation(message.getOrganisationIdentification());
+            final Organisation organisation = this.domainHelperService.findOrganisation(message
+                    .getOrganisationIdentification());
             final Device device = this.domainHelperService.findDevice(message.getDeviceIdentification());
 
-            this.domainHelperService.isAllowed(organisation, device, Enum.valueOf(DeviceFunction.class, message.getMessageType()));
+            this.domainHelperService.isAllowed(organisation, device,
+                    Enum.valueOf(DeviceFunction.class, message.getMessageType()));
 
             final ProtocolInfo protocolInfo = device.getProtocolInfo();
 
             if (protocolInfo == null) {
                 final String msg = "Protocol unknown for device [" + device.getDeviceIdentification() + "]";
                 LOGGER.error(msg);
-                throw new OsgpCoreException(msg);
+                throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKOWN_FOR_DEVICE,
+                        ComponentType.OSGP_CORE);
             } else {
-                LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
+                LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
+                        protocolInfo.getProtocolVersion());
             }
 
             this.protocolRequestMessageSender.send(message, protocolInfo);
 
-        } catch (final FunctionalException | OsgpCoreException e) {
+        } catch (final FunctionalException e) {
             this.domainResponseMessageSender.send(message, e);
             throw e;
         }

@@ -66,7 +66,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
 
     /**
      * Send the RequestMessage to a domain adapter.
-     * 
+     *
      * @param requestMessage
      *            The RequestMessage to process.
      * @param messageType
@@ -81,7 +81,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
         DomainInfo domainInfo = null;
 
         for (final DomainInfo di : this.domainInfos) {
-            if (di.getDomain().equals("CORE") && di.getDomainVersion().equals("1.0")) {
+            if ("CORE".equals(di.getDomain()) && "1.0".equals(di.getDomainVersion())) {
                 domainInfo = di;
             }
         }

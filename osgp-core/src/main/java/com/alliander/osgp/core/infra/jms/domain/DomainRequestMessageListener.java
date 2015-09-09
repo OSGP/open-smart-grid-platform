@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -60,7 +59,7 @@ public class DomainRequestMessageListener implements MessageListener {
                 LOGGER.info("Domain request for device [{}] processed.",
                         protocolRequestMessage.getDeviceIdentification());
             }
-        } catch (final JMSException | OsgpCoreException | FunctionalException e) {
+        } catch (final JMSException | FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
     }

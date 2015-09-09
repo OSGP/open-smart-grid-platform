@@ -29,6 +29,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Component("oslpRegisterDeviceMessageProcessor")
+@Transactional(value = "transactionManager")
 public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterDeviceMessageProcessor.class);
@@ -60,6 +61,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
             this.updateRegistrationData(deviceIdentification, deviceRegistrationData.getIpAddress(),
                     deviceRegistrationData.getDeviceType(), deviceRegistrationData.isHasSchedule());
         } catch (final UnknownHostException e) {
+            LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
         }
     }
@@ -67,7 +69,8 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
     // === REGISTER DEVICE ===
 
     /**
-     * Update device registration data (ipaddress, etc). Device is added (without an owner) when not exist yet.
+     * Update device registration data (ipaddress, etc). Device is added
+     * (without an owner) when not exist yet.
      *
      * @param deviceIdentification
      *            The device identification.
@@ -82,12 +85,11 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
      *
      * @throws UnknownHostException
      */
-    @Transactional(value = "transactionManager")
     private Device updateRegistrationData(final String deviceIdentification, final String ipAddress,
             final String deviceType, final boolean hasSchedule) throws UnknownHostException {
 
-        LOGGER.info("updateRegistrationData called for device: {} ipAddress: {}, deviceType: {}.",
-                deviceIdentification, ipAddress, deviceType);
+        LOGGER.info("updateRegistrationData called for device: {} ipAddress: {}, deviceType: {} hasSchedule: {}.",
+                deviceIdentification, ipAddress, deviceType, hasSchedule);
 
         // Convert the IP address from String to InetAddress.
         final InetAddress address = LOCAL_HOST.equals(ipAddress) ? InetAddress.getLoopbackAddress() : InetAddress
@@ -113,11 +115,10 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
         final List<Device> devices = this.deviceRepository.findByNetworkAddress(address);
 
         for (final Device device : devices) {
-            if (!LOCAL_HOST.equals(device.getIpAddress())) {
-                if (!device.getDeviceIdentification().equals(deviceIdentification)) {
-                    device.clearNetworkAddress();
-                    this.deviceRepository.save(device);
-                }
+            if (!LOCAL_HOST.equals(device.getIpAddress())
+                    && !device.getDeviceIdentification().equals(deviceIdentification)) {
+                device.clearNetworkAddress();
+                this.deviceRepository.save(device);
             }
         }
     }
