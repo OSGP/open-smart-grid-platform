@@ -49,7 +49,7 @@ public class AuthenticationTokenProcessingFilter extends GenericFilterBean {
             throws IOException, ServletException {
 
         if (!(request instanceof HttpServletRequest)) {
-            throw new RuntimeException("Expecting a HTTP request");
+            throw new IOException("Expecting a HTTP request");
         }
 
         // Read the token from the HTTP Headers
@@ -83,7 +83,7 @@ public class AuthenticationTokenProcessingFilter extends GenericFilterBean {
 
     /**
      * Get value from header or query parameters.
-     * 
+     *
      * @param request
      *            servlet request
      * @return value when found or null otherwise

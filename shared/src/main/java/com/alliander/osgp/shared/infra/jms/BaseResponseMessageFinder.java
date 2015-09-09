@@ -90,14 +90,10 @@ public abstract class BaseResponseMessageFinder {
      *             In case an error message is present in the response message.
      */
     protected void checkResponseMessage(final ResponseMessage responseMessage) throws OsgpException {
-        if (responseMessage.getResult().equals(ResponseMessageResultType.NOT_OK)) {
-            if (responseMessage.getOsgpException() != null) {
-                LOGGER.error("Unexpected exception: ", responseMessage.getOsgpException().getCause());
-                throw responseMessage.getOsgpException();
-                // throw new TechnicalException(ComponentType.UNKNOWN,
-                // "Unexpected exception while retrieving response message",
-                // ex);
-            }
+        if (responseMessage.getResult().equals(ResponseMessageResultType.NOT_OK)
+                && responseMessage.getOsgpException() != null) {
+            LOGGER.error("Unexpected exception: ", responseMessage.getOsgpException().getCause());
+            throw responseMessage.getOsgpException();
         }
     }
 

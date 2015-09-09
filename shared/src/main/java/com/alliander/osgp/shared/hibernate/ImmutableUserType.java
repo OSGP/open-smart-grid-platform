@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.shared.hibernate;
 
-import org.hibernate.HibernateException;
 
 public abstract class ImmutableUserType extends CustomUserType {
 
@@ -17,7 +16,7 @@ public abstract class ImmutableUserType extends CustomUserType {
     }
 
     @Override
-    public Object deepCopy(final Object value) throws HibernateException {
+    public Object deepCopy(final Object value) {
         // for immutable objects, a reference to the original is fine
         return value;
     }

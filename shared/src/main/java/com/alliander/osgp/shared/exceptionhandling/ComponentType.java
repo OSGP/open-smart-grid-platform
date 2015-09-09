@@ -10,7 +10,6 @@ package com.alliander.osgp.shared.exceptionhandling;
 /**
  * Enum having list of ExceptionsCodes
  */
-
 public enum ComponentType {
     WS_ADMIN("Osgp Web Service Adapter Admin"),
     WS_CORE("Osgp Web Service Adapter Core"),
@@ -27,7 +26,13 @@ public enum ComponentType {
 
     UNKNOWN("Unknown");
 
-    private ComponentType(final String componentName) {
+    private String componentName;
 
+    private ComponentType(final String componentName) {
+        this.componentName = componentName;
+    }
+
+    public String getComponentName() {
+        return this.componentName;
     }
 }

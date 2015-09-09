@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
-public class ResponseMessage implements java.io.Serializable {
+public class ResponseMessage implements Serializable {
 
     /**
      * Serial Version UID.
@@ -26,8 +26,8 @@ public class ResponseMessage implements java.io.Serializable {
     private final Object dataObject;
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final ResponseMessageResultType result, final OsgpException osgpException,
-            final Object dataObject) {
+            final String deviceIdentification, final ResponseMessageResultType result,
+            final OsgpException osgpException, final Object dataObject) {
         this.correlationUid = correlationUid;
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
@@ -36,7 +36,7 @@ public class ResponseMessage implements java.io.Serializable {
         this.dataObject = dataObject;
     }
 
-	public String getCorrelationUid() {
+    public String getCorrelationUid() {
         return this.correlationUid;
     }
 
