@@ -7,14 +7,12 @@
  */
 package com.alliander.osgp.adapter.domain.core.application.services;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -33,18 +31,21 @@ public class DefaultDeviceResponseService {
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
+        LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
+
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-            	LOGGER.error("Device Response not ok.", osgpException);
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,

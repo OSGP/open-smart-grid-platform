@@ -31,13 +31,13 @@ public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMess
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRevokeKeyRequestMessageProcessor.class);
 
-    public AdminRevokeKeyRequestMessageProcessor() {
-        super(DeviceFunction.REVOKE_KEY);
-    }
-
     @Autowired
     @Qualifier("domainAdminDeviceManagementService")
     private DeviceManagementService deviceManagementService;
+
+    public AdminRevokeKeyRequestMessageProcessor() {
+        super(DeviceFunction.REVOKE_KEY);
+    }
 
     @Override
     public void processMessage(final ObjectMessage message) {

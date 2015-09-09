@@ -52,7 +52,7 @@ public class DeviceMonitoringService extends AbstractService {
 
     public void getActualPowerUsage(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("GetActualPowerUsage for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -69,8 +69,8 @@ public class DeviceMonitoringService extends AbstractService {
             final String organisationIdentification, final String deviceIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handleGetActualPowerUsageResponse called for device: {} for organisation: {}",
-                deviceIdentification, organisationIdentification);
+        LOGGER.info("handleResponse called for device: {} for organisation: {} for messageType: {}",
+                deviceIdentification, organisationIdentification, messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -125,8 +125,8 @@ public class DeviceMonitoringService extends AbstractService {
             final String organisationIdentification, final String deviceIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handleGetPowerUsageHistoryResponse called for device: {} for organisation: {}",
-                deviceIdentification, organisationIdentification);
+        LOGGER.info("handleResponse called for device: {} for organisation: {} for messageType: {}",
+                deviceIdentification, organisationIdentification, messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
