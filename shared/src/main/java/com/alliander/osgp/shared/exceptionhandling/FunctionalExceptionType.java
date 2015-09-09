@@ -18,6 +18,7 @@ public enum FunctionalExceptionType {
     UNREGISTERED_DEVICE(202, "Device is not registered."),
     UNSCHEDULED_DEVICE(203, "Device does not have a schedule."),
     EXISTING_DEVICE(204, "Device already exists."),
+    PROTOCOL_UNKOWN_FOR_DEVICE(205, "Device has no protocol defined."),
 
     // Authorization exceptions
     UNAUTHORIZED(301, "Not authorized to perform this action."),
@@ -27,9 +28,7 @@ public enum FunctionalExceptionType {
     // Other exceptions
     VALIDATION_ERROR(401, "Validation error."),
     TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD(402, "Set tariff schedule is not allowed for PSLD."),
-    ARGUMENT_NULL(403, "Argument null.")
-
-    ;
+    ARGUMENT_NULL(403, "Argument null.");
 
     private int code;
     private String message;
