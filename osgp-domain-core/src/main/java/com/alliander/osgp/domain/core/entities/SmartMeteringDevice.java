@@ -12,10 +12,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import com.alliander.osgp.domain.core.validation.Identification;
@@ -38,6 +36,17 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
+    @Column
+    private String deviceType;
+
+    @Column
+    private String supplier;
+
+    @ManyToOne()
+    @JoinColumn(name = "protocol_info_id")
+    private ProtocolInfo protocolInfo;
+
+    // TODO potential future fields
     @Column(length = 255)
     private String containerCity;
 
@@ -56,32 +65,21 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
     @Column
     private Float gpsLongitude;
 
-    private String deviceType;
-
-    @ManyToOne()
-    @JoinColumn(name = "protocol_info_id")
-    private ProtocolInfo protocolInfo;
-
-    @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class, fetch = FetchType.EAGER)
+    @Transient
+    // @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class,
+    // fetch = FetchType.EAGER)
     private final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
 
     @Transient
     private final List<String> organisations = new ArrayList<String>();
 
-    @Column
-    private String configurationVersion;
-
     public SmartMeteringDevice() {
         // Default constructor for hibernate
     }
 
-    public String getConfigurationVersion() {
-        return this.configurationVersion;
-    }
-
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.alliander.osgp.domain.core.entities.DeviceInterface#
      * getDeviceIdentification()
      */
@@ -92,7 +90,7 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.alliander.osgp.domain.core.entities.DeviceInterface#
      * getContainerPostalCode()
      */
@@ -103,9 +101,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getContainerCity
      * ()
      */
@@ -116,9 +114,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getContainerStreet
      * ()
      */
@@ -129,9 +127,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getContainerNumber
      * ()
      */
@@ -142,9 +140,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getGpsLatitude()
      */
     @Override
@@ -154,9 +152,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getGpsLongitude()
      */
     @Override
@@ -166,7 +164,7 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getDeviceType()
      */
@@ -177,9 +175,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getProtocolInfo()
      */
     @Override
@@ -189,9 +187,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getAuthorizations
      * ()
      */
@@ -202,9 +200,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#addAuthorization
      * (com.alliander.osgp.domain.core.entities.Organisation,
      * com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup)
@@ -223,7 +221,7 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.alliander.osgp.domain.core.entities.DeviceInterface#getOwner()
      */
     @Override
@@ -243,9 +241,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
-     * 
+     *
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getOrganisations
      * ()
      */
@@ -253,4 +251,25 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
     public List<String> getOrganisations() {
         return this.organisations;
     }
+
+    public void updateProtocol(final ProtocolInfo protocolInfo) {
+        this.protocolInfo = protocolInfo;
+    }
+
+    public void setDeviceIdentification(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+    }
+
+    public void setDeviceType(final String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public String getSupplier() {
+        return this.supplier;
+    }
+
+    public void setSupplier(final String supplier) {
+        this.supplier = supplier;
+    }
+
 }

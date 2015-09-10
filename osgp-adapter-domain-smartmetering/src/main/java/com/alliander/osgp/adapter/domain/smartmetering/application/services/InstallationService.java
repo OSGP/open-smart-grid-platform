@@ -14,17 +14,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
-import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
-import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
+import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -45,6 +44,9 @@ public class InstallationService {
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
+    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+
+    @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
@@ -56,12 +58,16 @@ public class InstallationService {
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
 
+    @Autowired
+    private InstallationMapper installationMapper;
+
     public InstallationService() {
         // Parameterless constructor required for transactions...
     }
 
     public void addMeter(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String deviceType,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice smartMeteringDeviceValueObject,
             final String messageType) throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
@@ -72,27 +78,32 @@ public class InstallationService {
         // this.findOrganisation(organisationIdentification);
         // final Device device = this.findActiveDevice(deviceIdentification);
 
-        Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        SmartMeteringDevice device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
         if (device == null) {
 
-            device = new Device(deviceIdentification);
-            final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DLMS",
-                    "1.0");
+            device = this.installationMapper.map(smartMeteringDeviceValueObject, SmartMeteringDevice.class);
+
+            final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DSMR",
+                    smartMeteringDeviceValueObject.getDSMRVersion());
             device.updateProtocol(protocolInfo);
-            device = this.deviceRepository.save(device);
 
-            final Organisation organisation = this.organisationRepository
-                    .findByOrganisationIdentification(organisationIdentification);
+            // TODO deviceAuthorization
+            // final DeviceAuthorization deviceAuthorization = new
+            // DeviceAuthorization(dummy, organisation,
+            // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
+            // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
-            final DeviceAuthorization deviceAuthorization = new DeviceAuthorization(device, organisation,
-                    DeviceFunctionGroup.OWNER);
-            this.deviceAuthorizationRepository.save(deviceAuthorization);
+            this.smartMeteringDeviceRepository.save(device);
 
         } else {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
+        final com.alliander.osgp.dto.valueobjects.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
+                .map(smartMeteringDeviceValueObject, com.alliander.osgp.dto.valueobjects.SmartMeteringDevice.class);
+
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, null), messageType, "ip-address");
+                deviceIdentification, smartMeteringDevicDto), messageType);
     }
 }

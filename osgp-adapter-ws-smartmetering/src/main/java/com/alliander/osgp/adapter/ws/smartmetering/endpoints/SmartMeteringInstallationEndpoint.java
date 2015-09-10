@@ -20,9 +20,10 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
+import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -42,20 +43,11 @@ public class SmartMeteringInstallationEndpoint {
     @Autowired
     private InstallationService installationService;
 
-    // private InstallationMapper installationMapper;
+    @Autowired
+    private InstallationMapper installationMapper;
 
     public SmartMeteringInstallationEndpoint() {
     }
-
-    // @Autowired
-    // public SmartMeteringInstallationEndpoint(@Qualifier(value =
-    // "wsCoreDeviceInstallationService") final DeviceInstallationService
-    // deviceInstallationService,
-    // @Qualifier(value = "coreDeviceInstallationMapper") final
-    // DeviceInstallationMapper deviceInstallationMapper) {
-    // this.deviceInstallationService = deviceInstallationService;
-    // this.deviceInstallationMapper = deviceInstallationMapper;
-    // }
 
     @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
@@ -67,13 +59,9 @@ public class SmartMeteringInstallationEndpoint {
         final AddDeviceResponse response = new AddDeviceResponse();
 
         try {
-            // final Device device =
-            // this.installationMapper.map(request.getDevice(),
-            // Device.class);
 
-            // Add a mapper as soon as the structure is set
-
-            final Device device = new Device(request.getDevice().getDeviceIdentification());
+            final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
+                    SmartMeteringDevice.class);
 
             final String correlationUid = this.installationService.addDevice(organisationIdentification, device);
 

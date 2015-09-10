@@ -5,14 +5,14 @@ CREATE TABLE smart_metering_device(
     version bigint,
     device_identification character varying(40) NOT NULL,
     device_type character varying(255),
+    supplier character varying(50),
     container_city character varying(255),
     container_street character varying(255),
     gps_latitude character varying(15),
     gps_longitude character varying(15),
     container_postal_code character varying(10),
     container_number character varying(10),
-    protocol_info_id bigint,
-	configuration_version character varying(50)
+    protocol_info_id bigint
 );
 
 ALTER TABLE public.smart_metering_device OWNER TO osp_admin;

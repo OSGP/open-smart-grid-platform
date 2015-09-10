@@ -29,12 +29,7 @@ public class OsgpCoreRequestMessageSender {
     @Qualifier("domainSmartMeteringOutgoingOsgpCoreRequestsJmsTemplate")
     private JmsTemplate osgpCoreRequestsJmsTemplate;
 
-    public void send(final RequestMessage requestMessage, final String messageType, final String ipAddress) {
-        this.send(requestMessage, messageType, ipAddress, null);
-    }
-
-    public void send(final RequestMessage requestMessage, final String messageType, final String ipAddress,
-            final Long scheduleTime) {
+    public void send(final RequestMessage requestMessage, final String messageType) {
 
         this.osgpCoreRequestsJmsTemplate.send(new MessageCreator() {
 
@@ -48,10 +43,6 @@ public class OsgpCoreRequestMessageSender {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
-                objectMessage.setStringProperty(Constants.IP_ADDRESS, ipAddress);
-                if (scheduleTime != null) {
-                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
-                }
                 objectMessage.setObject(requestMessage.getRequest());
 
                 return objectMessage;

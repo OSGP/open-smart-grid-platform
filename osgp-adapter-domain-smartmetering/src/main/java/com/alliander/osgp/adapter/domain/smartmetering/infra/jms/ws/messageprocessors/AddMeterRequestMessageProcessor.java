@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -55,14 +56,14 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        String deviceType = null;
+        Object dataObject = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            deviceType = message.getStringProperty(Constants.DEVICE_TYPE);
+            dataObject = message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -76,8 +77,10 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
+            final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) dataObject;
+
             this.installationService.addMeter(organisationIdentification, deviceIdentification, correlationUid,
-                    deviceType, messageType);
+                    smartMeteringDevice, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
