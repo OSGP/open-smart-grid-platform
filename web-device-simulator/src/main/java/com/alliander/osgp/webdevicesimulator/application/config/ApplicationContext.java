@@ -133,7 +133,6 @@ public class ApplicationContext {
      *
      * @return DataSource
      */
-    // @Bean(destroyMethod = "close")
     public DataSource getDataSource() {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
@@ -151,8 +150,6 @@ public class ApplicationContext {
             this.dataSource = new HikariDataSource(hikariConfig);
         }
         return this.dataSource;
-
-        // return new HikariDataSource(hikariConfig);
     }
 
     /**
@@ -259,7 +256,7 @@ public class ApplicationContext {
         final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-                    NoSuchProviderException {
+            NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
 
                 LOGGER.info("Created new client pipeline");
@@ -289,7 +286,7 @@ public class ApplicationContext {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-                    NoSuchProviderException {
+            NoSuchProviderException {
                 final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
                 LOGGER.info("Created new server pipeline");
 
@@ -306,7 +303,7 @@ public class ApplicationContext {
     }
 
     private ChannelPipeline createPipeLine() throws NoSuchAlgorithmException, InvalidKeySpecException,
-            NoSuchProviderException, IOException {
+    NoSuchProviderException, IOException {
         final ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast("oslpEncoder", new OslpEncoder());
@@ -324,13 +321,13 @@ public class ApplicationContext {
 
     @Bean
     public OslpDecoder oslpDecoder() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
     @Bean
     public PublicKey publicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return CertificateHelper.createPublicKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
@@ -339,7 +336,7 @@ public class ApplicationContext {
 
     @Bean
     public PrivateKey privateKey() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return CertificateHelper.createPrivateKey(
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH),
                 this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE),
