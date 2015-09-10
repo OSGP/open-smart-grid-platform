@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class EventNotification implements Serializable {
 
     /**
-     * Serial Version UID
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 5665838352689024852L;
 

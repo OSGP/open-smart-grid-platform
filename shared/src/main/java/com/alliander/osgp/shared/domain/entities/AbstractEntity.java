@@ -47,7 +47,7 @@ public abstract class AbstractEntity implements Serializable {
     private Date modificationTime = new Date();
 
     @Version
-    private Long version = -1l;
+    private Long version = -1L;
 
     // === FIELDS [END] ===
 
