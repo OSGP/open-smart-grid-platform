@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.protocol.oslp.exceptions;
 
 import java.util.Set;
 
+import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,14 +23,17 @@ public class ValidationException extends ProtocolAdapterException {
 
     private static final String DEFAULT_MESSAGE = "Validation Exception";
 
-    private Set<? extends ConstraintViolation<?>> constraintViolations;
+    @Transient
+    private final Set<? extends ConstraintViolation<?>> constraintViolations;
 
     public ValidationException() {
         super(DEFAULT_MESSAGE);
+        this.constraintViolations = null;
     }
 
     public ValidationException(final String message) {
         super(message);
+        this.constraintViolations = null;
     }
 
     public ValidationException(final Set<? extends ConstraintViolation<?>> constraintViolations) {

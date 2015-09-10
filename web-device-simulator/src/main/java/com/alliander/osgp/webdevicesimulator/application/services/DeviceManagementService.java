@@ -26,7 +26,7 @@ public class DeviceManagementService {
     @Autowired
     private DeviceRepository deviceRepository;
 
-    public List<EventNotificationToBeSent> listeventNotificationToBeSent = new ArrayList<>();
+    private static final List<EventNotificationToBeSent> EVENT_NOTIFICATION_TO_BE_SENT = new ArrayList<>();
 
     @Autowired
     private Boolean checkboxDeviceRegistrationValue;
@@ -42,6 +42,10 @@ public class DeviceManagementService {
 
     @Autowired
     private Boolean checkboxEventNotificationValue;
+
+    public List<EventNotificationToBeSent> getEventNotificationToBeSent() {
+        return EVENT_NOTIFICATION_TO_BE_SENT;
+    }
 
     protected void setDeviceRepository(final DeviceRepository deviceRepository) {
         this.deviceRepository = deviceRepository;

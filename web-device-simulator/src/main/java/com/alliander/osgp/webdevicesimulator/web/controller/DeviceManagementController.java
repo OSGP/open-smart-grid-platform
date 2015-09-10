@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.webdevicesimulator.web.controller;
 
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -35,8 +34,6 @@ import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.webdevicesimulator.application.services.DeviceManagementService;
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.entities.DeviceMessageStatus;
-import com.alliander.osgp.webdevicesimulator.domain.repositories.OslpLogItemRepository;
-import com.alliander.osgp.webdevicesimulator.service.OslpChannelHandler;
 import com.alliander.osgp.webdevicesimulator.service.RegisterDevice;
 
 @Controller
@@ -95,27 +92,6 @@ public class DeviceManagementController extends AbstractController {
 
     @Resource
     private DeviceManagementService deviceManagementService;
-
-    @Resource
-    private String oslpAddressServer;
-
-    @Resource
-    private int oslpPortClient;
-
-    @Resource
-    private PrivateKey privateKey;
-
-    @Resource
-    private OslpChannelHandler oslpChannelHandler;
-
-    @Resource
-    private String oslpSignature;
-
-    @Resource
-    private String oslpSignatureProvider;
-
-    @Autowired
-    private OslpLogItemRepository oslpLogItemRepository;
 
     @Autowired
     private RegisterDevice registerDevice;

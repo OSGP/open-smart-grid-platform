@@ -24,15 +24,15 @@ public class OslpDeviceSettingsService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceSettingsService.class);
 
+    @Autowired
+    private OslpDeviceRepository oslpDeviceRepository;
+
     /**
      * Constructor
      */
     public OslpDeviceSettingsService() {
         // Parameterless constructor required for transactions...
     }
-
-    @Autowired
-    private OslpDeviceRepository oslpDeviceRepository;
 
     public OslpDevice addDevice(final OslpDevice device) {
         LOGGER.info("add device: {}", device.getDeviceIdentification());

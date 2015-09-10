@@ -35,7 +35,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 /**
- * An application context Java configuration class. The usage of Java configuration requires Spring Framework 3.0
+ * An application context Java configuration class. The usage of Java
+ * configuration requires Spring Framework 3.0
  */
 @EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = { OslpDeviceRepository.class })
 @Configuration
@@ -78,7 +79,6 @@ public class OslpPersistenceConfig {
      *
      * @return DataSource
      */
-    // @Bean(destroyMethod = "close")
     public DataSource getOslpDataSource() {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
@@ -96,8 +96,6 @@ public class OslpPersistenceConfig {
             this.dataSource = new HikariDataSource(hikariConfig);
         }
         return this.dataSource;
-
-        // return new HikariDataSource(hikariConfig);
     }
 
     /**

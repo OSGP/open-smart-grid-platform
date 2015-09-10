@@ -26,7 +26,7 @@ public class OslpEnvelope {
     private static final String SECURITY_CONFIG_EXCEPTION = "Given security settings caused an error.";
 
     /**
-     * Length of the security hash TODO length for ECDSA could be smaller (73),
+     * Length of the security hash NOTE: length for ECDSA could be smaller (73),
      * but leave it for now on 128 for testing with AME.
      */
     public static final int SECURITY_KEY_LENGTH = 128;
@@ -100,7 +100,7 @@ public class OslpEnvelope {
 
     /**
      * Private constructor.
-     * 
+     *
      * @param signature
      *            signature algorithm
      * @param provider
@@ -146,7 +146,7 @@ public class OslpEnvelope {
 
     /**
      * set security key bytes.
-     * 
+     *
      * @param newSecurityKey
      */
     public void setSecurityKey(final byte[] newSecurityKey) {
@@ -187,7 +187,7 @@ public class OslpEnvelope {
 
     /**
      * Set new sequence number.
-     * 
+     *
      * @param newSequenceNumber
      */
     public void setSequenceNumber(final byte[] newSequenceNumber) {
@@ -212,7 +212,7 @@ public class OslpEnvelope {
     /**
      * Set new device id and new manufacturer id. Both values will be combined
      * into one array.
-     * 
+     *
      * @param newDeviceId
      */
     public void setDeviceId(final byte[] newDeviceId) {
@@ -241,7 +241,7 @@ public class OslpEnvelope {
 
     /**
      * Sets new OSLP payload.
-     * 
+     *
      * @param payloadMessage
      */
     public void setPayloadMessage(final Message payloadMessage) {
@@ -251,7 +251,7 @@ public class OslpEnvelope {
     /**
      * Validates the envelope + payload (excluding securityKey) using signature
      * algorithm.
-     * 
+     *
      * @return true when securityKey and calculated signature match or false
      *         otherwise.
      */
@@ -297,9 +297,7 @@ public class OslpEnvelope {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-
         final OslpEnvelope that = (OslpEnvelope) o;
-
         if (this.signature != null ? !this.signature.equals(that.signature) : that.signature != null) {
             return false;
         }
@@ -322,7 +320,6 @@ public class OslpEnvelope {
         if (!Arrays.equals(this.sequenceNumber, that.sequenceNumber)) {
             return false;
         }
-
         return true;
     }
 

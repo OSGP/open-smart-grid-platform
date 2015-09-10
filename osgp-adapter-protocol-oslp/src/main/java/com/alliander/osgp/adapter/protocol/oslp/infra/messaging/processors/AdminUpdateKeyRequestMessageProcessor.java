@@ -30,16 +30,15 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminUpdateKeyRequestMessageProcessor.class);
 
-    public AdminUpdateKeyRequestMessageProcessor() {
-        super(DeviceRequestMessageType.UPDATE_KEY);
-    }
-
     /**
      * Autowired field device management application service
      */
     @Autowired
-    // @Qualifier(value = "oslpDeviceManagementService")
     private DeviceManagementService deviceManagementService;
+
+    public AdminUpdateKeyRequestMessageProcessor() {
+        super(DeviceRequestMessageType.UPDATE_KEY);
+    }
 
     @Override
     public void processMessage(final ObjectMessage message) {

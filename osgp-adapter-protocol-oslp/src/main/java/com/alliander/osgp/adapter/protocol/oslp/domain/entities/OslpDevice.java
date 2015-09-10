@@ -69,6 +69,12 @@ public class OslpDevice extends AbstractEntity {
         // Default constructor
     }
 
+    public OslpDevice(final String deviceUid, final String deviceIdentification, final String deviceType) {
+        this.deviceUid = deviceUid;
+        this.deviceIdentification = deviceIdentification;
+        this.deviceType = deviceType;
+    }
+
     public OslpDevice(final String deviceUid, final String deviceIdentification, final String deviceType,
             final InetAddress networkAddress, final boolean activated, final boolean hasSchedule) {
         this.deviceUid = deviceUid;
@@ -149,9 +155,7 @@ public class OslpDevice extends AbstractEntity {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-
         final OslpDevice device = (OslpDevice) o;
-
         if (this.deviceIdentification != null ? !this.deviceIdentification.equals(device.deviceIdentification)
                 : device.deviceIdentification != null) {
             return false;
@@ -162,7 +166,6 @@ public class OslpDevice extends AbstractEntity {
         if (this.deviceUid != null ? !this.deviceUid.equals(device.deviceUid) : device.deviceUid != null) {
             return false;
         }
-
         return true;
     }
 

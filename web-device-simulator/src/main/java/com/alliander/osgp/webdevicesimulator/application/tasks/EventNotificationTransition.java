@@ -30,7 +30,8 @@ public class EventNotificationTransition implements Runnable {
 
         if (this.deviceManagementService.getEventNotification()) {
             // The original list with listofeventtobesent
-            final List<EventNotificationToBeSent> listeventNotificationToBeSent = this.deviceManagementService.listeventNotificationToBeSent;
+            final List<EventNotificationToBeSent> listeventNotificationToBeSent = this.deviceManagementService
+                    .getEventNotificationToBeSent();
 
             // The local list of events
             final List<EventNotificationToBeSent> listOfEvents = new ArrayList<>();

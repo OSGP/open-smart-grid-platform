@@ -30,16 +30,15 @@ public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageP
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRevokeKeyRequestMessageProcessor.class);
 
-    public AdminRevokeKeyRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REVOKE_KEY);
-    }
-
     /**
      * Autowired field device management application service
      */
     @Autowired
-    // @Qualifier(value = "oslpDeviceManagementService")
     private DeviceManagementService deviceManagementService;
+
+    public AdminRevokeKeyRequestMessageProcessor() {
+        super(DeviceRequestMessageType.REVOKE_KEY);
+    }
 
     @Override
     public void processMessage(final ObjectMessage message) {

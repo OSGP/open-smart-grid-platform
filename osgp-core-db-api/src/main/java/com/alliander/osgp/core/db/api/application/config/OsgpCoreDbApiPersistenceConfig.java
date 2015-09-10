@@ -68,7 +68,6 @@ public class OsgpCoreDbApiPersistenceConfig {
      *
      * @return DataSource
      */
-    // @Bean(destroyMethod = "close")
     public DataSource getOsgpCoreDbApiDataSource() {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
@@ -86,8 +85,6 @@ public class OsgpCoreDbApiPersistenceConfig {
             this.dataSource = new HikariDataSource(hikariConfig);
         }
         return this.dataSource;
-
-        // return new HikariDataSource(hikariConfig);
     }
 
     /**
