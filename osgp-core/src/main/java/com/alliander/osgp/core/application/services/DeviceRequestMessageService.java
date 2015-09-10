@@ -54,7 +54,7 @@ public class DeviceRequestMessageService {
             if (protocolInfo == null) {
                 final String msg = "Protocol unknown for device [" + device.getDeviceIdentification() + "]";
                 LOGGER.error(msg);
-                throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKOWN_FOR_DEVICE,
+                throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
                         ComponentType.OSGP_CORE);
             } else {
                 LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
