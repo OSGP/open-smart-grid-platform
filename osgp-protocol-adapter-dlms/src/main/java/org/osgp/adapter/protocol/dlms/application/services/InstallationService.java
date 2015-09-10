@@ -7,15 +7,16 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
-import org.osgp.adapter.protocol.dlms.infra.messaging.OsgpRequestMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -23,16 +24,15 @@ import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsDeviceManagementService")
-// @Transactional(value = "transactionManager")
 public class InstallationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
 
     @Autowired
-    private OsgpRequestMessageSender osgpRequestMessageSender;
+    private DlmsDeviceRepository dlmsDeviceRepository;
 
     @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
+    private InstallationMapper installationMapper;
 
     /**
      * Constructor
@@ -44,14 +44,15 @@ public class InstallationService {
     // === ADD METER ===
 
     public void addMeter(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceResponseMessageSender responseMessageSender, final String domain,
-            final String domainVersion, final String messageType, final String publicKey) {
+            final String correlationUid, final SmartMeteringDevice smartMeteringDevice,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
 
-        LOGGER.info("addMeter called for device: {} for organisation: {} with new publicKey: {}", deviceIdentification,
-                organisationIdentification, publicKey);
+        LOGGER.info("addMeter called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
 
         try {
-            final DlmsDevice dlmsDevice = new DlmsDevice(deviceIdentification);
+            final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
 
             this.dlmsDeviceRepository.save(dlmsDevice);
 

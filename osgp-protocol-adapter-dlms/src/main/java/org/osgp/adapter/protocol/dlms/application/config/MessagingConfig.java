@@ -407,9 +407,4 @@ public class MessagingConfig {
         return messageListenerContainer;
     }
 
-    // @Bean
-    // public OsgpResponseMessageListener osgpResponseMessageListener() {
-    // return new OsgpResponseMessageListener();
-    // }
-
 }
