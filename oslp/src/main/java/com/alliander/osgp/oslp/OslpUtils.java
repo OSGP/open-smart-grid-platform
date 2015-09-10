@@ -28,26 +28,30 @@ import com.google.protobuf.ByteString;
  */
 public class OslpUtils {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(OslpUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OslpUtils.class);
 
     /**
      * Fallback signature value which triggers previous RSA/Hash implementation.
      */
-    public final static String FALLBACK_SIGNATURE = "SHA512encryptedwithRSA";
+    public static final String FALLBACK_SIGNATURE = "SHA512encryptedwithRSA";
 
     /**
      * Fallback RSA / Padding settings for Cipher
      */
-    public final static String FALLBACK_CIPHER = "RSA/ECB/PKCS1Padding";
+    public static final String FALLBACK_CIPHER = "RSA/ECB/PKCS1Padding";
 
     /**
      * Fallback digest to create hash from previous RSA/Hash implementation.
      */
-    public final static String FALLBACK_DIGEST = "SHA-512";
+    public static final String FALLBACK_DIGEST = "SHA-512";
+
+    public OslpUtils() {
+        // Public constructor.
+    }
 
     /**
      * Converts an {@link Integer} to a {@link ByteString}.
-     * 
+     *
      * @param i
      *            the {@link Integer} to convert.
      * @return the {@link ByteString}.
@@ -64,7 +68,7 @@ public class OslpUtils {
 
     /**
      * Convert byteString to Integer
-     * 
+     *
      * @param b
      *            bytestring input
      * @return converted integer
@@ -83,7 +87,7 @@ public class OslpUtils {
 
     /**
      * Combine all bytes which need to be signed from the OSLP envelope.
-     * 
+     *
      * @param envelope
      * @return array of bytes which can be signed
      */
@@ -97,7 +101,7 @@ public class OslpUtils {
 
     /**
      * Create a signature of specified message.
-     * 
+     *
      * @param message
      *            message bytes to sign
      * @param privateKey
@@ -127,7 +131,7 @@ public class OslpUtils {
 
     /**
      * Validate the signature against the message.
-     * 
+     *
      * @param message
      *            message to validate
      * @param securityKey
