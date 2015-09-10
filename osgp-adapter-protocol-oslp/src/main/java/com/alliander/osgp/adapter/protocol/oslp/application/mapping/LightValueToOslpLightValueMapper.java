@@ -10,7 +10,6 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-//import com.alliander.osgp.dto.exceptions.ValidationException;
 import com.alliander.osgp.dto.valueobjects.LightValue;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;

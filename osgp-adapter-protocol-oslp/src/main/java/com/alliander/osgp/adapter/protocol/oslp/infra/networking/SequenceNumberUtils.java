@@ -57,7 +57,7 @@ public class SequenceNumberUtils {
      * @return The Integer object.
      */
     public static Integer convertByteArrayToInteger(final byte[] array) {
-        final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF) << 0;
+        final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
         if (IS_LOGGING_ENABLED) {
             LOGGER.info(
                     "platform.SequenceNumberUtils.convertByteArrayToInteger() byte[0]: {} byte[1]: {} Integer value: {}",

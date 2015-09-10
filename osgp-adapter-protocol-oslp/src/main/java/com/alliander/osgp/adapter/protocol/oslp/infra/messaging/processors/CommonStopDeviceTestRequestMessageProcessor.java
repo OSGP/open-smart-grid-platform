@@ -58,7 +58,7 @@ public class CommonStopDeviceTestRequestMessageProcessor extends DeviceRequestMe
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
         } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.");
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("domain: {}", domain);
             LOGGER.debug("domainVersion: {}", domainVersion);
