@@ -43,7 +43,6 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDeviceBuilde
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerClient;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpDeviceService;
-import com.alliander.osgp.adapter.ws.core.application.mapping.AdHocManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.AdHocManagementService;
 import com.alliander.osgp.adapter.ws.core.endpoints.AdHocManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
@@ -202,7 +201,7 @@ public class SetRebootSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("a get set reboot response request with correlationId (.*) and deviceId (.*)")
@@ -444,11 +443,10 @@ public class SetRebootSteps {
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.oslpDeviceRepositoryMock,
-                this.webServiceResponseMessageSenderMock, this.channelMock });
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock,
+                this.oslpDeviceRepositoryMock, this.webServiceResponseMessageSenderMock, this.channelMock });
 
-        this.adHocManagementEndpoint = new AdHocManagementEndpoint(this.adHocManagementService,
-                new AdHocManagementMapper());
+        this.adHocManagementEndpoint = new AdHocManagementEndpoint(this.adHocManagementService);
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
