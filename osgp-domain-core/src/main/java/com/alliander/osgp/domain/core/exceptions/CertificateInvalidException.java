@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class CertificateInvalidException extends Exception {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 5979052338314893813L;
     private static final String MESSAGE = "Client certificate is untrusted or invalid for organisation [%1$s]";

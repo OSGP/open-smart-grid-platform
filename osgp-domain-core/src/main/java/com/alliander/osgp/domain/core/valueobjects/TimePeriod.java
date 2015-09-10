@@ -18,6 +18,9 @@ import com.alliander.osgp.domain.core.validation.TimePeriodConstraints;
 @TimePeriodConstraints
 public class TimePeriod implements Serializable {
 
+    /**
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = -1279128399397536492L;
 
     @NotNull

@@ -16,9 +16,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class RelayConfiguration implements Serializable {
+
     /**
-	 * 
-	 */
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = 7065046304131439924L;
 
     @Valid

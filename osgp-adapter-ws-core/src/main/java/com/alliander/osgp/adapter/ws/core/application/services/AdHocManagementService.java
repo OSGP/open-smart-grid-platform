@@ -61,8 +61,10 @@ public class AdHocManagementService {
         // Parameterless constructor required for transactions
     }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber) throws FunctionalException {
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification, pageNumber);
+    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
+            throws FunctionalException {
+        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
+                pageNumber);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
@@ -70,27 +72,29 @@ public class AdHocManagementService {
         return this.deviceRepository.findAllAuthorized(organisation, request);
     }
 
-    public String enqueueSetRebootRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueSetRebootRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_REBOOT);
 
-        LOGGER.debug("enqueueSetRebootRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueSetRebootRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_REBOOT, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_REBOOT,
+                correlationUid, organisationIdentification, deviceIdentification, null, null);
 
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueSetRebootResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueSetRebootResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 

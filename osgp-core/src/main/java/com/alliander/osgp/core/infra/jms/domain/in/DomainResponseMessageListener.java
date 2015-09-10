@@ -53,7 +53,7 @@ public class DomainResponseMessageListener implements MessageListener {
             // TODO: MAKE SURE THE PROTOCOL INFO IS CHOSEN!!!
             //
             for (final ProtocolInfo pi : this.protocolInfos) {
-                if (pi.getProtocol().equals("OSLP") && pi.getProtocolVersion().equals("1.0")) {
+                if ("OSLP".equals(pi.getProtocol()) && "1.0".equals(pi.getProtocolVersion())) {
                     protocolInfo = pi;
                 }
             }
@@ -62,14 +62,10 @@ public class DomainResponseMessageListener implements MessageListener {
                 throw new OsgpCoreException("No protocol info!");
             }
 
-            switch (messageType) {
-
-            case "REGISTER_DEVICE":
+            if ("REGISTER_DEVICE".equals(messageType)) {
                 final ResponseMessage responseMessage = (ResponseMessage) dataObject;
                 this.protocolResponseService.send(responseMessage, messageType, protocolInfo);
-                break;
-
-            default:
+            } else {
                 throw new OsgpCoreException("Unknown JMSType: " + messageType);
             }
 

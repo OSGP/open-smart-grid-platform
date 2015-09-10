@@ -12,8 +12,9 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 
 @SoapFault(faultCode = FaultCode.SERVER)
 public class UnregisteredDeviceException extends PlatformException {
+
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -8628972116249878312L;
     private static final String MESSAGE = "Device %1$s is not registered";

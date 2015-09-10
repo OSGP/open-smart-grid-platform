@@ -32,7 +32,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 public class Organisation extends AbstractEntity {
 
     /**
-     * SerialVersionID for serrialization
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -1097307978466479033L;
 
@@ -65,10 +65,6 @@ public class Organisation extends AbstractEntity {
     @Column(nullable = false)
     private boolean enabled;
 
-    public Organisation() {
-        // Default constructor
-    }
-
     /**
      * Comma separated list of domains organisation is allowed to access.
      */
@@ -76,6 +72,10 @@ public class Organisation extends AbstractEntity {
     @NotEmpty
     @Length(max = NAME_MAX_LENGTH)
     private String domains;
+
+    public Organisation() {
+        // Default constructor
+    }
 
     public Organisation(final String organisationIdentification, final String name, final String prefix,
             final PlatformFunctionGroup functionGroup) {
@@ -87,7 +87,7 @@ public class Organisation extends AbstractEntity {
 
     /**
      * Gets the organisations identification
-     * 
+     *
      * @return the identification
      */
     public String getOrganisationIdentification() {
@@ -96,7 +96,7 @@ public class Organisation extends AbstractEntity {
 
     /**
      * Gets the organisations name
-     * 
+     *
      * @return the name
      */
     public String getName() {
@@ -105,7 +105,7 @@ public class Organisation extends AbstractEntity {
 
     /**
      * Gets the organisations prefix
-     * 
+     *
      * @return the prefix
      */
     public String getPrefix() {

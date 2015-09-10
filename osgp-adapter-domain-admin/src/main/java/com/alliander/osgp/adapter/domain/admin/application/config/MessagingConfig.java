@@ -123,6 +123,18 @@ public class MessagingConfig {
     @Resource
     private Environment environment;
 
+    @Autowired
+    @Qualifier("domainAdminIncomingWebServiceRequestMessageListener")
+    private WebServiceRequestMessageListener incomingWebServiceRequestMessageListener;
+
+    @Autowired
+    @Qualifier("domainAdminIncomingOsgpCoreResponseMessageListener")
+    private OsgpCoreResponseMessageListener incomingOsgpCoreResponseMessageListener;
+
+    @Autowired
+    @Qualifier("domainAdminIncomingOsgpCoreRequestMessageListener")
+    private OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener;
+
     // === JMS SETTINGS ===
 
     @Bean(destroyMethod = "stop")
@@ -154,10 +166,10 @@ public class MessagingConfig {
                 this.outgoingWebServiceResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.outgoingOsgpCoreRequestsQueue(), this.outgoingOsgpCoreRequestsRedeliveryPolicy());
         redeliveryPolicyMap
-                .put(this.incomingOsgpCoreResponsesQueue(), this.incomingOsgpCoreResponsesRedeliveryPolicy());
+        .put(this.incomingOsgpCoreResponsesQueue(), this.incomingOsgpCoreResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.incomingOsgpCoreRequestsQueue(), this.incomingOsgpCoreRequestsRedeliveryPolicy());
         redeliveryPolicyMap
-                .put(this.outgoingOsgpCoreResponsesQueue(), this.outgoingOsgpCoreResponsesRedeliveryPolicy());
+        .put(this.outgoingOsgpCoreResponsesQueue(), this.outgoingOsgpCoreResponsesRedeliveryPolicy());
         return redeliveryPolicyMap;
     }
 
@@ -215,10 +227,6 @@ public class MessagingConfig {
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
-
-    @Autowired
-    @Qualifier("domainAdminIncomingWebServiceRequestMessageListener")
-    private WebServiceRequestMessageListener incomingWebServiceRequestMessageListener;
 
     // JMS SETTINGS: OUTGOING WEB SERVICE RESPONSES
 
@@ -347,10 +355,6 @@ public class MessagingConfig {
         return messageListenerContainer;
     }
 
-    @Autowired
-    @Qualifier("domainAdminIncomingOsgpCoreResponseMessageListener")
-    private OsgpCoreResponseMessageListener incomingOsgpCoreResponseMessageListener;
-
     // JMS SETTINGS: INCOMING OSGP CORE REQUESTS (receiving requests from osgp
     // core)
 
@@ -392,10 +396,6 @@ public class MessagingConfig {
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
-
-    @Autowired
-    @Qualifier("domainAdminIncomingOsgpCoreRequestMessageListener")
-    private OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener;
 
     // JMS SETTINGS: OUTGOING OSGP CORE RESPONSES (sending responses to osgp
     // core)

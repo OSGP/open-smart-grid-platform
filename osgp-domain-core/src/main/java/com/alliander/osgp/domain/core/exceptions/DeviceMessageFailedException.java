@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class DeviceMessageFailedException extends Exception {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 2589780904277543380L;
     private static final String MESSAGE = "Device Message Failed";

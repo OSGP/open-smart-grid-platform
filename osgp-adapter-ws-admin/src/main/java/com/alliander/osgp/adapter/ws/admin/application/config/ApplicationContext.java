@@ -9,8 +9,6 @@ package com.alliander.osgp.adapter.ws.admin.application.config;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +32,8 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
  * configuration requires Spring Framework 3.0
  */
 @Configuration
-@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.admin", "com.alliander.osgp.logging.domain"})
+@ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.admin",
+"com.alliander.osgp.logging.domain" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ MessagingConfig.class, PersistenceConfig.class, WebServiceConfig.class, ReadOnlyLoggingConfig.class })
 @PropertySource("file:${osp/osgpAdapterWsAdmin/config}")
@@ -47,8 +46,6 @@ public class ApplicationContext {
 
     private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
     private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     @Resource
     private Environment environment;
@@ -73,10 +70,9 @@ public class ApplicationContext {
      */
     @Bean
     public PagingSettings pagingSettings() {
-        final PagingSettings settings = new PagingSettings(Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)),
-                Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
-
-        return settings;
+        return new PagingSettings(Integer.parseInt(this.environment
+                .getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)), Integer.parseInt(this.environment
+                        .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
     /**

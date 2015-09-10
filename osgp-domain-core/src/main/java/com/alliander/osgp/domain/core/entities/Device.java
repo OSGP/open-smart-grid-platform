@@ -45,7 +45,7 @@ public class Device extends AbstractEntity {
     public static final String SSLD_TYPE = "SSLD";
 
     /**
-     * UID for serialization
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -1067112091560627041L;
 
@@ -261,9 +261,7 @@ public class Device extends AbstractEntity {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-
         final Device device = (Device) o;
-
         if (this.isActivated != device.isActivated) {
             return false;
         }
@@ -285,7 +283,6 @@ public class Device extends AbstractEntity {
                 : device.networkAddress != null) {
             return false;
         }
-
         return true;
     }
 
@@ -307,7 +304,8 @@ public class Device extends AbstractEntity {
     /**
      * Get the organisations that are authorized for this device.
      *
-     * @return List of OrganisationIdentification of organisations that are authorized for this device.
+     * @return List of OrganisationIdentification of organisations that are
+     *         authorized for this device.
      */
     @Transient
     public List<String> getOrganisations() {

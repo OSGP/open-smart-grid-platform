@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class ConfigurationException extends PlatformException {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 4535607746025926682L;
     private static final String MESSAGE = "Platform configuration is incorrect or incomplete.";

@@ -18,7 +18,6 @@ import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
-import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -29,9 +28,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 public class DomainResponseMessageSender implements DomainResponseService {
-
-    @Autowired
-    private DomainInfoRepository domainInfoRepository;
 
     @Autowired
     private DomainResponseMessageJmsTemplateFactory factory;

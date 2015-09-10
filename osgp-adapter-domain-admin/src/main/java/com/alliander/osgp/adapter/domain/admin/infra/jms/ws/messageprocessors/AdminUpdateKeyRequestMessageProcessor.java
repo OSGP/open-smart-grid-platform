@@ -31,13 +31,13 @@ public class AdminUpdateKeyRequestMessageProcessor extends WebServiceRequestMess
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminUpdateKeyRequestMessageProcessor.class);
 
-    public AdminUpdateKeyRequestMessageProcessor() {
-        super(DeviceFunction.UPDATE_KEY);
-    }
-
     @Autowired
     @Qualifier("domainAdminDeviceManagementService")
     private DeviceManagementService deviceManagementService;
+
+    public AdminUpdateKeyRequestMessageProcessor() {
+        super(DeviceFunction.UPDATE_KEY);
+    }
 
     @Override
     public void processMessage(final ObjectMessage message) {

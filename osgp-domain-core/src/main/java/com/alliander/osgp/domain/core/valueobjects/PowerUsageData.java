@@ -13,6 +13,9 @@ import org.joda.time.DateTime;
 
 public class PowerUsageData implements Serializable {
 
+    /**
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = -4500816713354211228L;
 
     private DateTime recordTime;

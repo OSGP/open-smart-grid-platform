@@ -66,7 +66,6 @@ public class LoggingConfig {
      *
      * @return DataSource
      */
-    // @Bean(destroyMethod = "close")
     public DataSource getDataSource() {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
@@ -85,7 +84,6 @@ public class LoggingConfig {
         }
 
         return this.dataSource;
-        // return new HikariDataSource(hikariConfig);
     }
 
     /**
@@ -96,7 +94,7 @@ public class LoggingConfig {
      *             when class not found
      */
     @Bean
-    public JpaTransactionManager transactionManager() throws Exception {
+    public JpaTransactionManager transactionManager() throws ClassNotFoundException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
@@ -105,7 +103,7 @@ public class LoggingConfig {
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
-            throw new Exception(msg, e);
+            throw e;
         }
 
         return transactionManager;

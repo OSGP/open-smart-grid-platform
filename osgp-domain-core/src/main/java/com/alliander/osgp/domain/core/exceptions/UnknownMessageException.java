@@ -14,10 +14,10 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class UnknownMessageException extends PlatformException {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -5443719028089122868L;
-    private final static String DEFAULT_MESSAGE = "Unknown message Exception";
+    private static final String DEFAULT_MESSAGE = "Unknown message Exception";
 
     public UnknownMessageException() {
         super(DEFAULT_MESSAGE);

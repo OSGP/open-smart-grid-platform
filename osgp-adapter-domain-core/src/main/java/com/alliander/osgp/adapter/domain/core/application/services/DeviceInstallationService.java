@@ -68,6 +68,8 @@ public class DeviceInstallationService extends AbstractService {
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
+
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
@@ -91,8 +93,8 @@ public class DeviceInstallationService extends AbstractService {
 
             deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
                     DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
-                            DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
-                            status.getLightType(), status.getEventNotificationsMask());
+                    DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
+                    status.getLightType(), status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
@@ -108,7 +110,8 @@ public class DeviceInstallationService extends AbstractService {
     // === CUSTOM STATUS FILTER FUNCTIONS ===
 
     /**
-     * Filter light values based on PublicLighting domain. Only matching values will be returned.
+     * Filter light values based on PublicLighting domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -116,7 +119,8 @@ public class DeviceInstallationService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     private static List<LightValue> filterLightValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
@@ -138,7 +142,8 @@ public class DeviceInstallationService extends AbstractService {
     }
 
     /**
-     * Filter light values based on TariffSwitching domain. Only matching values will be returned.
+     * Filter light values based on TariffSwitching domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -146,7 +151,8 @@ public class DeviceInstallationService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     private static List<TariffValue> filterTariffValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {

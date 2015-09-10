@@ -13,7 +13,7 @@ import javax.validation.ConstraintValidatorContext;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 
 public class LightTypeAndConfigurationValidator implements
-        ConstraintValidator<LightTypeAndConfiguration, Configuration> {
+ConstraintValidator<LightTypeAndConfiguration, Configuration> {
 
     @Override
     public void initialize(final LightTypeAndConfiguration constraintAnnotation) {
@@ -25,12 +25,10 @@ public class LightTypeAndConfigurationValidator implements
         if (value == null) {
             return true;
         }
-
         // If no light type is given only one of the configuration is allowed.
         if (value.getLightType() == null) {
-            return (value.getDaliConfiguration() == null || value.getRelayConfiguration() == null);
+            return value.getDaliConfiguration() == null || value.getRelayConfiguration() == null;
         }
-
         switch (value.getLightType()) {
         case DALI:
             return value.getRelayConfiguration() == null;

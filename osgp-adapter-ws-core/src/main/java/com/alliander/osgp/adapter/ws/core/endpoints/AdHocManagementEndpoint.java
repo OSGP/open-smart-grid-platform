@@ -16,7 +16,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import com.alliander.osgp.adapter.ws.core.application.mapping.AdHocManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.AdHocManagementService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.adhocmanagement.SetRebootAsyncRequest;
@@ -40,8 +39,8 @@ public class AdHocManagementEndpoint {
     private final AdHocManagementService adHocManagementService;
 
     @Autowired
-    public AdHocManagementEndpoint(@Qualifier(value = "wsCoreAdHocManagementService") final AdHocManagementService adHocManagementService,
-            @Qualifier(value = "coreAdhocManagementMapper") final AdHocManagementMapper adHocManagementMapper) {
+    public AdHocManagementEndpoint(
+            @Qualifier(value = "wsCoreAdHocManagementService") final AdHocManagementService adHocManagementService) {
         this.adHocManagementService = adHocManagementService;
     }
 
@@ -49,15 +48,17 @@ public class AdHocManagementEndpoint {
 
     @PayloadRoot(localPart = "SetRebootRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetRebootAsyncResponse setReboot(@OrganisationIdentification final String organisationIdentification, @RequestPayload final SetRebootRequest request)
-            throws OsgpException {
+    public SetRebootAsyncResponse setReboot(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetRebootRequest request) throws OsgpException {
 
-        LOGGER.info("Set Light Request received from organisation: {} for device: {}.", organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Set Light Request received from organisation: {} for device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
 
         final SetRebootAsyncResponse response = new SetRebootAsyncResponse();
 
         try {
-            final String correlationUid = this.adHocManagementService.enqueueSetRebootRequest(organisationIdentification, request.getDeviceIdentification());
+            final String correlationUid = this.adHocManagementService.enqueueSetRebootRequest(
+                    organisationIdentification, request.getDeviceIdentification());
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -76,14 +77,14 @@ public class AdHocManagementEndpoint {
     public SetRebootResponse getSetRebootResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetRebootAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Set Reboot Response received from organisation: {} with correlationUid: {}.", organisationIdentification, request.getAsyncRequest()
-                .getCorrelationUid());
+        LOGGER.info("Get Set Reboot Response received from organisation: {} with correlationUid: {}.",
+                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final SetRebootResponse response = new SetRebootResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueSetRebootResponse(organisationIdentification, request.getAsyncRequest()
-                    .getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService.dequeueSetRebootResponse(request
+                    .getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -95,7 +96,8 @@ public class AdHocManagementEndpoint {
     }
 
     private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical exception,
+        // Rethrow exception if it already is a functional or technical
+        // exception,
         // otherwise throw new technical exception.
         if (e instanceof OsgpException) {
             LOGGER.error("Exception occurred: ", e);

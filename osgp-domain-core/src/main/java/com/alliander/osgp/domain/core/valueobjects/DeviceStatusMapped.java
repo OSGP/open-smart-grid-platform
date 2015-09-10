@@ -14,13 +14,16 @@ import java.util.List;
  */
 public class DeviceStatusMapped extends DeviceStatus {
 
+    /**
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = 4843866024199626891L;
 
     private List<TariffValue> tariffValues;
 
     /**
      * Construct a device status mapped to domains (PL and TS).
-     * 
+     *
      * @param tariffValues
      *            tariff values to use
      * @param lightValues
@@ -50,7 +53,7 @@ public class DeviceStatusMapped extends DeviceStatus {
 
     /**
      * Update the current tariff values with new tariff values.
-     * 
+     *
      * @param tariffValues
      *            tariff values to update
      */

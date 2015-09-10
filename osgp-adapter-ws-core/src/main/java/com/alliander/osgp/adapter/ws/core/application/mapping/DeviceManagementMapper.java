@@ -24,13 +24,13 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                .field("event", "eventType").byDefault().toClassMap());
+                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
