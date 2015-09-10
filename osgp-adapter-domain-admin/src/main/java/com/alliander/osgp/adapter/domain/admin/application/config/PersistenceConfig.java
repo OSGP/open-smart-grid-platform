@@ -61,7 +61,6 @@ public class PersistenceConfig {
      *
      * @return DataSource
      */
-    // @Bean(destroyMethod = "close")
     public DataSource getDataSource() {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
@@ -79,8 +78,6 @@ public class PersistenceConfig {
             this.dataSource = new HikariDataSource(hikariConfig);
         }
         return this.dataSource;
-
-        // return new HikariDataSource(hikariConfig);
     }
 
     /**

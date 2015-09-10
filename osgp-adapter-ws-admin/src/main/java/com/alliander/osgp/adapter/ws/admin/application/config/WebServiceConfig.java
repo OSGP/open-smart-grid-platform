@@ -56,7 +56,7 @@ public class WebServiceConfig {
 
     /**
      * Method for creating the Marshaller for device management.
-     * 
+     *
      * @return Jaxb2Marshaller
      */
     @Bean
@@ -65,7 +65,8 @@ public class WebServiceConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_MANAGEMENT));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_DEVICE_MANAGEMENT));
 
         return marshaller;
     }
@@ -73,22 +74,20 @@ public class WebServiceConfig {
     /**
      * Method for creating the Marshalling Payload Method Processor for device
      * management.
-     * 
+     *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
     public MarshallingPayloadMethodProcessor deviceManagementMarshallingPayloadMethodProcessor() {
         LOGGER.debug("Creating Device Management Marshallinngg Payload Method Processor Bean");
 
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(this.deviceManagementMarshaller(),
+        return new MarshallingPayloadMethodProcessor(this.deviceManagementMarshaller(),
                 this.deviceManagementMarshaller());
-
-        return marshallingPayloadMethodProcessor;
     }
 
     /**
      * Method for creating the Default Method Endpoint Adapter.
-     * 
+     *
      * @return DefaultMethodEndpointAdapter
      */
     @Bean
@@ -101,7 +100,8 @@ public class WebServiceConfig {
 
         methodArgumentResolvers.add(this.deviceManagementMarshallingPayloadMethodProcessor());
 
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT, OrganisationIdentification.class));
+        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
+                OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
@@ -116,7 +116,8 @@ public class WebServiceConfig {
     @Bean
     public DetailSoapFaultMappingExceptionResolver exceptionResolver() {
         LOGGER.debug("Creating Detail Soap Fault Mapping Exception Resolver Bean");
-        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(new SoapFaultMapper());
+        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(
+                new SoapFaultMapper());
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
@@ -132,7 +133,8 @@ public class WebServiceConfig {
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
         LOGGER.debug("Creating Organisation Identification Interceptor Bean");
 
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
+                ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     /**
@@ -142,7 +144,8 @@ public class WebServiceConfig {
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
         LOGGER.debug("Creating X509 Certificate Subject CN Endpoint Interceptor Bean");
 
-        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID, X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
+        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
     /**
@@ -152,14 +155,16 @@ public class WebServiceConfig {
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         LOGGER.debug("Creating Certificate And Soap Header Authorization Endpoint Interceptor Bean");
 
-        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
         LOGGER.debug("Creating Web Service Monitor Interceptor Bean");
 
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER);
+        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
+                APPLICATION_NAME_HEADER);
     }
 
 }

@@ -20,7 +20,6 @@ import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.core.domain.model.protocol.ProtocolResponseService;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
@@ -28,9 +27,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 public class ProtocolResponseMessageSender implements ProtocolResponseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolResponseMessageSender.class);
-
-    @Autowired
-    private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
     private ProtocolResponseMessageJmsTemplateFactory factory;

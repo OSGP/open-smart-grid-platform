@@ -31,6 +31,8 @@ public class DefaultDeviceResponseService {
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
+        LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
+
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
 

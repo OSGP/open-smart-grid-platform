@@ -56,7 +56,7 @@ public class FirmwareManagementService extends AbstractService {
 
     public void getFirmwareVersion(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("Get firmware version called with organisation [{}], device [{}].", organisationIdentification,
                 deviceIdentification);
@@ -71,6 +71,8 @@ public class FirmwareManagementService extends AbstractService {
     public void handleGetFirmwareVersionResponse(final String firmwareVersion, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;

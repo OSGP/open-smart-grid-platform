@@ -11,6 +11,9 @@ import java.io.Serializable;
 
 public class PowerUsageHistoryMessageDataContainer implements Serializable {
 
+    /**
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = -7037893048316285620L;
     private TimePeriod timePeriod;
     private HistoryTermType historyTermType;

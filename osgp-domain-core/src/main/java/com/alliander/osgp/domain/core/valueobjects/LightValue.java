@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.validation.LightValueConstraints;
 public class LightValue implements Serializable {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -2244245336355424779L;
     private static final int MIN_INDEX = 0;

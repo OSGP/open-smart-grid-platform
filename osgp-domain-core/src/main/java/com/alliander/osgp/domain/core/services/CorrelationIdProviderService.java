@@ -17,10 +17,7 @@ public class CorrelationIdProviderService {
 
     public String getCorrelationId(final String organisationIdentification, final String deviceIdentification) {
 
-        final String correlationId = organisationIdentification + "|||" + deviceIdentification + "|||"
-                + this.getCurrentDateString();
-
-        return correlationId;
+        return organisationIdentification + "|||" + deviceIdentification + "|||" + this.getCurrentDateString();
     }
 
     private String getCurrentDateString() {

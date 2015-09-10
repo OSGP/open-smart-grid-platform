@@ -48,7 +48,7 @@ public class TariffSwitchingScheduleManagementEndpoint {
 
     /**
      * Constructor.
-     * 
+     *
      * @param scheduleManagementService
      *            The service instance.
      * @param scheduleManagementMapper
@@ -67,20 +67,22 @@ public class TariffSwitchingScheduleManagementEndpoint {
     public SetScheduleAsyncResponse setSchedule(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetScheduleRequest request) throws OsgpException {
 
-        LOGGER.info("Set Tariff Schedule Request received from organisation: {} for device: {}.", organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Set Tariff Schedule Request received from organisation: {} for device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
 
         // Get the request parameters, make sure that they are in UTC.
         // Maybe add an adapter to the service, so that all datetime are
         // converted to utc automatically.
-        final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request.getScheduledTime().toGregorianCalendar())
-                .toDateTime(DateTimeZone.UTC);
+        final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
+                .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
         final SetScheduleAsyncResponse response = new SetScheduleAsyncResponse();
 
         try {
-            final String correlationUid = this.scheduleManagementService.enqueueSetTariffSchedule(organisationIdentification,
-                    request.getDeviceIdentification(),
-                    this.scheduleManagementMapper.mapAsList(request.getSchedules(), com.alliander.osgp.domain.core.valueobjects.Schedule.class), scheduleTime);
+            final String correlationUid = this.scheduleManagementService.enqueueSetTariffSchedule(
+                    organisationIdentification, request.getDeviceIdentification(), this.scheduleManagementMapper
+                            .mapAsList(request.getSchedules(),
+                                    com.alliander.osgp.domain.core.valueobjects.Schedule.class), scheduleTime);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -88,8 +90,8 @@ public class TariffSwitchingScheduleManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_TARIFF_SWITCHING, new ValidationException(
-                    e.getConstraintViolations()));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_TARIFF_SWITCHING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -99,16 +101,17 @@ public class TariffSwitchingScheduleManagementEndpoint {
 
     @PayloadRoot(localPart = "SetScheduleAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetScheduleResponse getSetScheduleResponse(@OrganisationIdentification final String organisationIdentification,
+    public SetScheduleResponse getSetScheduleResponse(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetScheduleAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Tariff Schedule Response Request received from organisation: {} for correlationUID: {}.", organisationIdentification, request
-                .getAsyncRequest().getCorrelationUid());
+        LOGGER.info("Get Tariff Schedule Response Request received from organisation: {} for correlationUID: {}.",
+                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final SetScheduleResponse response = new SetScheduleResponse();
 
         try {
-            final ResponseMessage message = this.scheduleManagementService.dequeueSetTariffScheduleResponse(organisationIdentification, request
+            final ResponseMessage message = this.scheduleManagementService.dequeueSetTariffScheduleResponse(request
                     .getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
@@ -121,7 +124,8 @@ public class TariffSwitchingScheduleManagementEndpoint {
     }
 
     private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical exception,
+        // Rethrow exception if it already is a functional or technical
+        // exception,
         // otherwise throw new technical exception.
         LOGGER.error("Exception occurred: ", e);
         if (e instanceof OsgpException) {

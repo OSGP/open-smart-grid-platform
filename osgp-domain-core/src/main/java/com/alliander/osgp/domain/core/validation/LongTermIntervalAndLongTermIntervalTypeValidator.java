@@ -14,7 +14,7 @@ import javax.validation.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 
 public class LongTermIntervalAndLongTermIntervalTypeValidator implements
-        ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
+ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
 
     @Override
     public void initialize(final LongTermIntervalAndLongTermIntervalType constraintAnnotation) {
@@ -26,14 +26,12 @@ public class LongTermIntervalAndLongTermIntervalTypeValidator implements
         if (value == null) {
             return true;
         }
-
         // If LongTermHistoryInterval or LongTermHistoryIntervalType is not
         // present,
         // the other must be not present as well.
         if (value.getLongTermHistoryInterval() == null && value.getLongTermHistoryIntervalType() == null) {
             return true;
         }
-
         // If LongTermHistoryInterval or LongTermHistoryIntervalType is present,
         // the other must be as well.
         if (value.getLongTermHistoryInterval() != null && value.getLongTermHistoryIntervalType() != null) {

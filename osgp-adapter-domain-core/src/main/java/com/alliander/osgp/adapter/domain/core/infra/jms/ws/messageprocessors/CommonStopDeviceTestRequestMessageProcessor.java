@@ -23,9 +23,9 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common stop device test request message
- * 
+ *
  * @author CGI
- * 
+ *
  */
 @Component("domainCoreCommonStopDeviceTestRequestMessageProcessor")
 public class CommonStopDeviceTestRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -57,7 +57,7 @@ public class CommonStopDeviceTestRequestMessageProcessor extends WebServiceReque
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.");
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);

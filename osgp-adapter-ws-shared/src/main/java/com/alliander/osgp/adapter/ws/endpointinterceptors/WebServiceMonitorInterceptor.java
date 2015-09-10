@@ -59,6 +59,8 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     private static final String XML_ELEMENT_DEVICE_ID = "DeviceId";
     private static final String XML_ELEMENT_OSP_RESULT_TYPE = "Result";
 
+    private static final String FAULT_RESPONSE_RESULT = "SOAP_FAULT";
+
     private final String organisationIdentification;
     private final String userName;
     private final String applicationName;
@@ -89,7 +91,6 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     @Override
     public boolean handleFault(final MessageContext messageContext, final Object endpoint) throws Exception {
 
-        final String FAULT_RESPONSE_RESULT = "SOAP_FAULT";
         final LoggingRequestMessage loggingRequestMessage = this.createLoggingRequestMessage(messageContext, endpoint);
         loggingRequestMessage.setResponseResult(FAULT_RESPONSE_RESULT);
         this.loggingMessageSender.send(loggingRequestMessage);
@@ -245,13 +246,13 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Read OrganisationIdentification from header from request.
-        final String organisationIdentification = this.getHeaderValue(soapHeader, this.organisationIdentification);
+        final String orgIdentification = this.getHeaderValue(soapHeader, this.organisationIdentification);
 
         // Read UserName from header from request.
-        final String userName = this.getHeaderValue(soapHeader, this.userName);
+        final String usrName = this.getHeaderValue(soapHeader, this.userName);
 
         // Read ApplicationName from header from request.
-        final String applicationName = this.getHeaderValue(soapHeader, this.applicationName);
+        final String appName = this.getHeaderValue(soapHeader, this.applicationName);
 
         // Read correlationUid and deviceId from request.
         final Map<String, Object> requestData = this.parseSoapMessage(request);
@@ -280,11 +281,8 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         }
 
         // Creating the logging request message
-        final LoggingRequestMessage loggingRequestMessage = new LoggingRequestMessage(now, organisationIdentification,
-                userName, applicationName, classAndMethod.get(CLASS_NAME), classAndMethod.get(METHOD_NAME),
-                (String) requestData.get(DEVICE_ID), correlationId, (String) responseData.get(RESPONSE_RESULT),
-                (int) responseData.get(RESPONSE_DATA_SIZE));
-
-        return loggingRequestMessage;
+        return new LoggingRequestMessage(now, orgIdentification, usrName, appName, classAndMethod.get(CLASS_NAME),
+                classAndMethod.get(METHOD_NAME), (String) requestData.get(DEVICE_ID), correlationId,
+                (String) responseData.get(RESPONSE_RESULT), (int) responseData.get(RESPONSE_DATA_SIZE));
     }
 }

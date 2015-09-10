@@ -67,7 +67,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -87,7 +87,8 @@ public class AdHocManagementService extends AbstractService {
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting or TariffSwitching)
+     * Retrieve status of device and provide a mapped response (PublicLighting
+     * or TariffSwitching)
      *
      * @param organisationIdentification
      *            identification of organisation
@@ -104,7 +105,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -120,6 +121,8 @@ public class AdHocManagementService extends AbstractService {
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -162,7 +165,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -202,7 +205,8 @@ public class AdHocManagementService extends AbstractService {
     // === CUSTOM STATUS FILTER FUNCTIONS ===
 
     /**
-     * Filter light values based on PublicLighting domain. Only matching values will be returned.
+     * Filter light values based on PublicLighting domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -210,7 +214,8 @@ public class AdHocManagementService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     public static List<LightValue> filterLightValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
@@ -232,7 +237,8 @@ public class AdHocManagementService extends AbstractService {
     }
 
     /**
-     * Filter light values based on TariffSwitching domain. Only matching values will be returned.
+     * Filter light values based on TariffSwitching domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -240,7 +246,8 @@ public class AdHocManagementService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     public static List<TariffValue> filterTariffValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
