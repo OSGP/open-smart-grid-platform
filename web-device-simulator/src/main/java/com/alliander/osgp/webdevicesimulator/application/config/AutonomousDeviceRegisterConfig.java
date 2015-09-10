@@ -9,8 +9,6 @@ package com.alliander.osgp.webdevicesimulator.application.config;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +25,6 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.AutonomousDeviceR
 @EnableScheduling
 @PropertySource("file:${osp//webDeviceSimulator/config}")
 public class AutonomousDeviceRegisterConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AutonomousDeviceRegisterConfig.class);
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_CRON_EXPRESSION = "autonomous.tasks.device.registration.cron.expression";
     private static final String PROPERTY_NAME_AUTONOMOUS_POOL_SIZE = "autonomous.task.device.registration.pool.size";

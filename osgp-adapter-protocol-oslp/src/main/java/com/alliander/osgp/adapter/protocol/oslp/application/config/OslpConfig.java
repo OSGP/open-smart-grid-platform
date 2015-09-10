@@ -259,6 +259,11 @@ public class OslpConfig {
     }
 
     /**
+     * Why is this class instantiated? The class only offers static functions.
+     * SonarQube issue: Classes with only "static" methods should not be
+     * instantiated squid:S2440
+     * http://54.77.62.182/sonarqube/coding_rules#rule_key=squid%3AS2440
+     * 
      * @return
      */
     @Bean

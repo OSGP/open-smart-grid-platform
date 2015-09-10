@@ -22,7 +22,6 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDe
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.DeviceService;
-import com.alliander.osgp.adapter.protocol.oslp.services.DeviceResponseService;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -35,20 +34,17 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(CommonUpdateFirmwareRequestMessageProcessor.class);
 
-    public CommonUpdateFirmwareRequestMessageProcessor() {
-        super(DeviceRequestMessageType.UPDATE_FIRMWARE);
-    }
-
     @Autowired
     private DeviceService deviceService;
 
     @Autowired
-    private DeviceResponseService deviceResponseService;
-
-    @Autowired
     private FirmwareLocation firmwareLocation;
 
-    // TODO: the FirmwareLocation class in domain and dto can/must be deleted!
+    public CommonUpdateFirmwareRequestMessageProcessor() {
+        super(DeviceRequestMessageType.UPDATE_FIRMWARE);
+    }
+
+    // IDEA: the FirmwareLocation class in domain and dto can/must be deleted!
     // Or, this
     // setup has to be changed in order to reuse the FirmwareLocation class in
     // the domain!!
@@ -77,7 +73,6 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -150,7 +145,7 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
         }
     }
 
-    // TODO: method added for testing, make this a protected method
+    // Method added for testing, make this a protected method if needed
     public void setFirmwareLocation(final FirmwareLocation firmwareLocation) {
         this.firmwareLocation = firmwareLocation;
     }

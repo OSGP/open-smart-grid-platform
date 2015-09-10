@@ -51,7 +51,7 @@ public class DeviceManagementService {
 
     /**
      * Send a new event notification to OSGP Core with the given arguments.
-     * 
+     *
      * @param deviceId
      *            The Uid of the device
      * @param eventType
@@ -105,7 +105,8 @@ public class DeviceManagementService {
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during updateKey", e);
-        	TechnicalException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
@@ -136,7 +137,8 @@ public class DeviceManagementService {
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during revokeKey", e);
-        	TechnicalException ex= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }

@@ -2,8 +2,6 @@ package com.alliander.osgp.webdevicesimulator.application.config;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +18,6 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.EveningMorningBur
 @EnableScheduling
 @PropertySource("file:${osp//webDeviceSimulator/config}")
 public class EveningMorningBurnersLightSwitchingOnConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EveningMorningBurnersLightSwitchingOnConfig.class);
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_EVENING_MORNING_BURNER_LIGHTSWITCHING_ON_CRON_EXPRESSION = "autonomous.tasks.evening.morning.burner.lightswitching.on.cron.expression";
     private static final String PROPERTY_NAME_AUTONOMOUS_EVENING_MORNING_BURNER_LIGHTSWITCHING_ON_POOL_SIZE = "autonomous.tasks.evening.morning.burner.lightswitching.on.pool.size";
@@ -46,8 +42,8 @@ public class EveningMorningBurnersLightSwitchingOnConfig {
         eveningMorningBurnerslightSwitchingOnTaskScheduler.setPoolSize(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_EVENING_MORNING_BURNER_LIGHTSWITCHING_ON_POOL_SIZE)));
         eveningMorningBurnerslightSwitchingOnTaskScheduler
-                .setThreadNamePrefix(this.environment
-                        .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_EVENING_MORNING_BURNER_LIGHTSWITCHING_ON_THREAD_NAME_PREFIX));
+        .setThreadNamePrefix(this.environment
+                .getRequiredProperty(PROPERTY_NAME_AUTONOMOUS_EVENING_MORNING_BURNER_LIGHTSWITCHING_ON_THREAD_NAME_PREFIX));
         eveningMorningBurnerslightSwitchingOnTaskScheduler.setWaitForTasksToCompleteOnShutdown(false);
         eveningMorningBurnerslightSwitchingOnTaskScheduler.setAwaitTerminationSeconds(10);
         eveningMorningBurnerslightSwitchingOnTaskScheduler.initialize();

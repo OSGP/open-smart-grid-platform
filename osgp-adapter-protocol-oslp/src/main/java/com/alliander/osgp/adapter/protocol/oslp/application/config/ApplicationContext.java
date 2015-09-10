@@ -14,8 +14,6 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +43,6 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE = "paging.maximum.pagesize";
     private static final String PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE = "paging.default.pagesize";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
-
     private static final String LOCAL_TIME_ZONE_IDENTIFIER = "Europe/Paris";
     private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
     private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
@@ -64,11 +60,9 @@ public class ApplicationContext {
      */
     @Bean(name = "oslpPagingSettings")
     public PagingSettings pagingSettings() {
-        final PagingSettings settings = new PagingSettings(Integer.parseInt(this.environment
+        return new PagingSettings(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)), Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
-
-        return settings;
+                        .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
     /**

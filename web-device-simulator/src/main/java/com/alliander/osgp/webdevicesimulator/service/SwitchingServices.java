@@ -7,16 +7,12 @@
  */
 package com.alliander.osgp.webdevicesimulator.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.webdevicesimulator.application.services.DeviceManagementService;
 import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 
 public class SwitchingServices {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SwitchingServices.class);
 
     @Autowired
     private DeviceManagementService deviceManagementService;

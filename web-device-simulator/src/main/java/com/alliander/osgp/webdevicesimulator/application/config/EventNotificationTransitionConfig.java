@@ -2,8 +2,6 @@ package com.alliander.osgp.webdevicesimulator.application.config;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +18,6 @@ import com.alliander.osgp.webdevicesimulator.application.tasks.EventNotification
 @EnableScheduling
 @PropertySource("file:${osp//webDeviceSimulator/config}")
 public class EventNotificationTransitionConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationTransitionConfig.class);
 
     private static final String PROPERTY_NAME_AUTONOMOUS_TASKS_EVENTNOTIFICATION_CRON_EXPRESSION = "autonomous.tasks.eventnotification.cron.expression";
     private static final String PROPERTY_NAME_AUTONOMOUS_EVENTNOTIFICATION_POOL_SIZE = "autonomous.tasks.eventnotification.pool.size";

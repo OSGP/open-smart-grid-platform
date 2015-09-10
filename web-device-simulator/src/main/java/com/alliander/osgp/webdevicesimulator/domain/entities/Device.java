@@ -135,7 +135,7 @@ public class Device extends AbstractEntity {
     private final SecureRandom random = new SecureRandom();
 
     @Transient
-    private final Integer sequenceNumberMaximum = 65535;
+    private static final Integer sequenceNumberMaximum = 65535;
 
     public Device() {
         // Default constructor
@@ -344,5 +344,9 @@ public class Device extends AbstractEntity {
         }
 
         return defaultConfiguration;
+    }
+
+    public boolean getHasEveningMorningBurner() {
+        return this.hasEveningMorningBurner;
     }
 }

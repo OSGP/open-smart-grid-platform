@@ -169,8 +169,11 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private final Random random = new Random();
 
+    private static final int CUMALATIVE_BURNING_MINUTES = 600;
+    private static int INITIAL_BURNING_MINUTES = 100000;
+
     public static class OutOfSequenceEvent {
-        public Long deviceId;
+        private final Long deviceId;
         private final String request;
         private final DateTime timestamp;
 
@@ -261,8 +264,6 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
                 callback.handle(message);
             } else {
-                // LOGGER.info("Received OSLP Request: {}",
-                // message.getPayloadMessage());
                 LOGGER.info("Received OSLP Request: {}", message.getPayloadMessage().toString().split(" ")[0]);
 
                 // Sequence number logic
@@ -310,9 +311,6 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                 LOGGER.info("sending OSLP response with sequence number: {}",
                         this.convertByteArrayToInteger(response.getSequenceNumber()));
                 e.getChannel().write(response);
-
-                // LOGGER.info("Send OSLP Response: {}",
-                // response.getPayloadMessage());
                 LOGGER.info("Send OSLP Response: {}", response.getPayloadMessage().toString().split(" ")[0]);
             }
         } else {
@@ -617,7 +615,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                                 .newBuilder()
                                 .setRecordTime(utcTimestamp)
                                 .setMeterType(MeterType.P1)
-                                .setTotalConsumedEnergy(actualConsumedPower * 2)
+                                .setTotalConsumedEnergy(actualConsumedPower * 2L)
                                 .setActualConsumedPower(actualConsumedPower)
                                 .setPsldData(
                                         PsldData.newBuilder().setTotalLightingHours(
@@ -663,9 +661,6 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                                                                                                                         .setTotalLightingMinutes(480))))
                                                                                                                         .setStatus(Oslp.Status.OK)).build();
     }
-
-    private static final int CUMALATIVE_BURNING_MINUTES = 600;
-    private static int INITIAL_BURNING_MINUTES = 100000;
 
     private static Message createGetPowerUsageHistoryWithDatesResponse(final Device device,
             final GetPowerUsageHistoryRequest powerUsageHistoryRequest) throws ParseException {
@@ -961,7 +956,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
         final EventNotificationToBeSent eventNotificationToBeSent = new EventNotificationToBeSent(device.getId(),
                 device.isLightOn());
-        this.deviceManagementService.listeventNotificationToBeSent.add(eventNotificationToBeSent);
+        this.deviceManagementService.getEventNotificationToBeSent().add(eventNotificationToBeSent);
     }
 
     private void handleSetEventNotificationsRequest(final Device device, final SetEventNotificationsRequest request) {
@@ -1033,7 +1028,7 @@ public class OslpChannelHandler extends SimpleChannelHandler {
 
     private Integer convertByteArrayToInteger(final byte[] array) {
         // See: platform.service.SequenceNumberUtils
-        final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF) << 0;
+        final Integer value = (array[0] & 0xFF) << 8 | (array[1] & 0xFF);
         LOGGER.info(
                 "web-device-simulator.OslpChannelHandler.convertByteArrayToInteger() byte[0]: {} byte[1]: {} Integer value: {}",
                 array[0], array[1], value);
