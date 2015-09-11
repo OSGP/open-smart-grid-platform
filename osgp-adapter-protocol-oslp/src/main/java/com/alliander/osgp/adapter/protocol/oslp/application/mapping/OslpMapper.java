@@ -34,6 +34,7 @@ public class OslpMapper extends ConfigurableMapper {
         factory.getConverterFactory().registerConverter(new RelayTypeConverter());
         factory.getConverterFactory().registerConverter(new RelayDataConverter());
         factory.getConverterFactory().registerConverter(new PowerUsageDataConverter());
+        factory.getConverterFactory().registerConverter(new HistoryTermTypeConverter());
 
         // Converter from String to DateTime using the Oslp time format.
         factory.getConverterFactory().registerConverter(new CustomConverter<String, DateTime>() {
