@@ -10,7 +10,7 @@ package com.alliander.osgp.shared.usermanagement;
 /**
  * Enumeration indicating the domain of the platform.
  */
-public enum PlatformDomain {
+public enum PlatformDomain implements java.io.Serializable {
     /**
      * Domain containing all common functionality, like installation and
      * management.
