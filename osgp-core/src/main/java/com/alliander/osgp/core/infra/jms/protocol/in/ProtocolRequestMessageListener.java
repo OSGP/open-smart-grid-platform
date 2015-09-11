@@ -54,6 +54,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
                 processor.processMessage(objectMessage);
 
             } catch (final JMSException ex) {
+                LOGGER.error("JMSException", ex);
                 // The message needs to be sent to a domain adapter.
                 this.sendMessageToDomainAdapter((RequestMessage) objectMessage.getObject(), message.getJMSType());
 
