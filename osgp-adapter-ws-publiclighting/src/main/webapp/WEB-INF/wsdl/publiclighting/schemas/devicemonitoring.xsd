@@ -93,8 +93,8 @@
    	
    	<xsd:simpleType name="HistoryTermType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Short" />
-			<xsd:enumeration value="Long" />
+			<xsd:enumeration value="SHORT" />
+			<xsd:enumeration value="LONG" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	
