@@ -51,7 +51,7 @@ public class PublicLightingScheduleManagementEndpoint {
 
     /**
      * Constructor
-     * 
+     *
      * @param scheduleManagementService
      *            The service instance for this end point.
      * @param scheduleManagementMapper
@@ -69,10 +69,12 @@ public class PublicLightingScheduleManagementEndpoint {
 
     @PayloadRoot(localPart = "SetScheduleRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetScheduleAsyncResponse setLightSchedule(@OrganisationIdentification final String organisationIdentification,
+    public SetScheduleAsyncResponse setLightSchedule(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetScheduleRequest request) throws OsgpException {
 
-        LOGGER.info("Set Schedule Request received from organisation: {} for device: {}.", organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Set Schedule Request received from organisation: {} for device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
 
         final SetScheduleAsyncResponse response = new SetScheduleAsyncResponse();
 
@@ -80,11 +82,13 @@ public class PublicLightingScheduleManagementEndpoint {
             // Get the request parameters, make sure that they are in UTC.
             // Maybe add an adapter to the service, so that all datetime are
             // converted to utc automatically.
-            final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request.getScheduledTime().toGregorianCalendar())
-                    .toDateTime(DateTimeZone.UTC);
+            final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
+                    .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
-            final String correlationUid = this.scheduleManagementService.enqueueSetLightSchedule(organisationIdentification, request.getDeviceIdentification(),
-                    this.scheduleManagementMapper.mapAsList(request.getSchedules(), com.alliander.osgp.domain.core.valueobjects.Schedule.class), scheduleTime);
+            final String correlationUid = this.scheduleManagementService.enqueueSetLightSchedule(
+                    organisationIdentification, request.getDeviceIdentification(), this.scheduleManagementMapper
+                            .mapAsList(request.getSchedules(),
+                                    com.alliander.osgp.domain.core.valueobjects.Schedule.class), scheduleTime);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -92,8 +96,8 @@ public class PublicLightingScheduleManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_PUBLIC_LIGHTING, new ValidationException(
-                    e.getConstraintViolations()));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_PUBLIC_LIGHTING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -103,16 +107,17 @@ public class PublicLightingScheduleManagementEndpoint {
 
     @PayloadRoot(localPart = "SetScheduleAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public SetScheduleResponse getSetLightScheduleResponse(@OrganisationIdentification final String organisationIdentification,
+    public SetScheduleResponse getSetLightScheduleResponse(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetScheduleAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Set Schedule Response Request received from organisation: {} for correlationUid: {}.", organisationIdentification, request
-                .getAsyncRequest().getCorrelationUid());
+        LOGGER.info("Get Set Schedule Response Request received from organisation: {} for correlationUid: {}.",
+                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final SetScheduleResponse response = new SetScheduleResponse();
 
         try {
-            final ResponseMessage message = this.scheduleManagementService.dequeueSetLightScheduleResponse(organisationIdentification, request
+            final ResponseMessage message = this.scheduleManagementService.dequeueSetLightScheduleResponse(request
                     .getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
@@ -125,7 +130,8 @@ public class PublicLightingScheduleManagementEndpoint {
     }
 
     private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical exception,
+        // Rethrow exception if it already is a functional or technical
+        // exception,
         // otherwise throw new technical exception.
         LOGGER.error("Exception occurred: ", e);
         if (e instanceof OsgpException) {

@@ -45,12 +45,12 @@
 		<module.baseUri>${project.baseUri}/../</module.baseUri>
 		<osgp.version>0.11.0-SNAPSHOT</osgp.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<spring.version>4.1.7.RELEASE</spring.version>
-		<spring.ws.version>2.1.4.RELEASE</spring.ws.version>
-		<spring.data.version>1.8.1.RELEASE</spring.data.version>
-		<spring.security.version>4.0.2.RELEASE</spring.security.version>
-		<servlet.version>3.0.1</servlet.version>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>    
+		<spring.version>4.2.0.RELEASE</spring.version>
+		<spring.ws.version>2.2.0.RELEASE</spring.ws.version>
+		<spring.data.version>1.8.2.RELEASE</spring.data.version>
+		<spring.security.version>4.0.2.RELEASE</spring.security.version>	
+  	    <servlet.version>3.0.1</servlet.version>
 		<servlet.jstl.version>1.2</servlet.jstl.version>
 		<hibernate.version>4.2.16.Final</hibernate.version>
 		<hibernate.validator.version>4.3.1.Final</hibernate.validator.version>
@@ -73,6 +73,7 @@
 		<apache.commons.schema>2.0.3</apache.commons.schema>
 		<maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
 		<license.maven.plugin>2.11</license.maven.plugin>
+		<hikaricp.version>2.4.0</hikaricp.version>
 	</properties>
 
 	<repositories>
@@ -330,6 +331,13 @@
 				<version>${joda.version}</version>
 			</dependency>
 
+			<!-- Hikari connection pooling -->
+			<dependency>
+				<groupId>com.zaxxer</groupId>
+				<artifactId>HikariCP</artifactId>
+				<version>${hikaricp.version}</version>
+			</dependency>
+			
 			<!-- Hibernate -->
 			<dependency>
 				<groupId>org.hibernate</groupId>

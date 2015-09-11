@@ -9,6 +9,7 @@ package com.alliander.osgp.logging.domain.config;
 
 import java.util.Properties;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
@@ -20,12 +21,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(entityManagerFactoryRef = "readableEntityManagerFactory", basePackageClasses = { DeviceLogItemRepository.class })
 @Configuration
@@ -33,11 +35,14 @@ import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 @PropertySource("file:${osp/osgpDomainLogging/config}")
 public class ReadOnlyLoggingConfig {
 
+    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.readonly.password.domain_logging";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url.domain_logging";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.readonly.username.domain_logging";
 
-    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+    private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.readonly.max_pool_size";
+    private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.readonly.auto_commit";
+
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY = "hibernate.ejb.naming_strategy";
@@ -50,25 +55,31 @@ public class ReadOnlyLoggingConfig {
     @Resource
     private Environment environment;
 
+    private HikariDataSource dataSource;
+
     /**
      * Method for creating the Data Source.
      *
      * @return DataSource
      */
-    public DataSource readableDataSource() {
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
-        singleConnectionDataSource.setConnectionProperties(properties);
-        singleConnectionDataSource.setDriverClassName(this.environment
-                .getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-        singleConnectionDataSource.setUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-        singleConnectionDataSource.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-        singleConnectionDataSource.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
-        singleConnectionDataSource.setSuppressClose(true);
-        return singleConnectionDataSource;
+    public DataSource getReadableDataSource() {
+        if (this.dataSource == null) {
+            final HikariConfig hikariConfig = new HikariConfig();
+
+            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+
+            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
+            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+
+            this.dataSource = new HikariDataSource(hikariConfig);
+        }
+
+        return this.dataSource;
     }
 
     /**
@@ -79,7 +90,7 @@ public class ReadOnlyLoggingConfig {
      *             when class not found
      */
     @Bean
-    public JpaTransactionManager readableTransactionManager() throws Exception {
+    public JpaTransactionManager readableTransactionManager() throws ClassNotFoundException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
@@ -88,7 +99,7 @@ public class ReadOnlyLoggingConfig {
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
-            throw new Exception(msg, e);
+            throw e;
         }
 
         return transactionManager;
@@ -106,7 +117,7 @@ public class ReadOnlyLoggingConfig {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_DOMAIN_LOGGING");
-        entityManagerFactoryBean.setDataSource(this.readableDataSource());
+        entityManagerFactoryBean.setDataSource(this.getReadableDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
@@ -124,5 +135,12 @@ public class ReadOnlyLoggingConfig {
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
         return entityManagerFactoryBean;
+    }
+
+    @PreDestroy
+    public void destroyDataSource() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
+        }
     }
 }

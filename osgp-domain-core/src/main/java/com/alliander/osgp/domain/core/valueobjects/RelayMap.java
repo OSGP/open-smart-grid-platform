@@ -14,9 +14,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class RelayMap implements Serializable {
+
     /**
-	 * 
-	 */
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = -8997468148053647259L;
 
     @NotNull

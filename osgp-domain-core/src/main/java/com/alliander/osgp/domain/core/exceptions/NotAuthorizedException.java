@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class NotAuthorizedException extends PlatformException {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 2343397355361259276L;
     private static final String MESSAGE = "Organisation [%1$s] is not authorized for action";

@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class InvalidFirmwareIdentificationException extends PlatformException {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -2033954329227850371L;
     private static final String MESSAGE_FORMAT = "Invalid firmware identification: [%s]";

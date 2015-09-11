@@ -67,16 +67,19 @@ public class DeviceManagementEndpoint {
     private static final String DEVICE_MANAGEMENT_NAMESPACE = "http://www.alliander.com/schemas/osgp/devicemanagement/2014/10";
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
+    private static final String EXCEPTION = "Exception: {}, StackTrace: {}";
+
     private final DeviceManagementService deviceManagementService;
     private final DeviceManagementMapper deviceManagementMapper;
 
     /**
      * Constructor
-     * 
+     *
      * @param deviceManagementService
      */
     @Autowired
-    public DeviceManagementEndpoint(@Qualifier(value = "wsCoreDeviceManagementService") final DeviceManagementService deviceManagementService,
+    public DeviceManagementEndpoint(
+            @Qualifier(value = "wsCoreDeviceManagementService") final DeviceManagementService deviceManagementService,
             @Qualifier(value = "coreDeviceManagementMapper") final DeviceManagementMapper deviceManagementMapper) {
         this.deviceManagementService = deviceManagementService;
         this.deviceManagementMapper = deviceManagementMapper;
@@ -84,7 +87,8 @@ public class DeviceManagementEndpoint {
 
     @PayloadRoot(localPart = "FindAllOrganisationsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
-    public FindAllOrganisationsResponse findAllOrganisations(@OrganisationIdentification final String organisationIdentification,
+    public FindAllOrganisationsResponse findAllOrganisations(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindAllOrganisationsRequest request) throws OsgpException {
 
         LOGGER.info("Find all organisations for organisation: {}.", organisationIdentification);
@@ -92,12 +96,15 @@ public class DeviceManagementEndpoint {
         final FindAllOrganisationsResponse response = new FindAllOrganisationsResponse();
 
         try {
-            final List<Organisation> organisations = this.deviceManagementService.findAllOrganisations(organisationIdentification);
+            final List<Organisation> organisations = this.deviceManagementService
+                    .findAllOrganisations(organisationIdentification);
             response.getOrganisations().addAll(
-                    this.deviceManagementMapper.mapAsList(organisations, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation.class));
+                    this.deviceManagementMapper.mapAsList(organisations,
+                            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation.class));
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE, new ValidationException(e.getConstraintViolations()));
+            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -107,20 +114,22 @@ public class DeviceManagementEndpoint {
 
     @PayloadRoot(localPart = "SetEventNotificationsRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
-    public SetEventNotificationsAsyncResponse setEventNotifications(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetEventNotificationsRequest request) throws OsgpException, FunctionalException {
+    public SetEventNotificationsAsyncResponse setEventNotifications(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetEventNotificationsRequest request) throws OsgpException {
 
-        LOGGER.info("Set EventNotifications Request received from organisation: {} for event device: {}.", organisationIdentification,
-                request.getDeviceIdentification());
+        LOGGER.info("Set EventNotifications Request received from organisation: {} for event device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
 
         final SetEventNotificationsAsyncResponse response = new SetEventNotificationsAsyncResponse();
 
         try {
             final List<EventNotificationType> eventNotifications = new ArrayList<>();
-            eventNotifications.addAll(this.deviceManagementMapper.mapAsList(request.getEventNotifications(), EventNotificationType.class));
+            eventNotifications.addAll(this.deviceManagementMapper.mapAsList(request.getEventNotifications(),
+                    EventNotificationType.class));
 
-            final String correlationUid = this.deviceManagementService.enqueueSetEventNotificationsRequest(organisationIdentification,
-                    request.getDeviceIdentification(), eventNotifications);
+            final String correlationUid = this.deviceManagementService.enqueueSetEventNotificationsRequest(
+                    organisationIdentification, request.getDeviceIdentification(), eventNotifications);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -135,16 +144,17 @@ public class DeviceManagementEndpoint {
 
     @PayloadRoot(localPart = "SetEventNotificationsAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
-    public SetEventNotificationsResponse getSetEventNotificationsResponse(@OrganisationIdentification final String organisationIdentification,
+    public SetEventNotificationsResponse getSetEventNotificationsResponse(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetEventNotificationsAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Set Event Notifications Response received from organisation: {} with correlationUid: {}.", organisationIdentification, request
-                .getAsyncRequest().getCorrelationUid());
+        LOGGER.info("Get Set Event Notifications Response received from organisation: {} with correlationUid: {}.",
+                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final SetEventNotificationsResponse response = new SetEventNotificationsResponse();
 
         try {
-            final ResponseMessage message = this.deviceManagementService.dequeueSetEventNotificationsResponse(organisationIdentification, request
+            final ResponseMessage message = this.deviceManagementService.dequeueSetEventNotificationsResponse(request
                     .getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
@@ -161,7 +171,8 @@ public class DeviceManagementEndpoint {
     public FindEventsResponse findEventsRequest(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindEventsRequest request) throws OsgpException {
 
-        LOGGER.info("Find events response for organisation: {} and device: {}.", organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Find events response for organisation: {} and device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
 
         // Create response.
         final FindEventsResponse response = new FindEventsResponse();
@@ -170,12 +181,15 @@ public class DeviceManagementEndpoint {
             // Get the request parameters, make sure that they are in UTC.
             // Maybe add an adapter to the service, so that all datetime are
             // converted to utc automatically.
-            final DateTime from = request.getFrom() == null ? null : new DateTime(request.getFrom().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
-            final DateTime until = request.getUntil() == null ? null : new DateTime(request.getUntil().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+            final DateTime from = request.getFrom() == null ? null : new DateTime(request.getFrom()
+                    .toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
+            final DateTime until = request.getUntil() == null ? null : new DateTime(request.getUntil()
+                    .toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
             // Get all events matching the request.
-            final Page<com.alliander.osgp.domain.core.entities.Event> result = this.deviceManagementService.findEvents(organisationIdentification,
-                    request.getDeviceIdentification(), request.getPageSize(), request.getPage(), from, until);
+            final Page<com.alliander.osgp.domain.core.entities.Event> result = this.deviceManagementService.findEvents(
+                    organisationIdentification, request.getDeviceIdentification(), request.getPageSize(),
+                    request.getPage(), from, until);
 
             response.getEvents().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Event.class));
             response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
@@ -183,8 +197,9 @@ public class DeviceManagementEndpoint {
             response.getPage().setTotalPages(result.getTotalPages());
             response.getPage().setCurrentPage(result.getNumber());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE, new ValidationException(e.getConstraintViolations()));
+            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -194,17 +209,18 @@ public class DeviceManagementEndpoint {
 
     @PayloadRoot(localPart = "FindDevicesRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
-    public FindDevicesResponse findDevices(@OrganisationIdentification final String organisationIdentification, @RequestPayload final FindDevicesRequest request)
-            throws OsgpException {
+    public FindDevicesResponse findDevices(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindDevicesRequest request) throws OsgpException {
 
         LOGGER.info("Find devices for organisation: {}.", organisationIdentification);
 
         final FindDevicesResponse response = new FindDevicesResponse();
 
         try {
-            final Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService.findDevices(organisationIdentification,
-                    request.getPageSize(), request.getPage(),
-                    this.deviceManagementMapper.map(request.getDeviceFilter(), com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
+            final Page<com.alliander.osgp.domain.core.entities.Device> result = this.deviceManagementService
+                    .findDevices(organisationIdentification, request.getPageSize(), request.getPage(),
+                            this.deviceManagementMapper.map(request.getDeviceFilter(),
+                                    com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
 
             response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
             response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
@@ -212,10 +228,11 @@ public class DeviceManagementEndpoint {
             response.getPage().setTotalPages(result.getTotalPages());
             response.getPage().setCurrentPage(result.getNumber());
         } catch (final MethodConstraintViolationException e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE, new ValidationException(e.getConstraintViolations()));
+            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+            LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             this.handleException(e);
         }
 
@@ -224,7 +241,8 @@ public class DeviceManagementEndpoint {
 
     @PayloadRoot(localPart = "FindScheduledTasksRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
-    public FindScheduledTasksResponse findScheduledTasks(@OrganisationIdentification final String organisationIdentification,
+    public FindScheduledTasksResponse findScheduledTasks(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final FindScheduledTasksRequest request) throws OsgpException {
 
         LOGGER.info("Finding scheduled tasks for organisation: {}.", organisationIdentification);
@@ -236,14 +254,17 @@ public class DeviceManagementEndpoint {
             if (request.getDeviceIdentification() == null) {
                 scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification);
             } else {
-                scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification, request.getDeviceIdentification());
+                scheduledTasks = this.deviceManagementService.findScheduledTasks(organisationIdentification,
+                        request.getDeviceIdentification());
             }
 
             response.getScheduledTask().addAll(
-                    this.deviceManagementMapper.mapAsList(scheduledTasks, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
+                    this.deviceManagementMapper.mapAsList(scheduledTasks,
+                            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.ScheduledTask.class));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception find Scheduled tasks: {} ", e.getMessage(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE, new ValidationException(e.getConstraintViolations()));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -252,7 +273,8 @@ public class DeviceManagementEndpoint {
     }
 
     private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical exception,
+        // Rethrow exception if it already is a functional or technical
+        // exception,
         // otherwise throw new technical exception.
         if (e instanceof OsgpException) {
             LOGGER.error("Exception occurred: ", e);

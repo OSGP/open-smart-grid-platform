@@ -76,6 +76,10 @@ public class ProtocolMessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolMessagingConfig.class);
 
+    @Autowired
+    @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
+    private ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
+
     @Bean(destroyMethod = "stop")
     public PooledConnectionFactory protocolPooledConnectionFactory() {
         LOGGER.debug("Creating bean: pooledConnectionFactory");
@@ -139,8 +143,8 @@ public class ProtocolMessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_EXPLICIT_QOS_ENABLED)),
                 Long.parseLong(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_TIME_TO_LIVE)),
-                Boolean.parseBoolean(this.environment
-                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_DELIVERY_PERSISTENT)));
+                        Boolean.parseBoolean(this.environment
+                                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_REQUESTS_DELIVERY_PERSISTENT)));
 
         return new ProtocolRequestMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(),
                 jmsTemplateSettings, this.protocolInfoRepository.findAll());
@@ -179,10 +183,6 @@ public class ProtocolMessagingConfig {
         return messageListenerContainer;
     }
 
-    @Autowired
-    @Qualifier("osgpCoreIncomingProtocolRequestMessageProcessorMap")
-    private ProtocolRequestMessageProcessorMap protocolRequestMessageProcessorMap;
-
     // === OUTGOING PROTOCOL RESPONSES ===
     // beans used for sending protocol response messages
 
@@ -192,8 +192,8 @@ public class ProtocolMessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_EXPLICIT_QOS_ENABLED)),
                 Long.parseLong(this.environment
                         .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_TIME_TO_LIVE)),
-                Boolean.parseBoolean(this.environment
-                        .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_DELIVERY_PERSISTENT)));
+                        Boolean.parseBoolean(this.environment
+                                .getRequiredProperty(PROPERTY_NAME_JMS_OUTGOING_PROTOCOL_RESPONSES_DELIVERY_PERSISTENT)));
 
         return new ProtocolResponseMessageJmsTemplateFactory(this.protocolPooledConnectionFactory(),
                 jmsTemplateSettings, this.protocolInfoRepository.findAll());

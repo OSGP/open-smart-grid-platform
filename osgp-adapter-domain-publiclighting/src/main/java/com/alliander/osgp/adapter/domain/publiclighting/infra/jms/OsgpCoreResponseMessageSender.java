@@ -36,14 +36,12 @@ public class OsgpCoreResponseMessageSender {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
-
                 objectMessage.setJMSType(messageType);
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 objectMessage.setObject(responseMessage);
-
                 return objectMessage;
             }
         });

@@ -155,7 +155,7 @@ public class ConfigurationManagementService extends AbstractService {
             }
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+            LOGGER.error("Unexpected Exception for messageType: {}", messageType, e);
             result = ResponseMessageResultType.NOT_OK;
             osgpException = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception while retrieving response message", e);

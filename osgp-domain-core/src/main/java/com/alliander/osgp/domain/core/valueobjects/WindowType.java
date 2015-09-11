@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class WindowType implements Serializable {
 
     /**
-     * Serial version ID.
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 8216467608629392658L;
     private long minutesBefore;

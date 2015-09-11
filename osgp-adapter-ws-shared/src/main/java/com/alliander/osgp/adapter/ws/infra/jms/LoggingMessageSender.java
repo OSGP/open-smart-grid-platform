@@ -34,7 +34,7 @@ public class LoggingMessageSender {
 
     /**
      * Method for sending a logging message to the queue.
-     * 
+     *
      * @param loggingRequestMessage
      *            The LoggingRequestMessage request message to send.
      */
@@ -45,7 +45,7 @@ public class LoggingMessageSender {
 
     /**
      * Method for sending a logging message to the logger queue.
-     * 
+     *
      * @param requestMessage
      *            The LoggingRequestMessage request message to send.
      */
@@ -53,12 +53,9 @@ public class LoggingMessageSender {
         LOGGER.info("Sending logger message to queue");
 
         this.loggingJmsTemplate.send(new MessageCreator() {
-
             @Override
             public Message createMessage(final Session session) throws JMSException {
-
                 final ObjectMessage objectMessage = session.createObjectMessage();
-
                 objectMessage.setJMSCorrelationID(loggingMessage.getCorrelationUid());
                 objectMessage.setLongProperty(Constants.TIME_STAMP, loggingMessage.getTimeStamp().getTime());
                 objectMessage.setStringProperty(Constants.CLASS_NAME, loggingMessage.getClassName());
@@ -72,7 +69,6 @@ public class LoggingMessageSender {
                 objectMessage.setIntProperty(Constants.RESPONSE_DATA_SIZE, loggingMessage.getResposeDataSize());
                 return objectMessage;
             }
-
         });
     }
 }

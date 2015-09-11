@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
@@ -56,7 +55,7 @@ public class ScheduledTaskScheduler implements Runnable {
                 scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
                 final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(scheduledTask);
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
-            } catch (final OsgpCoreException | FunctionalException e) {
+            } catch (final FunctionalException e) {
                 LOGGER.error("Processing scheduled task failed.", e);
                 scheduledTask.setFailed(e.getMessage());
                 scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
@@ -70,6 +69,6 @@ public class ScheduledTaskScheduler implements Runnable {
         return new ProtocolRequestMessage(scheduledTask.getDomain(), scheduledTask.getDomainVersion(),
                 scheduledTask.getMessageType(), scheduledTask.getCorrelationId(),
                 scheduledTask.getOrganisationIdentification(), scheduledTask.getDeviceIdentification(), device
-                .getNetworkAddress().getHostAddress(), scheduledTask.getMessageData(), true, 0);
+                        .getNetworkAddress().getHostAddress(), scheduledTask.getMessageData(), true, 0);
     }
 }

@@ -145,10 +145,8 @@ public class WebServiceConfig {
      */
     @Bean
     public MarshallingPayloadMethodProcessor smartMeteringManagementMarshallingPayloadMethodProcessor() {
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
-                this.smartMeteringManagementMarshaller(), this.smartMeteringManagementMarshaller());
-
-        return marshallingPayloadMethodProcessor;
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringManagementMarshaller(),
+                this.smartMeteringManagementMarshaller());
     }
 
     /**
@@ -174,10 +172,8 @@ public class WebServiceConfig {
      */
     @Bean
     public MarshallingPayloadMethodProcessor smartMeteringInstallationMarshallingPayloadMethodProcessor() {
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
-                this.smartMeteringInstallationMarshaller(), this.smartMeteringInstallationMarshaller());
-
-        return marshallingPayloadMethodProcessor;
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringInstallationMarshaller(),
+                this.smartMeteringInstallationMarshaller());
     }
 
     /**

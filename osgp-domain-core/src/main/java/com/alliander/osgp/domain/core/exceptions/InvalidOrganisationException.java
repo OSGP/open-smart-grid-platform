@@ -20,14 +20,14 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 public class InvalidOrganisationException extends Exception {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 2734765757362133547L;
-    private final static String message = "Invalid organisation [%1$s], validation errors: %2$s";
+    private static final String MESSAGE = "Invalid organisation [%1$s], validation errors: %2$s";
 
     public InvalidOrganisationException(final Organisation organisation,
             final Set<ConstraintViolation<Organisation>> constraintViolations) {
-        super(String.format(message, organisation, convertToString(constraintViolations)));
+        super(String.format(MESSAGE, organisation, convertToString(constraintViolations)));
     }
 
     private static String convertToString(final Set<ConstraintViolation<Organisation>> constraintViolations) {

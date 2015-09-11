@@ -22,9 +22,10 @@ import com.alliander.osgp.domain.core.validation.NumberOfLightsAndIndexAddressMa
 
 @NumberOfLightsAndIndexAddressMap
 public class DaliConfiguration implements Serializable {
+
     /**
-	 * 
-	 */
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = -4779233927956697006L;
 
     @Min(0)

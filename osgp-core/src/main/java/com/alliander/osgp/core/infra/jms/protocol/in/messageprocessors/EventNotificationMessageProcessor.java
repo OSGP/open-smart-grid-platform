@@ -62,6 +62,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
                     com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
                             .name()), eventNotification.getDescription(), eventNotification.getIndex());
         } catch (final UnknownEntityException e) {
+            LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
         }
     }
@@ -70,7 +71,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
 
     /**
      * Add a new event notification to the repository with the given arguments.
-     * 
+     *
      * @param deviceId
      *            The device identification
      * @param eventType
@@ -80,7 +81,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
      *            device.
      * @param index
      *            The index of the device.
-     * 
+     *
      * @throws UnknownEntityException
      *             When the device isn't found.
      */

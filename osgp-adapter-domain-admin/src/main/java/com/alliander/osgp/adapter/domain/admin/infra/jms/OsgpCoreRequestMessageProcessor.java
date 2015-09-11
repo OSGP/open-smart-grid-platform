@@ -30,12 +30,8 @@ public class OsgpCoreRequestMessageProcessor {
         LOGGER.info(
                 "Received request message from OSGP-CORE messageType: {} deviceIdentification: {}, organisationIdentification: {}, correlationUid: {}, className: {}",
                 messageType, deviceIdentification, organisationIdentification, correlationUid, dataObject.getClass()
-                        .getCanonicalName());
+                .getCanonicalName());
 
-        switch (messageType) {
-
-            default:
-                throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
-        }
+        throw new UnknownMessageTypeException("Unknown JMSType: " + messageType);
     }
 }

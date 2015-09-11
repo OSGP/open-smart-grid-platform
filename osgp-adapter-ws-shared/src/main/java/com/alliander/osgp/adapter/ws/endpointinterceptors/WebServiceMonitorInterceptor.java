@@ -7,14 +7,12 @@
  */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -36,7 +34,6 @@ import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingMessageSender;
 import com.alliander.osgp.adapter.ws.infra.jms.LoggingRequestMessage;
@@ -62,7 +59,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     private static final String XML_ELEMENT_DEVICE_ID = "DeviceId";
     private static final String XML_ELEMENT_OSP_RESULT_TYPE = "Result";
 
-    private static final String UTF_8 = "UTF-8";
+    private static final String FAULT_RESPONSE_RESULT = "SOAP_FAULT";
 
     private final String organisationIdentification;
     private final String userName;
@@ -94,7 +91,6 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
     @Override
     public boolean handleFault(final MessageContext messageContext, final Object endpoint) throws Exception {
 
-        final String FAULT_RESPONSE_RESULT = "SOAP_FAULT";
         final LoggingRequestMessage loggingRequestMessage = this.createLoggingRequestMessage(messageContext, endpoint);
         loggingRequestMessage.setResponseResult(FAULT_RESPONSE_RESULT);
         this.loggingMessageSender.send(loggingRequestMessage);
@@ -167,20 +163,13 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
      */
     private Map<String, Object> parseSoapMessage(final SoapMessage soapMessage) {
         try {
-            // Create a stream and write the message to the stream.
+            // Determine the data size of the message (stream).
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             soapMessage.writeTo(outputStream);
-            // Determine the data size of the message (stream).
             final int dataSize = outputStream.size();
-            // Get the XML from the message (stream).
-            final String xml = new String(outputStream.toByteArray(), UTF_8);
-
-            // Create a document of the XML.
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final Document document = factory.newDocumentBuilder().parse(
-                    new InputSource(new ByteArrayInputStream(xml.getBytes(UTF_8))));
 
             // Try to find the desired XML elements in the document.
+            final Document document = soapMessage.getDocument();
             final String correlationUid = this.evaluateXPathExpression(document, XML_ELEMENT_CORRELATION_UID);
             final String deviceId = this.evaluateXPathExpression(document, XML_ELEMENT_DEVICE_ID);
             final String result = this.evaluateXPathExpression(document, XML_ELEMENT_OSP_RESULT_TYPE);
@@ -257,13 +246,13 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Read OrganisationIdentification from header from request.
-        final String organisationIdentification = this.getHeaderValue(soapHeader, this.organisationIdentification);
+        final String orgIdentification = this.getHeaderValue(soapHeader, this.organisationIdentification);
 
         // Read UserName from header from request.
-        final String userName = this.getHeaderValue(soapHeader, this.userName);
+        final String usrName = this.getHeaderValue(soapHeader, this.userName);
 
         // Read ApplicationName from header from request.
-        final String applicationName = this.getHeaderValue(soapHeader, this.applicationName);
+        final String appName = this.getHeaderValue(soapHeader, this.applicationName);
 
         // Read correlationUid and deviceId from request.
         final Map<String, Object> requestData = this.parseSoapMessage(request);
@@ -292,11 +281,8 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         }
 
         // Creating the logging request message
-        final LoggingRequestMessage loggingRequestMessage = new LoggingRequestMessage(now, organisationIdentification,
-                userName, applicationName, classAndMethod.get(CLASS_NAME), classAndMethod.get(METHOD_NAME),
-                (String) requestData.get(DEVICE_ID), correlationId, (String) responseData.get(RESPONSE_RESULT),
-                (int) responseData.get(RESPONSE_DATA_SIZE));
-
-        return loggingRequestMessage;
+        return new LoggingRequestMessage(now, orgIdentification, usrName, appName, classAndMethod.get(CLASS_NAME),
+                classAndMethod.get(METHOD_NAME), (String) requestData.get(DEVICE_ID), correlationId,
+                (String) responseData.get(RESPONSE_RESULT), (int) responseData.get(RESPONSE_DATA_SIZE));
     }
 }

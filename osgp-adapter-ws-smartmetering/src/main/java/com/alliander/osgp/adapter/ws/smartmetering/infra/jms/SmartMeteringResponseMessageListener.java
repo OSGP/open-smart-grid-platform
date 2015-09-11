@@ -54,7 +54,6 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
                     objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION),
                     objectMessage.getStringProperty(Constants.RESULT), objectMessage.getJMSCorrelationID(),
                     objectMessage.getStringProperty(Constants.DESCRIPTION), notificationType);
-
         } catch (final JMSException | FunctionalException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         }

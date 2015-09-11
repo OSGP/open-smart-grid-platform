@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long>, JpaSpecificationExecutor<Device> {
+
     Device findByDeviceIdentification(String deviceIdentification);
 
     List<Device> findByNetworkAddress(InetAddress address);

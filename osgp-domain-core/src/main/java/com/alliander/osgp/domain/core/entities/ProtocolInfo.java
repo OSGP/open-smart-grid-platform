@@ -73,9 +73,7 @@ public class ProtocolInfo extends AbstractEntity {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-
         final ProtocolInfo protocolInfo = (ProtocolInfo) o;
-
         if (!protocolInfo.getProtocol().equals(this.protocol)) {
             return false;
         }
@@ -94,7 +92,6 @@ public class ProtocolInfo extends AbstractEntity {
         if (!protocolInfo.getOutgoingProtocolResponsesQueue().equals(this.outgoingProtocolResponsesQueue)) {
             return false;
         }
-
         return true;
     }
 

@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.domain.core.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +23,6 @@ import com.alliander.osgp.domain.core.validation.Identification;
 @Transactional(value = "transactionManager")
 public class DeviceDomainService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceDomainService.class);
-
     @Autowired
     private DeviceRepository deviceRepository;
 
@@ -41,7 +37,8 @@ public class DeviceDomainService {
         return device;
     }
 
-    public Device searchActiveDevice(@Identification final String deviceIdentification) throws UnregisteredDeviceException, UnknownEntityException {
+    public Device searchActiveDevice(@Identification final String deviceIdentification)
+            throws UnregisteredDeviceException, UnknownEntityException {
 
         final Device device = this.searchDevice(deviceIdentification);
 

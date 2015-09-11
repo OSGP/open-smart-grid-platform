@@ -33,7 +33,6 @@ import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
@@ -56,9 +55,6 @@ public class DeviceInstallationService {
 
     @Autowired
     private Integer recentDevicesPeriod;
-
-    @Autowired
-    private DeviceAuthorizationRepository authorizationRepository;
 
     @Autowired
     private WritableDeviceAuthorizationRepository writableAuthorizationRepository;
@@ -116,7 +112,6 @@ public class DeviceInstallationService {
             if (newDevice.getProtocolInfo() == null) {
                 newDevice.updateProtocol(protocolInfo);
             }
-            // newDevice.updateProtocol(protocolInfo);
 
             this.writableDeviceRepository.save(newDevice);
             this.writableAuthorizationRepository.save(authorization);
@@ -229,8 +224,7 @@ public class DeviceInstallationService {
     }
 
     @Transactional(value = "transactionManager")
-    public ResponseMessage dequeueGetStatusResponse(final String organisationIdentification, final String correlationUid)
-            throws OsgpException {
+    public ResponseMessage dequeueGetStatusResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
@@ -260,8 +254,7 @@ public class DeviceInstallationService {
     }
 
     @Transactional(value = "transactionManager")
-    public ResponseMessage dequeueStartDeviceTestResponse(final String organisationIdentification,
-            final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueStartDeviceTestResponse(final String correlationUid) throws OsgpException {
         LOGGER.debug("Dequeue Start Device Test response");
 
         return this.commonResponseMessageFinder.findMessage(correlationUid);
@@ -292,8 +285,7 @@ public class DeviceInstallationService {
     }
 
     @Transactional(value = "transactionManager")
-    public ResponseMessage dequeueStopDeviceTestResponse(final String organisationIdentification,
-            final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueStopDeviceTestResponse(final String correlationUid) throws OsgpException {
         LOGGER.debug("Dequeue Stop Device Test response");
 
         return this.commonResponseMessageFinder.findMessage(correlationUid);

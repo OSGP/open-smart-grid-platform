@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class PlatformException extends Exception {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 2879663396838174171L;
 

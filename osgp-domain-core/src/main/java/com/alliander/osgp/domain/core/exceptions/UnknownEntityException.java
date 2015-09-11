@@ -14,7 +14,7 @@ import org.springframework.ws.soap.server.endpoint.annotation.SoapFault;
 public class UnknownEntityException extends PlatformException {
 
     /**
-     * 
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 2360400169267313819L;
     private static final String MESSAGE = "%1$s with id \"%2$s\" could not be found.";

@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.validation.PageInfoConstraints;
 public class PageInfo implements Serializable {
 
     /**
-     * Serial version ID.
+     * Serial Version UID.
      */
     private static final long serialVersionUID = 8425736412320281464L;
 

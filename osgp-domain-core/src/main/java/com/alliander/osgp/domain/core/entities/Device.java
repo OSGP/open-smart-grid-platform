@@ -46,7 +46,7 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     public static final String SSLD_TYPE = "SSLD";
 
     /**
-     * UID for serialization
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -1067112091560627041L;
     @Identification
@@ -275,9 +275,7 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-
         final Device device = (Device) o;
-
         if (this.isActivated != device.isActivated) {
             return false;
         }
@@ -299,7 +297,6 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
                 : device.networkAddress != null) {
             return false;
         }
-
         return true;
     }
 

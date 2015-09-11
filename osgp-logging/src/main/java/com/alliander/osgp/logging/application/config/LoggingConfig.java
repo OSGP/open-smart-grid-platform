@@ -9,6 +9,7 @@ package com.alliander.osgp.logging.application.config;
 
 import java.util.Properties;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
@@ -21,24 +22,26 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;
 import com.googlecode.flyway.core.Flyway;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @EnableJpaRepositories(basePackageClasses = { WebServiceMonitorLogRepository.class })
 @Configuration
 @PropertySource("file:${osp/osgpLogging/config}")
 public class LoggingConfig {
 
-    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
-    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
-
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
+    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
+
+    private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
+    private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
@@ -49,29 +52,38 @@ public class LoggingConfig {
     private static final String PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION = "flyway.initial.description";
     private static final String PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE = "flyway.init.on.migrate";
 
+    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingConfig.class);
 
     @Resource
     private Environment environment;
+
+    private HikariDataSource dataSource;
 
     /**
      * Method for creating the Data Source.
      *
      * @return DataSource
      */
-    public DataSource dataSource() {
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
-        singleConnectionDataSource.setDriverClassName(this.environment
-                .getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-        singleConnectionDataSource.setUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-        singleConnectionDataSource.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-        singleConnectionDataSource.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
-        singleConnectionDataSource.setSuppressClose(true);
-        return singleConnectionDataSource;
+    public DataSource getDataSource() {
+        if (this.dataSource == null) {
+            final HikariConfig hikariConfig = new HikariConfig();
+
+            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+
+            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
+            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+
+            this.dataSource = new HikariDataSource(hikariConfig);
+        }
+
+        return this.dataSource;
     }
 
     /**
@@ -82,7 +94,7 @@ public class LoggingConfig {
      *             when class not found
      */
     @Bean
-    public JpaTransactionManager transactionManager() throws Exception {
+    public JpaTransactionManager transactionManager() throws ClassNotFoundException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
@@ -91,7 +103,7 @@ public class LoggingConfig {
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
-            throw new Exception(msg, e);
+            throw e;
         }
 
         return transactionManager;
@@ -110,7 +122,7 @@ public class LoggingConfig {
         flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
-        flyway.setDataSource(this.dataSource());
+        flyway.setDataSource(this.getDataSource());
 
         return flyway;
     }
@@ -128,7 +140,7 @@ public class LoggingConfig {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_LOGGING");
-        entityManagerFactoryBean.setDataSource(this.dataSource());
+        entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
@@ -146,5 +158,12 @@ public class LoggingConfig {
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
 
         return entityManagerFactoryBean;
+    }
+
+    @PreDestroy
+    public void destroyDataSource() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
+        }
     }
 }

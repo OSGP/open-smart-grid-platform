@@ -53,7 +53,8 @@ public class FirmwareManagementEndpoint {
     private final FirmwareManagementService firmwareManagementService;
 
     @Autowired
-    public FirmwareManagementEndpoint(@Qualifier(value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService) {
+    public FirmwareManagementEndpoint(
+            @Qualifier(value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService) {
         this.firmwareManagementService = firmwareManagementService;
     }
 
@@ -61,11 +62,13 @@ public class FirmwareManagementEndpoint {
 
     @PayloadRoot(localPart = "UpdateFirmwareRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public UpdateFirmwareAsyncResponse updateFirmware(@OrganisationIdentification final String organisationIdentification,
+    public UpdateFirmwareAsyncResponse updateFirmware(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateFirmwareRequest request) throws OsgpException {
 
-        LOGGER.info("UpdateFirmware Request received from organisation {} for device {} with firmware name {}.", organisationIdentification,
-                request.getDeviceIdentification(), request.getFirmwareIdentification(), request.getScheduledTime());
+        LOGGER.info("UpdateFirmware Request received from organisation {} for device {} with firmware name {}.",
+                organisationIdentification, request.getDeviceIdentification(), request.getFirmwareIdentification(),
+                request.getScheduledTime());
 
         final UpdateFirmwareAsyncResponse response = new UpdateFirmwareAsyncResponse();
 
@@ -73,11 +76,12 @@ public class FirmwareManagementEndpoint {
             // Get the request parameters, make sure that they are in UTC.
             // Maybe add an adapter to the service, so that all datetime are
             // converted to utc automatically.
-            final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request.getScheduledTime().toGregorianCalendar())
-                    .toDateTime(DateTimeZone.UTC);
+            final DateTime scheduleTime = request.getScheduledTime() == null ? null : new DateTime(request
+                    .getScheduledTime().toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
 
-            final String correlationUid = this.firmwareManagementService.enqueueUpdateFirmwareRequest(organisationIdentification,
-                    request.getDeviceIdentification(), request.getFirmwareIdentification(), scheduleTime);
+            final String correlationUid = this.firmwareManagementService.enqueueUpdateFirmwareRequest(
+                    organisationIdentification, request.getDeviceIdentification(), request.getFirmwareIdentification(),
+                    scheduleTime);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -85,7 +89,8 @@ public class FirmwareManagementEndpoint {
             response.setAsyncResponse(asyncResponse);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE, new ValidationException(e.getConstraintViolations()));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -95,17 +100,18 @@ public class FirmwareManagementEndpoint {
 
     @PayloadRoot(localPart = "UpdateFirmwareAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public UpdateFirmwareResponse getUpdateFirmwareResponse(@OrganisationIdentification final String organisationIdentification,
+    public UpdateFirmwareResponse getUpdateFirmwareResponse(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final UpdateFirmwareAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("GetUpdateFirmwareResponse Request received from organisation {} for device: {}.", organisationIdentification, request.getAsyncRequest()
-                .getDeviceId());
+        LOGGER.info("GetUpdateFirmwareResponse Request received from organisation {} for device: {}.",
+                organisationIdentification, request.getAsyncRequest().getDeviceId());
 
         final UpdateFirmwareResponse response = new UpdateFirmwareResponse();
 
         try {
-            final ResponseMessage message = this.firmwareManagementService.dequeueUpdateFirmwareResponse(organisationIdentification, request.getAsyncRequest()
-                    .getCorrelationUid());
+            final ResponseMessage message = this.firmwareManagementService.dequeueUpdateFirmwareResponse(request
+                    .getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             }
@@ -120,23 +126,27 @@ public class FirmwareManagementEndpoint {
 
     @PayloadRoot(localPart = "GetFirmwareVersionRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public GetFirmwareVersionAsyncResponse getFirmwareVersion(@OrganisationIdentification final String organisationIdentification,
+    public GetFirmwareVersionAsyncResponse getFirmwareVersion(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetFirmwareVersionRequest request) throws OsgpException {
 
-        LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.", organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("GetFirmwareVersion Request received from organisation {} for device {}.",
+                organisationIdentification, request.getDeviceIdentification());
 
         final GetFirmwareVersionAsyncResponse response = new GetFirmwareVersionAsyncResponse();
 
         try {
             final AsyncResponse asyncResponse = new AsyncResponse();
-            final String correlationUid = this.firmwareManagementService.enqueueGetFirmwareRequest(organisationIdentification,
-                    request.getDeviceIdentification());
+            final String correlationUid = this.firmwareManagementService.enqueueGetFirmwareRequest(
+                    organisationIdentification, request.getDeviceIdentification());
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceId(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
         } catch (final MethodConstraintViolationException e) {
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE, new ValidationException(e.getConstraintViolations()));
+            LOGGER.error("exception", e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -146,17 +156,19 @@ public class FirmwareManagementEndpoint {
 
     @PayloadRoot(localPart = "GetFirmwareVersionAsyncRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public GetFirmwareVersionResponse getGetFirmwareVersionResponse(@OrganisationIdentification final String organisationIdentification,
+    public GetFirmwareVersionResponse getGetFirmwareVersionResponse(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetFirmwareVersionAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("GetFirmwareVersionResponse Request received from organisation {} for device: {}.", organisationIdentification, request.getAsyncRequest()
-                .getDeviceId());
+        LOGGER.info("GetFirmwareVersionResponse Request received from organisation {} for device: {}.",
+                organisationIdentification, request.getAsyncRequest().getDeviceId());
 
         final GetFirmwareVersionResponse response = new GetFirmwareVersionResponse();
         ResponseMessage message = null;
 
         try {
-            message = this.firmwareManagementService.dequeueGetFirmwareResponse(organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+            message = this.firmwareManagementService.dequeueGetFirmwareResponse(request.getAsyncRequest()
+                    .getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
@@ -173,7 +185,8 @@ public class FirmwareManagementEndpoint {
     }
 
     private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical exception,
+        // Rethrow exception if it already is a functional or technical
+        // exception,
         // otherwise throw new technical exception.
         if (e instanceof OsgpException) {
             throw (OsgpException) e;

@@ -61,7 +61,7 @@ public class WebServiceConfig {
 
     /**
      * Method for creating the Marshaller for device monitoring.
-     * 
+     *
      * @return Jaxb2Marshaller
      */
     @Bean
@@ -70,7 +70,8 @@ public class WebServiceConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_DEVICE_MONITORING));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_DEVICE_MONITORING));
 
         return marshaller;
     }
@@ -78,22 +79,20 @@ public class WebServiceConfig {
     /**
      * Method for creating the Marshalling Payload Method Processor for device
      * monitoring.
-     * 
+     *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
     public MarshallingPayloadMethodProcessor deviceMonitoringMarshallingPayloadMethodProcessor() {
         LOGGER.debug("Creating Public Lighting Device Monitoring Marshalling Payload Method Processor Bean");
 
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(this.deviceMonitoringMarshaller(),
+        return new MarshallingPayloadMethodProcessor(this.deviceMonitoringMarshaller(),
                 this.deviceMonitoringMarshaller());
-
-        return marshallingPayloadMethodProcessor;
     }
 
     /**
      * Method for creating the Marshaller for schedule management.
-     * 
+     *
      * @return Jaxb2Marshaller
      */
     @Bean
@@ -102,7 +101,8 @@ public class WebServiceConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_AD_HOC_MANAGEMENT));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_AD_HOC_MANAGEMENT));
 
         return marshaller;
     }
@@ -110,22 +110,20 @@ public class WebServiceConfig {
     /**
      * Method for creating the Marshalling Payload Method Processor for public
      * lighting schedule management.
-     * 
+     *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
     public MarshallingPayloadMethodProcessor publicLightingAdHocManagementMarshallingPayloadMethodProcessor() {
         LOGGER.debug("Creating Public Lighting Ad Hoc Management Marshalling Payload Method Processor Bean");
 
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
-                this.publicLightingAdHocManagementMarshaller(), this.publicLightingAdHocManagementMarshaller());
-
-        return marshallingPayloadMethodProcessor;
+        return new MarshallingPayloadMethodProcessor(this.publicLightingAdHocManagementMarshaller(),
+                this.publicLightingAdHocManagementMarshaller());
     }
 
     /**
      * Method for creating the Marshaller for schedule management.
-     * 
+     *
      * @return Jaxb2Marshaller
      */
     @Bean
@@ -134,7 +132,8 @@ public class WebServiceConfig {
 
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_SCHEDULE_MANAGEMENT));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_PUBLIC_LIGHTING_SCHEDULE_MANAGEMENT));
 
         return marshaller;
     }
@@ -142,22 +141,20 @@ public class WebServiceConfig {
     /**
      * Method for creating the Marshalling Payload Method Processor for Tariff
      * Switching schedule management.
-     * 
+     *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
     public MarshallingPayloadMethodProcessor publicLightingScheduleManagementMarshallingPayloadMethodProcessor() {
         LOGGER.debug("Creating Public Lighting Schedule Management Marshalling Payload Method Processor Bean");
 
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
-                this.publicLightingScheduleManagementMarshaller(), this.publicLightingScheduleManagementMarshaller());
-
-        return marshallingPayloadMethodProcessor;
+        return new MarshallingPayloadMethodProcessor(this.publicLightingScheduleManagementMarshaller(),
+                this.publicLightingScheduleManagementMarshaller());
     }
 
     /**
      * Method for creating the Default Method Endpoint Adapter.
-     * 
+     *
      * @return DefaultMethodEndpointAdapter
      */
     @Bean
@@ -175,7 +172,8 @@ public class WebServiceConfig {
         methodArgumentResolvers.add(this.publicLightingScheduleManagementMarshallingPayloadMethodProcessor());
 
         // Add Organisation Identification Annotation Method Argument Resolver
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT, OrganisationIdentification.class));
+        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
+                OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
@@ -194,7 +192,8 @@ public class WebServiceConfig {
     @Bean
     public DetailSoapFaultMappingExceptionResolver exceptionResolver() {
         LOGGER.debug("Creating Detail Soap Fault Mapping Exception Resolver Bean");
-        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(new SoapFaultMapper());
+        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(
+                new SoapFaultMapper());
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
@@ -210,7 +209,8 @@ public class WebServiceConfig {
      */
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
-        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID, X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
+        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
     /**
@@ -218,7 +218,8 @@ public class WebServiceConfig {
      */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
+                ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     /**
@@ -226,12 +227,14 @@ public class WebServiceConfig {
      */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
-        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER);
+        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
+                APPLICATION_NAME_HEADER);
     }
 
 }

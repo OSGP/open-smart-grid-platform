@@ -12,6 +12,9 @@ import java.util.List;
 
 public class SsldData implements java.io.Serializable {
 
+    /**
+     * Serial Version UID.
+     */
     private static final long serialVersionUID = 4785387346353649099L;
 
     private int actualCurrent1;
