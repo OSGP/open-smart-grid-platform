@@ -63,7 +63,6 @@ public class WritablePersistenceConfig {
      *
      * @return DataSource
      */
-    // @Bean(destroyMethod = "close")
     public DataSource getWritableDataSource() {
         if (this.dataSource == null) {
             final HikariConfig hikariConfig = new HikariConfig();
@@ -81,8 +80,6 @@ public class WritablePersistenceConfig {
             this.dataSource = new HikariDataSource(hikariConfig);
         }
         return this.dataSource;
-
-        // return new HikariDataSource(hikariConfig);
     }
 
     /**
