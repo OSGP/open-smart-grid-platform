@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -47,8 +48,6 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        String ipAddress = null;
-        int retryCount = 0;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -57,11 +56,11 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+
+            final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) message.getObject();
 
             this.installationService.addMeter(organisationIdentification, deviceIdentification, correlationUid,
-                    this.responseMessageSender, domain, domainVersion, messageType, "publicKey");
+                    smartMeteringDevice, this.responseMessageSender, domain, domainVersion, messageType);
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -71,7 +70,6 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
             LOGGER.debug("messageType: {}", messageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("ipAddress: {}", ipAddress);
             return;
         }
     }
