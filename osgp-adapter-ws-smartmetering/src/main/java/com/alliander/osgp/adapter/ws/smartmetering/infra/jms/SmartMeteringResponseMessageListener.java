@@ -14,7 +14,11 @@ import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -24,6 +28,9 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 public class SmartMeteringResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseMessageListener.class);
+
+    @Autowired
+    private NotificationService notificationService;
 
     public SmartMeteringResponseMessageListener() {
         // empty constructor
@@ -38,11 +45,16 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
 
-            final String feedback = "DeviceIdentification: "
-                    + objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION) + " - RESULT: "
-                    + objectMessage.getStringProperty(Constants.RESULT);
+            // TODO error handling
+            final NotificationType notificationType = NotificationType.valueOf(message.getJMSType());
 
-        } catch (final JMSException ex) {
+            // WS call
+            this.notificationService.sendNotification(
+                    objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION),
+                    objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION),
+                    objectMessage.getStringProperty(Constants.RESULT), objectMessage.getJMSCorrelationID(),
+                    objectMessage.getStringProperty(Constants.DESCRIPTION), notificationType);
+        } catch (final JMSException | FunctionalException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         }
     }

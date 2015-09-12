@@ -19,20 +19,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
 import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
 import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
-import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.DetailSoapFaultMappingExceptionResolver;
 import com.alliander.osgp.adapter.ws.smartmetering.application.exceptionhandling.SoapFaultMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.NotificationMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
+import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFactory;
 
 @Configuration
 @PropertySource("file:${osp/osgpAdapterWsSmartMetering/config}")
@@ -51,12 +56,71 @@ public class WebServiceConfig {
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
 
+    private static final String PROPERTY_NAME_APPLICATION_NAME = "application.name";
+
+    private static final String PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_LOCATION = "web.service.truststore.location";
+    private static final String PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_PASSWORD = "web.service.truststore.password";
+    private static final String PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_TYPE = "web.service.truststore.type";
+    private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_LOCATION = "web.service.keystore.location";
+    private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_PASSWORD = "web.service.keystore.password";
+    private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_TYPE = "web.service.keystore.type";
+
+    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMARTMETERING_NOTIFICATION = "jaxb2.marshaller.context.path.smartmetering.notification";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
 
     @Resource
     private Environment environment;
 
-    // SMART METERING
+    // WS Notification communication
+
+    @Bean
+    public SaajSoapMessageFactory messageFactory() {
+        final SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
+
+        return messageFactory;
+    }
+
+    @Bean
+    public KeyStoreFactoryBean webServiceTrustStoreFactory() {
+        final KeyStoreFactoryBean factory = new KeyStoreFactoryBean();
+        factory.setType(this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_TYPE));
+        factory.setLocation(new FileSystemResource(this.environment
+                .getProperty(PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_LOCATION)));
+        factory.setPassword(this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_TRUSTSTORE_PASSWORD));
+
+        return factory;
+    }
+
+    @Bean
+    public Jaxb2Marshaller notificationSenderMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMARTMETERING_NOTIFICATION));
+        return marshaller;
+    }
+
+    @Bean
+    public SendNotificationServiceClient sendNotificationServiceClient() throws java.security.GeneralSecurityException {
+        return new SendNotificationServiceClient(this.createWebServiceTemplateFactory(this
+                .notificationSenderMarshaller()), this.notificationMapper());
+    }
+
+    private WebServiceTemplateFactory createWebServiceTemplateFactory(final Jaxb2Marshaller marshaller) {
+        return new WebServiceTemplateFactory(marshaller, this.messageFactory(),
+                this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_TYPE),
+                this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_LOCATION),
+                this.environment.getProperty(PROPERTY_NAME_WEBSERVICE_KEYSTORE_PASSWORD),
+                this.webServiceTrustStoreFactory(),
+                this.environment.getRequiredProperty(PROPERTY_NAME_APPLICATION_NAME));
+    }
+
+    @Bean
+    public NotificationMapper notificationMapper() {
+        return new NotificationMapper();
+    }
+
+    // Client WS code
 
     /**
      * Method for creating the Marshaller for smart metering management.
@@ -179,12 +243,6 @@ public class WebServiceConfig {
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
-    }
-
-    @Bean
-    public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
-                APPLICATION_NAME_HEADER);
     }
 
 }

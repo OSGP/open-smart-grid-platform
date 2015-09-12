@@ -18,11 +18,11 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.NotificationResponseMessageSender;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 // Send response message to the web service adapter.
-public class WebServiceResponseMessageSender implements ResponseMessageSender {
+public class WebServiceResponseMessageSender implements NotificationResponseMessageSender {
 
     @Autowired
     @Qualifier("domainSmartMeteringOutgoingWebServiceResponsesJmsTemplate")
@@ -37,7 +37,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
      * @param timeToLive
      *            The custom time to live value in milliseconds.
      */
-    public void send(final ResponseMessage responseMessage, final Long timeToLive) {
+    public void send(final ResponseMessage responseMessage, final Long timeToLive, final String messageType) {
 
         // Keep the original time to live from configuration.
         final Long originalTimeToLive = this.webServiceResponsesJmsTemplate.getTimeToLive();
@@ -52,6 +52,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
                 objectMessage.setJMSCorrelationID(responseMessage.getCorrelationUid());
+                objectMessage.setJMSType(messageType);
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
@@ -72,7 +73,7 @@ public class WebServiceResponseMessageSender implements ResponseMessageSender {
     }
 
     @Override
-    public void send(final ResponseMessage responseMessage) {
-        this.send(responseMessage, null);
+    public void send(final ResponseMessage responseMessage, final String messageType) {
+        this.send(responseMessage, null, messageType);
     }
 }

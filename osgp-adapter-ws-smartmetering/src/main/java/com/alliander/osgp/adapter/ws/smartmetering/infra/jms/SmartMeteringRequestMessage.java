@@ -9,34 +9,21 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.jms;
 
 import java.io.Serializable;
 
-import org.joda.time.DateTime;
-
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 public class SmartMeteringRequestMessage extends RequestMessage {
 
+    private static final long serialVersionUID = 8978488633831083383L;
+
     private final SmartMeteringRequestMessageType messageType;
-    private final DateTime scheduleTime;
-    private final String deviceType;
 
     public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final Serializable request,
-            final DateTime scheduleTime, final String deviceType) {
+            final String organisationIdentification, final String deviceIdentification, final Serializable request) {
         super(correlationUid, organisationIdentification, deviceIdentification, request);
         this.messageType = messageType;
-        this.scheduleTime = scheduleTime;
-        this.deviceType = deviceType;
     }
 
     public SmartMeteringRequestMessageType getMessageType() {
         return this.messageType;
-    }
-
-    public DateTime getScheduleTime() {
-        return this.scheduleTime;
-    }
-
-    public String getDeviceType() {
-        return this.deviceType;
     }
 }

@@ -16,9 +16,9 @@ import org.springframework.validation.annotation.Validated;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 /**
@@ -46,7 +46,7 @@ public class InstallationService {
     // }
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final String deviceType)
+            @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)
             throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
@@ -67,7 +67,7 @@ public class InstallationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.ADD_METER, correlationUid, organisationIdentification,
-                deviceIdentification, null, null, deviceType);
+                deviceIdentification, device);
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -79,9 +79,9 @@ public class InstallationService {
      * @param device
      * @throws FunctionalException
      */
-    public String addDevice(final String organisationIdentification, final Device device) throws FunctionalException {
-        return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(),
-                device.getDeviceType());
+    public String addDevice(final String organisationIdentification, final SmartMeteringDevice device)
+            throws FunctionalException {
+        return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(), device);
     }
 
 }

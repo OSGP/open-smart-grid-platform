@@ -19,61 +19,94 @@
 		namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
-	<xsd:element name="AddMeterRequest">
+	<xsd:element name="AddDeviceRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Meter" type="tns:Meter" />
+				<xsd:element name="Device" type="tns:Device" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="AddMeterResponse">
-		<xsd:complexType />
+	<xsd:element name="AddDeviceResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
 	</xsd:element>
 	
-<!-- 	<xsd:simpleType name="Str8"> -->
-<!-- 	    <xsd:restriction base="xsd:string"> -->
-<!-- 			<xsd:length value="8"/> -->
-<!-- 	    </xsd:restriction> -->
-<!-- 	</xsd:simpleType> -->
-	
-<!-- 	<xsd:simpleType name="StrMax10"> -->
-<!-- 	    <xsd:restriction base="xsd:string"> -->
-<!-- 			<xsd:minLength value="1"/> -->
-<!-- 			<xsd:maxLength value="10"/> -->
-<!-- 	    </xsd:restriction> -->
-<!-- 	</xsd:simpleType> -->
-	
-<!-- 	<xsd:simpleType name="StrMax20"> -->
-<!-- 	    <xsd:restriction base="xsd:string"> -->
-<!-- 			<xsd:minLength value="1"/> -->
-<!-- 			<xsd:maxLength value="20"/> -->
-<!-- 	    </xsd:restriction> -->
-<!-- 	</xsd:simpleType> -->
-	
-<!-- 	<xsd:simpleType name="StrMax50"> -->
-<!-- 	    <xsd:restriction base="xsd:string"> -->
-<!-- 			<xsd:minLength value="1"/> -->
-<!-- 			<xsd:maxLength value="50"/> -->
-<!-- 	    </xsd:restriction> -->
-<!-- 	</xsd:simpleType> -->
-	
-	<xsd:complexType name="Meter">
+	<xsd:complexType name="Device">
 		<xsd:sequence>
-			<xsd:element name="Identification_number" type="xsd:string" />
-			<xsd:element name="Company" type="xsd:string" minOccurs="0"/>
-			<xsd:element name="Public_key_Grid_Operator" type="xsd:string" minOccurs="0" />
-			<xsd:element name="Device_type" type="xsd:string" minOccurs="0" />
-			<xsd:element name="Configuration_version" type="xsd:string" minOccurs="0" />
-			<xsd:element name="Communication_method" type="xsd:string" minOccurs="0" />
-			<xsd:element name="Default_encryption_key" type="xsd:string" minOccurs="0" />
-			<xsd:element name="User_key" type="xsd:string" minOccurs="0" />
-			<xsd:element name="ICC_id" type="xsd:string" minOccurs="0" />
-			<xsd:element name="DSMR_version" type="xsd:string" minOccurs="0" />
+			<xsd:element name="Device_Identification" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="tns:AlphaNumericType">
+						<xsd:length value="17" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="Device_type" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="50" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="Communication_method" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="tns:AlphaNumericType">
+						<xsd:maxLength value="10" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="Communication_provider" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="tns:AlphaNumericType">
+						<xsd:maxLength value="10" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="ICC_id" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="tns:AlphaNumericType">
+						<xsd:maxLength value="20" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="DSMR_version" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="10" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="Supplier" minOccurs="0">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="50" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="HLS3_active" type="xsd:boolean" minOccurs="0" />
+			<xsd:element name="HLS4_active" type="xsd:boolean" minOccurs="0" />
+			<xsd:element name="HLS5_active" type="xsd:boolean" minOccurs="0" />
+			<!-- no type restriction for unencrypted keys for now -->
 			<xsd:element name="Master_key" type="xsd:string" minOccurs="0" />
 			<xsd:element name="Global_encryption_unicast_key" type="xsd:string" minOccurs="0" />
 			<xsd:element name="Authentication_key" type="xsd:string" minOccurs="0" />
+			
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:simpleType name="AlphaNumericType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[a-zA-Z0-9 ]+" />
+		</xsd:restriction>
+	</xsd:simpleType>
 </xsd:schema>

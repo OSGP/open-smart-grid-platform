@@ -17,11 +17,13 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddMeterRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddMeterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
+import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -41,43 +43,37 @@ public class SmartMeteringInstallationEndpoint {
     @Autowired
     private InstallationService installationService;
 
-    // private InstallationMapper installationMapper;
+    @Autowired
+    private InstallationMapper installationMapper;
 
     public SmartMeteringInstallationEndpoint() {
     }
 
-    // @Autowired
-    // public SmartMeteringInstallationEndpoint(@Qualifier(value =
-    // "wsCoreDeviceInstallationService") final DeviceInstallationService
-    // deviceInstallationService,
-    // @Qualifier(value = "coreDeviceInstallationMapper") final
-    // DeviceInstallationMapper deviceInstallationMapper) {
-    // this.deviceInstallationService = deviceInstallationService;
-    // this.deviceInstallationMapper = deviceInstallationMapper;
-    // }
-
-    @PayloadRoot(localPart = "AddMeterRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public AddMeterResponse addDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddMeterRequest request) throws OsgpException {
+    public AddDeviceResponse addDevice(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming AddMeterRequest for meter: {}.", request.getMeter().getIdentificationNumber());
+        LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
+
+        final AddDeviceResponse response = new AddDeviceResponse();
 
         try {
-            // final Device device =
-            // this.installationMapper.map(request.getDevice(),
-            // Device.class);
 
-            // Add a mapper as soon as the structure is set
-            // we'll use identificationNumber as deviceIdentification for now
+            final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
+                    SmartMeteringDevice.class);
 
-            final Device device = new Device(request.getMeter().getIdentificationNumber());
+            final String correlationUid = this.installationService.addDevice(organisationIdentification, device);
 
-            this.installationService.addDevice(organisationIdentification, device);
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDevice().getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+
         } catch (final MethodConstraintViolationException e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getMeter().getIdentificationNumber(), organisationIdentification }, e);
+                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
@@ -85,12 +81,12 @@ public class SmartMeteringInstallationEndpoint {
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getMeter().getIdentificationNumber(), organisationIdentification }, e);
+                    request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
         }
 
-        return new AddMeterResponse();
+        return response;
     }
 
     private void handleException(final Exception e) throws OsgpException {

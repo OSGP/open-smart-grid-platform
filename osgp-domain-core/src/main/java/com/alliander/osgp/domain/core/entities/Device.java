@@ -32,7 +32,8 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 // TODO: Refactor: Create Container and Gps classes
 
 @Entity
-public class Device extends AbstractEntity {
+public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
+        NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -48,7 +49,6 @@ public class Device extends AbstractEntity {
      * Serial Version UID.
      */
     private static final long serialVersionUID = -1067112091560627041L;
-
     @Identification
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
@@ -124,42 +124,52 @@ public class Device extends AbstractEntity {
 
     }
 
+    @Override
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
+    @Override
     public String getContainerPostalCode() {
         return this.containerPostalCode;
     }
 
+    @Override
     public String getContainerCity() {
         return this.containerCity;
     }
 
+    @Override
     public String getContainerStreet() {
         return this.containerStreet;
     }
 
+    @Override
     public String getContainerNumber() {
         return this.containerNumber;
     }
 
+    @Override
     public Float getGpsLatitude() {
         return this.gpsLatitude;
     }
 
+    @Override
     public Float getGpsLongitude() {
         return this.gpsLongitude;
     }
 
+    @Override
     public String getDeviceType() {
         return this.deviceType;
     }
 
+    @Override
     public InetAddress getNetworkAddress() {
         return this.networkAddress;
     }
 
+    @Override
     public String getIpAddress() {
         return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
     }
@@ -180,6 +190,7 @@ public class Device extends AbstractEntity {
         this.hasPublicKey = isPublicKeyPresent;
     }
 
+    @Override
     public ProtocolInfo getProtocolInfo() {
         return this.protocolInfo;
     }
@@ -215,6 +226,7 @@ public class Device extends AbstractEntity {
         this.networkAddress = null;
     }
 
+    @Override
     public List<DeviceAuthorization> getAuthorizations() {
         return this.authorizations;
     }
@@ -232,6 +244,7 @@ public class Device extends AbstractEntity {
      *
      * @return The organisation name when an owner was set, "" otherwise.
      */
+    @Override
     public String getOwner() {
         String retval = "";
 
@@ -246,6 +259,7 @@ public class Device extends AbstractEntity {
         return retval;
     }
 
+    @Override
     public DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
         // TODO: Make sure that there is only one owner authorization.
         final DeviceAuthorization authorization = new DeviceAuthorization(this, organisation, functionGroup);
@@ -307,6 +321,7 @@ public class Device extends AbstractEntity {
      * @return List of OrganisationIdentification of organisations that are
      *         authorized for this device.
      */
+    @Override
     @Transient
     public List<String> getOrganisations() {
         return this.organisations;
