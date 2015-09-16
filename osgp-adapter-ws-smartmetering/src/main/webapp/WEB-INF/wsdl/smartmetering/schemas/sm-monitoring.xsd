@@ -1,0 +1,70 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
+<xsd:schema 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+	attributeFormDefault="unqualified"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10">
+
+	<xsd:import 
+		namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
+		schemaLocation="common.xsd" />
+
+	<!-- RequestPeriodicData -->
+
+	<xsd:element name="RequestPeriodicDataRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="PeriodicDataRequest" type="tns:PeriodicDataRequest" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="RequestPeriodicDataResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="PeriodicDataRequest">
+		<xsd:sequence>
+			<xsd:element name="Device_Identification"  minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="tns:AlphaNumericType">
+						<xsd:length value="17" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="Date" type="xsd:date"  minOccurs="1" maxOccurs="1" />
+
+			<xsd:element name="PeriodType" type="tns:PeriodType" minOccurs="1" maxOccurs="1"/>
+
+			</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="AlphaNumericType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[a-zA-Z0-9 ]+" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="PeriodType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="DAILY" />
+			<xsd:enumeration value="MONTHLY" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+</xsd:schema>
