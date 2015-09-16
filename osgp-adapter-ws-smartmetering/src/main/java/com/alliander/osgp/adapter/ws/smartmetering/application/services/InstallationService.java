@@ -26,14 +26,11 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
  *
  */
 @Service(value = "wsSmartMeteringInstallationService")
-// @Transactional(value = "transactionManager")
 @Validated
+// @Transactional(value = "coreTransactionManager")
 public class InstallationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
-
-    @Autowired
-    private DomainHelperService domainHelperService;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
