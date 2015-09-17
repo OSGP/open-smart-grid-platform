@@ -18,19 +18,18 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 /**
  * @author OSGP
  *
  */
-@Service(value = "wsSmartMeteringInstallationService")
+@Service(value = "wsSmartMeteringMonitoringService")
 @Validated
-// @Transactional(value = "coreTransactionManager")
-public class InstallationService {
+public class MonitoringService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -38,13 +37,9 @@ public class InstallationService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-    // public InstallationService() {
-    // // Parameterless constructor required for transactions
-    // }
-
-    public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)
-            throws FunctionalException {
+    public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            @Identification final PeriodicMeterReadsRequest requestData) throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -56,15 +51,15 @@ public class InstallationService {
         // this.domainHelperService.isAllowed(organisation, device,
         // DeviceFunction.GET_STATUS);
 
-        LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
+        LOGGER.debug("enqueuePeriodicMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.ADD_METER, correlationUid, organisationIdentification,
-                deviceIdentification, device);
+                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA, correlationUid,
+                organisationIdentification, deviceIdentification, requestData);
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -76,9 +71,10 @@ public class InstallationService {
      * @param device
      * @throws FunctionalException
      */
-    public String addDevice(final String organisationIdentification, final SmartMeteringDevice device)
-            throws FunctionalException {
-        return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(), device);
+    public String requestPeriodicMeterData(final String organisationIdentification,
+            final PeriodicMeterReadsRequest requestData) throws FunctionalException {
+        return this.enqueuePeriodicMeterReadsRequestData(organisationIdentification,
+                requestData.getDeviceIdentification(), requestData);
     }
 
 }

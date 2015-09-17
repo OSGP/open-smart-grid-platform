@@ -65,9 +65,11 @@ public class InstallationService {
         // Parameterless constructor required for transactions...
     }
 
-    public void addMeter(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid,
-            final com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice smartMeteringDeviceValueObject,
+    public void addMeter(
+            @Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceValueObject,
             final String messageType) throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",

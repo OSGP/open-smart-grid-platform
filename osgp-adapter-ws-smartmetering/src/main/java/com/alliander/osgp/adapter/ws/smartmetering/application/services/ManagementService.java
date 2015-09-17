@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
-import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -81,11 +79,13 @@ public class ManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SM_REQUEST1, correlationUid, organisationIdentification,
-                deviceIdentification, null);
+        // final SmartMeteringRequestMessage message = new
+        // SmartMeteringRequestMessage(
+        // SmartMeteringRequestMessageType.SM_REQUEST1, correlationUid,
+        // organisationIdentification,
+        // deviceIdentification, null);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(null);
 
         return correlationUid;
     }
