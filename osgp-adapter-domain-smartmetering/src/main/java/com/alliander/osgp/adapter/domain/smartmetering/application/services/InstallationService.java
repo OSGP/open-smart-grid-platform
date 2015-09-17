@@ -102,8 +102,8 @@ public class InstallationService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final com.alliander.osgp.dto.valueobjects.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
-                .map(smartMeteringDeviceValueObject, com.alliander.osgp.dto.valueobjects.SmartMeteringDevice.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
+                .map(smartMeteringDeviceValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevicDto), messageType);
