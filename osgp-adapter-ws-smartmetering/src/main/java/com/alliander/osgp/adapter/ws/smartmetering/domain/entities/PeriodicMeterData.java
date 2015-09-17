@@ -24,6 +24,14 @@ public class PeriodicMeterData extends AbstractEntity {
     @Column
     private String deviceIdentification;
 
+    // logtime
+
+    // captureTime -> last time request time
+
+    // meterValue
+
+    // status ?
+
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }

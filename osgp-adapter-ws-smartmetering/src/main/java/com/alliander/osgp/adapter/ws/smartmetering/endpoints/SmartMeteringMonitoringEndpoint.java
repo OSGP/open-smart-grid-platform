@@ -17,8 +17,10 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RequestPeriodicDataRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RequestPeriodicDataResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
+//import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RequestPeriodicDataRequest;
+//import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RequestPeriodicDataResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -44,20 +46,18 @@ public class SmartMeteringMonitoringEndpoint {
     public SmartMeteringMonitoringEndpoint() {
     }
 
-    @PayloadRoot(localPart = "RequestPeriodicDataRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @PayloadRoot(localPart = "PeriodicMeterReadsRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
-    public RequestPeriodicDataResponse requestPeriodicData(
+    public PeriodicMeterReadsResponse requestPeriodicData(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RequestPeriodicDataRequest request) throws OsgpException {
+            @RequestPayload final PeriodicMeterReadsRequest request) throws OsgpException {
 
-        // LOGGER.info("Incoming AddDeviceRequest for meter: {}.",
-        // request.getDevice().getDeviceIdentification());
+        // LOGGER.info("Incoming PeriodicMeterReadsRequest for meter: {}.",
+        // request.getPeriodicMeterReadsrequest().);
 
-        final RequestPeriodicDataResponse response = new RequestPeriodicDataResponse();
+        final PeriodicMeterReadsResponse response = new PeriodicMeterReadsResponse();
 
         // try {
-
-        System.out.println("HERE");
 
         // final SmartMeteringDevice device =
         // this.installationMapper.map(request.getDevice(),
@@ -74,26 +74,28 @@ public class SmartMeteringMonitoringEndpoint {
         //
         // } catch (final MethodConstraintViolationException e) {
         //
-        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // new Object[] { e.getMessage(),
-        // request.getDevice().getDeviceIdentification(),
-        // organisationIdentification }, e);
-        //
-        // throw new
-        // FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-        // ComponentType.WS_CORE,
-        // new ValidationException(e.getConstraintViolations()));
-        //
-        // } catch (final Exception e) {
         //
         // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // new Object[] { e.getMessage(),
-        // request.getDevice().getDeviceIdentification(),
-        // organisationIdentification }, e);
+        // // new Object[] { e.getMessage(),
+        // // request.getDevice().getDeviceIdentification(),
+        // // organisationIdentification }, e);
+        // //
+        // // throw new
+        // // FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+        // // ComponentType.WS_CORE,
+        // // new ValidationException(e.getConstraintViolations()));
+        // //
+        // // } catch (final Exception e) {
+        // //
+        // //
+        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
+        // // new Object[] { e.getMessage(),
+        // // request.getDevice().getDeviceIdentification(),
+        // // organisationIdentification }, e);
+        // //
+        // // this.handleException(e);
+        // // }
         //
-        // this.handleException(e);
-        // }
-
         return response;
     }
 
