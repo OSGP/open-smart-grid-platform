@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;

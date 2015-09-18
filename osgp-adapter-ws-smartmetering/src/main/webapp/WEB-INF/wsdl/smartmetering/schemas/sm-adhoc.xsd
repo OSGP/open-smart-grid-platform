@@ -34,7 +34,6 @@
 		<xsd:complexContent>
 			<xsd:extension base="tns:Query">
 				<xsd:sequence>
-					<xsd:element name="PeriodType" type="tns:PeriodType" minOccurs="1" maxOccurs="1" />
 					<xsd:element name="Date" type="xsd:date" minOccurs="1" maxOccurs="1" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -60,13 +59,6 @@
 	<xsd:simpleType name="AlphaNumericType">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[a-zA-Z0-9 ]+" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
-	<xsd:simpleType name="PeriodType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="DAILY" />
-			<xsd:enumeration value="MONTHLY" />
 		</xsd:restriction>
 	</xsd:simpleType>
 

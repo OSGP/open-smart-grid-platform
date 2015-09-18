@@ -18,8 +18,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Monit
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
