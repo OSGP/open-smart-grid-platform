@@ -16,9 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.DefaultDeviceResponseService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -27,19 +28,19 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing smart metering default response messages
  */
-@Component("domainSmartMeteringDefaultResponseMessageProcessor")
-public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
+public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringDefaultResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsresponseMessageProcessor.class);
 
     @Autowired
-    @Qualifier("domainSmartMeteringDefaultDeviceResponseService")
-    private DefaultDeviceResponseService defaultDeviceResponseService;
+    @Qualifier("domainSmartMeteringMonitoringService")
+    private MonitoringService monitoringService;
 
-    protected SmartMeteringDefaultResponseMessageProcessor() {
-        super(DeviceFunction.ADD_METER);
+    protected PeriodicMeterReadsresponseMessageProcessor() {
+        super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
     }
 
     @Override
@@ -54,6 +55,7 @@ public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreRespon
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
+        PeriodicMeterData periodicMeterData = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -64,6 +66,7 @@ public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreRespon
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
+            periodicMeterData = (PeriodicMeterData) responseMessage.getDataObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -79,8 +82,8 @@ public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreRespon
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
+            this.monitoringService.handlePeriodicMeterDataresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessageResultType, osgpException, periodicMeterData);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

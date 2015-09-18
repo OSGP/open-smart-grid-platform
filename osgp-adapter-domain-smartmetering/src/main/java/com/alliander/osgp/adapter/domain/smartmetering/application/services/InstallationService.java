@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
@@ -27,7 +28,11 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * @author OSGP
@@ -60,14 +65,19 @@ public class InstallationService {
 
     @Autowired
     private InstallationMapper installationMapper;
+    
+    @Autowired
+    private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     public InstallationService() {
         // Parameterless constructor required for transactions...
     }
 
-    public void addMeter(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid,
-            final com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice smartMeteringDeviceValueObject,
+    public void addMeter(
+            @Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceValueObject,
             final String messageType) throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
@@ -100,10 +110,35 @@ public class InstallationService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final com.alliander.osgp.dto.valueobjects.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
-                .map(smartMeteringDeviceValueObject, com.alliander.osgp.dto.valueobjects.SmartMeteringDevice.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
+                .map(smartMeteringDeviceValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevicDto), messageType);
+    }
+    
+    public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
+
+        LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException osgpException = exception;
+
+        try {
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, null), messageType);
     }
 }

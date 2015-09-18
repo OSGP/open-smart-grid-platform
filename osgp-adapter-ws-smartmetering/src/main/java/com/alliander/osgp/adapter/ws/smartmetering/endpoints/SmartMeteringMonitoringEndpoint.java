@@ -19,10 +19,8 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
-//import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RequestPeriodicDataRequest;
-//import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RequestPeriodicDataResponse;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -38,10 +36,10 @@ public class SmartMeteringMonitoringEndpoint {
     private static final String SMARTMETER_MONITORING_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10";
 
     @Autowired
-    private InstallationService installationService;
+    private MonitoringService monitoringService;
 
     @Autowired
-    private InstallationMapper installationMapper;
+    private MonitoringMapper monitoringMapper;
 
     public SmartMeteringMonitoringEndpoint() {
     }
@@ -52,23 +50,20 @@ public class SmartMeteringMonitoringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final PeriodicMeterReadsRequest request) throws OsgpException {
 
-        // LOGGER.info("Incoming PeriodicMeterReadsRequest for meter: {}.",
-        // request.getPeriodicMeterReadsrequest().);
+        LOGGER.info("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
 
         final PeriodicMeterReadsResponse response = new PeriodicMeterReadsResponse();
 
         // try {
+        //
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest dataRequest = this.monitoringMapper
+                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
+        //
+        final String correlationUid = this.monitoringService.requestPeriodicMeterData(organisationIdentification,
+                dataRequest);
 
-        // final SmartMeteringDevice device =
-        // this.installationMapper.map(request.getDevice(),
-        // SmartMeteringDevice.class);
-        //
-        // final String correlationUid =
-        // this.installationService.addDevice(organisationIdentification,
-        // device);
-        //
         final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid("1234");
+        asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceId("567812346584849");
         response.setAsyncResponse(asyncResponse);
         //

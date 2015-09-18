@@ -16,30 +16,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * @author OSGP
  *
  */
-@Component("domainSmartmeteringAddMeterRequestMessageProcessor")
-public class AddMeterRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+@Component("domainSmartmeteringPeriodicMeterReadsRequestMessageProcessor")
+public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestMessageProcessor.class);
 
     @Autowired
-    @Qualifier("domainSmartMeteringInstallationService")
-    private InstallationService installationService;
+    @Qualifier("domainSmartMeteringMonitoringService")
+    private MonitoringService monitoringService;
 
     /**
      * @param deviceFunction
      */
-    protected AddMeterRequestMessageProcessor() {
-        super(DeviceFunction.ADD_METER);
+    protected PeriodicMeterReadsRequestMessageProcessor() {
+        super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
     }
 
     /*
@@ -77,14 +77,13 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) dataObject;
+            final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) dataObject;
 
-            this.installationService.addMeter(organisationIdentification, deviceIdentification, correlationUid,
-                    smartMeteringDevice, messageType);
+            this.monitoringService.requestPeriodicMeterData(organisationIdentification, deviceIdentification,
+                    correlationUid, periodicMeterReadsRequest, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
-
     }
 }

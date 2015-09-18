@@ -5,31 +5,16 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.ws.smartmetering.domain.entities;
+package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-
-import com.alliander.osgp.shared.domain.entities.AbstractEntity;
-
-/**
- * An entity class which contains the information of a shipment file that was
- * imported
- */
-@Entity
-public class PeriodicMeterData extends AbstractEntity {
+public class PeriodicMeterData implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    @Column
     private String deviceIdentification;
-
-    @OneToMany(mappedBy = "periodicMeterData", targetEntity = MeterData.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<MeterData> meterData;
 
     public String getDeviceIdentification() {
@@ -46,10 +31,6 @@ public class PeriodicMeterData extends AbstractEntity {
 
     public void setMeterData(final List<MeterData> meterData) {
         this.meterData = meterData;
-    }
-
-    public void addMeterData(final MeterData meterData) {
-        this.meterData.add(meterData);
     }
 
 }
