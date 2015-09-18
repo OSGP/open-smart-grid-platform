@@ -5,8 +5,10 @@ CREATE TABLE meter_data (
     version bigint,
     periodic_meter_data_id bigint NOT NULL,
     log_time timestamp without time zone NOT NULL,
-    capture_time timestamp without time zone NOT NULL,
-    meter_value bigint NOT NULL
+    active_energy_import_tariff_one  bigint NOT NULL,
+    active_energy_import_tariff_two  bigint NOT NULL,
+    active_energy_export_tariff_one  bigint NOT NULL,
+    active_energy_export_tariff_two  bigint NOT NULL
 );
 
 ALTER TABLE public.meter_data OWNER TO osp_admin;

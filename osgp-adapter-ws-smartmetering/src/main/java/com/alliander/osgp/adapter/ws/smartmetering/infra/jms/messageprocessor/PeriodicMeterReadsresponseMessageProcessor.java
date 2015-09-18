@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -34,6 +36,12 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private PeriodicMeterDataRepository periodicMeterDataRepository;
+
+    @Autowired
+    private MonitoringMapper monitoringMapper;
 
     protected PeriodicMeterReadsresponseMessageProcessor() {
         super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
@@ -78,6 +86,11 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+            // convert and Save the meterdata
+
+            this.periodicMeterDataRepository.save(this.monitoringMapper.map(periodicMeterData,
+                    com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterData.class));
 
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
                     correlationUid, message, notificationType);

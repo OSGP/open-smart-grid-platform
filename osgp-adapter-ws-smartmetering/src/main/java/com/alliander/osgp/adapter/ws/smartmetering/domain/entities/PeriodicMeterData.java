@@ -9,13 +9,11 @@ package com.alliander.osgp.adapter.ws.smartmetering.domain.entities;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -31,8 +29,7 @@ public class PeriodicMeterData extends AbstractEntity {
     @Column
     private String deviceIdentification;
 
-    @OneToMany(mappedBy = "periodicMeterData", targetEntity = MeterData.class, fetch = FetchType.EAGER)
-    @Fetch(FetchMode.SELECT)
+    @OneToMany(mappedBy = "periodicMeterData", targetEntity = MeterData.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<MeterData> meterData;
 
     public String getDeviceIdentification() {

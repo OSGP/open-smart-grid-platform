@@ -35,10 +35,16 @@ public class MeterData extends AbstractEntity {
     private Date logTime;
 
     @Column
-    private Date captureTime;
+    private long activeEnergyImportTariffOne;
 
     @Column
-    private long meterValue;
+    private long activeEnergyImportTariffTwo;
+
+    @Column
+    private long activeEnergyExportTariffOne;
+
+    @Column
+    private long activeEnergyExportTariffTwo;
 
     public PeriodicMeterData getPeriodicMeterData() {
         return this.periodicMeterData;
@@ -56,20 +62,36 @@ public class MeterData extends AbstractEntity {
         this.logTime = logTime;
     }
 
-    public Date getCaptureTime() {
-        return this.captureTime;
+    public long getActiveEnergyImportTariffOne() {
+        return this.activeEnergyImportTariffOne;
     }
 
-    public void setCaptureTime(final Date captureTime) {
-        this.captureTime = captureTime;
+    public void setActiveEnergyImportTariffOne(final long activeEnergyImportTariffOne) {
+        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
     }
 
-    public long getMeterValue() {
-        return this.meterValue;
+    public long getActiveEnergyImportTariffTwo() {
+        return this.activeEnergyImportTariffTwo;
     }
 
-    public void setMeterValue(final long meterValue) {
-        this.meterValue = meterValue;
+    public void setActiveEnergyImportTariffTwo(final long activeEnergyImportTariffTwo) {
+        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
+    }
+
+    public long getActiveEnergyExportTariffOne() {
+        return this.activeEnergyExportTariffOne;
+    }
+
+    public void setActiveEnergyExportTariffOne(final long activeEnergyExportTariffOne) {
+        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
+    }
+
+    public long getActiveEnergyExportTariffTwo() {
+        return this.activeEnergyExportTariffTwo;
+    }
+
+    public void setActiveEnergyExportTariffTwo(final long activeEnergyExportTariffTwo) {
+        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
     }
 
 }
