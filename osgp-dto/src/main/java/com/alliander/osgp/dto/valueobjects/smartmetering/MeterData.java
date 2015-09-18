@@ -18,8 +18,42 @@ public class MeterData implements Serializable {
 
     private PeriodicMeterData periodicMeterData;
     private Date logTime;
-    private Date captureTime;
-    private long meterValue;
+    private long activeEnergyImportTariffOne;
+    private long activeEnergyImportTariffTwo;
+    private long activeEnergyExportTariffOne;
+    private long activeEnergyExportTariffTwo;
+
+    public long getActiveEnergyImportTariffOne() {
+        return this.activeEnergyImportTariffOne;
+    }
+
+    public void setActiveEnergyImportTariffOne(final long activeEnergyImportTariffOne) {
+        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
+    }
+
+    public long getActiveEnergyImportTariffTwo() {
+        return this.activeEnergyImportTariffTwo;
+    }
+
+    public void setActiveEnergyImportTariffTwo(final long activeEnergyImportTariffTwo) {
+        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
+    }
+
+    public long getActiveEnergyExportTariffOne() {
+        return this.activeEnergyExportTariffOne;
+    }
+
+    public void setActiveEnergyExportTariffOne(final long activeEnergyExportTariffOne) {
+        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
+    }
+
+    public long getActiveEnergyExportTariffTwo() {
+        return this.activeEnergyExportTariffTwo;
+    }
+
+    public void setActiveEnergyExportTariffTwo(final long activeEnergyExportTariffTwo) {
+        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
+    }
 
     public PeriodicMeterData getPeriodicMeterData() {
         return this.periodicMeterData;
@@ -35,22 +69,6 @@ public class MeterData implements Serializable {
 
     public void setLogTime(final Date logTime) {
         this.logTime = logTime;
-    }
-
-    public Date getCaptureTime() {
-        return this.captureTime;
-    }
-
-    public void setCaptureTime(final Date captureTime) {
-        this.captureTime = captureTime;
-    }
-
-    public long getMeterValue() {
-        return this.meterValue;
-    }
-
-    public void setMeterValue(final long meterValue) {
-        this.meterValue = meterValue;
     }
 
 }
