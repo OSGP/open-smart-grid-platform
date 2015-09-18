@@ -15,13 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing smart metering default response messages
@@ -41,7 +40,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage objectMessage) throws JMSException {
         LOGGER.debug("Processing smart metering periodic meter data response message");
 
         String correlationUid = null;
@@ -49,28 +48,29 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        ResponseMessage responseMessage = null;
-        ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException = null;
+        final OsgpException osgpException = null;
+
+        String result = null;
+        String message = null;
+        NotificationType notificationType = null;
         PeriodicMeterData periodicMeterData = null;
 
         try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            correlationUid = objectMessage.getJMSCorrelationID();
+            messageType = objectMessage.getJMSType();
+            organisationIdentification = objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
-            osgpException = responseMessage.getOsgpException();
-            periodicMeterData = (PeriodicMeterData) responseMessage.getDataObject();
+            result = objectMessage.getStringProperty(Constants.RESULT);
+            message = objectMessage.getStringProperty(Constants.DESCRIPTION);
+            notificationType = NotificationType.valueOf(messageType);
+
+            periodicMeterData = (PeriodicMeterData) objectMessage.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("osgpException: {}", osgpException);
             return;
@@ -78,6 +78,9 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
+                    correlationUid, message, notificationType);
 
             // this.monitoringService.handlePeriodicMeterDataresponse(deviceIdentification,
             // organisationIdentification,
