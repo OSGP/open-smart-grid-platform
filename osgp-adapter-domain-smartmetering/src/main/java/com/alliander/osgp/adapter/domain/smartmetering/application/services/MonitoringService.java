@@ -16,10 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * @author OSGP
@@ -37,6 +44,9 @@ public class MonitoringService {
 
     @Autowired
     private MonitoringMapper monitoringMapper;
+
+    @Autowired
+    private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     public MonitoringService() {
         // Parameterless constructor required for transactions...
@@ -69,4 +79,37 @@ public class MonitoringService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, periodicMeterReadsRequestDto), messageType);
     }
+
+    public void handlePeriodicMeterDataresponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final PeriodicMeterData meterDataValueDTO) {
+
+        LOGGER.info("handlePeriodicMeterDataresponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException osgpException = exception;
+
+        try {
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+
+        }
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData meterDataValueDomain = this.monitoringMapper
+                .map(meterDataValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, meterDataValueDomain), messageType);
+
+    }
+
 }

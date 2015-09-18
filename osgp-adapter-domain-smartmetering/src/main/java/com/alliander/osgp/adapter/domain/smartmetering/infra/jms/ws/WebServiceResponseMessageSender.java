@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.NotificationResponseMessageSender;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -62,6 +63,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                     objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
                             .getMessage());
                 }
+                objectMessage.setObject((PeriodicMeterData) responseMessage.getDataObject());
                 return objectMessage;
             }
         });
