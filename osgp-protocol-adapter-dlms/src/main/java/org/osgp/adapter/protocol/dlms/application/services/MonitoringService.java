@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.util.Date;
+import java.util.Random;
 
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.slf4j.Logger;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -27,6 +28,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class MonitoringService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
+
+    private static final Random generator = new Random();
 
     /**
      * Constructor
@@ -51,20 +54,19 @@ public class MonitoringService {
             final PeriodicMeterData periodicMeterData = new PeriodicMeterData();
             periodicMeterData.setDeviceIdentification(deviceIdentification);
 
-            final MeterData meterData1 = new MeterData();
-            meterData1.setCaptureTime(new Date());
-            meterData1.setLogTime(new Date());
-            meterData1.setMeterValue(123);
-            meterData1.setPeriodicMeterData(periodicMeterData);
+            MeterData meterData;
+            for (final PeriodicMeterReadsRequestData p : periodicMeterReadsRequest.getPeriodicMeterReadsRequestData()) {
+                // Dummy MeterData with random values
+                meterData = new MeterData();
+                meterData.setLogTime(p.getDate());
+                meterData.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
+                meterData.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
+                meterData.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
+                meterData.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
 
-            final MeterData meterData2 = new MeterData();
-            meterData2.setCaptureTime(new Date());
-            meterData2.setLogTime(new Date());
-            meterData2.setMeterValue(123);
-            meterData2.setPeriodicMeterData(periodicMeterData);
-
-            periodicMeterData.addMeterData(meterData1);
-            periodicMeterData.addMeterData(meterData2);
+                meterData.setPeriodicMeterData(periodicMeterData);
+                periodicMeterData.addMeterData(meterData);
+            }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, periodicMeterData);
