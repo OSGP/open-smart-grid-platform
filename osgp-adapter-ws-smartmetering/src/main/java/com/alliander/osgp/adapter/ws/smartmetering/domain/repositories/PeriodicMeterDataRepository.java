@@ -15,4 +15,6 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeter
 @Repository
 public interface PeriodicMeterDataRepository extends JpaRepository<PeriodicMeterData, Long> {
 
+    PeriodicMeterData findByCorrelationUidAndDeviceIdentification(String correlationUid, String deviceIdentification);
+
 }

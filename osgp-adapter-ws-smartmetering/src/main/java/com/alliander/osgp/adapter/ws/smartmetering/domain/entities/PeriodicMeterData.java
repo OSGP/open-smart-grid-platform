@@ -27,6 +27,9 @@ public class PeriodicMeterData extends AbstractEntity {
     private static final long serialVersionUID = -156966569210717654L;
 
     @Column
+    private String correlationUid;
+
+    @Column
     private String deviceIdentification;
 
     @OneToMany(mappedBy = "periodicMeterData", targetEntity = MeterData.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -50,6 +53,14 @@ public class PeriodicMeterData extends AbstractEntity {
 
     public void addMeterData(final MeterData meterData) {
         this.meterData.add(meterData);
+    }
+
+    public String getCorrelationUid() {
+        return this.correlationUid;
+    }
+
+    public void setCorrelationUid(final String correlationUid) {
+        this.correlationUid = correlationUid;
     }
 
 }

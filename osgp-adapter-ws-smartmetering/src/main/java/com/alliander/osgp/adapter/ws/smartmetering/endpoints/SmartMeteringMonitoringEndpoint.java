@@ -19,8 +19,12 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterDataRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -40,6 +44,9 @@ public class SmartMeteringMonitoringEndpoint {
 
     @Autowired
     private MonitoringMapper monitoringMapper;
+
+    @Autowired
+    private PeriodicMeterDataRepository periodicMeterDataRepository;
 
     public SmartMeteringMonitoringEndpoint() {
     }
@@ -66,6 +73,75 @@ public class SmartMeteringMonitoringEndpoint {
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceId("567812346584849");
         response.setAsyncResponse(asyncResponse);
+        //
+        // } catch (final MethodConstraintViolationException e) {
+        //
+        //
+        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
+        // // new Object[] { e.getMessage(),
+        // // request.getDevice().getDeviceIdentification(),
+        // // organisationIdentification }, e);
+        // //
+        // // throw new
+        // // FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+        // // ComponentType.WS_CORE,
+        // // new ValidationException(e.getConstraintViolations()));
+        // //
+        // // } catch (final Exception e) {
+        // //
+        // //
+        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
+        // // new Object[] { e.getMessage(),
+        // // request.getDevice().getDeviceIdentification(),
+        // // organisationIdentification }, e);
+        // //
+        // // this.handleException(e);
+        // // }
+        //
+        return response;
+    }
+
+    @PayloadRoot(localPart = "RetrievePeriodicMeterReadsRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public RetrievePeriodicMeterReadsResponse requestPeriodicData(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RetrievePeriodicMeterReadsRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming RetrievePeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
+
+        final RetrievePeriodicMeterReadsResponse response = new RetrievePeriodicMeterReadsResponse();
+
+        final PeriodicMeterData meterData = this.periodicMeterDataRepository
+                .findByCorrelationUidAndDeviceIdentification(request.getCorrelationUid(),
+                        request.getDeviceIdentification());
+
+        // removing
+        this.periodicMeterDataRepository.delete(meterData.getId());
+
+        response.setPeriodicMeterData(this.monitoringMapper.map(meterData,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterData.class));
+
+        // TODO not OK when not found
+
+        // final PeriodicMeterReadsResponse response = new
+        // PeriodicMeterReadsResponse();
+        //
+        // // try {
+        // //
+        // final
+        // com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest
+        // dataRequest = this.monitoringMapper
+        // .map(request,
+        // com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
+        // //
+        // final String correlationUid =
+        // this.monitoringService.requestPeriodicMeterData(organisationIdentification,
+        // dataRequest);
+        //
+        // final AsyncResponse asyncResponse = new AsyncResponse();
+        // asyncResponse.setCorrelationUid(correlationUid);
+        // asyncResponse.setDeviceId("567812346584849");
+        // response.setAsyncResponse(asyncResponse);
         //
         // } catch (final MethodConstraintViolationException e) {
         //

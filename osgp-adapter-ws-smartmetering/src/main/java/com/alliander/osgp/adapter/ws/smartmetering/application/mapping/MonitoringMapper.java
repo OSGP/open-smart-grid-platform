@@ -19,14 +19,16 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeter
 public class MonitoringMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
+
+        // entity PeriodicMeterData -> WS PeriodicMeterData
         mapperFactory
-                .classMap(PeriodicMeterData.class,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData.class).byDefault()
-                .register();
+        .classMap(PeriodicMeterData.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterData.class)
+                .byDefault().register();
 
         mapperFactory
-                .classMap(PeriodicMeterReadsRequest.class,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class)
+        .classMap(PeriodicMeterReadsRequest.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class)
                 .byDefault().register();
     }
 }

@@ -26,6 +26,8 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
+    <!-- REQUEST_PERIODIC_METER_DATA -->
+    
     <wsdl:message name="PeriodicMeterReadsRequest">
         <wsdl:part element="sminst:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
         </wsdl:part>
@@ -35,12 +37,28 @@
         </wsdl:part>
     </wsdl:message>
     
+    <wsdl:message name="RetrievePeriodicMeterReadsRequest">
+        <wsdl:part element="sminst:RetrievePeriodicMeterReadsRequest" name="RetrievePeriodicMeterReadsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="RetrievePeriodicMeterReadsResponse">
+        <wsdl:part element="sminst:RetrievePeriodicMeterReadsResponse" name="RetrievePeriodicMeterReadsResponse">
+        </wsdl:part>
+    </wsdl:message>
+    
     <wsdl:portType name="SmartmetermonitoringPort">
    
         <wsdl:operation name="RequestPeriodicMeterReads">
             <wsdl:input message="tns:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
             </wsdl:input>
             <wsdl:output message="tns:PeriodicMeterReadsResponse" name="PeriodicMeterReadsResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
+         <wsdl:operation name="RetrievePeriodicMeterReads">
+            <wsdl:input message="tns:RetrievePeriodicMeterReadsRequest" name="RetrievePeriodicMeterReadsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:RetrievePeriodicMeterReadsResponse" name="RetrievePeriodicMeterReadsResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -58,6 +76,19 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="PeriodicMeterReadsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+ 		<wsdl:operation name="RetrievePeriodicMeterReads">
+            <soap:operation soapAction="" />
+            <wsdl:input name="RetrievePeriodicMeterReadsRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="RetrievePeriodicMeterReadsResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

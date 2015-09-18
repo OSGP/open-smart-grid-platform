@@ -89,16 +89,16 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
 
             // convert and Save the meterdata
 
-            this.periodicMeterDataRepository.save(this.monitoringMapper.map(periodicMeterData,
-                    com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterData.class));
+            final com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterData data = this.monitoringMapper
+                    .map(periodicMeterData,
+                            com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterData.class);
 
+            data.setCorrelationUid(correlationUid);
+            this.periodicMeterDataRepository.save(data);
+
+            // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
                     correlationUid, message, notificationType);
-
-            // this.monitoringService.handlePeriodicMeterDataresponse(deviceIdentification,
-            // organisationIdentification,
-            // correlationUid, messageType, responseMessageResultType,
-            // osgpException, periodicMeterData);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
