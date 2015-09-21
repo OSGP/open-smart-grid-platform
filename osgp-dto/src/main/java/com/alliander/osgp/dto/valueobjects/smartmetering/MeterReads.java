@@ -10,13 +10,13 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class MeterData implements Serializable {
+public class MeterReads implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
     // TODO add status
 
-    private PeriodicMeterData periodicMeterData;
+    private PeriodicMeterReads periodicMmeterReads;
     private Date logTime;
     private long activeEnergyImportTariffOne;
     private long activeEnergyImportTariffTwo;
@@ -55,12 +55,12 @@ public class MeterData implements Serializable {
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
     }
 
-    public PeriodicMeterData getPeriodicMeterData() {
-        return this.periodicMeterData;
+    public PeriodicMeterReads getPeriodicMmeterReads() {
+        return this.periodicMmeterReads;
     }
 
-    public void setPeriodicMeterData(final PeriodicMeterData periodicMeterData) {
-        this.periodicMeterData = periodicMeterData;
+    public void setPeriodicMeterReads(final PeriodicMeterReads periodicMmeterReads) {
+        this.periodicMmeterReads = periodicMmeterReads;
     }
 
     public Date getLogTime() {
