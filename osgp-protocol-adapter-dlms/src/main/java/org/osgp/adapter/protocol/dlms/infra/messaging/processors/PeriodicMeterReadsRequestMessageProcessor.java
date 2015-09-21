@@ -59,7 +59,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
 
             final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) message.getObject();
 
-            this.monitoringService.requestPeriodicMeterData(organisationIdentification, deviceIdentification,
+            this.monitoringService.requestPeriodicMeterReads(organisationIdentification, deviceIdentification,
                     correlationUid, periodicMeterReadsRequest, this.responseMessageSender, domain, domainVersion,
                     messageType);
 

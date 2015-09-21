@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterData;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -40,39 +40,39 @@ public class MonitoringService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public void requestPeriodicMeterData(final String organisationIdentification, final String deviceIdentification,
+    public void requestPeriodicMeterReads(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final PeriodicMeterReadsRequest periodicMeterReadsRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
-        LOGGER.info("requestPeriodicMeterData called for device: {} for organisation: {}", deviceIdentification,
+        LOGGER.info("requestPeriodicMeterReads called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
         try {
-            // creating dummy periodicMeterData
+            // creating duMy periodicMeterReads
 
-            final PeriodicMeterData periodicMeterData = new PeriodicMeterData();
-            periodicMeterData.setDeviceIdentification(deviceIdentification);
+            final PeriodicMeterReads periodicMeterReads = new PeriodicMeterReads();
+            periodicMeterReads.setDeviceIdentification(deviceIdentification);
 
-            MeterData meterData;
+            MeterReads MeterReads;
             for (final PeriodicMeterReadsRequestData p : periodicMeterReadsRequest.getPeriodicMeterReadsRequestData()) {
-                // Dummy MeterData with random values
-                meterData = new MeterData();
-                meterData.setLogTime(p.getDate());
-                meterData.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
-                meterData.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
-                meterData.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
-                meterData.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
+                // DuMy MeterReads with random values
+                MeterReads = new MeterReads();
+                MeterReads.setLogTime(p.getDate());
+                MeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
+                MeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
+                MeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
+                MeterReads.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
 
-                meterData.setPeriodicMeterData(periodicMeterData);
-                periodicMeterData.addMeterData(meterData);
+                MeterReads.setPeriodicMeterReads(periodicMeterReads);
+                periodicMeterReads.addMeterReads(MeterReads);
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, periodicMeterData);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, periodicMeterReads);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestPeriodicMeterData", e);
+            LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception while retrieving response message", e);
 
@@ -84,11 +84,11 @@ public class MonitoringService {
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final PeriodicMeterData periodicMeterData) {
+            final DeviceResponseMessageSender responseMessageSender, final PeriodicMeterReads periodicMeterReads) {
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                periodicMeterData);
+                periodicMeterReads);
 
         responseMessageSender.send(responseMessage);
     }
