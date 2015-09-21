@@ -54,18 +54,6 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             processor.processMessage(objectMessage);
 
-            // // TODO error handling
-            // final NotificationType notificationType =
-            // NotificationType.valueOf(message.getJMSType());
-            //
-            // // WS call
-            // this.notificationService.sendNotification(
-            // objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION),
-            // objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-            // objectMessage.getStringProperty(Constants.RESULT),
-            // objectMessage.getJMSCorrelationID(),
-            // objectMessage.getStringProperty(Constants.DESCRIPTION),
-            // notificationType);
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         }

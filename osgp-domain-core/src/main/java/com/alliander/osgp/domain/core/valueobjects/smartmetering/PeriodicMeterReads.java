@@ -10,12 +10,12 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class PeriodicMeterData implements Serializable {
+public class PeriodicMeterReads implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
     private String deviceIdentification;
-    private List<MeterData> meterData;
+    private List<MeterReads> meterReads;
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
@@ -25,12 +25,12 @@ public class PeriodicMeterData implements Serializable {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public List<MeterData> getMeterData() {
-        return this.meterData;
+    public List<MeterReads> getMeterReads() {
+        return this.meterReads;
     }
 
-    public void setMeterData(final List<MeterData> meterData) {
-        this.meterData = meterData;
+    public void setMeterReads(final List<MeterReads> meterReads) {
+        this.meterReads = meterReads;
     }
 
 }

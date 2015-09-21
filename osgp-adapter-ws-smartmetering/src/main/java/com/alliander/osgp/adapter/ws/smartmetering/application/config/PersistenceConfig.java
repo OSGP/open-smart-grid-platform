@@ -17,16 +17,22 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterDataRepository;
+//<<<<<<< HEAD
+//import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterDataRepository;
+//import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.SynchronizeTimeDataRepository;
+//
+//=======
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterReadsRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.SynchronizeTimeDataRepository;
-
 import com.googlecode.flyway.core.Flyway;
 
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
  */
-@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = { PeriodicMeterDataRepository.class, SynchronizeTimeDataRepository.class})
+@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = { PeriodicMeterReadsRepository.class, SynchronizeTimeDataRepository.class})
+//@EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = { PeriodicMeterReadsRepository.class })
+//>>>>>>> origin/feat-smartmeter-periodic-reads
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("file:${osp/osgpAdapterWsSmartMetering/config}")

@@ -37,7 +37,7 @@ public class MonitoringService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-    public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
+    private String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             @Identification final PeriodicMeterReadsRequest requestData) throws FunctionalException {
 
@@ -71,7 +71,7 @@ public class MonitoringService {
      * @param device
      * @throws FunctionalException
      */
-    public String requestPeriodicMeterData(final String organisationIdentification,
+    public String requestPeriodicMeterReads(final String organisationIdentification,
             final PeriodicMeterReadsRequest requestData) throws FunctionalException {
         return this.enqueuePeriodicMeterReadsRequestData(organisationIdentification,
                 requestData.getDeviceIdentification(), requestData);
