@@ -11,7 +11,9 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 //import com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -34,8 +36,8 @@ public class AdhocService {
 	
 	
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)
-            throws FunctionalException {
+            @Identification final String deviceIdentification,
+            @Identification final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -55,8 +57,8 @@ public class AdhocService {
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.ADD_METER, correlationUid, organisationIdentification,
-                deviceIdentification, device);
+                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA, correlationUid, organisationIdentification,
+                deviceIdentification, requestData);
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -69,9 +71,10 @@ public class AdhocService {
      * @param device
      * @throws FunctionalException
      */
-    public String synchronizeTime(final String organisationIdentification, final SmartMeteringDevice device)
-            throws FunctionalException {
-        return this.enqueueSynchronizeTimeRequest(organisationIdentification, device.getDeviceIdentification(), device);
+    public String requestSynchronizeTimeData(final String organisationIdentification,
+            final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
+        return this.enqueueSynchronizeTimeRequest(organisationIdentification,
+                requestData.getDeviceIdentification(), requestData);
     }
     
 }

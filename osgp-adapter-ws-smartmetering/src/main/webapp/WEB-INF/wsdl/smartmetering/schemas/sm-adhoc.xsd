@@ -12,14 +12,6 @@
 
 	<xsd:complexType name="Action" abstract="true">
 		<xsd:sequence>
-			<xsd:element name="Device_Identification" minOccurs="1"
-				maxOccurs="1">
-				<xsd:simpleType>
-					<xsd:restriction base="tns:AlphaNumericType">
-						<xsd:length value="17" />
-					</xsd:restriction>
-				</xsd:simpleType>
-			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -43,7 +35,16 @@
 	<xsd:element name="SynchronizeTimeReadsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="SynchronizeTimeReadsRequestData" type="tns:SynchronizeTimeReadsRequestData" minOccurs="0" maxOccurs="unbounded" />
+			
+			<xsd:element name="Device_Identification" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="tns:AlphaNumericType">
+						<xsd:length value="17" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			
+			<xsd:element name="SynchronizeTimeReadsRequestData" type="tns:SynchronizeTimeReadsRequestData" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>

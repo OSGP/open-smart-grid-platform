@@ -1,5 +1,7 @@
 package com.alliander.osgp.adapter.ws.smartmetering.domain.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -16,19 +18,22 @@ public class SynchronizeTimeData extends AbstractEntity {
     @Column
     private String deviceIdentification;
 
-    // logtime
-
-    // captureTime -> last time request time
-
-    // meterValue
-
-    // status ?
-
+    @Column
+    private Date dateTime;
+    
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
+    public Date getDateTime() {
+		return dateTime;
+	}
+
+	public void setDateTime(Date dateTime) {
+		this.dateTime = dateTime;
+	}
+
+	public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
     }
 

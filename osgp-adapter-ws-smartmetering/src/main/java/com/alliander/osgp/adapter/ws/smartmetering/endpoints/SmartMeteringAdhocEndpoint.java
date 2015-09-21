@@ -14,7 +14,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeR
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -32,24 +34,19 @@ public class SmartMeteringAdhocEndpoint {
     private static final String SMARTMETER_ADHOC_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10";
 
     @Autowired
-    private InstallationService installationService;
+    private AdhocService adhocService;
 
     @Autowired
-    private InstallationMapper installationMapper;
+    private AdhocMapper adhocMapper;
 
     public SmartMeteringAdhocEndpoint() {
     }
     
-    
     @PayloadRoot(localPart = "SynchronizeTimeReadsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-	public SynchronizeTimeReadsResponse requestPeriodicData(
+	public SynchronizeTimeReadsResponse requestSynchronizeTimeData(
     		@OrganisationIdentification final String organisationIdentification,
-//            @RequestPayload final PeriodicMeterReadsRequest request) throws OsgpException {
             @RequestPayload final SynchronizeTimeReadsRequest request) throws OsgpException {
-
-        // LOGGER.info("Incoming PeriodicMeterReadsRequest for meter: {}.",
-        // request.getPeriodicMeterReadsrequest().);
 
         final SynchronizeTimeReadsResponse response = new SynchronizeTimeReadsResponse();
 
@@ -63,10 +60,18 @@ public class SmartMeteringAdhocEndpoint {
         // this.installationService.addDevice(organisationIdentification,
         // device);
         //
+        
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest dataRequest = this.adhocMapper
+        			.map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest.class);
+        
+        
+        final String correlationUid = this.adhocService.requestSynchronizeTimeData(organisationIdentification, dataRequest);
+        
         final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid("1234");
-        asyncResponse.setDeviceId("5678123465");
+        asyncResponse.setCorrelationUid(correlationUid);
+        asyncResponse.setDeviceId("567812346584849");
         response.setAsyncResponse(asyncResponse);
+
         //
         // } catch (final MethodConstraintViolationException e) {
         //
