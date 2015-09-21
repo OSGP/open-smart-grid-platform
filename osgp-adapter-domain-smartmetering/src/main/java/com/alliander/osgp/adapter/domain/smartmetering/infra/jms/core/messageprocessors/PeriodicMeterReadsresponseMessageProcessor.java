@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -55,7 +55,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        PeriodicMeterData periodicMeterData = null;
+        PeriodicMeterReads periodicMeterReads = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -66,7 +66,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
-            periodicMeterData = (PeriodicMeterData) responseMessage.getDataObject();
+            periodicMeterReads = (PeriodicMeterReads) responseMessage.getDataObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -82,8 +82,8 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.monitoringService.handlePeriodicMeterDataresponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException, periodicMeterData);
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessageResultType, osgpException, periodicMeterReads);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

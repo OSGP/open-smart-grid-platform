@@ -10,11 +10,11 @@ package com.alliander.osgp.adapter.ws.smartmetering.domain.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads;
 
 @Repository
-public interface PeriodicMeterDataRepository extends JpaRepository<PeriodicMeterData, Long> {
+public interface PeriodicMeterReadsRepository extends JpaRepository<PeriodicMeterReads, Long> {
 
-    PeriodicMeterData findByCorrelationUidAndDeviceIdentification(String correlationUid, String deviceIdentification);
+    PeriodicMeterReads findByCorrelationUidAndDeviceIdentification(String correlationUid, String deviceIdentification);
 
 }

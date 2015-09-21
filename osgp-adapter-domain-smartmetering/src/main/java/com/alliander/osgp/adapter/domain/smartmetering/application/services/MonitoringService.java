@@ -18,7 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Monit
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -52,14 +52,14 @@ public class MonitoringService {
         // Parameterless constructor required for transactions...
     }
 
-    public void requestPeriodicMeterData(
+    public void requestPeriodicMeterReads(
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest periodicMeterReadsRequestValueObject,
             final String messageType) throws FunctionalException {
 
-        LOGGER.info("requestPeriodicMeterData for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("requestPeriodicMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
@@ -69,7 +69,7 @@ public class MonitoringService {
 
         // TODO deviceAuthorization
         // final DeviceAuthorization deviceAuthorization = new
-        // DeviceAuthorization(dummy, organisation,
+        // DeviceAuthorization(duMy, organisation,
         // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
         // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
@@ -80,12 +80,12 @@ public class MonitoringService {
                 deviceIdentification, periodicMeterReadsRequestDto), messageType);
     }
 
-    public void handlePeriodicMeterDataresponse(final String deviceIdentification,
+    public void handlePeriodicMeterReadsresponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final PeriodicMeterData meterDataValueDTO) {
+            final PeriodicMeterReads MeterReadsValueDTO) {
 
-        LOGGER.info("handlePeriodicMeterDataresponse for MessageType: {}", messageType);
+        LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -103,12 +103,12 @@ public class MonitoringService {
 
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData meterDataValueDomain = this.monitoringMapper
-                .map(meterDataValueDTO,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterData.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads MeterReadsValueDomain = this.monitoringMapper
+                .map(MeterReadsValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, meterDataValueDomain), messageType);
+                deviceIdentification, result, osgpException, MeterReadsValueDomain), messageType);
 
     }
 

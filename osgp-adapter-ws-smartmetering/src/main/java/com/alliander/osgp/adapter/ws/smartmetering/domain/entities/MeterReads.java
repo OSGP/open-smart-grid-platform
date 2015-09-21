@@ -21,15 +21,15 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
  * imported
  */
 @Entity
-public class MeterData extends AbstractEntity {
+public class MeterReads extends AbstractEntity {
 
     private static final long serialVersionUID = -156966569210717654L;
 
     // TODO add status
 
     @ManyToOne()
-    @JoinColumn(name = "periodic_meter_data_id", nullable = false)
-    private PeriodicMeterData periodicMeterData;
+    @JoinColumn(name = "periodic_meter_reads_id", nullable = false)
+    private PeriodicMeterReads periodicMeterReads;
 
     @Column
     private Date logTime;
@@ -46,12 +46,12 @@ public class MeterData extends AbstractEntity {
     @Column
     private long activeEnergyExportTariffTwo;
 
-    public PeriodicMeterData getPeriodicMeterData() {
-        return this.periodicMeterData;
+    public PeriodicMeterReads getPeriodicMeterReads() {
+        return this.periodicMeterReads;
     }
 
-    public void setPeriodicMeterData(final PeriodicMeterData periodicMeterData) {
-        this.periodicMeterData = periodicMeterData;
+    public void setPeriodicMeterReads(final PeriodicMeterReads periodicMeterReads) {
+        this.periodicMeterReads = periodicMeterReads;
     }
 
     public Date getLogTime() {

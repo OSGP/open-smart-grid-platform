@@ -44,7 +44,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequest
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
@@ -79,7 +79,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequest
 
             final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) dataObject;
 
-            this.monitoringService.requestPeriodicMeterData(organisationIdentification, deviceIdentification,
+            this.monitoringService.requestPeriodicMeterReads(organisationIdentification, deviceIdentification,
                     correlationUid, periodicMeterReadsRequest, messageType);
 
         } catch (final Exception e) {

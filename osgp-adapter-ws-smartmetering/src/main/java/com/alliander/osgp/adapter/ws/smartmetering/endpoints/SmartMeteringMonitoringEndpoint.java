@@ -23,8 +23,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePer
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterDataRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterReadsRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -46,7 +46,7 @@ public class SmartMeteringMonitoringEndpoint {
     private MonitoringMapper monitoringMapper;
 
     @Autowired
-    private PeriodicMeterDataRepository periodicMeterDataRepository;
+    private PeriodicMeterReadsRepository periodicMeterReadsRepository;
 
     public SmartMeteringMonitoringEndpoint() {
     }
@@ -66,7 +66,7 @@ public class SmartMeteringMonitoringEndpoint {
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest dataRequest = this.monitoringMapper
                 .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
         //
-        final String correlationUid = this.monitoringService.requestPeriodicMeterData(organisationIdentification,
+        final String correlationUid = this.monitoringService.requestPeriodicMeterReads(organisationIdentification,
                 dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
@@ -111,15 +111,15 @@ public class SmartMeteringMonitoringEndpoint {
 
         final RetrievePeriodicMeterReadsResponse response = new RetrievePeriodicMeterReadsResponse();
 
-        final PeriodicMeterData meterData = this.periodicMeterDataRepository
+        final PeriodicMeterReads meterReads = this.periodicMeterReadsRepository
                 .findByCorrelationUidAndDeviceIdentification(request.getCorrelationUid(),
                         request.getDeviceIdentification());
 
         // removing
-        this.periodicMeterDataRepository.delete(meterData.getId());
+        this.periodicMeterReadsRepository.delete(meterReads.getId());
 
-        response.setPeriodicMeterData(this.monitoringMapper.map(meterData,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterData.class));
+        response.setPeriodicMeterReads(this.monitoringMapper.map(meterReads,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads.class));
 
         // TODO not OK when not found
 
@@ -135,7 +135,7 @@ public class SmartMeteringMonitoringEndpoint {
         // com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
         // //
         // final String correlationUid =
-        // this.monitoringService.requestPeriodicMeterData(organisationIdentification,
+        // this.monitoringService.requestPeriodicMeterReads(organisationIdentification,
         // dataRequest);
         //
         // final AsyncResponse asyncResponse = new AsyncResponse();

@@ -71,7 +71,7 @@ public class MonitoringService {
      * @param device
      * @throws FunctionalException
      */
-    public String requestPeriodicMeterData(final String organisationIdentification,
+    public String requestPeriodicMeterReads(final String organisationIdentification,
             final PeriodicMeterReadsRequest requestData) throws FunctionalException {
         return this.enqueuePeriodicMeterReadsRequestData(organisationIdentification,
                 requestData.getDeviceIdentification(), requestData);
