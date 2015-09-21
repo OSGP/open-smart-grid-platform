@@ -61,43 +61,25 @@ public class SmartMeteringMonitoringEndpoint {
 
         final PeriodicMeterReadsResponse response = new PeriodicMeterReadsResponse();
 
-        // try {
-        //
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest dataRequest = this.monitoringMapper
-                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
-        //
-        final String correlationUid = this.monitoringService.requestPeriodicMeterReads(organisationIdentification,
-                dataRequest);
+        try {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest dataRequest = this.monitoringMapper
+                    .map(request,
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
 
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceId("567812346584849");
-        response.setAsyncResponse(asyncResponse);
-        //
-        // } catch (final MethodConstraintViolationException e) {
-        //
-        //
-        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // // new Object[] { e.getMessage(),
-        // // request.getDevice().getDeviceIdentification(),
-        // // organisationIdentification }, e);
-        // //
-        // // throw new
-        // // FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-        // // ComponentType.WS_CORE,
-        // // new ValidationException(e.getConstraintViolations()));
-        // //
-        // // } catch (final Exception e) {
-        // //
-        // //
-        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // // new Object[] { e.getMessage(),
-        // // request.getDevice().getDeviceIdentification(),
-        // // organisationIdentification }, e);
-        // //
-        // // this.handleException(e);
-        // // }
-        //
+            final String correlationUid = this.monitoringService.requestPeriodicMeterReads(organisationIdentification,
+                    dataRequest);
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
         return response;
     }
 
@@ -111,62 +93,27 @@ public class SmartMeteringMonitoringEndpoint {
 
         final RetrievePeriodicMeterReadsResponse response = new RetrievePeriodicMeterReadsResponse();
 
-        final PeriodicMeterReads meterReads = this.periodicMeterReadsRepository
-                .findByCorrelationUidAndDeviceIdentification(request.getCorrelationUid(),
-                        request.getDeviceIdentification());
+        try {
 
-        // removing
-        this.periodicMeterReadsRepository.delete(meterReads.getId());
+            final PeriodicMeterReads meterReads = this.periodicMeterReadsRepository
+                    .findByCorrelationUidAndDeviceIdentification(request.getCorrelationUid(),
+                            request.getDeviceIdentification());
 
-        response.setPeriodicMeterReads(this.monitoringMapper.map(meterReads,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads.class));
+            // TODO not OK when not found
+            response.setPeriodicMeterReads(this.monitoringMapper.map(meterReads,
+                    com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads.class));
 
-        // TODO not OK when not found
+            // removing
+            this.periodicMeterReadsRepository.delete(meterReads.getId());
 
-        // final PeriodicMeterReadsResponse response = new
-        // PeriodicMeterReadsResponse();
-        //
-        // // try {
-        // //
-        // final
-        // com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest
-        // dataRequest = this.monitoringMapper
-        // .map(request,
-        // com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
-        // //
-        // final String correlationUid =
-        // this.monitoringService.requestPeriodicMeterReads(organisationIdentification,
-        // dataRequest);
-        //
-        // final AsyncResponse asyncResponse = new AsyncResponse();
-        // asyncResponse.setCorrelationUid(correlationUid);
-        // asyncResponse.setDeviceId("567812346584849");
-        // response.setAsyncResponse(asyncResponse);
-        //
-        // } catch (final MethodConstraintViolationException e) {
-        //
-        //
-        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // // new Object[] { e.getMessage(),
-        // // request.getDevice().getDeviceIdentification(),
-        // // organisationIdentification }, e);
-        // //
-        // // throw new
-        // // FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-        // // ComponentType.WS_CORE,
-        // // new ValidationException(e.getConstraintViolations()));
-        // //
-        // // } catch (final Exception e) {
-        // //
-        // //
-        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // // new Object[] { e.getMessage(),
-        // // request.getDevice().getDeviceIdentification(),
-        // // organisationIdentification }, e);
-        // //
-        // // this.handleException(e);
-        // // }
-        //
+        } catch (final Exception e) {
+
+            LOGGER.error("Exception: {} while sending Periodic MeterReads of device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
         return response;
     }
 

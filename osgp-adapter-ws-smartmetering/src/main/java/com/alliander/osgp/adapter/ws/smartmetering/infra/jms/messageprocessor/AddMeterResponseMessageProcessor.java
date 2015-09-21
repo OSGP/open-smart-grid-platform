@@ -76,11 +76,6 @@ public class AddMeterResponseMessageProcessor extends DomainResponseMessageProce
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
                     correlationUid, message, notificationType);
 
-            // this.notificationService.sendNotification(organisationIdentification,
-            // deviceIdentification,
-            // responseMessageResultType, correlationUid, message,
-            // NotificationType.ADD_METER);
-
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }

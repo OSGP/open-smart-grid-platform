@@ -87,7 +87,6 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
-        // FIXME handle exception
 
         LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
 
@@ -95,9 +94,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
                     correlationUid, e.getMessage(), notificationType);
         } catch (final FunctionalException e1) {
+            // TODO how to handle this?
             LOGGER.info("Something went wrong during error handling: {} for notification type: {}", e.getMessage(),
                     notificationType);
         }
-
     }
 }

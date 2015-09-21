@@ -88,7 +88,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             // convert and Save the meterReads
-
             final com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads data = this.monitoringMapper
                     .map(periodicMeterReads,
                             com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads.class);
