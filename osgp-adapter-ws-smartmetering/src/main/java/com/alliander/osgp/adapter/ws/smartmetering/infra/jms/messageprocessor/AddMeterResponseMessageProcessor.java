@@ -82,7 +82,7 @@ public class AddMeterResponseMessageProcessor extends DomainResponseMessageProce
             // NotificationType.ADD_METER);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
     }
 }

@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 
 /**
@@ -36,6 +39,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      */
     @Autowired
     protected DomainResponseMessageProcessorMap domainResponseMessageProcessorMap;
+
+    @Autowired
+    private NotificationService notificationService;
 
     /**
      * The message type that a message processor implementation can handle.
@@ -80,17 +86,18 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      *            The message type.
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String messageType) {
+            final String deviceIdentification, final NotificationType notificationType) {
         // FIXME handle exception
 
-        // LOGGER.info("handeling error: {} for message type: {}",
-        // e.getMessage(), messageType);
-        // final OsgpException osgpException = new
-        // TechnicalException(ComponentType.UNKNOWN,
-        // "Unexpected exception while retrieving response message", e);
-        // this.d.send(new ResponseMessage(correlationUid,
-        // organisationIdentification, deviceIdentification,
-        // ResponseMessageResultType.NOT_OK, osgpException, e), messageType);
+        LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
+
+        try {
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
+                    correlationUid, e.getMessage(), notificationType);
+        } catch (final FunctionalException e1) {
+            LOGGER.info("Something went wrong during error handling: {} for notification type: {}", e.getMessage(),
+                    notificationType);
+        }
 
     }
 }

@@ -101,7 +101,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
                     correlationUid, message, notificationType);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
     }
 }
