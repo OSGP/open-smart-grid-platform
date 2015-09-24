@@ -65,9 +65,6 @@ public class Organisation extends AbstractEntity {
     @Column(nullable = false)
     private boolean enabled;
 
-    @Column(nullable = false)
-    private String notificationURL;
-
     /**
      * Comma separated list of domains organisation is allowed to access.
      */
@@ -202,10 +199,6 @@ public class Organisation extends AbstractEntity {
 
     public void setIsEnabled(final boolean value) {
         this.enabled = value;
-    }
-
-    public String getNotificationURL() {
-        return this.notificationURL;
     }
 
     public void setDomains(final List<PlatformDomain> domains) {
