@@ -46,8 +46,7 @@ public class AdhocService {
         // Parameterless constructor required for transactions...
     }
 
-    
-    public void requestSynchronizeTimeData(
+    public void requestSynchronizeTimeReads(
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final String correlationUid,

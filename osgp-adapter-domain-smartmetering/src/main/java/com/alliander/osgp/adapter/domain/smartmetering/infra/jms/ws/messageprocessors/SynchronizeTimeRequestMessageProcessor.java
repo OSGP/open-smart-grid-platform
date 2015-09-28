@@ -58,7 +58,7 @@ public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMes
 
             final SynchronizeTimeReadsRequest synchronizeTimeReadsRequest = (SynchronizeTimeReadsRequest) dataObject;
 
-            this.adhocService.requestSynchronizeTimeData(organisationIdentification, deviceIdentification, correlationUid, synchronizeTimeReadsRequest, messageType);
+            this.adhocService.requestSynchronizeTimeReads(organisationIdentification, deviceIdentification, correlationUid, synchronizeTimeReadsRequest, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
