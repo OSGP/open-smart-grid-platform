@@ -14,18 +14,17 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
+		    
+@Component("domainSmartmeteringSynchronizeTimeReadsRequestMessageProcessor")
+public class SynchronizeTimeReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
-@Component("domainSmartmeteringSynchronizeTimeRequestMessageProcessor")
-public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeReadsRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    protected SynchronizeTimeRequestMessageProcessor(
-			DeviceFunction deviceFunction) {
+    protected SynchronizeTimeReadsRequestMessageProcessor() { 
 		super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
 	}
 
