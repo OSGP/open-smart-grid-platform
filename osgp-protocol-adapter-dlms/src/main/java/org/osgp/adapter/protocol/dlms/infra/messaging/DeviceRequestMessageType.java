@@ -29,5 +29,6 @@ public enum DeviceRequestMessageType {
     UPDATE_KEY,
     REVOKE_KEY,
     ADD_METER,
-    FIND_EVENTS
+    FIND_EVENTS,
+    REQUEST_PERIODIC_METER_DATA
 }
