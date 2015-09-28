@@ -72,7 +72,7 @@ public class ManagementService {
             LOGGER.info("Sending request message to core.");
             final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
                     deviceIdentification, this.managementMapper.map(findEventsQueryMessageDataContainer,
-                            com.alliander.osgp.dto.valueobject.smartmetering.FindEventsQueryMessageDataContainer.class));
+                            com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer.class));
             this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
         }
     }
@@ -80,7 +80,7 @@ public class ManagementService {
     public void handleFindEventsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final com.alliander.osgp.dto.valueobject.smartmetering.EventMessageDataContainer eventMessageDataContainerDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer eventMessageDataContainerDto) {
 
         final EventMessageDataContainer eventMessageDataContainer = this.managementMapper.map(
                 eventMessageDataContainerDto, EventMessageDataContainer.class);

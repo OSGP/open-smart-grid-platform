@@ -7,10 +7,10 @@ import com.alliander.osgp.domain.core.valueobjects.EventLogCategory;
 import com.alliander.osgp.domain.core.valueobjects.FindEventsQuery;
 
 public class FindEventsQueryConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobject.smartmetering.FindEventsQuery, FindEventsQuery> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery, FindEventsQuery> {
 
     @Override
-    public FindEventsQuery convertTo(final com.alliander.osgp.dto.valueobject.smartmetering.FindEventsQuery source,
+    public FindEventsQuery convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery source,
             final Type<FindEventsQuery> destinationType) {
         if (source == null) {
             return null;
@@ -22,16 +22,16 @@ public class FindEventsQueryConverter extends
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobject.smartmetering.FindEventsQuery convertFrom(final FindEventsQuery source,
-            final Type<com.alliander.osgp.dto.valueobject.smartmetering.FindEventsQuery> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery convertFrom(final FindEventsQuery source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobject.smartmetering.EventLogCategory eventLogCategory = com.alliander.osgp.dto.valueobject.smartmetering.EventLogCategory
+        final com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory eventLogCategory = com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory
                 .valueOf(source.getEventLogCategory().toString());
 
-        return new com.alliander.osgp.dto.valueobject.smartmetering.FindEventsQuery(eventLogCategory, source.getFrom(),
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery(eventLogCategory, source.getFrom(),
                 source.getUntil());
     }
 
