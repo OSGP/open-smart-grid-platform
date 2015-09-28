@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.dto.valueobjects;
+package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
