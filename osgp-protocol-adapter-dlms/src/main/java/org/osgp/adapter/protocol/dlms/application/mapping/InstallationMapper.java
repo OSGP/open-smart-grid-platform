@@ -13,7 +13,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
 
 @Component(value = "installationMapper")
 public class InstallationMapper extends ConfigurableMapper {

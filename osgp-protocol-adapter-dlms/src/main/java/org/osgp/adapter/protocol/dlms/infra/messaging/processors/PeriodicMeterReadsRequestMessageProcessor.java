@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
+import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
@@ -18,29 +18,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing padd meter request messages
+ * Class for processing Periodic Meter Request messages
  */
-@Component("dlmsAddMeterRequestMessageProcessor")
-public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
+@Component("dlmsPeriodicMeterRequestMessageProcessor")
+public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestMessageProcessor.class);
 
     @Autowired
-    private InstallationService installationService;
+    private MonitoringService monitoringService;
 
-    public AddMeterRequestMessageProcessor() {
-        super(DeviceRequestMessageType.ADD_METER);
+    public PeriodicMeterReadsRequestMessageProcessor() {
+        super(DeviceRequestMessageType.REQUEST_PERIODIC_METER_DATA);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing add meter request message");
+        LOGGER.debug("Processing periodic meter reads request message");
 
         String correlationUid = null;
         String domain = null;
@@ -57,10 +57,11 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) message.getObject();
+            final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) message.getObject();
 
-            this.installationService.addMeter(organisationIdentification, deviceIdentification, correlationUid,
-                    smartMeteringDevice, this.responseMessageSender, domain, domainVersion, messageType);
+            this.monitoringService.requestPeriodicMeterReads(organisationIdentification, deviceIdentification,
+                    correlationUid, periodicMeterReadsRequest, this.responseMessageSender, domain, domainVersion,
+                    messageType);
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
