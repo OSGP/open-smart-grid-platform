@@ -28,5 +28,6 @@ public enum DeviceRequestMessageType {
     SET_TARIFF_SCHEDULE,
     UPDATE_KEY,
     REVOKE_KEY,
-    ADD_METER
+    ADD_METER,
+    FIND_EVENTS
 }
