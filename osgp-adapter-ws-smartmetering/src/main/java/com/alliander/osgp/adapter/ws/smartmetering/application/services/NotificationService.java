@@ -43,6 +43,8 @@ public class NotificationService {
             final String deviceIdentification, final String result, final String correlationUid, final String message,
             final NotificationType notificationType) throws FunctionalException {
 
+        LOGGER.info("sendNotification called with organisation {}", organisationIdentification);
+
         final Notification notification = new Notification();
         // TODO message is null, unless an error occurred
         notification.setMessage(message);
@@ -59,9 +61,7 @@ public class NotificationService {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
                     notificationURL);
         } catch (final Exception e) {
-            LOGGER.error("Add device exception", e);
+            LOGGER.error("Notification exception", e);
         }
-
-        LOGGER.debug("sendNotification called with organisation {}", organisationIdentification);
     }
 }

@@ -21,8 +21,8 @@
 	<xsd:simpleType name="Identification">
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:minLength value="1"/>
-			<xsd:maxLength value="40"/>
-			<xsd:pattern value="[^ ]{0,40}"/>
+			<xsd:maxLength value="17"/>
+			<xsd:pattern value="[^ ]{0,17}"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -39,6 +39,18 @@
 			<xsd:minLength value="20" />
 		</xsd:restriction>
 	</xsd:simpleType>
+	
+	<xsd:complexType name="Action" abstract="true">
+		<xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Query" abstract="true">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Action">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 		
 	<xsd:complexType name="AsyncRequest">
 		<xsd:sequence>

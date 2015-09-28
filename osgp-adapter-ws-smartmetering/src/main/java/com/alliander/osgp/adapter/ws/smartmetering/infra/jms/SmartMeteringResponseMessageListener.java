@@ -41,18 +41,26 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
         try {
             LOGGER.info("Received message of type: {}", message.getJMSType());
 
+            final String messageType = message.getJMSType();
             final ObjectMessage objectMessage = (ObjectMessage) message;
+            final String correlationUid = objectMessage.getJMSCorrelationID();
+            LOGGER.info("objectMessage CorrelationUID: {}", correlationUid);
 
-            LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
+            // Temporary if instead of message processor.
+            if (messageType.equals(NotificationType.FIND_EVENTS.toString())) {
+                // Save the events to the database.
+                LOGGER.info("Saving events for FIND_EVENTS");
+
+            }
 
             // TODO error handling
-            final NotificationType notificationType = NotificationType.valueOf(message.getJMSType());
+            final NotificationType notificationType = NotificationType.valueOf(messageType);
 
             // WS call
             this.notificationService.sendNotification(
                     objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION),
                     objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                    objectMessage.getStringProperty(Constants.RESULT), objectMessage.getJMSCorrelationID(),
+                    objectMessage.getStringProperty(Constants.RESULT), correlationUid,
                     objectMessage.getStringProperty(Constants.DESCRIPTION), notificationType);
         } catch (final JMSException | FunctionalException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
