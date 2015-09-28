@@ -11,8 +11,6 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 //import com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;

@@ -10,9 +10,10 @@ package com.alliander.osgp.adapter.ws.smartmetering.domain.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads;
 
 @Repository
-public interface SynchronizeTimeDataRepository extends JpaRepository<SynchronizeTimeData, Long> {
+public interface SynchronizeTimeDataRepository extends JpaRepository<SynchronizeTimeReads, Long> {
 
+	SynchronizeTimeReads findByCorrelationUidAndDeviceIdentification(String correlationUid, String deviceIdentification);
 }

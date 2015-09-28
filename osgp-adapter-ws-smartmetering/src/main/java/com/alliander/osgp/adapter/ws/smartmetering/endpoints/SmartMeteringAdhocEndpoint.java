@@ -9,15 +9,17 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveSynchronizeTimeReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveSynchronizeTimeReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterReadsRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.SynchronizeTimeDataRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -26,7 +28,6 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 //MethodConstraintViolationException is deprecated.
 //Will by replaced by equivalent functionality defined
 //by the Bean Validation 1.1 API as of Hibernate Validator 5.
-@SuppressWarnings("deprecation")
 @Endpoint
 public class SmartMeteringAdhocEndpoint {
 
@@ -38,6 +39,9 @@ public class SmartMeteringAdhocEndpoint {
 
     @Autowired
     private AdhocMapper adhocMapper;
+    
+    @Autowired
+    private SynchronizeTimeDataRepository synchronizeTimeDataRepository;
 
     public SmartMeteringAdhocEndpoint() {
     }
@@ -50,17 +54,6 @@ public class SmartMeteringAdhocEndpoint {
 
         final SynchronizeTimeReadsResponse response = new SynchronizeTimeReadsResponse();
 
-        // try {
-
-        // final SmartMeteringDevice device =
-        // this.installationMapper.map(request.getDevice(),
-        // SmartMeteringDevice.class);
-        //
-        // final String correlationUid =
-        // this.installationService.addDevice(organisationIdentification,
-        // device);
-        //
-        
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest dataRequest = this.adhocMapper
         			.map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest.class);
         
@@ -100,6 +93,40 @@ public class SmartMeteringAdhocEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "RetrieveSynchronizeTimeReadsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @ResponsePayload
+    public RetrieveSynchronizeTimeReadsResponse requestSynchronizeTimeData(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RetrieveSynchronizeTimeReadsRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming RetrieveSynchronizeTimeReadsRequest for meter: {}.", request.getDeviceIdentification());
+
+        final RetrieveSynchronizeTimeReadsResponse response = new RetrieveSynchronizeTimeReadsResponse();
+
+        try {
+
+            final SynchronizeTimeReads syncTimeReads = this.synchronizeTimeDataRepository
+                    .findByCorrelationUidAndDeviceIdentification(request.getCorrelationUid(),
+                            request.getDeviceIdentification());
+
+            // TODO not OK when not found
+            response.setSynchronizeTimeReads(this.adhocMapper.map(syncTimeReads,
+                    com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeReads.class));
+
+            // removing
+            this.synchronizeTimeDataRepository.delete(syncTimeReads.getId());
+
+        } catch (final Exception e) {
+
+            LOGGER.error("Exception: {} while sending Synchronize time reads of device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        return response;
+    }
+    
     private void handleException(final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical
         // exception,

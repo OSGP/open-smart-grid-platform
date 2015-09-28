@@ -11,13 +11,16 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
  * An entity class which contains the information of a the synchronized time.
  */
 @Entity
-public class SynchronizeTimeData extends AbstractEntity {
+public class SynchronizeTimeReads extends AbstractEntity {
 
 	private static final long serialVersionUID = -136966569210717654L;
 
     @Column
     private String deviceIdentification;
 
+    @Column
+    private String correlationUid;
+    
     @Column
     private Date dateTime;
     
@@ -37,4 +40,12 @@ public class SynchronizeTimeData extends AbstractEntity {
         this.deviceIdentification = deviceIdentification;
     }
 
+	public String getCorrelationUid() {
+		return correlationUid;
+	}
+
+	public void setCorrelationUid(String correlationUid) {
+		this.correlationUid = correlationUid;
+	}
+	
 }

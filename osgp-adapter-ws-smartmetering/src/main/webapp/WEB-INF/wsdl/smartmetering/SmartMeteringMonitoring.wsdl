@@ -26,7 +26,7 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
-    <!-- REQUEST_PERIODIC_METER_DATA -->
+    <!-- REQUEST_SYNCHRONIZE_TIME -->
     
     <wsdl:message name="PeriodicMeterReadsRequest">
         <wsdl:part element="sminst:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">

@@ -26,12 +26,23 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
+    <!-- REQUEST_PERIODIC_METER_DATA -->
+    
     <wsdl:message name="SynchronizeTimeReadsRequest">
         <wsdl:part element="sminst:SynchronizeTimeReadsRequest" name="SynchronizeTimeReadsRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SynchronizeTimeReadsResponse">
         <wsdl:part element="sminst:SynchronizeTimeReadsResponse" name="SynchronizeTimeReadsResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="RetrieveSynchronizeTimeReadsRequest">
+        <wsdl:part element="sminst:RetrieveSynchronizeTimeReadsRequest" name="RetrieveSynchronizeTimeReadsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="RetrieveSynchronizeTimeReadsResponse">
+        <wsdl:part element="sminst:RetrieveSynchronizeTimeReadsResponse" name="RetrieveSynchronizeTimeReadsResponse">
         </wsdl:part>
     </wsdl:message>
     
@@ -41,6 +52,13 @@
             <wsdl:input message="tns:SynchronizeTimeReadsRequest" name="SynchronizeTimeReadsRequest">
             </wsdl:input>
             <wsdl:output message="tns:SynchronizeTimeReadsResponse" name="SynchronizeTimeReadsResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+         <wsdl:operation name="RetrieveSynchronizeTimeReads">
+            <wsdl:input message="tns:RetrieveSynchronizeTimeReadsRequest" name="RetrieveSynchronizeTimeReadsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:RetrieveSynchronizeTimeReadsResponse" name="RetrieveSynchronizeTimeReadsResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -58,6 +76,19 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SynchronizeTimeReadsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+ 		<wsdl:operation name="RetrieveSynchronizeTimeReads">
+            <soap:operation soapAction="" />
+            <wsdl:input name="RetrieveSynchronizeTimeReadsRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="RetrieveSynchronizeTimeReadsResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
