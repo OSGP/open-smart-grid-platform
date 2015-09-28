@@ -13,10 +13,9 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.DefaultDeviceResponseService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -28,17 +27,16 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * Class for processing smart metering default response messages
  */
 @Component("domainSmartMeteringDefaultResponseMessageProcessor")
-public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringDefaultResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterResponseMessageProcessor.class);
 
     @Autowired
-    @Qualifier("domainSmartMeteringDefaultDeviceResponseService")
-    private DefaultDeviceResponseService defaultDeviceResponseService;
+    private InstallationService installationService;
 
-    protected SmartMeteringDefaultResponseMessageProcessor() {
+    protected AddMeterResponseMessageProcessor() {
         super(DeviceFunction.ADD_METER);
     }
 
@@ -79,8 +77,8 @@ public class SmartMeteringDefaultResponseMessageProcessor extends OsgpCoreRespon
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.defaultDeviceResponseService.handleDefaultDeviceResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
+            this.installationService.handleAddMeterResponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

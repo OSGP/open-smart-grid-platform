@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
-import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -34,6 +33,9 @@ public class NotificationService {
 
     @Autowired
     private OrganisationRepository organisationRepository;
+
+    @Autowired
+    private String notificationURL;
 
     public NotificationService() {
         // Parameterless constructor required for transactions
@@ -53,13 +55,9 @@ public class NotificationService {
         notification.setCorrelationUid(correlationUid);
         notification.setNotificationType(notificationType);
 
-        final Organisation organisation = this.organisationRepository
-                .findByOrganisationIdentification(organisationIdentification);
-        final String notificationURL = organisation.getNotificationURL();
-
         try {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
-                    notificationURL);
+                    this.notificationURL);
         } catch (final Exception e) {
             LOGGER.error("Notification exception", e);
         }

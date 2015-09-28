@@ -23,7 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDevice
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
-import com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;

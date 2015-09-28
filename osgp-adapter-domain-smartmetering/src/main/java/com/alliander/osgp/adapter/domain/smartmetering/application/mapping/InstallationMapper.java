@@ -21,12 +21,13 @@ public class InstallationMapper extends ConfigurableMapper {
 
         // domain value object -> SmartMeteringDevice entity class
         mapperFactory
-                .classMap(SmartMeteringDevice.class,
-                        com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice.class).byDefault().register();
+        .classMap(SmartMeteringDevice.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class)
+                .byDefault().register();
 
         // domain value object -> dto value object
         mapperFactory
-                .classMap(com.alliander.osgp.domain.core.valueobjects.SmartMeteringDevice.class,
-                        com.alliander.osgp.dto.valueobjects.SmartMeteringDevice.class).byDefault().register();
+        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class,
+                com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class).byDefault().register();
     }
 }

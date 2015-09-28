@@ -45,13 +45,10 @@ public class WebServiceConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MANAGEMENT = "jaxb2.marshaller.context.path.smartmetering.management";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_INSTALLATION = "jaxb2.marshaller.context.path.smartmetering.installation";
+    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MONITORING = "jaxb2.marshaller.context.path.smartmetering.monitoring";
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
-
-    private static final String USER_NAME_HEADER = "UserName";
-
-    private static final String APPLICATION_NAME_HEADER = "ApplicationName";
 
     private static final String X509_RDN_ATTRIBUTE_ID = "cn";
     private static final String X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME = "CommonNameSet";
@@ -64,6 +61,8 @@ public class WebServiceConfig {
     private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_LOCATION = "web.service.keystore.location";
     private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_PASSWORD = "web.service.keystore.password";
     private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_TYPE = "web.service.keystore.type";
+
+    private static final String PROPERTY_NAME_WEBSERVICE_NOTIFICATION_URL = "web.service.notification.url";
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMARTMETERING_NOTIFICATION = "jaxb2.marshaller.context.path.smartmetering.notification";
 
@@ -118,6 +117,11 @@ public class WebServiceConfig {
     @Bean
     public NotificationMapper notificationMapper() {
         return new NotificationMapper();
+    }
+
+    @Bean
+    public String notificationURL() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_WEBSERVICE_NOTIFICATION_URL);
     }
 
     // Client WS code
@@ -177,6 +181,33 @@ public class WebServiceConfig {
     }
 
     /**
+     * Method for creating the Marshaller for smart metering monitoring.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller smartMeteringMonitoringMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MONITORING));
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for Smart
+     * Metering monitoring.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor smartMeteringMonitoringMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringMonitoringMarshaller(),
+                this.smartMeteringMonitoringMarshaller());
+    }
+
+    /**
      * Method for creating the Default Method Endpoint Adapter.
      *
      * @return DefaultMethodEndpointAdapter
@@ -190,6 +221,7 @@ public class WebServiceConfig {
         // SMART METERING
         methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
+        methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
@@ -200,6 +232,7 @@ public class WebServiceConfig {
         // SMART METERING
         methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
         methodReturnValueHandlers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
+        methodReturnValueHandlers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
 
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 

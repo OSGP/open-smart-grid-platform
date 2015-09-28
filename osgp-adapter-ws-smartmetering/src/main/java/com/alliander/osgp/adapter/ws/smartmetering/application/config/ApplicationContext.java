@@ -31,7 +31,7 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.smartmetering" })
 @EnableTransactionManagement()
 @ImportResource("classpath:applicationContext.xml")
-@Import({ PersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class })
+@Import({ PersistenceConfig.class, CorePersistenceConfig.class, MessagingConfig.class, WebServiceConfig.class })
 @PropertySource("file:${osp/osgpAdapterWsSmartMetering/config}")
 public class ApplicationContext {
 
