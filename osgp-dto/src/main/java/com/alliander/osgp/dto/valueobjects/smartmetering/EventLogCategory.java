@@ -1,4 +1,4 @@
-package com.alliander.osgp.dto.valueobject.smartmetering;
+package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 public enum EventLogCategory {
     STANDARD_EVENT_LOG,

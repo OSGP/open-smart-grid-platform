@@ -1,4 +1,4 @@
-package com.alliander.osgp.dto.valueobject.smartmetering;
+package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
