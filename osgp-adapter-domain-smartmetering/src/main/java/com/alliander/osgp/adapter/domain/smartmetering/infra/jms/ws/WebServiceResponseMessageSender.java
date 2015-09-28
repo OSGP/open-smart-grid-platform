@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws;
 
+import java.io.Serializable;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -62,6 +64,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                     objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
                             .getMessage());
                 }
+                objectMessage.setObject((Serializable) responseMessage.getDataObject());
                 return objectMessage;
             }
         });

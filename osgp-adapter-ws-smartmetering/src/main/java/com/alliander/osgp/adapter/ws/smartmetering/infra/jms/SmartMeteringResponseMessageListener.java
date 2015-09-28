@@ -15,11 +15,11 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.MessageProcessor;
+import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 
 /**
  * @author OSGP
@@ -31,6 +31,10 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    @Qualifier("wsAdapterSmartMeteringDomainMessageProcessorMap")
+    private MessageProcessorMap domainResponseMessageProcessorMap;
 
     public SmartMeteringResponseMessageListener() {
         // empty constructor
@@ -45,16 +49,12 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
 
             LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
 
-            // TODO error handling
-            final NotificationType notificationType = NotificationType.valueOf(message.getJMSType());
+            final MessageProcessor processor = this.domainResponseMessageProcessorMap
+                    .getMessageProcessor(objectMessage);
 
-            // WS call
-            this.notificationService.sendNotification(
-                    objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION),
-                    objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                    objectMessage.getStringProperty(Constants.RESULT), objectMessage.getJMSCorrelationID(),
-                    objectMessage.getStringProperty(Constants.DESCRIPTION), notificationType);
-        } catch (final JMSException | FunctionalException ex) {
+            processor.processMessage(objectMessage);
+
+        } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);
         }
     }
