@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -7,7 +14,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventLogCategor
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
 
 public class FindEventsQueryConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery, FindEventsQuery> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery, FindEventsQuery> {
 
     @Override
     public FindEventsQuery convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery source,
@@ -31,8 +38,8 @@ public class FindEventsQueryConverter extends
         final com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory eventLogCategory = com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory
                 .valueOf(source.getEventLogCategory().toString());
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery(eventLogCategory, source.getFrom(),
-                source.getUntil());
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery(eventLogCategory,
+                source.getFrom(), source.getUntil());
     }
 
 }
