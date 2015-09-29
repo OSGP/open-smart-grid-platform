@@ -18,12 +18,18 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing smart metering default response messages
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 @Component("domainSmartMeteringSynchronizeTimeResponseMessageProcessor")
 public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-	/**
+    /**
      * Logger for this class
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeResponseMessageProcessor.class);
@@ -85,11 +91,11 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
             // convert and Save the synchronizeTimeReads
             final com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads data = this.adhocMapper
                     .map(synchronizeTimeReads,
-                    		com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads.class);
+                            com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads.class);
 
             data.setCorrelationUid(correlationUid);
             this.synchronizeTimeDataRepository.save(data);
-            
+
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
                     correlationUid, message, notificationType);
@@ -97,5 +103,5 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
-    }	
+    }
 }

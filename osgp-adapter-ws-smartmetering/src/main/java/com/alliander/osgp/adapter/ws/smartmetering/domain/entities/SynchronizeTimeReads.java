@@ -8,44 +8,49 @@ import javax.persistence.Entity;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
- * An entity class which contains the information of a the synchronized time.
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 @Entity
 public class SynchronizeTimeReads extends AbstractEntity {
 
-	private static final long serialVersionUID = -136966569210717654L;
+    private static final long serialVersionUID = -136966569210717654L;
 
     @Column
     private String deviceIdentification;
 
     @Column
     private String correlationUid;
-    
+
     @Column
     private Date dateTime;
-    
+
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
     public Date getDateTime() {
-		return dateTime;
-	}
+        return this.dateTime;
+    }
 
-	public void setDateTime(Date dateTime) {
-		this.dateTime = dateTime;
-	}
+    public void setDateTime(final Date dateTime) {
+        this.dateTime = dateTime;
+    }
 
-	public void setDeviceIdentification(final String deviceIdentification) {
+    public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
     }
 
-	public String getCorrelationUid() {
-		return correlationUid;
-	}
+    public String getCorrelationUid() {
+        return this.correlationUid;
+    }
 
-	public void setCorrelationUid(String correlationUid) {
-		this.correlationUid = correlationUid;
-	}
-	
+    public void setCorrelationUid(final String correlationUid) {
+        this.correlationUid = correlationUid;
+    }
 }

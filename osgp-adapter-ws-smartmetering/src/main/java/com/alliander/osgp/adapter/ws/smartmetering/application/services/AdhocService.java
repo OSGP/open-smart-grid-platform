@@ -16,23 +16,26 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTime
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 /**
- * @author OSGP
+ * Copyright 2015 Smart Society Services B.V.
  *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 @Service(value = "wsSmartMeteringAdhocService")
 @Validated
-// @Transactional(value = "coreTransactionManager")
 public class AdhocService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
-	
-	
+
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             @Identification final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
@@ -47,7 +50,6 @@ public class AdhocService {
         // this.domainHelperService.isAllowed(organisation, device,
         // DeviceFunction.GET_STATUS);
 
-    	
         LOGGER.debug("enqueueSynchronizeTimeReadsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
@@ -55,15 +57,14 @@ public class AdhocService {
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA, correlationUid, organisationIdentification,
+                SmartMeteringRequestMessageType.REQUEST_SYNC_TIME, correlationUid, organisationIdentification,
                 deviceIdentification, requestData);
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
-    
-    
+
     /**
      * @param organisationIdentification
      * @param device
@@ -71,8 +72,7 @@ public class AdhocService {
      */
     public String requestSynchronizeTimeData(final String organisationIdentification,
             final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
-        return this.enqueueSynchronizeTimeRequest(organisationIdentification,
-                requestData.getDeviceIdentification(), requestData);
+        return this.enqueueSynchronizeTimeRequest(organisationIdentification, requestData.getDeviceIdentification(),
+                requestData);
     }
-    
 }

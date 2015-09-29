@@ -14,7 +14,16 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
-		    
+
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 @Component("domainSmartmeteringSynchronizeTimeReadsRequestMessageProcessor")
 public class SynchronizeTimeReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
@@ -24,13 +33,13 @@ public class SynchronizeTimeReadsRequestMessageProcessor extends WebServiceReque
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    protected SynchronizeTimeReadsRequestMessageProcessor() { 
-		super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
-	}
+    protected SynchronizeTimeReadsRequestMessageProcessor() {
+        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
+    }
 
-	@Override
-	public void processMessage(ObjectMessage message) throws JMSException {
-		String correlationUid = null;
+    @Override
+    public void processMessage(ObjectMessage message) throws JMSException {
+        String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
@@ -57,14 +66,11 @@ public class SynchronizeTimeReadsRequestMessageProcessor extends WebServiceReque
 
             final SynchronizeTimeReadsRequest synchronizeTimeReadsRequest = (SynchronizeTimeReadsRequest) dataObject;
 
-            this.adhocService.requestSynchronizeTimeReads(organisationIdentification, deviceIdentification, correlationUid, synchronizeTimeReadsRequest, messageType);
+            this.adhocService.requestSynchronizeTimeReads(organisationIdentification, deviceIdentification,
+                    correlationUid, synchronizeTimeReadsRequest, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
-	}
-
-	
-	
-	
+    }
 }

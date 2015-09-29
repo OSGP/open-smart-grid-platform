@@ -23,8 +23,11 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 
 /**
- * @author OSGP
+ * Copyright 2015 Smart Society Services B.V.
  *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 @Service(value = "domainSmartMeteringAdhocService")
 @Transactional(value = "transactionManager")
@@ -54,7 +57,7 @@ public class AdhocService {
             final String messageType) throws FunctionalException {
 
         LOGGER.info("requestSynchronizeTimeReads for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
+                organisationIdentification, deviceIdentification);PeriodicMeterReadsresponseMessageProcessor
 
         // TODO: bypassing authorization, this should be fixed.
         // Organisation organisation =
@@ -68,7 +71,7 @@ public class AdhocService {
         // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
         final SynchronizeTimeReadsRequest synchronizeTimeReadsRequestDto = this.adhocMapper.map(
-        		synchronizeTimeReadsRequestValueObject, SynchronizeTimeReadsRequest.class);
+                synchronizeTimeReadsRequestValueObject, SynchronizeTimeReadsRequest.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, synchronizeTimeReadsRequestDto), messageType);

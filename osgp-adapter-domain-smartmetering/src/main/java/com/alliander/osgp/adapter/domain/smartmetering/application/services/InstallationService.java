@@ -35,8 +35,11 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
- * @author OSGP
+ * Copyright 2015 Smart Society Services B.V.
  *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 @Service(value = "domainSmartMeteringInstallationService")
 @Transactional(value = "transactionManager")
@@ -110,8 +113,8 @@ public class InstallationService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
-                .map(smartMeteringDeviceValueObject, com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
+                .map(smartMeteringDeviceValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevicDto), messageType);

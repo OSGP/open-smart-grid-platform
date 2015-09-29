@@ -26,7 +26,7 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
-    <!-- REQUEST_PERIODIC_METER_DATA -->
+    <!-- REQUEST_SYNCHRONIZE_TIME -->
     
     <wsdl:message name="SynchronizeTimeReadsRequest">
         <wsdl:part element="sminst:SynchronizeTimeReadsRequest" name="SynchronizeTimeReadsRequest">
@@ -100,4 +100,5 @@
                 location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/adhocService/" />
         </wsdl:port>
     </wsdl:service>
+    
 </wsdl:definitions>
