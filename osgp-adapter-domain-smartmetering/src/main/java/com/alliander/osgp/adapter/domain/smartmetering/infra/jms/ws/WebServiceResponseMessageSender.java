@@ -62,7 +62,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
                     objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getMessage());
+                            .getCause().getMessage());
                 }
                 objectMessage.setObject((Serializable) responseMessage.getDataObject());
                 return objectMessage;
