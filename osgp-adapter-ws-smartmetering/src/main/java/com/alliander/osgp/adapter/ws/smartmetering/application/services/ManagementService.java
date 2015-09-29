@@ -35,7 +35,9 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -66,17 +68,24 @@ public class ManagementService {
     }
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<FindEventsQuery> findEventsQuery) throws FunctionalException {
+            final List<FindEventsQuery> findEventsQueryList) throws FunctionalException {
 
         LOGGER.info("findEvents called with organisation {}", organisationIdentification);
 
         this.domainHelperService.findOrganisation(organisationIdentification);
+        for (final FindEventsQuery findEventsQuery : findEventsQueryList) {
+            if (!findEventsQuery.getFrom().isBefore(findEventsQuery.getUntil())) {
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.WS_SMART_METERING, new Exception(
+                                "The 'from' timestamp designates a time after 'until' timestamp."));
+            }
+        }
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.FIND_EVENTS, correlationUid, organisationIdentification,
-                deviceIdentification, new FindEventsQueryMessageDataContainer(findEventsQuery));
+                deviceIdentification, new FindEventsQueryMessageDataContainer(findEventsQueryList));
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;

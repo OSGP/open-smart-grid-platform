@@ -49,7 +49,7 @@
 	<xsd:element name="FindEventsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element maxOccurs="unbounded" name="Events" type="tns:Event" />
+				<xsd:element name="Events" type="tns:Event" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -72,8 +72,8 @@
 	<!-- Event containing Timestamp and EventType -->
 	<xsd:complexType name="Event">
 		<xsd:sequence>
-			<xsd:element name="timestamp" type="xsd:dateTime" />
-			<xsd:element name="eventType" type="tns:EventType" />
+			<xsd:element name="timestamp" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="eventType" type="tns:EventType" minOccurs="1" maxOccurs="1" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
