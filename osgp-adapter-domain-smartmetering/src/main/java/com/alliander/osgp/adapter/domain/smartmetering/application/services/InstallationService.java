@@ -19,9 +19,6 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
@@ -52,20 +49,11 @@ public class InstallationService {
     private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
 
     @Autowired
-    private DeviceRepository deviceRepository;
-
-    @Autowired
-    private DeviceAuthorizationRepository deviceAuthorizationRepository;
-
-    @Autowired
-    private OrganisationRepository organisationRepository;
-
-    @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
     private InstallationMapper installationMapper;
-    
+
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
@@ -96,6 +84,12 @@ public class InstallationService {
 
             final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DSMR",
                     smartMeteringDeviceValueObject.getDSMRVersion());
+
+            if (protocolInfo == null) {
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
+                        ComponentType.DOMAIN_SMART_METERING);
+            }
+
             device.updateProtocol(protocolInfo);
 
             // TODO deviceAuthorization
@@ -111,12 +105,13 @@ public class InstallationService {
         }
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDevicDto = this.installationMapper
-                .map(smartMeteringDeviceValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
+                .map(smartMeteringDeviceValueObject,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevicDto), messageType);
     }
-    
+
     public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
