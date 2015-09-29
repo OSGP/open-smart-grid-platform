@@ -57,7 +57,7 @@ public class AdhocService {
             final String messageType) throws FunctionalException {
 
         LOGGER.info("requestSynchronizeTimeReads for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);PeriodicMeterReadsresponseMessageProcessor
+                organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
         // Organisation organisation =
