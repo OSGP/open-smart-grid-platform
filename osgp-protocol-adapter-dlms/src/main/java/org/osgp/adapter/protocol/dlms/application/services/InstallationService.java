@@ -23,7 +23,7 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-@Service(value = "dlmsDeviceManagementService")
+@Service(value = "dlmsInstallationService")
 public class InstallationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);

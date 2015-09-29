@@ -1,16 +1,9 @@
-/**
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
+import org.osgp.adapter.protocol.dlms.application.services.ManagementService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
@@ -18,29 +11,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing add meter request messages
  */
-@Component("dlmsAddMeterRequestMessageProcessor")
-public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
+@Component("dlmsFindEventsRequestMessageProcessor")
+public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterRequestMessageProcessor.class);
 
     @Autowired
-    private InstallationService installationService;
+    private ManagementService managementService;
 
-    public AddMeterRequestMessageProcessor() {
-        super(DeviceRequestMessageType.ADD_METER);
+    public FindEventsRequestMessageProcessor() {
+        super(DeviceRequestMessageType.FIND_EVENTS);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing add meter request message");
+        LOGGER.debug("Processing find events request message");
 
         String correlationUid = null;
         String domain = null;
@@ -48,6 +41,7 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
+        Object data = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -56,12 +50,7 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
-            final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) message.getObject();
-
-            this.installationService.addMeter(organisationIdentification, deviceIdentification, correlationUid,
-                    smartMeteringDevice, this.responseMessageSender, domain, domainVersion, messageType);
-
+            data = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -72,5 +61,9 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
+
+        this.managementService.findEvents(organisationIdentification, deviceIdentification, correlationUid,
+                this.responseMessageSender, domain, domainVersion, messageType,
+                (FindEventsQueryMessageDataContainer) data);
     }
 }
