@@ -1,4 +1,4 @@
-package com.alliander.osgp.domain.core.valueobjects;
+package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 

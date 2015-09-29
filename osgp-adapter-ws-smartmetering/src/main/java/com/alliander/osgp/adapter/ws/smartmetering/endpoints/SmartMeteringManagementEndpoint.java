@@ -34,6 +34,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Managemen
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ManagementService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -82,7 +83,7 @@ public class SmartMeteringManagementEndpoint {
 
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
-                            com.alliander.osgp.domain.core.valueobjects.FindEventsQuery.class));
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -112,12 +113,18 @@ public class SmartMeteringManagementEndpoint {
             final String deviceIdentification = request.getAsyncRequest().getDeviceId();
             final String correlationUid = request.getAsyncRequest().getCorrelationUid();
 
-            // final Page<com.alliander.osgp.domain.core.entities.Event> result
-            // = this.managementService
-            // .findEventsByCorrelationUid(organisationIdentification,
-            // deviceIdentification, correlationUid);
-            // response.getEvents().addAll(this.managementMapper.mapAsList(result.getContent(),
-            // Event.class));
+            final List<Event> events = this.managementService.findEventsByCorrelationUid(organisationIdentification,
+                    deviceIdentification, correlationUid);
+
+            LOGGER.info("getFindEventsResponse() number of events: {}", events.size());
+            for (final Event event : events) {
+                LOGGER.info("event.eventCode: {} event.timestamp: {}", event.getEventCode(), event.getTimestamp());
+            }
+            LOGGER.info("mapping events to schema type...");
+            response.getEvents().addAll(
+                    this.managementMapper.mapAsList(events,
+                            com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
+            LOGGER.info("mapping done, sending response...");
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,

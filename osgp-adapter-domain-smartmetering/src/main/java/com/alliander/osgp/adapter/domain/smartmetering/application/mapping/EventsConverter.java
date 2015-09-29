@@ -3,7 +3,7 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.Event;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 
 public class EventsConverter extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Event, Event> {
 

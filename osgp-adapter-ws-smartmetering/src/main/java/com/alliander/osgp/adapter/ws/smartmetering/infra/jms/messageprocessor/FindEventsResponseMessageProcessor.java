@@ -1,5 +1,7 @@
 package com.alliander.osgp.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import java.io.Serializable;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -11,9 +13,10 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.EventMessageDataContainer;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -32,6 +35,9 @@ public class FindEventsResponseMessageProcessor extends DomainResponseMessagePro
     @Autowired
     private ManagementMapper managementMapper;
 
+    @Autowired
+    private MeterResponseDataRepository meterResponseDataRepository;
+
     public FindEventsResponseMessageProcessor() {
         super(DeviceFunction.FIND_EVENTS);
     }
@@ -44,11 +50,10 @@ public class FindEventsResponseMessageProcessor extends DomainResponseMessagePro
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        final OsgpException osgpException = null;
         String result = null;
         String message = null;
         NotificationType notificationType = null;
-        Object data = null;
+        Serializable data = null;
 
         try {
             correlationUid = objectMessage.getJMSCorrelationID();
@@ -65,7 +70,6 @@ public class FindEventsResponseMessageProcessor extends DomainResponseMessagePro
             LOGGER.debug("messageType: {}", messageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
 
@@ -74,16 +78,14 @@ public class FindEventsResponseMessageProcessor extends DomainResponseMessagePro
 
             final EventMessageDataContainer eventMessageDataContainer = (EventMessageDataContainer) data;
 
-            // Test print below:
+            // Test print below, remove this line of code after saving the data:
             LOGGER.info("Number of events in EventMessageDataContainer: {}", eventMessageDataContainer.getEvents()
                     .size());
 
             // Convert the events to entity and save the events
-            // final
-            // com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads
-            // data = this.managementMapper
-            // .map(periodicMeterReads,
-            // com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads.class);
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, data);
+            this.meterResponseDataRepository.save(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

@@ -3,8 +3,8 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.EventLogCategory;
-import com.alliander.osgp.domain.core.valueobjects.FindEventsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventLogCategory;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
 
 public class FindEventsQueryConverter extends
         BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery, FindEventsQuery> {

@@ -7,40 +7,35 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
-import static org.springframework.data.jpa.domain.Specifications.where;
-
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
-import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
-import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.FindEventsQuery;
-import com.alliander.osgp.domain.core.valueobjects.FindEventsQueryMessageDataContainer;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -58,10 +53,7 @@ public class ManagementService {
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
-    private EventSpecifications eventSpecifications;
+    private MeterResponseDataRepository meterResponseDataRepository;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -82,21 +74,6 @@ public class ManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        // for (final FindEventsQuery query : findEventsQuery) {
-        // final DateTime from = query.getFrom() == null ? null : new
-        // DateTime(query.getFrom().toGregorianCalendar())
-        // .toDateTime(DateTimeZone.UTC);
-        // final DateTime until = query.getUntil() == null ? null : new
-        // DateTime(query.getUntil()
-        // .toGregorianCalendar()).toDateTime(DateTimeZone.UTC);
-        // final EventLogCategory eventLogCategory =
-        // query.getEventLogCategory();
-        //
-        // LOGGER.info("looping through FindEventsQuery, from: {}, until: {}, EventLogCategory: {}",
-        // from, until,
-        // eventLogCategory);
-        // }
-
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.FIND_EVENTS, correlationUid, organisationIdentification,
                 deviceIdentification, new FindEventsQueryMessageDataContainer(findEventsQuery));
@@ -110,47 +87,30 @@ public class ManagementService {
 
         LOGGER.info("findEventsByCorrelationUid called with organisation {}}", organisationIdentification);
 
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.findOrganisation(organisationIdentification);
 
-        return null;
-    }
+        final List<MeterResponseData> meterResponseDataList = this.meterResponseDataRepository
+                .findByCorrelationUid(correlationUid);
+        final List<Event> events = new ArrayList<>();
+        final List<MeterResponseData> meterResponseDataToDeleteList = new ArrayList<>();
 
-    // THIS FUNCTION SHOULD FIND THE TEMPORARY STORED EVENTS
-    // A RESPONSE QUEUE MESSAGE SHOULD BE DEQUEUED, AND THE RESULTING EVENTS
-    // WILL BE STORED
-    public List<Event> findEvents(@Identification final String organisationIdentification,
-            final String deviceIdentification, final Integer pageSize, final Integer pageNumber, final DateTime from,
-            final DateTime until) throws FunctionalException {
-
-        LOGGER.debug("findEvents called for organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
-
-        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
-
-        Specifications<Event> specifications = null;
-
-        try {
-            if (deviceIdentification != null && !deviceIdentification.isEmpty()) {
-                final Device device = this.domainHelperService.findDevice(deviceIdentification);
-                this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_EVENT_NOTIFICATIONS);
-
-                specifications = where(this.eventSpecifications.isFromDevice(device));
+        for (final MeterResponseData meterResponseData : meterResponseDataList) {
+            final Serializable messageData = meterResponseData.getMessageData();
+            if (messageData instanceof EventMessageDataContainer) {
+                events.addAll(((EventMessageDataContainer) messageData).getEvents());
+                meterResponseDataToDeleteList.add(meterResponseData);
             } else {
-                specifications = where(this.eventSpecifications.isAuthorized(organisation));
+                LOGGER.info(
+                        "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
+                        messageData.getClass().getName(), correlationUid);
             }
-
-            if (from != null) {
-                specifications = specifications.and(this.eventSpecifications.isCreatedAfter(from.toDate()));
-            }
-
-            if (until != null) {
-                specifications = specifications.and(this.eventSpecifications.isCreatedBefore(until.toDate()));
-            }
-        } catch (final ArgumentNullOrEmptyException e) {
-            throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_CORE, e);
         }
 
-        return this.eventRepository.findAll(specifications);
+        LOGGER.info("deleting {} MeterResponseData rows", meterResponseDataToDeleteList.size());
+        this.meterResponseDataRepository.delete(meterResponseDataToDeleteList);
+
+        LOGGER.info("returning a list containing {} events", events.size());
+        return events;
     }
 
     public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)

@@ -25,7 +25,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"	maxOccurs="1" />
-				<xsd:element name="FindEventsQuery" type="tns:FindEventsQuery" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="FindEventsQuery" type="tns:FindEventsQuery" minOccurs="1" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -61,9 +61,9 @@
 		<xsd:complexContent>			
 			<xsd:extension base="common:Query">
 				<xsd:sequence>
-					<xsd:element minOccurs="0" name="EventLogCategory" type="tns:EventLogCategory" />
-					<xsd:element minOccurs="0" name="From" type="xsd:dateTime" />
-					<xsd:element minOccurs="0" name="Until" type="xsd:dateTime" />
+					<xsd:element name="EventLogCategory" type="tns:EventLogCategory" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="From" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="Until" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -113,14 +113,23 @@
 			<!-- 10 - Error Register Cleared -->
 			<xsd:enumeration value="ERROR_REGISTER_CLEARED" />
 			<!-- 11 - Alarm Register Cleared -->
-			<xsd:enumeration value="ALARM_REGISTER_CLEARED" />
+			<xsd:enumeration value="ALARM_REGISTER_CLEARED" />			
+			<!-- NOTE: 12, 13, 14 and 16 are mapped to unique enum members instead of mapped to HARDWARE_ERROR -->
 			<!-- 12 - Program Memory Error -->
 			<!-- 13 - RAM Error -->
 			<!-- 14 - NV Memory Error -->
 			<!-- 16 - Measurement System Error -->
-			<xsd:enumeration value="HARDWARE_ERROR" />
+<!-- 			<xsd:enumeration value="HARDWARE_ERROR" /> -->
+			<!-- 12 - Program Memory Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_PROGRAM_MEMORY" />
+			<!-- 13 - RAM Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_RAM" />
+			<!-- 14 - NV Memory Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_NV_MEMORY" />
 			<!-- 15 - Watchdog Error -->
 			<xsd:enumeration value="WATCHDOG_ERROR" />
+			<!-- 16 - Measurement System Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_MEASUREMENT_SYSTEM" />
 			<!-- 17 - Firmware Ready for Activation -->
 			<xsd:enumeration value="FIRMWARE_READY_FOR_ACTIVATION" />
 			<!-- 18 - Firmware Activated -->
