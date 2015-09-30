@@ -14,11 +14,11 @@ import java.util.List;
  */
 public class SynchronizeTimeReadsRequest implements Serializable {
 
-    private static final long serialVersionUID = -4368585364171307327L;
-
-    private String deviceIdentification;
-    private List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData;
-
+    private static final long serialVersionUID = -2394318355946737102L;
+    
+    private String deviceIdentification; 
+    private List<SynchronizeTimeReadsRequestData> synchronizeTimeReadsRequestData;
+ 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
@@ -27,11 +27,12 @@ public class SynchronizeTimeReadsRequest implements Serializable {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public List<PeriodicMeterReadsRequestData> getPeriodicMeterReadsRequestData() {
-        return this.periodicMeterReadsRequestData;
+    public List<SynchronizeTimeReadsRequestData> getSynchronizeTimeReadsRequestData() {
+        return synchronizeTimeReadsRequestData;
     }
 
-    public void setPeriodicMeterReadsRequestData(final List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData) {
-        this.periodicMeterReadsRequestData = periodicMeterReadsRequestData;
+    public void setSynchronizeTimeReadsRequestData(final List<SynchronizeTimeReadsRequestData> synchronizeTimeReadsRequestData) {
+        this.synchronizeTimeReadsRequestData = synchronizeTimeReadsRequestData;
     }
+    
 }

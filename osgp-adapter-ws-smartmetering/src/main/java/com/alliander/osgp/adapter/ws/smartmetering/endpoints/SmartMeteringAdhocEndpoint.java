@@ -31,6 +31,7 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+@SuppressWarnings("deprecation")
 @Endpoint
 public class SmartMeteringAdhocEndpoint {
 
