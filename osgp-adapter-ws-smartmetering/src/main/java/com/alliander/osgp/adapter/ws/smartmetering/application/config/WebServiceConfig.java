@@ -62,6 +62,8 @@ public class WebServiceConfig {
     private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_PASSWORD = "web.service.keystore.password";
     private static final String PROPERTY_NAME_WEBSERVICE_KEYSTORE_TYPE = "web.service.keystore.type";
 
+    private static final String PROPERTY_NAME_WEBSERVICE_NOTIFICATION_URL = "web.service.notification.url";
+
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMARTMETERING_NOTIFICATION = "jaxb2.marshaller.context.path.smartmetering.notification";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebServiceConfig.class);
@@ -115,6 +117,11 @@ public class WebServiceConfig {
     @Bean
     public NotificationMapper notificationMapper() {
         return new NotificationMapper();
+    }
+
+    @Bean
+    public String notificationURL() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_WEBSERVICE_NOTIFICATION_URL);
     }
 
     // Client WS code

@@ -19,7 +19,6 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
-import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -40,10 +39,7 @@ public class DeviceRequestMessageService {
     private DomainResponseService domainResponseMessageSender;
 
     @Autowired
-    private ProtocolRequestService protocolRequestMessageSender;
-
-    @Autowired
-    private ProtocolInfoRepository protocolInfoRepository;
+    private ProtocolRequestService protocolRequestService;
 
     @Autowired
     private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
@@ -81,7 +77,7 @@ public class DeviceRequestMessageService {
                 }
             }
 
-            this.protocolRequestMessageSender.send(message, protocolInfo);
+            this.protocolRequestService.send(message, protocolInfo);
 
         } catch (final FunctionalException e) {
             this.domainResponseMessageSender.send(message, e);
