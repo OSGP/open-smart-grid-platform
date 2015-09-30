@@ -69,6 +69,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="tns:Query">
 				<xsd:sequence>
+					<xsd:element name="Date" type="xsd:date" minOccurs="1" maxOccurs="1" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

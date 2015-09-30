@@ -1,6 +1,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Copyright 2015 Smart Society Services B.V.
@@ -16,6 +17,16 @@ public class SynchronizeTimeReadsRequestData implements Serializable {
     private static final long serialVersionUID = -1483665562035897062L;
 
     private String deviceIdentification;
+
+    private Date date;
+    
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
