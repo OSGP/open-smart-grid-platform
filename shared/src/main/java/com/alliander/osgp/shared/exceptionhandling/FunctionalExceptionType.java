@@ -19,6 +19,7 @@ public enum FunctionalExceptionType {
     UNSCHEDULED_DEVICE(203, "Device does not have a schedule."),
     EXISTING_DEVICE(204, "Device already exists."),
     PROTOCOL_UNKNOWN_FOR_DEVICE(205, "Device has no protocol defined."),
+    UNKNOWN_PROTOCOL_NAME_OR_VERSION(206, "Device has an unknown protocol name or version."),
 
     // Authorization exceptions
     UNAUTHORIZED(301, "Not authorized to perform this action."),
