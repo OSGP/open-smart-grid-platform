@@ -87,7 +87,7 @@ public class SmartMeteringManagementEndpoint {
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
         } catch (final Exception e) {
             this.handleException(e);
@@ -103,14 +103,14 @@ public class SmartMeteringManagementEndpoint {
             @RequestPayload final FindEventsAsyncRequest request) throws OsgpException {
 
         LOGGER.info("Get find events response for organisation: {} and device: {}.", organisationIdentification,
-                request.getAsyncRequest().getDeviceId());
+                request.getAsyncRequest().getDeviceIdentification());
 
         // Create response.
         final FindEventsResponse response = new FindEventsResponse();
 
         try {
             // Get the request parameters, make sure that date time are in UTC.
-            final String deviceIdentification = request.getAsyncRequest().getDeviceId();
+            final String deviceIdentification = request.getAsyncRequest().getDeviceIdentification();
             final String correlationUid = request.getAsyncRequest().getCorrelationUid();
 
             final List<Event> events = this.managementService.findEventsByCorrelationUid(organisationIdentification,
