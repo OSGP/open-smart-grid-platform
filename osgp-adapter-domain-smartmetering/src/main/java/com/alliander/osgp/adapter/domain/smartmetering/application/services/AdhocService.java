@@ -73,8 +73,12 @@ public class AdhocService {
         final SynchronizeTimeReadsRequest synchronizeTimeReadsRequestDto = this.adhocMapper.map(
                 synchronizeTimeReadsRequestValueObject, SynchronizeTimeReadsRequest.class);
 
+//        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+//                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
+        
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
+                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);        
+        
     }
 
     public void handleSynchronizeTimeReadsresponse(final String deviceIdentification,

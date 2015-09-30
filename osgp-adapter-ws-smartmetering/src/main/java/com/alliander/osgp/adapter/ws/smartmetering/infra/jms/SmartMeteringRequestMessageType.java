@@ -17,5 +17,5 @@ public enum SmartMeteringRequestMessageType {
     ADD_METER,
     REQUEST_PERIODIC_METER_DATA,
     SM_REQUEST2,
-    REQUEST_SYNC_TIME
+    REQUEST_SYNCHRONIZE_TIME
 }
