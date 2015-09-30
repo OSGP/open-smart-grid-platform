@@ -67,7 +67,7 @@ public class SmartMeteringInstallationEndpoint {
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDevice().getDeviceIdentification());
+            asyncResponse.setDeviceIdentification(request.getDevice().getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
         } catch (final MethodConstraintViolationException e) {

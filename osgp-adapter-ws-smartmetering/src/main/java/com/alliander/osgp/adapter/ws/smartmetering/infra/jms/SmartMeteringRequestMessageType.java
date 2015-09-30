@@ -15,7 +15,7 @@ public enum SmartMeteringRequestMessageType {
     // TODO: insert message types for smart metering
 
     ADD_METER,
+    FIND_EVENTS,
     REQUEST_PERIODIC_METER_DATA,
-    SM_REQUEST2,
     REQUEST_SYNCHRONIZE_TIME
 }

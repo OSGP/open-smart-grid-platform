@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
@@ -45,9 +46,17 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
         try {
             LOGGER.info("Received message of type: {}", message.getJMSType());
 
+            final String messageType = message.getJMSType();
             final ObjectMessage objectMessage = (ObjectMessage) message;
+            final String correlationUid = objectMessage.getJMSCorrelationID();
+            LOGGER.info("objectMessage CorrelationUID: {}", correlationUid);
 
-            LOGGER.info("objectMessage CorrelationUID: {}", objectMessage.getJMSCorrelationID());
+            // Temporary if instead of message processor.
+            if (messageType.equals(NotificationType.FIND_EVENTS.toString())) {
+                // Save the events to the database.
+                LOGGER.info("Saving events for FIND_EVENTS");
+
+            }
 
             final MessageProcessor processor = this.domainResponseMessageProcessorMap
                     .getMessageProcessor(objectMessage);

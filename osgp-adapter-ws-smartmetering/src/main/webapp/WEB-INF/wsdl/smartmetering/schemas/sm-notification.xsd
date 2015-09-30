@@ -44,6 +44,7 @@
 	<xsd:simpleType name="NotificationType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="ADD_METER" />
+			<xsd:enumeration value="FIND_EVENTS" />
 			<xsd:enumeration value="REQUEST_PERIODIC_METER_DATA" />
 			<xsd:enumeration value="REQUEST_SYNCHRONIZE_TIME" />
 		</xsd:restriction>
