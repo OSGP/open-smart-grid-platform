@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.Event;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -51,15 +52,22 @@ public class ManagementService {
                 organisationIdentification);
 
         try {
+            // Debug logging which can be removed.
             LOGGER.info("FindEventsQueryMessageDataContainer number of FindEventsQuery: {}",
                     findEventsQueryMessageDataContainer.getFindEventsQueryList().size());
+            for (final FindEventsQuery findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
+                LOGGER.info(
+                        "findEventsQuery.eventLogCategory :{}, findEventsQuery.from: {}, findEventsQuery.until: {}",
+                        findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
+                        findEventsQuery.getUntil());
+            }
 
             // TODO: talk to the smart-meter and fetch the events.
             // For now, just create some dummy data to return.
 
             final List<Event> events = new ArrayList<>();
-            events.add(new Event(new DateTime(12344566L), 11));
-            events.add(new Event(new DateTime(66554432L), 12));
+            events.add(new Event(DateTime.now(), 11));
+            events.add(new Event(DateTime.now(), 12));
             final EventMessageDataContainer eventMessageDataContainer = new EventMessageDataContainer(events);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
