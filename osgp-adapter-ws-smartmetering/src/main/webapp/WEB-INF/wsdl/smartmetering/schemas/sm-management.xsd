@@ -18,6 +18,130 @@
 	<xsd:import 
 		namespace="http://www.alliander.com/schemas/osgp/common/2014/10" 
 		schemaLocation="common.xsd" />
+
+	<!-- Requests and Responses -->
+
+	<xsd:element name="FindEventsRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1"	maxOccurs="1" />
+				<xsd:element name="FindEventsQuery" type="tns:FindEventsQuery" minOccurs="1" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="FindEventsAsyncResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="FindEventsAsyncRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="FindEventsResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Events" type="tns:Event" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!-- Data Types -->	
+	
+	<!-- Query for FindEventsRequest -->
+	<xsd:complexType name="FindEventsQuery">
+		<xsd:complexContent>			
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+					<xsd:element name="EventLogCategory" type="tns:EventLogCategory" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="From" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="Until" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Event containing Timestamp and EventType -->
+	<xsd:complexType name="Event">
+		<xsd:sequence>
+			<xsd:element name="timestamp" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="eventType" type="tns:EventType" minOccurs="1" maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!-- Event Log Categories -->
+	<xsd:simpleType name="EventLogCategory">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="STANDARD_EVENT_LOG" />		
+			<xsd:enumeration value="FRAUD_DETECTION_LOG" />		
+			<xsd:enumeration value="COMMUNICATION_SESSION_LOG" />		
+			<xsd:enumeration value="M_BUS_EVENT_LOG" />			
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<!-- Standard Event Log Event Types -->
+	<xsd:simpleType name="EventType">
+		<xsd:restriction base="xsd:string">
+			<!-- 255 - Event Log Cleared -->
+			<xsd:enumeration value="EVENTLOG_CLEARED" />
+			<!-- 1 - Power Down -->
+			<xsd:enumeration value="POWER_FAILURE" />
+			<!-- 2 - Power Up -->
+			<xsd:enumeration value="POWER_RETURNED" />
+			<!-- 3 - Daylight Saving Time Enabled or Disabled -->
+			<xsd:enumeration value="CLOCK_UPDATE" />
+			<!-- 4 - Clock Adjusted (old date/time) -->
+			<xsd:enumeration value="CLOCK_ADJUSTED_OLD_TIME" />
+			<!-- 5 - Clock Adjusted (new date/time) -->
+			<xsd:enumeration value="CLOCK_ADJUSTED_NEW_TIME" />
+			<!-- 6 - Clock Invalid -->
+			<xsd:enumeration value="CLOCK_INVALID" />
+			<!-- 7 - Replace Battery -->
+			<xsd:enumeration value="REPLACE_BATTERY" />
+			<!-- 8 - Battery Voltage Low -->
+			<xsd:enumeration value="BATTERY_VOLTAGE_LOW" />
+			<!-- 9 - Tariff Shift Times (TOU) Activated -->
+			<xsd:enumeration value="TARIFF_ACTIVATED" />
+			<!-- 10 - Error Register Cleared -->
+			<xsd:enumeration value="ERROR_REGISTER_CLEARED" />
+			<!-- 11 - Alarm Register Cleared -->
+			<xsd:enumeration value="ALARM_REGISTER_CLEARED" />			
+			<!-- NOTE: 12, 13, 14 and 16 are mapped to unique enum members instead of mapped to HARDWARE_ERROR -->
+			<!-- 12 - Program Memory Error -->
+			<!-- 13 - RAM Error -->
+			<!-- 14 - NV Memory Error -->
+			<!-- 16 - Measurement System Error -->
+<!-- 			<xsd:enumeration value="HARDWARE_ERROR" /> -->
+			<!-- 12 - Program Memory Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_PROGRAM_MEMORY" />
+			<!-- 13 - RAM Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_RAM" />
+			<!-- 14 - NV Memory Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_NV_MEMORY" />
+			<!-- 15 - Watchdog Error -->
+			<xsd:enumeration value="WATCHDOG_ERROR" />
+			<!-- 16 - Measurement System Error -->
+			<xsd:enumeration value="HARDWARE_ERROR_MEASUREMENT_SYSTEM" />
+			<!-- 17 - Firmware Ready for Activation -->
+			<xsd:enumeration value="FIRMWARE_READY_FOR_ACTIVATION" />
+			<!-- 18 - Firmware Activated -->
+			<xsd:enumeration value="FIRMWARE_ACTIVATED" />
+			<!-- 19 - Tariff Shift Time (TOU) -->
+			<xsd:enumeration value="PASSIVE_TARIFF_UPDATED" />
+			<!-- 20 - Successful Selfcheck after Firmware Update -->
+			<xsd:enumeration value="SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE" />
+		</xsd:restriction>
+	</xsd:simpleType>
+		
+	<!-- Requests and Responses -->
 	
 	<xsd:element name="GetDevicesRequest">
 		<xsd:complexType>
@@ -34,49 +158,9 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-
-	<xsd:element name="GetStatusRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="1" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
 	
-	<xsd:element name="GetStatusAsyncResponse">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
+	<!-- Data Types -->
 	
-	<xsd:element name="GetStatusAsyncRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncRequest" type="common:AsyncRequest" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="GetStatusResponse">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
-				<xsd:element name="Description" type="xsd:string" />
-				<xsd:element name="DeviceStatus" type="tns:DeviceStatus" />			
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:complexType name="DeviceStatus">
-		<xsd:sequence>
-			<xsd:element name="PreferredLinkType" type="tns:LinkType" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActualLinkType" type="tns:LinkType" minOccurs="1" maxOccurs="1" />
-			<xsd:element minOccurs="0" maxOccurs="8" name="EventNotifications" type="tns:EventNotificationType" />
-		</xsd:sequence>
-	</xsd:complexType>
-
 	<xsd:complexType name="Device">
 		<xsd:sequence>
 			<xsd:element name="DeviceUid" type="xsd:string" />
@@ -94,20 +178,5 @@
 			<xsd:element maxOccurs="unbounded" name="Devices" type="tns:Device" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
-	<xsd:simpleType name="LinkType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="LINK_NOT_SET" />
-			<xsd:enumeration value="GPRS" />
-			<xsd:enumeration value="CDMA" />
-			<xsd:enumeration value="ETHERNET" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
-	<xsd:simpleType name="EventNotificationType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="SM_EVENTS" />
-		</xsd:restriction>
-	</xsd:simpleType>
 
 </xsd:schema>

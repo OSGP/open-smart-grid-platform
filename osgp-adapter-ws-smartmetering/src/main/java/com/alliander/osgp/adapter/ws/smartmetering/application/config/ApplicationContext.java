@@ -20,6 +20,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
+import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
+import com.alliander.osgp.domain.core.specifications.EventSpecifications;
+
 /**
  * An application context Java configuration class. The usage of Java
  * configuration requires Spring Framework 3.0
@@ -56,6 +59,11 @@ public class ApplicationContext {
         final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
         m.setValidatorFactory(this.validator());
         return m;
+    }
+
+    @Bean
+    public EventSpecifications eventSpecifications() {
+        return new JpaEventSpecifications();
     }
 
 }

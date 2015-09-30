@@ -71,7 +71,7 @@ public class SmartMeteringMonitoringEndpoint {
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceId(request.getDeviceIdentification());
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while requesting meter reads for device: {} for organisation {}.",
