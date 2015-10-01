@@ -18,7 +18,8 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.PeriodicMeterReadsRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -38,7 +39,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
     private NotificationService notificationService;
 
     @Autowired
-    private PeriodicMeterReadsRepository periodicMeterReadsRepository;
+    private MeterResponseDataRepository meterResponseDataRepository;
 
     @Autowired
     private MonitoringMapper monitoringMapper;
@@ -61,7 +62,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         String result = null;
         String message = null;
         NotificationType notificationType = null;
-        PeriodicMeterReads periodicMeterReads = null;
+        PeriodicMeterReads data = null;
 
         try {
             correlationUid = objectMessage.getJMSCorrelationID();
@@ -73,7 +74,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
 
-            periodicMeterReads = (PeriodicMeterReads) objectMessage.getObject();
+            data = (PeriodicMeterReads) objectMessage.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -87,13 +88,10 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            // convert and Save the meterReads
-            final com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads data = this.monitoringMapper
-                    .map(periodicMeterReads,
-                            com.alliander.osgp.adapter.ws.smartmetering.domain.entities.PeriodicMeterReads.class);
-
-            data.setCorrelationUid(correlationUid);
-            this.periodicMeterReadsRepository.save(data);
+            // Convert the events to entity and save the meterReads
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, data);
+            this.meterResponseDataRepository.save(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

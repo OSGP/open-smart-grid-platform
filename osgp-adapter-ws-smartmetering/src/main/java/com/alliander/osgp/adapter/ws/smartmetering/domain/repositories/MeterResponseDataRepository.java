@@ -24,4 +24,7 @@ public interface MeterResponseDataRepository extends JpaRepository<MeterResponse
     List<MeterResponseData> findByDeviceIdentification(String deviceIdentification);
 
     List<MeterResponseData> findByCorrelationUid(String correlationUid);
+
+    MeterResponseData findSingleResultByCorrelationUid(String correlationUid);
+
 }
