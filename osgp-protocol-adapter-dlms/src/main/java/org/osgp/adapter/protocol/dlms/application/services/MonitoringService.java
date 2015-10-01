@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -51,25 +51,26 @@ public class MonitoringService {
         try {
             // creating duMy periodicMeterReads
 
-            final PeriodicMeterReads periodicMeterReads = new PeriodicMeterReads();
-            periodicMeterReads.setDeviceIdentification(deviceIdentification);
+            final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer();
+            periodicMeterReadsContainer.setDeviceIdentification(deviceIdentification);
 
-            MeterReads MeterReads;
+            PeriodicMeterReads periodicMeterReads;
             for (final PeriodicMeterReadsRequestData p : periodicMeterReadsRequest.getPeriodicMeterReadsRequestData()) {
                 // DuMy MeterReads with random values
-                MeterReads = new MeterReads();
-                MeterReads.setLogTime(p.getDate());
-                MeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
-                MeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
-                MeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
-                MeterReads.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
+                periodicMeterReads = new PeriodicMeterReads();
+                periodicMeterReads.setLogTime(p.getDate());
+                periodicMeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
+                periodicMeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
+                periodicMeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
+                periodicMeterReads.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
 
-                MeterReads.setPeriodicMeterReads(periodicMeterReads);
-                periodicMeterReads.addMeterReads(MeterReads);
+                periodicMeterReads.setPeriodicMeterReads(periodicMeterReadsContainer);
+                periodicMeterReadsContainer.addPeriodicMeterReads(periodicMeterReads);
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, periodicMeterReads);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
+                    periodicMeterReadsContainer);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
@@ -84,11 +85,12 @@ public class MonitoringService {
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final PeriodicMeterReads periodicMeterReads) {
+            final DeviceResponseMessageSender responseMessageSender,
+            final PeriodicMeterReadsContainer periodicMeterReadsContainer) {
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                periodicMeterReads);
+                periodicMeterReadsContainer);
 
         responseMessageSender.send(responseMessage);
     }
