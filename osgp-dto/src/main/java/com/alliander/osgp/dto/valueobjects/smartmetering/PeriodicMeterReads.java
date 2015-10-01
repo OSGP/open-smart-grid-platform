@@ -16,7 +16,7 @@ public class PeriodicMeterReads implements Serializable {
 
     // TODO add status
 
-    private PeriodicMeterReadsContainer periodicMeterReads;
+    private PeriodicMeterReadsContainer periodicMeterReadsContainer;
     private Date logTime;
     private long activeEnergyImportTariffOne;
     private long activeEnergyImportTariffTwo;
@@ -56,11 +56,11 @@ public class PeriodicMeterReads implements Serializable {
     }
 
     public PeriodicMeterReadsContainer getPeriodicMeterReads() {
-        return this.periodicMeterReads;
+        return this.periodicMeterReadsContainer;
     }
 
-    public void setPeriodicMeterReads(final PeriodicMeterReadsContainer periodicMeterReads) {
-        this.periodicMeterReads = periodicMeterReads;
+    public void setPeriodicMeterReads(final PeriodicMeterReadsContainer periodicMeterReadsContainer) {
+        this.periodicMeterReadsContainer = periodicMeterReadsContainer;
     }
 
     public Date getLogTime() {

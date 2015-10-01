@@ -30,15 +30,15 @@ public class PeriodicMeterReadsContainer implements Serializable {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public List<PeriodicMeterReads> getMeterReads() {
+    public List<PeriodicMeterReads> getPeriodicMeterReads() {
         return this.periodicMeterReads;
     }
 
-    public void setMeterReads(final List<PeriodicMeterReads> periodicMeterReads) {
+    public void setPeriodicMeterReads(final List<PeriodicMeterReads> periodicMeterReads) {
         this.periodicMeterReads = periodicMeterReads;
     }
 
-    public void addMeterReads(final PeriodicMeterReads periodicMeterReads) {
+    public void addPeriodicMeterReads(final PeriodicMeterReads periodicMeterReads) {
         this.periodicMeterReads.add(periodicMeterReads);
     }
 
