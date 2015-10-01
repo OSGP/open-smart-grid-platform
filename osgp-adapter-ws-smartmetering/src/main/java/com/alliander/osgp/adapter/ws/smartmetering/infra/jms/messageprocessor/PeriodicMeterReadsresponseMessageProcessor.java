@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Notifica
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -62,7 +62,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         String result = null;
         String message = null;
         NotificationType notificationType = null;
-        PeriodicMeterReads data = null;
+        PeriodicMeterReadContainer data = null;
 
         try {
             correlationUid = objectMessage.getJMSCorrelationID();
@@ -74,7 +74,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
 
-            data = (PeriodicMeterReads) objectMessage.getObject();
+            data = (PeriodicMeterReadContainer) objectMessage.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -88,7 +88,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            // Convert the events to entity and save the meterReads
+            // Convert the events to entity and save the periodicMeterReads
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, data);
             this.meterResponseDataRepository.save(meterResponseData);

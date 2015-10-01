@@ -25,7 +25,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Monitorin
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -99,11 +99,11 @@ public class SmartMeteringMonitoringEndpoint {
             final MeterResponseData meterResponseData = this.meterResponseDataRepository
                     .findSingleResultByCorrelationUid(request.getCorrelationUid());
 
-            if (meterResponseData.getMessageData() instanceof PeriodicMeterReads) {
+            if (meterResponseData.getMessageData() instanceof PeriodicMeterReadContainer) {
 
                 // TODO not OK when not found
-                response.setPeriodicMeterReads(this.monitoringMapper.map(meterResponseData.getMessageData(),
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads.class));
+                response.setPeriodicMeterReadsContainer(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsContainer.class));
 
                 // removing
                 LOGGER.info("deleting MeterResponseData for CorrelationUid {}", request.getCorrelationUid());
@@ -116,7 +116,7 @@ public class SmartMeteringMonitoringEndpoint {
 
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while sending Periodic MeterReads of device: {} for organisation {}.",
+            LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
