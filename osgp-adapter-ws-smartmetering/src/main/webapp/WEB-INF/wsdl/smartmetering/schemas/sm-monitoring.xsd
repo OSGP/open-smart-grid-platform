@@ -46,7 +46,7 @@
 	<xsd:element name="RetrievePeriodicMeterReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads" />
+				<xsd:element name="PeriodicMeterReadsContainer" type="tns:PeriodicMeterReadsContainer" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -83,15 +83,15 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:complexType name="PeriodicMeterReads">
+	<xsd:complexType name="PeriodicMeterReadsContainer">
 		<xsd:sequence>
 			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" />
 			<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />	
-			<xsd:element name="MeterReads" type="tns:MeterReads" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads" minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
-	<xsd:complexType name="MeterReads">
+	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:date" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
