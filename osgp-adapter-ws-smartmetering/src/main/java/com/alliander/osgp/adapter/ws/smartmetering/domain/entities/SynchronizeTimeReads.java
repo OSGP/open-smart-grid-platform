@@ -1,7 +1,5 @@
 package com.alliander.osgp.adapter.ws.smartmetering.domain.entities;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -27,19 +25,8 @@ public class SynchronizeTimeReads extends AbstractEntity {
     @Column
     private String correlationUid;
 
-    @Column
-    private Date dateTime;
-
     public String getDeviceIdentification() {
         return this.deviceIdentification;
-    }
-
-    public Date getDateTime() {
-        return this.dateTime;
-    }
-
-    public void setDateTime(final Date dateTime) {
-        this.dateTime = dateTime;
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {

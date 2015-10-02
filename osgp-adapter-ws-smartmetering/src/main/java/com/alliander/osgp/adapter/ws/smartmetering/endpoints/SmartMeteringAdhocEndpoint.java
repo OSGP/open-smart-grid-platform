@@ -66,34 +66,9 @@ public class SmartMeteringAdhocEndpoint {
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceId("567812346584849");
+        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
         response.setAsyncResponse(asyncResponse);
 
-        //
-        // } catch (final MethodConstraintViolationException e) {
-        //
-        //
-        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // // new Object[] { e.getMessage(),
-        // // request.getDevice().getDeviceIdentification(),
-        // // organisationIdentification }, e);
-        // //
-        // // throw new
-        // // FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
-        // // ComponentType.WS_CORE,
-        // // new ValidationException(e.getConstraintViolations()));
-        // //
-        // // } catch (final Exception e) {
-        // //
-        // //
-        // LOGGER.error("Exception: {} while adding device: {} for organisation {}.",
-        // // new Object[] { e.getMessage(),
-        // // request.getDevice().getDeviceIdentification(),
-        // // organisationIdentification }, e);
-        // //
-        // // this.handleException(e);
-        // // }
-        //
         return response;
     }
 

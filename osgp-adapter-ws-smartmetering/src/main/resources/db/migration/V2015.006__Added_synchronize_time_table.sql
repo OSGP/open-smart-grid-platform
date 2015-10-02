@@ -3,8 +3,10 @@ CREATE TABLE synchronize_time_reads (
     creation_time timestamp without time zone NOT NULL,
     modification_time timestamp without time zone NOT NULL,
     version bigint,
-	log_time timestamp without time zone NOT NULL,
-	correlation_uid character varying(255)
+    correlation_uid character varying(255),
+    organisation_identification character varying(255),
+    device_identification character varying(255),
+    message_type character varying(255)
 );
 
 ALTER TABLE public.synchronize_time_reads OWNER TO osp_admin;
