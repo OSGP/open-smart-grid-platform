@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.osgp.adapter.protocol.dlms.application.services.ManagementService;
+import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
@@ -18,29 +18,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing find events request messages
+ * Class for processing Synchronize Time Request messages
  */
-@Component("dlmsFindEventsRequestMessageProcessor")
-public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+@Component("dlmsSynchronizeTimeRequestMessageProcessor")
+public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestMessageProcessor.class);
 
     @Autowired
-    private ManagementService managementService;
+    private AdhocService adhocService;
 
-    public FindEventsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.FIND_EVENTS);
+    public SynchronizeTimeRequestMessageProcessor() {
+        super(DeviceRequestMessageType.REQUEST_SYNCHRONIZE_TIME);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing find events request message");
+        LOGGER.debug("Processing synchronize time request message");
 
         String correlationUid = null;
         String domain = null;
@@ -48,7 +48,6 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        Object data = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -57,7 +56,13 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            data = message.getObject();
+
+            final SynchronizeTimeReadsRequest synchronizeTimeReadsRequest = (SynchronizeTimeReadsRequest) message
+                    .getObject();
+
+            this.adhocService.requestSynchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
+                    synchronizeTimeReadsRequest, this.responseMessageSender, domain, domainVersion, messageType);
+
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -68,9 +73,5 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
-
-        this.managementService.findEvents(organisationIdentification, deviceIdentification, correlationUid,
-                this.responseMessageSender, domain, domainVersion, messageType,
-                (FindEventsQueryMessageDataContainer) data);
     }
 }
