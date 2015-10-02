@@ -18,7 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Monit
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -88,7 +88,7 @@ public class MonitoringService {
     public void handlePeriodicMeterReadsresponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final PeriodicMeterReads MeterReadsValueDTO) {
+            final PeriodicMeterReadsContainer periodMeterReadsValueDTO) {
 
         LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", messageType);
 
@@ -108,12 +108,12 @@ public class MonitoringService {
 
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads MeterReadsValueDomain = this.monitoringMapper
-                .map(MeterReadsValueDTO,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer periodMeterReadsValueDomain = this.monitoringMapper
+                .map(periodMeterReadsValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, MeterReadsValueDomain), messageType);
+                deviceIdentification, result, osgpException, periodMeterReadsValueDomain), messageType);
 
     }
 }

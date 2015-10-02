@@ -8,29 +8,67 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Date;
 
 public class PeriodicMeterReads implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    private String deviceIdentification;
-    private List<MeterReads> meterReads;
+    // TODO add status
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
+    private PeriodicMeterReadContainer periodicMeterReads;
+    private Date logTime;
+    private long activeEnergyImportTariffOne;
+    private long activeEnergyImportTariffTwo;
+    private long activeEnergyExportTariffOne;
+    private long activeEnergyExportTariffTwo;
+
+    public long getActiveEnergyImportTariffOne() {
+        return this.activeEnergyImportTariffOne;
     }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
+    public void setActiveEnergyImportTariffOne(final long activeEnergyImportTariffOne) {
+        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
     }
 
-    public List<MeterReads> getMeterReads() {
-        return this.meterReads;
+    public long getActiveEnergyImportTariffTwo() {
+        return this.activeEnergyImportTariffTwo;
     }
 
-    public void setMeterReads(final List<MeterReads> meterReads) {
-        this.meterReads = meterReads;
+    public void setActiveEnergyImportTariffTwo(final long activeEnergyImportTariffTwo) {
+        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
+    }
+
+    public long getActiveEnergyExportTariffOne() {
+        return this.activeEnergyExportTariffOne;
+    }
+
+    public void setActiveEnergyExportTariffOne(final long activeEnergyExportTariffOne) {
+        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
+    }
+
+    public long getActiveEnergyExportTariffTwo() {
+        return this.activeEnergyExportTariffTwo;
+    }
+
+    public void setActiveEnergyExportTariffTwo(final long activeEnergyExportTariffTwo) {
+        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
+    }
+
+    public PeriodicMeterReadContainer getPeriodicMeterReads() {
+        return this.periodicMeterReads;
+    }
+
+    public void setPeriodicMeterReads(final PeriodicMeterReadContainer periodicMeterReads) {
+        this.periodicMeterReads = periodicMeterReads;
+    }
+
+    public Date getLogTime() {
+        return this.logTime;
+    }
+
+    public void setLogTime(final Date logTime) {
+        this.logTime = logTime;
     }
 
 }
