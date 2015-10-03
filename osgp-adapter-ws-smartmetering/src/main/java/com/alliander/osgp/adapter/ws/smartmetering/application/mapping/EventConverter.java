@@ -34,8 +34,8 @@ public class EventConverter extends
         }
 
         try {
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType eventType = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType.VALUES[source
-                                                                                                                                                                             .getEventCode()];
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType eventType = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType
+                    .getValues()[source.getEventCode()];
             final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(
                     source.getTimestamp().toGregorianCalendar());
             final com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event event = new com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event();
