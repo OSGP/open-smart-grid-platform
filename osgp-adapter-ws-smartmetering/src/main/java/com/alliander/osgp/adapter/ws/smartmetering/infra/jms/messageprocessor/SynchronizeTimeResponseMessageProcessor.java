@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.SynchronizeTimeDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReads;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -36,9 +35,6 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
 
     @Autowired
     private NotificationService notificationService;
-
-    @Autowired
-    private SynchronizeTimeDataRepository synchronizeTimeDataRepository;
 
     @Autowired
     private AdhocMapper adhocMapper;
@@ -94,7 +90,6 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
                             com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads.class);
 
             data.setCorrelationUid(correlationUid);
-            this.synchronizeTimeDataRepository.save(data);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

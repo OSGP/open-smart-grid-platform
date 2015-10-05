@@ -37,16 +37,6 @@ public class AdhocService {
             @Identification final String deviceIdentification,
             @Identification final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
 
-        // TODO: bypassing authorization logic for now, needs to be fixed.
-
-        // final Organisation organisation =
-        // this.domainHelperService.findOrganisation(organisationIdentification);
-        // final Device device =
-        // this.domainHelperService.findActiveDevice(deviceIdentification);
-        //
-        // this.domainHelperService.isAllowed(organisation, device,
-        // DeviceFunction.GET_STATUS);
-
         LOGGER.debug("enqueueSynchronizeTimeReadsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
@@ -64,7 +54,7 @@ public class AdhocService {
 
     /**
      * @param organisationIdentification
-     * @param device
+     * @param requestData
      * @throws FunctionalException
      */
     public String requestSynchronizeTimeData(final String organisationIdentification,
