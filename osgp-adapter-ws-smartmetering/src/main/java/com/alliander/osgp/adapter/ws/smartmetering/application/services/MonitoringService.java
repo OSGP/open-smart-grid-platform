@@ -21,10 +21,6 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-/**
- * @author OSGP
- *
- */
 @Service(value = "wsSmartMeteringMonitoringService")
 @Validated
 public class MonitoringService {

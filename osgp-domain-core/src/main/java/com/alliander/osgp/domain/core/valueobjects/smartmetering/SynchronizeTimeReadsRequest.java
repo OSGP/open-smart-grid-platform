@@ -1,8 +1,3 @@
-package com.alliander.osgp.domain.core.valueobjects.smartmetering;
-
-import java.io.Serializable;
-import java.util.List;
-
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
@@ -12,13 +7,18 @@ import java.util.List;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+package com.alliander.osgp.domain.core.valueobjects.smartmetering;
+
+import java.io.Serializable;
+import java.util.List;
+
 public class SynchronizeTimeReadsRequest implements Serializable {
 
     private static final long serialVersionUID = -2394318355946737102L;
-    
-    private String deviceIdentification; 
+
+    private String deviceIdentification;
     private List<SynchronizeTimeReadsRequestData> synchronizeTimeReadsRequestData;
- 
+
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
@@ -28,11 +28,12 @@ public class SynchronizeTimeReadsRequest implements Serializable {
     }
 
     public List<SynchronizeTimeReadsRequestData> getSynchronizeTimeReadsRequestData() {
-        return synchronizeTimeReadsRequestData;
+        return this.synchronizeTimeReadsRequestData;
     }
 
-    public void setSynchronizeTimeReadsRequestData(final List<SynchronizeTimeReadsRequestData> synchronizeTimeReadsRequestData) {
+    public void setSynchronizeTimeReadsRequestData(
+            final List<SynchronizeTimeReadsRequestData> synchronizeTimeReadsRequestData) {
         this.synchronizeTimeReadsRequestData = synchronizeTimeReadsRequestData;
     }
-    
+
 }

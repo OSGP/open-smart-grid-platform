@@ -1,3 +1,12 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
 import org.slf4j.Logger;
@@ -16,15 +25,6 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapp
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
-/**
- * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- */
 @Endpoint
 public class SmartMeteringAdhocEndpoint {
 
