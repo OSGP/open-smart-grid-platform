@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.protocol.oslp.infra.networking;
 
 import java.io.IOException;
-import java.security.PrivateKey;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -36,9 +35,6 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
 
     private final Logger logger;
 
-    @Autowired
-    protected PrivateKey privateKey;
-
     @Resource
     protected String oslpSignatureProvider;
 
@@ -61,10 +57,6 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
 
     protected OslpChannelHandler(final Logger logger) {
         this.logger = logger;
-    }
-
-    public void setPrivateKey(final PrivateKey privateKey) {
-        this.privateKey = privateKey;
     }
 
     public void setProvider(final String provider) {

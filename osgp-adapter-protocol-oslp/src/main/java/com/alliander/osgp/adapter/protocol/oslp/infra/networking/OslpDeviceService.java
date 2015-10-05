@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.oslp.application.mapping.OslpMapper;
 import com.alliander.osgp.adapter.protocol.oslp.application.services.oslp.OslpDeviceSettingsService;
+import com.alliander.osgp.adapter.protocol.oslp.application.services.oslp.OslpSigningService;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
@@ -74,19 +74,10 @@ public class OslpDeviceService implements DeviceService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OslpDeviceService.class);
 
     @Autowired
-    private PrivateKey privateKey;
-
-    @Autowired
     private OslpChannelHandlerClient oslpChannelHandler;
 
     @Autowired
     private OslpMapper mapper;
-
-    @Resource
-    private String oslpSignatureProvider;
-
-    @Resource
-    private String oslpSignature;
 
     @Resource
     private int oslpPortClient;
@@ -99,6 +90,9 @@ public class OslpDeviceService implements DeviceService {
 
     @Autowired
     private OslpLogItemRequestMessageSender oslpLogItemRequestMessageSender;
+
+    @Autowired
+    private OslpSigningService oslpSigningService;
 
     @Override
     public void startSelfTest(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
@@ -242,9 +236,22 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void getFirmwareVersion(final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.debug("Getting firmware version for device: {}.");
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newGetFirmwareVersion()");
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestGetFirmwareVersion(deviceRequest);
+    @Override
+    public void newGetFirmwareVersion(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+        LOGGER.info("newGetFirmwareVersion() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestGetFirmwareVersion(deviceRequest, ipAddress, domain, domainVersion, messageType,
+                retryCount, isScheduled);
+    }
+
+    @Override
+    public void doGetFirmwareVerion(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doGetFirmwareVersion() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -539,9 +546,23 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void setConfiguration(final SetConfigurationDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.debug("Setting configuration for device: {}.", deviceRequest.getDeviceIdentification());
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetConfiguration()");
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestSetConfiguration(deviceRequest);
+    @Override
+    public void newSetConfiguration(final SetConfigurationDeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
+        LOGGER.info("newSetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSetConfiguration(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled);
+    }
+
+    @Override
+    public void doSetConfiguration(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doSetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -567,9 +588,22 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void getConfiguration(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
             final String ipAddress) throws IOException {
-        LOGGER.debug("Getting configuration for device: {}.", deviceRequest.getDeviceIdentification());
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newGetConfiguration()");
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestGetConfiguration(deviceRequest);
+    @Override
+    public void newGetConfiguration(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+        LOGGER.info("newGetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestGetConfiguration(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled);
+    }
+
+    @Override
+    public void doGetConfiguration(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doGetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -892,22 +926,22 @@ public class OslpDeviceService implements DeviceService {
                 .build();
     }
 
-    private OslpEnvelope buildOslpRequestGetConfiguration(final DeviceRequest deviceRequest) {
+    private void buildOslpRequestGetConfiguration(final DeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
         final Oslp.GetConfigurationRequest getConfigurationRequest = Oslp.GetConfigurationRequest.newBuilder().build();
 
-        final Oslp.Message.Builder messageBuilder = Oslp.Message.newBuilder().setGetConfigurationRequest(
-                getConfigurationRequest);
-
-        return this.getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(messageBuilder.build()).build();
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setGetConfigurationRequest(getConfigurationRequest).build());
     }
 
-    private OslpEnvelope buildOslpRequestGetFirmwareVersion(final DeviceRequest deviceRequest) {
-        return this
-                .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(
-                        Oslp.Message.newBuilder().setGetFirmwareVersionRequest(GetFirmwareVersionRequest.newBuilder())
-                                .build()).build();
+    private void buildOslpRequestGetFirmwareVersion(final DeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
+        final Oslp.GetFirmwareVersionRequest getFirmwareVersionRequest = GetFirmwareVersionRequest.newBuilder().build();
+
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setGetFirmwareVersionRequest(getFirmwareVersionRequest).build());
     }
 
     private OslpEnvelope buildOslpRequestGetStatus(final DeviceRequest deviceRequest) {
@@ -934,17 +968,14 @@ public class OslpDeviceService implements DeviceService {
                 .build();
     }
 
-    private OslpEnvelope buildOslpRequestSetConfiguration(final SetConfigurationDeviceRequest deviceRequest) {
+    private void buildOslpRequestSetConfiguration(final SetConfigurationDeviceRequest deviceRequest,
+            final String ipAddress, final String domain, final String domainVersion, final String messageType,
+            final int retryCount, final boolean isScheduled) {
         final Oslp.SetConfigurationRequest setConfigurationRequest = this.mapper.map(deviceRequest.getConfiguration(),
                 Oslp.SetConfigurationRequest.class);
 
-        final Oslp.Message.Builder messageBuilder = Oslp.Message.newBuilder();
-        messageBuilder.setSetConfigurationRequest(setConfigurationRequest);
-
-        final Oslp.Message message = messageBuilder.build();
-
-        return this.getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification()).withPayloadMessage(message)
-                .build();
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setSetConfigurationRequest(setConfigurationRequest).build());
     }
 
     private OslpEnvelope buildOslpRequestSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest) {
@@ -1273,15 +1304,45 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-    private OslpEnvelope.Builder getBasicEnvelopeBuilder(final String deviceIdentification) {
+    private void buildAndSignEnvelope(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled,
+            final Oslp.Message payloadMessage) {
+
+        final String deviceIdentification = deviceRequest.getDeviceIdentification();
+        final String organisationIdentification = deviceRequest.getOrganisationIdentification();
+        final String correlationUid = deviceRequest.getCorrelationUid();
+
+        // Get some values from the database.
         final OslpDevice oslpDevice = this.oslpDeviceSettingsService
                 .getDeviceByDeviceIdentification(deviceIdentification);
-
         final byte[] deviceId = Base64.decodeBase64(oslpDevice.getDeviceUid());
         final byte[] sequenceNumber = SequenceNumberUtils.convertIntegerToByteArray(oslpDevice.getSequenceNumber());
 
-        return new OslpEnvelope.Builder().withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
+        this.oslpSigningService.buildAndSignEnvelope(organisationIdentification, deviceIdentification, correlationUid,
+                deviceId, sequenceNumber, ipAddress, domain, domainVersion, messageType, retryCount, isScheduled,
+                payloadMessage);
+    }
+
+    /*
+     * THIS METHOD HAS TO BE REPLACED AS IT USES PRIVATE KEY (A.K.A. SIGN KEY)
+     */
+    private OslpEnvelope.Builder getBasicEnvelopeBuilder(final String deviceIdentification) {
+
+        LOGGER.error("THIS IS AN EMPTY METHOD. use buildAndSignEnvelope()");
+
+        // final OslpDevice oslpDevice = this.oslpDeviceSettingsService
+        // .getDeviceByDeviceIdentification(deviceIdentification);
+        //
+        // final byte[] deviceId =
+        // Base64.decodeBase64(oslpDevice.getDeviceUid());
+        // final byte[] sequenceNumber =
+        // SequenceNumberUtils.convertIntegerToByteArray(oslpDevice.getSequenceNumber());
+        //
+        // return new
+        // OslpEnvelope.Builder().withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
+        // .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
+
+        return null;
     }
 
     private Oslp.LightValue buildLightValue(final LightValue lightValue) {
@@ -1354,18 +1415,6 @@ public class OslpDeviceService implements DeviceService {
     }
 
     // === PROTECTED SETTERS FOR TESTING ===
-
-    public void setPrivateKey(final PrivateKey privateKey) {
-        this.privateKey = privateKey;
-    }
-
-    public void setProvider(final String provider) {
-        this.oslpSignatureProvider = provider;
-    }
-
-    public void setSignature(final String signature) {
-        this.oslpSignature = signature;
-    }
 
     public void setOslpPortClient(final int oslpPortClient) {
         this.oslpPortClient = oslpPortClient;
