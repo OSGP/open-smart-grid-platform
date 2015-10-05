@@ -35,5 +35,4 @@ public class SynchronizeTimeReadsRequest implements Serializable {
             final List<SynchronizeTimeReadsRequestData> synchronizeTimeReadsRequestData) {
         this.synchronizeTimeReadsRequestData = synchronizeTimeReadsRequestData;
     }
-
 }
