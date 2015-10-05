@@ -1,9 +1,11 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
@@ -14,12 +16,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -28,34 +29,34 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-@Service(value = "domainSmartMeteringMonitoringService")
+@Service(value = "domainSmartMeteringAdhocService")
 @Transactional(value = "transactionManager")
-public class MonitoringService {
+public class AdhocService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
     @Qualifier(value = "domainSmartMeteringOutgoingOsgpCoreRequestMessageSender")
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
-    private MonitoringMapper monitoringMapper;
+    private AdhocMapper adhocMapper;
 
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    public MonitoringService() {
+    public AdhocService() {
         // Parameterless constructor required for transactions...
     }
 
-    public void requestPeriodicMeterReads(
+    public void requestSynchronizeTimeReads(
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final String correlationUid,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest periodicMeterReadsRequestValueObject,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest synchronizeTimeReadsRequestValueObject,
             final String messageType) throws FunctionalException {
 
-        LOGGER.info("requestPeriodicMeterReads for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("requestSynchronizeTimeReads for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
@@ -69,19 +70,23 @@ public class MonitoringService {
         // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
         // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
-        final PeriodicMeterReadsRequest periodicMeterReadsRequestDto = this.monitoringMapper.map(
-                periodicMeterReadsRequestValueObject, PeriodicMeterReadsRequest.class);
+        final SynchronizeTimeReadsRequest synchronizeTimeReadsRequestDto = this.adhocMapper.map(
+                synchronizeTimeReadsRequestValueObject, SynchronizeTimeReadsRequest.class);
+
+        // this.osgpCoreRequestMessageSender.send(new
+        // RequestMessage(correlationUid, organisationIdentification,
+        // deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, periodicMeterReadsRequestDto), messageType);
+                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
+
     }
 
-    public void handlePeriodicMeterReadsresponse(final String deviceIdentification,
+    public void handleSynchronizeTimeReadsresponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final PeriodicMeterReadsContainer periodMeterReadsValueDTO) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", messageType);
+        LOGGER.info("handleSynchronizeReadsresponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -98,13 +103,7 @@ public class MonitoringService {
                     "Unexpected exception while retrieving response message", e);
 
         }
-
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer periodMeterReadsValueDomain = this.monitoringMapper
-                .map(periodMeterReadsValueDTO,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class);
-
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, periodMeterReadsValueDomain), messageType);
-
+                deviceIdentification, result, osgpException, null), messageType);
     }
 }

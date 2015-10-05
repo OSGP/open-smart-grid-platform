@@ -1,9 +1,11 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
@@ -16,38 +18,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-@Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
-public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMessageProcessor {
+@Component("domainSmartMeteringSynchronizeTimeResponseMessageProcessor")
+public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessageProcessor {
+
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsresponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeResponseMessageProcessor.class);
 
     @Autowired
     private NotificationService notificationService;
 
-    @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
-
-    @Autowired
-    private MonitoringMapper monitoringMapper;
-
-    protected PeriodicMeterReadsresponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
+    protected SynchronizeTimeResponseMessageProcessor() {
+        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
     }
 
     @Override
     public void processMessage(final ObjectMessage objectMessage) throws JMSException {
-        LOGGER.debug("Processing smart metering periodic meter data response message");
+        LOGGER.debug("Processing smart metering synchronize time data response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -59,7 +52,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         String result = null;
         String message = null;
         NotificationType notificationType = null;
-        PeriodicMeterReadContainer data = null;
 
         try {
             correlationUid = objectMessage.getJMSCorrelationID();
@@ -70,8 +62,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             result = objectMessage.getStringProperty(Constants.RESULT);
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
-
-            data = (PeriodicMeterReadContainer) objectMessage.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -84,11 +74,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            // Convert the events to entity and save the periodicMeterReads
-            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
-                    deviceIdentification, correlationUid, data);
-            this.meterResponseDataRepository.save(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

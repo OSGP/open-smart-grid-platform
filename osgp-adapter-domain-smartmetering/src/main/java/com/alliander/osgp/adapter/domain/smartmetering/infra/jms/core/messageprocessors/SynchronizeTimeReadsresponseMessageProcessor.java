@@ -1,9 +1,11 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
@@ -16,28 +18,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-@Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
-public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainSmartMeteringSynchronizeTimeReadsResponseMessageProcessor")
+public class SynchronizeTimeReadsresponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsresponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeReadsresponseMessageProcessor.class);
 
     @Autowired
-    @Qualifier("domainSmartMeteringMonitoringService")
-    private MonitoringService monitoringService;
+    @Qualifier("domainSmartMeteringAdhocService")
+    private AdhocService adhocService;
 
-    protected PeriodicMeterReadsresponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
+    protected SynchronizeTimeReadsresponseMessageProcessor() {
+        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
     }
 
     @Override
@@ -52,7 +54,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        PeriodicMeterReadsContainer periodicMeterReadsContainer = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -63,7 +64,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
-            periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage.getDataObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -79,8 +79,8 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException, periodicMeterReadsContainer);
+            this.adhocService.handleSynchronizeTimeReadsresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

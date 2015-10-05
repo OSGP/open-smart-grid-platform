@@ -46,6 +46,7 @@ public class WebServiceConfig {
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MANAGEMENT = "jaxb2.marshaller.context.path.smartmetering.management";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_INSTALLATION = "jaxb2.marshaller.context.path.smartmetering.installation";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MONITORING = "jaxb2.marshaller.context.path.smartmetering.monitoring";
+    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_ADHOC = "jaxb2.marshaller.context.path.smartmetering.adhoc";
 
     private static final String ORGANISATION_IDENTIFICATION_HEADER = "OrganisationIdentification";
     private static final String ORGANISATION_IDENTIFICATION_CONTEXT = ORGANISATION_IDENTIFICATION_HEADER;
@@ -196,8 +197,35 @@ public class WebServiceConfig {
     }
 
     /**
+     * Method for creating the Marshaller for smart metering adhoc.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller smartMeteringAdhocMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_ADHOC));
+
+        return marshaller;
+    }
+
+    /**
      * Method for creating the Marshalling Payload Method Processor for Smart
      * Metering monitoring.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor smartMeteringAdhocMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringAdhocMarshaller(),
+                this.smartMeteringAdhocMarshaller());
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for Smart
+     * Metering adhoc.
      *
      * @return MarshallingPayloadMethodProcessor
      */
@@ -222,6 +250,7 @@ public class WebServiceConfig {
         methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
+        methodArgumentResolvers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
@@ -233,6 +262,7 @@ public class WebServiceConfig {
         methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
         methodReturnValueHandlers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
         methodReturnValueHandlers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
+        methodReturnValueHandlers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
 
         defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
 

@@ -13,7 +13,9 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.jms;
  */
 public enum SmartMeteringRequestMessageType {
     // TODO: insert message types for smart metering
+
     ADD_METER,
     FIND_EVENTS,
-    REQUEST_PERIODIC_METER_DATA
+    REQUEST_PERIODIC_METER_DATA,
+    REQUEST_SYNCHRONIZE_TIME
 }

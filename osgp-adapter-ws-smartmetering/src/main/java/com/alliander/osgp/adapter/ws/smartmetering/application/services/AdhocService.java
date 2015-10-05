@@ -18,14 +18,14 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-@Service(value = "wsSmartMeteringMonitoringService")
+@Service(value = "wsSmartMeteringAdhocService")
 @Validated
-public class MonitoringService {
+public class AdhocService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -33,29 +33,19 @@ public class MonitoringService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-    private String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
+    public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            @Identification final PeriodicMeterReadsRequest requestData) throws FunctionalException {
+            @Identification final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
 
-        // TODO: bypassing authorization logic for now, needs to be fixed.
-
-        // final Organisation organisation =
-        // this.domainHelperService.findOrganisation(organisationIdentification);
-        // final Device device =
-        // this.domainHelperService.findActiveDevice(deviceIdentification);
-        //
-        // this.domainHelperService.isAllowed(organisation, device,
-        // DeviceFunction.GET_STATUS);
-
-        LOGGER.debug("enqueuePeriodicMeterReadsRequestData called with organisation {} and device {}",
+        LOGGER.debug("enqueueSynchronizeTimeReadsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA, correlationUid,
-                organisationIdentification, deviceIdentification, requestData);
+                SmartMeteringRequestMessageType.REQUEST_SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
+                deviceIdentification, requestData);
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -64,13 +54,12 @@ public class MonitoringService {
 
     /**
      * @param organisationIdentification
-     * @param device
+     * @param requestData
      * @throws FunctionalException
      */
-    public String requestPeriodicMeterReads(final String organisationIdentification,
-            final PeriodicMeterReadsRequest requestData) throws FunctionalException {
-        return this.enqueuePeriodicMeterReadsRequestData(organisationIdentification,
-                requestData.getDeviceIdentification(), requestData);
+    public String requestSynchronizeTimeData(final String organisationIdentification,
+            final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
+        return this.enqueueSynchronizeTimeRequest(organisationIdentification, requestData.getDeviceIdentification(),
+                requestData);
     }
-
 }

@@ -31,10 +31,6 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-/**
- * @author OSGP
- *
- */
 @Service(value = "domainSmartMeteringInstallationService")
 @Transactional(value = "transactionManager")
 public class InstallationService {
