@@ -11,7 +11,6 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Adhoc
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -21,11 +20,12 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
@@ -73,18 +73,18 @@ public class AdhocService {
         final SynchronizeTimeReadsRequest synchronizeTimeReadsRequestDto = this.adhocMapper.map(
                 synchronizeTimeReadsRequestValueObject, SynchronizeTimeReadsRequest.class);
 
-//        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-//                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
-        
+        // this.osgpCoreRequestMessageSender.send(new
+        // RequestMessage(correlationUid, organisationIdentification,
+        // deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
+
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);        
-        
+                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
+
     }
 
     public void handleSynchronizeTimeReadsresponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final SynchronizeTimeReads synchronizeTimeReadsValueDTO) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleSynchronizeReadsresponse for MessageType: {}", messageType);
 
@@ -103,13 +103,7 @@ public class AdhocService {
                     "Unexpected exception while retrieving response message", e);
 
         }
-
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReads SynchronizeTimeReadsValueDomain = this.adhocMapper
-                .map(synchronizeTimeReadsValueDTO,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReads.class);
-
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, SynchronizeTimeReadsValueDomain), messageType);
-
+                deviceIdentification, result, osgpException, null), messageType);
     }
 }

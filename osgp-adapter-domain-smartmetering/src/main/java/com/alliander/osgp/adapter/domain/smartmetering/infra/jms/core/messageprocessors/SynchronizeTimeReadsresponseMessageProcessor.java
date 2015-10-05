@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReads;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -44,7 +43,7 @@ public class SynchronizeTimeReadsresponseMessageProcessor extends OsgpCoreRespon
     }
 
     @Override
-    public void processMessage(ObjectMessage message) throws JMSException {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing smart metering default response message");
 
         String correlationUid = null;
@@ -55,7 +54,6 @@ public class SynchronizeTimeReadsresponseMessageProcessor extends OsgpCoreRespon
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
         OsgpException osgpException = null;
-        SynchronizeTimeReads synchronizeTimeReads = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -66,7 +64,6 @@ public class SynchronizeTimeReadsresponseMessageProcessor extends OsgpCoreRespon
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
-            synchronizeTimeReads = (SynchronizeTimeReads) responseMessage.getDataObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -83,7 +80,7 @@ public class SynchronizeTimeReadsresponseMessageProcessor extends OsgpCoreRespon
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             this.adhocService.handleSynchronizeTimeReadsresponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException, synchronizeTimeReads);
+                    correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
