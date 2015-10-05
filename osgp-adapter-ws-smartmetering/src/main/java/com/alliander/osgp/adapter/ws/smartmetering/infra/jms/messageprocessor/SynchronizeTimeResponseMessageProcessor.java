@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReads;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -36,9 +34,6 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
     @Autowired
     private NotificationService notificationService;
 
-    @Autowired
-    private AdhocMapper adhocMapper;
-
     protected SynchronizeTimeResponseMessageProcessor() {
         super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
     }
@@ -58,8 +53,6 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
         String message = null;
         NotificationType notificationType = null;
 
-        SynchronizeTimeReads synchronizeTimeReads = null;
-
         try {
             correlationUid = objectMessage.getJMSCorrelationID();
             messageType = objectMessage.getJMSType();
@@ -69,8 +62,6 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
             result = objectMessage.getStringProperty(Constants.RESULT);
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
-
-            synchronizeTimeReads = (SynchronizeTimeReads) objectMessage.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -83,13 +74,6 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            // convert and Save the synchronizeTimeReads
-            final com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads data = this.adhocMapper
-                    .map(synchronizeTimeReads,
-                            com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SynchronizeTimeReads.class);
-
-            data.setCorrelationUid(correlationUid);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
