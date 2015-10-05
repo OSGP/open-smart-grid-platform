@@ -13,19 +13,20 @@
 	<xsd:element name="SynchronizeTimeReadsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-			<xsd:element name="Device_Identification" minOccurs="1"
-				maxOccurs="1">
-				<xsd:simpleType>
-					<xsd:restriction base="tns:AlphaNumericType">
-						<xsd:length value="17" />
-					</xsd:restriction>
-				</xsd:simpleType>
-			</xsd:element>
-				<xsd:element name="SynchronizeTimeReadsRequestData" type="tns:SynchronizeTimeReadsRequestData" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="Device_Identification" minOccurs="1"
+					maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="tns:AlphaNumericType">
+							<xsd:length value="17" />
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<xsd:element name="SynchronizeTimeReadsRequestData"
+					type="tns:SynchronizeTimeReadsRequestData" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
 	<xsd:element name="SynchronizeTimeReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -33,26 +34,9 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
-	<xsd:element name="RetrieveSynchronizeTimeReadsRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" />
-			<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-			
-	<xsd:element name="RetrieveSynchronizeTimeReadsResponse">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="SynchronizeTimeReads" type="tns:SynchronizeTimeReads" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	
+
 	<!-- DATATYPES -->
-	
+
 	<xsd:complexType name="Action" abstract="true">
 		<xsd:sequence>
 		</xsd:sequence>
@@ -64,35 +48,28 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="SynchronizeTimeReadsRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="tns:Query">
 				<xsd:sequence>
-					<xsd:element name="Date" type="xsd:date" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="Date" type="xsd:date" minOccurs="1"
+						maxOccurs="1" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
-	<xsd:complexType name="SynchronizeTimeReads">
-		<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" />
-			<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />	
-		</xsd:sequence>
-	</xsd:complexType>
-	
+
 	<xsd:simpleType name="DeviceIdentification">
 		<xsd:restriction base="tns:AlphaNumericType">
 			<xsd:length value="17" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<xsd:simpleType name="AlphaNumericType">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[a-zA-Z0-9 ]+" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
-</xsd:schema>
 
+</xsd:schema>
