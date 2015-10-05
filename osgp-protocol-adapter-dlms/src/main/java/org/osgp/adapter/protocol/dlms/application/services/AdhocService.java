@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -46,48 +45,49 @@ public class AdhocService {
             // Synchronize Time has for now no return data, like a deviation
             // time.
 
-            final SynchronizeTimeReads synchronizeTimeReads = new SynchronizeTimeReads();
-            
-            DateTime newSmartMeterTime = new DateTime();
-            
+            final DateTime newSmartMeterTime = new DateTime();
+
             LOGGER.info(new String("************************************************************").substring(0, 55));
             LOGGER.info(new String("*********** Synchronize Time SmartMeter ********************").substring(0, 55));
             LOGGER.info(new String("************************************************************").substring(0, 55));
             LOGGER.info(new String("************************************************************").substring(0, 55));
-            LOGGER.info(new String("*********   Year:       {}   *******************************").substring(0, 53), newSmartMeterTime.getYear());
-            LOGGER.info(new String("*********   Month:      {}   *******************************").substring(0, 55), newSmartMeterTime.getMonthOfYear());
-            LOGGER.info(new String("*********   Day:        {}   *******************************").substring(0, 56), newSmartMeterTime.getDayOfMonth());
-            LOGGER.info(new String("*********   Hour:       {}   *******************************").substring(0, 55), newSmartMeterTime.getHourOfDay());
-            LOGGER.info(new String("*********   Minutes:    {}   *******************************").substring(0, 55), newSmartMeterTime.getMinuteOfHour());
-            LOGGER.info(new String("*********   Seconds:    {}   *******************************").substring(0, 55), newSmartMeterTime.getSecondOfMinute());
+            LOGGER.info(new String("*********   Year:       {}   *******************************").substring(0, 53),
+                    newSmartMeterTime.getYear());
+            LOGGER.info(new String("*********   Month:      {}   *******************************").substring(0, 55),
+                    newSmartMeterTime.getMonthOfYear());
+            LOGGER.info(new String("*********   Day:        {}   *******************************").substring(0, 56),
+                    newSmartMeterTime.getDayOfMonth());
+            LOGGER.info(new String("*********   Hour:       {}   *******************************").substring(0, 55),
+                    newSmartMeterTime.getHourOfDay());
+            LOGGER.info(new String("*********   Minutes:    {}   *******************************").substring(0, 55),
+                    newSmartMeterTime.getMinuteOfHour());
+            LOGGER.info(new String("*********   Seconds:    {}   *******************************").substring(0, 55),
+                    newSmartMeterTime.getSecondOfMinute());
             LOGGER.info(new String("************************************************************").substring(0, 55));
             LOGGER.info(new String("************************************************************").substring(0, 55));
             LOGGER.info(new String("************************************************************").substring(0, 55));
-            
-            synchronizeTimeReads.setDeviceIdentification(deviceIdentification);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
-                    synchronizeTimeReads);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during synchronizeTimeReads", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+                    "Unexpected exception during synchronizeTimeReads", e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final SynchronizeTimeReads synchronizeTimeReads) {
+            final DeviceResponseMessageSender responseMessageSender) {
 
+        // Creating a ProtocolResponseMessage without a Serializable object
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                synchronizeTimeReads);
+                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null);
 
         responseMessageSender.send(responseMessage);
     }
