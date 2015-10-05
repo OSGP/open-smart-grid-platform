@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.shared.security.CertificateHelper;
 import com.alliander.osgp.signing.server.domain.exceptions.SigningServerException;
@@ -34,7 +33,6 @@ import com.alliander.osgp.signing.server.domain.exceptions.SigningServerExceptio
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.signing.server" })
-@EnableTransactionManagement()
 @Import({ MessagingConfig.class })
 @PropertySource("file:${osp/signingServer/config}")
 public class ApplicationContext {
