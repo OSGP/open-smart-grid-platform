@@ -1,10 +1,3 @@
-package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
-
-import org.springframework.stereotype.Component;
-
 /**
  * Copyright 2015 Smart Society Services B.V.
  *
@@ -14,9 +7,22 @@ import org.springframework.stereotype.Component;
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
+package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
+
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.ConfigurableMapper;
+
+import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeReadsRequest;
+
 @Component(value = "adhocMapper")
 public class AdhocMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
+        mapperFactory
+                .classMap(SynchronizeTimeReadsRequest.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest.class)
+                .byDefault().register();
     }
 }
