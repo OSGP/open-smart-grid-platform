@@ -19,7 +19,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notificat
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "wsSmartMeteringNotificationService")
 @Transactional(value = "transactionManager")
@@ -43,7 +42,7 @@ public class NotificationService {
 
     public void sendNotification(@Identification final String organisationIdentification,
             final String deviceIdentification, final String result, final String correlationUid, final String message,
-            final NotificationType notificationType) throws FunctionalException {
+            final NotificationType notificationType) {
 
         LOGGER.info("sendNotification called with organisation {}", organisationIdentification);
 

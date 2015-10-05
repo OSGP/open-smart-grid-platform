@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 
 /**
@@ -82,21 +81,14 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
      *            The organisation identification.
      * @param deviceIdentification
      *            The device identification.
-     * @param messageType
+     * @param notificationType
      *            The message type.
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final NotificationType notificationType) {
 
         LOGGER.info("handeling error: {} for notification type: {}", e.getMessage(), notificationType);
-
-        try {
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
-                    correlationUid, e.getMessage(), notificationType);
-        } catch (final FunctionalException e1) {
-            // TODO how to handle this?
-            LOGGER.info("Something went wrong during error handling: {} for notification type: {}", e.getMessage(),
-                    notificationType);
-        }
+        this.notificationService.sendNotification(organisationIdentification, deviceIdentification, "NOT_OK",
+                correlationUid, e.getMessage(), notificationType);
     }
 }

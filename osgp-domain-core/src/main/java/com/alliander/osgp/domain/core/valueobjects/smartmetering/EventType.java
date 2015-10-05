@@ -32,10 +32,14 @@ public enum EventType {
 
     private int value;
 
-    public static final EventType[] VALUES = EventType.values();
+    private static final EventType[] VALUES = EventType.values();
 
     EventType(final int value) {
         this.value = value;
+    }
+
+    public static EventType[] getValues() {
+        return VALUES;
     }
 
     public int getValue() {
