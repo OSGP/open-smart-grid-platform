@@ -1,0 +1,83 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package com.alliander.osgp.signing.server.application.services;
+
+import java.security.PrivateKey;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.alliander.osgp.oslp.Oslp.Message;
+import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
+import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.signing.server.infra.messaging.SigningServerResponseMessageSender;
+
+@Service
+public class SigningService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SigningService.class);
+
+    @Autowired
+    private PrivateKey privateKey;
+
+    @Resource
+    private String signatureProvider;
+
+    @Resource
+    private String signature;
+
+    @Autowired
+    private SigningServerResponseMessageSender signingServerResponseMessageSender;
+
+    public void sign(final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto, final String correlationUid,
+            final String deviceIdentification) {
+
+        LOGGER.info("Received message to sign for device: {} with correlationId: {}", deviceIdentification,
+                correlationUid);
+
+        final byte[] deviceId = unsignedOslpEnvelopeDto.getDeviceId();
+        final byte[] sequenceNumber = unsignedOslpEnvelopeDto.getSequenceNumber();
+        final Message payloadMessage = unsignedOslpEnvelopeDto.getPayloadMessage();
+
+        final OslpEnvelope oslpEnvelope = new OslpEnvelope.Builder().withDeviceId(deviceId)
+                .withSequenceNumber(sequenceNumber).withPrimaryKey(this.privateKey).withSignature(this.signature)
+                .withProvider(this.signatureProvider).withPayloadMessage(payloadMessage).build();
+
+        // TODO: check everything and send NOT_OK if needed... the null check is
+        // just an example... also: do we want to use OsgpException everywhere?
+        // seems that the ResponseMessage forces you to do so...
+        ResponseMessage responseMessage = null;
+
+        if (oslpEnvelope == null) {
+            // responseMessage = new ResponseMessage(correlationId + "",
+            // "organisationIdentification",
+            // deviceIdentification, ResponseMessageResultType.NOT_OK, new
+            // OsgpException(componentType, message, cause), null);
+
+            LOGGER.error("Message for device: {} with correlationId: {} NOT SIGNED, sending error to protocol-adpater",
+                    deviceIdentification, correlationUid);
+        } else {
+            final SignedOslpEnvelopeDto signedOslpEnvelopeDto = new SignedOslpEnvelopeDto(oslpEnvelope,
+                    unsignedOslpEnvelopeDto);
+            responseMessage = new ResponseMessage(correlationUid + "", "organisationIdentification",
+                    deviceIdentification, ResponseMessageResultType.OK, null, signedOslpEnvelopeDto);
+
+            LOGGER.info("Message for device: {} with correlationId: {} signed, sendding response to protocol-adpater",
+                    deviceIdentification, correlationUid);
+        }
+
+        this.signingServerResponseMessageSender.send(responseMessage, "SIGNING_RESPONSE");
+    }
+}
