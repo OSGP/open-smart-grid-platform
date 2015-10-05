@@ -117,7 +117,6 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
 
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
-
                 CommonGetConfigurationRequestMessageProcessor.this.handleGetConfigurationDeviceResponse(deviceResponse,
                         CommonGetConfigurationRequestMessageProcessor.this.responseMessageSender, domain,
                         domainVersion, messageType, retryCount);
