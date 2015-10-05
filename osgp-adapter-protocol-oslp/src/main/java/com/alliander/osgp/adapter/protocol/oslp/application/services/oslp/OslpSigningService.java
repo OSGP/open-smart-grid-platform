@@ -101,6 +101,7 @@ public class OslpSigningService {
             // Handle OSLP response message.
             this.handleSignedOslpResponse(signedOslpEnvelopeDto);
         } else {
+            // Hanle OSLP request message.
             this.handleSignedOslpRequest(signedOslpEnvelopeDto, deviceIdentification);
         }
     }
