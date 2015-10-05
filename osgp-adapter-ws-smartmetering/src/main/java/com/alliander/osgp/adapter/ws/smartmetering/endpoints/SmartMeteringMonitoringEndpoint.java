@@ -99,19 +99,22 @@ public class SmartMeteringMonitoringEndpoint {
             final MeterResponseData meterResponseData = this.meterResponseDataRepository
                     .findSingleResultByCorrelationUid(request.getCorrelationUid());
 
-            if (meterResponseData.getMessageData() instanceof PeriodicMeterReadContainer) {
+            if (meterResponseData != null) {
+                if (meterResponseData.getMessageData() instanceof PeriodicMeterReadContainer) {
 
-                // TODO not OK when not found
-                response.setPeriodicMeterReadsContainer(this.monitoringMapper.map(meterResponseData.getMessageData(),
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsContainer.class));
+                    // TODO not OK when not found
+                    response.setPeriodicMeterReadsContainer(this.monitoringMapper.map(
+                            meterResponseData.getMessageData(),
+                            com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsContainer.class));
 
-                // removing
-                LOGGER.info("deleting MeterResponseData for CorrelationUid {}", request.getCorrelationUid());
-                this.meterResponseDataRepository.delete(meterResponseData);
-            } else {
-                LOGGER.info(
-                        "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
-                        meterResponseData.getClass().getName(), request.getCorrelationUid());
+                    // removing
+                    LOGGER.info("deleting MeterResponseData for CorrelationUid {}", request.getCorrelationUid());
+                    this.meterResponseDataRepository.delete(meterResponseData);
+                } else {
+                    LOGGER.info(
+                            "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
+                            meterResponseData.getClass().getName(), request.getCorrelationUid());
+                }
             }
 
         } catch (final Exception e) {
