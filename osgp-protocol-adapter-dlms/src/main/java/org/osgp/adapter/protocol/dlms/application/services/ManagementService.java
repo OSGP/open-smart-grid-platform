@@ -66,6 +66,16 @@ public class ManagementService {
             // For now, just create some dummy data to return.
 
             final List<Event> events = new ArrayList<>();
+            events.add(new Event(DateTime.now(), 1));
+            events.add(new Event(DateTime.now(), 2));
+            events.add(new Event(DateTime.now(), 3));
+            events.add(new Event(DateTime.now(), 4));
+            events.add(new Event(DateTime.now(), 5));
+            events.add(new Event(DateTime.now(), 6));
+            events.add(new Event(DateTime.now(), 7));
+            events.add(new Event(DateTime.now(), 8));
+            events.add(new Event(DateTime.now(), 9));
+            events.add(new Event(DateTime.now(), 10));
             events.add(new Event(DateTime.now(), 11));
             events.add(new Event(DateTime.now(), 12));
             final EventMessageDataContainer eventMessageDataContainer = new EventMessageDataContainer(events);
