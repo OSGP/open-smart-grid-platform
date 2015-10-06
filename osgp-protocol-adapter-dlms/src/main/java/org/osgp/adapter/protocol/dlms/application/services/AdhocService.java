@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -34,7 +34,7 @@ public class AdhocService {
     // === REQUEST Synchronize Time DATA ===
 
     public void requestSynchronizeTime(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SynchronizeTimeReadsRequest synchronizeTimeReadsRequest,
+            final String correlationUid, final SynchronizeTimeRequest synchronizeTimeRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
@@ -71,9 +71,9 @@ public class AdhocService {
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during synchronizeTimeReads", e);
+            LOGGER.error("Unexpected exception during synchronizeTime", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during synchronizeTimeReads", e);
+                    "Unexpected exception during synchronizeTime", e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
