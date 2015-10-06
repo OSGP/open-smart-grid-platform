@@ -10,23 +10,14 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
-public class SynchronizeTimeReadsRequestData implements Serializable {
+public class SynchronizeTimeRequest implements Serializable {
 
-    private static final long serialVersionUID = -1483665562035897062L;
+    private static final long serialVersionUID = -2394318355946737102L;
 
     private String deviceIdentification;
-
-    private Date date;
-
-    public Date getDate() {
-        return this.date;
-    }
-
-    public void setDate(final Date date) {
-        this.date = date;
-    }
+    private List<SynchronizeTimeRequestData> synchronizeTimeRequestData;
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
@@ -34,5 +25,14 @@ public class SynchronizeTimeReadsRequestData implements Serializable {
 
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
+    }
+
+    public List<SynchronizeTimeRequestData> getSynchronizeTimeRequestData() {
+        return this.synchronizeTimeRequestData;
+    }
+
+    public void setSynchronizeTimeRequestData(
+            final List<SynchronizeTimeRequestData> synchronizeTimeRequestData) {
+        this.synchronizeTimeRequestData = synchronizeTimeRequestData;
     }
 }

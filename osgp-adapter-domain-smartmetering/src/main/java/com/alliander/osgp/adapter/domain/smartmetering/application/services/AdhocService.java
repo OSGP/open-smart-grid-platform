@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Adhoc
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -49,14 +49,14 @@ public class AdhocService {
         // Parameterless constructor required for transactions...
     }
 
-    public void requestSynchronizeTimeReads(
+    public void requestSynchronizeTime(
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final String correlationUid,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest synchronizeTimeReadsRequestValueObject,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject,
             final String messageType) throws FunctionalException {
 
-        LOGGER.info("requestSynchronizeTimeReads for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("requestSynchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
@@ -70,19 +70,19 @@ public class AdhocService {
         // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
         // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
-        final SynchronizeTimeReadsRequest synchronizeTimeReadsRequestDto = this.adhocMapper.map(
-                synchronizeTimeReadsRequestValueObject, SynchronizeTimeReadsRequest.class);
+        final SynchronizeTimeRequest synchronizeTimeRequestDto = this.adhocMapper.map(
+                synchronizeTimeRequestValueObject, SynchronizeTimeRequest.class);
 
         // this.osgpCoreRequestMessageSender.send(new
         // RequestMessage(correlationUid, organisationIdentification,
-        // deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
+        // deviceIdentification, synchronizeTimeRequestDto), messageType);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, synchronizeTimeReadsRequestDto), messageType);
+                deviceIdentification, synchronizeTimeRequestDto), messageType);
 
     }
 
-    public void handleSynchronizeTimeReadsresponse(final String deviceIdentification,
+    public void handleSynchronizeTimeresponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
