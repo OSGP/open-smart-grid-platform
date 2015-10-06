@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -57,11 +57,11 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            final SynchronizeTimeReadsRequest synchronizeTimeReadsRequest = (SynchronizeTimeReadsRequest) message
+            final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) message
                     .getObject();
 
             this.adhocService.requestSynchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
-                    synchronizeTimeReadsRequest, this.responseMessageSender, domain, domainVersion, messageType);
+                    synchronizeTimeRequest, this.responseMessageSender, domain, domainVersion, messageType);
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
