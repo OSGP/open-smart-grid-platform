@@ -14,15 +14,15 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
 
 @Component(value = "adhocMapper")
 public class AdhocMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory
-                .classMap(SynchronizeTimeReadsRequest.class,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest.class)
+                .classMap(SynchronizeTimeRequest.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest.class)
                 .byDefault().register();
     }
 }

@@ -18,8 +18,8 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeReadsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
@@ -40,17 +40,16 @@ public class SmartMeteringAdhocEndpoint {
     public SmartMeteringAdhocEndpoint() {
     }
 
-    @PayloadRoot(localPart = "SynchronizeTimeReadsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "SynchronizeTimeRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SynchronizeTimeReadsResponse requestSynchronizeTimeData(
+    public SynchronizeTimeResponse requestSynchronizeTimeData(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SynchronizeTimeReadsRequest request) throws OsgpException {
+            @RequestPayload final SynchronizeTimeRequest request) throws OsgpException {
 
-        final SynchronizeTimeReadsResponse response = new SynchronizeTimeReadsResponse();
+        final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest dataRequest = this.adhocMapper
-                .map(request,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest dataRequest = this.adhocMapper
+                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest.class);
 
         final String correlationUid = this.adhocService.requestSynchronizeTimeData(organisationIdentification,
                 dataRequest);

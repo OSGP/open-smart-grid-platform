@@ -28,21 +28,21 @@
     
     <!-- REQUEST_SYNCHRONIZE_TIME -->
     
-    <wsdl:message name="SynchronizeTimeReadsRequest">
-        <wsdl:part element="sminst:SynchronizeTimeReadsRequest" name="SynchronizeTimeReadsRequest">
+    <wsdl:message name="SynchronizeTimeRequest">
+        <wsdl:part element="sminst:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
         </wsdl:part>
     </wsdl:message>
-    <wsdl:message name="SynchronizeTimeReadsResponse">
-        <wsdl:part element="sminst:SynchronizeTimeReadsResponse" name="SynchronizeTimeReadsResponse">
+    <wsdl:message name="SynchronizeTimeResponse">
+        <wsdl:part element="sminst:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
         </wsdl:part>
     </wsdl:message>
 
     <wsdl:portType name="SmartmeteradhocPort">
    
-        <wsdl:operation name="RequestSynchronizeTimeReads">
-            <wsdl:input message="tns:SynchronizeTimeReadsRequest" name="SynchronizeTimeReadsRequest">
+        <wsdl:operation name="RequestSynchronizeTime">
+            <wsdl:input message="tns:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
             </wsdl:input>
-            <wsdl:output message="tns:SynchronizeTimeReadsResponse" name="SynchronizeTimeReadsResponse">
+            <wsdl:output message="tns:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -51,15 +51,15 @@
     <wsdl:binding name="SmartmeteradhocPortSoap11" type="tns:SmartmeteradhocPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 
-        <wsdl:operation name="RequestSynchronizeTimeReads">
+        <wsdl:operation name="RequestSynchronizeTime">
             <soap:operation soapAction="" />
-            <wsdl:input name="SynchronizeTimeReadsRequest">
+            <wsdl:input name="SynchronizeTimeRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
-            <wsdl:output name="SynchronizeTimeReadsResponse">
+            <wsdl:output name="SynchronizeTimeResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

@@ -18,7 +18,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "wsSmartMeteringAdhocService")
@@ -34,10 +34,10 @@ public class AdhocService {
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification,
-            @Identification final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
+            @Identification final String deviceIdentification, @Identification final SynchronizeTimeRequest requestData)
+            throws FunctionalException {
 
-        LOGGER.debug("enqueueSynchronizeTimeReadsRequest called with organisation {} and device {}",
+        LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
@@ -58,7 +58,7 @@ public class AdhocService {
      * @throws FunctionalException
      */
     public String requestSynchronizeTimeData(final String organisationIdentification,
-            final SynchronizeTimeReadsRequest requestData) throws FunctionalException {
+            final SynchronizeTimeRequest requestData) throws FunctionalException {
         return this.enqueueSynchronizeTimeRequest(organisationIdentification, requestData.getDeviceIdentification(),
                 requestData);
     }

@@ -20,8 +20,8 @@ public class AdhocMapper extends ConfigurableMapper {
 
         // domain value object -> dto value object
         mapperFactory
-                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeReadsRequest.class,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeReadsRequest.class)
+                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest.class,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest.class)
                 .byDefault().register();
 
     }

@@ -10,7 +10,7 @@
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
-	<xsd:element name="SynchronizeTimeReadsRequest">
+	<xsd:element name="SynchronizeTimeRequest">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="Device_Identification" minOccurs="1"
@@ -21,13 +21,13 @@
 						</xsd:restriction>
 					</xsd:simpleType>
 				</xsd:element>
-				<xsd:element name="SynchronizeTimeReadsRequestData"
-					type="tns:SynchronizeTimeReadsRequestData" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="SynchronizeTimeRequestData"
+					type="tns:SynchronizeTimeRequestData" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="SynchronizeTimeReadsResponse">
+	<xsd:element name="SynchronizeTimeResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
@@ -49,7 +49,7 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="SynchronizeTimeReadsRequestData">
+	<xsd:complexType name="SynchronizeTimeRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="tns:Query">
 				<xsd:sequence>
