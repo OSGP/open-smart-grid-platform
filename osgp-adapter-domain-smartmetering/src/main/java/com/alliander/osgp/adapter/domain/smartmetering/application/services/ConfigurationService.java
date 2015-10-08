@@ -29,7 +29,7 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-@Service(value = "domainSmartMeteringAdhocService")
+@Service(value = "domainSmartMeteringConfigurationService")
 @Transactional(value = "transactionManager")
 public class ConfigurationService {
 
