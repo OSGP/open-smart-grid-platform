@@ -29,7 +29,8 @@ public enum FunctionalExceptionType {
     // Other exceptions
     VALIDATION_ERROR(401, "Validation error."),
     TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD(402, "Set tariff schedule is not allowed for PSLD."),
-    ARGUMENT_NULL(403, "Argument null.");
+    ARGUMENT_NULL(403, "Argument null."),
+    JMS_TEMPLATE_NULL(404, "JSM template was null. Restart server.");
 
     private int code;
     private String message;
