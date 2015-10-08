@@ -16,8 +16,6 @@ public class SynchronizeTimeRequestData implements Serializable {
 
     private static final long serialVersionUID = -1483665562035897062L;
 
-    private String deviceIdentification;
-
     private Date date;
 
     public Date getDate() {
@@ -26,13 +24,5 @@ public class SynchronizeTimeRequestData implements Serializable {
 
     public void setDate(final Date date) {
         this.date = date;
-    }
-
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
-    }
-
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
     }
 }
