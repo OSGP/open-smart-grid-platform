@@ -8,7 +8,6 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class SpecialDaysRequest implements Serializable {
 
@@ -16,15 +15,7 @@ public class SpecialDaysRequest implements Serializable {
 
     private String deviceIdentification;
 
-    private List<SpecialDaysRequestData> specialDaysRequestData;
-
-    public List<SpecialDaysRequestData> getSpecialDaysRequestData() {
-        return specialDaysRequestData;
-    }
-
-    public void setSpecialDaysRequestData(List<SpecialDaysRequestData> specialDaysRequestData) {
-        this.specialDaysRequestData = specialDaysRequestData;
-    }
+    private SpecialDaysRequestData specialDaysRequestData;
 
     public String getDeviceIdentification() {
         return deviceIdentification;
@@ -32,5 +23,13 @@ public class SpecialDaysRequest implements Serializable {
 
     public void setDeviceIdentification(String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
+    }
+
+    public SpecialDaysRequestData getSpecialDaysRequestData() {
+        return specialDaysRequestData;
+    }
+
+    public void setSpecialDaysRequestData(SpecialDaysRequestData specialDaysRequestData) {
+        this.specialDaysRequestData = specialDaysRequestData;
     }
 }
