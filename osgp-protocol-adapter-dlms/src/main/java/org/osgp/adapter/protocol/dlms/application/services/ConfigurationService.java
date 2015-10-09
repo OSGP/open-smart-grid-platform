@@ -33,7 +33,7 @@ public class ConfigurationService {
 
     // === REQUEST Special Days DATA ===
 
-    public void requestSynchronizeTime(final String organisationIdentification, final String deviceIdentification,
+    public void requestSpecialDays(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SpecialDaysRequest specialDaysRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
@@ -46,8 +46,8 @@ public class ConfigurationService {
             LOGGER.info("SpecialDaysRequest : {}", specialDaysRequest.getSpecialDaysRequestData().size());
             for (final SpecialDaysRequestData specialDay : specialDaysRequest.getSpecialDaysRequestData()) {
                 LOGGER.info("******************************************************");
-                LOGGER.info("Special Day date :{} ", specialDay.getSpecialDayDate());
-                LOGGER.info("Special Day dayId :{} ", specialDay.getDayId());
+                LOGGER.info("Special Day date :{} ", specialDay.getSpecialDays());
+//                LOGGER.info("Special Day dayId :{} ", specialDay.getDayId());
                 LOGGER.info("******************************************************");
             }
 
