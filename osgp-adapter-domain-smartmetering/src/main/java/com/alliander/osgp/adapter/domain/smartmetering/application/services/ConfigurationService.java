@@ -73,10 +73,6 @@ public class ConfigurationService {
         final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequest.class);
 
-        // this.osgpCoreRequestMessageSender.send(new
-        // RequestMessage(correlationUid, organisationIdentification,
-        // deviceIdentification, synchronizeTimeRequestDto), messageType);
-
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, specialDaysRequestDto), messageType);
 
