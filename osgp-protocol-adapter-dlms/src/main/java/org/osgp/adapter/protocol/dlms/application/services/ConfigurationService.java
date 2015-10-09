@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -43,11 +44,13 @@ public class ConfigurationService {
 
         try {
             // The Special days towards the Smart Meter
-            LOGGER.info("SpecialDaysRequest : {}", specialDaysRequest.getSpecialDaysRequestData().size());
-            for (final SpecialDaysRequestData specialDay : specialDaysRequest.getSpecialDaysRequestData()) {
+            SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
+            
+            LOGGER.info("SpecialDaysRequest : {}", specialDaysRequest.getSpecialDaysRequestData());
+            for (final SpecialDay specialDay : specialDaysRequestData.getSpecialDays()) {
                 LOGGER.info("******************************************************");
-                LOGGER.info("Special Day date :{} ", specialDay.getSpecialDays());
-//                LOGGER.info("Special Day dayId :{} ", specialDay.getDayId());
+                LOGGER.info("Special Day date :{} ", specialDay.getSpecialDayDate());
+                LOGGER.info("Special Day dayId :{} ", specialDay.getDayId());
                 LOGGER.info("******************************************************");
             }
 
