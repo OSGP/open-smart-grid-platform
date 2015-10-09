@@ -21,7 +21,7 @@
 						</xsd:restriction>
 					</xsd:simpleType>
 				</xsd:element>
-				<xsd:element name="SpecialDaysRequestData" type="tns:SpecialDaysRequestData" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="SpecialDaysRequestData" type="tns:SpecialDaysRequestData" minOccurs="1" maxOccurs="1" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
