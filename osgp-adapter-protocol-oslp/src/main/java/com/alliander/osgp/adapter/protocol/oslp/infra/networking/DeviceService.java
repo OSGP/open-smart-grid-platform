@@ -12,6 +12,7 @@ import java.io.IOException;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetPowerUsageHistoryDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.ResumeScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotificationsDeviceRequest;
@@ -86,5 +87,11 @@ public interface DeviceService {
             String domainVersion, String messageType, int retryCount, boolean isScheduled);
 
     void doSetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newGetStatus(GetStatusDeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
+            String messageType, int retryCount, boolean isScheduled);
+
+    void doGetStatus(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }

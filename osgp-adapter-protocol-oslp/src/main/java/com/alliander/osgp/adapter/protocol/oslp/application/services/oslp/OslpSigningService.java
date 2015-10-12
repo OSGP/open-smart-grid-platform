@@ -17,6 +17,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonGetConfigurationRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonGetFirmwareRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonGetStatusRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonSetConfigurationRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
@@ -46,6 +47,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpCommonSetConfigurationRequestMessageProcessor")
     private CommonSetConfigurationRequestMessageProcessor commonSetConfigurationRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpCommonGetStatusRequestMessageProcessor")
+    private CommonGetStatusRequestMessageProcessor commonGetStatusRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -148,6 +153,9 @@ public class OslpSigningService {
                     signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_CONFIGURATION)) {
             this.commonSetConfigurationRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_STATUS)) {
+            this.commonGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
