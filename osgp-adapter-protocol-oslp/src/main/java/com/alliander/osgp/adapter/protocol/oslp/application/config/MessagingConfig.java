@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.annotation.Resource;
 import javax.jms.MessageListener;
 
@@ -16,8 +19,11 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +48,8 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerReq
 @EnableTransactionManagement()
 @PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
 public class MessagingConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);
 
     // JMS Settings
     private static final String PROPERTY_NAME_JMS_ACTIVEMQ_BROKER_URL = "jms.activemq.broker.url";
@@ -190,6 +198,8 @@ public class MessagingConfig {
         redeliveryPolicyMap.put(this.osgpRequestsQueue(), this.osgpRequestsRedeliveryPolicy());
         redeliveryPolicyMap.put(this.osgpResponsesQueue(), this.osgpResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.oslpLogItemRequestsQueue(), this.oslpLogItemRequestsRedeliveryPolicy());
+        redeliveryPolicyMap.put(this.signingServerRequestsQueue(), this.signingServerRequetsRedeliveryPolicy());
+        redeliveryPolicyMap.put(this.replyToQueue(), this.signingServerResponsesRedeliveryPolicy());
         return redeliveryPolicyMap;
     }
 
@@ -495,9 +505,31 @@ public class MessagingConfig {
     @Qualifier("signingServerResponsesMessageListener")
     private MessageListener signingServerResponsesMessageListener;
 
+    /**
+     * Instead of a fixed name for the responses queue, the signing-server uses
+     * a 'reply-to' responses queue. This 'reply-to' responses queue is
+     * communicated to the signing-server by this Protocol-Adapter-OSLP instance
+     * when a request message is sent to the signing-server. The signing-server
+     * will send signed response messages to the 'reply-to' queue. This ensures
+     * that the signed response messages for this Protocol-Adapter-OSLP instance
+     * are sent back to this instance.
+     */
     @Bean
-    public ActiveMQDestination signingServerResponsesQueue() {
-        return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE));
+    public ActiveMQDestination replyToQueue() {
+        try {
+            final String prefix = this.environment
+                    .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE);
+            final String hostName = InetAddress.getLocalHost().getHostName();
+            final String randomPostFix = RandomStringUtils.random(10, false, true);
+            final String queueName = prefix.concat("-").concat(hostName).concat("-").concat(randomPostFix);
+
+            LOGGER.info("------> replyToQueue: {}", queueName);
+
+            return new ActiveMQQueue(queueName);
+        } catch (final UnknownHostException e) {
+            LOGGER.error("UnknownHostException while trying to create replyToQueue", e);
+            return null;
+        }
     }
 
     @Bean
@@ -511,7 +543,7 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
         redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY)));
-        redeliveryPolicy.setDestination(this.signingServerResponsesQueue());
+        redeliveryPolicy.setDestination(this.replyToQueue());
         redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER)));
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
@@ -523,7 +555,7 @@ public class MessagingConfig {
     public DefaultMessageListenerContainer signingResponsesMessageListenerContainer() {
         final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
         messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
-        messageListenerContainer.setDestination(this.signingServerResponsesQueue());
+        messageListenerContainer.setDestination(this.replyToQueue());
         messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment

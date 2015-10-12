@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.signing.server.infra.messaging;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -29,14 +30,14 @@ public class SigningServerResponseMessageSender {
     @Autowired
     private JmsTemplate responsesJmsTemplate;
 
-    public void send(final ResponseMessage responseMessage, final String messageType) {
+    public void send(final ResponseMessage responseMessage, final String messageType, final Destination replyToQueue) {
 
         if (!this.checkMessage(responseMessage)) {
             LOGGER.error("Response message failed check, not sending response.");
             return;
         }
 
-        this.sendMessage(responseMessage, messageType);
+        this.sendMessage(responseMessage, messageType, replyToQueue);
     }
 
     private boolean checkMessage(final ResponseMessage msg) {
@@ -60,8 +61,9 @@ public class SigningServerResponseMessageSender {
         return true;
     }
 
-    private void sendMessage(final ResponseMessage responseMessage, final String messageType) {
-        this.responsesJmsTemplate.send(new MessageCreator() {
+    private void sendMessage(final ResponseMessage responseMessage, final String messageType,
+            final Destination replyToQueue) {
+        this.responsesJmsTemplate.send(replyToQueue, new MessageCreator() {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(responseMessage);
@@ -71,8 +73,6 @@ public class SigningServerResponseMessageSender {
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
-                // objectMessage.setStringProperty(Constants.RESULT,
-                // responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
                     objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
                             .getMessage());

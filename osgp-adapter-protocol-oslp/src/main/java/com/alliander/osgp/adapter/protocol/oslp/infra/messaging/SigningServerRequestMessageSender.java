@@ -12,6 +12,7 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.apache.activemq.command.ActiveMQDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,11 @@ public class SigningServerRequestMessageSender {
     @Qualifier("signingServerRequestsJmsTemplate")
     private JmsTemplate signingServerRequestsJmsTemplate;
 
+    @Autowired
+    private ActiveMQDestination replyToQueue;
+
     public void send(final RequestMessage requestMessage, final String messageType) {
-        LOGGER.info("Sending request message to signing server.");
+        LOGGER.info("Sending request message to signing server, with reply-to-queue: {}.", this.replyToQueue.toString());
 
         this.signingServerRequestsJmsTemplate.send(new MessageCreator() {
 
@@ -39,6 +43,7 @@ public class SigningServerRequestMessageSender {
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
                 objectMessage.setJMSType(messageType);
+                objectMessage.setJMSReplyTo(SigningServerRequestMessageSender.this.replyToQueue);
                 objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());

@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.signing.server.infra.messaging;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -34,14 +35,15 @@ public class SigningServerRequestMessageListener implements MessageListener {
     public void onMessage(final Message message) {
         try {
             final ObjectMessage objectMessage = (ObjectMessage) message;
+            final Destination replyToQueue = objectMessage.getJMSReplyTo();
             final RequestMessage requestMessage = (RequestMessage) objectMessage.getObject();
             final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = (UnsignedOslpEnvelopeDto) requestMessage
                     .getRequest();
             final String correlationUid = objectMessage.getJMSCorrelationID();
             final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            LOGGER.info("Received message of type: {}, for device: {} with correlationId: {}",
-                    objectMessage.getJMSType(), deviceIdentification, correlationUid);
+            LOGGER.info("Received message of type: {}, for device: {} with correlationId: {} and replyToQueue: {}",
+                    objectMessage.getJMSType(), deviceIdentification, correlationUid, replyToQueue.toString());
 
             LOGGER.info("-----------------------------------------------------------------------------");
             LOGGER.info("unsignedOslpEnvelopeDto.getCorrelationUid() : {}", unsignedOslpEnvelopeDto.getCorrelationUid());
@@ -59,7 +61,7 @@ public class SigningServerRequestMessageListener implements MessageListener {
             LOGGER.info("unsignedOslpEnvelopeDto.isScheduled() : {}", unsignedOslpEnvelopeDto.isScheduled());
             LOGGER.info("-----------------------------------------------------------------------------");
 
-            this.signingService.sign(unsignedOslpEnvelopeDto, correlationUid, deviceIdentification);
+            this.signingService.sign(unsignedOslpEnvelopeDto, correlationUid, deviceIdentification, replyToQueue);
 
         } catch (final JMSException ex) {
             LOGGER.error("Exception: {} ", ex.getMessage(), ex);

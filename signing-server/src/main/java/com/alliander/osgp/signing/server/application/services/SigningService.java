@@ -10,6 +10,7 @@ package com.alliander.osgp.signing.server.application.services;
 import java.security.PrivateKey;
 
 import javax.annotation.Resource;
+import javax.jms.Destination;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +43,27 @@ public class SigningService {
     private SigningServerResponseMessageSender signingServerResponseMessageSender;
 
     public void sign(final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto, final String correlationUid,
-            final String deviceIdentification) {
+            final String deviceIdentification, final Destination replyToQueue) {
+
+        // Check the basics.
+        if (unsignedOslpEnvelopeDto == null) {
+            LOGGER.error("UnsignedOslpEnvelopeDto instance is null, unable to sign message");
+            return;
+        }
+        if (replyToQueue == null) {
+            LOGGER.error("Destination replyToQueue is null, unable to send response to protocol-adapter");
+            return;
+        }
 
         LOGGER.info("Received message to sign for device: {} with correlationId: {}", deviceIdentification,
                 correlationUid);
+
+        // Sign the message.
+        this.doSignMessage(unsignedOslpEnvelopeDto, correlationUid, deviceIdentification, replyToQueue);
+    }
+
+    private void doSignMessage(final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto, final String correlationUid,
+            final String deviceIdentification, final Destination replyToQueue) {
 
         final byte[] deviceId = unsignedOslpEnvelopeDto.getDeviceId();
         final byte[] sequenceNumber = unsignedOslpEnvelopeDto.getSequenceNumber();
@@ -74,10 +92,10 @@ public class SigningService {
             responseMessage = new ResponseMessage(correlationUid + "", "organisationIdentification",
                     deviceIdentification, ResponseMessageResultType.OK, null, signedOslpEnvelopeDto);
 
-            LOGGER.info("Message for device: {} with correlationId: {} signed, sendding response to protocol-adpater",
+            LOGGER.info("Message for device: {} with correlationId: {} signed, sending response to protocol-adpater",
                     deviceIdentification, correlationUid);
         }
 
-        this.signingServerResponseMessageSender.send(responseMessage, "SIGNING_RESPONSE");
+        this.signingServerResponseMessageSender.send(responseMessage, "SIGNING_RESPONSE", replyToQueue);
     }
 }
