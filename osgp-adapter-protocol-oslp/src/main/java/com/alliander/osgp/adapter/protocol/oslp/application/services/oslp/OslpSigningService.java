@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Commo
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonGetStatusRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonRebootRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonSetConfigurationRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonSetEventNotificationsRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -56,6 +57,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpCommonRebootRequestMessageProcessor")
     private CommonRebootRequestMessageProcessor commonRebootRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpCommonSetEventNotificationsRequestMessageProcessor")
+    private CommonSetEventNotificationsRequestMessageProcessor commonSetEventNotificationsRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -164,6 +169,9 @@ public class OslpSigningService {
                     signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_REBOOT)) {
             this.commonRebootRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
+            this.commonSetEventNotificationsRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());

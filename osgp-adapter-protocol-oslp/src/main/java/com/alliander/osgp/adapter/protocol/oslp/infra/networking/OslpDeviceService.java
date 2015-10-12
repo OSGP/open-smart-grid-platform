@@ -181,9 +181,52 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void setEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.debug("Setting event notifications for device: {}.", deviceRequest.getDeviceIdentification());
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetEventNotifications()");
+        // LOGGER.debug("Setting event notifications for device: {}.",
+        // deviceRequest.getDeviceIdentification());
+        //
+        // final OslpEnvelope oslpRequest =
+        // this.buildOslpRequestSetEventNotifications(deviceRequest);
+        //
+        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+        //
+        // final OslpResponseHandler oslpResponseHandler = new
+        // OslpResponseHandler() {
+        //
+        // @Override
+        // public void handleResponse(final OslpEnvelope oslpResponse) {
+        // OslpDeviceService.this.handleOslpResponseSetEventNotifications(deviceRequest,
+        // oslpResponse,
+        // deviceResponseHandler);
+        // }
+        //
+        // @Override
+        // public void handleException(final Throwable t) {
+        // OslpDeviceService.this.handleException(t, deviceRequest,
+        // deviceResponseHandler);
+        //
+        // }
+        // };
+        //
+        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
+        // oslpRequest, oslpResponseHandler,
+        // deviceRequest.getDeviceIdentification());
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestSetEventNotifications(deviceRequest);
+    @Override
+    public void newSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
+            final String ipAddress, final String domain, final String domainVersion, final String messageType,
+            final int retryCount, final boolean isScheduled) {
+        LOGGER.info("newSetEventNotifications() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSetEventNotifications(deviceRequest, ipAddress, domain, domainVersion, messageType,
+                retryCount, isScheduled);
+    }
+
+    @Override
+    public void doSetEventNotifications(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doSetEventNotifications() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1071,7 +1114,9 @@ public class OslpDeviceService implements DeviceService {
                 isScheduled, Oslp.Message.newBuilder().setSetConfigurationRequest(setConfigurationRequest).build());
     }
 
-    private OslpEnvelope buildOslpRequestSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest) {
+    private void buildOslpRequestSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
+            final String ipAddress, final String domain, final String domainVersion, final String messageType,
+            final int retryCount, final boolean isScheduled) {
         final Oslp.SetEventNotificationsRequest.Builder builder = Oslp.SetEventNotificationsRequest.newBuilder();
 
         int bitMask = 0;
@@ -1081,8 +1126,8 @@ public class OslpDeviceService implements DeviceService {
 
         builder.setNotificationMask(bitMask);
 
-        return this.getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(Oslp.Message.newBuilder().setSetEventNotificationsRequest(builder).build()).build();
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setSetEventNotificationsRequest(builder.build()).build());
     }
 
     private OslpEnvelope buildOslpRequestSetLight(final SetLightDeviceRequest deviceRequest) {

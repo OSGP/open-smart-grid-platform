@@ -100,4 +100,10 @@ public interface DeviceService {
 
     void doSetReboot(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newSetEventNotifications(SetEventNotificationsDeviceRequest deviceRequest, String ipAddress, String domain,
+            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+
+    void doSetEventNotifications(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }
