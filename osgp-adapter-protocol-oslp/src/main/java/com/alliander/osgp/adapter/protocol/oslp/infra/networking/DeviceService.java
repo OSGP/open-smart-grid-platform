@@ -94,4 +94,10 @@ public interface DeviceService {
 
     void doGetStatus(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newSetReboot(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
+            String messageType, int retryCount, boolean isScheduled);
+
+    void doSetReboot(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }
