@@ -140,4 +140,10 @@ public interface DeviceService {
             GetPowerUsageHistoryDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
             String ipAddress, final String domain, final String domainVersion, final String messageType,
             final int retryCount, final boolean isScheduled) throws IOException;
+
+    void newResumeSchedule(ResumeScheduleDeviceRequest deviceRequest, String ipAddress, String domain,
+            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+
+    void doResumeSchedule(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }

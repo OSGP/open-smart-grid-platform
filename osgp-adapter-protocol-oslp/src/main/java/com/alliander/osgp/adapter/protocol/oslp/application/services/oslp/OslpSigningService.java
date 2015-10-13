@@ -29,6 +29,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Commo
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetActualPowerUsageRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetPowerUsageHistoryRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetStatusRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingResumeScheduleRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -93,6 +94,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpPublicLightingGetStatusRequestMessageProcessor")
     private PublicLightingGetStatusRequestMessageProcessor publicLightingGetStatusRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpPublicLightingResumeScheduleRequestMessageProcessor")
+    private PublicLightingResumeScheduleRequestMessageProcessor publicLightingResumeScheduleRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -222,6 +227,9 @@ public class OslpSigningService {
                     deviceIdentification, signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_LIGHT_STATUS)) {
             this.publicLightingGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.RESUME_SCHEDULE)) {
+            this.publicLightingResumeScheduleRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
