@@ -50,6 +50,7 @@ public class UnsignedOslpEnvelopeDto implements Serializable {
     private boolean isScheduled;
     private String organisationIdentification;
     private String correlationUid;
+    private Serializable extraData;
 
     private String type;
 
@@ -86,6 +87,31 @@ public class UnsignedOslpEnvelopeDto implements Serializable {
         this.isScheduled = isScheduled;
         this.organisationIdentification = organisationIdentification;
         this.correlationUid = correlationUid;
+
+        this.type = OSLP_REQUEST_TYPE;
+    }
+
+    /**
+     * Constructor for OSLP device requests, with extra data field which can
+     * contain any serializable object.
+     */
+    public UnsignedOslpEnvelopeDto(final byte[] sequenceNumber, final byte[] deviceId, final Message payloadMessage,
+            final String ipAddress, final String domain, final String domainVersion, final String messageType,
+            final int retryCount, final boolean isScheduled, final String organisationIdentification,
+            final String correlationUid, final Serializable extraData) {
+        this.sequenceNumber = sequenceNumber;
+        this.deviceId = deviceId;
+        this.payloadMessage = payloadMessage;
+        this.ipAddress = ipAddress;
+
+        this.domain = domain;
+        this.domainVersion = domainVersion;
+        this.messageType = messageType;
+        this.retryCount = retryCount;
+        this.isScheduled = isScheduled;
+        this.organisationIdentification = organisationIdentification;
+        this.correlationUid = correlationUid;
+        this.extraData = extraData;
 
         this.type = OSLP_REQUEST_TYPE;
     }
@@ -132,6 +158,10 @@ public class UnsignedOslpEnvelopeDto implements Serializable {
 
     public String getCorrelationUid() {
         return this.correlationUid;
+    }
+
+    public Serializable getExtraData() {
+        return this.extraData;
     }
 
     public String getType() {

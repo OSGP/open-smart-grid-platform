@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.services.oslp;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Commo
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonStopDeviceTestRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonUpdateFirmwareRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetActualPowerUsageRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetPowerUsageHistoryRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -83,6 +86,10 @@ public class OslpSigningService {
     private PublicLightingGetActualPowerUsageRequestMessageProcessor publicLightingGetActualPowerUsageRequestMessageProcessor;
 
     @Autowired
+    @Qualifier("oslpPublicLightingGetPowerUsageHistoryRequestMessageProcessor")
+    private PublicLightingGetPowerUsageHistoryRequestMessageProcessor publicLightingGetPowerUsageHistoryRequestMessageProcessor;
+
+    @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
 
     /**
@@ -92,12 +99,12 @@ public class OslpSigningService {
     public void buildAndSignEnvelope(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final byte[] deviceId, final byte[] sequenceNumber, final String ipAddress,
             final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled, final Oslp.Message payloadMessage) {
+            final boolean isScheduled, final Oslp.Message payloadMessage, final Serializable extraData) {
 
         // Create DTO to transfer data using request message.
         final UnsignedOslpEnvelopeDto oslpEnvelopeDto = new UnsignedOslpEnvelopeDto(sequenceNumber, deviceId,
                 payloadMessage, ipAddress, domain, domainVersion, messageType, retryCount, isScheduled,
-                organisationIdentification, correlationUid);
+                organisationIdentification, correlationUid, extraData);
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, oslpEnvelopeDto);
 
@@ -205,9 +212,10 @@ public class OslpSigningService {
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE)) {
             this.publicLightingGetActualPowerUsageRequestMessageProcessor.processSignedOslpEnvelope(
                     deviceIdentification, signedOslpEnvelopeDto);
-        }
-
-        else {
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY)) {
+            this.publicLightingGetPowerUsageHistoryRequestMessageProcessor.processSignedOslpEnvelope(
+                    deviceIdentification, signedOslpEnvelopeDto);
+        } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
         }
     }

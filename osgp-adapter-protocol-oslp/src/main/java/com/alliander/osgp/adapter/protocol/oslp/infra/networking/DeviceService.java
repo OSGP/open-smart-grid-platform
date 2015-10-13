@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRe
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
 import com.alliander.osgp.oslp.OslpEnvelope;
 
 public interface DeviceService {
@@ -130,4 +131,13 @@ public interface DeviceService {
 
     void doGetActualPowerUsage(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newGetPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest, String ipAddress, String domain,
+            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+
+    void doGetPowerUsageHistory(OslpEnvelope oslpRequest,
+            PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainer,
+            GetPowerUsageHistoryDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
+            String ipAddress, final String domain, final String domainVersion, final String messageType,
+            final int retryCount, final boolean isScheduled) throws IOException;
 }
