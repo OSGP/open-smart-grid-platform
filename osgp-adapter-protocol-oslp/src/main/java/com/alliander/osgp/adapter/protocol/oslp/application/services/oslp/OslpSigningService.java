@@ -33,6 +33,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Publi
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetLightRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetScheduleRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetTransitionRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.TariffSwitchingGetStatusRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -113,6 +114,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpPublicLightingSetTransitionRequestMessageProcessor")
     private PublicLightingSetTransitionRequestMessageProcessor publicLightingSetTransitionRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpTariffSwitchingGetStatusRequestMessageProcessor")
+    private TariffSwitchingGetStatusRequestMessageProcessor tariffSwitchingGetStatusRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -254,6 +259,9 @@ public class OslpSigningService {
                     signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_TRANSITION)) {
             this.publicLightingSetTransitionRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_TARIFF_STATUS)) {
+            this.tariffSwitchingGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
