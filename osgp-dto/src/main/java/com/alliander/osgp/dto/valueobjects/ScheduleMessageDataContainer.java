@@ -18,6 +18,7 @@ public class ScheduleMessageDataContainer implements Serializable {
     private static final long serialVersionUID = 6516779611853805357L;
 
     private List<Schedule> scheduleList;
+    private PageInfo pageInfo;
 
     public ScheduleMessageDataContainer(final List<Schedule> scheduleList) {
         this.scheduleList = scheduleList;
@@ -25,5 +26,13 @@ public class ScheduleMessageDataContainer implements Serializable {
 
     public List<Schedule> getScheduleList() {
         return this.scheduleList;
+    }
+
+    public PageInfo getPageInfo() {
+        return this.pageInfo;
+    }
+
+    public void setPageInfo(final PageInfo pageInfo) {
+        this.pageInfo = pageInfo;
     }
 }
