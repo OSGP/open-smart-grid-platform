@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +23,14 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Alarms;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.SetAlarmNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.SetAlarmNotificationsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -87,6 +95,63 @@ public class SmartMeteringInstallationEndpoint {
         }
 
         return response;
+    }
+
+    @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public SetAlarmNotificationsResponse setAlarmNotifications(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetAlarmNotificationsRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
+
+        final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
+
+        try {
+
+            final String deviceIdentification = request.getDeviceIdentification();
+            final Set<AlarmType> disableAlarms = this.mapAlarms(request.getDisable());
+            final Set<AlarmType> enableAlarms = this.mapAlarms(request.getEnable());
+            final AlarmSwitches alarmSwitches = new AlarmSwitches(deviceIdentification, enableAlarms, disableAlarms);
+
+            final String correlationUid = this.installationService.setAlarmNotifications(organisationIdentification,
+                    deviceIdentification, alarmSwitches);
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+
+        } catch (final MethodConstraintViolationException e) {
+
+            LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+
+        } catch (final Exception e) {
+
+            LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    private Set<AlarmType> mapAlarms(final Alarms alarms) {
+
+        final Set<AlarmType> setOfAlarms;
+
+        if (alarms == null || alarms.getAlarm() == null || alarms.getAlarm().isEmpty()) {
+            setOfAlarms = Collections.emptySet();
+        } else {
+            setOfAlarms = this.installationMapper.mapAsSet(alarms.getAlarm(), AlarmType.class);
+        }
+
+        return setOfAlarms;
     }
 
     private void handleException(final Exception e) throws OsgpException {

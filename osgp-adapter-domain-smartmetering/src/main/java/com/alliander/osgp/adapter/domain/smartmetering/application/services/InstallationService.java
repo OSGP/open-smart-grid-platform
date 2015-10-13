@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -106,6 +107,31 @@ public class InstallationService {
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevicDto), messageType);
+    }
+
+    public void setAlarmNotifications(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final AlarmSwitches alarmSwitches, final String messageType) throws FunctionalException {
+
+        LOGGER.info("setAlarmNotifications for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        // TODO: bypassing authorization, this should be fixed.
+        // Organisation organisation =
+        // this.findOrganisation(organisationIdentification);
+        // final Device device = this.findActiveDevice(deviceIdentification);
+
+        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+        if (device == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
+        }
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches alarmSwitchesDto = this.installationMapper
+                .map(alarmSwitches, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, alarmSwitchesDto), messageType);
     }
 
     public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,

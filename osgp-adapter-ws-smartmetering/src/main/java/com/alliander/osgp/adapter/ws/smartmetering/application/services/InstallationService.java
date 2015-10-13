@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -44,7 +45,7 @@ public class InstallationService {
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -81,4 +82,43 @@ public class InstallationService {
         return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(), device);
     }
 
+    public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final AlarmSwitches alarmSwitches)
+            throws FunctionalException {
+
+        /*
+         * TODO check if something needs to be done for authorization logic
+         * 
+         * In enqueueAddSmartMeterRequest some comments are made about the
+         * authorization being bypassed for now, that may be applicable in this
+         * method also.
+         */
+
+        LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS, correlationUid, organisationIdentification,
+                deviceIdentification, alarmSwitches);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    /**
+     * @param organisationIdentification
+     * @param deviceIdentification
+     * @param enableAlarms
+     * @param disableAlarms
+     * @throws FunctionalException
+     */
+    public String setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
+            final AlarmSwitches alarmSwitches) throws FunctionalException {
+        return this
+                .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification, alarmSwitches);
+    }
 }
