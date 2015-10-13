@@ -39,8 +39,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-				<xsd:element name="Enable" minOccurs="0" type="tns:Alarms" />
-				<xsd:element name="Disable" minOccurs="0" type="tns:Alarms" />
+				<xsd:element name="SetAlarmNotificationsRequestData" type="tns:SetAlarmNotificationsRequestData" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -52,6 +51,27 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+
+	<!-- DATATYPES -->
+
+	<xsd:complexType name="Action" abstract="true">
+		<xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="Query" abstract="true">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Action">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="Command" abstract="true">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Action">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<xsd:complexType name="Device">
 		<xsd:sequence>
@@ -120,6 +140,17 @@
 			<xsd:element name="Authentication_key" type="xsd:string" minOccurs="0" />
 			
 		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="SetAlarmNotificationsRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Command">
+				<xsd:sequence>
+					<xsd:element name="Enable" minOccurs="0" type="tns:Alarms" />
+					<xsd:element name="Disable" minOccurs="0" type="tns:Alarms" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="Alarms">

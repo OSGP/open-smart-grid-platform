@@ -25,6 +25,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDevice
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Alarms;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.SetAlarmNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.SetAlarmNotificationsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
@@ -110,8 +111,9 @@ public class SmartMeteringInstallationEndpoint {
         try {
 
             final String deviceIdentification = request.getDeviceIdentification();
-            final Set<AlarmType> disableAlarms = this.mapAlarms(request.getDisable());
-            final Set<AlarmType> enableAlarms = this.mapAlarms(request.getEnable());
+            final SetAlarmNotificationsRequestData requestData = request.getSetAlarmNotificationsRequestData();
+            final Set<AlarmType> disableAlarms = this.mapAlarms(requestData.getDisable());
+            final Set<AlarmType> enableAlarms = this.mapAlarms(requestData.getEnable());
             final AlarmSwitches alarmSwitches = new AlarmSwitches(deviceIdentification, enableAlarms, disableAlarms);
 
             final String correlationUid = this.installationService.setAlarmNotifications(organisationIdentification,
