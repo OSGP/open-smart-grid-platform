@@ -167,9 +167,48 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void stopSelfTest(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
             final String ipAddress) throws IOException {
-        LOGGER.debug("Stopping self test for device: {}.");
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newStopSelfTest()");
+        // LOGGER.debug("Stopping self test for device: {}.");
+        //
+        // final OslpEnvelope oslpRequest =
+        // this.buildOslpRequestStopSelfTest(deviceRequest);
+        //
+        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+        //
+        // final OslpResponseHandler responseHandler = new OslpResponseHandler()
+        // {
+        //
+        // @Override
+        // public void handleResponse(final OslpEnvelope response) {
+        // OslpDeviceService.this.handleOslpResponseStopSelfTest(deviceRequest,
+        // response, deviceResponseHandler);
+        // }
+        //
+        // @Override
+        // public void handleException(final Throwable t) {
+        // OslpDeviceService.this.handleException(t, deviceRequest,
+        // deviceResponseHandler);
+        //
+        // }
+        // };
+        //
+        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
+        // oslpRequest, responseHandler,
+        // deviceRequest.getDeviceIdentification());
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestStopSelfTest(deviceRequest);
+    @Override
+    public void newStopSelfTest(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+        LOGGER.info("newStopSelfTest() for device: {}.");
+
+        this.buildOslpRequestStopSelfTest(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled);
+    }
+
+    @Override
+    public void doStopSelfTest(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1214,12 +1253,13 @@ public class OslpDeviceService implements DeviceService {
                 isScheduled, Oslp.Message.newBuilder().setStartSelfTestRequest(startSelftestRequest).build());
     }
 
-    private OslpEnvelope buildOslpRequestStopSelfTest(final DeviceRequest deviceRequest) {
-        return this
-                .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(
-                        Oslp.Message.newBuilder().setStopSelfTestRequest(Oslp.StopSelfTestRequest.newBuilder()).build())
-                        .build();
+    private void buildOslpRequestStopSelfTest(final DeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
+        final Oslp.StopSelfTestRequest stopSelftestRequest = Oslp.StopSelfTestRequest.newBuilder().build();
+
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setStopSelfTestRequest(stopSelftestRequest).build());
     }
 
     private OslpEnvelope buildOslpRequestUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest) {

@@ -112,4 +112,10 @@ public interface DeviceService {
 
     void doStartSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newStopSelfTest(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
+            String messageType, int retryCount, boolean isScheduled);
+
+    void doStopSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }
