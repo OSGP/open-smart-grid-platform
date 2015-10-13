@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Commo
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonUpdateFirmwareRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetActualPowerUsageRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetPowerUsageHistoryRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetStatusRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -88,6 +89,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpPublicLightingGetPowerUsageHistoryRequestMessageProcessor")
     private PublicLightingGetPowerUsageHistoryRequestMessageProcessor publicLightingGetPowerUsageHistoryRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpPublicLightingGetStatusRequestMessageProcessor")
+    private PublicLightingGetStatusRequestMessageProcessor publicLightingGetStatusRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -215,6 +220,9 @@ public class OslpSigningService {
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY)) {
             this.publicLightingGetPowerUsageHistoryRequestMessageProcessor.processSignedOslpEnvelope(
                     deviceIdentification, signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_LIGHT_STATUS)) {
+            this.publicLightingGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
         }

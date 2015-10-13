@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
 
+import java.io.IOException;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -22,6 +24,9 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.dto.valueobjects.DomainType;
+import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
+import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -56,6 +61,7 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
         String deviceIdentification = null;
         String ipAddress = null;
         int retryCount = 0;
+        boolean isScheduled = false;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -66,6 +72,8 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -81,51 +89,56 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
         try {
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-                @Override
-                public void handleResponse(final DeviceResponse deviceResponse) {
-                    try {
-                        PublicLightingGetStatusRequestMessageProcessor.this.handleGetStatusDeviceResponse(
-                                deviceResponse,
-                                PublicLightingGetStatusRequestMessageProcessor.this.responseMessageSender,
-                                message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.getIntProperty(Constants.RETRY_COUNT));
-                    } catch (final JMSException e) {
-                        LOGGER.error("JMSException", e);
-                    }
-
-                }
-
-                @Override
-                public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                    try {
-                        PublicLightingGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                                deviceResponse,
-                                t,
-                                null,
-                                PublicLightingGetStatusRequestMessageProcessor.this.responseMessageSender,
-                                deviceResponse,
-                                message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION),
-                                message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message
-                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
-                                        .getIntProperty(Constants.RETRY_COUNT));
-                    } catch (final JMSException e) {
-                        LOGGER.error("JMSException", e);
-                    }
-
-                }
-            };
-
             final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
                     deviceIdentification, correlationUid, DomainType.PUBLIC_LIGHTING);
 
-            this.deviceService.getStatus(deviceRequest, deviceResponseHandler, ipAddress);
+            this.deviceService.newGetStatus(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                    isScheduled);
 
         } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
+        }
+    }
+
+    public void processSignedOslpEnvelope(final String deviceIdentification,
+            final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
+
+        final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
+        final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+        final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
+        final String organisationIdentification = unsignedOslpEnvelopeDto.getOrganisationIdentification();
+        final String domain = unsignedOslpEnvelopeDto.getDomain();
+        final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
+        final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
+        final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
+        final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
+
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                PublicLightingGetStatusRequestMessageProcessor.this.handleGetStatusDeviceResponse(deviceResponse,
+                        PublicLightingGetStatusRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, retryCount);
+            }
+
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
+                PublicLightingGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
+                        t, null, PublicLightingGetStatusRequestMessageProcessor.this.responseMessageSender,
+                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+            }
+
+        };
+
+        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, DomainType.PUBLIC_LIGHTING);
+
+        try {
+            this.deviceService.doGetStatus(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+        } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);
         }
