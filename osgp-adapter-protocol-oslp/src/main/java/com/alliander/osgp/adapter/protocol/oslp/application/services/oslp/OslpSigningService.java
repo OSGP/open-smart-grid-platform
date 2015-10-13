@@ -32,6 +32,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Publi
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingResumeScheduleRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetLightRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetScheduleRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetTransitionRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -108,6 +109,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpPublicLightingSetScheduleRequestMessageProcessor")
     private PublicLightingSetScheduleRequestMessageProcessor publicLightingSetScheduleRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpPublicLightingSetTransitionRequestMessageProcessor")
+    private PublicLightingSetTransitionRequestMessageProcessor publicLightingSetTransitionRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -246,6 +251,9 @@ public class OslpSigningService {
                     signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_LIGHT_SCHEDULE)) {
             this.publicLightingSetScheduleRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_TRANSITION)) {
+            this.publicLightingSetTransitionRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());

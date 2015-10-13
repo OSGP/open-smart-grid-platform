@@ -1338,9 +1338,51 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void setTransition(final SetTransitionDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.debug("Setting transition for device: {}.", deviceRequest.getDeviceIdentification());
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetTranistion()");
+        // LOGGER.debug("Setting transition for device: {}.",
+        // deviceRequest.getDeviceIdentification());
+        //
+        // final OslpEnvelope oslpRequest =
+        // this.buildOslpRequestSetTransition(deviceRequest);
+        //
+        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+        //
+        // final OslpResponseHandler oslpResponseHandler = new
+        // OslpResponseHandler() {
+        //
+        // @Override
+        // public void handleResponse(final OslpEnvelope oslpResponse) {
+        // OslpDeviceService.this.handleOslpResponseSetTransition(deviceRequest,
+        // oslpResponse,
+        // deviceResponseHandler);
+        // }
+        //
+        // @Override
+        // public void handleException(final Throwable t) {
+        // OslpDeviceService.this.handleException(t, deviceRequest,
+        // deviceResponseHandler);
+        //
+        // }
+        // };
+        //
+        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
+        // oslpRequest, oslpResponseHandler,
+        // deviceRequest.getDeviceIdentification());
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestSetTransition(deviceRequest);
+    @Override
+    public void newSetTransition(final SetTransitionDeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
+        LOGGER.info("newSetTranistion() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSetTransition(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled);
+    }
+
+    @Override
+    public void doSetTransition(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1355,7 +1397,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -1513,7 +1554,9 @@ public class OslpDeviceService implements DeviceService {
                 isScheduled, Oslp.Message.newBuilder().setSetRebootRequest(setRebootRequest).build(), null);
     }
 
-    private OslpEnvelope buildOslpRequestSetTransition(final SetTransitionDeviceRequest deviceRequest) {
+    private void buildOslpRequestSetTransition(final SetTransitionDeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
         final Oslp.SetTransitionRequest.Builder setTransitionBuilder = Oslp.SetTransitionRequest.newBuilder()
                 .setTransitionType(
                         this.mapper.map(deviceRequest.getTransitionType(),
@@ -1522,9 +1565,9 @@ public class OslpDeviceService implements DeviceService {
             setTransitionBuilder.setTime(deviceRequest.getTransitionTime().toString(TIME_FORMAT));
         }
 
-        return this.getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(Oslp.Message.newBuilder().setSetTransitionRequest(setTransitionBuilder).build())
-                .build();
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setSetTransitionRequest(setTransitionBuilder.build()).build(),
+                null);
     }
 
     private void buildOslpRequestStartSelfTest(final DeviceRequest deviceRequest, final String ipAddress,

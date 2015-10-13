@@ -160,4 +160,10 @@ public interface DeviceService {
     void doSetSchedule(OslpEnvelope oslpRequest, SetScheduleDeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress, String domain, String domainVersion,
             String messageType, int retryCount, boolean isScheduled, PageInfo pageInfo) throws IOException;
+
+    void newSetTransition(SetTransitionDeviceRequest deviceRequest, String ipAddress, String domain,
+            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+
+    void doSetTransition(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }
