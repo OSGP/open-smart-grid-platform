@@ -795,9 +795,49 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void getActualPowerUsage(final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.debug("Get actual power use for device: {}.");
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newGetActualPowerUsage()");
+        // LOGGER.debug("Get actual power use for device: {}.");
+        //
+        // final OslpEnvelope oslpRequest =
+        // this.buildOslpRequestGetActualPowerUsage(deviceRequest);
+        //
+        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+        //
+        // final OslpResponseHandler oslpResponseHandler = new
+        // OslpResponseHandler() {
+        //
+        // @Override
+        // public void handleResponse(final OslpEnvelope oslpResponse) {
+        // OslpDeviceService.this.handleOslpResponseGetActualPowerUsage(deviceRequest,
+        // oslpResponse,
+        // deviceResponseHandler);
+        // }
+        //
+        // @Override
+        // public void handleException(final Throwable t) {
+        // OslpDeviceService.this.handleException(t, deviceRequest,
+        // deviceResponseHandler);
+        //
+        // }
+        // };
+        //
+        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
+        // oslpRequest, oslpResponseHandler,
+        // deviceRequest.getDeviceIdentification());
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestGetActualPowerUsage(deviceRequest);
+    @Override
+    public void newGetActualPowerUsage(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+        LOGGER.info("newGetActualPowerUsage() for device: {}.");
+
+        this.buildOslpRequestGetActualPowerUsage(deviceRequest, ipAddress, domain, domainVersion, messageType,
+                retryCount, isScheduled);
+    }
+
+    @Override
+    public void doGetActualPowerUsage(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1165,13 +1205,15 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status, configuration);
     }
 
-    private OslpEnvelope buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
-        return this
-                .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(
-                        Oslp.Message.newBuilder()
-                        .setGetActualPowerUsageRequest(Oslp.GetActualPowerUsageRequest.newBuilder()).build())
-                        .build();
+    private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
+        final Oslp.GetActualPowerUsageRequest getActualPowerUsageRequest = Oslp.GetActualPowerUsageRequest.newBuilder()
+                .build();
+
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setGetActualPowerUsageRequest(getActualPowerUsageRequest)
+                .build());
     }
 
     private void buildOslpRequestGetConfiguration(final DeviceRequest deviceRequest, final String ipAddress,
