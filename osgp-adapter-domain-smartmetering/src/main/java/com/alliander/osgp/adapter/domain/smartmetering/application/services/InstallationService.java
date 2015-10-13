@@ -158,4 +158,29 @@ public class InstallationService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, null), messageType);
     }
+
+    public void handleSetAlarmNotificationsResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleSetAlarmNotificationsResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException osgpException = exception;
+
+        try {
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Set Alarm Notifications Response not ok.", osgpException);
+                throw osgpException;
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, null), messageType);
+    }
 }
