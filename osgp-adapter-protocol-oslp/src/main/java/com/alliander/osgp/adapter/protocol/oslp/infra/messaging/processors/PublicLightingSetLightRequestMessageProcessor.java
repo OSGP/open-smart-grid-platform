@@ -16,13 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.dto.valueobjects.DomainType;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainer;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
@@ -130,8 +129,8 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
 
         };
 
-        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, DomainType.PUBLIC_LIGHTING);
+        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+                correlationUid);
 
         try {
             this.deviceService.doSetLight(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
