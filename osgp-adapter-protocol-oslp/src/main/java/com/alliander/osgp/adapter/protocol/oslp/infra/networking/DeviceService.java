@@ -118,4 +118,10 @@ public interface DeviceService {
 
     void doStopSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newUpdateFirmware(UpdateFirmwareDeviceRequest deviceRequest, String ipAddress, String domain,
+            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+
+    void doUpdateFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }

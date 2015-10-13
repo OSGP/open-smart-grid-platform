@@ -62,7 +62,6 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.GetFirmwareVersionRequest;
 import com.alliander.osgp.oslp.Oslp.GetStatusRequest;
 import com.alliander.osgp.oslp.Oslp.SetScheduleRequest;
-import com.alliander.osgp.oslp.Oslp.UpdateFirmwareRequest;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.google.protobuf.ByteString;
 
@@ -331,9 +330,52 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void updateFirmware(final UpdateFirmwareDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.debug("Updating firmware for device: {}.");
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newUpdateFirmware()");
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestUpdateFirmware(deviceRequest);
+        // LOGGER.debug("Updating firmware for device: {}.");
+        //
+        // final OslpEnvelope oslpRequest =
+        // this.buildOslpRequestUpdateFirmware(deviceRequest);
+        //
+        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+        //
+        // final OslpResponseHandler oslpResponseHandler = new
+        // OslpResponseHandler() {
+        //
+        // @Override
+        // public void handleResponse(final OslpEnvelope oslpResponse) {
+        // OslpDeviceService.this.handleOslpResponseUpdateFirmware(deviceRequest,
+        // oslpResponse,
+        // deviceResponseHandler);
+        //
+        // }
+        //
+        // @Override
+        // public void handleException(final Throwable t) {
+        // OslpDeviceService.this.handleException(t, deviceRequest,
+        // deviceResponseHandler);
+        //
+        // }
+        // };
+        //
+        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
+        // oslpRequest, oslpResponseHandler,
+        // deviceRequest.getDeviceIdentification());
+    }
+
+    @Override
+    public void newUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
+        LOGGER.info("newUpdateFirmware() for device: {}.");
+
+        this.buildOslpRequestUpdateFirmware(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled);
+    }
+
+    @Override
+    public void doUpdateFirmware(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1262,16 +1304,15 @@ public class OslpDeviceService implements DeviceService {
                 isScheduled, Oslp.Message.newBuilder().setStopSelfTestRequest(stopSelftestRequest).build());
     }
 
-    private OslpEnvelope buildOslpRequestUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest) {
-        return this
-                .getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(
-                        Oslp.Message
-                        .newBuilder()
-                        .setUpdateFirmwareRequest(
-                                UpdateFirmwareRequest.newBuilder()
-                                .setFirmwareDomain(deviceRequest.getFirmwareDomain())
-                                .setFirmwareUrl(deviceRequest.getFirmwareUrl())).build()).build();
+    private void buildOslpRequestUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest,
+            final String ipAddress, final String domain, final String domainVersion, final String messageType,
+            final int retryCount, final boolean isScheduled) {
+        final Oslp.UpdateFirmwareRequest updateFirmwareRequest = Oslp.UpdateFirmwareRequest.newBuilder()
+                .setFirmwareDomain(deviceRequest.getFirmwareDomain()).setFirmwareUrl(deviceRequest.getFirmwareUrl())
+                .build();
+
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setUpdateFirmwareRequest(updateFirmwareRequest).build());
     }
 
     private void handleOslpResponseGetActualPowerUsage(final DeviceRequest deviceRequest,

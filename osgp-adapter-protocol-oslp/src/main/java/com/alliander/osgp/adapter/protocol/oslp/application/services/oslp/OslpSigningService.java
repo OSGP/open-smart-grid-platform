@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Commo
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonSetEventNotificationsRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonStartDeviceTestRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonStopDeviceTestRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonUpdateFirmwareRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -71,6 +72,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpCommonStopDeviceTestRequestMessageProcessor")
     private CommonStopDeviceTestRequestMessageProcessor commonStopDeviceTestRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpCommonUpdateFirmwareRequestMessageProcessor")
+    private CommonUpdateFirmwareRequestMessageProcessor commonUpdateFirmwareRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -188,6 +193,9 @@ public class OslpSigningService {
                     signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.STOP_SELF_TEST)) {
             this.commonStopDeviceTestRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.UPDATE_FIRMWARE)) {
+            this.commonUpdateFirmwareRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
