@@ -30,6 +30,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Publi
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetPowerUsageHistoryRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetStatusRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingResumeScheduleRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetLightRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -98,6 +99,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpPublicLightingResumeScheduleRequestMessageProcessor")
     private PublicLightingResumeScheduleRequestMessageProcessor publicLightingResumeScheduleRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpPublicLightingSetLightRequestMessageProcessor")
+    private PublicLightingSetLightRequestMessageProcessor publicLightingSetLightRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -230,6 +235,9 @@ public class OslpSigningService {
                     signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.RESUME_SCHEDULE)) {
             this.publicLightingResumeScheduleRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_LIGHT)) {
+            this.publicLightingSetLightRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());

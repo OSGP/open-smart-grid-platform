@@ -234,9 +234,49 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
             final String ipAddress) throws IOException {
-        LOGGER.debug("Setting light for device: {}.", deviceRequest.getDeviceIdentification());
+        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetLight()");
+        // LOGGER.debug("Setting light for device: {}.",
+        // deviceRequest.getDeviceIdentification());
+        //
+        // final OslpEnvelope oslpRequest =
+        // this.buildOslpRequestSetLight(deviceRequest);
+        //
+        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+        //
+        // final OslpResponseHandler oslpResponseHandler = new
+        // OslpResponseHandler() {
+        //
+        // @Override
+        // public void handleResponse(final OslpEnvelope oslpResponse) {
+        // OslpDeviceService.this.handleOslpResponseSetLight(deviceRequest,
+        // oslpResponse, deviceResponseHandler);
+        // }
+        //
+        // @Override
+        // public void handleException(final Throwable t) {
+        // OslpDeviceService.this.handleException(t, deviceRequest,
+        // deviceResponseHandler);
+        //
+        // }
+        // };
+        //
+        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
+        // oslpRequest, oslpResponseHandler,
+        // deviceRequest.getDeviceIdentification());
+    }
 
-        final OslpEnvelope oslpRequest = this.buildOslpRequestSetLight(deviceRequest);
+    @Override
+    public void newSetLight(final SetLightDeviceRequest deviceRequest, final String ipAddress, final String domain,
+            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+        LOGGER.info("newSetLight() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSetLight(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled);
+    }
+
+    @Override
+    public void doSetLight(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1388,16 +1428,17 @@ public class OslpDeviceService implements DeviceService {
                 isScheduled, Oslp.Message.newBuilder().setSetEventNotificationsRequest(builder.build()).build(), null);
     }
 
-    private OslpEnvelope buildOslpRequestSetLight(final SetLightDeviceRequest deviceRequest) {
+    private void buildOslpRequestSetLight(final SetLightDeviceRequest deviceRequest, final String ipAddress,
+            final String domain, final String domainVersion, final String messageType, final int retryCount,
+            final boolean isScheduled) {
         final Oslp.SetLightRequest.Builder setLightRequestBuilder = Oslp.SetLightRequest.newBuilder();
 
         for (final LightValue lightValue : deviceRequest.getLightValues()) {
             setLightRequestBuilder.addValues(this.buildLightValue(lightValue));
         }
 
-        return this.getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-                .withPayloadMessage(Oslp.Message.newBuilder().setSetLightRequest(setLightRequestBuilder).build())
-                .build();
+        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
+                isScheduled, Oslp.Message.newBuilder().setSetLightRequest(setLightRequestBuilder.build()).build(), null);
     }
 
     private void buildOslpRequestSetReboot(final DeviceRequest deviceRequest, final String ipAddress,

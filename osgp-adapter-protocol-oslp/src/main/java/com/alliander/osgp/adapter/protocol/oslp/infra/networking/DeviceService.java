@@ -146,4 +146,10 @@ public interface DeviceService {
 
     void doResumeSchedule(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newSetLight(SetLightDeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
+            String messageType, int retryCount, boolean isScheduled);
+
+    void doSetLight(OslpEnvelope oslpRequest, DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
+            String ipAddress) throws IOException;
 }
