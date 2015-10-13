@@ -106,4 +106,10 @@ public interface DeviceService {
 
     void doSetEventNotifications(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void newStartSelfTest(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
+            String messageType, int retryCount, boolean isScheduled);
+
+    void doStartSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 }
