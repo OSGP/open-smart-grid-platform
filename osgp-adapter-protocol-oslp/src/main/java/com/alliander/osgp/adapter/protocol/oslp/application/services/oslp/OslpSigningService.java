@@ -34,6 +34,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.Publi
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetScheduleRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetTransitionRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.TariffSwitchingGetStatusRequestMessageProcessor;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.TariffSwitchingSetScheduleRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -118,6 +119,10 @@ public class OslpSigningService {
     @Autowired
     @Qualifier("oslpTariffSwitchingGetStatusRequestMessageProcessor")
     private TariffSwitchingGetStatusRequestMessageProcessor tariffSwitchingGetStatusRequestMessageProcessor;
+
+    @Autowired
+    @Qualifier("oslpTariffSwitchingSetScheduleRequestMessageProcessor")
+    private TariffSwitchingSetScheduleRequestMessageProcessor tariffSwitchingSetScheduleRequestMessageProcessor;
 
     @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
@@ -262,6 +267,9 @@ public class OslpSigningService {
                     signedOslpEnvelopeDto);
         } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_TARIFF_STATUS)) {
             this.tariffSwitchingGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
+                    signedOslpEnvelopeDto);
+        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_TARIFF_SCHEDULE)) {
+            this.tariffSwitchingSetScheduleRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
                     signedOslpEnvelopeDto);
         } else {
             LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
