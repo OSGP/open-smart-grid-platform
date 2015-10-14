@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetActualPowerU
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.PowerUsageData;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
@@ -38,7 +39,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * Class for processing public lighting get power usage request messages
  */
 @Component("oslpPublicLightingGetActualPowerUsageRequestMessageProcessor")
-public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -126,6 +128,7 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
         responseMessageSender.send(responseMessage);
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 

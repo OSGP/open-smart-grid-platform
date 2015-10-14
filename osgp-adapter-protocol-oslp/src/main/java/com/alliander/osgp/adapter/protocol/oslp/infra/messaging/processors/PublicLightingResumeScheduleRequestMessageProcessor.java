@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetStatusDeviceR
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.ResumeScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.DomainType;
 import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainer;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -33,7 +34,8 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing public lighting resume schedule request messages
  */
 @Component("oslpPublicLightingResumeScheduleRequestMessageProcessor")
-public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -100,6 +102,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         }
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 

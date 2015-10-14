@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetStatusDeviceR
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.dto.valueobjects.DomainType;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -39,7 +40,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  * Class for processing public lighting get status request messages
  */
 @Component("oslpPublicLightingGetStatusRequestMessageProcessor")
-public class PublicLightingGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -101,6 +103,7 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
         }
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 

@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -30,7 +31,8 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing common start device test request messages
  */
 @Component("oslpCommonStartDeviceTestRequestMessageProcessor")
-public class CommonStartDeviceTestRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class CommonStartDeviceTestRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -91,6 +93,7 @@ public class CommonStartDeviceTestRequestMessageProcessor extends DeviceRequestM
         }
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 

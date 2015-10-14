@@ -24,6 +24,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetPowerUsageHi
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.HistoryTermType;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
@@ -42,7 +43,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * Class for processing public lighting get power usage history request messages
  */
 @Component("oslpPublicLightingGetPowerUsageHistoryRequestMessageProcessor")
-public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -110,6 +112,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
         }
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 
@@ -129,9 +132,9 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             @Override
             public void handleResponse(final DeviceResponse deviceResponse) {
                 PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this
-                        .handleGetPowerUsageHistoryDeviceResponse(deviceResponse, null,
-                                PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
-                                domain, domainVersion, messageType, isScheduled, retryCount);
+                .handleGetPowerUsageHistoryDeviceResponse(deviceResponse, null,
+                        PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
+                        domain, domainVersion, messageType, isScheduled, retryCount);
             }
 
             @Override

@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainer;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
@@ -32,7 +33,8 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing public lighting set light request messages
  */
 @Component("oslpPublicLightingSetLightRequestMessageProcessor")
-public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -97,6 +99,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
         }
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 

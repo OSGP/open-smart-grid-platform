@@ -15,26 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessorMap;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerRequestMessageSender;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonGetConfigurationRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonGetFirmwareRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonGetStatusRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonRebootRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonSetConfigurationRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonSetEventNotificationsRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonStartDeviceTestRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonStopDeviceTestRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonUpdateFirmwareRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetActualPowerUsageRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetPowerUsageHistoryRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingGetStatusRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingResumeScheduleRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetLightRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetScheduleRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.PublicLightingSetTransitionRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.TariffSwitchingGetStatusRequestMessageProcessor;
-import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.TariffSwitchingSetScheduleRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -53,79 +37,11 @@ public class OslpSigningService {
     private SigningServerRequestMessageSender signingServerRequestMessageSender;
 
     @Autowired
-    @Qualifier("oslpCommonGetFirmwareRequestMessageProcessor")
-    private CommonGetFirmwareRequestMessageProcessor commonGetFirmwareRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonGetConfigurationRequestMessageProcessor")
-    private CommonGetConfigurationRequestMessageProcessor commonGetConfigurationRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonSetConfigurationRequestMessageProcessor")
-    private CommonSetConfigurationRequestMessageProcessor commonSetConfigurationRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonGetStatusRequestMessageProcessor")
-    private CommonGetStatusRequestMessageProcessor commonGetStatusRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonRebootRequestMessageProcessor")
-    private CommonRebootRequestMessageProcessor commonRebootRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonSetEventNotificationsRequestMessageProcessor")
-    private CommonSetEventNotificationsRequestMessageProcessor commonSetEventNotificationsRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonStartDeviceTestRequestMessageProcessor")
-    private CommonStartDeviceTestRequestMessageProcessor commonStartDeviceTestRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonStopDeviceTestRequestMessageProcessor")
-    private CommonStopDeviceTestRequestMessageProcessor commonStopDeviceTestRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpCommonUpdateFirmwareRequestMessageProcessor")
-    private CommonUpdateFirmwareRequestMessageProcessor commonUpdateFirmwareRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpPublicLightingGetActualPowerUsageRequestMessageProcessor")
-    private PublicLightingGetActualPowerUsageRequestMessageProcessor publicLightingGetActualPowerUsageRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpPublicLightingGetPowerUsageHistoryRequestMessageProcessor")
-    private PublicLightingGetPowerUsageHistoryRequestMessageProcessor publicLightingGetPowerUsageHistoryRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpPublicLightingGetStatusRequestMessageProcessor")
-    private PublicLightingGetStatusRequestMessageProcessor publicLightingGetStatusRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpPublicLightingResumeScheduleRequestMessageProcessor")
-    private PublicLightingResumeScheduleRequestMessageProcessor publicLightingResumeScheduleRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpPublicLightingSetLightRequestMessageProcessor")
-    private PublicLightingSetLightRequestMessageProcessor publicLightingSetLightRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpPublicLightingSetScheduleRequestMessageProcessor")
-    private PublicLightingSetScheduleRequestMessageProcessor publicLightingSetScheduleRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpPublicLightingSetTransitionRequestMessageProcessor")
-    private PublicLightingSetTransitionRequestMessageProcessor publicLightingSetTransitionRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpTariffSwitchingGetStatusRequestMessageProcessor")
-    private TariffSwitchingGetStatusRequestMessageProcessor tariffSwitchingGetStatusRequestMessageProcessor;
-
-    @Autowired
-    @Qualifier("oslpTariffSwitchingSetScheduleRequestMessageProcessor")
-    private TariffSwitchingSetScheduleRequestMessageProcessor tariffSwitchingSetScheduleRequestMessageProcessor;
-
-    @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
+
+    @Autowired
+    @Qualifier("protocolOslpDeviceRequestMessageProcessorMap")
+    private DeviceRequestMessageProcessorMap deviceRequestMessageProcessorMap;
 
     /**
      * Build OslpEnvelope for an OSLP request using the arguments supplied and
@@ -171,6 +87,7 @@ public class OslpSigningService {
      */
     public void handleSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto,
             final String deviceIdentification) {
+
         final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
 
         // Check if it's a request or response message.
@@ -213,67 +130,13 @@ public class OslpSigningService {
                 .valueOf(unsignedOslpEnvelopeDto.getMessageType());
 
         // Handle message for message type.
-        // TODO: move to own (service class/message processor) and add the other
-        // functions too.
-        if (deviceRequestMessageType == null) {
-            LOGGER.error("Unknown messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_FIRMWARE_VERSION)) {
-            this.commonGetFirmwareRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_CONFIGURATION)) {
-            this.commonGetConfigurationRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_CONFIGURATION)) {
-            this.commonSetConfigurationRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_STATUS)) {
-            this.commonGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_REBOOT)) {
-            this.commonRebootRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_EVENT_NOTIFICATIONS)) {
-            this.commonSetEventNotificationsRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.START_SELF_TEST)) {
-            this.commonStartDeviceTestRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.STOP_SELF_TEST)) {
-            this.commonStopDeviceTestRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.UPDATE_FIRMWARE)) {
-            this.commonUpdateFirmwareRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_ACTUAL_POWER_USAGE)) {
-            this.publicLightingGetActualPowerUsageRequestMessageProcessor.processSignedOslpEnvelope(
-                    deviceIdentification, signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_POWER_USAGE_HISTORY)) {
-            this.publicLightingGetPowerUsageHistoryRequestMessageProcessor.processSignedOslpEnvelope(
-                    deviceIdentification, signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_LIGHT_STATUS)) {
-            this.publicLightingGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.RESUME_SCHEDULE)) {
-            this.publicLightingResumeScheduleRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_LIGHT)) {
-            this.publicLightingSetLightRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_LIGHT_SCHEDULE)) {
-            this.publicLightingSetScheduleRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_TRANSITION)) {
-            this.publicLightingSetTransitionRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.GET_TARIFF_STATUS)) {
-            this.tariffSwitchingGetStatusRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else if (deviceRequestMessageType.equals(DeviceRequestMessageType.SET_TARIFF_SCHEDULE)) {
-            this.tariffSwitchingSetScheduleRequestMessageProcessor.processSignedOslpEnvelope(deviceIdentification,
-                    signedOslpEnvelopeDto);
-        } else {
-            LOGGER.error("Unhandled messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
+        final OslpEnvelopeProcessor messageProcessor = this.deviceRequestMessageProcessorMap
+                .getOslpEnvelopeProcessor(deviceRequestMessageType);
+        if (messageProcessor == null) {
+            LOGGER.error("No message processor for messageType: {}", unsignedOslpEnvelopeDto.getMessageType());
+            return;
         }
+        messageProcessor.processSignedOslpEnvelope(deviceIdentification, signedOslpEnvelopeDto);
     }
 
     private void handleSignedOslpResponse(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {

@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
@@ -38,7 +39,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  * Class for processing common get configuration request messages
  */
 @Component("oslpCommonGetConfigurationRequestMessageProcessor")
-public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -99,6 +101,7 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
         }
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 

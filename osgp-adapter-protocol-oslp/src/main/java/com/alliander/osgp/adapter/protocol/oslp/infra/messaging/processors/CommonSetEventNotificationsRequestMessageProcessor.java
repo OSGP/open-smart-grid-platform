@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotificationsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
@@ -32,7 +33,8 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing common set event notifications request messages
  */
 @Component("oslpCommonSetEventNotificationsRequestMessageProcessor")
-public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -98,6 +100,7 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
         }
     }
 
+    @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
 
