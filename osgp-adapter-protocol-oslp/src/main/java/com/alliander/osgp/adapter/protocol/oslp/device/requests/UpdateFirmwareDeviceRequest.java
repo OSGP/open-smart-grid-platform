@@ -21,6 +21,16 @@ public class UpdateFirmwareDeviceRequest extends DeviceRequest {
         this.firmwareUrl = firmwareUrl;
     }
 
+    public UpdateFirmwareDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String firmwareDomain, final String firmwareUrl, final String domain,
+            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
+            final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+        this.firmwareDomain = firmwareDomain;
+        this.firmwareUrl = firmwareUrl;
+    }
+
     public String getFirmwareDomain() {
         return this.firmwareDomain;
     }

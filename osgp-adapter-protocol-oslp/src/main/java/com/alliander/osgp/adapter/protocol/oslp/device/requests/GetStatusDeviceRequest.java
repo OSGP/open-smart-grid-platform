@@ -20,6 +20,14 @@ public class GetStatusDeviceRequest extends DeviceRequest {
         this.domainType = domainType;
     }
 
+    public GetStatusDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final DomainType domainType, final String domain, final String domainVersion,
+            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+        this.domainType = domainType;
+    }
+
     public DomainType getDomainType() {
         return this.domainType;
     }

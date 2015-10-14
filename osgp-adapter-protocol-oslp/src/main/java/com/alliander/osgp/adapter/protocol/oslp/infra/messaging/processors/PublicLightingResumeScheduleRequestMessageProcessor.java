@@ -35,7 +35,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpPublicLightingResumeScheduleRequestMessageProcessor")
 public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -91,10 +91,10 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
 
             final ResumeScheduleDeviceRequest deviceRequest = new ResumeScheduleDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
-                    resumeScheduleMessageDataContainer.getIndex(), resumeScheduleMessageDataContainer.isImmediate());
+                    resumeScheduleMessageDataContainer.getIndex(), resumeScheduleMessageDataContainer.isImmediate(),
+                    domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newResumeSchedule(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled);
+            this.deviceService.newResumeSchedule(deviceRequest);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,

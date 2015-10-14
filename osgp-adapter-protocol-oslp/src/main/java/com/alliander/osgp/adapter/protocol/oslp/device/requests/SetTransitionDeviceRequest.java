@@ -25,6 +25,17 @@ public class SetTransitionDeviceRequest extends DeviceRequest {
         this.transitionTime = transitionTime;
     }
 
+    public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime,
+            final String domain, final String domainVersion, final String messageType, final String ipAddress,
+            final int retryCount, final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+
+        this.transitionType = transitionType;
+        this.transitionTime = transitionTime;
+    }
+
     public TransitionType getTransitionType() {
         return this.transitionType;
     }

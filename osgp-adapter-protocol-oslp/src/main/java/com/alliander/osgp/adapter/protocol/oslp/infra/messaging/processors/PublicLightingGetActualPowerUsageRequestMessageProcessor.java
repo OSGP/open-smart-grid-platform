@@ -40,7 +40,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  */
 @Component("oslpPublicLightingGetActualPowerUsageRequestMessageProcessor")
 public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -92,10 +92,9 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                    correlationUid);
+                    correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newGetActualPowerUsage(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled);
+            this.deviceService.newGetActualPowerUsage(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

@@ -34,7 +34,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpCommonSetEventNotificationsRequestMessageProcessor")
 public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -90,10 +90,10 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
 
             final SetEventNotificationsDeviceRequest deviceRequest = new SetEventNotificationsDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
-                    eventNotificationMessageDataContainer.getEventNotifications());
+                    eventNotificationMessageDataContainer.getEventNotifications(), domain, domainVersion, messageType,
+                    ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetEventNotifications(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled);
+            this.deviceService.newSetEventNotifications(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

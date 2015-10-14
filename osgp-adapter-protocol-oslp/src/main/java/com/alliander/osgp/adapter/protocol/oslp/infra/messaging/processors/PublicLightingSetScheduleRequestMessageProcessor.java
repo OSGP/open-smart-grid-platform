@@ -90,11 +90,9 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
                     deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
-                    RelayType.LIGHT);
+                    RelayType.LIGHT, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetSchedule(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                    isScheduled);
-
+            this.deviceService.newSetSchedule(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);
@@ -138,7 +136,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         };
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(), RelayType.LIGHT);
+                deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(), RelayType.LIGHT,
+                domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         try {
             this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,

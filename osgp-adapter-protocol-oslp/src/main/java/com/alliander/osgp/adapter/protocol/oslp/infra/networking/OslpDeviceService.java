@@ -134,12 +134,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newStartSelfTest(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newStartSelfTest(final DeviceRequest deviceRequest) {
         LOGGER.info("newStartSelfTest() for device: {}.");
 
-        this.buildOslpRequestStartSelfTest(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestStartSelfTest(deviceRequest);
     }
 
     @Override
@@ -159,7 +157,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -201,12 +198,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newStopSelfTest(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newStopSelfTest(final DeviceRequest deviceRequest) {
         LOGGER.info("newStopSelfTest() for device: {}.");
 
-        this.buildOslpRequestStopSelfTest(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestStopSelfTest(deviceRequest);
     }
 
     @Override
@@ -225,7 +220,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -268,12 +262,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newSetLight(final SetLightDeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newSetLight(final SetLightDeviceRequest deviceRequest) {
         LOGGER.info("newSetLight() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestSetLight(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestSetLight(deviceRequest);
     }
 
     @Override
@@ -292,7 +284,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -336,13 +327,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) {
+    public void newSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest) {
         LOGGER.info("newSetEventNotifications() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestSetEventNotifications(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                retryCount, isScheduled);
+        this.buildOslpRequestSetEventNotifications(deviceRequest);
     }
 
     @Override
@@ -363,7 +351,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -408,13 +395,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    public void newUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest) {
         LOGGER.info("newUpdateFirmware() for device: {}.");
 
-        this.buildOslpRequestUpdateFirmware(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestUpdateFirmware(deviceRequest);
     }
 
     @Override
@@ -429,13 +413,11 @@ public class OslpDeviceService implements DeviceService {
             public void handleResponse(final OslpEnvelope oslpResponse) {
                 OslpDeviceService.this.handleOslpResponseUpdateFirmware(deviceRequest, oslpResponse,
                         deviceResponseHandler);
-
             }
 
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -450,12 +432,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newGetFirmwareVersion(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newGetFirmwareVersion(final DeviceRequest deviceRequest) {
         LOGGER.info("newGetFirmwareVersion() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestGetFirmwareVersion(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                retryCount, isScheduled);
+        this.buildOslpRequestGetFirmwareVersion(deviceRequest);
     }
 
     @Override
@@ -476,7 +456,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -507,22 +486,18 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newSetSchedule(final SetScheduleDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    public void newSetSchedule(final SetScheduleDeviceRequest deviceRequest) {
         LOGGER.info("newSetSchedule() for device: {}.");
 
         final int pageSize = 5;
         final int numberOfPages = (int) Math.ceil((double) deviceRequest.getSchedules().size() / pageSize);
 
         if (numberOfPages == 1) {
-            this.processOslpRequestSetScheduleSingle(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled);
+            this.processOslpRequestSetScheduleSingle(deviceRequest);
         } else {
             final Pager pager = new Pager(deviceRequest.getSchedules().size(), pageSize);
 
-            this.processOslpRequestSetSchedulePaged(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled, pager);
+            this.processOslpRequestSetSchedulePaged(deviceRequest, pager);
         }
     }
 
@@ -543,14 +518,11 @@ public class OslpDeviceService implements DeviceService {
         }
     }
 
-    private void processOslpRequestSetScheduleSingle(final SetScheduleDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) {
+    private void processOslpRequestSetScheduleSingle(final SetScheduleDeviceRequest deviceRequest) {
 
         LOGGER.debug("Processing single set schedule request for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestSetScheduleSingle(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                retryCount, isScheduled);
+        this.buildOslpRequestSetScheduleSingle(deviceRequest);
     }
 
     private void doProcessOslpRequestSetScheduleSingle(final OslpEnvelope oslpRequest,
@@ -608,9 +580,7 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-    private void buildOslpRequestSetScheduleSingle(final SetScheduleDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) {
+    private void buildOslpRequestSetScheduleSingle(final SetScheduleDeviceRequest deviceRequest) {
         final List<Oslp.Schedule> oslpSchedules = this.convertToOslpSchedules(deviceRequest.getSchedules());
 
         final Oslp.SetScheduleRequest.Builder request = SetScheduleRequest
@@ -622,19 +592,15 @@ public class OslpDeviceService implements DeviceService {
         final ScheduleMessageDataContainer scheduleMessageDataContainer = new ScheduleMessageDataContainer(
                 deviceRequest.getSchedules());
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setSetScheduleRequest(request.build()).build(),
-                scheduleMessageDataContainer);
+        this.buildAndSignEnvelope(deviceRequest, Oslp.Message.newBuilder().setSetScheduleRequest(request.build())
+                .build(), scheduleMessageDataContainer);
     }
 
-    private void processOslpRequestSetSchedulePaged(final SetScheduleDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled, final Pager pager) {
+    private void processOslpRequestSetSchedulePaged(final SetScheduleDeviceRequest deviceRequest, final Pager pager) {
         LOGGER.debug("Processing paged set schedule request for device: {}, page {} of {}",
                 deviceRequest.getDeviceIdentification(), pager.getCurrentPage(), pager.numberOfPages);
 
-        this.buildOslpRequestSetSchedulePaged(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, pager);
+        this.buildOslpRequestSetSchedulePaged(deviceRequest, pager);
     }
 
     private void doProcessOslpRequestSetSchedulePaged(final OslpEnvelope oslpRequest,
@@ -694,14 +660,11 @@ public class OslpDeviceService implements DeviceService {
         } else {
             // Process next page
             pager.nextPage();
-            this.processOslpRequestSetSchedulePaged(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled, pager);
+            this.processOslpRequestSetSchedulePaged(deviceRequest, pager);
         }
     }
 
-    private void buildOslpRequestSetSchedulePaged(final SetScheduleDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled, final Pager pager) {
+    private void buildOslpRequestSetSchedulePaged(final SetScheduleDeviceRequest deviceRequest, final Pager pager) {
 
         final List<Oslp.Schedule> oslpSchedules = this.convertToOslpSchedules(deviceRequest.getSchedules().subList(
                 pager.getIndexFrom(), pager.getIndexTo()));
@@ -711,8 +674,8 @@ public class OslpDeviceService implements DeviceService {
                 .addAllSchedules(oslpSchedules)
                 .setScheduleType(
                         this.mapper.map(deviceRequest.getRelayType(), com.alliander.osgp.oslp.Oslp.RelayType.class))
-                .setPageInfo(
-                        Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
+                        .setPageInfo(
+                                Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
                                 .setPageSize(pager.getPageSize()).setTotalPages(pager.getNumberOfPages()));
 
         final PageInfo pageInfo = new PageInfo(pager.getCurrentPage(), pager.getPageSize(), pager.getNumberOfPages());
@@ -720,8 +683,8 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getSchedules());
         scheduleMessageDataContainer.setPageInfo(pageInfo);
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setSetScheduleRequest(oslpRequestBuilder.build()).build(),
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSetScheduleRequest(oslpRequestBuilder.build()).build(),
                 scheduleMessageDataContainer);
     }
 
@@ -829,13 +792,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newSetConfiguration(final SetConfigurationDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    public void newSetConfiguration(final SetConfigurationDeviceRequest deviceRequest) {
         LOGGER.info("newSetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestSetConfiguration(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestSetConfiguration(deviceRequest);
     }
 
     @Override
@@ -856,7 +816,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -871,12 +830,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newGetConfiguration(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newGetConfiguration(final DeviceRequest deviceRequest) {
         LOGGER.info("newGetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestGetConfiguration(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestGetConfiguration(deviceRequest);
     }
 
     @Override
@@ -897,7 +854,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -940,12 +896,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newGetActualPowerUsage(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newGetActualPowerUsage(final DeviceRequest deviceRequest) {
         LOGGER.info("newGetActualPowerUsage() for device: {}.");
 
-        this.buildOslpRequestGetActualPowerUsage(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                retryCount, isScheduled);
+        this.buildOslpRequestGetActualPowerUsage(deviceRequest);
     }
 
     @Override
@@ -965,7 +919,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -989,16 +942,13 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    public void newGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest) {
         LOGGER.debug("newGetPowerUsageHistory() for device: {}.", deviceRequest.getDeviceIdentification());
 
         final Pager pager = new Pager();
         final List<PowerUsageData> powerUsageHistoryData = new ArrayList<>();
 
-        this.buildOslpRequestGetPowerUsageHistory(deviceRequest, pager, powerUsageHistoryData, ipAddress, domain,
-                domainVersion, messageType, retryCount, isScheduled);
+        this.buildOslpRequestGetPowerUsageHistory(deviceRequest, pager, powerUsageHistoryData);
     }
 
     @Override
@@ -1028,7 +978,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -1040,12 +989,11 @@ public class OslpDeviceService implements DeviceService {
             final Pager pager, final List<PowerUsageData> powerUsageHistoryData,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
             final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled)
-            throws IOException {
+                    throws IOException {
         LOGGER.info("GetPowerUsageHistory() for device: {}, page: {}", deviceRequest.getDeviceIdentification(),
                 pager.getCurrentPage());
 
-        this.buildOslpRequestGetPowerUsageHistory(deviceRequest, pager, powerUsageHistoryData, ipAddress, domain,
-                domainVersion, messageType, retryCount, isScheduled);
+        this.buildOslpRequestGetPowerUsageHistory(deviceRequest, pager, powerUsageHistoryData);
     }
 
     private void handleOslpResponseGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
@@ -1101,9 +1049,7 @@ public class OslpDeviceService implements DeviceService {
     }
 
     private void buildOslpRequestGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
-            final Pager pager, final List<PowerUsageData> powerUsageHistoryData, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+            final Pager pager, final List<PowerUsageData> powerUsageHistoryData) {
         final Oslp.HistoryTermType oslpHistoryTermType = this.mapper.map(deviceRequest.getHistoryTermType(),
                 Oslp.HistoryTermType.class);
         final Oslp.TimePeriod.Builder oslpTimePeriodBuilder = Oslp.TimePeriod.newBuilder();
@@ -1125,9 +1071,9 @@ public class OslpDeviceService implements DeviceService {
         powerUsageHistoryResponseMessageDataContainer.setEndTime(deviceRequest.getTimePeriod().getEndTime());
         powerUsageHistoryResponseMessageDataContainer.setHistoryTermType(deviceRequest.getHistoryTermType());
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setGetPowerUsageHistoryRequest(getPowerUsageHistoryRequest)
-                        .build(), powerUsageHistoryResponseMessageDataContainer);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setGetPowerUsageHistoryRequest(getPowerUsageHistoryRequest).build(),
+                powerUsageHistoryResponseMessageDataContainer);
     }
 
     @Override
@@ -1165,12 +1111,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newGetStatus(final GetStatusDeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newGetStatus(final GetStatusDeviceRequest deviceRequest) {
         LOGGER.info("newGetStatus() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestGetStatus(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestGetStatus(deviceRequest);
     }
 
     @Override
@@ -1190,7 +1134,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -1234,13 +1177,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newResumeSchedule(final ResumeScheduleDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    public void newResumeSchedule(final ResumeScheduleDeviceRequest deviceRequest) {
         LOGGER.info("newResumeSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestResumeSchedule(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestResumeSchedule(deviceRequest);
     }
 
     @Override
@@ -1260,7 +1200,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -1302,12 +1241,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newSetReboot(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled) {
+    public void newSetReboot(final DeviceRequest deviceRequest) {
         LOGGER.info("newSetReboot() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestSetReboot(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestSetReboot(deviceRequest);
     }
 
     @Override
@@ -1327,7 +1264,6 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleException(final Throwable t) {
                 OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
-
             }
         };
 
@@ -1371,13 +1307,10 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void newSetTransition(final SetTransitionDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    public void newSetTransition(final SetTransitionDeviceRequest deviceRequest) {
         LOGGER.info("newSetTranistion() for device: {}.", deviceRequest.getDeviceIdentification());
 
-        this.buildOslpRequestSetTransition(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled);
+        this.buildOslpRequestSetTransition(deviceRequest);
     }
 
     @Override
@@ -1441,57 +1374,36 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status, configuration);
     }
 
-    private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
         final Oslp.GetActualPowerUsageRequest getActualPowerUsageRequest = Oslp.GetActualPowerUsageRequest.newBuilder()
                 .build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setGetActualPowerUsageRequest(getActualPowerUsageRequest)
-                        .build(), null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setGetActualPowerUsageRequest(getActualPowerUsageRequest).build(), null);
     }
 
-    private void buildOslpRequestGetConfiguration(final DeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestGetConfiguration(final DeviceRequest deviceRequest) {
         final Oslp.GetConfigurationRequest getConfigurationRequest = Oslp.GetConfigurationRequest.newBuilder().build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setGetConfigurationRequest(getConfigurationRequest).build(),
-                null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setGetConfigurationRequest(getConfigurationRequest).build(), null);
     }
 
-    private void buildOslpRequestGetFirmwareVersion(final DeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestGetFirmwareVersion(final DeviceRequest deviceRequest) {
         final Oslp.GetFirmwareVersionRequest getFirmwareVersionRequest = GetFirmwareVersionRequest.newBuilder().build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setGetFirmwareVersionRequest(getFirmwareVersionRequest).build(),
-                null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setGetFirmwareVersionRequest(getFirmwareVersionRequest).build(), null);
     }
 
-    private void buildOslpRequestGetStatus(final DeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
-        // final Oslp.GetStatusRequest.Builder getStatusRequestBuilder =
-        // Oslp.GetStatusRequest.newBuilder();
-        //
-        // return
-        // this.getBasicEnvelopeBuilder(deviceRequest.getDeviceIdentification())
-        // .withPayloadMessage(Oslp.Message.newBuilder().setGetStatusRequest(getStatusRequestBuilder).build())
-        // .build();
-
+    private void buildOslpRequestGetStatus(final DeviceRequest deviceRequest) {
         final Oslp.GetStatusRequest getStatusRequest = GetStatusRequest.newBuilder().build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setGetStatusRequest(getStatusRequest).build(), null);
+        this.buildAndSignEnvelope(deviceRequest, Oslp.Message.newBuilder().setGetStatusRequest(getStatusRequest)
+                .build(), null);
     }
 
-    private void buildOslpRequestResumeSchedule(final ResumeScheduleDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) {
+    private void buildOslpRequestResumeSchedule(final ResumeScheduleDeviceRequest deviceRequest) {
         final Oslp.ResumeScheduleRequest.Builder resumeScheduleRequestBuilder = Oslp.ResumeScheduleRequest.newBuilder();
         if (deviceRequest.getIndex() != null) {
             resumeScheduleRequestBuilder.setIndex(ByteString
@@ -1500,25 +1412,19 @@ public class OslpDeviceService implements DeviceService {
         }
         resumeScheduleRequestBuilder.setImmediate(deviceRequest.isImmediate());
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setResumeScheduleRequest(resumeScheduleRequestBuilder.build())
-                        .build(), null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setResumeScheduleRequest(resumeScheduleRequestBuilder.build()).build(), null);
     }
 
-    private void buildOslpRequestSetConfiguration(final SetConfigurationDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) {
+    private void buildOslpRequestSetConfiguration(final SetConfigurationDeviceRequest deviceRequest) {
         final Oslp.SetConfigurationRequest setConfigurationRequest = this.mapper.map(deviceRequest.getConfiguration(),
                 Oslp.SetConfigurationRequest.class);
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setSetConfigurationRequest(setConfigurationRequest).build(),
-                null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSetConfigurationRequest(setConfigurationRequest).build(), null);
     }
 
-    private void buildOslpRequestSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) {
+    private void buildOslpRequestSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest) {
         final Oslp.SetEventNotificationsRequest.Builder builder = Oslp.SetEventNotificationsRequest.newBuilder();
 
         int bitMask = 0;
@@ -1528,35 +1434,29 @@ public class OslpDeviceService implements DeviceService {
 
         builder.setNotificationMask(bitMask);
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setSetEventNotificationsRequest(builder.build()).build(), null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSetEventNotificationsRequest(builder.build()).build(), null);
     }
 
-    private void buildOslpRequestSetLight(final SetLightDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestSetLight(final SetLightDeviceRequest deviceRequest) {
         final Oslp.SetLightRequest.Builder setLightRequestBuilder = Oslp.SetLightRequest.newBuilder();
 
         for (final LightValue lightValue : deviceRequest.getLightValues()) {
             setLightRequestBuilder.addValues(this.buildLightValue(lightValue));
         }
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setSetLightRequest(setLightRequestBuilder.build()).build(), null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSetLightRequest(setLightRequestBuilder.build()).build(), null);
     }
 
-    private void buildOslpRequestSetReboot(final DeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestSetReboot(final DeviceRequest deviceRequest) {
         final Oslp.SetRebootRequest setRebootRequest = Oslp.SetRebootRequest.newBuilder().build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setSetRebootRequest(setRebootRequest).build(), null);
+        this.buildAndSignEnvelope(deviceRequest, Oslp.Message.newBuilder().setSetRebootRequest(setRebootRequest)
+                .build(), null);
     }
 
-    private void buildOslpRequestSetTransition(final SetTransitionDeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestSetTransition(final SetTransitionDeviceRequest deviceRequest) {
         final Oslp.SetTransitionRequest.Builder setTransitionBuilder = Oslp.SetTransitionRequest.newBuilder()
                 .setTransitionType(
                         this.mapper.map(deviceRequest.getTransitionType(),
@@ -1565,38 +1465,31 @@ public class OslpDeviceService implements DeviceService {
             setTransitionBuilder.setTime(deviceRequest.getTransitionTime().toString(TIME_FORMAT));
         }
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setSetTransitionRequest(setTransitionBuilder.build()).build(),
-                null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSetTransitionRequest(setTransitionBuilder.build()).build(), null);
     }
 
-    private void buildOslpRequestStartSelfTest(final DeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestStartSelfTest(final DeviceRequest deviceRequest) {
         final Oslp.StartSelfTestRequest startSelftestRequest = Oslp.StartSelfTestRequest.newBuilder().build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setStartSelfTestRequest(startSelftestRequest).build(), null);
+        this.buildAndSignEnvelope(deviceRequest, Oslp.Message.newBuilder()
+                .setStartSelfTestRequest(startSelftestRequest).build(), null);
     }
 
-    private void buildOslpRequestStopSelfTest(final DeviceRequest deviceRequest, final String ipAddress,
-            final String domain, final String domainVersion, final String messageType, final int retryCount,
-            final boolean isScheduled) {
+    private void buildOslpRequestStopSelfTest(final DeviceRequest deviceRequest) {
         final Oslp.StopSelfTestRequest stopSelftestRequest = Oslp.StopSelfTestRequest.newBuilder().build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setStopSelfTestRequest(stopSelftestRequest).build(), null);
+        this.buildAndSignEnvelope(deviceRequest, Oslp.Message.newBuilder().setStopSelfTestRequest(stopSelftestRequest)
+                .build(), null);
     }
 
-    private void buildOslpRequestUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest,
-            final String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) {
+    private void buildOslpRequestUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest) {
         final Oslp.UpdateFirmwareRequest updateFirmwareRequest = Oslp.UpdateFirmwareRequest.newBuilder()
                 .setFirmwareDomain(deviceRequest.getFirmwareDomain()).setFirmwareUrl(deviceRequest.getFirmwareUrl())
                 .build();
 
-        this.buildAndSignEnvelope(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                isScheduled, Oslp.Message.newBuilder().setUpdateFirmwareRequest(updateFirmwareRequest).build(), null);
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setUpdateFirmwareRequest(updateFirmwareRequest).build(), null);
     }
 
     private void handleOslpResponseGetActualPowerUsage(final DeviceRequest deviceRequest,
@@ -1657,7 +1550,7 @@ public class OslpDeviceService implements DeviceService {
                         LightValue.class), this.mapper.map(getStatusResponse.getPreferredLinktype(), LinkType.class),
                         this.mapper.map(getStatusResponse.getActualLinktype(), LinkType.class), this.mapper.map(
                                 getStatusResponse.getLightType(), LightType.class),
-                        getStatusResponse.getEventNotificationMask());
+                                getStatusResponse.getEventNotificationMask());
             } else {
                 // handle failure by throwing exceptions if needed
             }
@@ -1849,13 +1742,18 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-    private void buildAndSignEnvelope(final DeviceRequest deviceRequest, final String ipAddress, final String domain,
-            final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled,
-            final Oslp.Message payloadMessage, final Serializable extraData) {
+    private void buildAndSignEnvelope(final DeviceRequest deviceRequest, final Oslp.Message payloadMessage,
+            final Serializable extraData) {
 
         final String deviceIdentification = deviceRequest.getDeviceIdentification();
         final String organisationIdentification = deviceRequest.getOrganisationIdentification();
         final String correlationUid = deviceRequest.getCorrelationUid();
+        final String ipAddress = deviceRequest.getIpAddress();
+        final String domain = deviceRequest.getDomain();
+        final String domainVersion = deviceRequest.getDomainVersion();
+        final String messageType = deviceRequest.getMessageType();
+        final int retryCount = deviceRequest.getRetryCount();
+        final boolean isScheduled = deviceRequest.isScheduled();
 
         // Get some values from the database.
         final OslpDevice oslpDevice = this.oslpDeviceSettingsService

@@ -82,10 +82,9 @@ public class CommonRebootRequestMessageProcessor extends DeviceRequestMessagePro
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                    correlationUid);
+                    correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetReboot(deviceRequest, ipAddress, domain, domainVersion, messageType, retryCount,
-                    isScheduled);
+            this.deviceService.newSetReboot(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

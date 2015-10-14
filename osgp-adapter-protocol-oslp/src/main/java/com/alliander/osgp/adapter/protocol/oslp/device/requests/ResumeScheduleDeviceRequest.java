@@ -22,6 +22,17 @@ public class ResumeScheduleDeviceRequest extends DeviceRequest {
         this.immediate = immediate;
     }
 
+    public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final Integer index, final boolean immediate, final String domain,
+            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
+            final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+
+        this.index = index;
+        this.immediate = immediate;
+    }
+
     public Integer getIndex() {
         return this.index;
     }

@@ -33,7 +33,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpCommonSetConfigurationRequestMessageProcessor")
 public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -67,7 +67,6 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -88,10 +87,10 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetConfigurationDeviceRequest deviceRequest = new SetConfigurationDeviceRequest(
-                    organisationIdentification, deviceIdentification, correlationUid, configuration);
+                    organisationIdentification, deviceIdentification, correlationUid, configuration, domain,
+                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetConfiguration(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled);
+            this.deviceService.newSetConfiguration(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

@@ -36,7 +36,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpCommonUpdateFirmwareRequestMessageProcessor")
 public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -101,10 +101,10 @@ public class CommonUpdateFirmwareRequestMessageProcessor extends DeviceRequestMe
 
             final UpdateFirmwareDeviceRequest deviceRequest = new UpdateFirmwareDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
-                    this.firmwareLocation.getDomain(), this.firmwareLocation.getFullPath(firmwareIdentification));
+                    this.firmwareLocation.getDomain(), this.firmwareLocation.getFullPath(firmwareIdentification),
+                    domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newUpdateFirmware(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled);
+            this.deviceService.newUpdateFirmware(deviceRequest);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,

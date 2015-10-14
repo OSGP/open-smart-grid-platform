@@ -73,68 +73,57 @@ public interface DeviceService {
 
     // CHANGED FUNCTIONS
 
-    void newGetFirmwareVersion(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newGetFirmwareVersion(DeviceRequest deviceRequest);
 
     void doGetFirmwareVerion(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newGetConfiguration(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newGetConfiguration(DeviceRequest deviceRequest);
 
     void doGetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetConfiguration(SetConfigurationDeviceRequest deviceRequest, String ipAddress, String domain,
-            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+    void newSetConfiguration(SetConfigurationDeviceRequest deviceRequest);
 
     void doSetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newGetStatus(GetStatusDeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newGetStatus(GetStatusDeviceRequest deviceRequest);
 
     void doGetStatus(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetReboot(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newSetReboot(DeviceRequest deviceRequest);
 
     void doSetReboot(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetEventNotifications(SetEventNotificationsDeviceRequest deviceRequest, String ipAddress, String domain,
-            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+    void newSetEventNotifications(SetEventNotificationsDeviceRequest deviceRequest);
 
     void doSetEventNotifications(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newStartSelfTest(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newStartSelfTest(DeviceRequest deviceRequest);
 
     void doStartSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newStopSelfTest(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newStopSelfTest(DeviceRequest deviceRequest);
 
     void doStopSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newUpdateFirmware(UpdateFirmwareDeviceRequest deviceRequest, String ipAddress, String domain,
-            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+    void newUpdateFirmware(UpdateFirmwareDeviceRequest deviceRequest);
 
     void doUpdateFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newGetActualPowerUsage(DeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newGetActualPowerUsage(DeviceRequest deviceRequest);
 
     void doGetActualPowerUsage(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newGetPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest, String ipAddress, String domain,
-            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+    void newGetPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest);
 
     void doGetPowerUsageHistory(OslpEnvelope oslpRequest,
             PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainer,
@@ -142,27 +131,23 @@ public interface DeviceService {
             String ipAddress, final String domain, final String domainVersion, final String messageType,
             final int retryCount, final boolean isScheduled) throws IOException;
 
-    void newResumeSchedule(ResumeScheduleDeviceRequest deviceRequest, String ipAddress, String domain,
-            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+    void newResumeSchedule(ResumeScheduleDeviceRequest deviceRequest);
 
     void doResumeSchedule(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetLight(SetLightDeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newSetLight(SetLightDeviceRequest deviceRequest);
 
     void doSetLight(OslpEnvelope oslpRequest, DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
             String ipAddress) throws IOException;
 
-    void newSetSchedule(SetScheduleDeviceRequest deviceRequest, String ipAddress, String domain, String domainVersion,
-            String messageType, int retryCount, boolean isScheduled);
+    void newSetSchedule(SetScheduleDeviceRequest deviceRequest);
 
     void doSetSchedule(OslpEnvelope oslpRequest, SetScheduleDeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress, String domain, String domainVersion,
             String messageType, int retryCount, boolean isScheduled, PageInfo pageInfo) throws IOException;
 
-    void newSetTransition(SetTransitionDeviceRequest deviceRequest, String ipAddress, String domain,
-            String domainVersion, String messageType, int retryCount, boolean isScheduled);
+    void newSetTransition(SetTransitionDeviceRequest deviceRequest);
 
     void doSetTransition(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;

@@ -101,11 +101,10 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             final GetPowerUsageHistoryDeviceRequest deviceRequest = new GetPowerUsageHistoryDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
                     powerUsageHistoryMessageDataContainerDto.getTimePeriod(),
-                    powerUsageHistoryMessageDataContainerDto.getHistoryTermType());
+                    powerUsageHistoryMessageDataContainerDto.getHistoryTermType(), domain, domainVersion, messageType,
+                    ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newGetPowerUsageHistory(deviceRequest, ipAddress, domain, domainVersion, messageType,
-                    retryCount, isScheduled);
-
+            this.deviceService.newGetPowerUsageHistory(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);
@@ -154,7 +153,8 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
             final HistoryTermType historyTermType = powerUsageHistoryResponseMessageDataContainer.getHistoryTermType();
 
             final GetPowerUsageHistoryDeviceRequest deviceRequest = new GetPowerUsageHistoryDeviceRequest(
-                    organisationIdentification, deviceIdentification, correlationUid, timePeriod, historyTermType);
+                    organisationIdentification, deviceIdentification, correlationUid, timePeriod, historyTermType,
+                    domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.doGetPowerUsageHistory(oslpEnvelope, powerUsageHistoryResponseMessageDataContainer,
                     deviceRequest, deviceResponseHandler, ipAddress, domain, domainVersion, messageType, retryCount,

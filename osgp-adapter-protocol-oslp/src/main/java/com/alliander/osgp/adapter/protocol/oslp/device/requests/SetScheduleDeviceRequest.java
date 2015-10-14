@@ -25,6 +25,16 @@ public class SetScheduleDeviceRequest extends DeviceRequest {
         this.relayType = relayType;
     }
 
+    public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final List<Schedule> schedules, final RelayType relayType,
+            final String domain, final String domainVersion, final String messageType, final String ipAddress,
+            final int retryCount, final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+        this.schedules = schedules;
+        this.relayType = relayType;
+    }
+
     public List<Schedule> getSchedules() {
         return this.schedules;
     }
