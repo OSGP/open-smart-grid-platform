@@ -33,6 +33,30 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="SetConfigurationObjectRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Device_Identification" minOccurs="1" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="tns:AlphaNumericType">
+							<xsd:length value="17" />
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+				<xsd:element name="SetConfigurationObjectRequestData" type="tns:SetConfigurationObjectRequestData" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="SetConfigurationObjectResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+
 	<!-- DATATYPES -->
 
 	<xsd:complexType name="Action" abstract="true">
@@ -47,6 +71,13 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="Command" abstract="true">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Action">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<xsd:complexType name="SpecialDaysRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="tns:Query">
@@ -69,6 +100,37 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="dayId" type="xsd:int" />
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	<xsd:complexType name="SetConfigurationObjectRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Command">
+				<xsd:sequence>
+					<xsd:element name="Configuration" minOccurs="0" type="tns:Configurations" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="Configurations">
+		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
+			<xsd:element name="Configuration" type="tns:ConfigurationType" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="ConfigurationType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="DISCOVER_ON_OPEN_COVER" />
+			<xsd:enumeration value="DISCOVER_ON_POWER_ON" />
+			<xsd:enumeration value="DYNAMIC_MBUS_ADDRESS" />
+			<xsd:enumeration value="PO_ENABLE" />
+			<xsd:enumeration value="HLS_3_ON_P3_ENABLE" />
+			<xsd:enumeration value="HLS_4_ON_P3_ENABLE" />
+			<xsd:enumeration value="HLS_5_ON_P3_ENABLE" />
+			<xsd:enumeration value="HLS_3_ON_PO_ENABLE" />
+			<xsd:enumeration value="HLS_4_ON_PO_ENABLE" />
+			<xsd:enumeration value="HLS_5_ON_PO_ENABLE" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	
 	<xsd:simpleType name="DeviceIdentification">
 		<xsd:restriction base="tns:AlphaNumericType">
