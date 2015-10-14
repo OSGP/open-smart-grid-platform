@@ -10,19 +10,19 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.List;
 
-public class SynchronizeTimeRequestData implements Serializable {
+public class SpecialDaysRequestData implements Serializable {
 
-    private static final long serialVersionUID = -1483665562035897062L;
+    private static final long serialVersionUID = -5161574052268470981L;
 
-    private Date date;
+    private List<SpecialDay> specialDays;
 
-    public Date getDate() {
-        return this.date;
+    public List<SpecialDay> getSpecialDays() {
+        return specialDays;
     }
 
-    public void setDate(final Date date) {
-        this.date = date;
+    public void setSpecialDays(List<SpecialDay> specialDays) {
+        this.specialDays = specialDays;
     }
 }

@@ -47,6 +47,7 @@
 			<xsd:enumeration value="FIND_EVENTS" />
 			<xsd:enumeration value="REQUEST_PERIODIC_METER_DATA" />
 			<xsd:enumeration value="REQUEST_SYNCHRONIZE_TIME" />
+			<xsd:enumeration value="REQUEST_SPECIAL_DAYS" />
 			<xsd:enumeration value="SET_ALARM_NOTIFICATIONS" />
 		</xsd:restriction>
 	</xsd:simpleType>
