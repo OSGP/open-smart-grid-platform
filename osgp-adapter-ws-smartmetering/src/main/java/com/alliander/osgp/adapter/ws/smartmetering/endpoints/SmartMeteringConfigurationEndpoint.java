@@ -19,6 +19,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
@@ -53,6 +55,29 @@ public class SmartMeteringConfigurationEndpoint {
 
         final String correlationUid = this.configurationService.requestSpecialDaysData(organisationIdentification,
                 dataRequest);
+
+        final AsyncResponse asyncResponse = new AsyncResponse();
+        asyncResponse.setCorrelationUid(correlationUid);
+        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+        response.setAsyncResponse(asyncResponse);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetConfigurationObjectResponse requestSetConfigurationObject(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetConfigurationObjectRequest request) throws OsgpException {
+
+        final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest dataRequest = this.configurationMapper
+                .map(request,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
+
+        final String correlationUid = this.configurationService.requestSetConfigurationObject(
+                organisationIdentification, dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);

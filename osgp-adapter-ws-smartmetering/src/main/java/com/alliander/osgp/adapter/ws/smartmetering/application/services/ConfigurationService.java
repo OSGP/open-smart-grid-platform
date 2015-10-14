@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -52,6 +53,25 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            @Identification final SetConfigurationObjectRequest requestData) throws FunctionalException {
+
+        LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.REQUEST_SET_CONFIGURATION_OBJECT, correlationUid,
+                organisationIdentification, deviceIdentification, requestData);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
     /**
      * @param organisationIdentification
      * @param requestData
@@ -61,5 +81,16 @@ public class ConfigurationService {
             throws FunctionalException {
         return this.enqueueSpecialDaysRequest(organisationIdentification, requestData.getDeviceIdentification(),
                 requestData);
+    }
+
+    /**
+     * @param organisationIdentification
+     * @param requestData
+     * @throws FunctionalException
+     */
+    public String requestSetConfigurationObject(final String organisationIdentification,
+            final SetConfigurationObjectRequest requestData) throws FunctionalException {
+        return this.enqueueSetConfigurationObjectRequest(organisationIdentification,
+                requestData.getDeviceIdentification(), requestData);
     }
 }

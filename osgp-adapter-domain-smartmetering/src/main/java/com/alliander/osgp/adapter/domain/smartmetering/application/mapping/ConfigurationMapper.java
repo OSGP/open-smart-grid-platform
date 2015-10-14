@@ -24,5 +24,11 @@ public class ConfigurationMapper extends ConfigurableMapper {
                         com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
                 .register();
 
+        mapperFactory
+                .classMap(
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest.class)
+                .byDefault().register();
+
     }
 }

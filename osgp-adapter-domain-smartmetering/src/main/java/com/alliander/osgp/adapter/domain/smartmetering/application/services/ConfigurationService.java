@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Confi
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -56,7 +57,7 @@ public class ConfigurationService {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject,
             final String messageType) throws FunctionalException {
 
-        LOGGER.info("requestSSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
@@ -78,11 +79,65 @@ public class ConfigurationService {
 
     }
 
+    public void requestSetConfigurationObject(
+            @Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest setConfigurationObjectRequestValueObject,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info("requestSetConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        // TODO: bypassing authorization, this should be fixed.
+        // Organisation organisation =
+        // this.findOrganisation(organisationIdentification);
+        // final Device device = this.findActiveDevice(deviceIdentification);
+
+        // TODO deviceAuthorization
+        // final DeviceAuthorization deviceAuthorization = new
+        // DeviceAuthorization(duMy, organisation,
+        // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
+        // this.deviceAuthorizationRepository.save(deviceAuthorization);
+
+        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, setConfigurationObjectRequestDto), messageType);
+
+    }
+
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
 
         LOGGER.info("handleSpecialDaysresponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException osgpException = exception;
+
+        try {
+            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
+                throw osgpException;
+            }
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+
+        }
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, null), messageType);
+    }
+
+    public void handleSetConfigurationObjectResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handle SetConfigurationObject response for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
