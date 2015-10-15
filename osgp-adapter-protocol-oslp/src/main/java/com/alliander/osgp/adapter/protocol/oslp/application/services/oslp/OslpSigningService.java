@@ -36,7 +36,6 @@ public class OslpSigningService {
     @Autowired
     private SigningServerRequestMessageSender signingServerRequestMessageSender;
 
-    @Autowired
     private OslpChannelHandlerServer oslpChannelHandlerServer;
 
     @Autowired
@@ -68,8 +67,10 @@ public class OslpSigningService {
      * have the envelope signed by the signing server.
      */
     public void buildAndSignEnvelope(final byte[] deviceId, final byte[] sequenceNumber,
-            final Oslp.Message payloadMessage, final Integer channelId) {
+            final Oslp.Message payloadMessage, final Integer channelId,
+            final OslpChannelHandlerServer oslpChannelHandlerServer) {
 
+        this.oslpChannelHandlerServer = oslpChannelHandlerServer;
         final String correlationUid = channelId.toString();
 
         // Create DTO to transfer data using request message.

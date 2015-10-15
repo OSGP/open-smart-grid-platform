@@ -137,7 +137,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
 
                 // Send message to signing server to get our response signed.
                 this.oslpSigningService.buildAndSignEnvelope(message.getDeviceId(), message.getSequenceNumber(),
-                        payload, channelId);
+                        payload, channelId, this);
             }
         } else {
             LOGGER.warn("{} Received message wasn't properly secured.", channelId);
@@ -234,9 +234,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                        .setSequenceWindow(this.sequenceNumberWindow)).build();
+                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                                .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,
