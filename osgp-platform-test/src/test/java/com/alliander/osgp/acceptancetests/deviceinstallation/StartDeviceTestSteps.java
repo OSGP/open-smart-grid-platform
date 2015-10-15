@@ -206,7 +206,7 @@ public class StartDeviceTestSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.INSTALLATION).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the start device test oslp message from the device")
@@ -341,7 +341,7 @@ public class StartDeviceTestSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
@@ -403,7 +403,7 @@ public class StartDeviceTestSteps {
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();

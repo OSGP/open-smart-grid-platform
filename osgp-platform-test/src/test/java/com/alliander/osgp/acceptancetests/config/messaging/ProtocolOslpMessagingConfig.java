@@ -9,11 +9,15 @@ package com.alliander.osgp.acceptancetests.config.messaging;
 
 import static org.mockito.Mockito.mock;
 
+import javax.jms.MessageListener;
+
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -25,6 +29,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMe
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpResponseMessageListener;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpLogItemRequestMessageSender;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerRequestMessageSender;
 
 //@Configuration
 public class ProtocolOslpMessagingConfig {
@@ -151,4 +156,84 @@ public class ProtocolOslpMessagingConfig {
         return new OsgpResponseMessageListener();
     }
 
+    // === SIGNING SERVER ===
+
+    @Bean
+    public JmsTemplate signingServerRequestsJmsTemplate() {
+        final JmsTemplate jmsTemplate = new JmsTemplate();
+        jmsTemplate.setDefaultDestination(this.signingServerRequestsQueue());
+        // Enable the use of deliveryMode, priority, and timeToLive
+        jmsTemplate.setExplicitQosEnabled(MessagingConfig.EXPLICIT_QOS_ENABLED);
+        jmsTemplate.setTimeToLive(MessagingConfig.TIME_TO_LIVE);
+        jmsTemplate.setDeliveryPersistent(MessagingConfig.DELIVERY_PERSISTENT);
+        jmsTemplate.setConnectionFactory(MessagingConfig.connectionFactory());
+        jmsTemplate.setReceiveTimeout(MessagingConfig.RECEIVE_TIMEOUT);
+        return jmsTemplate;
+    }
+
+    @Bean
+    public ActiveMQDestination signingServerRequestsQueue() {
+        return new ActiveMQQueue(MessagingConfig.SIGNING_SERVER_1_0_REQUESTS);
+    }
+
+    @Bean
+    public RedeliveryPolicy signingServerRequetsRedeliveryPolicy() {
+        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+        redeliveryPolicy.setInitialRedeliveryDelay(MessagingConfig.INITIAL_REDELIVERY_DELAY);
+        redeliveryPolicy.setMaximumRedeliveries(MessagingConfig.MAXIMUM_REDELIVERIES);
+        redeliveryPolicy.setMaximumRedeliveryDelay(MessagingConfig.MAXIMUM_REDELIVERY_DELAY);
+        redeliveryPolicy.setRedeliveryDelay(MessagingConfig.REDELIVERY_DELAY);
+        redeliveryPolicy.setDestination(this.signingServerRequestsQueue());
+        redeliveryPolicy.setBackOffMultiplier(MessagingConfig.BACK_OFF_MULTIPLIER);
+        redeliveryPolicy.setUseExponentialBackOff(MessagingConfig.USE_EXPONENTIAL_BACK_OFF);
+        return redeliveryPolicy;
+    }
+
+    @Bean
+    public SigningServerRequestMessageSender signingServerRequestMessageSender() {
+        return new SigningServerRequestMessageSender();
+    }
+
+    @Autowired
+    @Qualifier("signingServerResponsesMessageListener")
+    private MessageListener signingServerResponsesMessageListener;
+
+    /**
+     * Instead of a fixed name for the responses queue, the signing-server uses
+     * a 'reply-to' responses queue. This 'reply-to' responses queue is
+     * communicated to the signing-server by this Protocol-Adapter-OSLP instance
+     * when a request message is sent to the signing-server. The signing-server
+     * will send signed response messages to the 'reply-to' queue. This ensures
+     * that the signed response messages for this Protocol-Adapter-OSLP instance
+     * are sent back to this instance. FOR THE TESTS THIS IS A FIXED QUEUE NAME.
+     */
+    @Bean
+    public ActiveMQDestination replyToQueue() {
+        return new ActiveMQQueue(MessagingConfig.SIGNING_SERVER_1_0_RESPONSES);
+    }
+
+    @Bean
+    public RedeliveryPolicy signingServerResponsesRedeliveryPolicy() {
+        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+        redeliveryPolicy.setInitialRedeliveryDelay(MessagingConfig.INITIAL_REDELIVERY_DELAY);
+        redeliveryPolicy.setMaximumRedeliveries(MessagingConfig.MAXIMUM_REDELIVERIES);
+        redeliveryPolicy.setMaximumRedeliveryDelay(MessagingConfig.MAXIMUM_REDELIVERY_DELAY);
+        redeliveryPolicy.setRedeliveryDelay(MessagingConfig.REDELIVERY_DELAY);
+        redeliveryPolicy.setDestination(this.replyToQueue());
+        redeliveryPolicy.setBackOffMultiplier(MessagingConfig.BACK_OFF_MULTIPLIER);
+        redeliveryPolicy.setUseExponentialBackOff(MessagingConfig.USE_EXPONENTIAL_BACK_OFF);
+        return redeliveryPolicy;
+    }
+
+    @Bean
+    public DefaultMessageListenerContainer signingResponsesMessageListenerContainer() {
+        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+        messageListenerContainer.setConnectionFactory(MessagingConfig.pooledConnectionFactory());
+        messageListenerContainer.setDestination(this.replyToQueue());
+        messageListenerContainer.setConcurrentConsumers(MessagingConfig.CONCURRENT_CONSUMERS);
+        messageListenerContainer.setMaxConcurrentConsumers(MessagingConfig.MAX_CONCURRENT_CONSUMERS);
+        messageListenerContainer.setMessageListener(this.signingServerResponsesMessageListener);
+        messageListenerContainer.setSessionTransacted(true);
+        return messageListenerContainer;
+    }
 }

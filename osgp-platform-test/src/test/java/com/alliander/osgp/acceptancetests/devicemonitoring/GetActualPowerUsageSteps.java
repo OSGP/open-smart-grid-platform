@@ -203,7 +203,7 @@ public class GetActualPowerUsageSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.MONITORING).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the get actual power usage oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")
@@ -310,44 +310,44 @@ public class GetActualPowerUsageSteps {
                 .newBuilder()
                 .setPowerUsageData(
                         com.alliander.osgp.oslp.Oslp.PowerUsageData
+                        .newBuilder()
+                        .setSsldData(
+                                com.alliander.osgp.oslp.Oslp.SsldData
                                 .newBuilder()
-                                .setSsldData(
-                                        com.alliander.osgp.oslp.Oslp.SsldData
-                                                .newBuilder()
-                                                .setActualCurrent1(apuActualCurrent1)
-                                                .setActualCurrent2(apuActualCurrent2)
-                                                .setActualCurrent3(apuActualCurrent3)
-                                                .setActualPower1(apuActualPower1)
-                                                .setActualPower2(apuActualPower2)
-                                                .setActualPower3(apuActualPower3)
-                                                .setAveragePowerFactor1(apuAveragePowerFactor1)
-                                                .setAveragePowerFactor2(apuAveragePowerFactor2)
-                                                .setAveragePowerFactor3(apuAveragePowerFactor3)
+                                .setActualCurrent1(apuActualCurrent1)
+                                .setActualCurrent2(apuActualCurrent2)
+                                .setActualCurrent3(apuActualCurrent3)
+                                .setActualPower1(apuActualPower1)
+                                .setActualPower2(apuActualPower2)
+                                .setActualPower3(apuActualPower3)
+                                .setAveragePowerFactor1(apuAveragePowerFactor1)
+                                .setAveragePowerFactor2(apuAveragePowerFactor2)
+                                .setAveragePowerFactor3(apuAveragePowerFactor3)
+                                .addRelayData(
+                                        com.alliander.osgp.oslp.Oslp.RelayData
+                                        .newBuilder()
+                                        .setIndex(
+                                                OslpUtils
+                                                .integerToByteString(relayData1IndexInt))
+                                                .setTotalLightingMinutes(relayData1LightingMinutesInt)
+                                                .build())
                                                 .addRelayData(
                                                         com.alliander.osgp.oslp.Oslp.RelayData
-                                                                .newBuilder()
-                                                                .setIndex(
-                                                                        OslpUtils
-                                                                                .integerToByteString(relayData1IndexInt))
-                                                                .setTotalLightingMinutes(relayData1LightingMinutesInt)
-                                                                .build())
-                                                .addRelayData(
-                                                        com.alliander.osgp.oslp.Oslp.RelayData
-                                                                .newBuilder()
-                                                                .setIndex(
-                                                                        OslpUtils
-                                                                                .integerToByteString(relayData2IndexInt))
+                                                        .newBuilder()
+                                                        .setIndex(
+                                                                OslpUtils
+                                                                .integerToByteString(relayData2IndexInt))
                                                                 .setTotalLightingMinutes(relayData2LightingMinutesInt)
                                                                 .build()))
-                                .setPsldData(
-                                        com.alliander.osgp.oslp.Oslp.PsldData.newBuilder()
-                                                .setTotalLightingHours(apuPsldDataTotalLightHours).build())
-                                .setRecordTime(recordTime)
-                                .setTotalConsumedEnergy(apuTotalConsumedEnergy)
-                                .setActualConsumedPower(apuActualConsumedPower)
-                                .setMeterType(
-                                        apuMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType
-                                                .valueOf(apuMeterType.name())).build()).setStatus(Status.OK).build();
+                                                                .setPsldData(
+                                                                        com.alliander.osgp.oslp.Oslp.PsldData.newBuilder()
+                                                                        .setTotalLightingHours(apuPsldDataTotalLightHours).build())
+                                                                        .setRecordTime(recordTime)
+                                                                        .setTotalConsumedEnergy(apuTotalConsumedEnergy)
+                                                                        .setActualConsumedPower(apuActualConsumedPower)
+                                                                        .setMeterType(
+                                                                                apuMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType
+                                                                                        .valueOf(apuMeterType.name())).build()).setStatus(Status.OK).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetActualPowerUsageResponse(oslpResponse).build()).build();
@@ -523,7 +523,7 @@ public class GetActualPowerUsageSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
@@ -548,7 +548,7 @@ public class GetActualPowerUsageSteps {
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
 
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             // Check the result.
             final String expected = result.equals("NULL") ? null : result;
@@ -574,9 +574,9 @@ public class GetActualPowerUsageSteps {
                 "THEN: \"the get get actual power usage response request should return a get actual power usage response with result {}, description {} and recordTime {}, meterType {}, totalConsumedEnergy {}"
                         + "	actualConsumedPower {}, psldDataTotalLightHours {}, actualCurrent1 {}, actualCurrent2 {}, actualCurrent3 {} ,"
                         + "	actualPower1 {}, actualPower2 {}, actualPower3 {}, 	averagePowerFactor1 {}, averagePowerFactor2 {}, averagePowerFactor3 {} ",
-                result, description, recordTime, meterType, totalConsumedEnergy, actualConsumedPower,
-                psldDataTotalLightHours, actualCurrent1, actualCurrent2, actualCurrent3, actualPower1, actualPower2,
-                actualPower3, averagePowerFactor1, averagePowerFactor2, averagePowerFactor3);
+                        result, description, recordTime, meterType, totalConsumedEnergy, actualConsumedPower,
+                        psldDataTotalLightHours, actualCurrent1, actualCurrent2, actualCurrent3, actualPower1, actualPower2,
+                        actualPower3, averagePowerFactor1, averagePowerFactor2, averagePowerFactor3);
 
         try {
             if ("NOT_OK".equals(result)) {

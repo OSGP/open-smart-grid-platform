@@ -111,7 +111,8 @@ public class OslpTestUtils {
         // Hardcoded to single channel id
         when(channel.getId()).thenReturn(1);
 
-        // Manual trigger validation based on public key, OslpSecurityHandler is skipped
+        // Manual trigger validation based on public key, OslpSecurityHandler is
+        // skipped
         response.validate(getDefaultPublicKey());
         when(channel.write(anyObject())).thenAnswer(new OslpResponseAnswer(oslpChannelHandler, response, channel));
 
@@ -149,30 +150,43 @@ public class OslpTestUtils {
         return new InetSocketAddress(address, CLIENT_PORT);
     }
 
+    //
+    // TODO: HAD TO HACK THIS TO REMOVE PRIVATE KEY FROM PROTOCOL-ADAPTER-OSLP
+    // [KS 2015-10-04]
+    //
     public static OslpDeviceService configureDeviceServiceForOslp(final OslpDeviceService oslpDeviceService) {
-        try {
-            oslpDeviceService.setSignature(SIGNATURE);
-            oslpDeviceService.setProvider(provider());
-            oslpDeviceService.setOslpPortClient(CLIENT_PORT);
-            oslpDeviceService.setOslpPortClientLocal(LOCAL_CLIENT_PORT);
-            oslpDeviceService.setPrivateKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64, KEY_TYPE,
-                    provider()));
+        // try {
+        // oslpDeviceService.setSignature(SIGNATURE);
+        // oslpDeviceService.setProvider(provider());
+        oslpDeviceService.setOslpPortClient(CLIENT_PORT);
+        oslpDeviceService.setOslpPortClientLocal(LOCAL_CLIENT_PORT);
+        // oslpDeviceService.setPrivateKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64,
+        // KEY_TYPE,
+        // provider()));
 
-            return oslpDeviceService;
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException | NoSuchProviderException e) {
-            throw new IllegalStateException("Could not configure OslpDeviceService", e);
-        }
+        return oslpDeviceService;
+        // }
+        // catch (InvalidKeySpecException | NoSuchAlgorithmException |
+        // IOException | NoSuchProviderException e) { throw new
+        // IllegalStateException("Could not configure OslpDeviceService", e); }
+
     }
 
+    //
+    // TODO: HAD TO HACK THIS TO REMOVE PRIVATE KEY FROM PROTOCOL-ADAPTER-OSLP
+    // [KS 2015-10-04]
+    //
     public static void configureOslpChannelHandler(final OslpChannelHandler oslpChannelHandler) {
-        try {
-            oslpChannelHandler.setSignature(SIGNATURE);
-            oslpChannelHandler.setProvider(provider());
-            oslpChannelHandler.setPrivateKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64,
-                    KEY_TYPE, provider()));
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException | NoSuchProviderException e) {
-            throw new IllegalStateException("Could not create OslpChannelHandler.", e);
-        }
+        // try {
+        oslpChannelHandler.setSignature(SIGNATURE);
+        oslpChannelHandler.setProvider(provider());
+        // oslpChannelHandler.setPrivateKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64,
+        // KEY_TYPE, provider()));
+        // } catch (NoSuchAlgorithmException | InvalidKeySpecException |
+        // IOException | NoSuchProviderException e) {
+        // throw new
+        // IllegalStateException("Could not create OslpChannelHandler.", e);
+        // }
     }
 
     public static String provider() {

@@ -9,32 +9,32 @@
  User story: Set Light
 
  Scenario 1: Receive A Set Light Request With A Single Light Value
-	given 	a set light request for device @device with index @index, on @on, and dimvalue @dimvalue
-	and 	the set light request refers to a device @device with status @status
-	and 	the set light request refers to an organisation that is authorised
-	when 	the set light request is received
-	then 	the set light request should return a set light response with a correlationID
-	and 	an ovl set light request message should be sent to the ovl in queue
-	and 	an oslp set light request message is sent to the oslp out queue should be @ismessagesent
-	and 	a set light oslp message is sent to device @device should be @ismessagesent
-	and 	an oslp set light response message is sent to the oslp in queue should be @ismessagesent
-	and 	an ovl set light result message is sent to the ovl out queue should be true
-	and 	the ovl set light result message should contain a set light result @result
+ given 	a set light request for device @device with index @index, on @on, and dimvalue @dimvalue
+ and 	the set light request refers to a device @device with status @status
+ and 	the set light request refers to an organisation that is authorised
+ when 	the set light request is received
+ then 	the set light request should return a set light response with a correlationID
+ and 	an ovl set light request message should be sent to the ovl in queue
+ and 	an oslp set light request message is sent to the oslp out queue should be @ismessagesent
+ and 	a set light oslp message is sent to device @device should be @ismessagesent
+ and 	an oslp set light response message is sent to the oslp in queue should be @ismessagesent
+ and 	an ovl set light result message is sent to the ovl out queue should be true
+ and 	the ovl set light result message should contain a set light result @result
 
  Scenario 2: Receive A Set Light Request With Multiple Light Values
-	given 	a set light request for device @device with @validnr valid light values and @invalidnr invalid light values
-	and 	the set light request refers to a device @device with status @status
-	and 	the set light request refers to an organisation that is authorised
-	when 	the set light request is received
-	then 	a correlationID @isgenerated
-	and 	a message with @lightvaluenr lightvalues @isqueued
-	and 	the set light request should return result @result
+ given 	a set light request for device @device with @validnr valid light values and @invalidnr invalid light values
+ and 	the set light request refers to a device @device with status @status
+ and 	the set light request refers to an organisation that is authorised
+ when 	the set light request is received
+ then 	a correlationID @isgenerated
+ and 	a message with @lightvaluenr lightvalues @isqueued
+ and 	the set light request should return result @result
 
  Scenario 3: Receive A Get Set light Result Request
-	given 	a get set light result request with correlationId @correlationId
-	and 	a set light response message with correlationId @correlationId and content @content is found in the queue @isFound
-	when 	the get set light result request is received
-	then 	the get set light result request should return a get set light result response with result @result
+ given 	a get set light result request with correlationId @correlationId
+ and 	a set light response message with correlationId @correlationId and content @content is found in the queue @isFound
+ when 	the get set light result request is received
+ then 	the get set light result request should return a get set light result response with result @result
 
  */
 
@@ -410,7 +410,7 @@ public class SetLightSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpMessage = argument.getValue();
@@ -434,7 +434,7 @@ public class SetLightSteps {
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();

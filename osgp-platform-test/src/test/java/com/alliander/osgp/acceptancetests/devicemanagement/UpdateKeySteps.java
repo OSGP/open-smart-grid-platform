@@ -8,7 +8,7 @@
 package com.alliander.osgp.acceptancetests.devicemanagement;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -178,7 +178,7 @@ public class UpdateKeySteps {
         try {
             final ArgumentCaptor<OslpDevice> argument = ArgumentCaptor.forClass(OslpDevice.class);
 
-            verify(this.oslpDeviceRepositoryMock, times(1)).save(argument.capture());
+            verify(this.oslpDeviceRepositoryMock, timeout(10000).times(1)).save(argument.capture());
 
             Assert.assertEquals("Device identifications should match", this.device.getDeviceIdentification(), argument
                     .getValue().getDeviceIdentification());
@@ -199,7 +199,7 @@ public class UpdateKeySteps {
         try {
             final ArgumentCaptor<OslpDevice> argument = ArgumentCaptor.forClass(OslpDevice.class);
 
-            verify(this.oslpDeviceRepositoryMock, times(2)).save(argument.capture());
+            verify(this.oslpDeviceRepositoryMock, timeout(10000).times(2)).save(argument.capture());
 
             Assert.assertEquals("Device identifications should match", device, argument.getValue()
                     .getDeviceIdentification());
@@ -218,7 +218,7 @@ public class UpdateKeySteps {
         LOGGER.info("THEN: \"the device {} should not be updated with the invalid key {}\".", device, key);
 
         try {
-            verify(this.deviceRepositoryMock, times(0)).save(any(Device.class));
+            verify(this.deviceRepositoryMock, timeout(10000).times(0)).save(any(Device.class));
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             return false;

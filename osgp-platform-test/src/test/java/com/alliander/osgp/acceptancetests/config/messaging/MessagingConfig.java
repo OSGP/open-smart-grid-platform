@@ -16,11 +16,12 @@ import org.springframework.context.annotation.Import;
 
 //@Configuration
 @Import({ WsAdminMessagingConfig.class, WsCoreMessagingConfig.class, WsPublicLightingMessagingConfig.class,
-        WsTariffSwitchingMessagingConfig.class, DomainAdminMessagingConfig.class, DomainCoreMessagingConfig.class,
-        DomainPublicLightingMessagingConfig.class, DomainTariffSwitchingMessagingConfig.class,
-        OsgpCoreMessagingConfig.class, ProtocolOslpMessagingConfig.class })
-//@Import({ WsPublicLightingMessagingConfig.class, DomainPublicLightingMessagingConfig.class,
-//        OsgpCoreMessagingConfig.class, ProtocolOslpMessagingConfig.class })
+    WsTariffSwitchingMessagingConfig.class, DomainAdminMessagingConfig.class, DomainCoreMessagingConfig.class,
+    DomainPublicLightingMessagingConfig.class, DomainTariffSwitchingMessagingConfig.class,
+    OsgpCoreMessagingConfig.class, ProtocolOslpMessagingConfig.class })
+// @Import({ WsPublicLightingMessagingConfig.class,
+// DomainPublicLightingMessagingConfig.class,
+// OsgpCoreMessagingConfig.class, ProtocolOslpMessagingConfig.class })
 public class MessagingConfig {
 
     // ========================================================================
@@ -76,9 +77,13 @@ public class MessagingConfig {
     public static final String WS_LOGGING_QUEUE = "osgp-test.logging.ws.1_0";
     public static final String OSLP_LOG_ITEM_REQUESTS_QUEUE = "osgp-test.logging.protocol.1_0";
 
+    // SIGNING SERVER QUEUES
+    public static final String SIGNING_SERVER_1_0_REQUESTS = "signing-server.1_0.requests";
+    public static final String SIGNING_SERVER_1_0_RESPONSES = "signing-server.1_0.responses";
+
     // GENERAL
     public static final String BROKER_URL = "vm://localhost";
-    //    public static final String BROKER_URL = "tcp://localhost:61616";
+    // public static final String BROKER_URL = "tcp://localhost:61616";
     public static final long INITIAL_REDELIVERY_DELAY = 0;
     public static final int MAXIMUM_REDELIVERIES = 1;
     public static final long MAXIMUM_REDELIVERY_DELAY = 10;
