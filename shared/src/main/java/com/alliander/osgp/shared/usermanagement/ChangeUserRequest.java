@@ -12,6 +12,10 @@ public class ChangeUserRequest {
     private String organisationIdentificationForUser;
     private String username;
     private String newUsername;
+    private String newFirstname;
+    private String newMiddlename;
+    private String newLastname;
+    private String newEmailAddress;
     private String newPassword;
     private String newRole;
     private String newApplications;
@@ -21,9 +25,14 @@ public class ChangeUserRequest {
     }
 
     public ChangeUserRequest(final String organisationIdentificationForUser, final String username,
-            final String newUsername, final String newPassword, final String newRole, final String newApplications) {
+            final String newUsername, final String newFirstname, final String newMiddlename, final String newLastname,
+            final String newEmailAddress, final String newPassword, final String newRole, final String newApplications) {
         this.organisationIdentificationForUser = organisationIdentificationForUser;
         this.username = username;
+        this.newFirstname = newFirstname;
+        this.newMiddlename = newMiddlename;
+        this.newLastname = newLastname;
+        this.newEmailAddress = newEmailAddress;
         this.newUsername = newUsername;
         this.newPassword = newPassword;
         this.newRole = newRole;
@@ -52,5 +61,21 @@ public class ChangeUserRequest {
 
     public String getNewApplications() {
         return this.newApplications;
+    }
+
+    public String getNewFirstname() {
+        return this.newFirstname;
+    }
+
+    public String getNewMiddlename() {
+        return this.newMiddlename;
+    }
+
+    public String getNewLastname() {
+        return this.newLastname;
+    }
+
+    public String getNewEmailAddress() {
+        return this.newEmailAddress;
     }
 }

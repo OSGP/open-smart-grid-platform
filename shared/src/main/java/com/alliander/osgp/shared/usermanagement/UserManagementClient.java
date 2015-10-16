@@ -367,11 +367,13 @@ public class UserManagementClient extends AbstractClient {
      *             equal to 200 OK or if the response body is empty.
      */
     public String changeUserData(final String organisationIdentificationForUser, final String username,
-            final String newUsername, final String newPassword, final String newRole, final String newApplications,
+            final String newUsername, final String newFirstName, final String newMiddleName, final String newLastName,
+            final String newEmailAddress, final String newPassword, final String newRole, final String newApplications,
             final String organisationIdentification, final String token) throws UserManagementClientException {
 
         final ChangeUserRequest changeUserRequest = new ChangeUserRequest(organisationIdentificationForUser, username,
-                newUsername, newPassword, newRole, newApplications);
+                newUsername, newFirstName, newMiddleName, newLastName, newEmailAddress, newPassword, newRole,
+                newApplications);
 
         final Response response = this.getWebClientInstance().path(this.userPath + username + this.changeUserDataPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(changeUserRequest);
