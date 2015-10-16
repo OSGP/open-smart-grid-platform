@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -62,40 +61,6 @@ public class InstallationService {
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during addMeter", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
-
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
-        }
-    }
-
-    public void setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final AlarmSwitches alarmSwitches,
-            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType) {
-
-        LOGGER.info("setAlarmNotifications called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
-
-        try {
-
-            LOGGER.info("*******************************************************");
-            LOGGER.info("*********** Set Alarm Notifications *******************");
-            LOGGER.info("*******************************************************");
-            LOGGER.info("*******************************************************");
-            LOGGER.info("*********   Device:       {}   *******", deviceIdentification);
-            LOGGER.info("*********   Enable:       {}   *******", alarmSwitches.getEnableAlarms());
-            LOGGER.info("*********   Disable:       {}   *******", alarmSwitches.getDisableAlarms());
-            LOGGER.info("************************************************************");
-            LOGGER.info("************************************************************");
-            LOGGER.info("************************************************************");
-
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setAlarmNotifications", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception while retrieving response message", e);
 

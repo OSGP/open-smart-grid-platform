@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
+import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsRequestMessageProcessor.class);
 
     @Autowired
-    private InstallationService installationService;
+    private ConfigurationService configurationService;
 
     public SetAlarmNotificationsRequestMessageProcessor() {
         super(DeviceRequestMessageType.SET_ALARM_NOTIFICATIONS);
@@ -59,7 +59,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
 
             final AlarmSwitches alarmSwitches = (AlarmSwitches) message.getObject();
 
-            this.installationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
+            this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
                     correlationUid, alarmSwitches, this.responseMessageSender, domain, domainVersion, messageType);
 
         } catch (final JMSException e) {
