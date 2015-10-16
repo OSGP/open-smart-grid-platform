@@ -141,5 +141,4 @@ public class TestApplicationContext {
     public int getMaxRetryCount() {
         return MAX_RETRY_COUNT;
     }
-
 }
