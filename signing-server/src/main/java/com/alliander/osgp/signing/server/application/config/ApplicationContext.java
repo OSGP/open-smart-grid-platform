@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,7 @@ public class ApplicationContext {
     private Environment environment;
 
     @Bean
+    @Qualifier("signingServerPrivateKey")
     public PrivateKey privateKey() throws SigningServerException {
         try {
             return CertificateHelper.createPrivateKey(
@@ -62,16 +64,19 @@ public class ApplicationContext {
     }
 
     @Bean
+    @Qualifier("signingServerKeyType")
     public String keyType() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_KEYTYPE);
     }
 
     @Bean
+    @Qualifier("signingServerSignatureProvider")
     public String signatureProvider() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_PROVIDER);
     }
 
     @Bean
+    @Qualifier("signingServerSignature")
     public String signature() {
         return this.environment.getRequiredProperty(PROPERTY_NAME_SIGNING_SERVER_SECURITY_SIGNATURE);
     }

@@ -15,6 +15,7 @@ import javax.jms.Destination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -26,17 +27,21 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.signing.server.infra.messaging.SigningServerResponseMessageSender;
 
 @Service
+@Qualifier("SigningServerSigningService")
 public class SigningService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SigningService.class);
 
     @Autowired
+    @Qualifier("signingServerPrivateKey")
     private PrivateKey privateKey;
 
     @Resource
+    @Qualifier("signingServerSignatureProvider")
     private String signatureProvider;
 
     @Resource
+    @Qualifier("signingServerSignature")
     private String signature;
 
     @Autowired
