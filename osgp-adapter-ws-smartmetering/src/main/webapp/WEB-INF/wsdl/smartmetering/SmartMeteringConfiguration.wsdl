@@ -3,7 +3,7 @@
 
 <wsdl:definitions 
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:sminst="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
+    xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
     xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0"
@@ -29,20 +29,20 @@
     <!-- REQUEST_SPECIAL_DAYS -->
     
     <wsdl:message name="SpecialDaysRequest">
-        <wsdl:part element="sminst:SpecialDaysRequest" name="SpecialDaysRequest">
+        <wsdl:part element="smconf:SpecialDaysRequest" name="SpecialDaysRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SpecialDaysResponse">
-        <wsdl:part element="sminst:SpecialDaysResponse" name="SpecialDaysResponse">
+        <wsdl:part element="smconf:SpecialDaysResponse" name="SpecialDaysResponse">
         </wsdl:part>
     </wsdl:message>
 
     <wsdl:message name="SetAlarmNotificationsResponse">
-        <wsdl:part element="sminst:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
+        <wsdl:part element="smconf:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SetAlarmNotificationsRequest">
-        <wsdl:part element="sminst:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
+        <wsdl:part element="smconf:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
         </wsdl:part>
     </wsdl:message>
 
