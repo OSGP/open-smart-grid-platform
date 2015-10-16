@@ -28,6 +28,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -64,25 +65,27 @@ public class OslpConfig {
 
     @Bean
     public OslpDecoder oslpDecoder() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
     }
 
     @Bean
     public PublicKey publicKey() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return CertificateHelper.createPublicKeyFromBase64(OslpTestUtils.PUBLIC_KEY_BASE_64, OslpTestUtils.KEY_TYPE,
                 OslpTestUtils.provider());
     }
 
     @Bean
+    @Qualifier("signingServerPrivateKey")
     public PrivateKey privateKey() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException,
-            NoSuchProviderException {
+    NoSuchProviderException {
         return CertificateHelper.createPrivateKeyFromBase64(OslpTestUtils.PRIVATE_KEY_BASE_64, OslpTestUtils.KEY_TYPE,
                 OslpTestUtils.provider());
     }
 
     @Bean
+    @Qualifier("signingServerSignatureProvider")
     public String oslpSignatureProvider() {
         return OslpTestUtils.provider();
     }
@@ -98,11 +101,13 @@ public class OslpConfig {
     }
 
     @Bean
+    @Qualifier("signingServerSignature")
     public String oslpSignature() {
         return OslpTestUtils.SIGNATURE;
     }
 
     @Bean
+    @Qualifier("signingServerKeyType")
     public String oslpKeyType() {
         return OslpTestUtils.KEY_TYPE;
     }
@@ -145,7 +150,7 @@ public class OslpConfig {
         final ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-                    NoSuchProviderException {
+            NoSuchProviderException {
                 final ChannelPipeline pipeline = Channels.pipeline();
 
                 pipeline.addLast("oslpEncoder", new OslpEncoder());
@@ -180,7 +185,7 @@ public class OslpConfig {
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             @Override
             public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
-                    NoSuchProviderException {
+            NoSuchProviderException {
                 final ChannelPipeline pipeline = Channels.pipeline();
 
                 pipeline.addLast("oslpEncoder", new OslpEncoder());

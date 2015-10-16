@@ -30,6 +30,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpRequestMessa
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpResponseMessageListener;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpLogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerRequestMessageSender;
+import com.alliander.osgp.signing.server.infra.messaging.SigningServerResponseMessageSender;
 
 //@Configuration
 public class ProtocolOslpMessagingConfig {
@@ -235,5 +236,79 @@ public class ProtocolOslpMessagingConfig {
         messageListenerContainer.setMessageListener(this.signingServerResponsesMessageListener);
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
+    }
+
+    // === JMS SETTINGS: SIGNING SERVER REQUESTS ===
+
+    @Bean
+    public ActiveMQDestination requestsQueue() {
+        return new ActiveMQQueue(MessagingConfig.SIGNING_SERVER_1_0_REQUESTS);
+    }
+
+    @Bean
+    public RedeliveryPolicy oslpRequestsRedeliveryPolicy() {
+        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+        redeliveryPolicy.setInitialRedeliveryDelay(MessagingConfig.INITIAL_REDELIVERY_DELAY);
+        redeliveryPolicy.setMaximumRedeliveries(MessagingConfig.MAXIMUM_REDELIVERIES);
+        redeliveryPolicy.setMaximumRedeliveryDelay(MessagingConfig.MAXIMUM_REDELIVERY_DELAY);
+        redeliveryPolicy.setRedeliveryDelay(MessagingConfig.REDELIVERY_DELAY);
+        redeliveryPolicy.setDestination(this.requestsQueue());
+        redeliveryPolicy.setBackOffMultiplier(MessagingConfig.BACK_OFF_MULTIPLIER);
+        redeliveryPolicy.setUseExponentialBackOff(MessagingConfig.USE_EXPONENTIAL_BACK_OFF);
+        return redeliveryPolicy;
+    }
+
+    @Bean
+    public DefaultMessageListenerContainer requestsMessageListenerContainer() {
+        final DefaultMessageListenerContainer messageListenerContainer = new DefaultMessageListenerContainer();
+        messageListenerContainer.setConnectionFactory(MessagingConfig.pooledConnectionFactory());
+        messageListenerContainer.setDestination(this.requestsQueue());
+        messageListenerContainer.setConcurrentConsumers(MessagingConfig.CONCURRENT_CONSUMERS);
+        messageListenerContainer.setMaxConcurrentConsumers(MessagingConfig.MAX_CONCURRENT_CONSUMERS);
+        messageListenerContainer.setMessageListener(this.requestsMessageListener);
+        messageListenerContainer.setSessionTransacted(true);
+        return messageListenerContainer;
+    }
+
+    @Autowired
+    @Qualifier("signingServerRequestsMessageListener")
+    private MessageListener requestsMessageListener;
+
+    // === JMS SETTINGS: SIGNING SERVER RESPONSES ===
+
+    @Bean
+    public JmsTemplate responsesJmsTemplate() {
+        final JmsTemplate jmsTemplate = new JmsTemplate();
+        jmsTemplate.setDefaultDestination(this.responsesQueue());
+        // Enable the use of deliveryMode, priority, and timeToLive
+        jmsTemplate.setExplicitQosEnabled(MessagingConfig.EXPLICIT_QOS_ENABLED);
+        jmsTemplate.setTimeToLive(MessagingConfig.TIME_TO_LIVE);
+        jmsTemplate.setDeliveryPersistent(MessagingConfig.DELIVERY_PERSISTENT);
+        jmsTemplate.setConnectionFactory(MessagingConfig.pooledConnectionFactory());
+        jmsTemplate.setReceiveTimeout(MessagingConfig.RECEIVE_TIMEOUT);
+        return jmsTemplate;
+    }
+
+    @Bean
+    public ActiveMQDestination responsesQueue() {
+        return new ActiveMQQueue(MessagingConfig.SIGNING_SERVER_1_0_RESPONSES);
+    }
+
+    @Bean
+    public RedeliveryPolicy responsesRedeliveryPolicy() {
+        final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+        redeliveryPolicy.setInitialRedeliveryDelay(MessagingConfig.INITIAL_REDELIVERY_DELAY);
+        redeliveryPolicy.setMaximumRedeliveries(MessagingConfig.MAXIMUM_REDELIVERIES);
+        redeliveryPolicy.setMaximumRedeliveryDelay(MessagingConfig.MAXIMUM_REDELIVERY_DELAY);
+        redeliveryPolicy.setRedeliveryDelay(MessagingConfig.REDELIVERY_DELAY);
+        redeliveryPolicy.setDestination(this.responsesQueue());
+        redeliveryPolicy.setBackOffMultiplier(MessagingConfig.BACK_OFF_MULTIPLIER);
+        redeliveryPolicy.setUseExponentialBackOff(MessagingConfig.USE_EXPONENTIAL_BACK_OFF);
+        return redeliveryPolicy;
+    }
+
+    @Bean
+    public SigningServerResponseMessageSender responseMessageSender() {
+        return new SigningServerResponseMessageSender();
     }
 }
