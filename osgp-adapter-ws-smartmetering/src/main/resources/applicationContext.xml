@@ -17,7 +17,8 @@
  	<sws:static-wsdl id="SmartMeteringManagement" location="/WEB-INF/wsdl/smartmetering/SmartMeteringManagement.wsdl"/>
  	<sws:static-wsdl id="SmartMeteringMonitoring" location="/WEB-INF/wsdl/smartmetering/SmartMeteringMonitoring.wsdl"/>
  	<sws:static-wsdl id="SmartMeteringAdhoc" location="/WEB-INF/wsdl/smartmetering/SmartMeteringAdhoc.wsdl"/>
- 	 	
+	<sws:static-wsdl id="SmartMeteringConfiguration" location="/WEB-INF/wsdl/smartmetering/SmartMeteringConfiguration.wsdl"/>
+
  	<bean id="common" class="org.springframework.xml.xsd.SimpleXsdSchema">
         <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/common.xsd" />
     </bean>
@@ -33,6 +34,9 @@
     </bean>
     <bean id="sm-adhoc" class="org.springframework.xml.xsd.SimpleXsdSchema">
         <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-adhoc.xsd" />
+    </bean>
+    <bean id="sm-configuration" class="org.springframework.xml.xsd.SimpleXsdSchema">
+        <property name="xsd" value="/WEB-INF/wsdl/smartmetering/schemas/sm-configuration.xsd" />
     </bean>
 
 	<bean id="payloadValidatingInterceptor" class="org.springframework.ws.soap.server.endpoint.interceptor.PayloadValidatingInterceptor">
