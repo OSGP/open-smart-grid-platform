@@ -22,7 +22,6 @@ import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -109,31 +108,6 @@ public class InstallationService {
                 deviceIdentification, smartMeteringDevicDto), messageType);
     }
 
-    public void setAlarmNotifications(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid,
-            final AlarmSwitches alarmSwitches, final String messageType) throws FunctionalException {
-
-        LOGGER.info("setAlarmNotifications for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
-
-        // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
-
-        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
-        if (device == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
-        }
-
-        final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches alarmSwitchesDto = this.installationMapper
-                .map(alarmSwitches, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches.class);
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, alarmSwitchesDto), messageType);
-    }
-
     public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception) {
@@ -146,31 +120,6 @@ public class InstallationService {
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
                 LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
-            result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
-        }
-
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null), messageType);
-    }
-
-    public void handleSetAlarmNotificationsResponse(final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
-
-        LOGGER.info("handleSetAlarmNotificationsResponse for MessageType: {}", messageType);
-
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
-
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Set Alarm Notifications Response not ok.", osgpException);
                 throw osgpException;
             }
         } catch (final Exception e) {

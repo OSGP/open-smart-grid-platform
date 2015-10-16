@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -34,7 +34,7 @@ public class SetAlarmNotificationsResponseMessageProcessor extends OsgpCoreRespo
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsResponseMessageProcessor.class);
 
     @Autowired
-    private InstallationService installationService;
+    private ConfigurationService configurationService;
 
     protected SetAlarmNotificationsResponseMessageProcessor() {
         super(DeviceFunction.SET_ALARM_NOTIFICATIONS);
@@ -77,7 +77,7 @@ public class SetAlarmNotificationsResponseMessageProcessor extends OsgpCoreRespo
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.installationService.handleSetAlarmNotificationsResponse(deviceIdentification,
+            this.configurationService.handleSetAlarmNotificationsResponse(deviceIdentification,
                     organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {

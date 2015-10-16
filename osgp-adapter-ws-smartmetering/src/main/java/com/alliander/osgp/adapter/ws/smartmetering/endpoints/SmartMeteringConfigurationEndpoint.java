@@ -9,6 +9,9 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +22,19 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.Alarms;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Endpoint
 public class SmartMeteringConfigurationEndpoint {
@@ -60,5 +71,68 @@ public class SmartMeteringConfigurationEndpoint {
         response.setAsyncResponse(asyncResponse);
 
         return response;
+    }
+
+    @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetAlarmNotificationsResponse setAlarmNotifications(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetAlarmNotificationsRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
+
+        final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
+
+        try {
+
+            final String deviceIdentification = request.getDeviceIdentification();
+            final SetAlarmNotificationsRequestData requestData = request.getSetAlarmNotificationsRequestData();
+            final Set<AlarmType> disableAlarms = this.mapAlarms(requestData.getDisable());
+            final Set<AlarmType> enableAlarms = this.mapAlarms(requestData.getEnable());
+            final AlarmSwitches alarmSwitches = new AlarmSwitches(deviceIdentification, enableAlarms, disableAlarms);
+
+            final String correlationUid = this.configurationService.setAlarmNotifications(organisationIdentification,
+                    deviceIdentification, alarmSwitches);
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+
+        } catch (final Exception e) {
+
+            LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    private Set<AlarmType> mapAlarms(final Alarms alarms) {
+
+        final Set<AlarmType> setOfAlarms;
+
+        if (alarms == null || alarms.getAlarm() == null || alarms.getAlarm().isEmpty()) {
+            setOfAlarms = Collections.emptySet();
+        } else {
+            setOfAlarms = this.configurationMapper.mapAsSet(alarms.getAlarm(), AlarmType.class);
+        }
+
+        return setOfAlarms;
+    }
+
+    private void handleException(final Exception e) throws OsgpException {
+        // Rethrow exception if it already is a functional or technical
+        // exception,
+        // otherwise throw new technical exception.
+        if (e instanceof OsgpException) {
+            LOGGER.error("Exception occurred: ", e);
+            throw (OsgpException) e;
+        } else {
+            LOGGER.error("Exception occurred: ", e);
+            throw new TechnicalException(ComponentType.WS_SMART_METERING, e);
+        }
     }
 }

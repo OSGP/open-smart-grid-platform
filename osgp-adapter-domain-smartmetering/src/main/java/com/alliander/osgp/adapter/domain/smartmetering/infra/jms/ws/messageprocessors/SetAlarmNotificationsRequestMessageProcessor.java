@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
@@ -32,8 +32,8 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsRequestMessageProcessor.class);
 
     @Autowired
-    @Qualifier("domainSmartMeteringInstallationService")
-    private InstallationService installationService;
+    @Qualifier("domainSmartMeteringConfigurationService")
+    private ConfigurationService configurationService;
 
     /**
      * @param deviceFunction
@@ -79,7 +79,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
 
             final AlarmSwitches alarmSwitches = (AlarmSwitches) dataObject;
 
-            this.installationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
+            this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
                     correlationUid, alarmSwitches, messageType);
 
         } catch (final Exception e) {

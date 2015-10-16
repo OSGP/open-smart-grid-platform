@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -35,7 +36,7 @@ public class ConfigurationService {
 
     public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -61,5 +62,36 @@ public class ConfigurationService {
             throws FunctionalException {
         return this.enqueueSpecialDaysRequest(organisationIdentification, requestData.getDeviceIdentification(),
                 requestData);
+    }
+
+    public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final AlarmSwitches alarmSwitches)
+                    throws FunctionalException {
+
+        LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS, correlationUid, organisationIdentification,
+                deviceIdentification, alarmSwitches);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    /**
+     * @param organisationIdentification
+     * @param deviceIdentification
+     * @param alarmSwitches
+     * @throws FunctionalException
+     */
+    public String setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
+            final AlarmSwitches alarmSwitches) throws FunctionalException {
+        return this
+                .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification, alarmSwitches);
     }
 }

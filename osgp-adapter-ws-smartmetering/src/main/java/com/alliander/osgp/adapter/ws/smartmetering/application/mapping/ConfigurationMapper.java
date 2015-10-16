@@ -15,6 +15,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
@@ -25,5 +26,8 @@ public class ConfigurationMapper extends ConfigurableMapper {
                 .classMap(SpecialDaysRequest.class,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
                 .register();
+        mapperFactory
+        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmType.class,
+                AlarmType.class).byDefault().register();
     }
 }

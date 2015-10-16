@@ -35,43 +35,7 @@
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="SetAlarmNotificationsRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-				<xsd:element name="SetAlarmNotificationsRequestData" type="tns:SetAlarmNotificationsRequestData" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="SetAlarmNotificationsResponse">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-
 	<!-- DATATYPES -->
-
-	<xsd:complexType name="Action" abstract="true">
-		<xsd:sequence>
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="Query" abstract="true">
-		<xsd:complexContent>
-			<xsd:extension base="tns:Action">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="Command" abstract="true">
-		<xsd:complexContent>
-			<xsd:extension base="tns:Action">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
 
 	<xsd:complexType name="Device">
 		<xsd:sequence>
@@ -141,50 +105,6 @@
 			
 		</xsd:sequence>
 	</xsd:complexType>
-
-	<xsd:complexType name="SetAlarmNotificationsRequestData">
-		<xsd:complexContent>
-			<xsd:extension base="tns:Command">
-				<xsd:sequence>
-					<xsd:element name="Enable" minOccurs="0" type="tns:Alarms" />
-					<xsd:element name="Disable" minOccurs="0" type="tns:Alarms" />
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
-	<xsd:complexType name="Alarms">
-		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:element name="Alarm" type="tns:AlarmType" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<!-- DSMR Alarm Codes -->
-	<xsd:simpleType name="AlarmType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="CLOCK_INVALID" />
-			<xsd:enumeration value="REPLACE_BATTERY" />
-			<xsd:enumeration value="POWER_UP" />
-			<xsd:enumeration value="PROGRAM_MEMORY_ERROR" />
-			<xsd:enumeration value="RAM_ERROR" />
-			<xsd:enumeration value="NV_MEMORY_ERROR" />
-			<xsd:enumeration value="MEASUREMENT_SYSTEM_ERROR" />
-			<xsd:enumeration value="WATCHDOG_ERROR" />
-			<xsd:enumeration value="FRAUD_ATTEMPT" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
-			<xsd:enumeration value="NEW_M_BUS_DEVISE_DISCOVERED_CHANNEL_1" />
-			<xsd:enumeration value="NEW_M_BUS_DEVISE_DISCOVERED_CHANNEL_2" />
-			<xsd:enumeration value="NEW_M_BUS_DEVISE_DISCOVERED_CHANNEL_3" />
-			<xsd:enumeration value="NEW_M_BUS_DEVISE_DISCOVERED_CHANNEL_4" />
-		</xsd:restriction>
-	</xsd:simpleType>
 
 	<xsd:simpleType name="AlphaNumericType">
 		<xsd:restriction base="xsd:string">

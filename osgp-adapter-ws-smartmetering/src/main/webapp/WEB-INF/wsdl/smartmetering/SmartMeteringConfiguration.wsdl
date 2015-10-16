@@ -37,6 +37,15 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="SetAlarmNotificationsResponse">
+        <wsdl:part element="sminst:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetAlarmNotificationsRequest">
+        <wsdl:part element="sminst:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
+        </wsdl:part>
+    </wsdl:message>
+
     <wsdl:portType name="SmartmeterconfigurationPort">
    
         <wsdl:operation name="RequestSpecialDays">
@@ -45,6 +54,13 @@
             <wsdl:output message="tns:SpecialDaysResponse" name="SpecialDaysResponse">
             </wsdl:output>
         </wsdl:operation>
+
+		<wsdl:operation name="SetAlarmNotifications">
+            <wsdl:input message="tns:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
+            </wsdl:output>
+		</wsdl:operation>
 
     </wsdl:portType>
     
@@ -60,6 +76,19 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SpecialDaysResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetAlarmNotifications">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetAlarmNotificationsRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetAlarmNotificationsResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
