@@ -25,7 +25,15 @@ public class ConfigurationMapper extends ConfigurableMapper {
                 .register();
 
         mapperFactory
-        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches.class,
-                com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches.class).byDefault().register();
+        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class,
+                com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class).byDefault()
+                .register();
+        mapperFactory
+        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotification.class,
+                com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification.class).byDefault()
+                .register();
+        mapperFactory
+                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType.class,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType.class).byDefault().register();
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -77,7 +77,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final AlarmSwitches alarmSwitches = (AlarmSwitches) dataObject;
+            final AlarmNotifications alarmSwitches = (AlarmNotifications) dataObject;
 
             this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
                     correlationUid, alarmSwitches, messageType);

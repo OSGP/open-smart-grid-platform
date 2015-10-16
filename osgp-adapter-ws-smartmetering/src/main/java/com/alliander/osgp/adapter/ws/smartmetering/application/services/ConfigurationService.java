@@ -18,7 +18,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -65,7 +65,7 @@ public class ConfigurationService {
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final AlarmSwitches alarmSwitches)
+            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
                     throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
@@ -90,7 +90,7 @@ public class ConfigurationService {
      * @throws FunctionalException
      */
     public String setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
-            final AlarmSwitches alarmSwitches) throws FunctionalException {
+            final AlarmNotifications alarmSwitches) throws FunctionalException {
         return this
                 .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification, alarmSwitches);
     }

@@ -79,16 +79,22 @@
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
 				<xsd:sequence>
-					<xsd:element name="Enable" minOccurs="0" type="tns:Alarms" />
-					<xsd:element name="Disable" minOccurs="0" type="tns:Alarms" />
+					<xsd:element name="AlarmNotifications" type="tns:AlarmNotifications" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="Alarms">
-		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:element name="Alarm" type="tns:AlarmType" />
+	<xsd:complexType name="AlarmNotifications">
+		<xsd:sequence maxOccurs="unbounded">
+			<xsd:element name="AlarmNotification" type="tns:AlarmNotification" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="AlarmNotification">
+		<xsd:sequence>
+			<xsd:element name="AlarmType" type="tns:AlarmType" />
+			<xsd:element name="Enabled" type="xsd:boolean" />
 		</xsd:sequence>
 	</xsd:complexType>
 

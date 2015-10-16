@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmSwitches;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -112,7 +112,7 @@ public class ConfigurationService {
 
     public void setAlarmNotifications(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
-            final AlarmSwitches alarmSwitches, final String messageType) throws FunctionalException {
+            final AlarmNotifications alarmNotifications, final String messageType) throws FunctionalException {
 
         LOGGER.info("setAlarmNotifications for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -128,11 +128,11 @@ public class ConfigurationService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches alarmSwitchesDto = this.configurationMapper
-                .map(alarmSwitches, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications alarmNotificationsDto = this.configurationMapper
+                .map(alarmNotifications, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, alarmSwitchesDto), messageType);
+                deviceIdentification, alarmNotificationsDto), messageType);
     }
 
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,
