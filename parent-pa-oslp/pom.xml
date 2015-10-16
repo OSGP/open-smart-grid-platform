@@ -125,6 +125,13 @@
                 <version>${osgp.version}</version>
                 <classifier>classes</classifier>
             </dependency>
+            
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>signing-server</artifactId>
+                <version>${osgp.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
 
             <!-- Guava for Joiner class -->
             <dependency>
