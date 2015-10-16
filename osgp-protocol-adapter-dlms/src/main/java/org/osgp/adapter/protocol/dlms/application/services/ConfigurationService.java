@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
@@ -69,7 +69,7 @@ public class ConfigurationService {
     }
 
     public void setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final AlarmSwitches alarmSwitches,
+            final String correlationUid, final AlarmNotifications alarmNotifications,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
@@ -83,8 +83,7 @@ public class ConfigurationService {
             LOGGER.info("*******************************************************");
             LOGGER.info("*******************************************************");
             LOGGER.info("*********   Device:       {}   *******", deviceIdentification);
-            LOGGER.info("*********   Enable:       {}   *******", alarmSwitches.getEnableAlarms());
-            LOGGER.info("*********   Disable:       {}   *******", alarmSwitches.getDisableAlarms());
+            LOGGER.info("*********   Alarm Notifications:       {}   *******", alarmNotifications);
             LOGGER.info("************************************************************");
             LOGGER.info("************************************************************");
             LOGGER.info("************************************************************");

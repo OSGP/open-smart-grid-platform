@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmSwitches;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -57,10 +57,10 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            final AlarmSwitches alarmSwitches = (AlarmSwitches) message.getObject();
+            final AlarmNotifications alarmNotifications = (AlarmNotifications) message.getObject();
 
             this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
-                    correlationUid, alarmSwitches, this.responseMessageSender, domain, domainVersion, messageType);
+                    correlationUid, alarmNotifications, this.responseMessageSender, domain, domainVersion, messageType);
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
