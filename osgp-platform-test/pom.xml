@@ -136,6 +136,12 @@
             <classifier>classes</classifier>
         </dependency>
 
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>signing-server</artifactId>
+            <classifier>classes</classifier>
+        </dependency>
+
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>

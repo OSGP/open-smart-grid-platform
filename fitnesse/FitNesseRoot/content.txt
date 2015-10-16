@@ -60,6 +60,9 @@
 !path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/classes
 !path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/test-classes
 
+!path ../Protocol-Adapter-OSLP/signing-server/target/classes
+!path ../Protocol-Adapter-OSLP/signing-server/target/test-classes
+
 !path ../Protocol-Adapter-OSLP/oslp/target/classes
 !path ../Protocol-Adapter-OSLP/oslp/target/test-classes
 
@@ -87,6 +90,7 @@
 !path ${MAVEN_REPO}/com/alliander/osgp/osgp-dto/0.11.0-SNAPSHOT/osgp-dto-0.11.0-SNAPSHOT.jar
 !path ${MAVEN_REPO}/com/alliander/osgp/osgp-logging/0.11.0-SNAPSHOT/osgp-logging-0.11.0-SNAPSHOT.jar
 !path ${MAVEN_REPO}/com/alliander/osgp/osgp-protocol-adapter-oslp/0.11.0-SNAPSHOT/osgp-protocol-adapter-oslp-0.11.0-SNAPSHOT-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/signing-server/0.11.0-SNAPSHOT/signing-server-0.11.0-SNAPSHOT-classes.jar
 !path ${MAVEN_REPO}/com/alliander/osgp/oslp/0.11.0-SNAPSHOT/oslp-0.11.0-SNAPSHOT.jar
 !path ${MAVEN_REPO}/com/alliander/osgp/shared/0.11.0-SNAPSHOT/shared-0.11.0-SNAPSHOT.jar
 !path ${MAVEN_REPO}/com/carrotsearch/java-sizeof/0.0.4/java-sizeof-0.0.4.jar
