@@ -96,7 +96,7 @@ OslpEnvelopeProcessor {
                     deviceIdentification, correlationUid, DomainType.TARIFF_SWITCHING, domain, domainVersion,
                     messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newGetStatus(deviceRequest);
+            this.deviceService.getStatus(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

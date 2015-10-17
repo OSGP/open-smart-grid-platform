@@ -93,7 +93,7 @@ OslpEnvelopeProcessor {
                     transitionMessageDataContainer.getDateTime(), domain, domainVersion, messageType, ipAddress,
                     retryCount, isScheduled);
 
-            this.deviceService.newSetTransition(deviceRequest);
+            this.deviceService.setTransition(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

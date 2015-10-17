@@ -32,7 +32,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpCommonStopDeviceTestRequestMessageProcessor")
 public class CommonStopDeviceTestRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -85,8 +85,7 @@ OslpEnvelopeProcessor {
             final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                     correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newStopSelfTest(deviceRequest);
-
+            this.deviceService.stopSelfTest(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessorMap;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
@@ -24,7 +25,9 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
+import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Service
 public class OslpSigningService {
@@ -35,6 +38,9 @@ public class OslpSigningService {
 
     @Autowired
     private SigningServerRequestMessageSender signingServerRequestMessageSender;
+
+    @Autowired
+    private DeviceResponseMessageSender deviceResponseMessageSender;
 
     private OslpChannelHandlerServer oslpChannelHandlerServer;
 
@@ -157,5 +163,21 @@ public class OslpSigningService {
 
         // Send the signed OSLP envelope to the channel handler server.
         this.oslpChannelHandlerServer.processSignedOslpEnvelope(signedOslpEnvelopeDto);
+    }
+
+    /**
+     * Handle an error from the signing server.
+     */
+    public void handleError(final String deviceIdentification, final ResponseMessage responseMessage) {
+
+        final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = (UnsignedOslpEnvelopeDto) responseMessage
+                .getDataObject();
+        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(
+                unsignedOslpEnvelopeDto.getDomain(), unsignedOslpEnvelopeDto.getDomainVersion(),
+                unsignedOslpEnvelopeDto.getMessageType(), unsignedOslpEnvelopeDto.getCorrelationUid(),
+                unsignedOslpEnvelopeDto.getOrganisationIdentification(), deviceIdentification,
+                responseMessage.getResult(), responseMessage.getOsgpException(), null,
+                unsignedOslpEnvelopeDto.isScheduled());
+        this.deviceResponseMessageSender.send(protocolResponseMessage);
     }
 }

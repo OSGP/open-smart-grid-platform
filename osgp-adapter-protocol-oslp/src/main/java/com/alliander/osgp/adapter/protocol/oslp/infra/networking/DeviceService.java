@@ -26,128 +26,81 @@ import com.alliander.osgp.oslp.OslpEnvelope;
 
 public interface DeviceService {
 
-    void startSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    void stopSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    void setLight(SetLightDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    void getStatus(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    void setEventNotifications(SetEventNotificationsDeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
-
-    void updateFirmware(UpdateFirmwareDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress) throws IOException;
-
-    void setConfiguration(SetConfigurationDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress) throws IOException;
-
-    void getConfiguration(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    void getActualPowerUsage(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    void getPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
-
-    void setSchedule(SetScheduleDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress) throws IOException;
-
-    void resumeSchedule(ResumeScheduleDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress) throws IOException;
-
-    void setReboot(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    void setTransition(SetTransitionDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress) throws IOException;
-
-    void getFirmwareVersion(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, String ipAddress)
-            throws IOException;
-
-    // CHANGED FUNCTIONS
-
-    void newGetFirmwareVersion(DeviceRequest deviceRequest);
-
-    void doGetFirmwareVerion(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
-            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
-
-    void newGetConfiguration(DeviceRequest deviceRequest);
+    void getConfiguration(DeviceRequest deviceRequest);
 
     void doGetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetConfiguration(SetConfigurationDeviceRequest deviceRequest);
+    void getFirmwareVersion(DeviceRequest deviceRequest);
 
-    void doSetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+    void doGetFirmwareVerion(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newGetStatus(GetStatusDeviceRequest deviceRequest);
+    void getStatus(GetStatusDeviceRequest deviceRequest);
 
     void doGetStatus(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetReboot(DeviceRequest deviceRequest);
+    void setReboot(DeviceRequest deviceRequest);
 
     void doSetReboot(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetEventNotifications(SetEventNotificationsDeviceRequest deviceRequest);
+    void setConfiguration(SetConfigurationDeviceRequest deviceRequest);
+
+    void doSetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void setEventNotifications(SetEventNotificationsDeviceRequest deviceRequest);
 
     void doSetEventNotifications(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newStartSelfTest(DeviceRequest deviceRequest);
+    void startSelfTest(DeviceRequest deviceRequest);
 
     void doStartSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newStopSelfTest(DeviceRequest deviceRequest);
+    void stopSelfTest(DeviceRequest deviceRequest);
 
     void doStopSelfTest(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newUpdateFirmware(UpdateFirmwareDeviceRequest deviceRequest);
+    void updateFirmware(UpdateFirmwareDeviceRequest deviceRequest);
 
     void doUpdateFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newGetActualPowerUsage(DeviceRequest deviceRequest);
+    void getActualPowerUsage(DeviceRequest deviceRequest);
 
     void doGetActualPowerUsage(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newGetPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest);
+    void getPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest);
 
     void doGetPowerUsageHistory(OslpEnvelope oslpRequest,
             PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainer,
             GetPowerUsageHistoryDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
-            String ipAddress, final String domain, final String domainVersion, final String messageType,
-            final int retryCount, final boolean isScheduled) throws IOException;
+            String ipAddress, String domain, String domainVersion, String messageType, int retryCount,
+            boolean isScheduled) throws IOException;
 
-    void newResumeSchedule(ResumeScheduleDeviceRequest deviceRequest);
+    void resumeSchedule(ResumeScheduleDeviceRequest deviceRequest);
 
     void doResumeSchedule(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
-    void newSetLight(SetLightDeviceRequest deviceRequest);
+    void setLight(SetLightDeviceRequest deviceRequest);
 
     void doSetLight(OslpEnvelope oslpRequest, DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler,
             String ipAddress) throws IOException;
 
-    void newSetSchedule(SetScheduleDeviceRequest deviceRequest);
+    void setSchedule(SetScheduleDeviceRequest deviceRequest);
 
     void doSetSchedule(OslpEnvelope oslpRequest, SetScheduleDeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress, String domain, String domainVersion,
             String messageType, int retryCount, boolean isScheduled, PageInfo pageInfo) throws IOException;
 
-    void newSetTransition(SetTransitionDeviceRequest deviceRequest);
+    void setTransition(SetTransitionDeviceRequest deviceRequest);
 
     void doSetTransition(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;

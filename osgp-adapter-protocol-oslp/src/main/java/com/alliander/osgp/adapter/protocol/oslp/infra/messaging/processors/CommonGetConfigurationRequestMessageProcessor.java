@@ -93,7 +93,7 @@ OslpEnvelopeProcessor {
             final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                     correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newGetConfiguration(deviceRequest);
+            this.deviceService.getConfiguration(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

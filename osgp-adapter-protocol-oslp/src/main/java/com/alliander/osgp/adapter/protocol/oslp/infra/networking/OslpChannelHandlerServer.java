@@ -9,8 +9,8 @@ package com.alliander.osgp.adapter.protocol.oslp.infra.networking;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.lang.model.UnknownEntityException;
 
@@ -68,7 +68,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     @Autowired
     private OslpSigningService oslpSigningService;
 
-    private final Map<Integer, Channel> channelMap = new HashMap<>();
+    private final ConcurrentMap<Integer, Channel> channelMap = new ConcurrentHashMap<>();
 
     public OslpChannelHandlerServer() {
         super(LOGGER);
@@ -234,9 +234,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                                .setSequenceWindow(this.sequenceNumberWindow)).build();
+                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                        .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,

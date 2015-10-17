@@ -90,7 +90,7 @@ OslpEnvelopeProcessor {
                     organisationIdentification, deviceIdentification, correlationUid, configuration, domain,
                     domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetConfiguration(deviceRequest);
+            this.deviceService.setConfiguration(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

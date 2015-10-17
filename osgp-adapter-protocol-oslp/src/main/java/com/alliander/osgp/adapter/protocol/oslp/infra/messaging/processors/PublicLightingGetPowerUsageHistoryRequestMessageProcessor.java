@@ -104,7 +104,7 @@ public class PublicLightingGetPowerUsageHistoryRequestMessageProcessor extends D
                     powerUsageHistoryMessageDataContainerDto.getHistoryTermType(), domain, domainVersion, messageType,
                     ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newGetPowerUsageHistory(deviceRequest);
+            this.deviceService.getPowerUsageHistory(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

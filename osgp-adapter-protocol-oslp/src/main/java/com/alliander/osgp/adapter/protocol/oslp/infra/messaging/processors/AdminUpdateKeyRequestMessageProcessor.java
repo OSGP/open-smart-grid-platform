@@ -77,7 +77,6 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
 
             this.deviceManagementService.updateKey(organisationIdentification, deviceIdentification, correlationUid,
                     this.responseMessageSender, domain, domainVersion, messageType, publicKey);
-
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType);

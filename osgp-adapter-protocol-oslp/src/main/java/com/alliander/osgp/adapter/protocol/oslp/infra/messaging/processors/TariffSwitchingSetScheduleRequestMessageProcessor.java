@@ -92,7 +92,7 @@ OslpEnvelopeProcessor {
                     deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
                     RelayType.TARIFF, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetSchedule(deviceRequest);
+            this.deviceService.setSchedule(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

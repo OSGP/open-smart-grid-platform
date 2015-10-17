@@ -92,7 +92,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
                     deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
                     RelayType.LIGHT, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetSchedule(deviceRequest);
+            this.deviceService.setSchedule(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

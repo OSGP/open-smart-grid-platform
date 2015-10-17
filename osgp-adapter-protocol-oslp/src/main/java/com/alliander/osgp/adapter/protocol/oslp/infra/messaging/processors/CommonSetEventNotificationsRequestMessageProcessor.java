@@ -93,7 +93,7 @@ OslpEnvelopeProcessor {
                     eventNotificationMessageDataContainer.getEventNotifications(), domain, domainVersion, messageType,
                     ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetEventNotifications(deviceRequest);
+            this.deviceService.setEventNotifications(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

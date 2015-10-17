@@ -47,6 +47,7 @@ public class SigningServerResponsesMessageListener implements MessageListener {
             if (result.equals(ResponseMessageResultType.NOT_OK)) {
                 LOGGER.error("OslpEnvelope was not signed by signing-server. Unable to send request to device: {}",
                         deviceIdentification);
+                this.oslpSigningService.handleError(deviceIdentification, responseMessage);
                 return;
             }
 

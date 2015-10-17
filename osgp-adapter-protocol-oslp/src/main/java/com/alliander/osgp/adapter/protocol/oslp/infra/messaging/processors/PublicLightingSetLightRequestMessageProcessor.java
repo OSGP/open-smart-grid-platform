@@ -34,7 +34,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpPublicLightingSetLightRequestMessageProcessor")
 public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -91,8 +91,7 @@ OslpEnvelopeProcessor {
                     deviceIdentification, correlationUid, lightValueMessageDataContainer.getLightValues(), domain,
                     domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetLight(deviceRequest);
-
+            this.deviceService.setLight(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

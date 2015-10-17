@@ -84,7 +84,7 @@ public class CommonRebootRequestMessageProcessor extends DeviceRequestMessagePro
             final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                     correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.newSetReboot(deviceRequest);
+            this.deviceService.setReboot(deviceRequest);
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);

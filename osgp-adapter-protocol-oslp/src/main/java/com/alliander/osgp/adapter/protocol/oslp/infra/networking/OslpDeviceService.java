@@ -100,42 +100,8 @@ public class OslpDeviceService implements DeviceService {
     private OslpSigningService oslpSigningService;
 
     @Override
-    public void startSelfTest(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newStartSelfTest()");
-        // LOGGER.debug("Starting self test for device: {}.");
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestStartSelfTest(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler responseHandler = new OslpResponseHandler()
-        // {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseStartSelfTest(deviceRequest,
-        // oslpResponse,
-        // deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, responseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newStartSelfTest(final DeviceRequest deviceRequest) {
-        LOGGER.info("newStartSelfTest() for device: {}.");
+    public void startSelfTest(final DeviceRequest deviceRequest) {
+        LOGGER.info("startSelfTest() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestStartSelfTest(deviceRequest);
     }
@@ -143,6 +109,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doStartSelfTest(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doStartSelfTest() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -165,41 +132,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void stopSelfTest(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newStopSelfTest()");
-        // LOGGER.debug("Stopping self test for device: {}.");
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestStopSelfTest(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler responseHandler = new OslpResponseHandler()
-        // {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope response) {
-        // OslpDeviceService.this.handleOslpResponseStopSelfTest(deviceRequest,
-        // response, deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, responseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newStopSelfTest(final DeviceRequest deviceRequest) {
-        LOGGER.info("newStopSelfTest() for device: {}.");
+    public void stopSelfTest(final DeviceRequest deviceRequest) {
+        LOGGER.info("stopSelfTest() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestStopSelfTest(deviceRequest);
     }
@@ -207,6 +141,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doStopSelfTest(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doStopSelfTest() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -228,42 +163,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetLight()");
-        // LOGGER.debug("Setting light for device: {}.",
-        // deviceRequest.getDeviceIdentification());
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestSetLight(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler oslpResponseHandler = new
-        // OslpResponseHandler() {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseSetLight(deviceRequest,
-        // oslpResponse, deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, oslpResponseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newSetLight(final SetLightDeviceRequest deviceRequest) {
-        LOGGER.info("newSetLight() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void setLight(final SetLightDeviceRequest deviceRequest) {
+        LOGGER.info("setLight() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestSetLight(deviceRequest);
     }
@@ -271,6 +172,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doSetLight(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doSetLight() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -292,43 +194,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void setEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetEventNotifications()");
-        // LOGGER.debug("Setting event notifications for device: {}.",
-        // deviceRequest.getDeviceIdentification());
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestSetEventNotifications(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler oslpResponseHandler = new
-        // OslpResponseHandler() {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseSetEventNotifications(deviceRequest,
-        // oslpResponse,
-        // deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, oslpResponseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newSetEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest) {
-        LOGGER.info("newSetEventNotifications() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void setEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest) {
+        LOGGER.info("setEventNotifications() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestSetEventNotifications(deviceRequest);
     }
@@ -359,44 +226,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void updateFirmware(final UpdateFirmwareDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newUpdateFirmware()");
-
-        // LOGGER.debug("Updating firmware for device: {}.");
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestUpdateFirmware(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler oslpResponseHandler = new
-        // OslpResponseHandler() {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseUpdateFirmware(deviceRequest,
-        // oslpResponse,
-        // deviceResponseHandler);
-        //
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, oslpResponseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newUpdateFirmware(final UpdateFirmwareDeviceRequest deviceRequest) {
-        LOGGER.info("newUpdateFirmware() for device: {}.");
+    public void updateFirmware(final UpdateFirmwareDeviceRequest deviceRequest) {
+        LOGGER.info("updateFirmware() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestUpdateFirmware(deviceRequest);
     }
@@ -404,6 +235,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doUpdateFirmware(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doUpdateFirmware() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -426,14 +258,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void getFirmwareVersion(final DeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newGetFirmwareVersion()");
-    }
-
-    @Override
-    public void newGetFirmwareVersion(final DeviceRequest deviceRequest) {
-        LOGGER.info("newGetFirmwareVersion() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void getFirmwareVersion(final DeviceRequest deviceRequest) {
+        LOGGER.info("getFirmwareVersion() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestGetFirmwareVersion(deviceRequest);
     }
@@ -464,30 +290,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void setSchedule(final SetScheduleDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetSchedule()");
-        // LOGGER.debug("Setting schedules for device: {}.");
-        //
-        // final int pageSize = 5;
-        // final int numberOfPages = (int) Math.ceil((double)
-        // deviceRequest.getSchedules().size() / pageSize);
-        //
-        // if (numberOfPages == 1) {
-        // this.processOslpRequestSetScheduleSingle(deviceRequest,
-        // deviceResponseHandler, ipAddress);
-        // } else {
-        // final Pager pager = new Pager(deviceRequest.getSchedules().size(),
-        // pageSize);
-        //
-        // this.processOslpRequestSetSchedulePaged(deviceRequest,
-        // deviceResponseHandler, ipAddress, pager);
-        // }
-    }
-
-    @Override
-    public void newSetSchedule(final SetScheduleDeviceRequest deviceRequest) {
-        LOGGER.info("newSetSchedule() for device: {}.");
+    public void setSchedule(final SetScheduleDeviceRequest deviceRequest) {
+        LOGGER.info("setSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
         final int pageSize = 5;
         final int numberOfPages = (int) Math.ceil((double) deviceRequest.getSchedules().size() / pageSize);
@@ -506,6 +310,7 @@ public class OslpDeviceService implements DeviceService {
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
             final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled,
             final PageInfo pageInfo) throws IOException {
+        LOGGER.info("doSetSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
         if (pageInfo == null) {
             this.doProcessOslpRequestSetScheduleSingle(oslpRequest, deviceRequest, deviceResponseHandler, ipAddress);
@@ -786,14 +591,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void setConfiguration(final SetConfigurationDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetConfiguration()");
-    }
-
-    @Override
-    public void newSetConfiguration(final SetConfigurationDeviceRequest deviceRequest) {
-        LOGGER.info("newSetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void setConfiguration(final SetConfigurationDeviceRequest deviceRequest) {
+        LOGGER.info("setConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestSetConfiguration(deviceRequest);
     }
@@ -824,14 +623,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void getConfiguration(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newGetConfiguration()");
-    }
-
-    @Override
-    public void newGetConfiguration(final DeviceRequest deviceRequest) {
-        LOGGER.info("newGetConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void getConfiguration(final DeviceRequest deviceRequest) {
+        LOGGER.info("getConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestGetConfiguration(deviceRequest);
     }
@@ -862,42 +655,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void getActualPowerUsage(final DeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newGetActualPowerUsage()");
-        // LOGGER.debug("Get actual power use for device: {}.");
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestGetActualPowerUsage(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler oslpResponseHandler = new
-        // OslpResponseHandler() {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseGetActualPowerUsage(deviceRequest,
-        // oslpResponse,
-        // deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, oslpResponseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newGetActualPowerUsage(final DeviceRequest deviceRequest) {
-        LOGGER.info("newGetActualPowerUsage() for device: {}.");
+    public void getActualPowerUsage(final DeviceRequest deviceRequest) {
+        LOGGER.info("getActualPowerUsage() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestGetActualPowerUsage(deviceRequest);
     }
@@ -905,6 +664,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doGetActualPowerUsage(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doGetActualPowerUsage() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -927,23 +687,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void getPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newGetPowerUsageHistory()");
-        // LOGGER.debug("Get power usage history for device: {}.",
-        // deviceRequest.getDeviceIdentification());
-        //
-        // final Pager pager = new Pager();
-        // final List<PowerUsageData> powerUsageHistoryData = new ArrayList<>();
-        //
-        // this.processOslpRequestGetPowerUsageHistory(deviceRequest, pager,
-        // powerUsageHistoryData, deviceResponseHandler,
-        // ipAddress);
-    }
-
-    @Override
-    public void newGetPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest) {
-        LOGGER.debug("newGetPowerUsageHistory() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void getPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest) {
+        LOGGER.info("getPowerUsageHistory() for device: {}.", deviceRequest.getDeviceIdentification());
 
         final Pager pager = new Pager();
         final List<PowerUsageData> powerUsageHistoryData = new ArrayList<>();
@@ -957,6 +702,7 @@ public class OslpDeviceService implements DeviceService {
             final GetPowerUsageHistoryDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
             final String ipAddress, final String domain, final String domainVersion, final String messageType,
             final int retryCount, final boolean isScheduled) throws IOException {
+        LOGGER.info("doGetPowerUsageHistory() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1077,42 +823,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final String ipAddress) throws IOException {
-        // LOGGER.debug("Getting status for device: {}.",
-        // deviceRequest.getDeviceIdentification());
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestGetStatus(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler responseHandler = new OslpResponseHandler()
-        // {
-        // @Override
-        // public void handleResponse(final OslpEnvelope response) {
-        // OslpDeviceService.this.handleOslpResponseGetStatus(deviceRequest,
-        // response, deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, responseHandler,
-        // deviceRequest.getDeviceIdentification());
-
-        return;
-    }
-
-    @Override
-    public void newGetStatus(final GetStatusDeviceRequest deviceRequest) {
-        LOGGER.info("newGetStatus() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void getStatus(final GetStatusDeviceRequest deviceRequest) {
+        LOGGER.info("getStatus() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestGetStatus(deviceRequest);
     }
@@ -1142,43 +854,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void resumeSchedule(final ResumeScheduleDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newResumeSchedule()");
-        // LOGGER.debug("Resuming schedule for device: {}.",
-        // deviceRequest.getDeviceIdentification());
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestResumeSchedule(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler oslpResponseHandler = new
-        // OslpResponseHandler() {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseResumeSchedule(deviceRequest,
-        // oslpResponse,
-        // deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, oslpResponseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newResumeSchedule(final ResumeScheduleDeviceRequest deviceRequest) {
-        LOGGER.info("newResumeSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void resumeSchedule(final ResumeScheduleDeviceRequest deviceRequest) {
+        LOGGER.info("resumeSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestResumeSchedule(deviceRequest);
     }
@@ -1186,6 +863,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doResumeSchedule(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doResumeSchedule() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1208,41 +886,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void setReboot(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
-            final String ipAddress) throws IOException {
-        // LOGGER.debug("Setting reboot for device: {}.",
-        // deviceRequest.getDeviceIdentification());
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestSetReboot(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler oslpResponseHandler = new
-        // OslpResponseHandler() {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseSetReboot(deviceRequest,
-        // oslpResponse, deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, oslpResponseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newSetReboot(final DeviceRequest deviceRequest) {
-        LOGGER.info("newSetReboot() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void setReboot(final DeviceRequest deviceRequest) {
+        LOGGER.info("setReboot() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestSetReboot(deviceRequest);
     }
@@ -1272,43 +917,8 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void setTransition(final SetTransitionDeviceRequest deviceRequest,
-            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
-        LOGGER.error("THIS IS AN EMPTY METHOD. use newSetTranistion()");
-        // LOGGER.debug("Setting transition for device: {}.",
-        // deviceRequest.getDeviceIdentification());
-        //
-        // final OslpEnvelope oslpRequest =
-        // this.buildOslpRequestSetTransition(deviceRequest);
-        //
-        // this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
-        //
-        // final OslpResponseHandler oslpResponseHandler = new
-        // OslpResponseHandler() {
-        //
-        // @Override
-        // public void handleResponse(final OslpEnvelope oslpResponse) {
-        // OslpDeviceService.this.handleOslpResponseSetTransition(deviceRequest,
-        // oslpResponse,
-        // deviceResponseHandler);
-        // }
-        //
-        // @Override
-        // public void handleException(final Throwable t) {
-        // OslpDeviceService.this.handleException(t, deviceRequest,
-        // deviceResponseHandler);
-        //
-        // }
-        // };
-        //
-        // this.oslpChannelHandler.send(this.createAddress(ipAddress),
-        // oslpRequest, oslpResponseHandler,
-        // deviceRequest.getDeviceIdentification());
-    }
-
-    @Override
-    public void newSetTransition(final SetTransitionDeviceRequest deviceRequest) {
-        LOGGER.info("newSetTranistion() for device: {}.", deviceRequest.getDeviceIdentification());
+    public void setTransition(final SetTransitionDeviceRequest deviceRequest) {
+        LOGGER.info("setTranistion() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.buildOslpRequestSetTransition(deviceRequest);
     }
@@ -1316,6 +926,7 @@ public class OslpDeviceService implements DeviceService {
     @Override
     public void doSetTransition(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doSetTranistion() for device: {}.", deviceRequest.getDeviceIdentification());
 
         this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
 
@@ -1766,28 +1377,6 @@ public class OslpDeviceService implements DeviceService {
                 payloadMessage, extraData);
     }
 
-    /*
-     * THIS METHOD HAS TO BE REPLACED AS IT USES PRIVATE KEY (A.K.A. SIGN KEY)
-     */
-    private OslpEnvelope.Builder getBasicEnvelopeBuilder(final String deviceIdentification) {
-
-        LOGGER.error("THIS IS AN EMPTY METHOD. use buildAndSignEnvelope()");
-
-        // final OslpDevice oslpDevice = this.oslpDeviceSettingsService
-        // .getDeviceByDeviceIdentification(deviceIdentification);
-        //
-        // final byte[] deviceId =
-        // Base64.decodeBase64(oslpDevice.getDeviceUid());
-        // final byte[] sequenceNumber =
-        // SequenceNumberUtils.convertIntegerToByteArray(oslpDevice.getSequenceNumber());
-        //
-        // return new
-        // OslpEnvelope.Builder().withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-        // .withPrimaryKey(this.privateKey).withDeviceId(deviceId).withSequenceNumber(sequenceNumber);
-
-        return null;
-    }
-
     private Oslp.LightValue buildLightValue(final LightValue lightValue) {
         final Oslp.LightValue.Builder builder = Oslp.LightValue.newBuilder();
 
@@ -1806,9 +1395,6 @@ public class OslpDeviceService implements DeviceService {
 
     /**
      * Return the correct port, depending on loopback or external.
-     *
-     * @param address
-     * @return
      */
     private InetSocketAddress createAddress(final InetAddress address) {
         if (address.isLoopbackAddress()) {

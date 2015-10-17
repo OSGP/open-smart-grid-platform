@@ -130,7 +130,7 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    // === JMS SETTINGS OSLP REQUESTS ===
+    // === JMS SETTINGS: SIGNING SERVER REQUESTS ===
 
     @Bean
     public ActiveMQDestination requestsQueue() {
@@ -170,7 +170,7 @@ public class MessagingConfig {
         return messageListenerContainer;
     }
 
-    // === JMS SETTINGS: OSLP RESPONSES ===
+    // === JMS SETTINGS: SIGNING SERVER RESPONSES ===
 
     @Bean
     public JmsTemplate responsesJmsTemplate() {

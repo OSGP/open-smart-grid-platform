@@ -22,6 +22,8 @@ import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.alliander.osgp.signing.server.infra.messaging.SigningServerResponseMessageSender;
@@ -73,32 +75,29 @@ public class SigningService {
         final byte[] deviceId = unsignedOslpEnvelopeDto.getDeviceId();
         final byte[] sequenceNumber = unsignedOslpEnvelopeDto.getSequenceNumber();
         final Message payloadMessage = unsignedOslpEnvelopeDto.getPayloadMessage();
+        final String organisationIdentification = unsignedOslpEnvelopeDto.getOrganisationIdentification();
 
         final OslpEnvelope oslpEnvelope = new OslpEnvelope.Builder().withDeviceId(deviceId)
                 .withSequenceNumber(sequenceNumber).withPrimaryKey(this.privateKey).withSignature(this.signature)
                 .withProvider(this.signatureProvider).withPayloadMessage(payloadMessage).build();
 
-        // TODO: check everything and send NOT_OK if needed... the null check is
-        // just an example... also: do we want to use OsgpException everywhere?
-        // seems that the ResponseMessage forces you to do so...
         ResponseMessage responseMessage = null;
 
         if (oslpEnvelope == null) {
-            // responseMessage = new ResponseMessage(correlationId + "",
-            // "organisationIdentification",
-            // deviceIdentification, ResponseMessageResultType.NOT_OK, new
-            // OsgpException(componentType, message, cause), null);
-
             LOGGER.error("Message for device: {} with correlationId: {} NOT SIGNED, sending error to protocol-adpater",
                     deviceIdentification, correlationUid);
-        } else {
-            final SignedOslpEnvelopeDto signedOslpEnvelopeDto = new SignedOslpEnvelopeDto(oslpEnvelope,
-                    unsignedOslpEnvelopeDto);
-            responseMessage = new ResponseMessage(correlationUid + "", "organisationIdentification",
-                    deviceIdentification, ResponseMessageResultType.OK, null, signedOslpEnvelopeDto);
 
+            responseMessage = new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
+                    ResponseMessageResultType.NOT_OK, new OsgpException(ComponentType.UNKNOWN,
+                            "Failed to build signed OslpEnvelope", null), unsignedOslpEnvelopeDto);
+        } else {
             LOGGER.info("Message for device: {} with correlationId: {} signed, sending response to protocol-adpater",
                     deviceIdentification, correlationUid);
+
+            final SignedOslpEnvelopeDto signedOslpEnvelopeDto = new SignedOslpEnvelopeDto(oslpEnvelope,
+                    unsignedOslpEnvelopeDto);
+            responseMessage = new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
+                    ResponseMessageResultType.OK, null, signedOslpEnvelopeDto);
         }
 
         this.signingServerResponseMessageSender.send(responseMessage, "SIGNING_RESPONSE", replyToQueue);
