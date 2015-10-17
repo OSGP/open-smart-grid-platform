@@ -91,7 +91,7 @@ public class SigningService {
                     ResponseMessageResultType.NOT_OK, new OsgpException(ComponentType.UNKNOWN,
                             "Failed to build signed OslpEnvelope", null), unsignedOslpEnvelopeDto);
         } else {
-            LOGGER.info("Message for device: {} with correlationId: {} signed, sending response to protocol-adpater",
+            LOGGER.info("Message for device: {} with correlationId: {} signed, sending response to protocol-adapter",
                     deviceIdentification, correlationUid);
 
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto = new SignedOslpEnvelopeDto(oslpEnvelope,

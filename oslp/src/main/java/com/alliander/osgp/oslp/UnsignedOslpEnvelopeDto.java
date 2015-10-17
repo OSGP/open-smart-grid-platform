@@ -63,6 +63,7 @@ public class UnsignedOslpEnvelopeDto implements Serializable {
         this.deviceId = deviceId;
         this.payloadMessage = payloadMessage;
 
+        this.organisationIdentification = "organisationIdentification";
         this.correlationUid = correlationUid;
 
         this.type = OSLP_RESPONSE_TYPE;

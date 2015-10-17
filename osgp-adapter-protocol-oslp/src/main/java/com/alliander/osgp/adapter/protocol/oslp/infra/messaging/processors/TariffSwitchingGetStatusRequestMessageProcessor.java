@@ -42,7 +42,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  */
 @Component("oslpTariffSwitchingGetStatusRequestMessageProcessor")
 public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -89,18 +89,13 @@ OslpEnvelopeProcessor {
             return;
         }
 
-        try {
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, DomainType.TARIFF_SWITCHING, domain, domainVersion,
-                    messageType, ipAddress, retryCount, isScheduled);
+        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, DomainType.TARIFF_SWITCHING, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
 
-            this.deviceService.getStatus(deviceRequest);
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
+        this.deviceService.getStatus(deviceRequest);
     }
 
     @Override

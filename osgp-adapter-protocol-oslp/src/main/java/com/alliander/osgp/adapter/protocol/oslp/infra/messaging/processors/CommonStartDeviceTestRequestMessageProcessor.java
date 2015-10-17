@@ -32,7 +32,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpCommonStartDeviceTestRequestMessageProcessor")
 public class CommonStartDeviceTestRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -79,17 +79,12 @@ OslpEnvelopeProcessor {
             return;
         }
 
-        try {
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                    correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.startSelfTest(deviceRequest);
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
+        this.deviceService.startSelfTest(deviceRequest);
     }
 
     @Override
