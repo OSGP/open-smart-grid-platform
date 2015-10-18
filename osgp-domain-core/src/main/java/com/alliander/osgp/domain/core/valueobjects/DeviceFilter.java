@@ -15,6 +15,7 @@ public class DeviceFilter {
     private String postalCode;
     private String street;
     private String number;
+    private String municipality;
     private String sortDir;
     private String sortedBy;
 
@@ -23,14 +24,15 @@ public class DeviceFilter {
     }
 
     public DeviceFilter(final String organisationIdentification, final String deviceIdentification, final String city,
-            final String postalCode, final String street, final String number, final String sortDir,
-            final String sortedBy) {
+            final String postalCode, final String street, final String number, final String municipality,
+            final String sortDir, final String sortedBy) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.city = city;
         this.postalCode = postalCode;
         this.street = street;
         this.number = number;
+        this.municipality = municipality;
         this.sortDir = sortDir;
         this.sortedBy = sortedBy;
     }
@@ -57,6 +59,10 @@ public class DeviceFilter {
 
     public String getNumber() {
         return this.number;
+    }
+
+    public String getMunicipality() {
+        return this.municipality;
     }
 
     public String getSortDir() {

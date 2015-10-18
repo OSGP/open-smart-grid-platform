@@ -132,4 +132,22 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             }
         };
     }
+
+    @Override
+    public Specification<Device> hasMunicipality(final String municipality) throws ArgumentNullOrEmptyException {
+
+        if (StringUtils.isEmpty(municipality)) {
+            throw new ArgumentNullOrEmptyException("municipality");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("municipality")), municipality.toUpperCase());
+            }
+        };
+    }
+
 }

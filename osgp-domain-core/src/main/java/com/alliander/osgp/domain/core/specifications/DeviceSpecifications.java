@@ -26,4 +26,6 @@ public interface DeviceSpecifications {
     Specification<Device> hasStreet(final String street) throws ArgumentNullOrEmptyException;
 
     Specification<Device> hasNumber(final String number) throws ArgumentNullOrEmptyException;
+
+    Specification<Device> hasMunicipality(final String municipality) throws ArgumentNullOrEmptyException;
 }

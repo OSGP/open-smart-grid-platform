@@ -62,6 +62,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Column(length = 255)
     private String containerNumber;
 
+    @Column(length = 255)
+    private String municipality;
+
     @Column
     private Float gpsLatitude;
     @Column
@@ -147,6 +150,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Override
     public String getContainerNumber() {
         return this.containerNumber;
+    }
+
+    public String getMunicipality() {
+        return this.municipality;
     }
 
     @Override
