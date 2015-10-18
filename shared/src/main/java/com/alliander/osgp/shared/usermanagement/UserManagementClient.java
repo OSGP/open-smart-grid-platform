@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.TrustManagerFactory;
@@ -369,11 +370,12 @@ public class UserManagementClient extends AbstractClient {
     public String changeUserData(final String organisationIdentificationForUser, final String username,
             final String newUsername, final String newFirstName, final String newMiddleName, final String newLastName,
             final String newEmailAddress, final String newPassword, final String newRole, final String newApplications,
+            final Date newStartDate, final Date newExpiryDateContract, final Date newExpiryDateBEIInstruction,
             final String organisationIdentification, final String token) throws UserManagementClientException {
 
         final ChangeUserRequest changeUserRequest = new ChangeUserRequest(organisationIdentificationForUser, username,
                 newUsername, newFirstName, newMiddleName, newLastName, newEmailAddress, newPassword, newRole,
-                newApplications);
+                newApplications, newStartDate, newExpiryDateContract, newExpiryDateBEIInstruction);
 
         final Response response = this.getWebClientInstance().path(this.userPath + username + this.changeUserDataPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(changeUserRequest);

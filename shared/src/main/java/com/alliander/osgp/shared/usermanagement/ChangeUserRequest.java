@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.shared.usermanagement;
 
+import java.util.Date;
+
 public class ChangeUserRequest {
 
     private String organisationIdentificationForUser;
@@ -19,6 +21,9 @@ public class ChangeUserRequest {
     private String newPassword;
     private String newRole;
     private String newApplications;
+    private Date newStartDate;
+    private Date newExpiryDateContract;
+    private Date newExpiryDateBEIInstruction;
 
     public ChangeUserRequest() {
 
@@ -26,7 +31,8 @@ public class ChangeUserRequest {
 
     public ChangeUserRequest(final String organisationIdentificationForUser, final String username,
             final String newUsername, final String newFirstname, final String newMiddlename, final String newLastname,
-            final String newEmailAddress, final String newPassword, final String newRole, final String newApplications) {
+            final String newEmailAddress, final String newPassword, final String newRole, final String newApplications,
+            final Date newStartDate, final Date newExpiryDateContract, final Date newExpiryDateBEIInstruction) {
         this.organisationIdentificationForUser = organisationIdentificationForUser;
         this.username = username;
         this.newFirstname = newFirstname;
@@ -37,6 +43,9 @@ public class ChangeUserRequest {
         this.newPassword = newPassword;
         this.newRole = newRole;
         this.newApplications = newApplications;
+        this.newStartDate = newStartDate;
+        this.newExpiryDateContract = newExpiryDateContract;
+        this.newExpiryDateBEIInstruction = newExpiryDateBEIInstruction;
     }
 
     public String getOrganisationIdentificationForUser() {
@@ -77,5 +86,17 @@ public class ChangeUserRequest {
 
     public String getNewEmailAddress() {
         return this.newEmailAddress;
+    }
+
+    public Date getNewStartDate() {
+        return this.newStartDate;
+    }
+
+    public Date getNewExpiryDateContract() {
+        return this.newExpiryDateContract;
+    }
+
+    public Date getNewExpiryDateBEIInstruction() {
+        return this.newExpiryDateBEIInstruction;
     }
 }
