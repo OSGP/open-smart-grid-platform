@@ -479,8 +479,8 @@ public class OslpDeviceService implements DeviceService {
                 .addAllSchedules(oslpSchedules)
                 .setScheduleType(
                         this.mapper.map(deviceRequest.getRelayType(), com.alliander.osgp.oslp.Oslp.RelayType.class))
-                        .setPageInfo(
-                                Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
+                .setPageInfo(
+                        Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
                                 .setPageSize(pager.getPageSize()).setTotalPages(pager.getNumberOfPages()));
 
         final PageInfo pageInfo = new PageInfo(pager.getCurrentPage(), pager.getPageSize(), pager.getNumberOfPages());
@@ -508,6 +508,12 @@ public class OslpDeviceService implements DeviceService {
             this.itemCount = itemCount;
             this.pageSize = pageSize;
             this.numberOfPages = (int) Math.ceil((double) itemCount / (double) pageSize);
+        }
+
+        public Pager(final int numberOfPages, final int pageSize, final int currentPage) {
+            this.numberOfPages = numberOfPages;
+            this.pageSize = pageSize;
+            this.currentPage = currentPage;
         }
 
         public int getCurrentPage() {
@@ -544,10 +550,6 @@ public class OslpDeviceService implements DeviceService {
 
         public void setCurrentPage(final int currentPage) {
             this.currentPage = currentPage;
-        }
-
-        public int getItemCount() {
-            return this.itemCount;
         }
     }
 
@@ -708,9 +710,8 @@ public class OslpDeviceService implements DeviceService {
 
         final List<PowerUsageData> powerUsageHistoryData = powerUsageHistoryResponseMessageDataContainer
                 .getPowerUsageData();
-        final Pager pager = new Pager(powerUsageHistoryResponseMessageDataContainer.getItemCount(), 5);
-        pager.setNumberOfPages(powerUsageHistoryResponseMessageDataContainer.getNumberOfPages());
-        pager.setCurrentPage(powerUsageHistoryResponseMessageDataContainer.getCurrentPage());
+        final PageInfo pageInfo = powerUsageHistoryResponseMessageDataContainer.getPageInfo();
+        final Pager pager = new Pager(pageInfo.getTotalPages(), pageInfo.getPageSize(), pageInfo.getCurrentPage());
 
         final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
 
@@ -735,7 +736,7 @@ public class OslpDeviceService implements DeviceService {
             final Pager pager, final List<PowerUsageData> powerUsageHistoryData,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
             final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled)
-                    throws IOException {
+            throws IOException {
         LOGGER.info("GetPowerUsageHistory() for device: {}, page: {}", deviceRequest.getDeviceIdentification(),
                 pager.getCurrentPage());
 
@@ -810,9 +811,8 @@ public class OslpDeviceService implements DeviceService {
 
         final PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainer = new PowerUsageHistoryResponseMessageDataContainer(
                 powerUsageHistoryData);
-        powerUsageHistoryResponseMessageDataContainer.setCurrentPage(pager.getCurrentPage());
-        powerUsageHistoryResponseMessageDataContainer.setItemCount(pager.getItemCount());
-        powerUsageHistoryResponseMessageDataContainer.setNumberOfPages(pager.getNumberOfPages());
+        final PageInfo pageInfo = new PageInfo(pager.getCurrentPage(), pager.getPageSize(), pager.getNumberOfPages());
+        powerUsageHistoryResponseMessageDataContainer.setPageInfo(pageInfo);
         powerUsageHistoryResponseMessageDataContainer.setStartTime(deviceRequest.getTimePeriod().getStartTime());
         powerUsageHistoryResponseMessageDataContainer.setEndTime(deviceRequest.getTimePeriod().getEndTime());
         powerUsageHistoryResponseMessageDataContainer.setHistoryTermType(deviceRequest.getHistoryTermType());
@@ -1161,7 +1161,7 @@ public class OslpDeviceService implements DeviceService {
                         LightValue.class), this.mapper.map(getStatusResponse.getPreferredLinktype(), LinkType.class),
                         this.mapper.map(getStatusResponse.getActualLinktype(), LinkType.class), this.mapper.map(
                                 getStatusResponse.getLightType(), LightType.class),
-                                getStatusResponse.getEventNotificationMask());
+                        getStatusResponse.getEventNotificationMask());
             } else {
                 // handle failure by throwing exceptions if needed
             }
