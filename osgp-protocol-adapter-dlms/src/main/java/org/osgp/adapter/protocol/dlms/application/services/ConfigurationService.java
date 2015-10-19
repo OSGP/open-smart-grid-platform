@@ -12,9 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.Configurations;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
@@ -82,17 +84,23 @@ public class ConfigurationService {
 
         try {
             // Configuration Object towards the Smart Meter
-            SetConfigurationObjectRequestData setConfigurationObjectRequestData = setConfigurationObjectRequest
-                    .getSetConfigurationObjectRequestData();
+            ConfigurationObject configurationObject = setConfigurationObjectRequest
+                    .getSetConfigurationObjectRequestData().getConfigurationObject();
 
-            LOGGER.info("Set Configuration Object : {}",
-                    setConfigurationObjectRequest.getSetConfigurationObjectRequestData());
+            GprsOperationModeType GprsOperationModeType = configurationObject.getGprsOperationMode();
+            ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
-            Configurations configurations = setConfigurationObjectRequestData.getConfiguration();
-
+            LOGGER.info("Configuration Object   ******************************");
             LOGGER.info("******************************************************");
-            LOGGER.info("Configuration Object :{} ", configurations.getConfiguration());
+            LOGGER.info("Configuration Object operation mode:{} ", GprsOperationModeType.value());
             LOGGER.info("******************************************************");
+            LOGGER.info("Flags   ********************************************");
+
+            for (ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
+                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag
+                        .getConfigurationFlagType().toString());
+                LOGGER.info("******************************************************");
+            }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);

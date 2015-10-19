@@ -37,7 +37,7 @@ public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequest
     private ConfigurationService configurationService;
 
     public SetConfigurationObjectRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_SET_CONFIGURATION_OBJECT);
+        super(DeviceRequestMessageType.SET_CONFIGURATION_OBJECT);
     }
 
     @Override
