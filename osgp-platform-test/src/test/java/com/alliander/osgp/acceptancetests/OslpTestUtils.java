@@ -111,13 +111,14 @@ public class OslpTestUtils {
         // Hardcoded to single channel id
         when(channel.getId()).thenReturn(1);
 
-        // Manual trigger validation based on public key, OslpSecurityHandler is skipped
+        // Manual trigger validation based on public key, OslpSecurityHandler is
+        // skipped
         response.validate(getDefaultPublicKey());
         when(channel.write(anyObject())).thenAnswer(new OslpResponseAnswer(oslpChannelHandler, response, channel));
 
         final ArgumentCaptor<ChannelFutureListener> argument = ArgumentCaptor.forClass(ChannelFutureListener.class);
         Mockito.doAnswer(new ChannelFutureListenerOperationCompleteAnswer(channelFuture, argument)).when(channelFuture)
-                .addListener(argument.capture());
+        .addListener(argument.capture());
 
         return oslpChannelHandler;
     }
@@ -131,11 +132,11 @@ public class OslpTestUtils {
 
         try {
             return new OslpEnvelope.Builder()
-                    .withSignature(SIGNATURE)
-                    .withSequenceNumber(SequenceNumberUtils.convertIntegerToByteArray(NEXT_SEQUENCE_NUMBER))
-                    .withProvider(provider())
-                    .withPrimaryKey(
-                            CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64, KEY_TYPE, provider()));
+            .withSignature(SIGNATURE)
+            .withSequenceNumber(SequenceNumberUtils.convertIntegerToByteArray(NEXT_SEQUENCE_NUMBER))
+            .withProvider(provider())
+            .withPrimaryKey(
+                    CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64, KEY_TYPE, provider()));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException | NoSuchProviderException e) {
             throw new IllegalStateException("Could not create OslpEnvelope.", e);
         }
@@ -150,29 +151,14 @@ public class OslpTestUtils {
     }
 
     public static OslpDeviceService configureDeviceServiceForOslp(final OslpDeviceService oslpDeviceService) {
-        try {
-            oslpDeviceService.setSignature(SIGNATURE);
-            oslpDeviceService.setProvider(provider());
-            oslpDeviceService.setOslpPortClient(CLIENT_PORT);
-            oslpDeviceService.setOslpPortClientLocal(LOCAL_CLIENT_PORT);
-            oslpDeviceService.setPrivateKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64, KEY_TYPE,
-                    provider()));
-
-            return oslpDeviceService;
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException | NoSuchProviderException e) {
-            throw new IllegalStateException("Could not configure OslpDeviceService", e);
-        }
+        oslpDeviceService.setOslpPortClient(CLIENT_PORT);
+        oslpDeviceService.setOslpPortClientLocal(LOCAL_CLIENT_PORT);
+        return oslpDeviceService;
     }
 
     public static void configureOslpChannelHandler(final OslpChannelHandler oslpChannelHandler) {
-        try {
-            oslpChannelHandler.setSignature(SIGNATURE);
-            oslpChannelHandler.setProvider(provider());
-            oslpChannelHandler.setPrivateKey(CertificateHelper.createPrivateKeyFromBase64(PRIVATE_KEY_BASE_64,
-                    KEY_TYPE, provider()));
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException | NoSuchProviderException e) {
-            throw new IllegalStateException("Could not create OslpChannelHandler.", e);
-        }
+        oslpChannelHandler.setSignature(SIGNATURE);
+        oslpChannelHandler.setProvider(provider());
     }
 
     public static String provider() {

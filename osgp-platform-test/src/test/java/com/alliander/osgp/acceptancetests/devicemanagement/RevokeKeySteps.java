@@ -8,6 +8,7 @@
 package com.alliander.osgp.acceptancetests.devicemanagement;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -147,7 +148,7 @@ public class RevokeKeySteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
 
     }
 
@@ -159,8 +160,6 @@ public class RevokeKeySteps {
 
         try {
             this.response = this.deviceManagementEndpoint.revokeKey(ORGANISATION_ID, this.request);
-
-            Thread.sleep(1000);
 
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -176,14 +175,14 @@ public class RevokeKeySteps {
 
         try {
             final ArgumentCaptor<OslpDevice> oslpDeviceArgument = ArgumentCaptor.forClass(OslpDevice.class);
-            verify(this.oslpDeviceRepositoryMock, times(1)).save(oslpDeviceArgument.capture());
+            verify(this.oslpDeviceRepositoryMock, timeout(10000).times(1)).save(oslpDeviceArgument.capture());
 
             Assert.assertEquals("Oslp Devices should match", this.device.getDeviceIdentification(), oslpDeviceArgument
                     .getValue().getDeviceIdentification());
             Assert.assertFalse("Oslp Device key should be cleared", oslpDeviceArgument.getValue().isPublicKeyPresent());
 
             final ArgumentCaptor<Device> deviceArgument = ArgumentCaptor.forClass(Device.class);
-            verify(this.deviceRepositoryMock, times(1)).save(deviceArgument.capture());
+            verify(this.deviceRepositoryMock, timeout(10000).times(1)).save(deviceArgument.capture());
 
             Assert.assertEquals("Devices should match", this.device.getDeviceIdentification(), deviceArgument
                     .getValue().getDeviceIdentification());

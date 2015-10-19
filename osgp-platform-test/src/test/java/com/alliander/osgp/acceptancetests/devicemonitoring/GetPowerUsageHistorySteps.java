@@ -217,7 +217,7 @@ public class GetPowerUsageHistorySteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.MONITORING).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the get power usage history oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")
@@ -324,15 +324,15 @@ public class GetPowerUsageHistorySteps {
                 .newBuilder()
                 .addPowerUsageData(
                         PowerUsageData
-                                .newBuilder()
-                                .setMeterType(
-                                        puhMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType
-                                                .valueOf(puhMeterType.name()))
-                                .setRecordTime(recordTime)
-                                .setActualConsumedPower(puhActualConsumedPower)
-                                .setTotalConsumedEnergy(puhTotalConsumedEnergy)
-                                .setSsldData(
-                                        com.alliander.osgp.oslp.Oslp.SsldData
+                        .newBuilder()
+                        .setMeterType(
+                                puhMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType
+                                        .valueOf(puhMeterType.name()))
+                                        .setRecordTime(recordTime)
+                                        .setActualConsumedPower(puhActualConsumedPower)
+                                        .setTotalConsumedEnergy(puhTotalConsumedEnergy)
+                                        .setSsldData(
+                                                com.alliander.osgp.oslp.Oslp.SsldData
                                                 .newBuilder()
                                                 .setActualCurrent1(puhActualCurrent1)
                                                 .setActualCurrent2(puhActualCurrent2)
@@ -345,22 +345,22 @@ public class GetPowerUsageHistorySteps {
                                                 .setAveragePowerFactor3(puhAveragePowerFactor3)
                                                 .addRelayData(
                                                         com.alliander.osgp.oslp.Oslp.RelayData
-                                                                .newBuilder()
-                                                                .setIndex(
-                                                                        OslpUtils
-                                                                                .integerToByteString(relayData1IndexInt))
+                                                        .newBuilder()
+                                                        .setIndex(
+                                                                OslpUtils
+                                                                .integerToByteString(relayData1IndexInt))
                                                                 .setTotalLightingMinutes(relayData1LightingMinutesInt)
                                                                 .build())
-                                                .addRelayData(
-                                                        com.alliander.osgp.oslp.Oslp.RelayData
-                                                                .newBuilder()
-                                                                .setIndex(
-                                                                        OslpUtils
+                                                                .addRelayData(
+                                                                        com.alliander.osgp.oslp.Oslp.RelayData
+                                                                        .newBuilder()
+                                                                        .setIndex(
+                                                                                OslpUtils
                                                                                 .integerToByteString(relayData2IndexInt))
-                                                                .setTotalLightingMinutes(relayData2LightingMinutesInt)
-                                                                .build())).build())
+                                                                                .setTotalLightingMinutes(relayData2LightingMinutesInt)
+                                                                                .build())).build())
 
-                .setStatus(Status.OK).build();
+                                                                                .setStatus(Status.OK).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetPowerUsageHistoryResponse(oslpResponse).build()).build();
@@ -418,7 +418,7 @@ public class GetPowerUsageHistorySteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
@@ -444,7 +444,7 @@ public class GetPowerUsageHistorySteps {
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
 
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture(),
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture(),
                     any(Long.class));
 
             // Check the result.

@@ -210,7 +210,7 @@ public class GetConfigurationDataSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.CONFIGURATION).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the get configuration oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")
@@ -366,7 +366,7 @@ public class GetConfigurationDataSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
@@ -387,7 +387,7 @@ public class GetConfigurationDataSteps {
             final String meterType, final String longInterval, final String longIntervalType) {
         LOGGER.info("THEN: the get configuration response should return {}, {}, {}, {}, {}, {}, {}, {}, {} and {}.",
                 new Object[] { lightType, dcLights, dcMap, rcType, rcMap, shortInterval, preferredLinkType, meterType,
-                        longInterval, longIntervalType });
+                longInterval, longIntervalType });
 
         try {
             Assert.assertNotNull("Response should not be null", this.response);
@@ -412,7 +412,7 @@ public class GetConfigurationDataSteps {
                 // lights
                 Assert.assertEquals("Dali configuration lights should equal expected value",
                         StringUtils.isNotBlank(dcLights.trim()) ? Integer.parseInt(dcLights.trim()) : 0,
-                        daliConfiguration.getNumberOfLights());
+                                daliConfiguration.getNumberOfLights());
 
                 // index address map
                 Assert.assertNotNull("Index address map should not be null", daliConfiguration.getIndexAddressMap());
@@ -553,7 +553,7 @@ public class GetConfigurationDataSteps {
 
                     final com.alliander.osgp.domain.core.valueobjects.LightType lighttype = StringUtils
                             .isBlank(lightType) ? null : Enum.valueOf(
-                            com.alliander.osgp.domain.core.valueobjects.LightType.class, lightType);
+                                    com.alliander.osgp.domain.core.valueobjects.LightType.class, lightType);
                     final Map<Integer, Integer> indexAddressMap = new HashMap<Integer, Integer>();
 
                     final com.alliander.osgp.domain.core.valueobjects.DaliConfiguration daliconfiguration = new com.alliander.osgp.domain.core.valueobjects.DaliConfiguration(
@@ -627,7 +627,7 @@ public class GetConfigurationDataSteps {
                     // light type
                     Assert.assertEquals("Light type should equal expected value", lightType.trim(), this.response
                             .getConfiguration().getLightType() != null ? this.response.getConfiguration()
-                            .getLightType().name() : "");
+                                    .getLightType().name() : "");
 
                     // dali configuration
                     if (this.response.getConfiguration().getLightType() == LightType.DALI
@@ -641,7 +641,7 @@ public class GetConfigurationDataSteps {
                         // lights
                         Assert.assertEquals("Dali configuration lights should equal expected value",
                                 StringUtils.isNotBlank(dcLights.trim()) ? Integer.parseInt(dcLights.trim()) : 0,
-                                daliConfiguration.getNumberOfLights());
+                                        daliConfiguration.getNumberOfLights());
 
                         // index address map
                         Assert.assertNotNull("Index address map should not be null",
@@ -674,7 +674,7 @@ public class GetConfigurationDataSteps {
                     // shortInterval
                     Assert.assertEquals("Short interval should equal expected value",
                             StringUtils.isBlank(shortInterval) ? null : Integer.parseInt(shortInterval.trim()),
-                            this.response.getConfiguration().getShortTermHistoryIntervalMinutes());
+                                    this.response.getConfiguration().getShortTermHistoryIntervalMinutes());
 
                     // preferredLinkType
                     Assert.assertEquals("Preferred link type should equal expected value", preferredLinkType.trim(),
@@ -684,12 +684,12 @@ public class GetConfigurationDataSteps {
                     // meterType
                     Assert.assertEquals("Meter type should equal expected value", meterType.trim(), this.response
                             .getConfiguration().getMeterType() != null ? this.response.getConfiguration()
-                            .getMeterType().value() : "");
+                                    .getMeterType().value() : "");
 
                     // longInterval
                     Assert.assertEquals("Long interval should equal expected value",
                             StringUtils.isBlank(longInterval) ? null : Integer.parseInt(longInterval.trim()),
-                            this.response.getConfiguration().getLongTermHistoryInterval());
+                                    this.response.getConfiguration().getLongTermHistoryInterval());
 
                     // longIntervalType
                     Assert.assertEquals("Long interval type should equal expected value", longIntervalType.trim(),
@@ -734,8 +734,8 @@ public class GetConfigurationDataSteps {
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.oslpDeviceRepositoryMock,
-                this.channelMock, this.webServiceResponseMessageSenderMock });
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock,
+                this.oslpDeviceRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock });
 
         this.configurationManagementEndpoint = new ConfigurationManagementEndpoint(this.configurationManagementService,
                 new ConfigurationManagementMapper());
