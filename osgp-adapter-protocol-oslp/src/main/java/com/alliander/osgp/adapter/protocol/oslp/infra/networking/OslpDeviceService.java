@@ -265,7 +265,7 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
-    public void doGetFirmwareVerion(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+    public void doGetFirmwareVersion(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
         LOGGER.info("doGetFirmwareVersion() for device: {}.", deviceRequest.getDeviceIdentification());
 

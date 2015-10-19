@@ -33,7 +33,7 @@ public interface DeviceService {
 
     void getFirmwareVersion(DeviceRequest deviceRequest);
 
-    void doGetFirmwareVerion(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+    void doGetFirmwareVersion(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
     void getStatus(GetStatusDeviceRequest deviceRequest);

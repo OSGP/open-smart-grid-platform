@@ -130,7 +130,7 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
                 correlationUid);
 
         try {
-            this.deviceService.doGetFirmwareVerion(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+            this.deviceService.doGetFirmwareVersion(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
         } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);
