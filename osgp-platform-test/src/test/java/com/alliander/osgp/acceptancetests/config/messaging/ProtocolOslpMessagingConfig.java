@@ -178,7 +178,7 @@ public class ProtocolOslpMessagingConfig {
     }
 
     @Bean
-    public RedeliveryPolicy signingServerRequetsRedeliveryPolicy() {
+    public RedeliveryPolicy signingServerRequestsRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(MessagingConfig.INITIAL_REDELIVERY_DELAY);
         redeliveryPolicy.setMaximumRedeliveries(MessagingConfig.MAXIMUM_REDELIVERIES);
