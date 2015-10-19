@@ -10,15 +10,12 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class AlarmNotification implements Serializable {
+public class AlarmNotification implements Comparable<AlarmNotification>, Serializable {
 
     private static final long serialVersionUID = -944840401788172403L;
 
-    private AlarmType alarmType;
-    private boolean enabled;
-
-    public AlarmNotification() {
-    }
+    private final AlarmType alarmType;
+    private final boolean enabled;
 
     public AlarmNotification(final AlarmType alarmType, final boolean enabled) {
         this.alarmType = alarmType;
@@ -42,6 +39,11 @@ public class AlarmNotification implements Serializable {
     }
 
     @Override
+    public int compareTo(final AlarmNotification o) {
+        return this.alarmType.compareTo(o.alarmType);
+    }
+
+    @Override
     public String toString() {
         return "AlarmNotification[type=" + this.alarmType + ", enabled=" + this.enabled + "]";
     }
@@ -50,15 +52,7 @@ public class AlarmNotification implements Serializable {
         return this.alarmType;
     }
 
-    public void setAlarmType(final AlarmType alarmType) {
-        this.alarmType = alarmType;
-    }
-
     public boolean isEnabled() {
         return this.enabled;
-    }
-
-    public void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
     }
 }

@@ -10,19 +10,16 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class AlarmNotifications implements Serializable {
 
     private static final long serialVersionUID = 2319359505656305783L;
 
-    private Set<AlarmNotification> alarmNotifications;
-
-    public AlarmNotifications() {
-        this.alarmNotifications = Collections.emptySet();
-    }
+    private final Set<AlarmNotification> alarmNotifications;
 
     public AlarmNotifications(final Set<AlarmNotification> alarmNotifications) {
-        this.alarmNotifications = alarmNotifications;
+        this.alarmNotifications = new TreeSet<AlarmNotification>(alarmNotifications);
     }
 
     @Override
@@ -31,10 +28,6 @@ public class AlarmNotifications implements Serializable {
     }
 
     public Set<AlarmNotification> getAlarmNotifications() {
-        return this.alarmNotifications;
-    }
-
-    public void setAlarmNotifications(final Set<AlarmNotification> alarmNotifications) {
-        this.alarmNotifications = alarmNotifications;
+        return Collections.unmodifiableSet(this.alarmNotifications);
     }
 }

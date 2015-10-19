@@ -77,10 +77,10 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final AlarmNotifications alarmSwitches = (AlarmNotifications) dataObject;
+            final AlarmNotifications alarmNotifications = (AlarmNotifications) dataObject;
 
             this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
-                    correlationUid, alarmSwitches, messageType);
+                    correlationUid, alarmNotifications, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

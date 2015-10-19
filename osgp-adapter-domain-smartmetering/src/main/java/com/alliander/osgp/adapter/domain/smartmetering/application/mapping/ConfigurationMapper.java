@@ -20,20 +20,10 @@ public class ConfigurationMapper extends ConfigurableMapper {
 
         // domain value object -> dto value object
         mapperFactory
-        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class,
-                com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
+                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
                 .register();
 
-        mapperFactory
-        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class,
-                com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class).byDefault()
-                .register();
-        mapperFactory
-        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotification.class,
-                com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification.class).byDefault()
-                .register();
-        mapperFactory
-                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType.class,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType.class).byDefault().register();
+        mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
     }
 }
