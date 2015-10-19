@@ -40,7 +40,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
  */
 @Component("oslpCommonGetConfigurationRequestMessageProcessor")
 public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -139,7 +139,7 @@ public class CommonGetConfigurationRequestMessageProcessor extends DeviceRequest
         }
     }
 
-    public void handleGetConfigurationDeviceResponse(final DeviceResponse deviceResponse,
+    private void handleGetConfigurationDeviceResponse(final DeviceResponse deviceResponse,
             final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
 
