@@ -198,7 +198,7 @@ public class MessagingConfig {
         redeliveryPolicyMap.put(this.osgpRequestsQueue(), this.osgpRequestsRedeliveryPolicy());
         redeliveryPolicyMap.put(this.osgpResponsesQueue(), this.osgpResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.oslpLogItemRequestsQueue(), this.oslpLogItemRequestsRedeliveryPolicy());
-        redeliveryPolicyMap.put(this.signingServerRequestsQueue(), this.signingServerRequetsRedeliveryPolicy());
+        redeliveryPolicyMap.put(this.signingServerRequestsQueue(), this.signingServerRequestsRedeliveryPolicy());
         redeliveryPolicyMap.put(this.replyToQueue(), this.signingServerResponsesRedeliveryPolicy());
         return redeliveryPolicyMap;
     }
@@ -476,7 +476,7 @@ public class MessagingConfig {
     }
 
     @Bean
-    public RedeliveryPolicy signingServerRequetsRedeliveryPolicy() {
+    public RedeliveryPolicy signingServerRequestsRedeliveryPolicy() {
         final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
         redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_INITIAL_REDELIVERY_DELAY)));
