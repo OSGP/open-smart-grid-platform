@@ -69,16 +69,9 @@ public class AdminRevokeKeyRequestMessageProcessor extends DeviceRequestMessageP
             return;
         }
 
-        try {
-            LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain,
-                    domainVersion);
+        LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            this.deviceManagementService.revokeKey(organisationIdentification, deviceIdentification, correlationUid,
-                    this.responseMessageSender, domain, domainVersion, messageType);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType);
-        }
+        this.deviceManagementService.revokeKey(organisationIdentification, deviceIdentification, correlationUid,
+                this.responseMessageSender, domain, domainVersion, messageType);
     }
 }

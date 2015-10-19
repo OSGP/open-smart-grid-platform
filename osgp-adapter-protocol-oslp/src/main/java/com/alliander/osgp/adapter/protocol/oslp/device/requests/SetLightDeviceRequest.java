@@ -23,6 +23,16 @@ public class SetLightDeviceRequest extends DeviceRequest {
         this.lightValues = lightValues;
     }
 
+    public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final List<LightValue> lightValues, final String domain,
+            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
+            final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+
+        this.lightValues = lightValues;
+    }
+
     public List<LightValue> getLightValues() {
         return this.lightValues;
     }

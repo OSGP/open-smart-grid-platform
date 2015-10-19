@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.oslp;
 
+import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -19,7 +20,12 @@ import com.alliander.osgp.oslp.Oslp.Message;
 /**
  * Envelope class which holds the OSLP payload.
  */
-public class OslpEnvelope {
+public class OslpEnvelope implements Serializable {
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = -7877297705451116796L;
+
     /**
      * Constant for security configuration errors.
      */

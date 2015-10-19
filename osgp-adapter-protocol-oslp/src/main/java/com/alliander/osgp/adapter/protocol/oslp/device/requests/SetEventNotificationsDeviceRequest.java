@@ -23,6 +23,15 @@ public class SetEventNotificationsDeviceRequest extends DeviceRequest {
         this.eventNotifications = eventNotifications;
     }
 
+    public SetEventNotificationsDeviceRequest(final String organisationIdentification,
+            final String deviceIdentification, final String correlationUid,
+            final List<EventNotificationType> eventNotifications, final String domain, final String domainVersion,
+            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+        this.eventNotifications = eventNotifications;
+    }
+
     public List<EventNotificationType> getEventNotifications() {
         return this.eventNotifications;
     }

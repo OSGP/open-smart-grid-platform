@@ -11,6 +11,7 @@ These components offer an implementation of OSLP. There's the Protocol Adapter t
 - oslp, Implementation of OSLP
 - osgp-adapter-protocol-oslp, Protocol Adapter
 - osgp-core-db-api, Database access provider
+- signing-server, OSLP message signing provider
 - web-device-simulator, OSLP device simulator
 
 The components have dependencies.

@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
 
+import java.io.IOException;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -14,19 +16,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotificationsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
+import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
+import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common set event notifications request messages
  */
 @Component("oslpCommonSetEventNotificationsRequestMessageProcessor")
-public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -49,6 +57,7 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
         String deviceIdentification = null;
         String ipAddress = null;
         int retryCount = 0;
+        boolean isScheduled = false;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -59,6 +68,8 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -77,51 +88,57 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-                @Override
-                public void handleResponse(final DeviceResponse deviceResponse) {
-                    try {
-                        CommonSetEventNotificationsRequestMessageProcessor.this.handleEmptyDeviceResponse(
-                                deviceResponse,
-                                CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender,
-                                message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION), message.getJMSType(),
-                                message.getIntProperty(Constants.RETRY_COUNT));
-                    } catch (final JMSException e) {
-                        LOGGER.error("JMSException", e);
-                    }
-
-                }
-
-                @Override
-                public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                    try {
-                        CommonSetEventNotificationsRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                                deviceResponse,
-                                t,
-                                eventNotificationMessageDataContainer,
-                                CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender,
-                                deviceResponse,
-                                message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION),
-                                message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message
-                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
-                                        .getIntProperty(Constants.RETRY_COUNT));
-                    } catch (final JMSException e) {
-                        LOGGER.error("JMSException", e);
-                    }
-                }
-            };
-
             final SetEventNotificationsDeviceRequest deviceRequest = new SetEventNotificationsDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
-                    eventNotificationMessageDataContainer.getEventNotifications());
+                    eventNotificationMessageDataContainer.getEventNotifications(), domain, domainVersion, messageType,
+                    ipAddress, retryCount, isScheduled);
 
-            this.deviceService.setEventNotifications(deviceRequest, deviceResponseHandler, ipAddress);
-
+            this.deviceService.setEventNotifications(deviceRequest);
         } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
+        }
+    }
+
+    @Override
+    public void processSignedOslpEnvelope(final String deviceIdentification,
+            final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
+
+        final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
+        final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+        final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
+        final String organisationIdentification = unsignedOslpEnvelopeDto.getOrganisationIdentification();
+        final String domain = unsignedOslpEnvelopeDto.getDomain();
+        final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
+        final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
+        final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
+        final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
+
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                CommonSetEventNotificationsRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
+                        CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, retryCount);
+            }
+
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
+                CommonSetEventNotificationsRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
+                        deviceResponse, t, null,
+                        CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender, deviceResponse,
+                        domain, domainVersion, messageType, isScheduled, retryCount);
+            }
+        };
+
+        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+                correlationUid);
+
+        try {
+            this.deviceService.doSetEventNotifications(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
+        } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);
         }

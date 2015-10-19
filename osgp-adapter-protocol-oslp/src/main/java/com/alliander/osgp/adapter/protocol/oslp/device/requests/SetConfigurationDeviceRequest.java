@@ -21,6 +21,16 @@ public class SetConfigurationDeviceRequest extends DeviceRequest {
         this.configuration = configuration;
     }
 
+    public SetConfigurationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final Configuration configuration, final String domain,
+            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
+            final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+
+        this.configuration = configuration;
+    }
+
     public Configuration getConfiguration() {
         return this.configuration;
     }

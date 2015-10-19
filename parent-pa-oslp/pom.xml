@@ -17,7 +17,7 @@
     <version>0.11.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>parent-pa-oslp</name>
-    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
     <description>Parent module.</description>
     <organization>
         <name>OSGP</name>
@@ -122,6 +122,13 @@
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>osgp-protocol-adapter-oslp</artifactId>
+                <version>${osgp.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
+            
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>signing-server</artifactId>
                 <version>${osgp.version}</version>
                 <classifier>classes</classifier>
             </dependency>

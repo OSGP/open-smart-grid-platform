@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright 2015 Smart Society Services B.V.
@@ -7,15 +8,14 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>protocol-adapter-oslp</artifactId>
     <groupId>com.alliander.osgp</groupId>
     <version>0.11.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
     <description>Protocol Adapter for OSLP smart devices.</description>
     <organization>
         <name>OSGP</name>
@@ -51,5 +51,6 @@
         <!-- Protocol Adapter OSLP -->        
         <module>osgp-core-db-api</module>
         <module>osgp-adapter-protocol-oslp</module>
-    </modules>
+    	<module>signing-server</module>
+  </modules>
 </project>

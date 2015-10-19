@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
 
+import java.io.IOException;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -19,15 +21,20 @@ import com.alliander.osgp.adapter.protocol.oslp.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
 import com.alliander.osgp.dto.valueobjects.RelayType;
 import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
+import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing tariff switching set schedule request messages
  */
 @Component("oslpTariffSwitchingSetScheduleRequestMessageProcessor")
-public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor implements
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -62,7 +69,6 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -82,55 +88,60 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
-
-                @Override
-                public void handleResponse(final DeviceResponse deviceResponse) {
-                    try {
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleScheduledEmptyDeviceResponse(
-                                deviceResponse,
-                                TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender,
-                                message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION),
-                                message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message
-                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
-                                        .getIntProperty(Constants.RETRY_COUNT));
-                    } catch (final JMSException e) {
-                        LOGGER.error("JMSException", e);
-                    }
-
-                }
-
-                @Override
-                public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                    try {
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                                deviceResponse,
-                                t,
-                                scheduleMessageDataContainer,
-                                TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender,
-                                deviceResponse,
-                                message.getStringProperty(Constants.DOMAIN),
-                                message.getStringProperty(Constants.DOMAIN_VERSION),
-                                message.getJMSType(),
-                                message.propertyExists(Constants.IS_SCHEDULED) ? message
-                                        .getBooleanProperty(Constants.IS_SCHEDULED) : false, message
-                                        .getIntProperty(Constants.RETRY_COUNT));
-                    } catch (final JMSException e) {
-                        LOGGER.error("JMSException", e);
-                    }
-
-                }
-            };
-
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
                     deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
-                    RelayType.TARIFF);
+                    RelayType.TARIFF, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            this.deviceService.setSchedule(deviceRequest, deviceResponseHandler, ipAddress);
-
+            this.deviceService.setSchedule(deviceRequest);
         } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
+                    domainVersion, messageType, retryCount);
+        }
+    }
+
+    @Override
+    public void processSignedOslpEnvelope(final String deviceIdentification,
+            final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
+
+        final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto = signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
+        final OslpEnvelope oslpEnvelope = signedOslpEnvelopeDto.getOslpEnvelope();
+        final String correlationUid = unsignedOslpEnvelopeDto.getCorrelationUid();
+        final String organisationIdentification = unsignedOslpEnvelopeDto.getOrganisationIdentification();
+        final String domain = unsignedOslpEnvelopeDto.getDomain();
+        final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
+        final String messageType = unsignedOslpEnvelopeDto.getMessageType();
+        final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
+        final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
+        final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
+        final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) unsignedOslpEnvelopeDto
+                .getExtraData();
+
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                TariffSwitchingSetScheduleRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
+                        TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, domain,
+                        domainVersion, messageType, retryCount);
+            }
+
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
+                TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
+                        deviceResponse, t, null,
+                        TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
+                        domain, domainVersion, messageType, isScheduled, retryCount);
+            }
+
+        };
+
+        final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(), RelayType.TARIFF);
+
+        try {
+            this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,
+                    domainVersion, messageType, retryCount, isScheduled, scheduleMessageDataContainer.getPageInfo());
+        } catch (final IOException e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
                     domainVersion, messageType, retryCount);
         }

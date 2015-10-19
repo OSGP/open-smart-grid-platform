@@ -9,10 +9,13 @@ package com.alliander.osgp.adapter.protocol.oslp.infra.networking;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.lang.model.UnknownEntityException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.joda.time.Instant;
@@ -25,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.adapter.protocol.oslp.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.protocol.oslp.application.services.DeviceRegistrationService;
 import com.alliander.osgp.adapter.protocol.oslp.application.services.oslp.OslpDeviceSettingsService;
+import com.alliander.osgp.adapter.protocol.oslp.application.services.oslp.OslpSigningService;
 import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.core.db.api.application.services.DeviceDataService;
@@ -33,7 +37,9 @@ import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
 import com.alliander.osgp.oslp.Oslp.LocationInfo;
+import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.OslpEnvelope;
+import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 
 public class OslpChannelHandlerServer extends OslpChannelHandler {
 
@@ -59,8 +65,21 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
     @Autowired
     private DeviceDataService deviceDataService;
 
+    @Autowired
+    private OslpSigningService oslpSigningService;
+
+    private final ConcurrentMap<Integer, Channel> channelMap = new ConcurrentHashMap<>();
+
     public OslpChannelHandlerServer() {
         super(LOGGER);
+    }
+
+    private Channel findChannel(final Integer channelId) {
+        return this.channelMap.get(channelId);
+    }
+
+    private void cacheChannel(final Integer channelId, final Channel channel) {
+        this.channelMap.put(channelId, channel);
     }
 
     public void setDeviceManagementService(final DeviceManagementService deviceManagementService) {
@@ -93,37 +112,63 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
             } else {
                 LOGGER.info("{} Received OSLP Request: {}", channelId, message.getPayloadMessage());
 
-                final OslpEnvelope.Builder responseBuilder = new OslpEnvelope.Builder()
-                        .withSignature(this.oslpSignature).withProvider(this.oslpSignatureProvider)
-                        .withPrimaryKey(this.privateKey).withDeviceId(message.getDeviceId())
-                        .withSequenceNumber(message.getSequenceNumber());
+                // Response pay-load to send to device.
+                Message payload = null;
 
+                // Check which request the device has sent and handle it.
                 if (message.getPayloadMessage().hasRegisterDeviceRequest()) {
-                    responseBuilder.withPayloadMessage(this.handleRegisterDeviceRequest(message.getDeviceId(),
-                            message.getSequenceNumber(), message.getPayloadMessage().getRegisterDeviceRequest()));
+                    payload = this.handleRegisterDeviceRequest(message.getDeviceId(), message.getSequenceNumber(),
+                            message.getPayloadMessage().getRegisterDeviceRequest());
                 } else if (message.getPayloadMessage().hasConfirmRegisterDeviceRequest()) {
-                    responseBuilder
-                            .withPayloadMessage(this.handleConfirmRegisterDeviceRequest(message.getDeviceId(), message
-                                    .getSequenceNumber(), message.getPayloadMessage().getConfirmRegisterDeviceRequest()));
+                    payload = this.handleConfirmRegisterDeviceRequest(message.getDeviceId(),
+                            message.getSequenceNumber(), message.getPayloadMessage().getConfirmRegisterDeviceRequest());
                 } else if (message.getPayloadMessage().hasEventNotificationRequest()) {
-                    responseBuilder.withPayloadMessage(this.handleEventNotificationRequest(message.getDeviceId(),
-                            message.getSequenceNumber(), message.getPayloadMessage().getEventNotificationRequest()));
+                    payload = (this.handleEventNotificationRequest(message.getDeviceId(), message.getSequenceNumber(),
+                            message.getPayloadMessage().getEventNotificationRequest()));
                 } else {
                     LOGGER.warn("{} Received unknown payload. Received: {}.", channelId, message.getPayloadMessage()
                             .toString());
-
                     // TODO return error code to device.
+                    return;
                 }
 
-                final OslpEnvelope response = responseBuilder.build();
-                this.logMessage(response, false);
-                e.getChannel().write(response);
+                // Cache the channel so we can write the response to it later.
+                this.cacheChannel(channelId, e.getChannel());
 
-                LOGGER.info("{} Send OSLP Response: {}", channelId, response.getPayloadMessage());
+                // Send message to signing server to get our response signed.
+                this.oslpSigningService.buildAndSignEnvelope(message.getDeviceId(), message.getSequenceNumber(),
+                        payload, channelId, this);
             }
         } else {
             LOGGER.warn("{} Received message wasn't properly secured.", channelId);
         }
+    }
+
+    /**
+     * Called when a signed OSLP envelope arrives from signing server. The
+     * envelope will be sent to the device which is waiting for a response. The
+     * channel for the waiting device should be present in the channelMap.
+     *
+     * @param signedOslpEnvelopeDto
+     *            DTO containing signed OslpEnvelope.
+     */
+    public void processSignedOslpEnvelope(final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
+
+        // Try to find the channel.
+        final Integer channelId = Integer.parseInt(signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto()
+                .getCorrelationUid());
+        final Channel channel = this.findChannel(channelId);
+        if (channel == null) {
+            LOGGER.error("Unable to find channel for channelId: {}. Can't send response message to device.", channelId);
+            return;
+        }
+
+        // Get signed envelope, log it and send it to device.
+        final OslpEnvelope response = signedOslpEnvelopeDto.getOslpEnvelope();
+        this.logMessage(response, false);
+        channel.write(response);
+
+        LOGGER.info("{} Send OSLP Response: {}", channelId, response.getPayloadMessage());
     }
 
     private Oslp.Message handleRegisterDeviceRequest(final byte[] deviceUid, final byte[] sequenceNumber,
@@ -189,9 +234,9 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
                 .newBuilder()
                 .setConfirmRegisterDeviceResponse(
                         Oslp.ConfirmRegisterDeviceResponse.newBuilder().setStatus(Oslp.Status.OK)
-                                .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
-                                .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
-                                .setSequenceWindow(this.sequenceNumberWindow)).build();
+                        .setRandomDevice(confirmRegisterDeviceRequest.getRandomDevice())
+                        .setRandomPlatform(confirmRegisterDeviceRequest.getRandomPlatform())
+                        .setSequenceWindow(this.sequenceNumberWindow)).build();
     }
 
     private Oslp.Message handleEventNotificationRequest(final byte[] deviceId, final byte[] sequenceNumber,

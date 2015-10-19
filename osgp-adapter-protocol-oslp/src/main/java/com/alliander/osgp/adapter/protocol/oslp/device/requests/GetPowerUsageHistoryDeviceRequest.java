@@ -24,6 +24,16 @@ public class GetPowerUsageHistoryDeviceRequest extends DeviceRequest {
         this.historyTermType = historyTermType;
     }
 
+    public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification,
+            final String deviceIdentification, final String correlationUid, final TimePeriod timePeriod,
+            final HistoryTermType historyTermType, final String domain, final String domainVersion,
+            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
+        super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
+                ipAddress, retryCount, isScheduled);
+        this.timePeriod = timePeriod;
+        this.historyTermType = historyTermType;
+    }
+
     public TimePeriod getTimePeriod() {
         return this.timePeriod;
     }
