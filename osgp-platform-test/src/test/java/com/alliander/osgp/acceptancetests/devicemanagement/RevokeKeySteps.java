@@ -148,7 +148,7 @@ public class RevokeKeySteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
 
     }
 
@@ -160,8 +160,6 @@ public class RevokeKeySteps {
 
         try {
             this.response = this.deviceManagementEndpoint.revokeKey(ORGANISATION_ID, this.request);
-
-            // /Thread.sleep(1000);
 
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
