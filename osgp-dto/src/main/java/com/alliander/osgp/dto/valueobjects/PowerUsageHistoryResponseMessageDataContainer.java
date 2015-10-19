@@ -20,9 +20,7 @@ public class PowerUsageHistoryResponseMessageDataContainer implements Serializab
     private static final long serialVersionUID = 105839711150545288L;
 
     private List<PowerUsageData> powerUsageData;
-    private int itemCount;
-    private int numberOfPages;
-    private int currentPage;
+    private PageInfo pageInfo;
     private DateTime startTime;
     private DateTime endTime;
     private HistoryTermType historyTermType;
@@ -40,28 +38,12 @@ public class PowerUsageHistoryResponseMessageDataContainer implements Serializab
         return this.powerUsageData;
     }
 
-    public int getItemCount() {
-        return this.itemCount;
+    public PageInfo getPageInfo() {
+        return this.pageInfo;
     }
 
-    public void setItemCount(final int itemCount) {
-        this.itemCount = itemCount;
-    }
-
-    public int getNumberOfPages() {
-        return this.numberOfPages;
-    }
-
-    public void setNumberOfPages(final int numberOfPages) {
-        this.numberOfPages = numberOfPages;
-    }
-
-    public int getCurrentPage() {
-        return this.currentPage;
-    }
-
-    public void setCurrentPage(final int currentPage) {
-        this.currentPage = currentPage;
+    public void setPageInfo(final PageInfo pageInfo) {
+        this.pageInfo = pageInfo;
     }
 
     public DateTime getStartTime() {
