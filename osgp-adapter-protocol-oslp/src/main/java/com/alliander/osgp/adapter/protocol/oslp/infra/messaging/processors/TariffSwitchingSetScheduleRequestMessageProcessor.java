@@ -34,7 +34,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpTariffSwitchingSetScheduleRequestMessageProcessor")
 public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -136,7 +136,8 @@ OslpEnvelopeProcessor {
         };
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(), RelayType.TARIFF);
+                deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(), RelayType.TARIFF,
+                domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         try {
             this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,
