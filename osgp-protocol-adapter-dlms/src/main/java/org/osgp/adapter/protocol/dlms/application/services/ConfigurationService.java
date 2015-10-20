@@ -90,15 +90,16 @@ public class ConfigurationService {
             GprsOperationModeType GprsOperationModeType = configurationObject.getGprsOperationMode();
             ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
+            LOGGER.info("******************************************************");
             LOGGER.info("Configuration Object   ******************************");
             LOGGER.info("******************************************************");
             LOGGER.info("Configuration Object operation mode:{} ", GprsOperationModeType.value());
             LOGGER.info("******************************************************");
-            LOGGER.info("Flags   ********************************************");
+            LOGGER.info("Flags:   ********************************************");
 
             for (ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
-                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag
-                        .getConfigurationFlagType().toString());
+                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag.getConfigurationFlagType().toString());
+                LOGGER.info("Configuration Object configuration flag enabled:{} ", configurationFlag.isEnabled());
                 LOGGER.info("******************************************************");
             }
 
