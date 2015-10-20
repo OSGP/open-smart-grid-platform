@@ -15,14 +15,14 @@ As an operator I want to create a new user
 |given|a valid organisation with organisationIdentification                         |
 |when |creating a user that already exists in WebUserManagement database            |
 |then |the user is not added to the WebUserManagement database                      |
-|and  |the operator receives an error message indicating that the sueralready exists|
+|and  |the operator receives an error message indicating that the user already exists|
 
 
 !2 Scenario: Operator creates a user with an invalid organisation identification
 
 |given|an invalid organisation organisationIdentification                           |
-|when |creating an organisation with an invalid organization identification         |
-|then |the organisation is not added to the platform due to the invalid organisation|
+|when |creating an user with an invalid organization identification         |
+|then |the user is not added to the WebUserManagement database due to the invalid organisation|
 |and  |the operator will receive an error message                                   |
 
 
@@ -31,3 +31,19 @@ As an operator I want to create a new user
 |given|a valid organisation with organisationIdentification             |
 |when |the operator views the list of users of a particular organisation|
 |then |a list of users of the particular organisation is returned       |
+
+
+!2 Scenario: Operator creates a user with an invalid password (the password is not strong enough according to the regex validation)
+
+|given|a valid organisation organisationIdentification                           |
+|when |creating a user with a simple password like '1234'         |
+|then |the user is not added to the WebUserManagement database |
+|and  |the operator will receive an validation message     |
+
+
+!2 Scenario: Operator changes the password for a user to an invalid password (the password is not strong enough according to the regex validation)
+
+|given|a valid organisation organisationIdentification                           |
+|when |changing the password for a user to a simple password like '1234'         |
+|then |the user's new password is not saved to the WebUserManagement database |
+|and  |the operator will receive an validation message     |
