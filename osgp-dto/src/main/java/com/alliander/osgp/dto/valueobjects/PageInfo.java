@@ -22,10 +22,20 @@ public class PageInfo implements Serializable {
 
     private final Integer totalPages;
 
+    private final Integer itemCount;
+
     public PageInfo(final Integer currentPage, final Integer pageSize, final Integer totalPages) {
         this.currentPage = currentPage;
         this.pageSize = pageSize;
         this.totalPages = totalPages;
+        this.itemCount = -1;
+    }
+
+    public PageInfo(final Integer currentPage, final Integer pageSize, final Integer totalPages, final Integer itemCount) {
+        this.currentPage = currentPage;
+        this.pageSize = pageSize;
+        this.totalPages = totalPages;
+        this.itemCount = itemCount;
     }
 
     public Integer getCurrentPage() {
@@ -38,5 +48,9 @@ public class PageInfo implements Serializable {
 
     public Integer getTotalPages() {
         return this.totalPages;
+    }
+
+    public Integer getItemCount() {
+        return this.itemCount;
     }
 }

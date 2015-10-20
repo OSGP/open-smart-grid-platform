@@ -10,6 +10,8 @@ package com.alliander.osgp.dto.valueobjects;
 import java.io.Serializable;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 public class PowerUsageHistoryResponseMessageDataContainer implements Serializable {
 
     /**
@@ -18,6 +20,10 @@ public class PowerUsageHistoryResponseMessageDataContainer implements Serializab
     private static final long serialVersionUID = 105839711150545288L;
 
     private List<PowerUsageData> powerUsageData;
+    private PageInfo pageInfo;
+    private DateTime startTime;
+    private DateTime endTime;
+    private HistoryTermType historyTermType;
 
     public PowerUsageHistoryResponseMessageDataContainer(final List<PowerUsageData> powerUsageData) {
 
@@ -30,5 +36,37 @@ public class PowerUsageHistoryResponseMessageDataContainer implements Serializab
 
     public List<PowerUsageData> getPowerUsageData() {
         return this.powerUsageData;
+    }
+
+    public PageInfo getPageInfo() {
+        return this.pageInfo;
+    }
+
+    public void setPageInfo(final PageInfo pageInfo) {
+        this.pageInfo = pageInfo;
+    }
+
+    public DateTime getStartTime() {
+        return this.startTime;
+    }
+
+    public void setStartTime(final DateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public DateTime getEndTime() {
+        return this.endTime;
+    }
+
+    public void setEndTime(final DateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public HistoryTermType getHistoryTermType() {
+        return this.historyTermType;
+    }
+
+    public void setHistoryTermType(final HistoryTermType historyTermType) {
+        this.historyTermType = historyTermType;
     }
 }
