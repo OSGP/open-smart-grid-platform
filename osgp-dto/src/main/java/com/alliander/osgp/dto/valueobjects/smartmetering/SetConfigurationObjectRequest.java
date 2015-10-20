@@ -34,5 +34,4 @@ public class SetConfigurationObjectRequest implements Serializable {
     public void setSetConfigurationObjectRequestData(SetConfigurationObjectRequestData setConfigurationObjectRequestData) {
         this.setConfigurationObjectRequestData = setConfigurationObjectRequestData;
     }
-
 }

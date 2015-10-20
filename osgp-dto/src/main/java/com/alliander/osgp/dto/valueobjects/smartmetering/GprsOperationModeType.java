@@ -9,23 +9,16 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public enum ConfigurationType {
-    DISCOVER_ON_OPEN_COVER,
-    DISCOVER_ON_POWER_ON,
-    DYNAMIC_MBUS_ADDRESS,
-    PO_ENABLE,
-    HLS_3_ON_P3_ENABLE,
-    HLS_4_ON_P3_ENABLE,
-    HLS_5_ON_P3_ENABLE,
-    HLS_3_ON_PO_ENABLE,
-    HLS_4_ON_PO_ENABLE,
-    HLS_5_ON_PO_ENABLE;
+public enum GprsOperationModeType {
+
+    ALWAYS_ON,
+    TRIGGERED;
 
     public String value() {
-        return this.name();
+        return name();
     }
 
-    public static ConfigurationType fromValue(final String v) {
+    public static GprsOperationModeType fromValue(String v) {
         return valueOf(v);
     }
 }
