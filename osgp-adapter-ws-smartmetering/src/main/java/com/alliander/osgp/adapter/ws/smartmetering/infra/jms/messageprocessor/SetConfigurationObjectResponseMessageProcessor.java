@@ -35,7 +35,7 @@ public class SetConfigurationObjectResponseMessageProcessor extends DomainRespon
     private NotificationService notificationService;
 
     protected SetConfigurationObjectResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_SET_CONFIGURATION_OBJECT);
+        super(DeviceFunction.SET_CONFIGURATION_OBJECT);
     }
 
     @Override

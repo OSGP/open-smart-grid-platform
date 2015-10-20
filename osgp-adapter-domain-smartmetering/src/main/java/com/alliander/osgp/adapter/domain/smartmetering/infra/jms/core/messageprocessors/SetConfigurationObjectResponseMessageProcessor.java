@@ -39,7 +39,7 @@ public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
     private ConfigurationService configurationService;
 
     protected SetConfigurationObjectResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_SET_CONFIGURATION_OBJECT);
+        super(DeviceFunction.SET_CONFIGURATION_OBJECT);
     }
     
     @Override

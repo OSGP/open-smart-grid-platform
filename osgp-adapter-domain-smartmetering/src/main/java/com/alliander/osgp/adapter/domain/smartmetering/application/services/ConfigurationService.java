@@ -19,11 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -46,6 +49,9 @@ public class ConfigurationService {
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
+    @Autowired
+    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+
     public ConfigurationService() {
         // Parameterless constructor required for transactions...
     }
@@ -60,23 +66,21 @@ public class ConfigurationService {
         LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
+        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
 
-        // TODO deviceAuthorization
-        // final DeviceAuthorization deviceAuthorization = new
-        // DeviceAuthorization(duMy, organisation,
-        // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
-        // this.deviceAuthorizationRepository.save(deviceAuthorization);
+        if (device == null) {
+            LOGGER.info("Unknown device.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
+        } else {
+            LOGGER.info("Sending request message to core.");
 
-        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequest.class);
+            final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(
+                    specialDaysRequestValueObject, SpecialDaysRequest.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, specialDaysRequestDto), messageType);
-
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, specialDaysRequestDto), messageType);
+        }
     }
 
     public void requestSetConfigurationObject(
@@ -89,23 +93,22 @@ public class ConfigurationService {
         LOGGER.info("requestSetConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
+        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
 
-        // TODO deviceAuthorization
-        // final DeviceAuthorization deviceAuthorization = new
-        // DeviceAuthorization(duMy, organisation,
-        // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
-        // this.deviceAuthorizationRepository.save(deviceAuthorization);
+        if (device == null) {
+            LOGGER.info("Unknown device.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
+        } else {
+            LOGGER.info("Sending request message to core.");
 
-        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
+            final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
+                    setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, setConfigurationObjectRequestDto), messageType);
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, setConfigurationObjectRequestDto), messageType);
 
+        }
     }
 
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,

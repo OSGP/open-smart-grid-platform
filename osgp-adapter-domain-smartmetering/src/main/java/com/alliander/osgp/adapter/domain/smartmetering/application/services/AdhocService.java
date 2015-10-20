@@ -19,10 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -45,6 +48,9 @@ public class AdhocService {
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
+    @Autowired
+    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+
     public AdhocService() {
         // Parameterless constructor required for transactions...
     }
@@ -59,27 +65,22 @@ public class AdhocService {
         LOGGER.info("requestSynchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
+        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
 
-        // TODO deviceAuthorization
-        // final DeviceAuthorization deviceAuthorization = new
-        // DeviceAuthorization(duMy, organisation,
-        // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
-        // this.deviceAuthorizationRepository.save(deviceAuthorization);
+        if (device == null) {
+            LOGGER.info("Unknown device.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
+        } else {
+            LOGGER.info("Sending request message to core.");
 
-        final SynchronizeTimeRequest synchronizeTimeRequestDto = this.adhocMapper.map(
-                synchronizeTimeRequestValueObject, SynchronizeTimeRequest.class);
+            final SynchronizeTimeRequest synchronizeTimeRequestDto = this.adhocMapper.map(
+                    synchronizeTimeRequestValueObject, SynchronizeTimeRequest.class);
 
-        // this.osgpCoreRequestMessageSender.send(new
-        // RequestMessage(correlationUid, organisationIdentification,
-        // deviceIdentification, synchronizeTimeRequestDto), messageType);
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, synchronizeTimeRequestDto), messageType);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, synchronizeTimeRequestDto), messageType);
-
+        }
     }
 
     public void handleSynchronizeTimeresponse(final String deviceIdentification,

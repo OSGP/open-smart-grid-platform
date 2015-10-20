@@ -6,7 +6,6 @@
 	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
 	attributeFormDefault="unqualified" elementFormDefault="qualified"
 	targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">
-
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
@@ -105,19 +104,34 @@
 		<xsd:complexContent>
 			<xsd:extension base="tns:Command">
 				<xsd:sequence>
-					<xsd:element name="Configuration" minOccurs="0" type="tns:Configurations" />
+					<xsd:element name="configurationObject" type="tns:ConfigurationObject" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
-	<xsd:complexType name="Configurations">
-		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
-			<xsd:element name="Configuration" type="tns:ConfigurationType" />
+
+	<xsd:complexType name="ConfigurationObject">
+		<xsd:sequence>
+			<xsd:element name="gprsOperationMode" type="tns:GprsOperationModeType" />
+			<xsd:element name="configurationFlags" type="tns:ConfigurationFlags" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ConfigurationFlags">
+		<xsd:sequence minOccurs="1" maxOccurs="10">
+			<xsd:element name="configurationFlag" type="tns:ConfigurationFlag" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
-	<xsd:simpleType name="ConfigurationType">
+	<xsd:complexType name="ConfigurationFlag">
+		<xsd:sequence>
+			<xsd:element name="configurationFlagType" type="tns:ConfigurationFlagType" />
+			<xsd:element name="enabled" type="xsd:boolean" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!--  ConfigurationObjectFlagType-->
+	<xsd:simpleType name="ConfigurationFlagType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="DISCOVER_ON_OPEN_COVER" />
 			<xsd:enumeration value="DISCOVER_ON_POWER_ON" />
@@ -132,16 +146,17 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="DeviceIdentification">
-		<xsd:restriction base="tns:AlphaNumericType">
-			<xsd:length value="17" />
+	<xsd:simpleType name="GprsOperationModeType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ALWAYS_ON" />
+			<xsd:enumeration value="TRIGGERED" />
 		</xsd:restriction>
 	</xsd:simpleType>
-
+	
 	<xsd:simpleType name="AlphaNumericType">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[a-zA-Z0-9 ]+" />
 		</xsd:restriction>
 	</xsd:simpleType>
-
+	
 </xsd:schema>

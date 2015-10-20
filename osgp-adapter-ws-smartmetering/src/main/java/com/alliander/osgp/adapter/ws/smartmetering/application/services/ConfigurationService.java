@@ -36,7 +36,7 @@ public class ConfigurationService {
 
     public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -64,8 +64,8 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_SET_CONFIGURATION_OBJECT, correlationUid,
-                organisationIdentification, deviceIdentification, requestData);
+                SmartMeteringRequestMessageType.SET_CONFIGURATION_OBJECT, correlationUid, organisationIdentification,
+                deviceIdentification, requestData);
 
         this.smartMeteringRequestMessageSender.send(message);
 

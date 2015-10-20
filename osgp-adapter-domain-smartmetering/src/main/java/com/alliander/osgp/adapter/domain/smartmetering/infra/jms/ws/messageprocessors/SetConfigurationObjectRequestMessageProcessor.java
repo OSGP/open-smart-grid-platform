@@ -34,7 +34,7 @@ public class SetConfigurationObjectRequestMessageProcessor extends WebServiceReq
     private ConfigurationService configurationService;
 
     protected SetConfigurationObjectRequestMessageProcessor() {
-        super(DeviceFunction.REQUEST_SET_CONFIGURATION_OBJECT);
+        super(DeviceFunction.SET_CONFIGURATION_OBJECT);
     }
 
     @Override
