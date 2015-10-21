@@ -64,6 +64,13 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 		
+	<xsd:complexType name="Command" abstract="true">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Action">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="AsyncRequest">
 		<xsd:sequence>
 			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" minOccurs="1" maxOccurs="1" />

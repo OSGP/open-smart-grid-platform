@@ -3,7 +3,7 @@
 
 <wsdl:definitions 
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:sminst="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
+    xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
     xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-configuration-v1.0"
@@ -27,19 +27,29 @@
     </wsdl:message>
     
     <wsdl:message name="SpecialDaysRequest">
-        <wsdl:part element="sminst:SpecialDaysRequest" name="SpecialDaysRequest">
+        <wsdl:part element="smconf:SpecialDaysRequest" name="SpecialDaysRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SpecialDaysResponse">
-        <wsdl:part element="sminst:SpecialDaysResponse" name="SpecialDaysResponse">
+        <wsdl:part element="smconf:SpecialDaysResponse" name="SpecialDaysResponse">
         </wsdl:part>
     </wsdl:message>
+
+    <wsdl:message name="SetAlarmNotificationsResponse">
+        <wsdl:part element="smconf:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetAlarmNotificationsRequest">
+        <wsdl:part element="smconf:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    
     <wsdl:message name="SetConfigurationObjectRequest">
-        <wsdl:part element="sminst:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
+        <wsdl:part element="smconf:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SetConfigurationObjectResponse">
-        <wsdl:part element="sminst:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
+        <wsdl:part element="smconf:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
         </wsdl:part>
     </wsdl:message>
 
@@ -57,6 +67,13 @@
             <wsdl:output message="tns:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
             </wsdl:output>
         </wsdl:operation>
+
+		<wsdl:operation name="SetAlarmNotifications">
+            <wsdl:input message="tns:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
+            </wsdl:output>
+		</wsdl:operation>
     </wsdl:portType>
 
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
@@ -86,6 +103,20 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+
+		<wsdl:operation name="SetAlarmNotifications">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetAlarmNotificationsRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetAlarmNotificationsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
     </wsdl:binding>
     
     <wsdl:service name="SmartmeterconfigurationPortService">

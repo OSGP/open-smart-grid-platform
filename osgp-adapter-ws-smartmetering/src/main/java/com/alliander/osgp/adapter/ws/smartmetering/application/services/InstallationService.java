@@ -44,7 +44,7 @@ public class InstallationService {
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -80,5 +80,4 @@ public class InstallationService {
             throws FunctionalException {
         return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(), device);
     }
-
 }

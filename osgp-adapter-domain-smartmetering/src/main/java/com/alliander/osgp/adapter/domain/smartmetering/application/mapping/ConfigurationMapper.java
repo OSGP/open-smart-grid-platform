@@ -30,5 +30,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
                         com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest.class)
                 .byDefault().register();
 
+        mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
     }
 }

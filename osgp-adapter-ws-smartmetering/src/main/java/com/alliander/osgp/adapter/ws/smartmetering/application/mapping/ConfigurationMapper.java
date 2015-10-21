@@ -31,6 +31,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         .classMap(SetConfigurationObjectRequest.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class)
                 .byDefault().register();
-
+        mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
     }
 }

@@ -34,7 +34,9 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
+	<!-- DATATYPES -->
+
 	<xsd:complexType name="Device">
 		<xsd:sequence>
 			<xsd:element name="Device_Identification" minOccurs="0">
