@@ -24,5 +24,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
                         com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
                 .register();
 
+        mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
     }
 }

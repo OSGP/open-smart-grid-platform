@@ -32,7 +32,7 @@
         <wsdl:part element="sminst:AddDeviceRequest" name="AddDeviceRequest">
         </wsdl:part>
     </wsdl:message>
-    
+
     <wsdl:portType name="SmartmeterInstallationPort">
    
         <wsdl:operation name="AddDevice">
