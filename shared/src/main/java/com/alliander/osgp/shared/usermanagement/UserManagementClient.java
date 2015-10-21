@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.TrustManagerFactory;
@@ -238,7 +237,7 @@ public class UserManagementClient extends AbstractClient {
      */
     public String changePassword(final String organisationIdentificationForUser, final String username,
             final String newPassword, final String organisationIdentification, final String token)
-                    throws UserManagementClientException {
+            throws UserManagementClientException {
 
         final ChangeUserPasswordRequest changeUserPasswordRequest = new ChangeUserPasswordRequest(
                 organisationIdentificationForUser, username, newPassword);
@@ -282,25 +281,23 @@ public class UserManagementClient extends AbstractClient {
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
      */
-    public String addNewUser(final String organisationIdentificationForUser, final String username,
-            final String password, final String role, final String applications,
-            final String organisationIdentification, final String token) throws UserManagementClientException {
+    public String addNewUser(final User user, final String organisationIdentification, final String token)
+            throws UserManagementClientException {
 
-        final AddNewUserRequest addNewUserRequest = new AddNewUserRequest(organisationIdentificationForUser, username,
-                password, role, applications);
+        final AddNewUserRequest addNewUserRequest = new AddNewUserRequest(user);
 
         final Response response = this.getWebClientInstance()
-                .path(this.organisationPath + organisationIdentificationForUser + this.addNewUserPath)
+                .path(this.organisationPath + user.getOrganisationIdentification() + this.addNewUserPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(addNewUserRequest);
 
-        String user;
+        String userResponse;
         try {
-            user = this.checkResponse(response);
+            userResponse = this.checkResponse(response);
         } catch (final ResponseException e) {
             throw new UserManagementClientException("add new user response exception", e);
         }
 
-        return user;
+        return userResponse;
     }
 
     /**
@@ -367,17 +364,13 @@ public class UserManagementClient extends AbstractClient {
      *             In case the response is null, the HTTP status code is not
      *             equal to 200 OK or if the response body is empty.
      */
-    public String changeUserData(final String organisationIdentificationForUser, final String username,
-            final String newUsername, final String newFirstName, final String newMiddleName, final String newLastName,
-            final String newEmailAddress, final String newPassword, final String newRole, final String newApplications,
-            final Date newStartDate, final Date newExpiryDateContract, final Date newExpiryDateBEIInstruction,
-            final String organisationIdentification, final String token) throws UserManagementClientException {
+    public String changeUserData(final ChangeUser changeUser, final String organisationIdentification,
+            final String token) throws UserManagementClientException {
 
-        final ChangeUserRequest changeUserRequest = new ChangeUserRequest(organisationIdentificationForUser, username,
-                newUsername, newFirstName, newMiddleName, newLastName, newEmailAddress, newPassword, newRole,
-                newApplications, newStartDate, newExpiryDateContract, newExpiryDateBEIInstruction);
+        final ChangeUserRequest changeUserRequest = new ChangeUserRequest(changeUser);
 
-        final Response response = this.getWebClientInstance().path(this.userPath + username + this.changeUserDataPath)
+        final Response response = this.getWebClientInstance()
+                .path(this.userPath + changeUser.getUsername() + this.changeUserDataPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(changeUserRequest);
 
         String apiResponse;

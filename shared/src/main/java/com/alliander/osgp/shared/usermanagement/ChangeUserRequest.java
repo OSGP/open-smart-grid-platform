@@ -14,9 +14,9 @@ public class ChangeUserRequest {
     private String organisationIdentificationForUser;
     private String username;
     private String newUsername;
-    private String newFirstname;
-    private String newMiddlename;
-    private String newLastname;
+    private String newFirstName;
+    private String newMiddleName;
+    private String newLastName;
     private String newEmailAddress;
     private String newPassword;
     private String newRole;
@@ -29,23 +29,20 @@ public class ChangeUserRequest {
 
     }
 
-    public ChangeUserRequest(final String organisationIdentificationForUser, final String username,
-            final String newUsername, final String newFirstname, final String newMiddlename, final String newLastname,
-            final String newEmailAddress, final String newPassword, final String newRole, final String newApplications,
-            final Date newStartDate, final Date newExpiryDateContract, final Date newExpiryDateBEIInstruction) {
-        this.organisationIdentificationForUser = organisationIdentificationForUser;
-        this.username = username;
-        this.newFirstname = newFirstname;
-        this.newMiddlename = newMiddlename;
-        this.newLastname = newLastname;
-        this.newEmailAddress = newEmailAddress;
-        this.newUsername = newUsername;
-        this.newPassword = newPassword;
-        this.newRole = newRole;
-        this.newApplications = newApplications;
-        this.newStartDate = newStartDate;
-        this.newExpiryDateContract = newExpiryDateContract;
-        this.newExpiryDateBEIInstruction = newExpiryDateBEIInstruction;
+    public ChangeUserRequest(final ChangeUser changeUser) {
+        this.organisationIdentificationForUser = changeUser.getOrganisationIdentification();
+        this.username = changeUser.getUsername();
+        this.newFirstName = changeUser.getNewFirstName();
+        this.newMiddleName = changeUser.getNewMiddleName();
+        this.newLastName = changeUser.getNewLastName();
+        this.newEmailAddress = changeUser.getNewEmailAddress();
+        this.newUsername = changeUser.getNewUsername();
+        this.newPassword = changeUser.getNewPassword();
+        this.newRole = changeUser.getNewRole();
+        this.newApplications = changeUser.getNewApplications();
+        this.newStartDate = changeUser.getStartDate();
+        this.newExpiryDateContract = changeUser.getExpiryDateContract();
+        this.newExpiryDateBEIInstruction = changeUser.getExpiryDateBEIInstruction();
     }
 
     public String getOrganisationIdentificationForUser() {
@@ -72,16 +69,16 @@ public class ChangeUserRequest {
         return this.newApplications;
     }
 
-    public String getNewFirstname() {
-        return this.newFirstname;
+    public String getNewFirstName() {
+        return this.newFirstName;
     }
 
-    public String getNewMiddlename() {
-        return this.newMiddlename;
+    public String getNewMiddleName() {
+        return this.newMiddleName;
     }
 
-    public String getNewLastname() {
-        return this.newLastname;
+    public String getNewLastName() {
+        return this.newLastName;
     }
 
     public String getNewEmailAddress() {
