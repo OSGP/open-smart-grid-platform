@@ -1,4 +1,4 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = feat-set-alarm-notifications
+	branch = feat-smartmeter-mbus-autoscan
