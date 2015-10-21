@@ -17,6 +17,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
@@ -49,7 +50,7 @@ public class ConfigurationService {
 
         try {
             // The Special days towards the Smart Meter
-            SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
+            final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
 
             LOGGER.info("SpecialDaysRequest : {}", specialDaysRequest.getSpecialDaysRequestData());
             for (final SpecialDay specialDay : specialDaysRequestData.getSpecialDays()) {
@@ -116,6 +117,39 @@ public class ConfigurationService {
         }
     }
 
+    public void setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final AlarmNotifications alarmNotifications,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
+
+        LOGGER.info("setAlarmNotifications called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        try {
+
+            LOGGER.info("*******************************************************");
+            LOGGER.info("*********** Set Alarm Notifications *******************");
+            LOGGER.info("*******************************************************");
+            LOGGER.info("*******************************************************");
+            LOGGER.info("*********   Device:       {}   *******", deviceIdentification);
+            LOGGER.info("*********   Alarm Notifications:       {}   *******", alarmNotifications);
+            LOGGER.info("************************************************************");
+            LOGGER.info("************************************************************");
+            LOGGER.info("************************************************************");
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setAlarmNotifications", e);
+            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        }
+    }
+
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException,
@@ -127,5 +161,4 @@ public class ConfigurationService {
 
         responseMessageSender.send(responseMessage);
     }
-
 }
