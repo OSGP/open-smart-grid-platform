@@ -30,7 +30,8 @@ public enum FunctionalExceptionType {
     VALIDATION_ERROR(401, "Validation error."),
     TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD(402, "Set tariff schedule is not allowed for PSLD."),
     ARGUMENT_NULL(403, "Argument null."),
-    JMS_TEMPLATE_NULL(404, "JSM template was null. Restart server.");
+    JMS_TEMPLATE_NULL(404, "JSM template was null. Restart server."),
+    UNKNOWN_CORRELATION_UID(405, "No results found for the given correlation uid.");
 
     private int code;
     private String message;
