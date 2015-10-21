@@ -71,7 +71,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
 
-            data = (PeriodicMeterReadContainer) objectMessage.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -85,14 +84,23 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            // Convert the events to entity and save the periodicMeterReads
-            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
-                    deviceIdentification, correlationUid, data);
-            this.meterResponseDataRepository.save(meterResponseData);
+            final Object dataObject = objectMessage.getObject();
+            if (dataObject instanceof Exception) {
+                this.handleError((Exception) dataObject, correlationUid, organisationIdentification,
+                        deviceIdentification, notificationType);
+            } else {
 
-            // Notifying
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
-                    correlationUid, message, notificationType);
+                data = (PeriodicMeterReadContainer) dataObject;
+
+                // Convert the events to entity and save the periodicMeterReads
+                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
+                        messageType, deviceIdentification, correlationUid, data);
+                this.meterResponseDataRepository.save(meterResponseData);
+
+                // Notifying
+                this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
+                        correlationUid, message, notificationType);
+            }
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
