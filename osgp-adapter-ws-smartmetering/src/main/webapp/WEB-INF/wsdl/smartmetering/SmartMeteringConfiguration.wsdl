@@ -26,8 +26,6 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
-    <!-- REQUEST_SPECIAL_DAYS -->
-    
     <wsdl:message name="SpecialDaysRequest">
         <wsdl:part element="smconf:SpecialDaysRequest" name="SpecialDaysRequest">
         </wsdl:part>
@@ -45,13 +43,28 @@
         <wsdl:part element="smconf:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
         </wsdl:part>
     </wsdl:message>
+    
+    <wsdl:message name="SetConfigurationObjectRequest">
+        <wsdl:part element="smconf:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetConfigurationObjectResponse">
+        <wsdl:part element="smconf:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
+        </wsdl:part>
+    </wsdl:message>
 
     <wsdl:portType name="SmartmeterconfigurationPort">
-   
         <wsdl:operation name="RequestSpecialDays">
             <wsdl:input message="tns:SpecialDaysRequest" name="SpecialDaysRequest">
             </wsdl:input>
             <wsdl:output message="tns:SpecialDaysResponse" name="SpecialDaysResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="SetConfigurationObject">
+            <wsdl:input message="tns:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -61,12 +74,10 @@
             <wsdl:output message="tns:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
             </wsdl:output>
 		</wsdl:operation>
-
     </wsdl:portType>
-    
+
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-
         <wsdl:operation name="RequestSpecialDays">
             <soap:operation soapAction="" />
             <wsdl:input name="SpecialDaysRequest">
@@ -79,8 +90,21 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+        
+        <wsdl:operation name="SetConfigurationObject">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetConfigurationObjectRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetConfigurationObjectResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
 
-        <wsdl:operation name="SetAlarmNotifications">
+		<wsdl:operation name="SetAlarmNotifications">
             <soap:operation soapAction="" />
             <wsdl:input name="SetAlarmNotificationsRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
@@ -94,6 +118,7 @@
         </wsdl:operation>
 
     </wsdl:binding>
+    
     <wsdl:service name="SmartmeterconfigurationPortService">
         <wsdl:port binding="tns:SmartmeterconfigurationPortSoap11" name="SmartmeterconfigurationPortSoap11">
             <soap:address
