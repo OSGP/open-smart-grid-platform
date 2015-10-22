@@ -6,26 +6,37 @@
 	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
 	attributeFormDefault="unqualified" elementFormDefault="qualified"
 	targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">
-
+	
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
 	<xsd:element name="SpecialDaysRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Device_Identification" minOccurs="1" maxOccurs="1">
-					<xsd:simpleType>
-						<xsd:restriction base="common:AlphaNumericType">
-							<xsd:length value="17" />
-						</xsd:restriction>
-					</xsd:simpleType>
-				</xsd:element>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
 				<xsd:element name="SpecialDaysRequestData" type="tns:SpecialDaysRequestData" minOccurs="1" maxOccurs="1" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
 	<xsd:element name="SpecialDaysResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="SetConfigurationObjectRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				<xsd:element name="SetConfigurationObjectRequestData" type="tns:SetConfigurationObjectRequestData" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="SetConfigurationObjectResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
@@ -74,6 +85,16 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="dayId" type="xsd:int" />
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	<xsd:complexType name="SetConfigurationObjectRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="ConfigurationObject" type="tns:ConfigurationObject" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<xsd:complexType name="SetAlarmNotificationsRequestData">
 		<xsd:complexContent>
@@ -85,6 +106,49 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="ConfigurationObject">
+		<xsd:sequence>
+			<xsd:element name="GprsOperationMode" type="tns:GprsOperationModeType" />
+			<xsd:element name="ConfigurationFlags" type="tns:ConfigurationFlags" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ConfigurationFlags">
+		<xsd:sequence minOccurs="1" maxOccurs="10">
+			<xsd:element name="ConfigurationFlag" type="tns:ConfigurationFlag" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ConfigurationFlag">
+		<xsd:sequence>
+			<xsd:element name="ConfigurationFlagType" type="tns:ConfigurationFlagType" />
+			<xsd:element name="Enabled" type="xsd:boolean" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<!--  ConfigurationObjectFlagType-->
+	<xsd:simpleType name="ConfigurationFlagType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="DISCOVER_ON_OPEN_COVER" />
+			<xsd:enumeration value="DISCOVER_ON_POWER_ON" />
+			<xsd:enumeration value="DYNAMIC_MBUS_ADDRESS" />
+			<xsd:enumeration value="PO_ENABLE" />
+			<xsd:enumeration value="HLS_3_ON_P3_ENABLE" />
+			<xsd:enumeration value="HLS_4_ON_P3_ENABLE" />
+			<xsd:enumeration value="HLS_5_ON_P3_ENABLE" />
+			<xsd:enumeration value="HLS_3_ON_PO_ENABLE" />
+			<xsd:enumeration value="HLS_4_ON_PO_ENABLE" />
+			<xsd:enumeration value="HLS_5_ON_PO_ENABLE" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="GprsOperationModeType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ALWAYS_ON" />
+			<xsd:enumeration value="TRIGGERED" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 	<xsd:complexType name="AlarmNotifications">
 		<xsd:sequence maxOccurs="unbounded">
 			<xsd:element name="AlarmNotification" type="tns:AlarmNotification" />
@@ -124,5 +188,5 @@
 			<xsd:enumeration value="NEW_M_BUS_DEVISE_DISCOVERED_CHANNEL_4" />
 		</xsd:restriction>
 	</xsd:simpleType>
-
+	
 </xsd:schema>
