@@ -12,6 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -59,9 +64,53 @@ public class ConfigurationService {
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during synchronizeTime", e);
+            LOGGER.error("Unexpected exception during set special days", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during synchronizeTime", e);
+                    "Unexpected exception during set special days", e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        }
+    }
+
+    // === REQUEST Configuration Object DATA ===
+
+    public void requestSetConfiguration(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SetConfigurationObjectRequest setConfigurationObjectRequest,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
+
+        LOGGER.info("requestSetConfiguration called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        try {
+            // Configuration Object towards the Smart Meter
+            ConfigurationObject configurationObject = setConfigurationObjectRequest
+                    .getSetConfigurationObjectRequestData().getConfigurationObject();
+
+            GprsOperationModeType GprsOperationModeType = configurationObject.getGprsOperationMode();
+            ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
+
+            LOGGER.info("******************************************************");
+            LOGGER.info("Configuration Object   ******************************");
+            LOGGER.info("******************************************************");
+            LOGGER.info("Configuration Object operation mode:{} ", GprsOperationModeType.value());
+            LOGGER.info("******************************************************");
+            LOGGER.info("Flags:   ********************************************");
+
+            for (ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
+                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag.getConfigurationFlagType().toString());
+                LOGGER.info("Configuration Object configuration flag enabled:{} ", configurationFlag.isEnabled());
+                LOGGER.info("******************************************************");
+            }
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during set Configuration Object", e);
+            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception during set Configuration Object", e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
