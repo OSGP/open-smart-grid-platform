@@ -89,7 +89,7 @@ public class ConfigurationService {
      * @param requestData
      * @throws FunctionalException
      */
-    public String requestSetConfigurationObject(final String organisationIdentification,
+    public String setConfigurationObject(final String organisationIdentification,
             final SetConfigurationObjectRequest requestData) throws FunctionalException {
         return this.enqueueSetConfigurationObjectRequest(organisationIdentification,
                 requestData.getDeviceIdentification(), requestData);

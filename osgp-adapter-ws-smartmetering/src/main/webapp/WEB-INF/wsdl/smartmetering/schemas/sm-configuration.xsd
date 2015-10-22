@@ -90,7 +90,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
 				<xsd:sequence>
-					<xsd:element name="configurationObject" type="tns:ConfigurationObject" />
+					<xsd:element name="ConfigurationObject" type="tns:ConfigurationObject" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -108,21 +108,21 @@
 
 	<xsd:complexType name="ConfigurationObject">
 		<xsd:sequence>
-			<xsd:element name="gprsOperationMode" type="tns:GprsOperationModeType" />
-			<xsd:element name="configurationFlags" type="tns:ConfigurationFlags" />
+			<xsd:element name="GprsOperationMode" type="tns:GprsOperationModeType" />
+			<xsd:element name="ConfigurationFlags" type="tns:ConfigurationFlags" />
 		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="ConfigurationFlags">
 		<xsd:sequence minOccurs="1" maxOccurs="10">
-			<xsd:element name="configurationFlag" type="tns:ConfigurationFlag" />
+			<xsd:element name="ConfigurationFlag" type="tns:ConfigurationFlag" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
 	<xsd:complexType name="ConfigurationFlag">
 		<xsd:sequence>
-			<xsd:element name="configurationFlagType" type="tns:ConfigurationFlagType" />
-			<xsd:element name="enabled" type="xsd:boolean" />
+			<xsd:element name="ConfigurationFlagType" type="tns:ConfigurationFlagType" />
+			<xsd:element name="Enabled" type="xsd:boolean" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

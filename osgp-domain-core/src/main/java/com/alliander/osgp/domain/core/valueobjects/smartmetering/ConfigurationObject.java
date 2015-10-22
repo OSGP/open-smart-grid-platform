@@ -15,23 +15,21 @@ public class ConfigurationObject implements Serializable {
 
     private static final long serialVersionUID = 2955060885937669868L;
 
-    private GprsOperationModeType gprsOperationMode;
+    private final GprsOperationModeType gprsOperationMode;
 
-    private ConfigurationFlags configurationFlags;
+    private final ConfigurationFlags configurationFlags;
 
-    public GprsOperationModeType getGprsOperationMode() {
-        return gprsOperationMode;
+    public ConfigurationObject(final GprsOperationModeType gprsOperationMode,
+            final ConfigurationFlags configurationFlags) {
+        this.gprsOperationMode = gprsOperationMode;
+        this.configurationFlags = configurationFlags;
     }
 
-    public void setGprsOperationMode(GprsOperationModeType gprsOperationMode) {
-        this.gprsOperationMode = gprsOperationMode;
+    public GprsOperationModeType getGprsOperationMode() {
+        return this.gprsOperationMode;
     }
 
     public ConfigurationFlags getConfigurationFlags() {
-        return configurationFlags;
-    }
-
-    public void setConfigurationFlags(ConfigurationFlags configurationFlags) {
-        this.configurationFlags = configurationFlags;
+        return this.configurationFlags;
     }
 }

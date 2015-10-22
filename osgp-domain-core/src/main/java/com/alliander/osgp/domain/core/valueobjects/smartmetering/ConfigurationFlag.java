@@ -15,24 +15,20 @@ public class ConfigurationFlag implements Serializable {
 
     private static final long serialVersionUID = -7943594696973940504L;
 
-    private ConfigurationFlagType configurationFlagType;
+    private final ConfigurationFlagType configurationFlagType;
 
-    private boolean enabled;
+    private final boolean enabled;
 
-    public ConfigurationFlagType getConfigurationFlagType() {
-        return configurationFlagType;
-    }
-
-    public void setConfigurationFlagType(ConfigurationFlagType configurationFlagType) {
+    public ConfigurationFlag(final ConfigurationFlagType configurationFlagType, final boolean enabled) {
         this.configurationFlagType = configurationFlagType;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    public ConfigurationFlagType getConfigurationFlagType() {
+        return this.configurationFlagType;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 }

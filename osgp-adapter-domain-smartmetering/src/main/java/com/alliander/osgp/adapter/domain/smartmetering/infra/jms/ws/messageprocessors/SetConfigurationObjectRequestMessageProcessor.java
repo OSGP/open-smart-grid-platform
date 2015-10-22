@@ -66,7 +66,7 @@ public class SetConfigurationObjectRequestMessageProcessor extends WebServiceReq
 
             final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) dataObject;
 
-            this.configurationService.requestSetConfigurationObject(organisationIdentification, deviceIdentification,
+            this.configurationService.setConfigurationObject(organisationIdentification, deviceIdentification,
                     correlationUid, setConfigurationObjectRequest, messageType);
 
         } catch (final Exception e) {

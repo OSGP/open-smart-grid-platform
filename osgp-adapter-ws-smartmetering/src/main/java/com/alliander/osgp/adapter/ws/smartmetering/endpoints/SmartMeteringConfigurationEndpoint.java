@@ -72,7 +72,7 @@ public class SmartMeteringConfigurationEndpoint {
 
     @PayloadRoot(localPart = "SetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetConfigurationObjectResponse requestSetConfigurationObject(
+    public SetConfigurationObjectResponse setConfigurationObject(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetConfigurationObjectRequest request) throws OsgpException {
 
@@ -82,7 +82,7 @@ public class SmartMeteringConfigurationEndpoint {
                 .map(request,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
-        final String correlationUid = this.configurationService.requestSetConfigurationObject(
+        final String correlationUid = this.configurationService.setConfigurationObject(
                 organisationIdentification, dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
