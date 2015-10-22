@@ -33,7 +33,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-        NetworkAddressInterface {
+NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -66,7 +66,7 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     private String containerNumber;
 
     @Column(length = 255)
-    private String municipality;
+    private String containerMunicipality;
 
     @Column
     private Float gpsLatitude;
@@ -119,14 +119,14 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
 
     public Device(final String deviceIdentification, final String alias, final String containerCity,
             final String containerPostalCode, final String containerStreet, final String containerNumber,
-            final String municipality, final Float gpsLatitude, final Float gpsLongitude) {
+            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
-        this.municipality = municipality;
+        this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
 
@@ -161,8 +161,8 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         return this.containerNumber;
     }
 
-    public String getMunicipality() {
-        return this.municipality;
+    public String getContainerMunicipality() {
+        return this.containerMunicipality;
     }
 
     @Override
@@ -212,14 +212,14 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     }
 
     public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final String municipality,
+            final String containerStreet, final String containerNumber, final String containerMunicipality,
             final Float gpsLatitude, final Float gpsLongitude) {
         this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
-        this.municipality = municipality;
+        this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
 

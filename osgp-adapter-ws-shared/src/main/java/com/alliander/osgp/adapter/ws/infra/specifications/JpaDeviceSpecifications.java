@@ -145,7 +145,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
 
-                return cb.like(cb.upper(deviceRoot.<String> get("municipality")), municipality.toUpperCase());
+                return cb.like(cb.upper(deviceRoot.<String> get("containerMunicipality")), municipality.toUpperCase());
             }
         };
     }

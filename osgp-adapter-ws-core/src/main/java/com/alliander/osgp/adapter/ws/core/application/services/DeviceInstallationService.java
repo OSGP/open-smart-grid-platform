@@ -185,8 +185,8 @@ public class DeviceInstallationService {
         // Update the device
         existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerCity(),
                 updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
-                updateDevice.getContainerNumber(), updateDevice.getMunicipality(), updateDevice.getGpsLatitude(),
-                updateDevice.getGpsLongitude());
+                updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
+                updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
         this.writableDeviceRepository.save(existingDevice);
     }
 

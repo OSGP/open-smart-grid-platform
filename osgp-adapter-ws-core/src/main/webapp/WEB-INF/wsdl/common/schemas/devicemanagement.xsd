@@ -174,7 +174,7 @@
 			<xsd:element name="ContainerCity" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="ContainerStreet" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="ContainerNumber" type="xsd:string" minOccurs="0"/>
-			<xsd:element name="Municipality" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="ContainerMunicipality" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="GpsLatitude" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="GpsLongitude" type="xsd:string" minOccurs="0" />
 			<xsd:element name="NetworkAddress" type="tns:IPType" minOccurs="0" />

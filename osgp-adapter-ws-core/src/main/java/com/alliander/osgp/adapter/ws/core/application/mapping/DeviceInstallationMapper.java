@@ -20,7 +20,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 public class DeviceInstallationMapper extends ConfigurableMapper {
 
     private static class DeviceConverter extends
-    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
+            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device source,
@@ -31,7 +31,7 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
             if (source != null) {
                 destination = new Device(source.getDeviceIdentification(), source.getAlias(),
                         source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
-                        source.getContainerNumber(), source.getMunicipality(), source.getGpsLatitude(),
+                        source.getContainerNumber(), source.getContainerMunicipality(), source.getGpsLatitude(),
                         source.getGpsLongitude());
 
                 return destination;
@@ -51,7 +51,7 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
                 destination.setContainerPostalCode(source.getContainerPostalCode());
                 destination.setContainerStreet(source.getContainerStreet());
                 destination.setContainerNumber(source.getContainerNumber());
-                destination.setMunicipality(source.getMunicipality());
+                destination.setContainerMunicipality(source.getContainerMunicipality());
                 destination.setGpsLatitude(source.getGpsLatitude());
                 destination.setGpsLongitude(source.getGpsLongitude());
 
