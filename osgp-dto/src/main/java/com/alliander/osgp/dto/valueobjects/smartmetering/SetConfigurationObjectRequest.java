@@ -15,23 +15,21 @@ public class SetConfigurationObjectRequest implements Serializable {
 
     private static final long serialVersionUID = -8295596279285780413L;
 
-    private String deviceIdentification;
+    private final String deviceIdentification;
 
-    private SetConfigurationObjectRequestData setConfigurationObjectRequestData;
+    private final SetConfigurationObjectRequestData setConfigurationObjectRequestData;
 
-    public String getDeviceIdentification() {
-        return deviceIdentification;
+    public SetConfigurationObjectRequest(final String deviceIdentification,
+            final SetConfigurationObjectRequestData setConfigurationObjectRequestData) {
+        this.deviceIdentification = deviceIdentification;
+        this.setConfigurationObjectRequestData = setConfigurationObjectRequestData;
     }
 
-    public void setDeviceIdentification(String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 
     public SetConfigurationObjectRequestData getSetConfigurationObjectRequestData() {
-        return setConfigurationObjectRequestData;
-    }
-
-    public void setSetConfigurationObjectRequestData(SetConfigurationObjectRequestData setConfigurationObjectRequestData) {
-        this.setConfigurationObjectRequestData = setConfigurationObjectRequestData;
+        return this.setConfigurationObjectRequestData;
     }
 }

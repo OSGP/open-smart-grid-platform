@@ -15,13 +15,13 @@ public class SetConfigurationObjectRequestData implements Serializable {
 
     private static final long serialVersionUID = -381163520662276868L;
 
-    private ConfigurationObject configurationObject;
+    private final ConfigurationObject configurationObject;
 
-    public ConfigurationObject getConfigurationObject() {
-        return configurationObject;
+    public SetConfigurationObjectRequestData(final ConfigurationObject configurationObject) {
+        this.configurationObject = configurationObject;
     }
 
-    public void setConfigurationObject(ConfigurationObject configurationObject) {
-        this.configurationObject = configurationObject;
+    public ConfigurationObject getConfigurationObject() {
+        return this.configurationObject;
     }
 }
