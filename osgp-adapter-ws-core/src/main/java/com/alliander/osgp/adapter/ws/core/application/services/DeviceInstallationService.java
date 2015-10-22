@@ -133,8 +133,8 @@ public class DeviceInstallationService {
                     DeviceFunctionGroup.OWNER);
 
             // add metadata to the device
-            existingDevice.updateMetaData(newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
-                    newDevice.getContainerStreet(), newDevice.getContainerNumber(), newDevice.getGpsLatitude(),
+            existingDevice.updateMetaData(null, newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
+                    newDevice.getContainerStreet(), newDevice.getContainerNumber(), null, newDevice.getGpsLatitude(),
                     newDevice.getGpsLongitude());
 
             // add default protocol if not set yet
@@ -183,8 +183,9 @@ public class DeviceInstallationService {
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getContainerCity(), updateDevice.getContainerPostalCode(),
-                updateDevice.getContainerStreet(), updateDevice.getContainerNumber(), updateDevice.getGpsLatitude(),
+        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerCity(),
+                updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
+                updateDevice.getContainerNumber(), updateDevice.getMunicipality(), updateDevice.getGpsLatitude(),
                 updateDevice.getGpsLongitude());
         this.writableDeviceRepository.save(existingDevice);
     }

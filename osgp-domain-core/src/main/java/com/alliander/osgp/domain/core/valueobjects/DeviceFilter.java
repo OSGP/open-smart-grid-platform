@@ -10,6 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects;
 public class DeviceFilter {
 
     private String organisationIdentification;
+    private String alias;
     private String deviceIdentification;
     private String city;
     private String postalCode;
@@ -23,11 +24,12 @@ public class DeviceFilter {
 
     }
 
-    public DeviceFilter(final String organisationIdentification, final String deviceIdentification, final String city,
-            final String postalCode, final String street, final String number, final String municipality,
-            final String sortDir, final String sortedBy) {
+    public DeviceFilter(final String organisationIdentification, final String deviceIdentification,
+            final String street, final String city, final String postalCode, final String alias, final String number,
+            final String municipality, final String sortDir, final String sortedBy) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
+        this.alias = alias;
         this.city = city;
         this.postalCode = postalCode;
         this.street = street;
@@ -43,6 +45,10 @@ public class DeviceFilter {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public String getAlias() {
+        return this.alias;
     }
 
     public String getCity() {

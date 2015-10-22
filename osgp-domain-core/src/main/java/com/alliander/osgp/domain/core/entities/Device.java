@@ -53,6 +53,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
+    @Column
+    private String alias;
+
     @Column(length = 255)
     private String containerCity;
     @Column(length = 255)
@@ -114,14 +117,16 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final Float gpsLatitude,
-            final Float gpsLongitude) {
+    public Device(final String deviceIdentification, final String alias, final String containerCity,
+            final String containerPostalCode, final String containerStreet, final String containerNumber,
+            final String municipality, final Float gpsLatitude, final Float gpsLongitude) {
         this.deviceIdentification = deviceIdentification;
+        this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
+        this.municipality = municipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
 
@@ -130,6 +135,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Override
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public String getAlias() {
+        return this.alias;
     }
 
     @Override
@@ -202,13 +211,15 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         return this.protocolInfo;
     }
 
-    public void updateMetaData(final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final Float gpsLatitude,
-            final Float gpsLongitude) {
+    public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
+            final String containerStreet, final String containerNumber, final String municipality,
+            final Float gpsLatitude, final Float gpsLongitude) {
+        this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
+        this.municipality = municipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
 

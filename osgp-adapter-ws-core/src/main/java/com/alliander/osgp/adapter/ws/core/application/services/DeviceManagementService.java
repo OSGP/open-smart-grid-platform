@@ -264,6 +264,10 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(deviceFilter
                             .getDeviceIdentification() + "%"));
                 }
+                if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
+                    specifications = specifications.and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias()
+                            + "%"));
+                }
                 if (!StringUtils.isEmpty(deviceFilter.getCity())) {
                     specifications = specifications
                             .and(this.deviceSpecifications.hasCity(deviceFilter.getCity() + "%"));

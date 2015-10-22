@@ -19,6 +19,8 @@ public interface DeviceSpecifications {
     Specification<Device> hasDeviceIdentification(final String deviceIdentification)
             throws ArgumentNullOrEmptyException;
 
+    Specification<Device> hasAlias(final String alias) throws ArgumentNullOrEmptyException;
+
     Specification<Device> hasCity(final String city) throws ArgumentNullOrEmptyException;
 
     Specification<Device> hasPostalCode(final String postalCode) throws ArgumentNullOrEmptyException;

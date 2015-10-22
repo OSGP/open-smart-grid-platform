@@ -150,4 +150,21 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         };
     }
 
+    @Override
+    public Specification<Device> hasAlias(final String alias) throws ArgumentNullOrEmptyException {
+
+        if (StringUtils.isEmpty(alias)) {
+            throw new ArgumentNullOrEmptyException("alias");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("alias")), alias.toUpperCase());
+            }
+        };
+    }
+
 }
