@@ -19,17 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -51,7 +46,7 @@ public class ConfigurationService {
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+    private DomainHelperService domainHelperService;
 
     public ConfigurationService() {
         // Parameterless constructor required for transactions...
@@ -67,21 +62,15 @@ public class ConfigurationService {
         LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        if (device == null) {
-            LOGGER.info("Unknown device.");
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
-        } else {
-            LOGGER.info("Sending request message to core.");
+        LOGGER.info("Sending request message to core.");
 
-            final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(
-                    specialDaysRequestValueObject, SpecialDaysRequest.class);
+        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequest.class);
 
-            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                    deviceIdentification, specialDaysRequestDto), messageType);
-        }
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, specialDaysRequestDto), messageType);
     }
 
     public void setConfigurationObject(
@@ -94,22 +83,15 @@ public class ConfigurationService {
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        if (device == null) {
-            LOGGER.info("Unknown device.");
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
-        } else {
-            LOGGER.info("Sending request message to core.");
+        LOGGER.info("Sending request message to core.");
 
-            final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
-                    setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
+        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
 
-            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                    deviceIdentification, setConfigurationObjectRequestDto), messageType);
-
-        }
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, setConfigurationObjectRequestDto), messageType);
     }
 
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,
@@ -118,23 +100,14 @@ public class ConfigurationService {
 
         LOGGER.info("handleSpecialDaysresponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
-
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
-
         }
+
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null), messageType);
+                deviceIdentification, result, exception, null), messageType);
     }
 
     public void setAlarmNotifications(@Identification final String organisationIdentification,
@@ -149,11 +122,7 @@ public class ConfigurationService {
         // this.findOrganisation(organisationIdentification);
         // final Device device = this.findActiveDevice(deviceIdentification);
 
-        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
-        if (device == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
-        }
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications alarmNotificationsDto = this.configurationMapper
                 .map(alarmNotifications, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class);
@@ -168,23 +137,14 @@ public class ConfigurationService {
 
         LOGGER.info("handleSetAlarmNotificationsResponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
-
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Set Alarm Notifications Response not ok.", osgpException);
-                throw osgpException;
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Set Alarm Notifications Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null), messageType);
+                deviceIdentification, result, exception, null), messageType);
     }
 
     public void handleSetConfigurationObjectResponse(final String deviceIdentification,
@@ -193,22 +153,13 @@ public class ConfigurationService {
 
         LOGGER.info("handle SetConfigurationObject response for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
-
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
-
         }
+
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null), messageType);
+                deviceIdentification, result, exception, null), messageType);
     }
 }

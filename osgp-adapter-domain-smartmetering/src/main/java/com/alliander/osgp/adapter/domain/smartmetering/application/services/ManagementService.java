@@ -17,14 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -48,7 +44,7 @@ public class ManagementService {
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+    private DomainHelperService domainHelperService;
 
     @Autowired
     private ManagementMapper managementMapper;
@@ -69,23 +65,13 @@ public class ManagementService {
         // this.findOrganisation(organisationIdentification);
         // final Device device = this.findActiveDevice(deviceIdentification);
 
-        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        if (device == null) {
-            LOGGER.info("Unknown device.");
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_SMART_METERING);
-        } else {
-            LOGGER.info("Sending request message to core.");
-            final RequestMessage requestMessage = new RequestMessage(
-                    correlationUid,
-                    organisationIdentification,
-                    deviceIdentification,
-                    this.managementMapper
-                            .map(findEventsQueryMessageDataContainer,
-                                    com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer.class));
-            this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
-        }
+        LOGGER.info("Sending request message to core.");
+        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, this.managementMapper.map(findEventsQueryMessageDataContainer,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer.class));
+        this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
     }
 
     public void handleFindEventsResponse(

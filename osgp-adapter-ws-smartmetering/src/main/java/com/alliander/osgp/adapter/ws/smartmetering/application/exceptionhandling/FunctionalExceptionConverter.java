@@ -18,17 +18,29 @@ public class FunctionalExceptionConverter extends CustomConverter<FunctionalExce
     @Override
     public FunctionalFault convert(final FunctionalException source,
             final Type<? extends FunctionalFault> destinationType) {
+
         if (source == null) {
             return null;
         }
+
         final FunctionalFault destination = new FunctionalFault();
         destination.setCode(source.getCode());
         destination.setComponent(source.getComponentType().name());
         destination.setMessage(source.getMessage());
-        destination.setInnerException(source.getCause().getClass().getName());
-        destination.setInnerMessage(source.getCause().getMessage());
+
+        final Throwable cause = source.getCause();
+        final String innerException;
+        final String innerMessage;
+        if (cause == null) {
+            innerException = "";
+            innerMessage = "";
+        } else {
+            innerException = cause.getClass().getName();
+            innerMessage = cause.getMessage();
+        }
+        destination.setInnerException(innerException);
+        destination.setInnerMessage(innerMessage);
 
         return destination;
     }
-
 }

@@ -63,7 +63,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
             responseMessage = (ResponseMessage) message.getObject();
             responseMessageResultType = responseMessage.getResult();
             osgpException = responseMessage.getOsgpException();
-            periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage.getDataObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -78,6 +77,8 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+            periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage.getDataObject();
 
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessageResultType, osgpException, periodicMeterReadsContainer);
