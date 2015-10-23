@@ -20,10 +20,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -40,6 +38,9 @@ public class MonitoringService {
 
     @Autowired
     private MonitoringMapper monitoringMapper;
+
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
@@ -69,6 +70,8 @@ public class MonitoringService {
         // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
         // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
         final PeriodicMeterReadsRequest periodicMeterReadsRequestDto = this.monitoringMapper.map(
                 periodicMeterReadsRequestValueObject, PeriodicMeterReadsRequest.class);
 
@@ -84,19 +87,9 @@ public class MonitoringService {
         LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException = exception;
-
-        try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-                LOGGER.error("Device Response not ok.", osgpException);
-                throw osgpException;
-            }
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
-
         }
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer periodMeterReadsValueDomain = this.monitoringMapper
@@ -104,7 +97,7 @@ public class MonitoringService {
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, periodMeterReadsValueDomain), messageType);
+                deviceIdentification, result, exception, periodMeterReadsValueDomain), messageType);
 
     }
 }
