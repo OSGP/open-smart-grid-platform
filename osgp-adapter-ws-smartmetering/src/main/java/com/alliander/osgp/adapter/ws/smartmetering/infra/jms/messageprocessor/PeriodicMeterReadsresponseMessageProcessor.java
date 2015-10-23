@@ -84,23 +84,16 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final Object dataObject = objectMessage.getObject();
-            if (dataObject instanceof Exception) {
-                this.handleError((Exception) dataObject, correlationUid, organisationIdentification,
-                        deviceIdentification, notificationType);
-            } else {
+            data = (PeriodicMeterReadContainer) objectMessage.getObject();
 
-                data = (PeriodicMeterReadContainer) dataObject;
+            // Convert the events to entity and save the periodicMeterReads
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, data);
+            this.meterResponseDataRepository.save(meterResponseData);
 
-                // Convert the events to entity and save the periodicMeterReads
-                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
-                        messageType, deviceIdentification, correlationUid, data);
-                this.meterResponseDataRepository.save(meterResponseData);
-
-                // Notifying
-                this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
-                        correlationUid, message, notificationType);
-            }
+            // Notifying
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
+                    correlationUid, message, notificationType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);

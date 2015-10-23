@@ -78,17 +78,10 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final Object dataObject = responseMessage.getDataObject();
-            if (dataObject instanceof Exception) {
-                this.handleError((Exception) dataObject, correlationUid, organisationIdentification,
-                        deviceIdentification, messageType);
-            } else {
-                periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage.getDataObject();
+            periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage.getDataObject();
 
-                this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification,
-                        organisationIdentification, correlationUid, messageType, responseMessageResultType,
-                        osgpException, periodicMeterReadsContainer);
-            }
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessageResultType, osgpException, periodicMeterReadsContainer);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
