@@ -86,7 +86,7 @@ public class MonitoringService {
 
         LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         if (exception != null) {
             LOGGER.error("Device Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;

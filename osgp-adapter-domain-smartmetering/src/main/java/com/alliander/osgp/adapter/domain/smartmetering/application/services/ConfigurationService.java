@@ -100,7 +100,7 @@ public class ConfigurationService {
 
         LOGGER.info("handleSpecialDaysresponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         if (exception != null) {
             LOGGER.error("Device Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
@@ -137,7 +137,7 @@ public class ConfigurationService {
 
         LOGGER.info("handleSetAlarmNotificationsResponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         if (exception != null) {
             LOGGER.error("Set Alarm Notifications Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
@@ -153,7 +153,7 @@ public class ConfigurationService {
 
         LOGGER.info("handle SetConfigurationObject response for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         if (exception != null) {
             LOGGER.error("Device Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;

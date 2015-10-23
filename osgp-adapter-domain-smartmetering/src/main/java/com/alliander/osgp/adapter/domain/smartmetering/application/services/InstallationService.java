@@ -113,7 +113,7 @@ public class InstallationService {
 
         LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
 
-        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        ResponseMessageResultType result = deviceResult;
         if (exception != null) {
             LOGGER.error("Device Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
