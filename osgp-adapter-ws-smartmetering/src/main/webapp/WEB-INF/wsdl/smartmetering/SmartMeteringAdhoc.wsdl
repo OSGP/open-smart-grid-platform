@@ -3,7 +3,7 @@
 
 <wsdl:definitions 
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:sminst="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
+    xmlns:smadhoc="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
     xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
     xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-adhoc-v1.0"
@@ -29,17 +29,17 @@
     <!-- REQUEST_SYNCHRONIZE_TIME -->
     
     <wsdl:message name="SynchronizeTimeRequest">
-        <wsdl:part element="sminst:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
+        <wsdl:part element="smadhoc:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SynchronizeTimeResponse">
-        <wsdl:part element="sminst:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
+        <wsdl:part element="smadhoc:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
         </wsdl:part>
     </wsdl:message>
 
     <wsdl:portType name="SmartmeteradhocPort">
    
-        <wsdl:operation name="RequestSynchronizeTime">
+        <wsdl:operation name="SynchronizeTime">
             <wsdl:input message="tns:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
             </wsdl:input>
             <wsdl:output message="tns:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
@@ -51,7 +51,7 @@
     <wsdl:binding name="SmartmeteradhocPortSoap11" type="tns:SmartmeteradhocPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 
-        <wsdl:operation name="RequestSynchronizeTime">
+        <wsdl:operation name="SynchronizeTime">
             <soap:operation soapAction="" />
             <wsdl:input name="SynchronizeTimeRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />

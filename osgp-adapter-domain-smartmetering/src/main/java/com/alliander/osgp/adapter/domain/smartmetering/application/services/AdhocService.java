@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
@@ -38,9 +37,6 @@ public class AdhocService {
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
-    private AdhocMapper adhocMapper;
-
-    @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     @Autowired
@@ -50,32 +46,32 @@ public class AdhocService {
         // Parameterless constructor required for transactions...
     }
 
-    public void requestSynchronizeTime(
+    public void synchronizeTime(
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject,
             final String messageType) throws FunctionalException {
 
-        LOGGER.info("requestSynchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
         LOGGER.info("Sending request message to core.");
 
-        final SynchronizeTimeRequest synchronizeTimeRequestDto = this.adhocMapper.map(
-                synchronizeTimeRequestValueObject, SynchronizeTimeRequest.class);
+        final SynchronizeTimeRequest synchronizeTimeRequestDto = new SynchronizeTimeRequest(
+                synchronizeTimeRequestValueObject.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, synchronizeTimeRequestDto), messageType);
     }
 
-    public void handleSynchronizeTimeresponse(final String deviceIdentification,
+    public void handleSynchronizeTimeResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handleSynchronizeReadsresponse for MessageType: {}", messageType);
+        LOGGER.info("handleSynchronizeTimeResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
