@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
+import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.core.services.SecurityService;
@@ -34,6 +36,9 @@ public class DomainHelperService {
 
     @Autowired
     private OrganisationDomainService organisationDomainService;
+
+    @Autowired
+    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
 
     @Autowired
     private SecurityService securityService;
@@ -60,6 +65,16 @@ public class DomainHelperService {
         return device;
     }
 
+    public SmartMeteringDevice findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
+        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+        if (device == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                    new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification));
+        }
+        return device;
+    }
+
     public Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {
         Organisation organisation;
         try {
@@ -70,7 +85,8 @@ public class DomainHelperService {
         return organisation;
     }
 
-    public void isAllowed(final Organisation organisation, final PlatformFunction platformFunction) throws FunctionalException {
+    public void isAllowed(final Organisation organisation, final PlatformFunction platformFunction)
+            throws FunctionalException {
         try {
             this.securityService.checkAuthorization(organisation, platformFunction);
         } catch (final NotAuthorizedException e) {
@@ -78,7 +94,8 @@ public class DomainHelperService {
         }
     }
 
-    public void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction) throws FunctionalException {
+    public void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction)
+            throws FunctionalException {
         try {
             this.securityService.checkAuthorization(organisation, device, deviceFunction);
         } catch (final NotAuthorizedException e) {
