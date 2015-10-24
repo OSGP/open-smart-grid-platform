@@ -33,7 +33,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-        NetworkAddressInterface {
+NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -53,6 +53,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
 
+    @Column
+    private String alias;
+
     @Column(length = 255)
     private String containerCity;
     @Column(length = 255)
@@ -61,6 +64,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     private String containerPostalCode;
     @Column(length = 255)
     private String containerNumber;
+
+    @Column(length = 255)
+    private String containerMunicipality;
 
     @Column
     private Float gpsLatitude;
@@ -111,14 +117,16 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final Float gpsLatitude,
-            final Float gpsLongitude) {
+    public Device(final String deviceIdentification, final String alias, final String containerCity,
+            final String containerPostalCode, final String containerStreet, final String containerNumber,
+            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
         this.deviceIdentification = deviceIdentification;
+        this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
+        this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
 
@@ -127,6 +135,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Override
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public String getAlias() {
+        return this.alias;
     }
 
     @Override
@@ -147,6 +159,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Override
     public String getContainerNumber() {
         return this.containerNumber;
+    }
+
+    public String getContainerMunicipality() {
+        return this.containerMunicipality;
     }
 
     @Override
@@ -195,13 +211,15 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         return this.protocolInfo;
     }
 
-    public void updateMetaData(final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final Float gpsLatitude,
-            final Float gpsLongitude) {
+    public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
+            final String containerStreet, final String containerNumber, final String containerMunicipality,
+            final Float gpsLatitude, final Float gpsLongitude) {
+        this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
+        this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
 

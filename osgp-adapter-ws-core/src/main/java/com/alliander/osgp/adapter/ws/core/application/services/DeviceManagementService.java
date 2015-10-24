@@ -125,7 +125,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -264,6 +264,10 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasDeviceIdentification(deviceFilter
                             .getDeviceIdentification() + "%"));
                 }
+                if (!StringUtils.isEmpty(deviceFilter.getAlias())) {
+                    specifications = specifications.and(this.deviceSpecifications.hasAlias(deviceFilter.getAlias()
+                            + "%"));
+                }
                 if (!StringUtils.isEmpty(deviceFilter.getCity())) {
                     specifications = specifications
                             .and(this.deviceSpecifications.hasCity(deviceFilter.getCity() + "%"));
@@ -279,6 +283,10 @@ public class DeviceManagementService {
                 if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
                     specifications = specifications.and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber()
                             + "%"));
+                }
+                if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
+                    specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
+                            .getMunicipality() + "%"));
                 }
 
                 devices = this.deviceRepository.findAll(specifications, request);
@@ -300,7 +308,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
