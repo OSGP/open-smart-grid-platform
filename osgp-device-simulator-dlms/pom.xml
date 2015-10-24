@@ -42,20 +42,20 @@
 
     <dependencies>
         <!--  GuruX  -->
-        <dependency>
-            <groupId>gurux</groupId>
-            <artifactId>gurux-dlms</artifactId>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>gurux</groupId> -->
+<!--             <artifactId>gurux-dlms</artifactId> -->
+<!--         </dependency> -->
 
-        <dependency>
-            <groupId>gurux</groupId>
-            <artifactId>gurux-common</artifactId>
-        </dependency>
+<!--         <dependency> -->
+<!--             <groupId>gurux</groupId> -->
+<!--             <artifactId>gurux-common</artifactId> -->
+<!--         </dependency> -->
         
-        <dependency>
-            <groupId>gurux</groupId>
-            <artifactId>gurux-net</artifactId>
-        </dependency>    
+<!--         <dependency> -->
+<!--             <groupId>gurux</groupId> -->
+<!--             <artifactId>gurux-net</artifactId> -->
+<!--         </dependency>     -->
 
         <!-- Alliander -->
         <dependency>
