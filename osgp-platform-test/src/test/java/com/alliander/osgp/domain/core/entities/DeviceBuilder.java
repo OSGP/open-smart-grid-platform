@@ -75,7 +75,7 @@ public class DeviceBuilder {
     public Device build() {
         final Device device = new Device(this.deviceIdentification, this.deviceType, this.networkAddress,
                 this.activated, this.hasSchedule);
-        device.updateMetaData(null, null, null, null, this.gpsLatitude, this.gpsLongitude);
+        device.updateMetaData(null, null, null, null, null, null, this.gpsLatitude, this.gpsLongitude);
         device.updateProtocol(this.protocolInfo);
         device.setPublicKeyPresent(this.publicKeyPresent);
         return device;

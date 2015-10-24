@@ -167,7 +167,7 @@ public class RegisterDeviceSteps {
     // === GIVEN ===
     @DomainStep("a valid register device OSLP message")
     public void givenAValidRegisterDeviceRequest() throws NoSuchAlgorithmException, InvalidKeySpecException,
-    IOException {
+            IOException {
         LOGGER.info("GIVEN: \"a valid register device OSLP message\".");
 
         this.setup();
@@ -223,7 +223,7 @@ public class RegisterDeviceSteps {
     @DomainStep("the device has no metadata for GPS")
     public void givenDeviceWithoutGps() {
         LOGGER.info("GIVEN: \"the device has no metadata for GPS\".");
-        this.device.updateMetaData(null, null, null, null, null, null);
+        this.device.updateMetaData(null, null, null, null, null, null, null, null);
         this.deviceData = new DeviceDataBuilder().withDeviceIdentification(DEVICE_ID).build();
         when(this.deviceDataRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.deviceData);
     }
