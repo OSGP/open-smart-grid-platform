@@ -87,10 +87,19 @@ public class DomainResponseMessageSender implements DomainResponseService {
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
-        final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                "Unexpected exception while retrieving response message", e);
+        final OsgpException ex = this.ensureOsgpException(e);
         return new ResponseMessage(protocolRequestMessage.getCorrelationUid(),
                 protocolRequestMessage.getOrganisationIdentification(),
-                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, e);
+                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, null);
+    }
+
+    private OsgpException ensureOsgpException(final Exception e) {
+
+        if (e instanceof OsgpException) {
+            return (OsgpException) e;
+        }
+
+        return new TechnicalException(ComponentType.OSGP_CORE,
+                "Unexpected exception while retrieving response message", e);
     }
 }

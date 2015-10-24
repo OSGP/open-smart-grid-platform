@@ -52,8 +52,8 @@ public class DeviceRequestMessageService {
             // TODO workaround for SSLD specific authorization
             if (message.getDomain().equals("SMART_METERING")) {
 
-                final SmartMeteringDevice smartMeteringDevice = this.smartMeteringDeviceRepository
-                        .findByDeviceIdentification(message.getDeviceIdentification());
+                final SmartMeteringDevice smartMeteringDevice = this.domainHelperService
+                        .findSmartMeteringDevice(message.getDeviceIdentification());
                 protocolInfo = smartMeteringDevice.getProtocolInfo();
             } else {
 

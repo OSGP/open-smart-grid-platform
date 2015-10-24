@@ -71,7 +71,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
 
-            data = (PeriodicMeterReadContainer) objectMessage.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -84,6 +83,8 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+            data = (PeriodicMeterReadContainer) objectMessage.getObject();
 
             // Convert the events to entity and save the periodicMeterReads
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
