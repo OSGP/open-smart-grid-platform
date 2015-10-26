@@ -133,6 +133,23 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="UpdateDeviceRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:Identification" />
+				<xsd:element name="UpdatedDevice" type="tns:Device" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="UpdateDeviceResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
 	<xsd:complexType name="ScheduledTask">
 		<xsd:sequence>
 			<xsd:element name="CreationTime" type="xsd:dateTime" minOccurs="0" />
@@ -183,6 +200,9 @@
             <xsd:element name="PublicKeyPresent" type="xsd:boolean" minOccurs="0" />
 			<xsd:sequence>
 				<xsd:element name="Organisations" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+			<xsd:sequence>
+				<xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -296,4 +316,33 @@
 			<xsd:element minOccurs="0" name="index" type="xsd:int" />
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	<xsd:complexType name="DeviceOutputSetting">
+		<xsd:sequence>
+			<xsd:element name="internalId" type="xsd:int" />
+			<xsd:element name="externalId" type="xsd:int" />
+			<xsd:element name="alias" type="xsd:string" />
+			<xsd:element name="relayType" type="tns:RelayType" />
+			<xsd:element name="relayFunction" type="tns:RelayFunction" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="RelayType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="LIGHT" />
+			<xsd:enumeration value="TARIFF" />
+			<xsd:enumeration value="TARIFF_REVERSED" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="RelayFunction">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="BURNER" />
+			<xsd:enumeration value="EVENING_MORNING" />
+			<xsd:enumeration value="TARIFF" />
+			<xsd:enumeration value="SPECIAL" />
+			<xsd:enumeration value="NOT_CONNECTED" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 </xsd:schema>

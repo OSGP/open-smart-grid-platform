@@ -11,6 +11,7 @@ import static org.springframework.data.jpa.domain.Specifications.where;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +32,8 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessage;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Event;
@@ -49,6 +52,7 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
@@ -101,6 +105,12 @@ public class DeviceManagementService {
 
     @Autowired
     private ScheduledTaskRepository scheduledTaskRepository;
+
+    @Autowired
+    private WritableDeviceAuthorizationRepository writableAuthorizationRepository;
+
+    @Autowired
+    private WritableDeviceRepository writableDeviceRepository;
 
     /**
      * Constructor
@@ -355,5 +365,46 @@ public class DeviceManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_SCHEDULED_TASKS);
         return this.scheduledTaskRepository.findByOrganisationIdentification(organisationIdentification);
+    }
+
+    @Transactional(value = "writableTransactionManager")
+    public void updateDevice(@Identification final String organisationIdentification, @Valid final Device updateDevice)
+            throws FunctionalException {
+
+        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(updateDevice
+                .getDeviceIdentification());
+        if (existingDevice == null) {
+            // device does not exist
+            LOGGER.info("Device does not exist, nothing to update.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
+        }
+
+        // TODO add support for changes to device identification
+        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
+                existingDevice, DeviceFunctionGroup.OWNER);
+
+        // Check organisation against owner of device
+        boolean isOwner = false;
+        for (final DeviceAuthorization owner : owners) {
+            if (owner.getOrganisation().getOrganisationIdentification().equalsIgnoreCase(organisationIdentification)) {
+                isOwner = true;
+            }
+        }
+
+        if (!isOwner) {
+            LOGGER.info("Device has no owner yet, or organisation is not the owner.");
+            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
+                    new NotAuthorizedException(organisationIdentification));
+        }
+
+        // Update the device
+        existingDevice.updateMetaData(updateDevice.getContainerCity(), updateDevice.getContainerPostalCode(),
+                updateDevice.getContainerStreet(), updateDevice.getContainerNumber(), updateDevice.getGpsLatitude(),
+                updateDevice.getGpsLongitude());
+
+        existingDevice.updateOutputSettings(updateDevice.receiveOutputSettings());
+
+        this.writableDeviceRepository.save(existingDevice);
     }
 }

@@ -42,9 +42,12 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -68,9 +71,13 @@ public class DeviceManagementEndpoint {
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private static final String EXCEPTION = "Exception: {}, StackTrace: {}";
+    private static final String EXCEPTION_WHILE_UPDATING_DEVICE = "Exception: {} while adding device: {} for organisation {}.";
 
     private final DeviceManagementService deviceManagementService;
     private final DeviceManagementMapper deviceManagementMapper;
+
+    @Autowired
+    private CorrelationIdProviderService correlationIdProviderService;
 
     /**
      * Constructor
@@ -270,6 +277,44 @@ public class DeviceManagementEndpoint {
         }
 
         return response;
+    }
+
+    @PayloadRoot(localPart = "UpdateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
+
+        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(), request
+                .getUpdatedDevice().getDeviceIdentification());
+
+        try {
+            final com.alliander.osgp.domain.core.entities.Device device = this.deviceManagementMapper.map(
+                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Device.class);
+
+            this.deviceManagementService.updateDevice(organisationIdentification, device);
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, new Object[] { e.getMessage(),
+                    request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final UpdateDeviceResponse updateDeviceResponse = new UpdateDeviceResponse();
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                request.getDeviceIdentification());
+
+        final AsyncResponse AsyncResponse = new AsyncResponse();
+        AsyncResponse.setCorrelationUid(correlationUid);
+        AsyncResponse.setDeviceId(request.getDeviceIdentification());
+
+        updateDeviceResponse.setAsyncResponse(AsyncResponse);
+
+        return updateDeviceResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {

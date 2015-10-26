@@ -12,6 +12,7 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import com.alliander.osgp.domain.core.valueobjects.RelayFunction;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
 @Embeddable
@@ -28,11 +29,33 @@ public class DeviceOutputSetting implements Serializable {
     @Column
     private int externalId;
 
+    @Column
+    private String alias;
+
     @Column(name = "output_type", length = 25)
     private RelayType relayType;
 
+    @Column
+    private RelayFunction relayFunction;
+
+    public String getAlias() {
+        return this.alias;
+    }
+
+    public RelayFunction getRelayFunction() {
+        return this.relayFunction;
+    }
+
     public DeviceOutputSetting() {
         // Default constructor
+    }
+
+    public DeviceOutputSetting(final int internalId, final int externalId, final RelayType relayType, final String alias, final RelayFunction relayFunction) {
+        this.internalId = internalId;
+        this.externalId = externalId;
+        this.relayType = relayType;
+        this.alias = alias;
+        this.relayFunction = relayFunction;
     }
 
     public DeviceOutputSetting(final int internalId, final int externalId, final RelayType relayType) {
