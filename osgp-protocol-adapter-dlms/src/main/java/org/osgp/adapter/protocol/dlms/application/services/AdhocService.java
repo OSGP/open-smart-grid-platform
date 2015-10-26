@@ -7,10 +7,15 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import org.joda.time.DateTime;
+import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
@@ -23,6 +28,15 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
+
+    @Autowired
+    DlmsDeviceRepository dlmsDeviceRepository;
+
+    @Autowired
+    DlmsConnectionFactory dlmsConnectionFactory;
+
+    @Autowired
+    SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     /**
      * Constructor
@@ -42,30 +56,16 @@ public class AdhocService {
                 organisationIdentification);
 
         try {
-            // Synchronize Time has for now no return data, like a deviation
-            // time.
 
-            final DateTime newSmartMeterTime = new DateTime();
+            final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
 
-            LOGGER.info(new String("************************************************************").substring(0, 55));
-            LOGGER.info(new String("*********** Synchronize Time SmartMeter ********************").substring(0, 55));
-            LOGGER.info(new String("************************************************************").substring(0, 55));
-            LOGGER.info(new String("************************************************************").substring(0, 55));
-            LOGGER.info(new String("*********   Year:       {}   *******************************").substring(0, 53),
-                    newSmartMeterTime.getYear());
-            LOGGER.info(new String("*********   Month:      {}   *******************************").substring(0, 55),
-                    newSmartMeterTime.getMonthOfYear());
-            LOGGER.info(new String("*********   Day:        {}   *******************************").substring(0, 56),
-                    newSmartMeterTime.getDayOfMonth());
-            LOGGER.info(new String("*********   Hour:       {}   *******************************").substring(0, 55),
-                    newSmartMeterTime.getHourOfDay());
-            LOGGER.info(new String("*********   Minutes:    {}   *******************************").substring(0, 55),
-                    newSmartMeterTime.getMinuteOfHour());
-            LOGGER.info(new String("*********   Seconds:    {}   *******************************").substring(0, 55),
-                    newSmartMeterTime.getSecondOfMinute());
-            LOGGER.info(new String("************************************************************").substring(0, 55));
-            LOGGER.info(new String("************************************************************").substring(0, 55));
-            LOGGER.info(new String("************************************************************").substring(0, 55));
+            if (device != null) {
+                final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+
+                this.synchronizeTimeCommandExecutor.execute(conn, null);
+
+                conn.close();
+            }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
