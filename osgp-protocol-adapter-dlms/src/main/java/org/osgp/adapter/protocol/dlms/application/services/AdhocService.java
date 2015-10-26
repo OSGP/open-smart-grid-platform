@@ -33,12 +33,12 @@ public class AdhocService {
 
     // === REQUEST Synchronize Time DATA ===
 
-    public void requestSynchronizeTime(final String organisationIdentification, final String deviceIdentification,
+    public void synchronizeTime(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SynchronizeTimeRequest synchronizeTimeRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
-        LOGGER.info("requestSynchronizeTime called for device: {} for organisation: {}", deviceIdentification,
+        LOGGER.info("synchronizeTime called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
         try {
@@ -72,12 +72,21 @@ public class AdhocService {
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during synchronizeTime", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during synchronizeTime", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
+    }
+
+    private OsgpException ensureOsgpException(final Exception e) {
+
+        if (e instanceof OsgpException) {
+            return (OsgpException) e;
+        }
+
+        return new TechnicalException(ComponentType.UNKNOWN,
+                "Unexpected exception during synchronizeTime with smart meter", e);
     }
 
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
