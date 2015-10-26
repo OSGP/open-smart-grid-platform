@@ -35,7 +35,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     private AdhocService adhocService;
 
     public SynchronizeTimeRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_SYNCHRONIZE_TIME);
+        super(DeviceRequestMessageType.SYNCHRONIZE_TIME);
     }
 
     @Override
