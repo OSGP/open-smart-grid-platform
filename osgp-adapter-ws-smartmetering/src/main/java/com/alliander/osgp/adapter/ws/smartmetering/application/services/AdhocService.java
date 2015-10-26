@@ -44,7 +44,7 @@ public class AdhocService {
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
+                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
                 deviceIdentification, synchronizeTimeRequest);
 
         this.smartMeteringRequestMessageSender.send(message);

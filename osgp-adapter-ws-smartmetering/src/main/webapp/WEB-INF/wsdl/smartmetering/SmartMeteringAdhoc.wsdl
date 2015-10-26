@@ -26,7 +26,7 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
-    <!-- REQUEST_SYNCHRONIZE_TIME -->
+    <!-- SYNCHRONIZE_TIME -->
     
     <wsdl:message name="SynchronizeTimeRequest">
         <wsdl:part element="smadhoc:SynchronizeTimeRequest" name="SynchronizeTimeRequest">

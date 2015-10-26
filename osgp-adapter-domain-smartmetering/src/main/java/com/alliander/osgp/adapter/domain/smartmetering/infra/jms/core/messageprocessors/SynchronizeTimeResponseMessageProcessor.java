@@ -39,7 +39,7 @@ public class SynchronizeTimeResponseMessageProcessor extends OsgpCoreResponseMes
     private AdhocService adhocService;
 
     protected SynchronizeTimeResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
+        super(DeviceFunction.SYNCHRONIZE_TIME);
     }
 
     @Override

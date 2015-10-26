@@ -34,7 +34,7 @@ public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMes
     private AdhocService adhocService;
 
     protected SynchronizeTimeRequestMessageProcessor() {
-        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
+        super(DeviceFunction.SYNCHRONIZE_TIME);
     }
 
     @Override
