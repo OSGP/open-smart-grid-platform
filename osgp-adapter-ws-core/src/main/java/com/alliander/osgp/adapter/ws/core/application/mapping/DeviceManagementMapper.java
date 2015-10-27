@@ -64,19 +64,23 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     source.setGpsLongitude("0");
                 }
 
-                destination = new Device(source.getDeviceIdentification(), source.getContainerCity(),
-                        source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
-                        Float.valueOf(source.getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
+                destination = new Device(source.getDeviceIdentification(), source.getAlias(),
+                        source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
+                        source.getContainerNumber(), source.getContainerMunicipality(), Float.valueOf(source
+                                .getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
 
                 final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
 
-                for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source.getOutputSettings()) {
+                for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
+                        .getOutputSettings()) {
                     com.alliander.osgp.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting();
 
-                    newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
-                            com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting.getRelayType().name()),
-                            deviceOutputSetting.getAlias(), com.alliander.osgp.domain.core.valueobjects.RelayFunction.valueOf(deviceOutputSetting.getRelayFunction().name()));
-
+                    newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
+                            deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
+                            com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
+                                    .getRelayType().name()), deviceOutputSetting.getAlias(),
+                                    com.alliander.osgp.domain.core.valueobjects.RelayFunction.valueOf(deviceOutputSetting
+                                            .getRelayFunction().name()));
 
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
@@ -105,18 +109,21 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
                     newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
                     newDeviceOutputSetting.setRelayType(RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
-                    newDeviceOutputSetting.setRelayFunction(RelayFunction.valueOf(deviceOutputSetting.getRelayFunction().name()));
+                    newDeviceOutputSetting.setRelayFunction(RelayFunction.valueOf(deviceOutputSetting
+                            .getRelayFunction().name()));
                     newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
 
                 destination.getOutputSettings().addAll(deviceOutputSettings);
 
+                destination.setAlias(source.getAlias());
                 destination.setActivated(source.isActivated());
                 destination.setContainerCity(source.getContainerCity());
                 destination.setContainerNumber(source.getContainerNumber());
                 destination.setContainerPostalCode(source.getContainerPostalCode());
                 destination.setContainerStreet(source.getContainerStreet());
+                destination.setContainerMunicipality(source.getContainerMunicipality());
                 destination.setDeviceIdentification(source.getDeviceIdentification());
                 destination.setDeviceType(source.getDeviceType());
                 destination.setPublicKeyPresent(source.isPublicKeyPresent());
@@ -129,7 +136,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 }
 
                 destination.setHasSchedule(source.getHasSchedule());
-                destination.setMunicipality(source.getMunicipality());
                 destination.setNetworkAddress(source.getNetworkAddress().toString());
                 destination.setOwner(source.getOwner());
                 destination.getOrganisations().addAll(source.getOrganisations());

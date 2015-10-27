@@ -403,9 +403,10 @@ public class DeviceManagementService {
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getContainerCity(), updateDevice.getContainerPostalCode(),
-                updateDevice.getContainerStreet(), updateDevice.getContainerNumber(), updateDevice.getGpsLatitude(),
-                updateDevice.getGpsLongitude());
+        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerCity(),
+                updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
+                updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
+                updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
         existingDevice.updateOutputSettings(updateDevice.receiveOutputSettings());
 
