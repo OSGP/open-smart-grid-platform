@@ -22,10 +22,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.RelayFunction;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -84,7 +87,8 @@ NetworkAddressInterface {
     @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class, fetch = FetchType.EAGER)
     private final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
 
-    @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @ElementCollection()
     @CollectionTable(name = "device_output_setting", joinColumns = @JoinColumn(name = "device_id"))
     private List<DeviceOutputSetting> outputSettings = new ArrayList<>();
 
@@ -257,6 +261,10 @@ NetworkAddressInterface {
         return Collections.unmodifiableList(this.outputSettings);
     }
 
+    public List<DeviceOutputSetting> receiveOutputSettings() {
+        return this.outputSettings;
+    }
+
     /**
      * Get the owner organisation name of the device.
      *
@@ -358,14 +366,14 @@ NetworkAddressInterface {
         final List<DeviceOutputSetting> defaultConfiguration = new ArrayList<>();
 
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT));
-            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
+            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "Gemeentehuis", RelayFunction.EVENING_MORNING));
+            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, "Belastingdienst", RelayFunction.TARIFF));
             return defaultConfiguration;
         }
 
         if (this.deviceType.equalsIgnoreCase(PSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "UWV", RelayFunction.SPECIAL));
             return defaultConfiguration;
         }
 
