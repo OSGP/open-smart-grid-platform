@@ -35,7 +35,7 @@ public class AdhocService {
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -52,11 +52,6 @@ public class AdhocService {
         return correlationUid;
     }
 
-    /**
-     * @param organisationIdentification
-     * @param synchronizeTimeRequest
-     * @throws FunctionalException
-     */
     public String synchronizeTime(final String organisationIdentification,
             final SynchronizeTimeRequest synchronizeTimeRequest) throws FunctionalException {
         return this.enqueueSynchronizeTimeRequest(organisationIdentification,
