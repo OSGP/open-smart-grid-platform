@@ -35,7 +35,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     private AdhocService adhocService;
 
     public SynchronizeTimeRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_SYNCHRONIZE_TIME);
+        super(DeviceRequestMessageType.SYNCHRONIZE_TIME);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
             final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) message
                     .getObject();
 
-            this.adhocService.requestSynchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
+            this.adhocService.synchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
                     synchronizeTimeRequest, this.responseMessageSender, domain, domainVersion, messageType);
 
         } catch (final JMSException e) {
