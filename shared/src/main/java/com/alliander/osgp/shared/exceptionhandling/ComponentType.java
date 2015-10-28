@@ -23,6 +23,7 @@ public enum ComponentType {
     DOMAIN_SMART_METERING("Osgp Domain Adapter Smart Metering"),
     OSGP_CORE("Osgp Core"),
     PROTOCOL_OSLP("Osgp Protocol Adapter OSLP"),
+    PROTOCOL_DLMS("Osgp Protocol Adapter DLMS"),
 
     UNKNOWN("Unknown");
 
