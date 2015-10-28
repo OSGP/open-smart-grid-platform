@@ -35,7 +35,7 @@ public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessa
     private NotificationService notificationService;
 
     protected SynchronizeTimeResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
+        super(DeviceFunction.SYNCHRONIZE_TIME);
     }
 
     @Override
