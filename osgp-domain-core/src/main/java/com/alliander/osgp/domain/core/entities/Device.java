@@ -36,7 +36,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-NetworkAddressInterface {
+        NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -133,7 +133,6 @@ NetworkAddressInterface {
         this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
-
     }
 
     @Override
@@ -365,10 +364,17 @@ NetworkAddressInterface {
     private List<DeviceOutputSetting> createDefaultConfiguration() {
         final List<DeviceOutputSetting> defaultConfiguration = new ArrayList<>();
 
+        if (this.deviceType == null) {
+            return defaultConfiguration;
+        }
+
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
-            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "Gemeentehuis", RelayFunction.EVENING_MORNING));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, "Belastingdienst", RelayFunction.TARIFF));
+            defaultConfiguration
+                    .add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
+            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "Gemeentehuis",
+                    RelayFunction.EVENING_MORNING));
+            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, "Belastingdienst",
+                    RelayFunction.TARIFF));
             return defaultConfiguration;
         }
 
