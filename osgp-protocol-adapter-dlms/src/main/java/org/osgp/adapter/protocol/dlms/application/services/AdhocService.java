@@ -46,12 +46,12 @@ public class AdhocService {
 
     // === REQUEST Synchronize Time DATA ===
 
-    public void requestSynchronizeTime(final String organisationIdentification, final String deviceIdentification,
+    public void synchronizeTime(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SynchronizeTimeRequest synchronizeTimeRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
-        LOGGER.info("requestSynchronizeTime called for device: {} for organisation: {}", deviceIdentification,
+        LOGGER.info("synchronizeTime called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
         try {
