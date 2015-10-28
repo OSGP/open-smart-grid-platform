@@ -19,7 +19,7 @@ public class DlmsConnectionFactory {
     private final static int W_PORT_SOURCE = 1;
     private final static int W_PORT_DESTINATION = 1;
     private final static boolean LN_REFERENCING_ENABLED = true;
-    private final static int RESPONSE_TIMEOUT = 3000;
+    private final static int RESPONSE_TIMEOUT = 30000;
 
     // TODO REPLACE HARD-CODED IP-ADDRESS!!!
     private final static String REMOTE_HOST = "89.200.91.92";
