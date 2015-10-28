@@ -12,7 +12,6 @@ import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.slf4j.Logger;
@@ -40,13 +39,13 @@ public class ConfigurationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
     @Autowired
-    DlmsDeviceRepository dlmsDeviceRepository;
+    private DomainHelperService domainHelperService;
 
     @Autowired
-    DlmsConnectionFactory dlmsConnectionFactory;
+    private DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
-    SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+    private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     /**
      * Constructor
@@ -147,22 +146,20 @@ public class ConfigurationService {
 
             LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
-            final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            if (device != null) {
-                final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
 
-                try {
-                    final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
-                            alarmNotifications);
-                    if (AccessResultCode.SUCCESS != accessResultCode) {
-                        throw new ProtocolAdapterException(
-                                "AccessResultCode for set alarm notifications was not SUCCESS: " + accessResultCode);
-                    }
-                } finally {
-                    if (conn != null && conn.isConnected()) {
-                        conn.close();
-                    }
+            try {
+                final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
+                        alarmNotifications);
+                if (AccessResultCode.SUCCESS != accessResultCode) {
+                    throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
+                            + accessResultCode);
+                }
+            } finally {
+                if (conn != null && conn.isConnected()) {
+                    conn.close();
                 }
             }
 
@@ -184,8 +181,8 @@ public class ConfigurationService {
             return (OsgpException) e;
         }
 
-        return new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message",
-                e);
+        return new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                "Unexpected exception while handling protocol request/response message", e);
     }
 
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,

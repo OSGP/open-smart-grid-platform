@@ -11,7 +11,6 @@ import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +29,13 @@ public class AdhocService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
-    DlmsDeviceRepository dlmsDeviceRepository;
+    private DomainHelperService domainHelperService;
 
     @Autowired
-    DlmsConnectionFactory dlmsConnectionFactory;
+    private DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
-    SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
+    private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     /**
      * Constructor
@@ -57,14 +56,16 @@ public class AdhocService {
 
         try {
 
-            final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            if (device != null) {
-                final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
 
+            try {
                 this.synchronizeTimeCommandExecutor.execute(conn, null);
-
-                conn.close();
+            } finally {
+                if (conn != null && conn.isConnected()) {
+                    conn.close();
+                }
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
@@ -72,12 +73,20 @@ public class AdhocService {
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during synchronizeTime", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during synchronizeTime", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
+    }
+
+    private OsgpException ensureOsgpException(final Exception e) {
+
+        if (e instanceof OsgpException) {
+            return (OsgpException) e;
+        }
+
+        return new TechnicalException(ComponentType.PROTOCOL_DLMS, "Unexpected exception during synchronizeTime", e);
     }
 
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
