@@ -7,17 +7,25 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
@@ -30,6 +38,15 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
+
+    @Autowired
+    DlmsDeviceRepository dlmsDeviceRepository;
+
+    @Autowired
+    DlmsConnectionFactory dlmsConnectionFactory;
+
+    @Autowired
+    SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     /**
      * Constructor
@@ -85,11 +102,11 @@ public class ConfigurationService {
 
         try {
             // Configuration Object towards the Smart Meter
-            ConfigurationObject configurationObject = setConfigurationObjectRequest
+            final ConfigurationObject configurationObject = setConfigurationObjectRequest
                     .getSetConfigurationObjectRequestData().getConfigurationObject();
 
-            GprsOperationModeType GprsOperationModeType = configurationObject.getGprsOperationMode();
-            ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
+            final GprsOperationModeType GprsOperationModeType = configurationObject.getGprsOperationMode();
+            final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
             LOGGER.info("******************************************************");
             LOGGER.info("Configuration Object   ******************************");
@@ -98,8 +115,9 @@ public class ConfigurationService {
             LOGGER.info("******************************************************");
             LOGGER.info("Flags:   ********************************************");
 
-            for (ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
-                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag.getConfigurationFlagType().toString());
+            for (final ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
+                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag
+                        .getConfigurationFlagType().toString());
                 LOGGER.info("Configuration Object configuration flag enabled:{} ", configurationFlag.isEnabled());
                 LOGGER.info("******************************************************");
             }
@@ -127,27 +145,47 @@ public class ConfigurationService {
 
         try {
 
-            LOGGER.info("*******************************************************");
-            LOGGER.info("*********** Set Alarm Notifications *******************");
-            LOGGER.info("*******************************************************");
-            LOGGER.info("*******************************************************");
-            LOGGER.info("*********   Device:       {}   *******", deviceIdentification);
-            LOGGER.info("*********   Alarm Notifications:       {}   *******", alarmNotifications);
-            LOGGER.info("************************************************************");
-            LOGGER.info("************************************************************");
-            LOGGER.info("************************************************************");
+            LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
+
+            final DlmsDevice device = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+
+            if (device != null) {
+                final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+
+                try {
+                    final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
+                            alarmNotifications);
+                    if (AccessResultCode.SUCCESS != accessResultCode) {
+                        throw new ProtocolAdapterException(
+                                "AccessResultCode for set alarm notifications was not SUCCESS: " + accessResultCode);
+                    }
+                } finally {
+                    if (conn != null && conn.isConnected()) {
+                        conn.close();
+                    }
+                }
+            }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setAlarmNotifications", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
+    }
+
+    private OsgpException ensureOsgpException(final Exception e) {
+
+        if (e instanceof OsgpException) {
+            return (OsgpException) e;
+        }
+
+        return new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message",
+                e);
     }
 
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
