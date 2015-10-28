@@ -34,8 +34,8 @@ public class AdhocService {
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SynchronizeTimeRequest requestData)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest)
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -44,22 +44,17 @@ public class AdhocService {
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
+                deviceIdentification, synchronizeTimeRequest);
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    /**
-     * @param organisationIdentification
-     * @param requestData
-     * @throws FunctionalException
-     */
-    public String requestSynchronizeTimeData(final String organisationIdentification,
-            final SynchronizeTimeRequest requestData) throws FunctionalException {
-        return this.enqueueSynchronizeTimeRequest(organisationIdentification, requestData.getDeviceIdentification(),
-                requestData);
+    public String synchronizeTime(final String organisationIdentification,
+            final SynchronizeTimeRequest synchronizeTimeRequest) throws FunctionalException {
+        return this.enqueueSynchronizeTimeRequest(organisationIdentification,
+                synchronizeTimeRequest.getDeviceIdentification(), synchronizeTimeRequest);
     }
 }
