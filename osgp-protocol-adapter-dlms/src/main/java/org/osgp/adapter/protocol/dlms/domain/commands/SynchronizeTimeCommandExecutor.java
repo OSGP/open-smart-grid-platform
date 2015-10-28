@@ -13,7 +13,7 @@ import org.openmuc.jdlms.SetRequestParameter;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class SynchronizeTimeCommandExecutor implements CommandExecutor {
+public class SynchronizeTimeCommandExecutor implements CommandExecutor<DataObject> {
 
     private static final int CLASS_ID = 8;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.1.0.0.255");
