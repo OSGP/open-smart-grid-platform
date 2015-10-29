@@ -4,6 +4,7 @@
 
 [![Build Status](http://54.77.62.182/job/OSGP_Integration-Tests_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Integration-Tests_development)
 
+
 ### Component Description
 
 This behaviour driven test suite uses FitNesse and mock frameworks.
