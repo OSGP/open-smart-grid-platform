@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.devicemonitoring;
 
 import static org.mockito.Matchers.any;
@@ -59,7 +66,6 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
@@ -67,6 +73,7 @@ import com.alliander.osgp.domain.core.valueobjects.PowerUsageData;
 import com.alliander.osgp.domain.core.valueobjects.PsldData;
 import com.alliander.osgp.domain.core.valueobjects.RelayData;
 import com.alliander.osgp.domain.core.valueobjects.SsldData;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -128,7 +135,7 @@ public class GetActualPowerUsageSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -187,25 +194,30 @@ public class GetActualPowerUsageSteps {
     public void givenAnAuthorisedOrganisation() {
         LOGGER.info("GIVEN: the get actual power usage request refers to an organisation that is authorised.");
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.MONITORING).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the get actual power usage oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")
-    public void givenAnOslpResponse(final String recordTime, final String meterType, final String totalConsumedEnergy, final String actualConsumedPower,
-            final String psldDataTotalLightHours, final String actualCurrent1, final String actualCurrent2, final String actualCurrent3,
-            final String actualPower1, final String actualPower2, final String actualPower3, final String averagePowerFactor1,
-            final String averagePowerFactor2, final String averagePowerFactor3, final String relayData1Index, final String relayData1LightingMinutes,
-            final String relayData2Index, final String relayData2LightingMinutes) {
+    public void givenAnOslpResponse(final String recordTime, final String meterType, final String totalConsumedEnergy,
+            final String actualConsumedPower, final String psldDataTotalLightHours, final String actualCurrent1,
+            final String actualCurrent2, final String actualCurrent3, final String actualPower1,
+            final String actualPower2, final String actualPower3, final String averagePowerFactor1,
+            final String averagePowerFactor2, final String averagePowerFactor3, final String relayData1Index,
+            final String relayData1LightingMinutes, final String relayData2Index, final String relayData2LightingMinutes) {
         LOGGER.info(
                 "GIVEN: the get actual power usage oslp message from the device contains {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} and {}.",
-                new Object[] { recordTime, meterType, totalConsumedEnergy, actualConsumedPower, psldDataTotalLightHours, actualCurrent1, actualCurrent2,
-                        actualCurrent3, actualPower1, actualPower2, actualPower3, averagePowerFactor1, averagePowerFactor2, averagePowerFactor3,
+                new Object[] { recordTime, meterType, totalConsumedEnergy, actualConsumedPower,
+                        psldDataTotalLightHours, actualCurrent1, actualCurrent2, actualCurrent3, actualPower1,
+                        actualPower2, actualPower3, averagePowerFactor1, averagePowerFactor2, averagePowerFactor3,
                         relayData1Index, relayData1LightingMinutes, relayData2Index, relayData2LightingMinutes });
 
         MeterType apuMeterType = null;
@@ -298,43 +310,58 @@ public class GetActualPowerUsageSteps {
                 .newBuilder()
                 .setPowerUsageData(
                         com.alliander.osgp.oslp.Oslp.PowerUsageData
+                        .newBuilder()
+                        .setSsldData(
+                                com.alliander.osgp.oslp.Oslp.SsldData
                                 .newBuilder()
-                                .setSsldData(
-                                        com.alliander.osgp.oslp.Oslp.SsldData
-                                                .newBuilder()
-                                                .setActualCurrent1(apuActualCurrent1)
-                                                .setActualCurrent2(apuActualCurrent2)
-                                                .setActualCurrent3(apuActualCurrent3)
-                                                .setActualPower1(apuActualPower1)
-                                                .setActualPower2(apuActualPower2)
-                                                .setActualPower3(apuActualPower3)
-                                                .setAveragePowerFactor1(apuAveragePowerFactor1)
-                                                .setAveragePowerFactor2(apuAveragePowerFactor2)
-                                                .setAveragePowerFactor3(apuAveragePowerFactor3)
+                                .setActualCurrent1(apuActualCurrent1)
+                                .setActualCurrent2(apuActualCurrent2)
+                                .setActualCurrent3(apuActualCurrent3)
+                                .setActualPower1(apuActualPower1)
+                                .setActualPower2(apuActualPower2)
+                                .setActualPower3(apuActualPower3)
+                                .setAveragePowerFactor1(apuAveragePowerFactor1)
+                                .setAveragePowerFactor2(apuAveragePowerFactor2)
+                                .setAveragePowerFactor3(apuAveragePowerFactor3)
+                                .addRelayData(
+                                        com.alliander.osgp.oslp.Oslp.RelayData
+                                        .newBuilder()
+                                        .setIndex(
+                                                OslpUtils
+                                                .integerToByteString(relayData1IndexInt))
+                                                .setTotalLightingMinutes(relayData1LightingMinutesInt)
+                                                .build())
                                                 .addRelayData(
-                                                        com.alliander.osgp.oslp.Oslp.RelayData.newBuilder()
-                                                                .setIndex(OslpUtils.integerToByteString(relayData1IndexInt))
-                                                                .setTotalLightingMinutes(relayData1LightingMinutesInt).build())
-                                                .addRelayData(
-                                                        com.alliander.osgp.oslp.Oslp.RelayData.newBuilder()
-                                                                .setIndex(OslpUtils.integerToByteString(relayData2IndexInt))
-                                                                .setTotalLightingMinutes(relayData2LightingMinutesInt).build()))
-                                .setPsldData(com.alliander.osgp.oslp.Oslp.PsldData.newBuilder().setTotalLightingHours(apuPsldDataTotalLightHours).build())
-                                .setRecordTime(recordTime).setTotalConsumedEnergy(apuTotalConsumedEnergy).setActualConsumedPower(apuActualConsumedPower)
-                                .setMeterType(apuMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType.valueOf(apuMeterType.name())).build())
-                .setStatus(Status.OK).build();
+                                                        com.alliander.osgp.oslp.Oslp.RelayData
+                                                        .newBuilder()
+                                                        .setIndex(
+                                                                OslpUtils
+                                                                .integerToByteString(relayData2IndexInt))
+                                                                .setTotalLightingMinutes(relayData2LightingMinutesInt)
+                                                                .build()))
+                                                                .setPsldData(
+                                                                        com.alliander.osgp.oslp.Oslp.PsldData.newBuilder()
+                                                                        .setTotalLightingHours(apuPsldDataTotalLightHours).build())
+                                                                        .setRecordTime(recordTime)
+                                                                        .setTotalConsumedEnergy(apuTotalConsumedEnergy)
+                                                                        .setActualConsumedPower(apuActualConsumedPower)
+                                                                        .setMeterType(
+                                                                                apuMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType
+                                                                                        .valueOf(apuMeterType.name())).build()).setStatus(Status.OK).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetActualPowerUsageResponse(oslpResponse).build()).build();
 
-        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse, this.channelMock, this.device.getNetworkAddress());
+        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
+                this.channelMock, this.device.getNetworkAddress());
         this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
         this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
     }
 
     @DomainStep("a get get actual power usage response request with correlationId (.*) and deviceId (.*)")
     public void givenAGetActualPowerUsageResponseRequest(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: \"a get actual power usage response request with correlationId {} and deviceId {}\".", correlationId, deviceId);
+        LOGGER.info("GIVEN: \"a get actual power usage response request with correlationId {} and deviceId {}\".",
+                correlationId, deviceId);
 
         this.setUp();
 
@@ -347,13 +374,16 @@ public class GetActualPowerUsageSteps {
     }
 
     @DomainStep("a get actual power usage response message with correlationId (.*), deviceId (.*), qresult (.*), qdescription (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) is found in the queue (.*)")
-    public void givenAGetActualPowerUsageResponseMessageIsFoundInQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final String recordTime, final String meterType, final String totalConsumedEnergy, final String actualConsumedPower,
-            final String psldDataTotalLightHours, final String actualCurrent1, final String actualCurrent2, final String actualCurrent3,
-            final String actualPower1, final String actualPower2, final String actualPower3, final String averagePowerFactor1,
-            final String averagePowerFactor2, final String averagePowerFactor3, final String relayData1Index, final String relayData1LightingMinutes,
+    public void givenAGetActualPowerUsageResponseMessageIsFoundInQueue(final String correlationId,
+            final String deviceId, final String qresult, final String qdescription, final String recordTime,
+            final String meterType, final String totalConsumedEnergy, final String actualConsumedPower,
+            final String psldDataTotalLightHours, final String actualCurrent1, final String actualCurrent2,
+            final String actualCurrent3, final String actualPower1, final String actualPower2,
+            final String actualPower3, final String averagePowerFactor1, final String averagePowerFactor2,
+            final String averagePowerFactor3, final String relayData1Index, final String relayData1LightingMinutes,
             final String relayData2Index, final String relayData2LightingMinutes, final Boolean isFound) {
-        LOGGER.info("GIVEN: \"a get actual power usage response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
+        LOGGER.info(
+                "GIVEN: \"a get actual power usage response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
                 correlationId, deviceId, qresult, qdescription, isFound);
 
         if (isFound) {
@@ -366,14 +396,16 @@ public class GetActualPowerUsageSteps {
 
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
 
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    exception = (OsgpException) dataObject;
                 } else {
 
-                    final MeterType metertype = StringUtils.isBlank(meterType) ? null : Enum.valueOf(MeterType.class, meterType);
+                    final MeterType metertype = StringUtils.isBlank(meterType) ? null : Enum.valueOf(MeterType.class,
+                            meterType);
 
                     DateTime dateTime = null;
                     if (!recordTime.equals("")) {
@@ -383,20 +415,27 @@ public class GetActualPowerUsageSteps {
 
                     PowerUsageData powerUsageData = null;
                     if (!totalConsumedEnergy.equals("") && !actualConsumedPower.equals("")) {
-                        powerUsageData = new PowerUsageData(dateTime, metertype, Long.parseLong(totalConsumedEnergy), Long.parseLong(actualConsumedPower));
+                        powerUsageData = new PowerUsageData(dateTime, metertype, Long.parseLong(totalConsumedEnergy),
+                                Long.parseLong(actualConsumedPower));
 
                         final PsldData psldData = new PsldData(Integer.valueOf(psldDataTotalLightHours));
 
                         final List<RelayData> relayDataList = new ArrayList<RelayData>();
-                        // Create RelayData instances for relay indexes and minutes
+                        // Create RelayData instances for relay indexes and
+                        // minutes
                         // lighting time.
-                        relayDataList.add(new RelayData(Integer.parseInt(relayData1Index), Integer.parseInt(relayData1LightingMinutes)));
-                        relayDataList.add(new RelayData(Integer.parseInt(relayData2Index), Integer.parseInt(relayData2LightingMinutes)));
+                        relayDataList.add(new RelayData(Integer.parseInt(relayData1Index), Integer
+                                .parseInt(relayData1LightingMinutes)));
+                        relayDataList.add(new RelayData(Integer.parseInt(relayData2Index), Integer
+                                .parseInt(relayData2LightingMinutes)));
 
                         // Construct SsldData using the list of RelayData.
-                        final SsldData ssldData = new SsldData(Integer.valueOf(actualCurrent1), Integer.valueOf(actualCurrent2),
-                                Integer.valueOf(actualCurrent3), Integer.valueOf(actualPower1), Integer.valueOf(actualPower2), Integer.valueOf(actualPower3),
-                                Integer.valueOf(averagePowerFactor1), Integer.valueOf(averagePowerFactor2), Integer.valueOf(averagePowerFactor3), relayDataList);
+                        final SsldData ssldData = new SsldData(Integer.valueOf(actualCurrent1),
+                                Integer.valueOf(actualCurrent2), Integer.valueOf(actualCurrent3),
+                                Integer.valueOf(actualPower1), Integer.valueOf(actualPower2),
+                                Integer.valueOf(actualPower3), Integer.valueOf(averagePowerFactor1),
+                                Integer.valueOf(averagePowerFactor2), Integer.valueOf(averagePowerFactor3),
+                                relayDataList);
 
                         powerUsageData.setPsldData(psldData);
                         powerUsageData.setSsldData(ssldData);
@@ -404,7 +443,8 @@ public class GetActualPowerUsageSteps {
                         dataObject = powerUsageData;
                     }
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result,
+                        exception, dataObject);
 
                 when(messageMock.getObject()).thenReturn(message);
 
@@ -428,7 +468,8 @@ public class GetActualPowerUsageSteps {
 
         try {
 
-            this.getActualPowerUsageAsyncResponse = this.deviceMonitoringEndpoint.getActualPowerUsage(ORGANISATION_ID, this.request);
+            this.getActualPowerUsageAsyncResponse = this.deviceMonitoringEndpoint.getActualPowerUsage(ORGANISATION_ID,
+                    this.request);
 
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -441,7 +482,8 @@ public class GetActualPowerUsageSteps {
         LOGGER.info("WHEN: \"the actual power usage response request is received\".");
 
         try {
-            this.response = this.deviceMonitoringEndpoint.getGetActualPowerUsageResponse(ORGANISATION_ID, this.getActualPowerUsageAsyncRequest);
+            this.response = this.deviceMonitoringEndpoint.getGetActualPowerUsageResponse(ORGANISATION_ID,
+                    this.getActualPowerUsageAsyncRequest);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -452,13 +494,19 @@ public class GetActualPowerUsageSteps {
 
     @DomainStep("the get actual power usage request should return an async response with a correlationId and deviceId (.*)")
     public boolean thenGetActualPowerUsageShouldReturnAsyncResponse(final String deviceId) {
-        LOGGER.info("THEN: \"the get actual power usage request should return an async response with a correlationId and deviceId {}\".", deviceId);
+        LOGGER.info(
+                "THEN: \"the get actual power usage request should return an async response with a correlationId and deviceId {}\".",
+                deviceId);
 
         try {
-            Assert.assertNotNull("Get Actual Power Async Response should not be null", this.getActualPowerUsageAsyncResponse);
-            Assert.assertNotNull("Async Response should not be null", this.getActualPowerUsageAsyncResponse.getAsyncResponse());
-            Assert.assertNotNull("CorrelationId should not be null", this.getActualPowerUsageAsyncResponse.getAsyncResponse().getCorrelationUid());
-            Assert.assertNotNull("DeviceId should not be null", this.getActualPowerUsageAsyncResponse.getAsyncResponse().getDeviceId());
+            Assert.assertNotNull("Get Actual Power Async Response should not be null",
+                    this.getActualPowerUsageAsyncResponse);
+            Assert.assertNotNull("Async Response should not be null",
+                    this.getActualPowerUsageAsyncResponse.getAsyncResponse());
+            Assert.assertNotNull("CorrelationId should not be null", this.getActualPowerUsageAsyncResponse
+                    .getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("DeviceId should not be null", this.getActualPowerUsageAsyncResponse
+                    .getAsyncResponse().getDeviceId());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -475,13 +523,13 @@ public class GetActualPowerUsageSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
 
-                Assert.assertTrue("Message should contain get actual power usage request.", this.oslpRequest.getPayloadMessage()
-                        .hasGetActualPowerUsageRequest());
+                Assert.assertTrue("Message should contain get actual power usage request.", this.oslpRequest
+                        .getPayloadMessage().hasGetActualPowerUsageRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -491,14 +539,16 @@ public class GetActualPowerUsageSteps {
     }
 
     @DomainStep("an ovl get actual power usage result message with result (.*) and description (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlGetActualPowerUsageResultMessageShouldBeSentToTheOvlOutQueue(final String result, final String description) {
-        LOGGER.info("THEN: \"an ovl get actual power usage result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
+    public boolean thenAnOvlGetActualPowerUsageResultMessageShouldBeSentToTheOvlOutQueue(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"an ovl get actual power usage result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
                 result, description);
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
 
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             // Check the result.
             final String expected = result.equals("NULL") ? null : result;
@@ -514,23 +564,26 @@ public class GetActualPowerUsageSteps {
     }
 
     @DomainStep("the get get actual power usage response request should return a get actual power usage response with result (.*) and description (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*)")
-    public boolean thenTheGetActualPowerUsageResponseRequestShouldReturnAGetActualPowerUsageResponse(final String result, final String description,
-            final String recordTime, final String meterType, final String totalConsumedEnergy, final String actualConsumedPower,
-            final String psldDataTotalLightHours, final String actualCurrent1, final String actualCurrent2, final String actualCurrent3,
-            final String actualPower1, final String actualPower2, final String actualPower3, final String averagePowerFactor1,
-            final String averagePowerFactor2, final String averagePowerFactor3) {
+    public boolean thenTheGetActualPowerUsageResponseRequestShouldReturnAGetActualPowerUsageResponse(
+            final String result, final String description, final String recordTime, final String meterType,
+            final String totalConsumedEnergy, final String actualConsumedPower, final String psldDataTotalLightHours,
+            final String actualCurrent1, final String actualCurrent2, final String actualCurrent3,
+            final String actualPower1, final String actualPower2, final String actualPower3,
+            final String averagePowerFactor1, final String averagePowerFactor2, final String averagePowerFactor3) {
         LOGGER.info(
                 "THEN: \"the get get actual power usage response request should return a get actual power usage response with result {}, description {} and recordTime {}, meterType {}, totalConsumedEnergy {}"
                         + "	actualConsumedPower {}, psldDataTotalLightHours {}, actualCurrent1 {}, actualCurrent2 {}, actualCurrent3 {} ,"
                         + "	actualPower1 {}, actualPower2 {}, actualPower3 {}, 	averagePowerFactor1 {}, averagePowerFactor2 {}, averagePowerFactor3 {} ",
-                result, description, recordTime, meterType, totalConsumedEnergy, actualConsumedPower, psldDataTotalLightHours, actualCurrent1, actualCurrent2,
-                actualCurrent3, actualPower1, actualPower2, actualPower3, averagePowerFactor1, averagePowerFactor2, averagePowerFactor3);
+                        result, description, recordTime, meterType, totalConsumedEnergy, actualConsumedPower,
+                        psldDataTotalLightHours, actualCurrent1, actualCurrent2, actualCurrent3, actualPower1, actualPower2,
+                        actualPower3, averagePowerFactor1, averagePowerFactor2, averagePowerFactor3);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 Assert.assertNotNull("Response should not be null", this.response);
@@ -539,7 +592,8 @@ public class GetActualPowerUsageSteps {
                 String expected = result.equals("NULL") ? null : result;
                 String actual = this.response.getResult().toString();
 
-                Assert.assertTrue("Invalid result, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                Assert.assertTrue("Invalid result, found: " + actual + " , expected: " + expected,
+                        actual.equals(expected));
 
                 if (this.response.getResult().equals("OK")) {
                     // Check if the PowerUsageData is not null.
@@ -547,15 +601,19 @@ public class GetActualPowerUsageSteps {
 
                     // check if recordTime is not null
                     expected = recordTime.equals("NULL") ? null : recordTime;
-                    actual = this.response.getPowerUsageData().getRecordTime() == null ? null : this.response.getPowerUsageData().getRecordTime().toString();
+                    actual = this.response.getPowerUsageData().getRecordTime() == null ? null : this.response
+                            .getPowerUsageData().getRecordTime().toString();
 
-                    Assert.assertTrue("Invalid recordTime, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                    Assert.assertTrue("Invalid recordTime, found: " + actual + " , expected: " + expected,
+                            actual.equals(expected));
 
                     // check if the meterType is not null
                     expected = meterType.equals("NULL") ? null : meterType;
-                    actual = this.response.getPowerUsageData().getMeterType() == null ? null : this.response.getPowerUsageData().getMeterType().toString();
+                    actual = this.response.getPowerUsageData().getMeterType() == null ? null : this.response
+                            .getPowerUsageData().getMeterType().toString();
 
-                    Assert.assertTrue("Invalid metertype, found: " + actual + " , expected: " + expected, actual.equals(expected));
+                    Assert.assertTrue("Invalid metertype, found: " + actual + " , expected: " + expected,
+                            actual.equals(expected));
 
                 }
             }
@@ -570,10 +628,12 @@ public class GetActualPowerUsageSteps {
     // === Private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
+                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
-        this.deviceMonitoringEndpoint = new DeviceMonitoringEndpoint(this.deviceMonitoringService, new DeviceMonitoringMapper());
+        this.deviceMonitoringEndpoint = new DeviceMonitoringEndpoint(this.deviceMonitoringService,
+                new DeviceMonitoringMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -588,9 +648,12 @@ public class GetActualPowerUsageSteps {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 }

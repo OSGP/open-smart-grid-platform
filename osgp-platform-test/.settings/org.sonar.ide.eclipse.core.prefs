@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 extraProperties=
-projectKey=com.alliander.osgp\:osgp-platform-test
-serverUrl=http\://localhost\:9000
+lastAnalysisDate=1427983187000
+projectKey=com.alliander.osgp\:osgp-platform-test\:R3
+serverUrl=http\://buildserver01.cloudapp.net\:9000
 version=2

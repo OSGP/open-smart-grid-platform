@@ -4,7 +4,8 @@ License information: Apache 2.0. The code files on this master branch don't have
 
 ### Build Status
 
-[![Build Status](http://54.77.62.182/job/OSGP_Integration-Tests_master/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Integration-Tests_master)
+[![Build Status](http://54.77.62.182/job/OSGP_Integration-Tests_development/badge/icon?style=plastic)](http://54.77.62.182/job/OSGP_Integration-Tests_development)
+
 
 ### Component Description
 

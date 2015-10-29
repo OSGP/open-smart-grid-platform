@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.devicemanagement;
 
 import static org.mockito.Matchers.any;
@@ -141,7 +148,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         authorizations.add(new DeviceAuthorization(this.device, this.organisation, DeviceFunctionGroup.MANAGEMENT));
 
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("a received event notification (.*), (.*) and (.*) from (.*)")
@@ -159,7 +166,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         this.eventsPage = new PageImpl<Event>(eventList, this.pageRequest, eventList.size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-                .thenReturn(this.eventsPage);
+        .thenReturn(this.eventsPage);
     }
 
     @DomainStep("a retrieve event notification request")
@@ -172,10 +179,10 @@ public class RetrieveReceivedEventNotificationsSteps {
         this.request.setPageSize(DEFAULT_PAGESIZE);
 
         this.request.setDeviceIdentification(this.device.getDeviceIdentification());
-        //         this.specifications =
-        //         Specifications.where(this.eventSpecifications.isAuthorized(this.organisation));
-        //         this.pageRequest = new PageRequest(DEFAULT_PAGE, DEFAULT_PAGESIZE,
-        //         Sort.Direction.DESC, "creationTime");
+        // this.specifications =
+        // Specifications.where(this.eventSpecifications.isAuthorized(this.organisation));
+        // this.pageRequest = new PageRequest(DEFAULT_PAGE, DEFAULT_PAGESIZE,
+        // Sort.Direction.DESC, "creationTime");
 
     }
 
@@ -211,7 +218,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         LOGGER.info("events: {}", this.eventsPage.getContent().size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-                .thenReturn(this.eventsPage);
+        .thenReturn(this.eventsPage);
     }
 
     @DomainStep("(.*) received event notifications")
@@ -222,7 +229,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         int totalPages = 0;
         if (count != null && count != "EMPTY") {
             for (int i = 0; i < Math.min(Integer.parseInt(count), Math.min(this.request.getPageSize(), PAGESIZELIMIT)); i++) {
-                eventList.add(new Event(this.device, this.event.getEvent(), this.event.getDescription(), this.event
+                eventList.add(new Event(this.device, this.event.getEventType(), this.event.getDescription(), this.event
                         .getIndex()));
             }
             totalPages = Integer.parseInt(count);
@@ -231,7 +238,7 @@ public class RetrieveReceivedEventNotificationsSteps {
                 this.request.getPageSize(), PAGESIZELIMIT)), totalPages);
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-                .thenReturn(this.eventsPage);
+        .thenReturn(this.eventsPage);
     }
 
     @DomainStep("the event notification must be filtered on (.*), (.*), and (.*)")
@@ -328,7 +335,7 @@ public class RetrieveReceivedEventNotificationsSteps {
 
     /**
      * Verify that the correct number events are returned.
-     * 
+     *
      * @param number
      *            The number of expected events
      * @return
@@ -356,7 +363,7 @@ public class RetrieveReceivedEventNotificationsSteps {
     /**
      * Verify that the page object has the correct total values for total
      * entities and total pages.
-     * 
+     *
      * @param totalNofEventNotifications
      * @param totalNofPages
      * @return

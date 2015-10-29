@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.devicemanagement;
 
 import static org.mockito.Matchers.any;
@@ -61,8 +68,8 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -123,7 +130,7 @@ public class SetEventNotificationsSteps {
     @Autowired
     private DeviceAuthorizationRepository authorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository logItemRepositoryMock;
+    private DeviceLogItemRepository logItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -146,9 +153,11 @@ public class SetEventNotificationsSteps {
     // === GIVEN ===
 
     @DomainStep("a valid set event notifications request with (.*) and (.*)")
-    public void givenAValidSetEventNotificationsRequest(final String device, final String notifications) throws NoSuchAlgorithmException,
-            InvalidKeySpecException, IOException {
-        LOGGER.info("GIVEN: \"a valid set event notifications request with (.*) and (.*)\" with device [{}] and notifications [{}].", device, notifications);
+    public void givenAValidSetEventNotificationsRequest(final String device, final String notifications)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+        LOGGER.info(
+                "GIVEN: \"a valid set event notifications request with (.*) and (.*)\" with device [{}] and notifications [{}].",
+                device, notifications);
 
         this.setUp();
 
@@ -158,9 +167,11 @@ public class SetEventNotificationsSteps {
     }
 
     @DomainStep("the set event notifications request refers to an existing device (.*) that will always respond OK")
-    public void givenTheSetEventNotificationsRequestRefersToAnExistingDevice(final String device) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            IOException {
-        LOGGER.info("GIVEN: \"the set event notifications request refers to an existing device (.*) that will always respond OK\" with device [{}].", device);
+    public void givenTheSetEventNotificationsRequestRefersToAnExistingDevice(final String device)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+        LOGGER.info(
+                "GIVEN: \"the set event notifications request refers to an existing device (.*) that will always respond OK\" with device [{}].",
+                device);
 
         // existing device
         this.device = this.createDevice(device);
@@ -171,13 +182,15 @@ public class SetEventNotificationsSteps {
         when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
 
         // device always responds ok
-        final com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse.newBuilder()
-                .setStatus(Status.OK).build();
+        final com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetEventNotificationsResponse
+                .newBuilder().setStatus(Status.OK).build();
 
         this.oslpEnvelope = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
-                .withPayloadMessage(Message.newBuilder().setSetEventNotificationsResponse(oslpResponse).build()).build();
+                .withPayloadMessage(Message.newBuilder().setSetEventNotificationsResponse(oslpResponse).build())
+                .build();
 
-        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpEnvelope, this.channelMock, this.device.getNetworkAddress());
+        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpEnvelope,
+                this.channelMock, this.device.getNetworkAddress());
         this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
         this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
     }
@@ -189,8 +202,10 @@ public class SetEventNotificationsSteps {
         this.organisation = this.createOrganisation();
         this.authorization = this.createAuthorization();
 
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(this.organisation);
-        when(this.authorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(Arrays.asList(this.authorization));
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(
+                this.organisation);
+        when(this.authorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(
+                Arrays.asList(this.authorization));
     }
 
     // === WHEN ===
@@ -200,7 +215,8 @@ public class SetEventNotificationsSteps {
         LOGGER.info("WHEN: \"the set event notifications request is received on OSGP\".");
 
         try {
-            this.setEventNotificationsAsyncResponse = this.deviceManagementEndpoint.setEventNotifications(ORGANISATION_ID_OWNER, this.request);
+            this.setEventNotificationsAsyncResponse = this.deviceManagementEndpoint.setEventNotifications(
+                    ORGANISATION_ID_OWNER, this.request);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -210,15 +226,20 @@ public class SetEventNotificationsSteps {
     // === THEN ===
 
     @DomainStep("the set event notifications request should return an async response with a correlationId and deviceId (.*)")
-    public boolean thenTheSetEventNotificationsRequestShouldReturnASetEventNotificationsResponseWithACorrelationID(final String deviceId) {
-        LOGGER.info("THEN: \"the set event notifications request should return a set event notifications response with a correlationId and deviceId {}\".",
+    public boolean thenTheSetEventNotificationsRequestShouldReturnASetEventNotificationsResponseWithACorrelationID(
+            final String deviceId) {
+        LOGGER.info(
+                "THEN: \"the set event notifications request should return a set event notifications response with a correlationId and deviceId {}\".",
                 deviceId);
 
         // TODO Add check on device id
         try {
-            Assert.assertNotNull("Set Event Notifications Async Response should not be null", this.setEventNotificationsAsyncResponse);
-            Assert.assertNotNull("Async Response should not be null", this.setEventNotificationsAsyncResponse.getAsyncResponse());
-            Assert.assertNotNull("CorrelationId should not be null", this.setEventNotificationsAsyncResponse.getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("Set Event Notifications Async Response should not be null",
+                    this.setEventNotificationsAsyncResponse);
+            Assert.assertNotNull("Async Response should not be null",
+                    this.setEventNotificationsAsyncResponse.getAsyncResponse());
+            Assert.assertNotNull("CorrelationId should not be null", this.setEventNotificationsAsyncResponse
+                    .getAsyncResponse().getCorrelationUid());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -229,19 +250,20 @@ public class SetEventNotificationsSteps {
 
     @DomainStep("a set event notifications oslp message is sent to device (.*) should be (.*)")
     public boolean thenASetEventNotificationsOslpMessageShouldBeSent(final String device, final Boolean isMessageSent) {
-        LOGGER.info("THEN: \"a set event notifications oslp message is sent to device [{}] should be [{}]\".", device, isMessageSent);
+        LOGGER.info("THEN: \"a set event notifications oslp message is sent to device [{}] should be [{}]\".", device,
+                isMessageSent);
 
         final int count = isMessageSent ? 1 : 0;
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpResponse = argument.getValue();
 
-                Assert.assertTrue("Message should contain set event notifications request.", this.oslpResponse.getPayloadMessage()
-                        .hasSetEventNotificationsRequest());
+                Assert.assertTrue("Message should contain set event notifications request.", this.oslpResponse
+                        .getPayloadMessage().hasSetEventNotificationsRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -251,14 +273,16 @@ public class SetEventNotificationsSteps {
     }
 
     @DomainStep("an ovl set event notifications result message with result (.*) and description (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlSetEventNotificationsResultMessageShouldBeSentToTheOvlOutQueue(final String result, final String description) {
-        LOGGER.info("THEN: \"an ovl set event notifications result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
+    public boolean thenAnOvlSetEventNotificationsResultMessageShouldBeSentToTheOvlOutQueue(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"an ovl set event notifications result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
                 result, description);
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
 
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();
@@ -274,7 +298,8 @@ public class SetEventNotificationsSteps {
 
     @DomainStep("a set event notifications oslp message should be sent to device (.*)")
     public boolean thenASetEventNotificationOslpMessageShouldBeSent(final String device) {
-        LOGGER.info("THEN: \"a set event notifications oslp message should be sent to device (.*)\" with device [{}].", device);
+        LOGGER.info("THEN: \"a set event notifications oslp message should be sent to device (.*)\" with device [{}].",
+                device);
 
         try {
             verify(this.channelMock, timeout(1000).times(1)).write(any(OslpEnvelope.class));
@@ -288,7 +313,9 @@ public class SetEventNotificationsSteps {
 
     @DomainStep("a set event notifications oslp message should not be sent to device (.*)")
     public boolean thenASetEventNotificationOslpMessageShouldNotBeSent(final String device) throws Throwable {
-        LOGGER.info("THEN: \"a set event notifications oslp message should not be sent to device (.*)\" with device [{}].", device);
+        LOGGER.info(
+                "THEN: \"a set event notifications oslp message should not be sent to device (.*)\" with device [{}].",
+                device);
 
         try {
             verify(this.channelMock, timeout(1000).times(0)).write(any(OslpEnvelope.class));
@@ -308,7 +335,8 @@ public class SetEventNotificationsSteps {
 
     @DomainStep("the set event notifications request should return an error (.*)")
     public boolean thenTheSetEventNotificationsRequestShouldReturnAnError(final String errorMessage) {
-        LOGGER.info("THEN: \"the set event notifications request should return an error (.*)\" with error [{}].", errorMessage);
+        LOGGER.info("THEN: \"the set event notifications request should return an error (.*)\" with error [{}].",
+                errorMessage);
 
         try {
             Assert.assertEquals(errorMessage.toUpperCase(), this.throwable.getClass().getSimpleName().toUpperCase());
@@ -320,8 +348,10 @@ public class SetEventNotificationsSteps {
     }
 
     @DomainStep("a get set event notifications response request with correlationId (.*) and deviceId (.*)")
-    public void givenAGetSetEventNotificationsResultRequestWithCorrelationId(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: \"a get set event notifications response with correlationId {} and deviceId {}\".", correlationId, deviceId);
+    public void givenAGetSetEventNotificationsResultRequestWithCorrelationId(final String correlationId,
+            final String deviceId) {
+        LOGGER.info("GIVEN: \"a get set event notifications response with correlationId {} and deviceId {}\".",
+                correlationId, deviceId);
 
         this.setUp();
 
@@ -335,9 +365,10 @@ public class SetEventNotificationsSteps {
     }
 
     @DomainStep("a set event notifications response message with correlationId (.*), deviceId (.*), qresult (.*) and qdescription (.*) is found in the queue (.*)")
-    public void givenASetEventNotificationsResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final Boolean isFound) {
-        LOGGER.info("GIVEN: \"a set event notifications response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
+    public void givenASetEventNotificationsResponseMessageIsFoundInTheQueue(final String correlationId,
+            final String deviceId, final String qresult, final String qdescription, final Boolean isFound) {
+        LOGGER.info(
+                "GIVEN: \"a set event notifications response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
                 correlationId, deviceId, qresult, qdescription, isFound);
 
         if (isFound) {
@@ -349,12 +380,14 @@ public class SetEventNotificationsSteps {
                 when(messageMock.getStringProperty("DeviceIdentification")).thenReturn(deviceId);
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    exception = (OsgpException) dataObject;
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID_OWNER, deviceId, result, exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID_OWNER, deviceId,
+                        result, exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 LOGGER.error("given a set event notifications response", e);
@@ -373,7 +406,8 @@ public class SetEventNotificationsSteps {
 
         try {
 
-            this.response = this.deviceManagementEndpoint.getSetEventNotificationsResponse(ORGANISATION_ID_OWNER, this.setEventNotificationsAsyncRequest);
+            this.response = this.deviceManagementEndpoint.getSetEventNotificationsResponse(ORGANISATION_ID_OWNER,
+                    this.setEventNotificationsAsyncRequest);
 
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -382,8 +416,8 @@ public class SetEventNotificationsSteps {
     }
 
     @DomainStep("the get set event notifications response request should return a set event notifications response with result (.*) and description (.*)")
-    public boolean thenTheGetSetEventNotificationsResultRequestShouldReturnAGetSetEventNotificationsResultResponseWithResult(final String result,
-            final String description) {
+    public boolean thenTheGetSetEventNotificationsResultRequestShouldReturnAGetSetEventNotificationsResultResponseWithResult(
+            final String result, final String description) {
         LOGGER.info(
                 "THEN: \"the get set event notifications result request should return a get set event notifications response with result {} and description {}",
                 result, description);
@@ -392,7 +426,8 @@ public class SetEventNotificationsSteps {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 Assert.assertNotNull("Response should not be null", this.response);
@@ -400,8 +435,8 @@ public class SetEventNotificationsSteps {
                 final String expectedResult = result.equals("NULL") ? null : result;
                 final String actualResult = this.response.getResult().toString();
 
-                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult, (actualResult == null && expectedResult == null)
-                        || actualResult.equals(expectedResult));
+                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
+                        (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
 
                 // TODO: check description
             }
@@ -415,13 +450,15 @@ public class SetEventNotificationsSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.logItemRepositoryMock, this.authorizationRepositoryMock,
-                this.channelMock, this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.logItemRepositoryMock, this.authorizationRepositoryMock, this.channelMock,
+                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.oslpDeviceService.setMapper(new OslpMapper());
         OslpTestUtils.configureDeviceServiceForOslp(this.oslpDeviceService);
 
-        this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService, new DeviceManagementMapper());
+        this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
+                new DeviceManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -434,8 +471,9 @@ public class SetEventNotificationsSteps {
     }
 
     private Device createDevice(final String deviceIdentification) {
-        return new DeviceBuilder().withDeviceIdentification(deviceIdentification).withNetworkAddress(InetAddress.getLoopbackAddress())
-                .withPublicKeyPresent(PUBLIC_KEY_PRESENT).withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(true)
+        return new DeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withNetworkAddress(InetAddress.getLoopbackAddress()).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(true)
                 .build();
     }
 
@@ -448,8 +486,8 @@ public class SetEventNotificationsSteps {
     }
 
     private DeviceAuthorization createAuthorization() {
-        return new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation).withFunctionGroup(DeviceFunctionGroup.OWNER)
-                .build();
+        return new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
+                .withFunctionGroup(DeviceFunctionGroup.OWNER).build();
     }
 
     private List<EventNotificationType> convertEventNotifications(final String eventNotifications) {

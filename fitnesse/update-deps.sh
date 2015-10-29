@@ -29,8 +29,6 @@ echo "!**> setup test system
 !path plugins/clover-2.6.1.jar
 !path plugins/givwenzen-1.0.3-SNAPSHOT.jar
 
-
-
 !path ../Platform/osgp-adapter-ws-core/target/classes
 !path ../Platform/osgp-adapter-ws-core/target/test-classes
 !path ../Platform/osgp-adapter-ws-admin/target/classes
@@ -57,8 +55,14 @@ echo "!**> setup test system
 !path ../Platform/osgp-domain-core/target/classes
 !path ../Platform/osgp-domain-core/target/test-classes
 
+!path ../Platform/osgp-domain-logging/target/classes
+!path ../Platform/osgp-domain-logging/target/test-classes
+
 !path ../Shared/shared/target/classes
 !path ../Shared/shared/target/test-classes
+
+!path ../Platform/osgp-logging/target/classes
+!path ../Platform/osgp-logging/target/test-classes
 
 !path ../Platform/osgp-core/target/classes
 !path ../Platform/osgp-core/target/test-classes

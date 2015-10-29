@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.config.messaging;
 
 import org.apache.activemq.command.ActiveMQDestination;
@@ -27,7 +34,8 @@ import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageListe
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessorMap;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageJmsTemplateFactory;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolResponseMessageSender;
-import com.alliander.osgp.core.infra.jms.protocol.logging.ProtocolLogItemRequestMessageListener;
+import com.alliander.osgp.logging.infra.jms.LoggingMessageListener;
+import com.alliander.osgp.logging.infra.jms.ProtocolLogItemRequestMessageListener;
 
 public class OsgpCoreMessagingConfig {
 

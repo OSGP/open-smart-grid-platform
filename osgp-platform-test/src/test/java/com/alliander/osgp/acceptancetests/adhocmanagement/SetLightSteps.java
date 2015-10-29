@@ -1,33 +1,40 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 /*
  User story: Set Light
 
  Scenario 1: Receive A Set Light Request With A Single Light Value
-	given 	a set light request for device @device with index @index, on @on, and dimvalue @dimvalue
-	and 	the set light request refers to a device @device with status @status
-	and 	the set light request refers to an organisation that is authorised
-	when 	the set light request is received
-	then 	the set light request should return a set light response with a correlationID
-	and 	an ovl set light request message should be sent to the ovl in queue
-	and 	an oslp set light request message is sent to the oslp out queue should be @ismessagesent
-	and 	a set light oslp message is sent to device @device should be @ismessagesent
-	and 	an oslp set light response message is sent to the oslp in queue should be @ismessagesent
-	and 	an ovl set light result message is sent to the ovl out queue should be true
-	and 	the ovl set light result message should contain a set light result @result
+ given 	a set light request for device @device with index @index, on @on, and dimvalue @dimvalue
+ and 	the set light request refers to a device @device with status @status
+ and 	the set light request refers to an organisation that is authorised
+ when 	the set light request is received
+ then 	the set light request should return a set light response with a correlationID
+ and 	an ovl set light request message should be sent to the ovl in queue
+ and 	an oslp set light request message is sent to the oslp out queue should be @ismessagesent
+ and 	a set light oslp message is sent to device @device should be @ismessagesent
+ and 	an oslp set light response message is sent to the oslp in queue should be @ismessagesent
+ and 	an ovl set light result message is sent to the ovl out queue should be true
+ and 	the ovl set light result message should contain a set light result @result
 
  Scenario 2: Receive A Set Light Request With Multiple Light Values
-	given 	a set light request for device @device with @validnr valid light values and @invalidnr invalid light values
-	and 	the set light request refers to a device @device with status @status
-	and 	the set light request refers to an organisation that is authorised
-	when 	the set light request is received
-	then 	a correlationID @isgenerated
-	and 	a message with @lightvaluenr lightvalues @isqueued
-	and 	the set light request should return result @result
+ given 	a set light request for device @device with @validnr valid light values and @invalidnr invalid light values
+ and 	the set light request refers to a device @device with status @status
+ and 	the set light request refers to an organisation that is authorised
+ when 	the set light request is received
+ then 	a correlationID @isgenerated
+ and 	a message with @lightvaluenr lightvalues @isqueued
+ and 	the set light request should return result @result
 
  Scenario 3: Receive A Get Set light Result Request
-	given 	a get set light result request with correlationId @correlationId
-	and 	a set light response message with correlationId @correlationId and content @content is found in the queue @isFound
-	when 	the get set light result request is received
-	then 	the get set light result request should return a get set light result response with result @result
+ given 	a get set light result request with correlationId @correlationId
+ and 	a set light response message with correlationId @correlationId and content @content is found in the queue @isFound
+ when 	the get set light result request is received
+ then 	the get set light result request should return a get set light result response with result @result
 
  */
 
@@ -88,9 +95,9 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -151,7 +158,7 @@ public class SetLightSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -175,7 +182,8 @@ public class SetLightSteps {
 
     @DomainStep("a set light request for device (.*) with index (.*), on (.*), and dimvalue (.*)")
     public void givenASetLightRequest(final String device, final String index, final Boolean on, final String dimValue) {
-        LOGGER.info("GIVEN: \"a set light request for device {} with index {}, on {}, and dimvalue {}\".", new Object[] { device, index, on, dimValue });
+        LOGGER.info("GIVEN: \"a set light request for device {} with index {}, on {}, and dimvalue {}\".",
+                new Object[] { device, index, on, dimValue });
 
         this.setUp();
 
@@ -195,8 +203,9 @@ public class SetLightSteps {
 
     @DomainStep("a set light request for device (.*) with (.*) valid light values and (.*) invalid light values")
     public void givenASetLightRequest(final String device, final Integer validNr, final Integer invalidNr) {
-        LOGGER.info("GIVEN: \"a set light request for device {} with {} valid light values and {} invalid light values\".", new Object[] { device, validNr,
-                invalidNr });
+        LOGGER.info(
+                "GIVEN: \"a set light request for device {} with {} valid light values and {} invalid light values\".",
+                new Object[] { device, validNr, invalidNr });
 
         this.setUp();
 
@@ -223,24 +232,28 @@ public class SetLightSteps {
     }
 
     @DomainStep("the set light request refers to a device (.*) with status (.*)")
-    public void givenTheSetLightRequestRefersToADeviceWithStatus(final String deviceIdentification, final String status) throws Exception {
-        LOGGER.info("GIVEN: \"the set light request refers to a device {} with status {}\".", deviceIdentification, status);
+    public void givenTheSetLightRequestRefersToADeviceWithStatus(final String deviceIdentification, final String status)
+            throws Exception {
+        LOGGER.info("GIVEN: \"the set light request refers to a device {} with status {}\".", deviceIdentification,
+                status);
 
         switch (status.toUpperCase()) {
         case "ACTIVE":
             this.createDevice(deviceIdentification, true);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
-            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.oslpDevice);
+            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(
+                    this.oslpDevice);
             when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
 
             // device always responds ok
-            final com.alliander.osgp.oslp.Oslp.SetLightResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetLightResponse.newBuilder().setStatus(Status.OK)
-                    .build();
+            final com.alliander.osgp.oslp.Oslp.SetLightResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetLightResponse
+                    .newBuilder().setStatus(Status.OK).build();
 
             this.oslpEnvelope = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                     .withPayloadMessage(Message.newBuilder().setSetLightResponse(oslpResponse).build()).build();
 
-            this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpEnvelope, this.channelMock, this.device.getNetworkAddress());
+            this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpEnvelope,
+                    this.channelMock, this.device.getNetworkAddress());
             this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
             this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
 
@@ -261,18 +274,22 @@ public class SetLightSteps {
     public void givenTheSetLightRequestRefersToAnOrganisationThatIsAuthorised() {
         LOGGER.info("GIVEN: \"the set light request refers to an organisation that is authorised\".");
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+                .thenReturn(authorizations);
     }
 
     @DomainStep("a get set light response request with correlationId (.*) and deviceId (.*)")
     public void givenAGetSetLightResultRequestWithCorrelationId(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: \"a get set light response with correlationId {} and deviceId {}\".", correlationId, deviceId);
+        LOGGER.info("GIVEN: \"a get set light response with correlationId {} and deviceId {}\".", correlationId,
+                deviceId);
 
         this.setUp();
 
@@ -286,10 +303,11 @@ public class SetLightSteps {
     }
 
     @DomainStep("a set light response message with correlationId (.*), deviceId (.*), qresult (.*) and qdescription (.*) is found in the queue (.*)")
-    public void givenASetLightResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final Boolean isFound) {
-        LOGGER.info("GIVEN: \"a set light response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".", correlationId,
-                deviceId, qresult, qdescription, isFound);
+    public void givenASetLightResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId,
+            final String qresult, final String qdescription, final Boolean isFound) {
+        LOGGER.info(
+                "GIVEN: \"a set light response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
+                correlationId, deviceId, qresult, qdescription, isFound);
 
         if (isFound) {
             final ObjectMessage messageMock = mock(ObjectMessage.class);
@@ -300,12 +318,14 @@ public class SetLightSteps {
                 when(messageMock.getStringProperty("DeviceIdentification")).thenReturn(deviceId);
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    exception = (OsgpException) dataObject;
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result,
+                        exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 // TODO Auto-generated catch block
@@ -337,7 +357,8 @@ public class SetLightSteps {
         LOGGER.info("WHEN: \"the set light request is received\".");
 
         try {
-            this.response = this.adHocManagementEndpoint.getSetLightResponse(ORGANISATION_ID, this.setLightAsyncRequest);
+            this.response = this.adHocManagementEndpoint
+                    .getSetLightResponse(ORGANISATION_ID, this.setLightAsyncRequest);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -348,13 +369,16 @@ public class SetLightSteps {
 
     @DomainStep("the set light request should return an async response with a correlationId and deviceId (.*)")
     public boolean thenTheSetLightRequestShouldReturnASetLightResponseWithACorrelationID(final String deviceId) {
-        LOGGER.info("THEN: \"the set light request should return a set light response with a correlationId and deviceId {}\".", deviceId);
+        LOGGER.info(
+                "THEN: \"the set light request should return a set light response with a correlationId and deviceId {}\".",
+                deviceId);
 
         // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Light Async Response should not be null", this.setLightAsyncResponse);
             Assert.assertNotNull("Async Response should not be null", this.setLightAsyncResponse.getAsyncResponse());
-            Assert.assertNotNull("CorrelationId should not be null", this.setLightAsyncResponse.getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("CorrelationId should not be null", this.setLightAsyncResponse.getAsyncResponse()
+                    .getCorrelationUid());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -386,12 +410,13 @@ public class SetLightSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpMessage = argument.getValue();
 
-                Assert.assertTrue("Message should contain set light request.", this.oslpMessage.getPayloadMessage().hasSetLightRequest());
+                Assert.assertTrue("Message should contain set light request.", this.oslpMessage.getPayloadMessage()
+                        .hasSetLightRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -401,12 +426,15 @@ public class SetLightSteps {
     }
 
     @DomainStep("an ovl set light result message with result (.*) and description (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlSetLightResultMessageShouldBeSentToTheOvlOutQueue(final String result, final String description) {
-        LOGGER.info("THEN: \"an ovl set light result message with result [{}] and description [{}] should be sent to the ovl out queue\".", result, description);
+    public boolean thenAnOvlSetLightResultMessageShouldBeSentToTheOvlOutQueue(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"an ovl set light result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
+                result, description);
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();
@@ -421,7 +449,8 @@ public class SetLightSteps {
     }
 
     @DomainStep("a set light oslp message with (.*) light values is sent to device (.*) should be (.*)")
-    public boolean thenASetLightOslpMessageShouldBeSent(final Integer lightvalueNr, final String device, final Boolean isMessageSent) {
+    public boolean thenASetLightOslpMessageShouldBeSent(final Integer lightvalueNr, final String device,
+            final Boolean isMessageSent) {
         LOGGER.info("THEN: \"a set light oslp message is sent to device [{}] should be [{}]\".", device, isMessageSent);
 
         final int count = isMessageSent ? 1 : 0;
@@ -433,10 +462,11 @@ public class SetLightSteps {
             if (isMessageSent) {
                 this.oslpMessage = argument.getValue();
 
-                Assert.assertTrue("Message should contain set light request.", this.oslpMessage.getPayloadMessage().hasSetLightRequest());
+                Assert.assertTrue("Message should contain set light request.", this.oslpMessage.getPayloadMessage()
+                        .hasSetLightRequest());
 
-                Assert.assertTrue("Message should contain " + lightvalueNr + " light values.", this.oslpMessage.getPayloadMessage().getSetLightRequest()
-                        .getValuesCount() == lightvalueNr);
+                Assert.assertTrue("Message should contain " + lightvalueNr + " light values.", this.oslpMessage
+                        .getPayloadMessage().getSetLightRequest().getValuesCount() == lightvalueNr);
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -460,7 +490,8 @@ public class SetLightSteps {
         } else {
             try {
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName().toUpperCase());
+                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName()
+                        .toUpperCase());
             } catch (final Exception e) {
                 LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
                 return false;
@@ -470,14 +501,18 @@ public class SetLightSteps {
     }
 
     @DomainStep("the get set light response request should return a set light response with result (.*) and description (.*)")
-    public boolean thenTheGetSetLightResultRequestShouldReturnAGetSetLightResultResponseWithResult(final String result, final String description) {
-        LOGGER.info("THEN: \"the get set light result request should return a get set light response with result {} and description {}", result, description);
+    public boolean thenTheGetSetLightResultRequestShouldReturnAGetSetLightResultResponseWithResult(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"the get set light result request should return a get set light response with result {} and description {}",
+                result, description);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 Assert.assertNotNull("Response should not be null", this.response);
@@ -485,8 +520,8 @@ public class SetLightSteps {
                 final String expectedResult = result.equals("NULL") ? null : result;
                 final String actualResult = this.response.getResult().toString();
 
-                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult, (actualResult == null && expectedResult == null)
-                        || actualResult.equals(expectedResult));
+                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
+                        (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
 
                 // TODO: check description
             }
@@ -501,11 +536,13 @@ public class SetLightSteps {
 
     private void setUp() {
         LOGGER.info("Resetting mocks");
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.channelMock, this.oslpDeviceRepositoryMock, this.webServiceResponseMessageSenderMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
+                this.oslpDeviceRepositoryMock, this.webServiceResponseMessageSenderMock });
 
         LOGGER.info("Setting endpoint");
-        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService, new AdHocManagementMapper());
+        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService,
+                new AdHocManagementMapper());
 
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
@@ -522,9 +559,12 @@ public class SetLightSteps {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 }

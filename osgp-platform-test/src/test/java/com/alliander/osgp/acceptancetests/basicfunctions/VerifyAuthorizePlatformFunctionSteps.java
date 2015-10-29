@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.basicfunctions;
 
 import static org.mockito.Matchers.any;
@@ -35,12 +42,12 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.OrganisationBuilder;
-import com.alliander.osgp.domain.core.entities.OslpLogItem;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
+import com.alliander.osgp.logging.domain.entities.DeviceLogItem;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 
 @Configurable
 @DomainSteps()
@@ -77,7 +84,7 @@ public class VerifyAuthorizePlatformFunctionSteps {
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository logItemRepositoryMock;
+    private DeviceLogItemRepository logItemRepositoryMock;
 
     // Protocol adapter fields
     @Mock
@@ -109,7 +116,7 @@ public class VerifyAuthorizePlatformFunctionSteps {
         this.organisation = new OrganisationBuilder().withOrganisationIdentification(ORGANISATION)
                 .withFunctionGroup(com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.valueOf(group.toUpperCase())).build();
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION)).thenReturn(this.organisation);
-        when(this.logItemRepositoryMock.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<OslpLogItem>()));
+        when(this.logItemRepositoryMock.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<DeviceLogItem>()));
     }
 
     @DomainStep("platform function (.*) is called")

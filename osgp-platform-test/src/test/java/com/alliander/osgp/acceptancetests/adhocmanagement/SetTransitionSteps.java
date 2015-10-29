@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.adhocmanagement;
 
 import static org.mockito.Matchers.any;
@@ -59,9 +66,9 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -123,7 +130,7 @@ public class SetTransitionSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -146,8 +153,10 @@ public class SetTransitionSteps {
     // === GIVEN ===
 
     @DomainStep("a set transition request for device (.*) with transitiontype (.*) and time (.*)")
-    public void givenARequest(final String device, final String transitionType, final String time) throws DatatypeConfigurationException, ParseException {
-        LOGGER.info("GIVEN: a set transition request for device {} with transitiontype {} and time {}.", new Object[] { device, transitionType, time });
+    public void givenARequest(final String device, final String transitionType, final String time)
+            throws DatatypeConfigurationException, ParseException {
+        LOGGER.info("GIVEN: a set transition request for device {} with transitiontype {} and time {}.", new Object[] {
+                device, transitionType, time });
 
         this.setUp();
 
@@ -189,13 +198,16 @@ public class SetTransitionSteps {
     public void givenAnAuthorisedOrganisation() {
         LOGGER.info("GIVEN: the set transition request refers to an organisation that is authorised.");
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+                .thenReturn(authorizations);
     }
 
     // === WHEN ===
@@ -221,13 +233,17 @@ public class SetTransitionSteps {
 
     @DomainStep("the set transition request should return an async response with a correlationId and deviceId (.*)")
     public boolean thenTheSetTransitionRequestShouldReturnASetTransitionResponseWithACorrelationID(final String deviceId) {
-        LOGGER.info("THEN: \"the set transition request should return a set transition response with a correlationId and deviceId {}\".", deviceId);
+        LOGGER.info(
+                "THEN: \"the set transition request should return a set transition response with a correlationId and deviceId {}\".",
+                deviceId);
 
         // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Transition Async Response should not be null", this.setTransitionAsyncResponse);
-            Assert.assertNotNull("Async Response should not be null", this.setTransitionAsyncResponse.getAsyncResponse());
-            Assert.assertNotNull("CorrelationId should not be null", this.setTransitionAsyncResponse.getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("Async Response should not be null",
+                    this.setTransitionAsyncResponse.getAsyncResponse());
+            Assert.assertNotNull("CorrelationId should not be null", this.setTransitionAsyncResponse.getAsyncResponse()
+                    .getCorrelationUid());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -238,7 +254,8 @@ public class SetTransitionSteps {
 
     @DomainStep("a set transition oslp message is sent to device (.*) should be (.*)")
     public boolean thenASetTransitionOslpMessageShouldBeSent(final String device, final Boolean isMessageSent) {
-        LOGGER.info("THEN: \"a set transition oslp message is sent to device [{}] should be [{}]\".", device, isMessageSent);
+        LOGGER.info("THEN: \"a set transition oslp message is sent to device [{}] should be [{}]\".", device,
+                isMessageSent);
 
         final int count = isMessageSent ? 1 : 0;
 
@@ -249,7 +266,8 @@ public class SetTransitionSteps {
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
 
-                Assert.assertTrue("Message should contain set transition request.", this.oslpRequest.getPayloadMessage().hasSetTransitionRequest());
+                Assert.assertTrue("Message should contain set transition request.", this.oslpRequest
+                        .getPayloadMessage().hasSetTransitionRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -259,9 +277,11 @@ public class SetTransitionSteps {
     }
 
     @DomainStep("an ovl set transition result message with result (.*) and description (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlSetTransitionResultMessageShouldBeSentToTheOvlOutQueue(final String result, final String description) {
-        LOGGER.info("THEN: \"an ovl set transition result message with result [{}] and description [{}] should be sent to the ovl out queue\".", result,
-                description);
+    public boolean thenAnOvlSetTransitionResultMessageShouldBeSentToTheOvlOutQueue(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"an ovl set transition result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
+                result, description);
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
@@ -292,7 +312,8 @@ public class SetTransitionSteps {
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
 
-                Assert.assertTrue("Message should contain set transition request.", this.oslpRequest.getPayloadMessage().hasSetTransitionRequest());
+                Assert.assertTrue("Message should contain set transition request.", this.oslpRequest
+                        .getPayloadMessage().hasSetTransitionRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -328,7 +349,8 @@ public class SetTransitionSteps {
 
     @DomainStep("a get set transition response request with correlationId (.*) and deviceId (.*)")
     public void givenAGetSetTransitionResultRequestWithCorrelationId(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: \"a get set transition response with correlationId {} and deviceId {}\".", correlationId, deviceId);
+        LOGGER.info("GIVEN: \"a get set transition response with correlationId {} and deviceId {}\".", correlationId,
+                deviceId);
 
         this.setUp();
 
@@ -342,9 +364,10 @@ public class SetTransitionSteps {
     }
 
     @DomainStep("a set transition response message with correlationId (.*), deviceId (.*), qresult (.*) and qdescription (.*) is found in the queue (.*)")
-    public void givenASetTransitionResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final Boolean isFound) {
-        LOGGER.info("GIVEN: \"a set transition response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
+    public void givenASetTransitionResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId,
+            final String qresult, final String qdescription, final Boolean isFound) {
+        LOGGER.info(
+                "GIVEN: \"a set transition response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
                 correlationId, deviceId, qresult, qdescription, isFound);
 
         if (isFound) {
@@ -356,12 +379,14 @@ public class SetTransitionSteps {
                 when(messageMock.getStringProperty("DeviceIdentification")).thenReturn(deviceId);
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    exception = (OsgpException) dataObject;
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result,
+                        exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 // TODO Auto-generated catch block
@@ -381,7 +406,8 @@ public class SetTransitionSteps {
 
         try {
 
-            this.response = this.adHocManagementEndpoint.getSetTransitionResponse(ORGANISATION_ID, this.setTransitionAsyncRequest);
+            this.response = this.adHocManagementEndpoint.getSetTransitionResponse(ORGANISATION_ID,
+                    this.setTransitionAsyncRequest);
 
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -390,15 +416,18 @@ public class SetTransitionSteps {
     }
 
     @DomainStep("the get set transition response request should return a set transition response with result (.*) and description (.*)")
-    public boolean thenTheGetSetTransitionResultRequestShouldReturnAGetSetTransitionResultResponseWithResult(final String result, final String description) {
-        LOGGER.info("THEN: \"the get set transition result request should return a get set transition response with result {} and description {}", result,
-                description);
+    public boolean thenTheGetSetTransitionResultRequestShouldReturnAGetSetTransitionResultResponseWithResult(
+            final String result, final String description) {
+        LOGGER.info(
+                "THEN: \"the get set transition result request should return a get set transition response with result {} and description {}",
+                result, description);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 Assert.assertNotNull("Response should not be null", this.response);
@@ -406,8 +435,8 @@ public class SetTransitionSteps {
                 final String expectedResult = result.equals("NULL") ? null : result;
                 final String actualResult = this.response.getResult().toString();
 
-                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult, (actualResult == null && expectedResult == null)
-                        || actualResult.equals(expectedResult));
+                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
+                        (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
 
                 // TODO: check description
             }
@@ -420,10 +449,12 @@ public class SetTransitionSteps {
 
     // === Private methods ===
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.oslpDeviceRepositoryMock, this.webServiceResponseMessageSenderMock, this.channelMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.oslpDeviceRepositoryMock,
+                this.webServiceResponseMessageSenderMock, this.channelMock });
 
-        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService, new AdHocManagementMapper());
+        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService,
+                new AdHocManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -439,21 +470,25 @@ public class SetTransitionSteps {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 
     private void initializeOslp() {
         // device always responds ok
-        final com.alliander.osgp.oslp.Oslp.SetTransitionResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetTransitionResponse.newBuilder()
-                .setStatus(Status.OK).build();
+        final com.alliander.osgp.oslp.Oslp.SetTransitionResponse oslpResponse = com.alliander.osgp.oslp.Oslp.SetTransitionResponse
+                .newBuilder().setStatus(Status.OK).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setSetTransitionResponse(oslpResponse).build()).build();
 
-        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse, this.channelMock, this.device.getNetworkAddress());
+        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
+                this.channelMock, this.device.getNetworkAddress());
         this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
         this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
     }

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.config;
 
 import static org.mockito.Mockito.mock;
@@ -15,20 +22,22 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
+import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;
 
 //@Configuration
 public class PersistenceConfig {
 
     // // WS LOGGING
-    // @Bean
-    // public WebServiceMonitorLogRepository WebServiceLoggingRepository() {
-    // return mock(WebServiceMonitorLogRepository.class);
-    // }
+    @Bean
+    public WebServiceMonitorLogRepository WebServiceLoggingRepository() {
+        return mock(WebServiceMonitorLogRepository.class);
+    }
 
     @Bean
     public WritableDeviceRepository writableDeviceRepositoryMock() {
@@ -57,6 +66,11 @@ public class PersistenceConfig {
     }
 
     @Bean
+    public SmartMeteringDeviceRepository smartMeteringDeviceRepositoryMock() {
+        return mock(SmartMeteringDeviceRepository.class);
+    }
+
+    @Bean
     public DeviceSpecifications deviceSpecifications() {
         return new JpaDeviceSpecifications();
     }
@@ -77,8 +91,8 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public OslpLogItemRepository oslpLogItemRepositoryMock() {
-        return mock(OslpLogItemRepository.class);
+    public DeviceLogItemRepository deviceLogItemRepositoryMock() {
+        return mock(DeviceLogItemRepository.class);
     }
 
     @Bean

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.configurationmanagement;
 
 import static org.mockito.Matchers.any;
@@ -66,9 +73,9 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
@@ -130,7 +137,7 @@ public class SetConfigurationDataSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol adapter fields
     @Autowired
@@ -152,10 +159,12 @@ public class SetConfigurationDataSteps {
     private void setUp() {
         LOGGER.info("Setting up {}", SetConfigurationDataSteps.class.getSimpleName());
 
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.webServiceResponseMessageSenderMock, this.channelMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock,
+                this.webServiceResponseMessageSenderMock, this.channelMock });
 
-        this.configurationManagementEndpoint = new ConfigurationManagementEndpoint(this.configurationManagementService, new ConfigurationManagementMapper());
+        this.configurationManagementEndpoint = new ConfigurationManagementEndpoint(this.configurationManagementService,
+                new ConfigurationManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -173,13 +182,16 @@ public class SetConfigurationDataSteps {
     }
 
     @DomainStep("a set configuration data request for device (.*) with data (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")
-    public void givenASetConfigurationRequest(final String device, final String lightType, final String dcLights, final String dcMap, final String rcType,
-            final String rcMap, final String shortInterval, final String preferredLinkType, final String meterType, final String longInterval,
+    public void givenASetConfigurationRequest(final String device, final String lightType, final String dcLights,
+            final String dcMap, final String rcType, final String rcMap, final String shortInterval,
+            final String preferredLinkType, final String meterType, final String longInterval,
             final String longIntervalType) {
         this.setUp();
 
-        LOGGER.info("GIVEN: a set configuration data request for device {} with data {}, {}, {}, {}, {}, {}, {}, {}, {} and {}", new Object[] { device,
-                lightType, dcLights, dcMap, rcType, rcMap, shortInterval, preferredLinkType, meterType, longInterval, longIntervalType });
+        LOGGER.info(
+                "GIVEN: a set configuration data request for device {} with data {}, {}, {}, {}, {}, {}, {}, {}, {} and {}",
+                new Object[] { device, lightType, dcLights, dcMap, rcType, rcMap, shortInterval, preferredLinkType,
+                        meterType, longInterval, longIntervalType });
 
         this.request = new SetConfigurationRequest();
         final Configuration configuration = new Configuration();
@@ -260,16 +272,19 @@ public class SetConfigurationDataSteps {
     }
 
     @DomainStep("the set configuration data request refers to a device (.*) with status (.*) which always returns (.*)")
-    public void givenTheRequestRefersToDevice(final String deviceIdentification, final String status, final String response) throws Exception {
-        LOGGER.info("GIVEN: the set configuration data request refers to a device {} with status {} which always returns {}", new Object[] {
-                deviceIdentification, status, response });
+    public void givenTheRequestRefersToDevice(final String deviceIdentification, final String status,
+            final String response) throws Exception {
+        LOGGER.info(
+                "GIVEN: the set configuration data request refers to a device {} with status {} which always returns {}",
+                new Object[] { deviceIdentification, status, response });
 
         switch (status.toUpperCase()) {
         case "ACTIVE":
             this.createDevice(deviceIdentification, true);
             this.initializeOslp(response);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
-            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.oslpDevice);
+            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(
+                    this.oslpDevice);
             when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
             break;
         case "UNKNOWN":
@@ -288,13 +303,16 @@ public class SetConfigurationDataSteps {
     public void givenTheSetConfigurationRequestRefersToAnAuthorisedOrganisation() {
         LOGGER.info("GIVEN: the set configuration data request refers to an organisation that is authorised");
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.CONFIGURATION).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the set configuration data request is received")
@@ -302,7 +320,8 @@ public class SetConfigurationDataSteps {
         LOGGER.info("WHEN: the set configuration data request is received");
         try {
 
-            this.setConfigurationAsyncResponse = this.configurationManagementEndpoint.setConfiguration(ORGANISATION_ID, this.request);
+            this.setConfigurationAsyncResponse = this.configurationManagementEndpoint.setConfiguration(ORGANISATION_ID,
+                    this.request);
 
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getStackTrace());
@@ -311,14 +330,20 @@ public class SetConfigurationDataSteps {
     }
 
     @DomainStep("the set configuration request should return an async response with a correlationId and deviceId (.*)")
-    public boolean thenTheSetConfigurationRequestShouldReturnASetConfigurationResponseWithACorrelationID(final String deviceId) {
-        LOGGER.info("THEN: \"the set configuration request should return a set configuration response with a correlationId and deviceId {}\".", deviceId);
+    public boolean thenTheSetConfigurationRequestShouldReturnASetConfigurationResponseWithACorrelationID(
+            final String deviceId) {
+        LOGGER.info(
+                "THEN: \"the set configuration request should return a set configuration response with a correlationId and deviceId {}\".",
+                deviceId);
 
         // TODO Add check on device id
         try {
-            Assert.assertNotNull("Set Configuration Async Response should not be null", this.setConfigurationAsyncResponse);
-            Assert.assertNotNull("Async Response should not be null", this.setConfigurationAsyncResponse.getAsyncResponse());
-            Assert.assertNotNull("CorrelationId should not be null", this.setConfigurationAsyncResponse.getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("Set Configuration Async Response should not be null",
+                    this.setConfigurationAsyncResponse);
+            Assert.assertNotNull("Async Response should not be null",
+                    this.setConfigurationAsyncResponse.getAsyncResponse());
+            Assert.assertNotNull("CorrelationId should not be null", this.setConfigurationAsyncResponse
+                    .getAsyncResponse().getCorrelationUid());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -342,18 +367,20 @@ public class SetConfigurationDataSteps {
 
     @DomainStep("a set configuration oslp message is sent to device (.*) should be (.*)")
     public boolean thenASetConfigurationOslpMessageShouldBeSent(final String device, final Boolean isMessageSent) {
-        LOGGER.info("THEN: \"a set configuration oslp message is sent to device [{}] should be [{}]\".", device, isMessageSent);
+        LOGGER.info("THEN: \"a set configuration oslp message is sent to device [{}] should be [{}]\".", device,
+                isMessageSent);
 
         final int count = isMessageSent ? 1 : 0;
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpResponse = argument.getValue();
 
-                Assert.assertTrue("Message should contain set configuration request.", this.oslpResponse.getPayloadMessage().hasSetConfigurationRequest());
+                Assert.assertTrue("Message should contain set configuration request.", this.oslpResponse
+                        .getPayloadMessage().hasSetConfigurationRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -363,14 +390,16 @@ public class SetConfigurationDataSteps {
     }
 
     @DomainStep("an ovl set configuration result message with result (.*) and description (.*) should be sent to the ovl out queue")
-    public boolean thenAnOvlSetConfigurationResultMessageShouldBeSentToTheOvlOutQueue(final String result, final String description) {
-        LOGGER.info("THEN: \"an ovl set configuration result message with result [{}] and description [{}] should be sent to the ovl out queue\".", result,
-                description);
+    public boolean thenAnOvlSetConfigurationResultMessageShouldBeSentToTheOvlOutQueue(final String result,
+            final String description) {
+        LOGGER.info(
+                "THEN: \"an ovl set configuration result message with result [{}] and description [{}] should be sent to the ovl out queue\".",
+                result, description);
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
 
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();
@@ -386,7 +415,8 @@ public class SetConfigurationDataSteps {
 
     @DomainStep("a set configuration data oslp message is sent to device (.*) should be (.*)")
     public boolean thenOslpMessageIsSent(final String deviceIdentification, final Boolean isMessageSent) {
-        LOGGER.info("THEN: a set configuration data oslp message is sent to device {} should be {}", deviceIdentification, isMessageSent);
+        LOGGER.info("THEN: a set configuration data oslp message is sent to device {} should be {}",
+                deviceIdentification, isMessageSent);
 
         final int count = isMessageSent ? 1 : 0;
 
@@ -397,7 +427,8 @@ public class SetConfigurationDataSteps {
             if (isMessageSent) {
                 this.oslpResponse = argument.getValue();
 
-                Assert.assertTrue("Message should contain set configuration request.", this.oslpResponse.getPayloadMessage().hasSetConfigurationRequest());
+                Assert.assertTrue("Message should contain set configuration request.", this.oslpResponse
+                        .getPayloadMessage().hasSetConfigurationRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -421,7 +452,8 @@ public class SetConfigurationDataSteps {
             }
         } else {
             try {
-                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName().toUpperCase());
+                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName()
+                        .toUpperCase());
             } catch (final Throwable t) {
                 LOGGER.error("Throwable [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
                 return false;
@@ -432,8 +464,10 @@ public class SetConfigurationDataSteps {
     }
 
     @DomainStep("a get set configuration response request with correlationId (.*) and deviceId (.*)")
-    public void givenAGetSetConfigurationResultRequestWithCorrelationId(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: \"a get set configuration response with correlationId {} and deviceId {}\".", correlationId, deviceId);
+    public void givenAGetSetConfigurationResultRequestWithCorrelationId(final String correlationId,
+            final String deviceId) {
+        LOGGER.info("GIVEN: \"a get set configuration response with correlationId {} and deviceId {}\".",
+                correlationId, deviceId);
 
         this.setUp();
 
@@ -447,9 +481,10 @@ public class SetConfigurationDataSteps {
     }
 
     @DomainStep("a set configuration response message with correlationId (.*), deviceId (.*), qresult (.*) and qdescription (.*) is found in the queue (.*)")
-    public void givenASetConfigurationResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final Boolean isFound) {
-        LOGGER.info("GIVEN: \"a set configuration response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
+    public void givenASetConfigurationResponseMessageIsFoundInTheQueue(final String correlationId,
+            final String deviceId, final String qresult, final String qdescription, final Boolean isFound) {
+        LOGGER.info(
+                "GIVEN: \"a set configuration response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found {}\".",
                 correlationId, deviceId, qresult, qdescription, isFound);
 
         if (isFound) {
@@ -462,12 +497,14 @@ public class SetConfigurationDataSteps {
 
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    exception = (OsgpException) dataObject;
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result, exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result,
+                        exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 // TODO Auto-generated catch block
@@ -487,7 +524,8 @@ public class SetConfigurationDataSteps {
 
         try {
 
-            this.response = this.configurationManagementEndpoint.getSetConfigurationResponse(ORGANISATION_ID, this.setConfigurationAsyncRequest);
+            this.response = this.configurationManagementEndpoint.getSetConfigurationResponse(ORGANISATION_ID,
+                    this.setConfigurationAsyncRequest);
 
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -496,15 +534,18 @@ public class SetConfigurationDataSteps {
     }
 
     @DomainStep("the get set configuration response request should return a set configuration response with result (.*) and description (.*)")
-    public boolean thenTheGetSetConfigurationResultRequestShouldReturnAGetSetConfigurationResultResponseWithResult(final String result, final String description) {
-        LOGGER.info("THEN: \"the get set configuration result request should return a get set configuration response with result {} and description {}",
+    public boolean thenTheGetSetConfigurationResultRequestShouldReturnAGetSetConfigurationResultResponseWithResult(
+            final String result, final String description) {
+        LOGGER.info(
+                "THEN: \"the get set configuration result request should return a get set configuration response with result {} and description {}",
                 result, description);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 Assert.assertNotNull("Response should not be null", this.response);
@@ -512,8 +553,8 @@ public class SetConfigurationDataSteps {
                 final String expectedResult = result.equals("NULL") ? null : result;
                 final String actualResult = this.response.getResult().toString();
 
-                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult, (actualResult == null && expectedResult == null)
-                        || actualResult.equals(expectedResult));
+                Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
+                        (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
 
                 // TODO: check description
             }
@@ -528,20 +569,25 @@ public class SetConfigurationDataSteps {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 
     private void initializeOslp(final String response) {
         // device always responds ok
-        final Oslp.SetConfigurationResponse oslpResponse = Oslp.SetConfigurationResponse.newBuilder().setStatus(Status.valueOf(response)).build();
+        final Oslp.SetConfigurationResponse oslpResponse = Oslp.SetConfigurationResponse.newBuilder()
+                .setStatus(Status.valueOf(response)).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setSetConfigurationResponse(oslpResponse).build()).build();
 
-        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse, this.channelMock, this.device.getNetworkAddress());
+        this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
+                this.channelMock, this.device.getNetworkAddress());
         this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
         this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
     }

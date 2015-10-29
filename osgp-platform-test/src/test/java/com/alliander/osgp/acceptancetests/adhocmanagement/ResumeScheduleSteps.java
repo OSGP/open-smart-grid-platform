@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.acceptancetests.adhocmanagement;
 
 import static org.mockito.Matchers.any;
@@ -55,9 +62,9 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
-import com.alliander.osgp.domain.core.repositories.OslpLogItemRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
+import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
 import com.alliander.osgp.oslp.Oslp.Status;
 import com.alliander.osgp.oslp.OslpEnvelope;
@@ -119,7 +126,7 @@ public class ResumeScheduleSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
-    private OslpLogItemRepository oslpLogItemRepositoryMock;
+    private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
     // Protocol Adapter fields
     @Autowired
@@ -143,7 +150,8 @@ public class ResumeScheduleSteps {
 
     @DomainStep("a resume schedule request for device (.*) with index (.*), and isimmediate (.*)")
     public void givenAResumeScheduleRequest(final String device, final String index, final String isImmediate) {
-        LOGGER.info("GIVEN: \"a resume schedule request for device {} with index {}, and isimmediate {}\".", new Object[] { device, index, isImmediate });
+        LOGGER.info("GIVEN: \"a resume schedule request for device {} with index {}, and isimmediate {}\".",
+                new Object[] { device, index, isImmediate });
 
         this.setUp();
 
@@ -162,25 +170,29 @@ public class ResumeScheduleSteps {
     }
 
     @DomainStep("the resume schedule request refers to a device (.*) with status (.*), and hasschedule (.*)")
-    public void givenADevice(final String deviceIdentification, final String status, final Boolean hasSchedule) throws Exception {
-        LOGGER.info("GIVEN: \"the resume schedule reqeust refers to a device {} with status {}, and hasschedule {}\".", new Object[] { deviceIdentification,
-                status, hasSchedule });
+    public void givenADevice(final String deviceIdentification, final String status, final Boolean hasSchedule)
+            throws Exception {
+        LOGGER.info("GIVEN: \"the resume schedule reqeust refers to a device {} with status {}, and hasschedule {}\".",
+                new Object[] { deviceIdentification, status, hasSchedule });
 
         switch (status.toUpperCase()) {
         case "ACTIVE":
             this.createDevice(deviceIdentification, true);
             this.device.setHasSchedule(hasSchedule != null ? hasSchedule : false);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
-            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.oslpDevice);
+            when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(
+                    this.oslpDevice);
             when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
 
-            final com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse resumeScheduleResponse = com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse.newBuilder()
-                    .setStatus(Status.OK).build();
+            final com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse resumeScheduleResponse = com.alliander.osgp.oslp.Oslp.ResumeScheduleResponse
+                    .newBuilder().setStatus(Status.OK).build();
 
             this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
-                    .withPayloadMessage(Message.newBuilder().setResumeScheduleResponse(resumeScheduleResponse).build()).build();
+                    .withPayloadMessage(Message.newBuilder().setResumeScheduleResponse(resumeScheduleResponse).build())
+                    .build();
 
-            this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse, this.channelMock, this.device.getNetworkAddress());
+            this.oslpChannelHandler = OslpTestUtils.createOslpChannelHandlerWithResponse(this.oslpResponse,
+                    this.channelMock, this.device.getNetworkAddress());
             this.oslpChannelHandler.setDeviceRegistrationService(this.deviceRegistrationService);
             this.oslpDeviceService.setOslpChannelHandler(this.oslpChannelHandler);
 
@@ -201,18 +213,22 @@ public class ResumeScheduleSteps {
     public void givenAnAuthorisedOrganisation() {
         LOGGER.info("GIVEN: \"the resume schedule request refers to an organisation {}\".", ORGANISATION_ID);
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+                .thenReturn(authorizations);
     }
 
     @DomainStep("a resume schedule response request with correlationId (.*) and deviceId (.*)")
     public void givenAResumeScheduleResponseRequest(final String correlationId, final String deviceId) {
-        LOGGER.info("GIVEN: \"a resume schedule response request with correlationId {} and deviceId {}\".", correlationId, deviceId);
+        LOGGER.info("GIVEN: \"a resume schedule response request with correlationId {} and deviceId {}\".",
+                correlationId, deviceId);
 
         this.setUp();
 
@@ -226,8 +242,8 @@ public class ResumeScheduleSteps {
     }
 
     @DomainStep("a resume schedule response message with correlationId (.*), deviceId (.*), qresult (.*) and qdescription (.*) is found in the queue (.*)")
-    public void givenAResumeScheduleResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId, final String qresult,
-            final String qdescription, final Boolean isFound) {
+    public void givenAResumeScheduleResponseMessageIsFoundInTheQueue(final String correlationId, final String deviceId,
+            final String qresult, final String qdescription, final Boolean isFound) {
         LOGGER.info(
                 "GIVEN: \"a resume schedule response message with correlationId {}, deviceId {}, qresult {} and qdescription {} is found in the queue {}\".",
                 correlationId, deviceId, qresult, qdescription, isFound);
@@ -236,18 +252,20 @@ public class ResumeScheduleSteps {
 
             try {
                 when(messageMock.getJMSCorrelationID()).thenReturn(correlationId);
-                when(messageMock.getStringProperty("OrganisationIdentification")).thenReturn(this.organisation.getOrganisationIdentification());
+                when(messageMock.getStringProperty("OrganisationIdentification")).thenReturn(
+                        this.organisation.getOrganisationIdentification());
                 when(messageMock.getStringProperty("DeviceIdentification")).thenReturn(deviceId);
 
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
                 Object dataObject = null;
-                OsgpException exception=null;
+                OsgpException exception = null;
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
-                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.UNKNOWN, new ValidationException());
-                    exception=(OsgpException) dataObject;
+                    dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.UNKNOWN, new ValidationException());
+                    exception = (OsgpException) dataObject;
                 }
-                final ResponseMessage message = new ResponseMessage(correlationId, this.organisation.getOrganisationIdentification(), deviceId, result,
-                		exception, dataObject);
+                final ResponseMessage message = new ResponseMessage(correlationId,
+                        this.organisation.getOrganisationIdentification(), deviceId, result, exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
                 e.printStackTrace();
@@ -266,7 +284,8 @@ public class ResumeScheduleSteps {
         LOGGER.info("WHEN: \"the request is received\".");
 
         try {
-            this.resumeScheduleAsyncResponse = this.adHocManagementEndpoint.resumeSchedule(this.organisation.getOrganisationIdentification(), this.request);
+            this.resumeScheduleAsyncResponse = this.adHocManagementEndpoint.resumeSchedule(
+                    this.organisation.getOrganisationIdentification(), this.request);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -278,8 +297,8 @@ public class ResumeScheduleSteps {
         LOGGER.info("WHEN: \"the resume schedule response request is received\".");
 
         try {
-            this.response = this.adHocManagementEndpoint.getResumeScheduleResponse(this.organisation.getOrganisationIdentification(),
-                    this.resumeScheduleAsyncRequest);
+            this.response = this.adHocManagementEndpoint.getResumeScheduleResponse(
+                    this.organisation.getOrganisationIdentification(), this.resumeScheduleAsyncRequest);
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -290,12 +309,16 @@ public class ResumeScheduleSteps {
 
     @DomainStep("the resume schedule request should return an async response with a correlationId and deviceId (.*)")
     public boolean thenResumeScheduleRequestShouldReturnAsyncResponse(final String deviceId) {
-        LOGGER.info("THEN: \"the resume schedule request should return an async response with a correlationId and deviceId {}\".", deviceId);
+        LOGGER.info(
+                "THEN: \"the resume schedule request should return an async response with a correlationId and deviceId {}\".",
+                deviceId);
 
         try {
             Assert.assertNotNull("asyncResponse should not be null", this.resumeScheduleAsyncResponse);
-            Assert.assertNotNull("CorrelationId should not be null", this.resumeScheduleAsyncResponse.getAsyncResponse().getCorrelationUid());
-            Assert.assertNotNull("DeviceId should not be null", this.resumeScheduleAsyncResponse.getAsyncResponse().getDeviceId());
+            Assert.assertNotNull("CorrelationId should not be null", this.resumeScheduleAsyncResponse
+                    .getAsyncResponse().getCorrelationUid());
+            Assert.assertNotNull("DeviceId should not be null", this.resumeScheduleAsyncResponse.getAsyncResponse()
+                    .getDeviceId());
             Assert.assertNull("Throwable should be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
@@ -319,18 +342,20 @@ public class ResumeScheduleSteps {
 
     @DomainStep("a resume schedule oslp message is sent to device (.*) should be (.*)")
     public boolean thenAnOslpMessageShouldBeSent(final String device, final Boolean isMessageSent) {
-        LOGGER.info("THEN: \"a resume schedule oslp message is sent to device {} should be {}.\"", device, isMessageSent);
+        LOGGER.info("THEN: \"a resume schedule oslp message is sent to device {} should be {}.\"", device,
+                isMessageSent);
 
         final int count = isMessageSent ? 1 : 0;
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
 
-                Assert.assertTrue("Message should contain resume schedule request.", this.oslpRequest.getPayloadMessage().hasResumeScheduleRequest());
+                Assert.assertTrue("Message should contain resume schedule request.", this.oslpRequest
+                        .getPayloadMessage().hasResumeScheduleRequest());
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -341,14 +366,16 @@ public class ResumeScheduleSteps {
 
     @DomainStep("the resume schedule response request should return a resume schedule response with result (.*) and description (.*)")
     public boolean thenTheResumeScheduleResponseRequestShouldReturn(final String result, final String description) {
-        LOGGER.info("THEN: \"the resume schedule response request should return a stop device test response with result {} and description {}\".", result,
-                description);
+        LOGGER.info(
+                "THEN: \"the resume schedule response request should return a stop device test response with result {} and description {}\".",
+                result, description);
 
         try {
             if ("NOT_OK".equals(result)) {
                 Assert.assertNull("Set Schedule Response should be null", this.response);
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertTrue("Throwable should contain a validation exception", this.throwable.getCause() instanceof ValidationException);
+                Assert.assertTrue("Throwable should contain a validation exception",
+                        this.throwable.getCause() instanceof ValidationException);
             } else {
 
                 Assert.assertNotNull("Response should not be null", this.response);
@@ -368,11 +395,13 @@ public class ResumeScheduleSteps {
 
     @DomainStep("an ovl resume schedule message with result (.*) and description (.*) should be sent to the ovl out queue")
     public boolean thenAnOvlResumeScheduleMessageShouldBeSent(final String result, final String description) {
-        LOGGER.info("THEN: \"an ovl resume schedule message with result {} and description {} should be sent to the ovl out queue.\"", result, description);
+        LOGGER.info(
+                "THEN: \"an ovl resume schedule message with result {} and description {} should be sent to the ovl out queue.\"",
+                result, description);
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-            verify(this.webServiceResponseMessageSenderMock, timeout(1000).times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();
@@ -390,19 +419,24 @@ public class ResumeScheduleSteps {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
-                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).ofDeviceType("SSLD").isActivated(activated).build();
+                .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+                .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
+                .ofDeviceType("SSLD").isActivated(activated).build();
 
-        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification).withDeviceUid(DEVICE_UID).build();
+        this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withDeviceUid(DEVICE_UID).build();
     }
 
     // === Private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.oslpLogItemRepositoryMock, this.channelMock, this.oslpDeviceRepositoryMock, this.webServiceResponseMessageSenderMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
+                this.oslpDeviceRepositoryMock, this.webServiceResponseMessageSenderMock });
 
-        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService, new AdHocManagementMapper());
+        this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService,
+                new AdHocManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
