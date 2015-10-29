@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.security;
 
 import java.util.Collection;
@@ -13,9 +20,6 @@ import com.alliander.osgp.shared.usermanagement.PlatformDomain;
 
 /**
  * Simple authentication class.
- * 
- * @author CGI
- * 
  */
 public final class CustomAuthentication implements Authentication {
 
@@ -24,6 +28,7 @@ public final class CustomAuthentication implements Authentication {
      */
     private static final long serialVersionUID = 1L;
     private transient String userName;
+    private transient String password;
     private transient String organisationIdentification;
     private transient List<String> applications;
     private transient boolean authenticated;
@@ -81,7 +86,11 @@ public final class CustomAuthentication implements Authentication {
 
     @Override
     public Object getCredentials() {
-        return this.userName + " is web-api-user-management authenticated user";
+        return this.password;
+    }
+
+    public void setCredentials(final String password) {
+        this.password = password;
     }
 
     @Override

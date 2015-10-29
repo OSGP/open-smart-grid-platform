@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.hibernate;
 
 import java.net.InetAddress;
@@ -6,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.TextType;
 import org.hibernate.usertype.UserType;
@@ -32,7 +38,7 @@ public class InetAddressUserType extends ImmutableUserType {
 
     @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final SessionImplementor session,
-            final Object owner) throws HibernateException, SQLException {
+            final Object owner) throws SQLException {
         try {
             final String value = (String) TextType.INSTANCE.nullSafeGet(rs, names, session, owner);
             if (value == null) {
@@ -48,7 +54,7 @@ public class InetAddressUserType extends ImmutableUserType {
 
     @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index,
-            final SessionImplementor session) throws HibernateException, SQLException {
+            final SessionImplementor session) throws SQLException {
         if (value != null) {
             final InetAddress address = (InetAddress) value;
             TextType.INSTANCE.nullSafeSet(st, address.getHostAddress(), index, session);

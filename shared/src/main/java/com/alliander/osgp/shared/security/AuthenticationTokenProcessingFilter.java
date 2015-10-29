@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.security;
 
 import java.io.IOException;
@@ -42,7 +49,7 @@ public class AuthenticationTokenProcessingFilter extends GenericFilterBean {
             throws IOException, ServletException {
 
         if (!(request instanceof HttpServletRequest)) {
-            throw new RuntimeException("Expecting a HTTP request");
+            throw new IOException("Expecting a HTTP request");
         }
 
         // Read the token from the HTTP Headers
@@ -76,7 +83,7 @@ public class AuthenticationTokenProcessingFilter extends GenericFilterBean {
 
     /**
      * Get value from header or query parameters.
-     * 
+     *
      * @param request
      *            servlet request
      * @return value when found or null otherwise

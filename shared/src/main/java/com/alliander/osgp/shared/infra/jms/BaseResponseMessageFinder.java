@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.infra.jms;
 
 import javax.jms.JMSException;
@@ -10,9 +17,6 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Base class for retrieving response messages from a queue by correlation UID.
- *
- * @author CGI
- *
  */
 public abstract class BaseResponseMessageFinder {
 
@@ -86,14 +90,10 @@ public abstract class BaseResponseMessageFinder {
      *             In case an error message is present in the response message.
      */
     protected void checkResponseMessage(final ResponseMessage responseMessage) throws OsgpException {
-        if (responseMessage.getResult().equals(ResponseMessageResultType.NOT_OK)) {
-            if (responseMessage.getOsgpException() != null) {
-                LOGGER.error("Unexpected exception: ", responseMessage.getOsgpException().getCause());
-                throw responseMessage.getOsgpException();
-                // throw new TechnicalException(ComponentType.UNKNOWN,
-                // "Unexpected exception while retrieving response message",
-                // ex);
-            }
+        if (responseMessage.getResult().equals(ResponseMessageResultType.NOT_OK)
+                && responseMessage.getOsgpException() != null) {
+            LOGGER.error("Unexpected exception: ", responseMessage.getOsgpException().getCause());
+            throw responseMessage.getOsgpException();
         }
     }
 

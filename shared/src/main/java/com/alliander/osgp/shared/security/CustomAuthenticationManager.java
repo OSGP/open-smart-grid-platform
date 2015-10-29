@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.security;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +25,7 @@ import com.alliander.osgp.shared.usermanagement.LoginResponse;
 /**
  * Authentication manager class that offers login and authentication token
  * validation for web applications.
- * 
+ *
  * The web application must create an instance of CustomAuthenticationManager
  * using an AuthenticationClient instance and a member of enumeration
  * com.alliander.osp.usermanagementweb.domain.Application as application String.
@@ -28,9 +35,6 @@ import com.alliander.osgp.shared.usermanagement.LoginResponse;
  * as argument for the function validateToken(CustomAuthentication) to validate
  * the authentication token. After each validation, a new authentication token
  * is set in the CustomAuthentication instance.
- * 
- * @author CGI
- * 
  */
 public final class CustomAuthenticationManager implements AuthenticationManager {
 
@@ -54,7 +58,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
      * com.alliander.osgp.shared.usermanagement.AuthenticationClient and
      * com.alliander.osgp.usermanagementweb.domain.Application as application
      * String
-     * 
+     *
      * @param authenticationClient
      *            The AuthenticationClient instance.
      * @param application
@@ -70,10 +74,10 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
      * to the user name and the credentials set to the password. Authentication
      * will be granted if the user is permitted for an/this application, the
      * user name is registered and the password matches.
-     * 
+     *
      * @param authentication
      *            An Authentication instance containing user name and password.
-     * 
+     *
      * @return An CustomAuthentication instance containing user name, users
      *         organisation identification, platform domains, user role, user
      *         applications and an authentication token.
@@ -97,6 +101,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
 
         // Try to login.
         try {
+
             loginResponse = this.authenticationClient.login(loginRequest);
         } catch (final Exception e) {
             LOGGER.debug(LOGIN_ATTEMPT_FAILED, e);
@@ -107,7 +112,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         this.checkLoginResponse(loginResponse);
 
         // Create the CustomAuthentication instance.
-        return this.createCustomAuthenticationInstance(username, loginResponse);
+        return this.createCustomAuthenticationInstance(username, password, loginResponse);
     }
 
     private void checkAuthenticationInstance(final Authentication authentication) {
@@ -143,13 +148,14 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         }
     }
 
-    private CustomAuthentication createCustomAuthenticationInstance(final String username,
+    private CustomAuthentication createCustomAuthenticationInstance(final String username, final String password,
             final LoginResponse loginResponse) {
 
         // Create the instance.
         final CustomAuthentication customAuthentication = new CustomAuthentication();
         customAuthentication.setAuthenticated(true);
         customAuthentication.setUserName(username);
+        customAuthentication.setCredentials(password);
         customAuthentication.setOrganisationIdentification(loginResponse.getOrganisationIdentification());
         customAuthentication.setDomains(loginResponse.getDomains());
         customAuthentication.getAuthorities().clear();
@@ -163,11 +169,11 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
 
     /**
      * Check the validity of an authentication token.
-     * 
+     *
      * @param authentication
      *            The CustomAuthentication instance obtained by successful
      *            authentication.
-     * 
+     *
      * @throws AuthenticationClientException
      *             In case the organisationIdentification or token are an empty
      *             string, the token is not valid, the response is null, the
@@ -180,7 +186,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         this.checkAuthenticationInstance(authentication);
 
         // Set authenticated to false.
-        authentication.setAuthenticated(false);
+        // authentication.setAuthenticated(false);
 
         final String organisationIdentification = authentication.getOrganisationIdentification();
         final String token = authentication.getToken();
@@ -189,7 +195,7 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
                 organisationIdentification, token);
 
         // Check the response.
-        this.checkAuthenticationResponse(authenticationResponse);
+        this.checkAuthenticationResponse(authenticationResponse, authentication);
 
         // Set authenticated to true, set the new token and user name.
         authentication.setToken(authenticationResponse.getToken());
@@ -197,18 +203,22 @@ public final class CustomAuthenticationManager implements AuthenticationManager 
         authentication.setAuthenticated(true);
     }
 
-    private void checkAuthenticationResponse(final AuthenticationResponse authenticationResponse)
-            throws AuthenticationClientException {
+    private void checkAuthenticationResponse(final AuthenticationResponse authenticationResponse,
+            final CustomAuthentication authentication) throws AuthenticationClientException {
 
         // Check if the response equals null.
         if (authenticationResponse == null) {
             LOGGER.debug(AUTHENTICATION_RESPONSE_IS_NULL);
+            // Set authenticated to false.
+            authentication.setAuthenticated(false);
             throw new AuthenticationClientException(AUTHENTICATION_RESPONSE_IS_NULL);
         }
 
         // Check if the response is OK.
         if (!authenticationResponse.getFeedbackMessage().equals(OK)) {
             LOGGER.debug(AUTHENTICATION_RESPONSE_IS_NOT_OK);
+            // Set authenticated to false.
+            authentication.setAuthenticated(false);
             throw new AuthenticationClientException(AUTHENTICATION_RESPONSE_IS_NOT_OK);
         }
     }

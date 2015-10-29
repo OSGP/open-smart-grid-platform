@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.shared.exceptionhandling;
 
 public enum FunctionalExceptionType {
@@ -11,6 +18,8 @@ public enum FunctionalExceptionType {
     UNREGISTERED_DEVICE(202, "Device is not registered."),
     UNSCHEDULED_DEVICE(203, "Device does not have a schedule."),
     EXISTING_DEVICE(204, "Device already exists."),
+    PROTOCOL_UNKNOWN_FOR_DEVICE(205, "Device has no protocol defined."),
+    UNKNOWN_PROTOCOL_NAME_OR_VERSION(206, "Device has an unknown protocol name or version."),
 
     // Authorization exceptions
     UNAUTHORIZED(301, "Not authorized to perform this action."),
@@ -20,9 +29,9 @@ public enum FunctionalExceptionType {
     // Other exceptions
     VALIDATION_ERROR(401, "Validation error."),
     TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD(402, "Set tariff schedule is not allowed for PSLD."),
-    ARGUMENT_NULL(403, "Argument null.")
-
-    ;
+    ARGUMENT_NULL(403, "Argument null."),
+    JMS_TEMPLATE_NULL(404, "JSM template was null. Restart server."),
+    UNKNOWN_CORRELATION_UID(405, "No results found for the given correlation uid.");
 
     private int code;
     private String message;
