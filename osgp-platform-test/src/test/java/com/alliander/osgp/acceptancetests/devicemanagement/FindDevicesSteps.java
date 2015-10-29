@@ -12,6 +12,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,10 +107,12 @@ public class FindDevicesSteps {
     }
 
     @DomainStep("a device (.*) with ownerid (.*) and ownername (.*)")
-    public void andADevice(final String deviceIdentification, final String ownerId, final String ownerName) {
+    public void andADevice(final String deviceIdentification, final String ownerId, final String ownerName)
+            throws UnknownHostException {
         this.ownerOrganisation = new Organisation(ownerId, ownerName, ORGANISATION_PREFIX, PlatformFunctionGroup.ADMIN);
 
-        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification).build();
+        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
+                .withNetworkAddress(InetAddress.getLocalHost()).build();
 
         this.device.addAuthorization(this.ownerOrganisation, DeviceFunctionGroup.OWNER);
 
@@ -124,14 +128,14 @@ public class FindDevicesSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     // === WHEN ===
 
     @DomainStep("the find devices request is received")
     public void whenTheFindDevicesRequestIsReceived() throws UnknownEntityException, ValidationException,
-            NotAuthorizedException {
+    NotAuthorizedException {
         LOGGER.info("WHEN: \"the the find devices request is received\".");
 
         try {
