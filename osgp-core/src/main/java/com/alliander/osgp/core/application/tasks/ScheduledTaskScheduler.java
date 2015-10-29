@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.application.tasks;
 
 import java.sql.Timestamp;
@@ -11,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
@@ -49,7 +55,7 @@ public class ScheduledTaskScheduler implements Runnable {
                 scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
                 final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(scheduledTask);
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
-            } catch (final OsgpCoreException | FunctionalException e) {
+            } catch (final FunctionalException e) {
                 LOGGER.error("Processing scheduled task failed.", e);
                 scheduledTask.setFailed(e.getMessage());
                 scheduledTask = this.scheduledTaskRepository.save(scheduledTask);
@@ -63,6 +69,6 @@ public class ScheduledTaskScheduler implements Runnable {
         return new ProtocolRequestMessage(scheduledTask.getDomain(), scheduledTask.getDomainVersion(),
                 scheduledTask.getMessageType(), scheduledTask.getCorrelationId(),
                 scheduledTask.getOrganisationIdentification(), scheduledTask.getDeviceIdentification(), device
-                        .getNetworkAddress().toString(), scheduledTask.getMessageData(), true, 0);
+                        .getNetworkAddress().getHostAddress(), scheduledTask.getMessageData(), true, 0);
     }
 }

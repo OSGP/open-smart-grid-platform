@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
 import java.util.Iterator;
@@ -22,8 +29,8 @@ public class SoapHeaderEndpointInterceptor implements EndpointInterceptor {
     private final String organisationIdentificationHeaderName;
     private final String contextPropertyName;
 
-    private final String userNameHeaderName = "UserName";
-    private final String applicationNameHeaderName = "ApplicationName";
+    private static final String USER_NAME_HEADER_NAME = "UserName";
+    private static final String APPLICTION_NAME_HEADER_NAME = "ApplicationName";
 
     public SoapHeaderEndpointInterceptor(final String headerName, final String contextPropertyName) {
         this.organisationIdentificationHeaderName = headerName;
@@ -40,8 +47,8 @@ public class SoapHeaderEndpointInterceptor implements EndpointInterceptor {
         // Try to get the values from the Soap Header.
         final String organisationIdentification = this.getHeaderValue(soapHeader,
                 this.organisationIdentificationHeaderName);
-        final String userName = this.getHeaderValue(soapHeader, this.userNameHeaderName);
-        final String applicationName = this.getHeaderValue(soapHeader, this.applicationNameHeaderName);
+        final String userName = this.getHeaderValue(soapHeader, this.USER_NAME_HEADER_NAME);
+        final String applicationName = this.getHeaderValue(soapHeader, this.APPLICTION_NAME_HEADER_NAME);
 
         // Check if the values are empty, if so, throw exception.
         if (StringUtils.isEmpty(organisationIdentification)) {

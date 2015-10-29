@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.domain.core.entities;
 
 import java.net.InetAddress;
@@ -15,17 +22,21 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.RelayFunction;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 // TODO: Refactor: Create Container and Gps classes
 
 @Entity
-public class Device extends AbstractEntity {
+public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
+        NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -38,13 +49,15 @@ public class Device extends AbstractEntity {
     public static final String SSLD_TYPE = "SSLD";
 
     /**
-     * UID for serialization
+     * Serial Version UID.
      */
     private static final long serialVersionUID = -1067112091560627041L;
-
     @Identification
     @Column(unique = true, nullable = false, length = 40)
     private String deviceIdentification;
+
+    @Column
+    private String alias;
 
     @Column(length = 255)
     private String containerCity;
@@ -54,6 +67,9 @@ public class Device extends AbstractEntity {
     private String containerPostalCode;
     @Column(length = 255)
     private String containerNumber;
+
+    @Column(length = 255)
+    private String containerMunicipality;
 
     @Column
     private Float gpsLatitude;
@@ -71,7 +87,8 @@ public class Device extends AbstractEntity {
     @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class, fetch = FetchType.EAGER)
     private final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
 
-    @ElementCollection
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @ElementCollection()
     @CollectionTable(name = "device_output_setting", joinColumns = @JoinColumn(name = "device_id"))
     private List<DeviceOutputSetting> outputSettings = new ArrayList<>();
 
@@ -104,53 +121,76 @@ public class Device extends AbstractEntity {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final Float gpsLatitude,
-            final Float gpsLongitude) {
+    public Device(final String deviceIdentification, final String alias, final String containerCity,
+            final String containerPostalCode, final String containerStreet, final String containerNumber,
+            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
         this.deviceIdentification = deviceIdentification;
+        this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
+        this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
-
     }
 
+    @Override
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
+    public String getAlias() {
+        return this.alias;
+    }
+
+    @Override
     public String getContainerPostalCode() {
         return this.containerPostalCode;
     }
 
+    @Override
     public String getContainerCity() {
         return this.containerCity;
     }
 
+    @Override
     public String getContainerStreet() {
         return this.containerStreet;
     }
 
+    @Override
     public String getContainerNumber() {
         return this.containerNumber;
     }
 
+    public String getContainerMunicipality() {
+        return this.containerMunicipality;
+    }
+
+    @Override
     public Float getGpsLatitude() {
         return this.gpsLatitude;
     }
 
+    @Override
     public Float getGpsLongitude() {
         return this.gpsLongitude;
     }
 
+    @Override
     public String getDeviceType() {
         return this.deviceType;
     }
 
+    @Override
     public InetAddress getNetworkAddress() {
         return this.networkAddress;
+    }
+
+    @Override
+    public String getIpAddress() {
+        return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
     }
 
     public boolean isActivated() {
@@ -169,17 +209,20 @@ public class Device extends AbstractEntity {
         this.hasPublicKey = isPublicKeyPresent;
     }
 
+    @Override
     public ProtocolInfo getProtocolInfo() {
         return this.protocolInfo;
     }
 
-    public void updateMetaData(final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final Float gpsLatitude,
-            final Float gpsLongitude) {
+    public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
+            final String containerStreet, final String containerNumber, final String containerMunicipality,
+            final Float gpsLatitude, final Float gpsLongitude) {
+        this.alias = alias;
         this.containerCity = containerCity;
         this.containerPostalCode = containerPostalCode;
         this.containerStreet = containerStreet;
         this.containerNumber = containerNumber;
+        this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
 
@@ -204,6 +247,7 @@ public class Device extends AbstractEntity {
         this.networkAddress = null;
     }
 
+    @Override
     public List<DeviceAuthorization> getAuthorizations() {
         return this.authorizations;
     }
@@ -216,11 +260,16 @@ public class Device extends AbstractEntity {
         return Collections.unmodifiableList(this.outputSettings);
     }
 
+    public List<DeviceOutputSetting> receiveOutputSettings() {
+        return this.outputSettings;
+    }
+
     /**
      * Get the owner organisation name of the device.
-     * 
+     *
      * @return The organisation name when an owner was set, "" otherwise.
      */
+    @Override
     public String getOwner() {
         String retval = "";
 
@@ -235,6 +284,7 @@ public class Device extends AbstractEntity {
         return retval;
     }
 
+    @Override
     public DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
         // TODO: Make sure that there is only one owner authorization.
         final DeviceAuthorization authorization = new DeviceAuthorization(this, organisation, functionGroup);
@@ -250,9 +300,7 @@ public class Device extends AbstractEntity {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-
         final Device device = (Device) o;
-
         if (this.isActivated != device.isActivated) {
             return false;
         }
@@ -274,7 +322,6 @@ public class Device extends AbstractEntity {
                 : device.networkAddress != null) {
             return false;
         }
-
         return true;
     }
 
@@ -295,10 +342,11 @@ public class Device extends AbstractEntity {
 
     /**
      * Get the organisations that are authorized for this device.
-     * 
+     *
      * @return List of OrganisationIdentification of organisations that are
      *         authorized for this device.
      */
+    @Override
     @Transient
     public List<String> getOrganisations() {
         return this.organisations;
@@ -310,21 +358,28 @@ public class Device extends AbstractEntity {
 
     /**
      * Create default configuration for a device (based on type).
-     * 
+     *
      * @return default configuration
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {
         final List<DeviceOutputSetting> defaultConfiguration = new ArrayList<>();
 
+        if (this.deviceType == null) {
+            return defaultConfiguration;
+        }
+
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT));
-            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF));
+            defaultConfiguration
+                    .add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
+            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "Gemeentehuis",
+                    RelayFunction.EVENING_MORNING));
+            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, "Belastingdienst",
+                    RelayFunction.TARIFF));
             return defaultConfiguration;
         }
 
         if (this.deviceType.equalsIgnoreCase(PSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "UWV", RelayFunction.SPECIAL));
             return defaultConfiguration;
         }
 

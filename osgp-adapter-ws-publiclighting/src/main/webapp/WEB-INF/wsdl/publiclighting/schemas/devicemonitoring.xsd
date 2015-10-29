@@ -1,3 +1,12 @@
+<!--
+
+    Copyright 2015 Smart Society Services B.V.
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+-->
 <xsd:schema 
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
 	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"			
@@ -84,8 +93,8 @@
    	
    	<xsd:simpleType name="HistoryTermType">
 		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Short" />
-			<xsd:enumeration value="Long" />
+			<xsd:enumeration value="SHORT" />
+			<xsd:enumeration value="LONG" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	

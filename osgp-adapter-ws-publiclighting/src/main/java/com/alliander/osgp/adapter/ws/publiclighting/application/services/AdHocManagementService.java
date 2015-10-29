@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.publiclighting.application.services;
 
 import java.util.List;
@@ -66,8 +73,10 @@ public class AdHocManagementService {
         // Parameterless constructor required for transactions
     }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber) throws FunctionalException {
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification, pageNumber);
+    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
+            throws FunctionalException {
+        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
+                pageNumber);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
@@ -75,7 +84,8 @@ public class AdHocManagementService {
         return this.deviceRepository.findAllAuthorized(organisation, request);
     }
 
-    public String enqueueSetLightRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
+    public String enqueueSetLightRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
             @Size(min = 1, max = 6) @Valid final List<LightValue> lightValues) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -83,76 +93,87 @@ public class AdHocManagementService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT);
 
-        LOGGER.debug("enqueueSetLightRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueSetLightRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final LightValueMessageDataContainer lightValueMessageDataContainer = new LightValueMessageDataContainer(lightValues);
+        final LightValueMessageDataContainer lightValueMessageDataContainer = new LightValueMessageDataContainer(
+                lightValues);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(PublicLightingRequestMessageType.SET_LIGHT, correlationUid,
-                organisationIdentification, deviceIdentification, lightValueMessageDataContainer, null);
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
+                PublicLightingRequestMessageType.SET_LIGHT, correlationUid, organisationIdentification,
+                deviceIdentification, lightValueMessageDataContainer, null);
 
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueSetLightResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueSetLightResponse(final String correlationUid) throws OsgpException {
 
         return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
     }
 
-    public String enqueueGetStatusRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueGetStatusRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_STATUS);
 
-        LOGGER.debug("enqueueGetStatusRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueGetStatusRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(PublicLightingRequestMessageType.GET_LIGHT_STATUS, correlationUid,
-                organisationIdentification, deviceIdentification, null, null);
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
+                PublicLightingRequestMessageType.GET_LIGHT_STATUS, correlationUid, organisationIdentification,
+                deviceIdentification, null, null);
 
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueGetStatusResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueGetStatusResponse(final String correlationUid) throws OsgpException {
 
         return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
     }
 
-    public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            @Valid final ResumeScheduleData resumeScheduleData) throws FunctionalException {
+    public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.RESUME_SCHEDULE);
 
-        LOGGER.debug("enqueueResumeScheduleRequest called with organisation {}, device {} and resumeScheduleData {} ", organisationIdentification,
-                deviceIdentification, resumeScheduleData);
+        LOGGER.debug("enqueueResumeScheduleRequest called with organisation {}, device {} and resumeScheduleData {} ",
+                organisationIdentification, deviceIdentification, resumeScheduleData);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(PublicLightingRequestMessageType.RESUME_SCHEDULE, correlationUid,
-                organisationIdentification, deviceIdentification, resumeScheduleData, null);
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
+                PublicLightingRequestMessageType.RESUME_SCHEDULE, correlationUid, organisationIdentification,
+                deviceIdentification, resumeScheduleData, null);
 
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueResumeScheduleResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueResumeScheduleResponse(final String correlationUid) throws OsgpException {
         return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
     }
 
-    public String enqueueTransitionRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
+    public String enqueueTransitionRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
             final TransitionMessageDataContainer transitionMessageDataContainer) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -160,19 +181,22 @@ public class AdHocManagementService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_TRANSITION);
 
-        LOGGER.debug("enqueueTransitionRequest called with organisation {}, device {} ", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueTransitionRequest called with organisation {}, device {} ", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(PublicLightingRequestMessageType.SET_TRANSITION, correlationUid,
-                organisationIdentification, deviceIdentification, transitionMessageDataContainer, null);
+        final PublicLightingRequestMessage message = new PublicLightingRequestMessage(
+                PublicLightingRequestMessageType.SET_TRANSITION, correlationUid, organisationIdentification,
+                deviceIdentification, transitionMessageDataContainer, null);
 
         this.publicLightingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueSetTransitionResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueSetTransitionResponse(final String correlationUid) throws OsgpException {
         return this.publicLightingResponseMessageFinder.findMessage(correlationUid);
     }
 

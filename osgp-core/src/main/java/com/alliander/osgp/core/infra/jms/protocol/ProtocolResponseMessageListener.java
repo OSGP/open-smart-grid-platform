@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol;
 
 import java.io.Serializable;
@@ -52,18 +59,21 @@ public class ProtocolResponseMessageListener implements MessageListener {
 
     private ProtocolResponseMessage createResponseMessage(final Message message) throws JMSException {
 
-    	final ResponseMessage responseMessage =(ResponseMessage)((ObjectMessage) message).getObject();
+        final ResponseMessage responseMessage = (ResponseMessage) ((ObjectMessage) message).getObject();
         final ObjectMessage objectMessage = (ObjectMessage) message;
-        final OsgpException osgpException = responseMessage.getOsgpException() == null ? null : responseMessage.getOsgpException();
+        final OsgpException osgpException = responseMessage.getOsgpException() == null ? null : responseMessage
+                .getOsgpException();
         final String correlationUid = objectMessage.getJMSCorrelationID();
         final String messageType = objectMessage.getJMSType();
         final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
         final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);
-        final String organisationIdentification = objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+        final String organisationIdentification = objectMessage
+                .getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
         final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(objectMessage
                 .getStringProperty(Constants.RESULT));
-        final Serializable dataObject = (Serializable) (responseMessage.getDataObject() == null ? null : responseMessage.getDataObject());
+        final Serializable dataObject = (Serializable) (responseMessage.getDataObject() == null ? null
+                : responseMessage.getDataObject());
         final boolean scheduled = objectMessage.propertyExists(Constants.IS_SCHEDULED) ? objectMessage
                 .getBooleanProperty(Constants.IS_SCHEDULED) : false;
         final int retryCount = objectMessage.getIntProperty(Constants.RETRY_COUNT);

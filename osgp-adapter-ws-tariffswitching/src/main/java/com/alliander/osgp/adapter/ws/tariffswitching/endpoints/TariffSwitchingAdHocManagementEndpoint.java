@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.tariffswitching.endpoints;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
@@ -58,25 +65,27 @@ public class TariffSwitchingAdHocManagementEndpoint {
 
     @PayloadRoot(localPart = "GetDevicesRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public GetDevicesResponse getDevices(@OrganisationIdentification final String organisationIdentification, @RequestPayload final GetDevicesRequest request)
-            throws OsgpException {
+    public GetDevicesResponse getDevices(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetDevicesRequest request) throws OsgpException {
 
         LOGGER.info("Get Devices Request received from organisation: {}.", organisationIdentification);
 
         final GetDevicesResponse response = new GetDevicesResponse();
 
         try {
-            final Page<Device> page = this.adHocManagementService.findAllDevices(organisationIdentification, request.getPage());
+            final Page<Device> page = this.adHocManagementService.findAllDevices(organisationIdentification,
+                    request.getPage());
 
             final DevicePage devicePage = new DevicePage();
             devicePage.setTotalPages(page.getTotalPages());
             devicePage.getDevices().addAll(
-                    this.adHocManagementMapper.mapAsList(page.getContent(), com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.Device.class));
+                    this.adHocManagementMapper.mapAsList(page.getContent(),
+                            com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.Device.class));
             response.setDevicePage(devicePage);
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING, new ValidationException(
-                    e.getConstraintViolations()));
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_TARIFF_SWITCHING,
+                    new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -88,16 +97,17 @@ public class TariffSwitchingAdHocManagementEndpoint {
 
     @PayloadRoot(localPart = "GetStatusRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public GetStatusAsyncResponse getStatus(@OrganisationIdentification final String organisationIdentification, @RequestPayload final GetStatusRequest request)
-            throws OsgpException {
+    public GetStatusAsyncResponse getStatus(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetStatusRequest request) throws OsgpException {
 
-        LOGGER.info("Get Status received from organisation: {} for device: {}.", organisationIdentification, request.getDeviceIdentification());
+        LOGGER.info("Get Status received from organisation: {} for device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
 
         final GetStatusAsyncResponse response = new GetStatusAsyncResponse();
 
         try {
-            final String correlationUid = this.adHocManagementService.enqueueGetTariffStatusRequest(organisationIdentification,
-                    request.getDeviceIdentification());
+            final String correlationUid = this.adHocManagementService.enqueueGetTariffStatusRequest(
+                    organisationIdentification, request.getDeviceIdentification());
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -115,22 +125,23 @@ public class TariffSwitchingAdHocManagementEndpoint {
     public GetStatusResponse getGetStatusResponse(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetStatusAsyncRequest request) throws OsgpException {
 
-        LOGGER.info("Get Status Response received from organisation: {} for correlationUid: {}.", organisationIdentification, request.getAsyncRequest()
-                .getCorrelationUid());
+        LOGGER.info("Get Status Response received from organisation: {} for correlationUid: {}.",
+                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
 
         final GetStatusResponse response = new GetStatusResponse();
 
         try {
-            final ResponseMessage message = this.adHocManagementService.dequeueGetTariffStatusResponse(organisationIdentification, request.getAsyncRequest()
-                    .getCorrelationUid());
+            final ResponseMessage message = this.adHocManagementService.dequeueGetTariffStatusResponse(request
+                    .getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
 
                 if (message.getDataObject() != null) {
                     final DeviceStatusMapped deviceStatus = (DeviceStatusMapped) message.getDataObject();
                     if (deviceStatus != null) {
-                        response.setDeviceStatus(this.adHocManagementMapper.map(deviceStatus,
-                                com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus.class));
+                        response.setDeviceStatus(this.adHocManagementMapper
+                                .map(deviceStatus,
+                                        com.alliander.osgp.adapter.ws.schema.tariffswitching.adhocmanagement.DeviceStatus.class));
                     }
                 }
             }
@@ -142,7 +153,8 @@ public class TariffSwitchingAdHocManagementEndpoint {
     }
 
     private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical exception,
+        // Rethrow exception if it already is a functional or technical
+        // exception,
         // otherwise throw new technical exception.
         LOGGER.error("Exception occurred: ", e);
         if (e instanceof OsgpException) {

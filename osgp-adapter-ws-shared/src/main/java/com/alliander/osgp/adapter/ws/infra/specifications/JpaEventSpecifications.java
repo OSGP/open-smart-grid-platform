@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.infra.specifications;
 
 import java.util.Date;
@@ -19,6 +26,8 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 
 public class JpaEventSpecifications implements EventSpecifications {
+
+    private static final String DEVICE = "device";
 
     @Override
     public Specification<Event> isCreatedAfter(final Date dateFrom) throws ArgumentNullOrEmptyException {
@@ -54,13 +63,13 @@ public class JpaEventSpecifications implements EventSpecifications {
     @Override
     public Specification<Event> isFromDevice(final Device device) throws ArgumentNullOrEmptyException {
         if (device == null) {
-            throw new ArgumentNullOrEmptyException("device");
+            throw new ArgumentNullOrEmptyException(DEVICE);
         }
         return new Specification<Event>() {
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-                return cb.equal(eventRoot.<Integer> get("device"), device.getId());
+                return cb.equal(eventRoot.<Integer> get(DEVICE), device.getId());
             }
         };
     }
@@ -79,7 +88,7 @@ public class JpaEventSpecifications implements EventSpecifications {
 
                 final Subquery<Integer> subquery = query.subquery(Integer.class);
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
-                subquery.select(deviceAuthorizationRoot.get("device").as(Integer.class));
+                subquery.select(deviceAuthorizationRoot.get(DEVICE).as(Integer.class));
                 subquery.where(cb.and(
                         cb.equal(deviceAuthorizationRoot.get("organisation"), organisation.getId()),
                         cb.or(cb.equal(deviceAuthorizationRoot.get("functionGroup"),
@@ -87,7 +96,7 @@ public class JpaEventSpecifications implements EventSpecifications {
                                 cb.equal(deviceAuthorizationRoot.get("functionGroup"),
                                         DeviceFunctionGroup.MANAGEMENT.ordinal()))));
 
-                return cb.in(eventRoot.get("device")).value(subquery);
+                return cb.in(eventRoot.get(DEVICE)).value(subquery);
             }
         };
     }

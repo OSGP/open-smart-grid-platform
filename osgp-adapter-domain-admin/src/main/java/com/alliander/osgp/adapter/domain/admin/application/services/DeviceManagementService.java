@@ -1,6 +1,12 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.admin.application.services;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +46,12 @@ public class DeviceManagementService extends AbstractService {
 
     // === UPDATE KEY ===
 
-    public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification, final String correlationUid,
-            final String messageType, @PublicKey final String publicKey) throws FunctionalException {
+    public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
+            final String correlationUid, final String messageType, @PublicKey final String publicKey)
+                    throws FunctionalException {
 
-        LOGGER.info("Updating key for device [{}] on behalf of organisation [{}]", deviceIdentification, organisationIdentification);
+        LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
+                deviceIdentification, organisationIdentification, messageType);
 
         try {
             this.organisationDomainService.searchOrganisation(organisationIdentification);
@@ -51,21 +59,23 @@ public class DeviceManagementService extends AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
         }
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, publicKey), messageType,
-                null);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, publicKey), messageType, null);
     }
 
-    public void handleUpdateKeyResponse(final String deviceIdentification, final String organisationIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+    public void handleUpdateKeyResponse(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
-        LOGGER.info("handleUpdateKeyResponse called for device: {} for organisation: {}", deviceIdentification, organisationIdentification);
+        LOGGER.info("handleUpdateKeyResponse called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-            	LOGGER.error("Device Response not ok.", osgpException);
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
 
@@ -79,24 +89,27 @@ public class DeviceManagementService extends AbstractService {
             device.setPublicKeyPresent(true);
             this.deviceRepository.save(device);
 
-            LOGGER.info("publicKey has been set for device: {} for organisation: {}", deviceIdentification, organisationIdentification);
+            LOGGER.info("publicKey has been set for device: {} for organisation: {}", deviceIdentification,
+                    organisationIdentification);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                null));
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, null));
     }
 
     // === REVOKE KEY ===
 
-    public void revokeKey(final String organisationIdentification, @Identification final String deviceIdentification, final String correlationUid,
-            final String messageType) throws FunctionalException {
+    public void revokeKey(final String organisationIdentification, @Identification final String deviceIdentification,
+            final String correlationUid, final String messageType) throws FunctionalException {
 
-        LOGGER.info("Revoking key for device [{}] on behalf of organisation [{}]", deviceIdentification, organisationIdentification);
+        LOGGER.info("MessageType: {}. Revoking key for device [{}] on behalf of organisation [{}]", messageType,
+                deviceIdentification, organisationIdentification);
 
         try {
             this.organisationDomainService.searchOrganisation(organisationIdentification);
@@ -104,21 +117,24 @@ public class DeviceManagementService extends AbstractService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_ADMIN, e);
         }
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType, null);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, null);
 
     }
 
-    public void handleRevokeKeyResponse(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+    public void handleRevokeKeyResponse(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
 
-        LOGGER.info("handleRevokeKeyResponse called for device: {} for organisation: {}", deviceIdentification, organisationIdentification);
+        LOGGER.info("handleRevokeKeyResponse called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        OsgpException osgpException =exception;
+        OsgpException osgpException = exception;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-            	LOGGER.error("Device Response not ok.", osgpException);
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
 
@@ -130,15 +146,17 @@ public class DeviceManagementService extends AbstractService {
             device.setPublicKeyPresent(false);
             this.deviceRepository.save(device);
 
-            LOGGER.info("publicKey has been revoked for device: {} for organisation: {}", deviceIdentification, organisationIdentification);
+            LOGGER.info("publicKey has been revoked for device: {} for organisation: {}", deviceIdentification,
+                    organisationIdentification);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                null));
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, null));
     }
 }

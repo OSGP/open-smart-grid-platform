@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
 import javax.jms.JMSException;
@@ -55,6 +62,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
                     com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
                             .name()), eventNotification.getDescription(), eventNotification.getIndex());
         } catch (final UnknownEntityException e) {
+            LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
         }
     }
@@ -63,7 +71,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
 
     /**
      * Add a new event notification to the repository with the given arguments.
-     * 
+     *
      * @param deviceId
      *            The device identification
      * @param eventType
@@ -73,7 +81,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
      *            device.
      * @param index
      *            The index of the device.
-     * 
+     *
      * @throws UnknownEntityException
      *             When the device isn't found.
      */

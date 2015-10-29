@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.core.application.services;
 
 import java.util.Date;
@@ -26,7 +33,6 @@ import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
@@ -49,9 +55,6 @@ public class DeviceInstallationService {
 
     @Autowired
     private Integer recentDevicesPeriod;
-
-    @Autowired
-    private DeviceAuthorizationRepository authorizationRepository;
 
     @Autowired
     private WritableDeviceAuthorizationRepository writableAuthorizationRepository;
@@ -88,45 +91,51 @@ public class DeviceInstallationService {
     }
 
     @Transactional(value = "writableTransactionManager")
-    public void addDevice(@Identification final String organisationIdentification, @Valid final Device newDevice) throws FunctionalException {
+    public void addDevice(@Identification final String organisationIdentification, @Valid final Device newDevice)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(newDevice.getDeviceIdentification());
+        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(newDevice
+                .getDeviceIdentification());
 
-        final ProtocolInfo protocolInfo = this.protocolRepository.findByProtocolAndProtocolVersion(this.defaultProtocol, this.defaultProtocolVersion);
+        final ProtocolInfo protocolInfo = this.protocolRepository.findByProtocolAndProtocolVersion(
+                this.defaultProtocol, this.defaultProtocolVersion);
 
         if (existingDevice == null) {
             // device not created yet, add new device
-            final DeviceAuthorization authorization = newDevice.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+            final DeviceAuthorization authorization = newDevice.addAuthorization(organisation,
+                    DeviceFunctionGroup.OWNER);
 
             // add default protocol if not set yet
             if (newDevice.getProtocolInfo() == null) {
                 newDevice.updateProtocol(protocolInfo);
             }
-            // newDevice.updateProtocol(protocolInfo);
 
             this.writableDeviceRepository.save(newDevice);
             this.writableAuthorizationRepository.save(authorization);
 
-            LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(), organisation.getOrganisationIdentification());
+            LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
+                    organisation.getOrganisationIdentification());
         } else {
-            final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(existingDevice,
-                    DeviceFunctionGroup.OWNER);
+            final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
+                    existingDevice, DeviceFunctionGroup.OWNER);
             if (!owners.isEmpty()) {
 
                 // device is already registered to a different owner
-                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE, new ExistingEntityException(Device.class,
-                        newDevice.getDeviceIdentification()));
+                throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
+                        new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
             }
 
             // device is orphan, register for current owner
-            final DeviceAuthorization authorization = existingDevice.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+            final DeviceAuthorization authorization = existingDevice.addAuthorization(organisation,
+                    DeviceFunctionGroup.OWNER);
 
             // add metadata to the device
-            existingDevice.updateMetaData(newDevice.getContainerCity(), newDevice.getContainerPostalCode(), newDevice.getContainerStreet(),
-                    newDevice.getContainerNumber(), newDevice.getGpsLatitude(), newDevice.getGpsLongitude());
+            existingDevice.updateMetaData(null, newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
+                    newDevice.getContainerStreet(), newDevice.getContainerNumber(), null, newDevice.getGpsLatitude(),
+                    newDevice.getGpsLongitude());
 
             // add default protocol if not set yet
             if (existingDevice.getProtocolInfo() == null) {
@@ -137,23 +146,27 @@ public class DeviceInstallationService {
             this.writableDeviceRepository.save(existingDevice);
             this.writableAuthorizationRepository.save(authorization);
 
-            LOGGER.info("Registered orphan device {} to owner {}", newDevice.getDeviceIdentification(), organisation.getOrganisationIdentification());
+            LOGGER.info("Registered orphan device {} to owner {}", newDevice.getDeviceIdentification(),
+                    organisation.getOrganisationIdentification());
         }
     }
 
     @Transactional(value = "writableTransactionManager")
-    public void updateDevice(@Identification final String organisationIdentification, @Valid final Device updateDevice) throws FunctionalException {
+    public void updateDevice(@Identification final String organisationIdentification, @Valid final Device updateDevice)
+            throws FunctionalException {
 
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(updateDevice.getDeviceIdentification());
+        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(updateDevice
+                .getDeviceIdentification());
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, nothing to update.");
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE, new UnknownEntityException(Device.class,
-                    updateDevice.getDeviceIdentification()));
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
         }
 
         // TODO add support for changes to device identification
-        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(existingDevice, DeviceFunctionGroup.OWNER);
+        final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
+                existingDevice, DeviceFunctionGroup.OWNER);
 
         // Check organisation against owner of device
         boolean isOwner = false;
@@ -165,17 +178,21 @@ public class DeviceInstallationService {
 
         if (!isOwner) {
             LOGGER.info("Device has no owner yet, or organisation is not the owner.");
-            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE, new NotAuthorizedException(organisationIdentification));
+            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
+                    new NotAuthorizedException(organisationIdentification));
         }
 
         // Update the device
-        existingDevice.updateMetaData(updateDevice.getContainerCity(), updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
-                updateDevice.getContainerNumber(), updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
+        existingDevice.updateMetaData(updateDevice.getAlias(), updateDevice.getContainerCity(),
+                updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
+                updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
+                updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
         this.writableDeviceRepository.save(existingDevice);
     }
 
     @Transactional(value = "transactionManager")
-    public List<Device> findRecentDevices(@Identification final String organisationIdentification) throws FunctionalException {
+    public List<Device> findRecentDevices(@Identification final String organisationIdentification)
+            throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
         final Date fromDate = new DateMidnight().minusDays(this.recentDevicesPeriod).toDate();
@@ -185,20 +202,22 @@ public class DeviceInstallationService {
     // === GET STATUS ===
 
     @Transactional(value = "transactionManager")
-    public String enqueueGetStatusRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueGetStatusRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_STATUS);
 
-        LOGGER.debug("enqueueGetStatusRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueGetStatusRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.GET_STATUS,
+                correlationUid, organisationIdentification, deviceIdentification, null, null);
 
         this.commonRequestMessageSender.send(message);
 
@@ -206,15 +225,15 @@ public class DeviceInstallationService {
     }
 
     @Transactional(value = "transactionManager")
-    public ResponseMessage dequeueGetStatusResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueGetStatusResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
     // === START DEVICE TEST ===
 
     @Transactional(value = "transactionManager")
-    public String enqueueStartDeviceTestRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueStartDeviceTestRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
 
         LOGGER.debug("Queue start device test request");
 
@@ -223,18 +242,20 @@ public class DeviceInstallationService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.START_SELF_TEST);
 
-        LOGGER.debug("enqueueStartDeviceTestRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueStartDeviceTestRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.START_SELF_TEST, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.START_SELF_TEST,
+                correlationUid, organisationIdentification, deviceIdentification, null, null);
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
     @Transactional(value = "transactionManager")
-    public ResponseMessage dequeueStartDeviceTestResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueStartDeviceTestResponse(final String correlationUid) throws OsgpException {
         LOGGER.debug("Dequeue Start Device Test response");
 
         return this.commonResponseMessageFinder.findMessage(correlationUid);
@@ -243,8 +264,8 @@ public class DeviceInstallationService {
     // === STOP DEVICE TEST ===
 
     @Transactional(value = "transactionManager")
-    public String enqueueStopDeviceTestRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueStopDeviceTestRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
 
         LOGGER.debug("Queue stop device test request");
 
@@ -253,17 +274,19 @@ public class DeviceInstallationService {
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.STOP_SELF_TEST);
 
-        LOGGER.debug("enqueueStopDeviceTestRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
-        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.STOP_SELF_TEST, correlationUid, organisationIdentification,
-                deviceIdentification, null, null);
+        LOGGER.debug("enqueueStopDeviceTestRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.STOP_SELF_TEST,
+                correlationUid, organisationIdentification, deviceIdentification, null, null);
         this.commonRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
     @Transactional(value = "transactionManager")
-    public ResponseMessage dequeueStopDeviceTestResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueStopDeviceTestResponse(final String correlationUid) throws OsgpException {
         LOGGER.debug("Dequeue Stop Device Test response");
 
         return this.commonResponseMessageFinder.findMessage(correlationUid);

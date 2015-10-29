@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol.in;
 
 import javax.annotation.PostConstruct;
@@ -13,9 +20,6 @@ import com.alliander.osgp.shared.infra.jms.MessageProcessor;
  * the MessageProcessor implementation can process should be passed in at
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
- * 
- * @author CGI
- * 
  */
 public abstract class ProtocolRequestMessageProcessor implements MessageProcessor {
 
@@ -32,7 +36,7 @@ public abstract class ProtocolRequestMessageProcessor implements MessageProcesso
 
     /**
      * Construct a message processor instance by passing in the message type.
-     * 
+     *
      * @param deviceFunction
      *            The message type a message processor can handle.
      */

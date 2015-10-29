@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
 import java.net.InetAddress;
@@ -22,6 +29,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Component("oslpRegisterDeviceMessageProcessor")
+@Transactional(value = "transactionManager")
 public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterDeviceMessageProcessor.class);
@@ -53,6 +61,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
             this.updateRegistrationData(deviceIdentification, deviceRegistrationData.getIpAddress(),
                     deviceRegistrationData.getDeviceType(), deviceRegistrationData.isHasSchedule());
         } catch (final UnknownHostException e) {
+            LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
         }
     }
@@ -62,7 +71,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
     /**
      * Update device registration data (ipaddress, etc). Device is added
      * (without an owner) when not exist yet.
-     * 
+     *
      * @param deviceIdentification
      *            The device identification.
      * @param ipAddress
@@ -71,17 +80,16 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
      *            The type of the device, SSLD or PSLD.
      * @param hasSchedule
      *            In case the device has a schedule, this will be true.
-     * 
+     *
      * @return Device with updated data
-     * 
+     *
      * @throws UnknownHostException
      */
-    @Transactional(value = "transactionManager")
     private Device updateRegistrationData(final String deviceIdentification, final String ipAddress,
             final String deviceType, final boolean hasSchedule) throws UnknownHostException {
 
-        LOGGER.info("updateRegistrationData called for device: {} ipAddress: {}, deviceType: {}.",
-                deviceIdentification, ipAddress, deviceType);
+        LOGGER.info("updateRegistrationData called for device: {} ipAddress: {}, deviceType: {} hasSchedule: {}.",
+                deviceIdentification, ipAddress, deviceType, hasSchedule);
 
         // Convert the IP address from String to InetAddress.
         final InetAddress address = LOCAL_HOST.equals(ipAddress) ? InetAddress.getLoopbackAddress() : InetAddress
@@ -107,11 +115,10 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
         final List<Device> devices = this.deviceRepository.findByNetworkAddress(address);
 
         for (final Device device : devices) {
-            if (!LOCAL_HOST.equals(device.getNetworkAddress().getHostAddress())) {
-                if (!device.getDeviceIdentification().equals(deviceIdentification)) {
-                    device.clearNetworkAddress();
-                    this.deviceRepository.save(device);
-                }
+            if (!LOCAL_HOST.equals(device.getIpAddress())
+                    && !device.getDeviceIdentification().equals(deviceIdentification)) {
+                device.clearNetworkAddress();
+                this.deviceRepository.save(device);
             }
         }
     }

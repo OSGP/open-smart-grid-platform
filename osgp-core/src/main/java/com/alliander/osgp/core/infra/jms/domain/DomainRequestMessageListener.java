@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.domain;
 
 import java.io.Serializable;
@@ -14,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.core.application.services.DeviceRequestMessageService;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -53,7 +59,7 @@ public class DomainRequestMessageListener implements MessageListener {
                 LOGGER.info("Domain request for device [{}] processed.",
                         protocolRequestMessage.getDeviceIdentification());
             }
-        } catch (final JMSException | OsgpCoreException | FunctionalException e) {
+        } catch (final JMSException | FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
     }

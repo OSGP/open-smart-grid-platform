@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.domain.core.validation;
 
 import javax.validation.ConstraintValidator;
@@ -38,27 +45,24 @@ public class ScheduleConstraintsValidator implements ConstraintValidator<Schedul
                 helper.addMessage(CHECK_START_DAY_MESSAGE);
             }
 
-            if (schedule.getEndDay() != null) {
-                // When weekDay is ABSOLUTEDAY then startDay may not be later
-                // than endDay
-                if (schedule.getStartDay() != null && schedule.getStartDay().isAfter(schedule.getEndDay())) {
-                    helper.addMessage(CHECK_START_DAY_AFTER_END_DAY_MESSAGE);
-                }
+            // When weekDay is ABSOLUTEDAY then startDay may not be later
+            // than endDay
+            if (schedule.getEndDay() != null && schedule.getStartDay() != null
+                    && schedule.getStartDay().isAfter(schedule.getEndDay())) {
+                helper.addMessage(CHECK_START_DAY_AFTER_END_DAY_MESSAGE);
             }
         }
     }
 
     private void checkTime(final ValidatorHelper helper, final Schedule schedule) {
-        if (schedule.getActionTime() == ActionTimeType.ABSOLUTETIME) {
-            // When actionTime is ABSOLUTETIME then time may not be null
-            if (schedule.getTime() == null) {
-                helper.addMessage(CHECK_TIME_MESSAGE);
-            }
+        // When actionTime is ABSOLUTETIME then time may not be null
+        if (schedule.getActionTime() == ActionTimeType.ABSOLUTETIME && schedule.getTime() == null) {
+            helper.addMessage(CHECK_TIME_MESSAGE);
         }
     }
 
     private void checkTriggerWindow(final ValidatorHelper helper, final Schedule schedule) {
-        if ((schedule.getActionTime() == ActionTimeType.SUNRISE || schedule.getActionTime() == ActionTimeType.SUNSET)) {
+        if (schedule.getActionTime() == ActionTimeType.SUNRISE || schedule.getActionTime() == ActionTimeType.SUNSET) {
             // When actionTime is SUNRISE or SUNSET then triggerWindow may not
             // be null
             if (schedule.getTriggerWindow() == null) {

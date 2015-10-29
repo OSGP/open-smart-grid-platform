@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.application.services;
 
 import java.io.Serializable;
@@ -13,12 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
-import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -41,12 +46,31 @@ public class DeviceResponseMessageService {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Autowired
+    private int getMaxRetryCount;
+
     public void processMessage(final ProtocolResponseMessage message) {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
 
-            if (message.getResult() == ResponseMessageResultType.NOT_OK && message.getRetryCount() < 3) {
+            // The array of exceptions which have to be retried.
+            final String[] retryExceptions = { "Unable to connect", "ConnectException",
+            "Failed to receive response within timelimit" };
+            Boolean retryMessage = false;
+
+            // Validate the actual exception with the list of exception to be
+            // retried.
+            if (message.getOsgpException() != null) {
+                for (final String retryException : retryExceptions) {
+                    if (message.getOsgpException().getCause().toString().contains(retryException)) {
+                        retryMessage = true;
+                    }
+                }
+            }
+
+            if (message.getResult() == ResponseMessageResultType.NOT_OK
+                    && message.getRetryCount() < this.getMaxRetryCount && retryMessage) {
                 LOGGER.info("Retrying: {} for {} time", message.getMessageType(), message.getRetryCount() + 1);
                 final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
@@ -59,7 +83,7 @@ public class DeviceResponseMessageService {
                     this.domainResponseMessageSender.send(message);
                 }
             }
-        } catch (JMSException | FunctionalException | OsgpCoreException e) {
+        } catch (JMSException | FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
     }
@@ -80,7 +104,8 @@ public class DeviceResponseMessageService {
             // TODO:delete the completed schedule from the database
             // this.scheduledTaskRepository.delete(scheduledTask)
         } else {
-            String errorMessage= message.getOsgpException() ==null? "" : message.getOsgpException().getCause().getMessage();
+            final String errorMessage = message.getOsgpException() == null ? "" : message.getOsgpException().getCause()
+                    .getMessage();
             scheduledTask.setFailed(errorMessage);
         }
         this.scheduledTaskRepository.save(scheduledTask);
@@ -94,7 +119,7 @@ public class DeviceResponseMessageService {
 
         return new ProtocolRequestMessage(message.getDomain(), message.getDomainVersion(), message.getMessageType(),
                 message.getCorrelationUid(), message.getOrganisationIdentification(),
-                message.getDeviceIdentification(), device.getNetworkAddress().toString(), messageData,
-                message.isScheduled(), message.getRetryCount() + 1);
+                message.getDeviceIdentification(), device.getIpAddress(), messageData, message.isScheduled(),
+                message.getRetryCount() + 1);
     }
 }

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.domain.core.validation;
 
 import javax.validation.ConstraintValidator;
@@ -6,7 +13,7 @@ import javax.validation.ConstraintValidatorContext;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 
 public class LightTypeAndConfigurationValidator implements
-        ConstraintValidator<LightTypeAndConfiguration, Configuration> {
+ConstraintValidator<LightTypeAndConfiguration, Configuration> {
 
     @Override
     public void initialize(final LightTypeAndConfiguration constraintAnnotation) {
@@ -18,12 +25,10 @@ public class LightTypeAndConfigurationValidator implements
         if (value == null) {
             return true;
         }
-
         // If no light type is given only one of the configuration is allowed.
         if (value.getLightType() == null) {
-            return (value.getDaliConfiguration() == null || value.getRelayConfiguration() == null);
+            return value.getDaliConfiguration() == null || value.getRelayConfiguration() == null;
         }
-
         switch (value.getLightType()) {
         case DALI:
             return value.getRelayConfiguration() == null;

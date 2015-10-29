@@ -107,6 +107,20 @@
         	name="FindScheduledTasksResponse">
         </wsdl:part>
     </wsdl:message>
+    
+    <wsdl:message name="UpdateDeviceHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceResponse">
+        <wsdl:part element="dman:UpdateDeviceResponse" name="UpdateDeviceResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceRequest">
+        <wsdl:part element="dman:UpdateDeviceRequest" name="UpdateDeviceRequest">
+        </wsdl:part>
+    </wsdl:message>
 
 	<wsdl:portType name="DeviceManagementPort">
 		<wsdl:operation name="FindEvents">
@@ -156,6 +170,13 @@
 			</wsdl:output>
 		</wsdl:operation>		
 	
+		<wsdl:operation name="UpdateDevice">
+            <wsdl:input message="tns:UpdateDeviceRequest" name="UpdateDeviceRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:UpdateDeviceResponse" name="UpdateDeviceResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
 	</wsdl:portType>
 	
 	<wsdl:binding name="DeviceManagementPortSoap11" type="tns:DeviceManagementPort">
@@ -237,6 +258,19 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
+		
+		<wsdl:operation name="UpdateDevice">
+            <soap:operation soapAction="" />
+            <wsdl:input name="UpdateDeviceRequest">
+                <soap:header message="tns:UpdateDeviceHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:UpdateDeviceHeader" part="UserName" use="literal" />
+				<soap:header message="tns:UpdateDeviceHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="UpdateDeviceResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
 	</wsdl:binding>
 	
 	<wsdl:service name="DeviceManagementPortService">

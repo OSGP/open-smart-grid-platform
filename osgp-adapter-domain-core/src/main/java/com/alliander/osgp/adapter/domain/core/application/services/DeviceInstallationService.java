@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.core.application.services;
 
 import java.util.ArrayList;
@@ -5,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
@@ -49,27 +54,29 @@ public class DeviceInstallationService extends AbstractService {
 
     // === GET STATUS ===
 
-    public void getStatus(final String organisationIdentification, final String deviceIdentification, final String correlationUid, final String messageType)
-            throws FunctionalException {
+    public void getStatus(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType) throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType, device
-                .getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatus deviceStatusDto, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatus deviceStatusDto,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
         DeviceStatusMapped deviceStatusMapped = null;
 
         try {
-            if (deviceResult == ResponseMessageResultType.NOT_OK || exception!=null) {
-            	LOGGER.error("Device Response not ok.", osgpException);
+            if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
 
@@ -84,18 +91,20 @@ public class DeviceInstallationService extends AbstractService {
                 dosMap.put(dos.getInternalId(), dos);
             }
 
-            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap, DomainType.TARIFF_SWITCHING), filterLightValues(
-                    status.getLightValues(), dosMap, DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
+            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
+                    DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
+                    DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
                     status.getLightType(), status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                deviceStatusMapped));
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, deviceStatusMapped));
     }
 
     // === CUSTOM STATUS FILTER FUNCTIONS ===
@@ -103,7 +112,7 @@ public class DeviceInstallationService extends AbstractService {
     /**
      * Filter light values based on PublicLighting domain. Only matching values
      * will be returned.
-     * 
+     *
      * @param source
      *            list to filter
      * @param dosMap
@@ -113,8 +122,8 @@ public class DeviceInstallationService extends AbstractService {
      * @return list with filtered values or empty list when domain is not
      *         allowed.
      */
-    private static List<LightValue> filterLightValues(final List<LightValue> source, final Map<Integer, DeviceOutputSetting> dosMap,
-            final DomainType allowedDomainType) {
+    private static List<LightValue> filterLightValues(final List<LightValue> source,
+            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
 
         final List<LightValue> filteredValues = new ArrayList<>();
         if (allowedDomainType != DomainType.PUBLIC_LIGHTING) {
@@ -123,7 +132,8 @@ public class DeviceInstallationService extends AbstractService {
         }
 
         for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex()) && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
+            if (dosMap.containsKey(lv.getIndex())
+                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
                 filteredValues.add(lv);
             }
         }
@@ -134,7 +144,7 @@ public class DeviceInstallationService extends AbstractService {
     /**
      * Filter light values based on TariffSwitching domain. Only matching values
      * will be returned.
-     * 
+     *
      * @param source
      *            list to filter
      * @param dosMap
@@ -144,8 +154,8 @@ public class DeviceInstallationService extends AbstractService {
      * @return list with filtered values or empty list when domain is not
      *         allowed.
      */
-    private static List<TariffValue> filterTariffValues(final List<LightValue> source, final Map<Integer, DeviceOutputSetting> dosMap,
-            final DomainType allowedDomainType) {
+    private static List<TariffValue> filterTariffValues(final List<LightValue> source,
+            final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
 
         final List<TariffValue> filteredValues = new ArrayList<>();
         if (allowedDomainType != DomainType.TARIFF_SWITCHING) {
@@ -154,7 +164,8 @@ public class DeviceInstallationService extends AbstractService {
         }
 
         for (final LightValue lv : source) {
-            if (dosMap.containsKey(lv.getIndex()) && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
+            if (dosMap.containsKey(lv.getIndex())
+                    && dosMap.get(lv.getIndex()).getOutputType().domainType().equals(allowedDomainType)) {
                 // Map light value to tariff value
                 final TariffValue tf = new TariffValue();
                 tf.setIndex(lv.getIndex());
@@ -177,29 +188,33 @@ public class DeviceInstallationService extends AbstractService {
 
     // === START DEVICE TEST ===
 
-    public void startSelfTest(@Identification final String deviceIdentification, @Identification final String organisationIdentification,
-            final String correlationUid, final String messageType) throws FunctionalException {
+    public void startSelfTest(@Identification final String deviceIdentification,
+            @Identification final String organisationIdentification, final String correlationUid,
+            final String messageType) throws FunctionalException {
 
-        LOGGER.debug("startSelfTest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("startSelfTest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType, device
-                .getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, device.getIpAddress());
     }
 
     // === STOP DEVICE TEST ===
 
-    public void stopSelfTest(@Identification final String deviceIdentification, @Identification final String organisationIdentification,
-            final String correlationUid, final String messageType) throws FunctionalException {
+    public void stopSelfTest(@Identification final String deviceIdentification,
+            @Identification final String organisationIdentification, final String correlationUid,
+            final String messageType) throws FunctionalException {
 
-        LOGGER.debug("stopSelfTest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("stopSelfTest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType, device
-                .getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, device.getIpAddress());
     }
 }

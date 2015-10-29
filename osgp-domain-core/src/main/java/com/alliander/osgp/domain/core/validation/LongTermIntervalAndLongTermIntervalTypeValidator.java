@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.domain.core.validation;
 
 import javax.validation.ConstraintValidator;
@@ -7,7 +14,7 @@ import javax.validation.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 
 public class LongTermIntervalAndLongTermIntervalTypeValidator implements
-        ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
+ConstraintValidator<LongTermIntervalAndLongTermIntervalType, Configuration> {
 
     @Override
     public void initialize(final LongTermIntervalAndLongTermIntervalType constraintAnnotation) {
@@ -19,14 +26,12 @@ public class LongTermIntervalAndLongTermIntervalTypeValidator implements
         if (value == null) {
             return true;
         }
-
         // If LongTermHistoryInterval or LongTermHistoryIntervalType is not
         // present,
         // the other must be not present as well.
         if (value.getLongTermHistoryInterval() == null && value.getLongTermHistoryIntervalType() == null) {
             return true;
         }
-
         // If LongTermHistoryInterval or LongTermHistoryIntervalType is present,
         // the other must be as well.
         if (value.getLongTermHistoryInterval() != null && value.getLongTermHistoryIntervalType() != null) {

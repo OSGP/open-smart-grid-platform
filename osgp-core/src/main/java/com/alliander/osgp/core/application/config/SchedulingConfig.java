@@ -1,9 +1,14 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.application.config;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +25,6 @@ import com.alliander.osgp.core.application.tasks.ScheduledTaskScheduler;
 @EnableScheduling
 @PropertySource("file:${osp/osgpCore/config}")
 public class SchedulingConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SchedulingConfig.class);
 
     private static final String PROPERTY_NAME_SCHEDULING_SCHEDULED_TASKS_CRON_EXPRESSION = "scheduling.scheduled.tasks.cron.expression";
     private static final String PROPERTY_NAME_SCHEDULING_TASK_SCHEDULER_POOL_SIZE = "scheduling.task.scheduler.pool.size";

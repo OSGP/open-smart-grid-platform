@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol.in;
 
 import javax.jms.JMSException;
@@ -13,7 +20,6 @@ import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.core.domain.model.protocol.ProtocolResponseService;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
@@ -21,9 +27,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 public class ProtocolResponseMessageSender implements ProtocolResponseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolResponseMessageSender.class);
-
-    @Autowired
-    private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
     private ProtocolResponseMessageJmsTemplateFactory factory;

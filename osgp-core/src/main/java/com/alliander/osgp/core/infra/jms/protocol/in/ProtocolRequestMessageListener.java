@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.infra.jms.protocol.in;
 
 import java.util.List;
@@ -47,6 +54,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
                 processor.processMessage(objectMessage);
 
             } catch (final JMSException ex) {
+                LOGGER.error("JMSException", ex);
                 // The message needs to be sent to a domain adapter.
                 this.sendMessageToDomainAdapter((RequestMessage) objectMessage.getObject(), message.getJMSType());
 
@@ -59,7 +67,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
 
     /**
      * Send the RequestMessage to a domain adapter.
-     * 
+     *
      * @param requestMessage
      *            The RequestMessage to process.
      * @param messageType
@@ -74,7 +82,7 @@ public class ProtocolRequestMessageListener implements MessageListener {
         DomainInfo domainInfo = null;
 
         for (final DomainInfo di : this.domainInfos) {
-            if (di.getDomain().equals("CORE") && di.getDomainVersion().equals("1.0")) {
+            if ("CORE".equals(di.getDomain()) && "1.0".equals(di.getDomainVersion())) {
                 domainInfo = di;
             }
         }

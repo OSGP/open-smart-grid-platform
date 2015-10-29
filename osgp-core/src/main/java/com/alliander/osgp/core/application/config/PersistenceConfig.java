@@ -1,7 +1,15 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.core.application.config;
 
 import java.util.Properties;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
@@ -14,13 +22,14 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 import com.alliander.osgp.domain.core.exceptions.OsgpCoreException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.googlecode.flyway.core.Flyway;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @PropertySource("file:${osp/osgpCore/config}")
@@ -31,6 +40,9 @@ public class PersistenceConfig {
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
     private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
     private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
+
+    private static final String PROPERTY_NAME_DATABASE_MAX_POOL_SIZE = "db.max_pool_size";
+    private static final String PROPERTY_NAME_DATABASE_AUTO_COMMIT = "db.auto_commit";
 
     private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
     private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
@@ -43,10 +55,12 @@ public class PersistenceConfig {
 
     private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
+
     @Resource
     private Environment environment;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
+    private HikariDataSource dataSource;
 
     public PersistenceConfig() {
         // empty constructor
@@ -54,27 +68,32 @@ public class PersistenceConfig {
 
     /**
      * Method for creating the Data Source.
-     * 
+     *
      * @return DataSource
      */
-    public DataSource dataSource() {
-        final SingleConnectionDataSource singleConnectionDataSource = new SingleConnectionDataSource();
-        singleConnectionDataSource.setAutoCommit(false);
-        final Properties properties = new Properties();
-        properties.setProperty("socketTimeout", "0");
-        properties.setProperty("tcpKeepAlive", "true");
-        singleConnectionDataSource.setDriverClassName(this.environment
-                .getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-        singleConnectionDataSource.setUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-        singleConnectionDataSource.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-        singleConnectionDataSource.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
-        singleConnectionDataSource.setSuppressClose(true);
-        return singleConnectionDataSource;
+    public DataSource getDataSource() {
+        if (this.dataSource == null) {
+            final HikariConfig hikariConfig = new HikariConfig();
+
+            hikariConfig.setDriverClassName(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+            hikariConfig.setJdbcUrl(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
+            hikariConfig.setUsername(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
+            hikariConfig.setPassword(this.environment.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+
+            hikariConfig.setMaximumPoolSize(Integer.parseInt(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_MAX_POOL_SIZE)));
+            hikariConfig.setAutoCommit(Boolean.parseBoolean(this.environment
+                    .getRequiredProperty(PROPERTY_NAME_DATABASE_AUTO_COMMIT)));
+
+            this.dataSource = new HikariDataSource(hikariConfig);
+        }
+
+        return this.dataSource;
     }
 
     /**
      * Method for creating the Transaction Manager.
-     * 
+     *
      * @return JpaTransactionManager
      * @throws ClassNotFoundException
      *             when class not found
@@ -108,13 +127,13 @@ public class PersistenceConfig {
         flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
 
-        flyway.setDataSource(this.dataSource());
+        flyway.setDataSource(this.getDataSource());
         return flyway;
     }
 
     /**
      * Method for creating the Entity Manager Factory Bean.
-     * 
+     *
      * @return LocalContainerEntityManagerFactoryBean
      * @throws ClassNotFoundException
      *             when class not found
@@ -125,7 +144,7 @@ public class PersistenceConfig {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
         entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE");
-        entityManagerFactoryBean.setDataSource(this.dataSource());
+        entityManagerFactoryBean.setDataSource(this.getDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistence.class);
@@ -144,4 +163,12 @@ public class PersistenceConfig {
 
         return entityManagerFactoryBean;
     }
+
+    @PreDestroy
+    public void destroyDataSource() {
+        if (this.dataSource != null) {
+            this.dataSource.close();
+        }
+    }
+
 }

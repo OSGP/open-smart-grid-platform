@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.infra.jms;
 
 import javax.jms.JMSException;
@@ -27,7 +34,7 @@ public class LoggingMessageSender {
 
     /**
      * Method for sending a logging message to the queue.
-     * 
+     *
      * @param loggingRequestMessage
      *            The LoggingRequestMessage request message to send.
      */
@@ -38,7 +45,7 @@ public class LoggingMessageSender {
 
     /**
      * Method for sending a logging message to the logger queue.
-     * 
+     *
      * @param requestMessage
      *            The LoggingRequestMessage request message to send.
      */
@@ -46,12 +53,9 @@ public class LoggingMessageSender {
         LOGGER.info("Sending logger message to queue");
 
         this.loggingJmsTemplate.send(new MessageCreator() {
-
             @Override
             public Message createMessage(final Session session) throws JMSException {
-
                 final ObjectMessage objectMessage = session.createObjectMessage();
-
                 objectMessage.setJMSCorrelationID(loggingMessage.getCorrelationUid());
                 objectMessage.setLongProperty(Constants.TIME_STAMP, loggingMessage.getTimeStamp().getTime());
                 objectMessage.setStringProperty(Constants.CLASS_NAME, loggingMessage.getClassName());
@@ -65,7 +69,6 @@ public class LoggingMessageSender {
                 objectMessage.setIntProperty(Constants.RESPONSE_DATA_SIZE, loggingMessage.getResposeDataSize());
                 return objectMessage;
             }
-
         });
     }
 }

@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.admin.infra.jms.ws;
 
 import javax.annotation.PostConstruct;
@@ -22,9 +29,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  * the MessageProcessor implementation can process should be passed in at
  * construction. The Singleton instance is added to the HashMap of
  * MessageProcessors after dependency injection has completed.
- * 
- * @author CGI
- * 
  */
 public abstract class WebServiceRequestMessageProcessor implements MessageProcessor {
 
@@ -62,7 +66,7 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
 
     /**
      * Construct a message processor instance by passing in the message type.
-     * 
+     *
      * @param deviceFunction
      *            The message type a message processor can handle.
      */
@@ -85,7 +89,7 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
     /**
      * In case of an error, this function can be used to send a response
      * containing the exception to the web-service-adapter.
-     * 
+     *
      * @param e
      *            The exception.
      * @param correlationUid
@@ -100,9 +104,18 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String messageType) {
         LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
-        OsgpException osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
-
+        final OsgpException osgpException = this.ensureOsgpException(e);
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, e));
+                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, null));
+    }
+
+    private OsgpException ensureOsgpException(final Exception e) {
+
+        if (e instanceof OsgpException) {
+            return (OsgpException) e;
+        }
+
+        return new TechnicalException(ComponentType.DOMAIN_ADMIN,
+                "Unexpected exception while retrieving response message", e);
     }
 }

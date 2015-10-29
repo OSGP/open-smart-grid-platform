@@ -1,9 +1,15 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.core.application.services;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
@@ -43,10 +48,12 @@ public class ConfigurationManagementService extends AbstractService {
 
     // === SET CONFIGURATION ===
 
-    public void setConfiguration(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final Configuration configuration, final Long scheduleTime, final String messageType) throws FunctionalException {
+    public void setConfiguration(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final Configuration configuration, final Long scheduleTime,
+            final String messageType) throws FunctionalException {
 
-        LOGGER.debug("setConfiguration called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("setConfiguration called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -61,7 +68,8 @@ public class ConfigurationManagementService extends AbstractService {
 
         // Second, replace TARIFF_REVERSED with TARIFF, since the device doesn't
         // contain a TARIFF_REVERSED enum entry.
-        if (configuration.getRelayConfiguration() != null && configuration.getRelayConfiguration().getRelayMap() != null) {
+        if (configuration.getRelayConfiguration() != null
+                && configuration.getRelayConfiguration().getRelayMap() != null) {
             for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
                 if (rm.getRelayType().equals(RelayType.TARIFF_REVERSED)) {
                     rm.changeRelayType(RelayType.TARIFF);
@@ -69,11 +77,11 @@ public class ConfigurationManagementService extends AbstractService {
             }
         }
 
-        final com.alliander.osgp.dto.valueobjects.Configuration configurationDto = this.domainCoreMapper.map(configuration,
-                com.alliander.osgp.dto.valueobjects.Configuration.class);
+        final com.alliander.osgp.dto.valueobjects.Configuration configurationDto = this.domainCoreMapper.map(
+                configuration, com.alliander.osgp.dto.valueobjects.Configuration.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, configurationDto),
-                messageType, device.getNetworkAddress().toString(), scheduleTime);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, configurationDto), messageType, device.getIpAddress(), scheduleTime);
     }
 
     private void updateDeviceOutputSettings(final Device device, final Configuration configuration) {
@@ -83,7 +91,8 @@ public class ConfigurationManagementService extends AbstractService {
             // Nothing to update
             return;
         }
-        if (configuration.getRelayConfiguration().getRelayMap() == null || configuration.getRelayConfiguration().getRelayMap().isEmpty()) {
+        if (configuration.getRelayConfiguration().getRelayMap() == null
+                || configuration.getRelayConfiguration().getRelayMap().isEmpty()) {
             // Nothing to update
             return;
         }
@@ -98,21 +107,23 @@ public class ConfigurationManagementService extends AbstractService {
 
     // === GET CONFIGURATION ===
 
-    public void getConfiguration(final String organisationIdentification, final String deviceIdentification, final String correlationUid,
-            final String messageType) throws FunctionalException {
+    public void getConfiguration(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType) throws FunctionalException {
 
-        LOGGER.debug("getConfiguration called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("getConfiguration called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, null), messageType, device
-                .getNetworkAddress().toString());
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, null), messageType, device.getIpAddress());
     }
 
-    public void handleGetConfigurationResponse(final com.alliander.osgp.dto.valueobjects.Configuration configurationDto, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+    public void handleGetConfigurationResponse(
+            final com.alliander.osgp.dto.valueobjects.Configuration configurationDto,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
@@ -120,7 +131,7 @@ public class ConfigurationManagementService extends AbstractService {
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
-            	LOGGER.error("Device Response not ok.", osgpException);
+                LOGGER.error("Device Response not ok.", osgpException);
                 throw osgpException;
             }
 
@@ -144,12 +155,13 @@ public class ConfigurationManagementService extends AbstractService {
             }
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected Exception", e);
+            LOGGER.error("Unexpected Exception for messageType: {}", messageType, e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException= new TechnicalException(ComponentType.UNKNOWN, "Unexpected exception while retrieving response message", e);
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                configuration));
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, configuration));
     }
 }

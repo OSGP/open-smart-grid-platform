@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.admin.infra.jms.ws.messageprocessors;
 
 import javax.jms.JMSException;
@@ -16,9 +23,6 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing admin revoke key request messages
- * 
- * @author CGI
- * 
  */
 @Component
 public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -27,13 +31,13 @@ public class AdminRevokeKeyRequestMessageProcessor extends WebServiceRequestMess
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(AdminRevokeKeyRequestMessageProcessor.class);
 
-    public AdminRevokeKeyRequestMessageProcessor() {
-        super(DeviceFunction.REVOKE_KEY);
-    }
-
     @Autowired
     @Qualifier("domainAdminDeviceManagementService")
     private DeviceManagementService deviceManagementService;
+
+    public AdminRevokeKeyRequestMessageProcessor() {
+        super(DeviceFunction.REVOKE_KEY);
+    }
 
     @Override
     public void processMessage(final ObjectMessage message) {

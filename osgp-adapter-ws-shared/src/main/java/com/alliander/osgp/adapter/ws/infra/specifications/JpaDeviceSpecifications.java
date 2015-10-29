@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.infra.specifications;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -125,4 +132,39 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             }
         };
     }
+
+    @Override
+    public Specification<Device> hasMunicipality(final String municipality) throws ArgumentNullOrEmptyException {
+
+        if (StringUtils.isEmpty(municipality)) {
+            throw new ArgumentNullOrEmptyException("municipality");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("containerMunicipality")), municipality.toUpperCase());
+            }
+        };
+    }
+
+    @Override
+    public Specification<Device> hasAlias(final String alias) throws ArgumentNullOrEmptyException {
+
+        if (StringUtils.isEmpty(alias)) {
+            throw new ArgumentNullOrEmptyException("alias");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.like(cb.upper(deviceRoot.<String> get("alias")), alias.toUpperCase());
+            }
+        };
+    }
+
 }

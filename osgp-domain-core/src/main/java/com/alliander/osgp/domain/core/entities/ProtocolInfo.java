@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.domain.core.entities;
 
 import javax.persistence.Column;
@@ -66,9 +73,7 @@ public class ProtocolInfo extends AbstractEntity {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-
         final ProtocolInfo protocolInfo = (ProtocolInfo) o;
-
         if (!protocolInfo.getProtocol().equals(this.protocol)) {
             return false;
         }
@@ -87,7 +92,6 @@ public class ProtocolInfo extends AbstractEntity {
         if (!protocolInfo.getOutgoingProtocolResponsesQueue().equals(this.outgoingProtocolResponsesQueue)) {
             return false;
         }
-
         return true;
     }
 

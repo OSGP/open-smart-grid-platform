@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.tariffswitching.application.services;
 
 import java.util.List;
@@ -54,28 +61,33 @@ public class ScheduleManagementService {
         // Parameterless constructor required for transactions...
     }
 
-    public String enqueueSetTariffSchedule(@Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            @NotNull @Size(min = 1, max = 50) @Valid final List<Schedule> mapAsList, final DateTime scheduledTime) throws FunctionalException {
+    public String enqueueSetTariffSchedule(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            @NotNull @Size(min = 1, max = 50) @Valid final List<Schedule> mapAsList, final DateTime scheduledTime)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_TARIFF_SCHEDULE);
 
-        LOGGER.debug("enqueueSetTariffSchedule called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueSetTariffSchedule called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
         final ScheduleMessageDataContainer scheduleMessageDataContainer = new ScheduleMessageDataContainer(mapAsList);
 
-        final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage(TariffSwitchingRequestMessageType.SET_TARIFF_SCHEDULE, correlationUid,
-                organisationIdentification, deviceIdentification, scheduleMessageDataContainer, scheduledTime);
+        final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage(
+                TariffSwitchingRequestMessageType.SET_TARIFF_SCHEDULE, correlationUid, organisationIdentification,
+                deviceIdentification, scheduleMessageDataContainer, scheduledTime);
 
         this.tariffSwitchingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueSetTariffScheduleResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueSetTariffScheduleResponse(final String correlationUid) throws OsgpException {
 
         return this.tariffSwitchingResponseMessageFinder.findMessage(correlationUid);
     }

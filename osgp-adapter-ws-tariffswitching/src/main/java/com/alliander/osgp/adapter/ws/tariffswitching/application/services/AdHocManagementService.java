@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.tariffswitching.application.services;
 
 import org.slf4j.Logger;
@@ -54,9 +61,11 @@ public class AdHocManagementService {
         // Parameterless constructor required for transactions
     }
 
-    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber) throws FunctionalException {
+    public Page<Device> findAllDevices(@Identification final String organisationIdentification, final int pageNumber)
+            throws FunctionalException {
 
-        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification, pageNumber);
+        LOGGER.debug("findAllDevices called with organisation {} and pageNumber {}", organisationIdentification,
+                pageNumber);
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
 
@@ -64,27 +73,30 @@ public class AdHocManagementService {
         return this.deviceRepository.findAllAuthorized(organisation, request);
     }
 
-    public String enqueueGetTariffStatusRequest(@Identification final String organisationIdentification, @Identification final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueGetTariffStatusRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_STATUS);
 
-        LOGGER.debug("enqueueGetTariffStatusRequest called with organisation {} and device {}", organisationIdentification, deviceIdentification);
+        LOGGER.debug("enqueueGetTariffStatusRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification, deviceIdentification);
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
 
-        final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage(TariffSwitchingRequestMessageType.GET_TARIFF_STATUS, correlationUid,
-                organisationIdentification, deviceIdentification, null, null);
+        final TariffSwitchingRequestMessage message = new TariffSwitchingRequestMessage(
+                TariffSwitchingRequestMessageType.GET_TARIFF_STATUS, correlationUid, organisationIdentification,
+                deviceIdentification, null, null);
 
         this.tariffSwitchingRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public ResponseMessage dequeueGetTariffStatusResponse(final String organisationIdentification, final String correlationUid) throws OsgpException {
+    public ResponseMessage dequeueGetTariffStatusResponse(final String correlationUid) throws OsgpException {
 
         return this.tariffSwitchingResponseMessageFinder.findMessage(correlationUid);
     }

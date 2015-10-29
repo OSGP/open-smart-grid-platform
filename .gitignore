@@ -34,3 +34,9 @@ local.properties
 #FitNesse data
 KahaDB/
 fitnesse/FitNesseRoot/files/
+
+#################
+## INTELLIJ
+#################
+*.iml
+.idea

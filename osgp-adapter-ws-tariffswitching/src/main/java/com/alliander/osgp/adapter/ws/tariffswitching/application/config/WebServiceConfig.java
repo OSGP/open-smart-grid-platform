@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.ws.tariffswitching.application.config;
 
 import java.util.ArrayList;
@@ -53,62 +60,62 @@ public class WebServiceConfig {
 
     /**
      * Method for creating the Marshaller for schedule management.
-     * 
+     *
      * @return Jaxb2Marshaller
      */
     @Bean
     public Jaxb2Marshaller tariffSwitchingAdHocManagementMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_TARIFF_SWITCHING_AD_HOC_MANAGEMENT));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_TARIFF_SWITCHING_AD_HOC_MANAGEMENT));
 
         return marshaller;
     }
 
     /**
-     * Method for creating the Marshalling Payload Method Processor for Tariff Switching schedule management.
-     * 
+     * Method for creating the Marshalling Payload Method Processor for Tariff
+     * Switching schedule management.
+     *
      * @return MarshallingPayloadMethodProcessor
      */
     @Bean
     public MarshallingPayloadMethodProcessor tariffSwitchingAdHocManagementMarshallingPayloadMethodProcessor() {
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
-                this.tariffSwitchingAdHocManagementMarshaller(), this.tariffSwitchingAdHocManagementMarshaller());
-
-        return marshallingPayloadMethodProcessor;
+        return new MarshallingPayloadMethodProcessor(this.tariffSwitchingAdHocManagementMarshaller(),
+                this.tariffSwitchingAdHocManagementMarshaller());
     }
 
     /**
      * Method for creating the Marshaller for schedule management.
-     * 
+     *
      * @return Jaxb2Marshaller
      */
     @Bean
     public Jaxb2Marshaller tariffSwitchingScheduleManagementMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
 
-        marshaller.setContextPath(this.environment.getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_TARIFF_SWITCHING_SCHEDULE_MANAGEMENT));
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_TARIFF_SWITCHING_SCHEDULE_MANAGEMENT));
 
         return marshaller;
     }
 
     /**
-     * Method for creating the Marshalling Payload Method Processor for Tariff Switching schedule management.
-     * 
+     * Method for creating the Marshalling Payload Method Processor for Tariff
+     * Switching schedule management.
+     *
      * @return MarshallingPayloadMethodProcessor
      */
 
     @Bean
     public MarshallingPayloadMethodProcessor tariffSwitchingScheduleManagementMarshallingPayloadMethodProcessor() {
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
-                this.tariffSwitchingScheduleManagementMarshaller(), this.tariffSwitchingScheduleManagementMarshaller());
-
-        return marshallingPayloadMethodProcessor;
+        return new MarshallingPayloadMethodProcessor(this.tariffSwitchingScheduleManagementMarshaller(),
+                this.tariffSwitchingScheduleManagementMarshaller());
     }
 
     /**
      * Method for creating the Default Method Endpoint Adapter.
-     * 
+     *
      * @return DefaultMethodEndpointAdapter
      */
     @Bean
@@ -121,7 +128,8 @@ public class WebServiceConfig {
         methodArgumentResolvers.add(this.tariffSwitchingAdHocManagementMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.tariffSwitchingScheduleManagementMarshallingPayloadMethodProcessor());
 
-        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT, OrganisationIdentification.class));
+        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
+                OrganisationIdentification.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
@@ -140,7 +148,8 @@ public class WebServiceConfig {
 
         LOGGER.debug("Creating Detail Soap Fault Mapping Exception Resolver Bean");
 
-        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(new SoapFaultMapper());
+        final DetailSoapFaultMappingExceptionResolver exceptionResolver = new DetailSoapFaultMappingExceptionResolver(
+                new SoapFaultMapper());
         exceptionResolver.setOrder(1);
 
         final Properties props = new Properties();
@@ -151,7 +160,8 @@ public class WebServiceConfig {
 
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
-        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID, X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
+        return new X509CertificateRdnAttributeValueEndpointInterceptor(X509_RDN_ATTRIBUTE_ID,
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
     /**
@@ -159,7 +169,8 @@ public class WebServiceConfig {
      */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
-        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new SoapHeaderEndpointInterceptor(ORGANISATION_IDENTIFICATION_HEADER,
+                ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     /**
@@ -167,12 +178,14 @@ public class WebServiceConfig {
      */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
-        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
+        return new CertificateAndSoapHeaderAuthorizationEndpointInterceptor(
+                X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME, ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
     @Bean
     public WebServiceMonitorInterceptor webServiceMonitorInterceptor() {
-        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER);
+        return new WebServiceMonitorInterceptor(ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER,
+                APPLICATION_NAME_HEADER);
     }
 
 }

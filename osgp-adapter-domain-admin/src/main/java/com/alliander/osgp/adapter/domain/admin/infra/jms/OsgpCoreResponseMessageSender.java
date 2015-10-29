@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.admin.infra.jms;
 
 import javax.jms.JMSException;
@@ -29,14 +36,12 @@ public class OsgpCoreResponseMessageSender {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage();
-
                 objectMessage.setJMSType(messageType);
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         responseMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         responseMessage.getDeviceIdentification());
                 objectMessage.setObject(responseMessage);
-
                 return objectMessage;
             }
         });

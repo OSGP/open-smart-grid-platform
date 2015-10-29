@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.core.application.config;
 
 import javax.annotation.Resource;
@@ -112,6 +119,18 @@ public class MessagingConfig {
     @Resource
     private Environment environment;
 
+    @Autowired
+    @Qualifier("domainCoreIncomingWebServiceRequestsMessageListener")
+    private WebServiceRequestMessageListener webServiceRequestMessageListener;
+
+    @Autowired
+    @Qualifier("domainCoreIncomingOsgpCoreResponsesMessageListener")
+    private OsgpCoreResponseMessageListener osgpCoreResponseMessageListener;
+
+    @Autowired
+    @Qualifier("domainCoreIncomingOsgpCoreRequestsMessageListener")
+    private OsgpCoreRequestMessageListener osgpCoreRequestMessageListener;
+
     // === JMS SETTINGS ===
 
     @Bean(destroyMethod = "stop")
@@ -143,7 +162,7 @@ public class MessagingConfig {
         redeliveryPolicyMap.put(this.osgpCoreResponsesQueue(), this.osgpCoreResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.osgpCoreRequestsIncomingQueue(), this.osgpCoreRequestsIncomingRedeliveryPolicy());
         redeliveryPolicyMap
-                .put(this.osgpCoreResponsesIncomingQueue(), this.osgpCoreResponsesIncomingRedeliveryPolicy());
+        .put(this.osgpCoreResponsesIncomingQueue(), this.osgpCoreResponsesIncomingRedeliveryPolicy());
         return redeliveryPolicyMap;
     }
 
@@ -201,10 +220,6 @@ public class MessagingConfig {
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
-
-    @Autowired
-    @Qualifier("domainCoreIncomingWebServiceRequestsMessageListener")
-    private WebServiceRequestMessageListener webServiceRequestMessageListener;
 
     // === JMS SETTINGS: COMMON WEB SERVICE RESPONSES ===
 
@@ -335,10 +350,6 @@ public class MessagingConfig {
         return messageListenerContainer;
     }
 
-    @Autowired
-    @Qualifier("domainCoreIncomingOsgpCoreResponsesMessageListener")
-    private OsgpCoreResponseMessageListener osgpCoreResponseMessageListener;
-
     // === JMS SETTINGS: OSGP DOMAIN CORE INCOMING REQUESTS ===
 
     @Bean(name = "domainCoreIncomingOsgpCoreRequestsQueue")
@@ -379,10 +390,6 @@ public class MessagingConfig {
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }
-
-    @Autowired
-    @Qualifier("domainCoreIncomingOsgpCoreRequestsMessageListener")
-    private OsgpCoreRequestMessageListener osgpCoreRequestMessageListener;
 
     // === JMS SETTINGS: OSGP DOMAIN CORE INCOMING RESPONSES ===
 
