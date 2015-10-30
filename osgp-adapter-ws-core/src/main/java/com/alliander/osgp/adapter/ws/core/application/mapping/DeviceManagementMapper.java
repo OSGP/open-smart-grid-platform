@@ -136,9 +136,21 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 }
 
                 destination.setHasSchedule(source.getHasSchedule());
-                destination.setNetworkAddress(source.getNetworkAddress().toString());
+                if (source.getNetworkAddress() != null) {
+                    destination.setNetworkAddress(source.getNetworkAddress().toString());
+                }
                 destination.setOwner(source.getOwner());
                 destination.getOrganisations().addAll(source.getOrganisations());
+
+                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
+                for (final com.alliander.osgp.domain.core.entities.Ean ean : source.getEans()) {
+                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
+                    newEan.setCode(ean.getCode());
+                    newEan.setDescription(ean.getDescription());
+                    eans.add(newEan);
+                }
+
+                destination.getEans().addAll(eans);
 
                 return destination;
             }

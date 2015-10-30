@@ -31,4 +31,5 @@ public interface DeviceInterface {
 
     List<String> getOrganisations();
 
+    List<Ean> getEans();
 }
