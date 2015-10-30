@@ -39,7 +39,7 @@ public class SynchronizeTimeResponseMessageProcessor extends OsgpCoreResponseMes
     private AdhocService adhocService;
 
     protected SynchronizeTimeResponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
+        super(DeviceFunction.SYNCHRONIZE_TIME);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class SynchronizeTimeResponseMessageProcessor extends OsgpCoreResponseMes
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.adhocService.handleSynchronizeTimeresponse(deviceIdentification, organisationIdentification,
+            this.adhocService.handleSynchronizeTimeResponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {

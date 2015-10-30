@@ -77,10 +77,12 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                     newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
                             deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
-                            com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
-                                    .getRelayType().name()), deviceOutputSetting.getAlias(),
-                                    com.alliander.osgp.domain.core.valueobjects.RelayFunction.valueOf(deviceOutputSetting
-                                            .getRelayFunction().name()));
+                            deviceOutputSetting.getRelayType() == null ? null
+                                    : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
+                                            .getRelayType().name()), deviceOutputSetting.getAlias(),
+                                            deviceOutputSetting.getRelayType() == null ? null
+                                                    : com.alliander.osgp.domain.core.valueobjects.RelayFunction
+                                                    .valueOf(deviceOutputSetting.getRelayFunction().name()));
 
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
@@ -109,8 +111,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
                     newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
                     newDeviceOutputSetting.setRelayType(RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
-                    newDeviceOutputSetting.setRelayFunction(RelayFunction.valueOf(deviceOutputSetting
-                            .getRelayFunction().name()));
+                    newDeviceOutputSetting.setRelayFunction(deviceOutputSetting.getRelayFunction() == null ? null
+                            : RelayFunction.valueOf(deviceOutputSetting.getRelayFunction().name()));
                     newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
@@ -139,6 +141,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 if (source.getNetworkAddress() != null) {
                     destination.setNetworkAddress(source.getNetworkAddress().toString());
                 }
+                destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
+                        .toString());
                 destination.setOwner(source.getOwner());
                 destination.getOrganisations().addAll(source.getOrganisations());
 

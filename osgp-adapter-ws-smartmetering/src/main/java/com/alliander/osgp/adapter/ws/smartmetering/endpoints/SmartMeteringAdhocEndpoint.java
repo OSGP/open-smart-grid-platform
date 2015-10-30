@@ -21,7 +21,6 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentifica
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
@@ -34,25 +33,21 @@ public class SmartMeteringAdhocEndpoint {
     @Autowired
     private AdhocService adhocService;
 
-    @Autowired
-    private AdhocMapper adhocMapper;
-
     public SmartMeteringAdhocEndpoint() {
     }
 
     @PayloadRoot(localPart = "SynchronizeTimeRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SynchronizeTimeResponse requestSynchronizeTimeData(
-            @OrganisationIdentification final String organisationIdentification,
+    public SynchronizeTimeResponse synchronizeTime(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SynchronizeTimeRequest request) throws OsgpException {
 
         final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest dataRequest = this.adhocMapper
-                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest(
+                request.getDeviceIdentification());
 
-        final String correlationUid = this.adhocService.requestSynchronizeTimeData(organisationIdentification,
-                dataRequest);
+        final String correlationUid = this.adhocService.synchronizeTime(organisationIdentification,
+                synchronizeTimeRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);

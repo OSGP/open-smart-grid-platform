@@ -137,7 +137,6 @@ NetworkAddressInterface {
         this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
-
     }
 
     @Override
@@ -382,6 +381,10 @@ NetworkAddressInterface {
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {
         final List<DeviceOutputSetting> defaultConfiguration = new ArrayList<>();
+
+        if (this.deviceType == null) {
+            return defaultConfiguration;
+        }
 
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
             defaultConfiguration

@@ -34,7 +34,7 @@ public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMes
     private AdhocService adhocService;
 
     protected SynchronizeTimeRequestMessageProcessor() {
-        super(DeviceFunction.REQUEST_SYNCHRONIZE_TIME);
+        super(DeviceFunction.SYNCHRONIZE_TIME);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMes
 
             final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) dataObject;
 
-            this.adhocService.requestSynchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
+            this.adhocService.synchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
                     synchronizeTimeRequest, messageType);
 
         } catch (final Exception e) {
