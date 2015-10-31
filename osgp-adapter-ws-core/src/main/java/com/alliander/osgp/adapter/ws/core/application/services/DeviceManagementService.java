@@ -237,7 +237,17 @@ public class DeviceManagementService {
         final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
-        final Page<Device> devices = this.applyFilter(deviceFilter, organisation, request);
+        Page<Device> devices = null;
+        if (!"LianderNetManagement".equals(organisationIdentification)) {
+            if (deviceFilter == null) {
+                final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
+                        null, null, null, null);
+                devices = this.applyFilter(df, organisation, request);
+            } else {
+                deviceFilter.updateOrganisationIdentification(organisationIdentification);
+                devices = this.applyFilter(deviceFilter, organisation, request);
+            }
+        }
 
         if (devices == null) {
             LOGGER.info("No devices found");
