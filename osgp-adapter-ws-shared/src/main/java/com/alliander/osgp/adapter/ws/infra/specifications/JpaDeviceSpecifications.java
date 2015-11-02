@@ -166,7 +166,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             }
         };
     }
-    
+
     @Override
     public Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException {
 
@@ -178,8 +178,8 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
             @Override
             public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-                
-                return cb.and(cb.equal(deviceRoot.<Boolean>get("isActivated"), activated));
+
+                return cb.and(cb.equal(deviceRoot.<Boolean> get("isActivated"), activated));
             }
         };
     }
