@@ -30,4 +30,7 @@ public interface DeviceSpecifications {
     Specification<Device> hasNumber(final String number) throws ArgumentNullOrEmptyException;
 
     Specification<Device> hasMunicipality(final String municipality) throws ArgumentNullOrEmptyException;
+    
+    Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException;
+
 }

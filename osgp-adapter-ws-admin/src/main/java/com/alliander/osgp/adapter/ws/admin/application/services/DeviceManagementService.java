@@ -60,6 +60,7 @@ import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
+import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
@@ -498,6 +499,10 @@ public class DeviceManagementService {
                 if (!StringUtils.isEmpty(deviceFilter.getNumber())) {
                     specifications = specifications.and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber()
                             + "%"));
+                }
+                if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
+                    specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
+                            .getDeviceActivated().getValue()));
                 }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
