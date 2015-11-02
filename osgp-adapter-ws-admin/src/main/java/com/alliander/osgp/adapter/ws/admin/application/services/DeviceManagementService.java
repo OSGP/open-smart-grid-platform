@@ -499,6 +499,9 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasNumber(deviceFilter.getNumber()
                             + "%"));
                 }
+                if (deviceFilter.getActivated() != null) {
+                    specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter.getActivated()));
+                }
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 devices = this.deviceRepository.findAll(request);
