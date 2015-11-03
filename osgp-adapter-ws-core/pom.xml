@@ -106,7 +106,7 @@
                             <!-- USE THIS FOR ALL EXECUTIONS EXCEPT THE FIRST -->
                             <clearOutputDir>false</clearOutputDir>
                         </configuration>
-                    </execution>                     
+                    </execution>
                     <execution>
                         <id>configuration-management</id>
                         <goals>
@@ -158,8 +158,6 @@
             <groupId>com.alliander.osgp</groupId>
             <artifactId>shared</artifactId>
         </dependency>
-
-        <!-- New for splitting platform into webservice tires -->
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-domain-core</artifactId>

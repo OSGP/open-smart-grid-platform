@@ -55,6 +55,11 @@
     </build>
 
     <dependencies>
+       <!-- Alliander -->
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-domain-core</artifactId>
+        </dependency>
 
         <!-- Spring Framework -->
         <dependency>
@@ -159,12 +164,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
-
-       <!-- New for splitting platform into webservice tiers -->
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-domain-core</artifactId>
         </dependency>
     </dependencies>
 </project>

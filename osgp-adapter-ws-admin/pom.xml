@@ -86,8 +86,6 @@
             <groupId>com.alliander.osgp</groupId>
             <artifactId>shared</artifactId>
         </dependency>
-
-        <!-- New for splitting platform into webservice tires -->
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-domain-core</artifactId>
@@ -157,12 +155,12 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 
-		<!-- Hikari connection pooling -->
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-		</dependency>
-		
+        <!-- Hikari connection pooling -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+
         <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
