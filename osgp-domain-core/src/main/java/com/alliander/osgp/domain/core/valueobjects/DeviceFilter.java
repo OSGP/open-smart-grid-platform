@@ -78,4 +78,8 @@ public class DeviceFilter {
     public String getSortedBy() {
         return this.sortedBy;
     }
+
+    public void updateOrganisationIdentification(final String organisationIdentification) {
+        this.organisationIdentification = organisationIdentification;
+    }
 }

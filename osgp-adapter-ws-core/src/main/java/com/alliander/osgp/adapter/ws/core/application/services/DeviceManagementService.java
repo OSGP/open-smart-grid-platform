@@ -112,6 +112,9 @@ public class DeviceManagementService {
     @Autowired
     private WritableDeviceRepository writableDeviceRepository;
 
+    @Autowired
+    private String netMangementOrganisation;
+
     /**
      * Constructor
      */
@@ -238,7 +241,7 @@ public class DeviceManagementService {
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
         Page<Device> devices = null;
-        if (!"LianderNetManagement".equals(organisationIdentification)) {
+        if (!this.netMangementOrganisation.equals(organisationIdentification)) {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, null, null);
@@ -247,6 +250,8 @@ public class DeviceManagementService {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
                 devices = this.applyFilter(deviceFilter, organisation, request);
             }
+        } else {
+            devices = this.applyFilter(deviceFilter, organisation, request);
         }
 
         if (devices == null) {
