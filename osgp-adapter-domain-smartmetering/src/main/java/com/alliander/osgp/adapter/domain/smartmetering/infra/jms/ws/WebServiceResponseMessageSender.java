@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.NotificationResponseMessageSender;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -61,8 +62,18 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                         responseMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.RESULT, responseMessage.getResult().toString());
                 if (responseMessage.getOsgpException() != null) {
-                    objectMessage.setStringProperty(Constants.DESCRIPTION, responseMessage.getOsgpException()
-                            .getCause().getMessage());
+                    String description = null;
+
+                    // If an exception had a cause, get the message of the
+                    // cause. If not, get the message of the exception itself
+                    final OsgpException osgpException = responseMessage.getOsgpException();
+                    if (osgpException.getCause() != null) {
+                        description = osgpException.getCause().getMessage();
+                    } else {
+                        description = osgpException.getMessage();
+                    }
+                    objectMessage.setStringProperty(Constants.DESCRIPTION, description);
+
                 }
                 objectMessage.setObject((Serializable) responseMessage.getDataObject());
                 return objectMessage;
