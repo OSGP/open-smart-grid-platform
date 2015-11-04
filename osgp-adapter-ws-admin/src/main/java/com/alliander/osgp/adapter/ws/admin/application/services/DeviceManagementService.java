@@ -17,6 +17,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.QueryException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,7 @@ import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformDomain;

@@ -225,10 +225,19 @@
 			<xsd:element minOccurs="0" name="Street" type="xsd:string" />
 			<xsd:element minOccurs="0" name="Number" type="xsd:string" />
 			<xsd:element minOccurs="0" name="Municipality" type="xsd:string" />
+			<xsd:element minOccurs="0" name="DeviceActivated" type="tns:DeviceActivatedFilterType" />
 			<xsd:element minOccurs="0" name="SortDir" type="xsd:string" />
 			<xsd:element minOccurs="0" name="SortedBy" type="xsd:string" />
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	<xsd:simpleType name="DeviceActivatedFilterType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="BOTH" />
+			<xsd:enumeration value="ACTIVE" />
+			<xsd:enumeration value="INACTIVE" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	
 	<xsd:complexType name="Organisation">
 		<xsd:sequence>
