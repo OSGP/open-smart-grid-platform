@@ -113,6 +113,9 @@ public class DeviceManagementService {
     @Autowired
     private WritableDeviceRepository writableDeviceRepository;
 
+    @Autowired
+    private String netMangementOrganisation;
+
     /**
      * Constructor
      */
@@ -238,7 +241,19 @@ public class DeviceManagementService {
         final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
-        final Page<Device> devices = this.applyFilter(deviceFilter, organisation, request);
+        Page<Device> devices = null;
+        if (!this.netMangementOrganisation.equals(organisationIdentification)) {
+            if (deviceFilter == null) {
+                final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
+                        null, null, DeviceActivatedFilterType.BOTH, null, null);
+                devices = this.applyFilter(df, organisation, request);
+            } else {
+                deviceFilter.updateOrganisationIdentification(organisationIdentification);
+                devices = this.applyFilter(deviceFilter, organisation, request);
+            }
+        } else {
+            devices = this.applyFilter(deviceFilter, organisation, request);
+        }
 
         if (devices == null) {
             LOGGER.info("No devices found");

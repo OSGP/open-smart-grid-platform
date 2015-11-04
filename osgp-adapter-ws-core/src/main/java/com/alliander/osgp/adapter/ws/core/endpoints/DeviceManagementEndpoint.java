@@ -230,6 +230,7 @@ public class DeviceManagementEndpoint {
                                     com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
 
             response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
+
             response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
             response.getPage().setPageSize(result.getSize());
             response.getPage().setTotalPages(result.getTotalPages());
