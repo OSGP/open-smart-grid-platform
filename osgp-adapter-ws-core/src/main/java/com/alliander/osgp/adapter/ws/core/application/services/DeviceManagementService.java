@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.core.application.services;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -131,7 +132,15 @@ public class DeviceManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
-        return this.organisationRepository.findAll();
+        if (this.netMangementOrganisation.equals(organisationIdentification)) {
+            return this.organisationRepository.findAll();
+        } else {
+            final Organisation org = this.organisationRepository
+                    .findByOrganisationIdentification(organisationIdentification);
+            final List<Organisation> organisations = new ArrayList<>();
+            organisations.add(org);
+            return organisations;
+        }
     }
 
     // TODO remove
