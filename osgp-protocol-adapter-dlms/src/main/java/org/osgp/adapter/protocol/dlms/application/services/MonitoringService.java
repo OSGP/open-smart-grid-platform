@@ -58,7 +58,7 @@ public class MonitoringService {
             for (final PeriodicMeterReadsRequestData p : periodicMeterReadsRequest.getPeriodicMeterReadsRequestData()) {
                 // DuMy MeterReads with random values
                 periodicMeterReads = new PeriodicMeterReads();
-                periodicMeterReads.setLogTime(p.getDate());
+                periodicMeterReads.setLogTime(p.getBeginDate());
                 periodicMeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
                 periodicMeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
                 periodicMeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
