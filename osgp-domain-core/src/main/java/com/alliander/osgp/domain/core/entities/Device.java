@@ -365,7 +365,6 @@ NetworkAddressInterface {
      *
      * @return List of Ean codes for this device.
      */
-    @Override
     public List<Ean> getEans() {
         return this.eans;
     }

@@ -138,9 +138,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 }
 
                 destination.setHasSchedule(source.getHasSchedule());
-                if (source.getNetworkAddress() != null) {
-                    destination.setNetworkAddress(source.getNetworkAddress().toString());
-                }
                 destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
                         .toString());
                 destination.setOwner(source.getOwner());

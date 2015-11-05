@@ -69,9 +69,6 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
     private final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
 
     @Transient
-    private final List<Ean> eans = new ArrayList<Ean>();
-
-    @Transient
     private final List<String> organisations = new ArrayList<String>();
 
     public SmartMeteringDevice() {
@@ -251,11 +248,6 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
     @Override
     public List<String> getOrganisations() {
         return this.organisations;
-    }
-
-    @Override
-    public List<Ean> getEans() {
-        return this.eans;
     }
 
     public void updateProtocol(final ProtocolInfo protocolInfo) {
