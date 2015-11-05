@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.io.Serializable;
 import java.util.Random;
 
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
@@ -85,13 +88,41 @@ public class MonitoringService {
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender,
-            final PeriodicMeterReadsContainer periodicMeterReadsContainer) {
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                periodicMeterReadsContainer);
+                responseObject);
 
         responseMessageSender.send(responseMessage);
+    }
+
+    public void requestActualMeterReads(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final ActualMeterReadsRequest actualMeterReadsRequest,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
+
+        LOGGER.info("requestActualMeterReads called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        try {
+            // Mock a return value for actual meter reads.
+            final ActualMeterReads actualMeterReads = new ActualMeterReads();
+            actualMeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
+            actualMeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
+            actualMeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
+            actualMeterReads.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, actualMeterReads);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during requestActualMeterReads", e);
+            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        }
     }
 }
