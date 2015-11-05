@@ -22,7 +22,6 @@ public class ChangeUserRequest {
     private String newRole;
     private String newApplications;
     private Date newStartDate;
-    private Date newExpiryDateContract;
     private Date newExpiryDateBEIInstruction;
 
     public ChangeUserRequest() {
@@ -41,7 +40,6 @@ public class ChangeUserRequest {
         this.newRole = changeUser.getNewRole();
         this.newApplications = changeUser.getNewApplications();
         this.newStartDate = changeUser.getStartDate();
-        this.newExpiryDateContract = changeUser.getExpiryDateContract();
         this.newExpiryDateBEIInstruction = changeUser.getExpiryDateBEIInstruction();
     }
 
@@ -87,10 +85,6 @@ public class ChangeUserRequest {
 
     public Date getNewStartDate() {
         return this.newStartDate;
-    }
-
-    public Date getNewExpiryDateContract() {
-        return this.newExpiryDateContract;
     }
 
     public Date getNewExpiryDateBEIInstruction() {

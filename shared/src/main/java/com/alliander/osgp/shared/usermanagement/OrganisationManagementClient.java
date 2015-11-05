@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.TrustManagerFactory;
@@ -315,11 +316,13 @@ public class OrganisationManagementClient extends AbstractClient {
      *             equal to 200 OK or if the response body is empty.
      */
     public String changeOrganisationData(final String organisationIdentificationToChange,
-            final String newOrganisationIdentification, final String newOrganisationName, final String functionGroup,
-            final String organisationIdentification, final String token) throws OrganisationManagementClientException {
+            final String newOrganisationIdentification, final String newOrganisationName,
+            final Date newExpiryDateContract, final String functionGroup, final String organisationIdentification,
+            final String token) throws OrganisationManagementClientException {
 
         final ChangeOrganisationRequest changeOrganisationRequest = new ChangeOrganisationRequest(
-                organisationIdentificationToChange, newOrganisationIdentification, newOrganisationName, functionGroup);
+                organisationIdentificationToChange, newOrganisationIdentification, newOrganisationName, functionGroup,
+                newExpiryDateContract);
 
         final Response response = this.getWebClientInstance().path(this.changeOrganisationDataPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(changeOrganisationRequest);
