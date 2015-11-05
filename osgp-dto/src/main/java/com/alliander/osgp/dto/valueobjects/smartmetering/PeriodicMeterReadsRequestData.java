@@ -16,7 +16,8 @@ public class PeriodicMeterReadsRequestData implements Serializable {
 
     private String deviceIdentification;
     private PeriodType periodType;
-    private Date date;
+    private Date beginDate;
+    private Date endDate;
 
     public PeriodType getPeriodType() {
         return this.periodType;
@@ -26,12 +27,20 @@ public class PeriodicMeterReadsRequestData implements Serializable {
         this.periodType = periodType;
     }
 
-    public Date getDate() {
-        return this.date;
+    public Date getBeginDate() {
+        return this.beginDate;
     }
 
-    public void setDate(final Date date) {
-        this.date = date;
+    public void setBeginDate(final Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public Date getEndDate() {
+        return this.endDate;
+    }
+
+    public void setEndDate(final Date endDate) {
+        this.endDate = endDate;
     }
 
     public String getDeviceIdentification() {
