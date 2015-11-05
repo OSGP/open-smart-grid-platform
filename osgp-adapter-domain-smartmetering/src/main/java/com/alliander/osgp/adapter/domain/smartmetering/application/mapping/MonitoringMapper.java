@@ -22,5 +22,10 @@ public class MonitoringMapper extends ConfigurableMapper {
                 .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class,
                         com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest.class).byDefault()
                 .register();
+
+        mapperFactory
+                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest.class,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest.class).byDefault()
+                .register();
     }
 }

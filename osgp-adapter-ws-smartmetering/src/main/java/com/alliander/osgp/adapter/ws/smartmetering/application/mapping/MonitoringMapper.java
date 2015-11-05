@@ -12,6 +12,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 
 @Component(value = "monitoringMapper")
@@ -20,8 +21,13 @@ public class MonitoringMapper extends ConfigurableMapper {
     public void configure(final MapperFactory mapperFactory) {
 
         mapperFactory
-        .classMap(PeriodicMeterReadsRequest.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class)
+                .classMap(PeriodicMeterReadsRequest.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class)
+                .byDefault().register();
+
+        mapperFactory
+                .classMap(ActualMeterReadsRequest.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest.class)
                 .byDefault().register();
     }
 }

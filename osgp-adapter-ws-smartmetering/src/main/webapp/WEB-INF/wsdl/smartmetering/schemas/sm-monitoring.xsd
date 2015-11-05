@@ -51,6 +51,41 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="ActualMeterReadsRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="ActualMeterReadsResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="RetrieveActualMeterReadsRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="RetrieveActualMeterReadsResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="PositiveActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+				<xsd:element name="PositiveActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+				<xsd:element name="NegativeActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+				<xsd:element name="NegativeActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
 	<!-- DATATYPES -->
 	
 	<xsd:complexType name="Action" abstract="true">

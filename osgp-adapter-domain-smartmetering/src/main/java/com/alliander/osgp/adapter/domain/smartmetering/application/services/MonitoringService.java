@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Monit
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -99,5 +100,26 @@ public class MonitoringService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, periodMeterReadsValueDomain), messageType);
 
+    }
+
+    public void requestActualMeterReads(
+            @Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest actualMeterReadsRequestValueObject,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        // TODO: Authorization
+
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+        final ActualMeterReadsRequest actualMeterReadsRequestDto = this.monitoringMapper.map(
+                actualMeterReadsRequestValueObject, ActualMeterReadsRequest.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, actualMeterReadsRequestDto), messageType);
     }
 }

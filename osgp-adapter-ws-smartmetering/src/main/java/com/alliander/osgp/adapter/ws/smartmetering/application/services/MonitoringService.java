@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -73,4 +74,31 @@ public class MonitoringService {
                 requestData.getDeviceIdentification(), requestData);
     }
 
+    private String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final ActualMeterReadsRequest requestData)
+            throws FunctionalException {
+
+        // TODO: authorization logic?
+
+        LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA, correlationUid, organisationIdentification,
+                deviceIdentification, requestData);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String requestActualMeterReads(final String organisationIdentification,
+            final ActualMeterReadsRequest requestData) throws FunctionalException {
+
+        return this.enqueueActualMeterReadsRequestData(organisationIdentification,
+                requestData.getDeviceIdentification(), requestData);
+    }
 }
