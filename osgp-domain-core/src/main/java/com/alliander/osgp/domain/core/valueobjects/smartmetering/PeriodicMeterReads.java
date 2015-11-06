@@ -22,6 +22,7 @@ public class PeriodicMeterReads implements Serializable {
     private long activeEnergyImportTariffTwo;
     private long activeEnergyExportTariffOne;
     private long activeEnergyExportTariffTwo;
+    private PeriodType periodType;
 
     public long getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
@@ -69,6 +70,14 @@ public class PeriodicMeterReads implements Serializable {
 
     public void setLogTime(final Date logTime) {
         this.logTime = logTime;
+    }
+
+    public PeriodType getPeriodType() {
+        return this.periodType;
+    }
+
+    public void setPeriodType(final PeriodType periodType) {
+        this.periodType = periodType;
     }
 
 }

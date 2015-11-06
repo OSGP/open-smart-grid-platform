@@ -77,10 +77,11 @@
 	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:date" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="PeriodType" type="tns:PeriodType" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:meterValue" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:meterValue" minOccurs="0" maxOccurs="1" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
