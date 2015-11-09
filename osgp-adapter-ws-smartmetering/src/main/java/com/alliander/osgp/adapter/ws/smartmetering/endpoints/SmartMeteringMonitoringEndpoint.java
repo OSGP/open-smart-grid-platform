@@ -40,7 +40,6 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 // MethodConstraintViolationException is deprecated.
 // Will by replaced by equivalent functionality defined
 // by the Bean Validation 1.1 API as of Hibernate Validator 5.
-@SuppressWarnings("deprecation")
 @Endpoint
 public class SmartMeteringMonitoringEndpoint {
 
@@ -206,9 +205,8 @@ public class SmartMeteringMonitoringEndpoint {
 
                 this.meterResponseDataRepository.delete(meterResponseData);
             } else {
-                LOGGER.info(
-                        "findEventsByCorrelationUid  found other type of meter response data: {} for correlation UID: {}",
-                        meterResponseData.getClass().getName(), request.getCorrelationUid());
+                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
+                        .getName(), request.getCorrelationUid());
             }
 
         } catch (final Exception e) {
@@ -221,7 +219,6 @@ public class SmartMeteringMonitoringEndpoint {
                 throw e;
 
             } else {
-
                 LOGGER.error("Exception: {} while sending ActualMeterReads of device: {} for organisation {}.",
                         new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
 
@@ -234,13 +231,11 @@ public class SmartMeteringMonitoringEndpoint {
 
     private void handleException(final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
+        // exception, otherwise throw new technical exception.
+        LOGGER.error("Exception occurred: ", e);
         if (e instanceof OsgpException) {
-            LOGGER.error("Exception occurred: ", e);
             throw (OsgpException) e;
         } else {
-            LOGGER.error("Exception occurred: ", e);
             throw new TechnicalException(ComponentType.WS_SMART_METERING, e);
         }
     }

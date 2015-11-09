@@ -78,8 +78,6 @@ public class MonitoringService {
             @Identification final String deviceIdentification, final ActualMeterReadsRequest requestData)
             throws FunctionalException {
 
-        // TODO: authorization logic?
-
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 

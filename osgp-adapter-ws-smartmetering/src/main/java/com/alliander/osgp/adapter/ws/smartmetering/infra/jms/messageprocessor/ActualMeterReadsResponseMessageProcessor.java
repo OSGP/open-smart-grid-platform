@@ -49,7 +49,6 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
             result = message.getStringProperty(Constants.RESULT);
             notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
@@ -60,7 +59,6 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
             LOGGER.debug("messageType: {}", messageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             return;
         }
 
@@ -69,8 +67,6 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
 
             // Convert and Persist data
             final ActualMeterReads data = (ActualMeterReads) message.getObject();
-
-            // Convert the events to entity and save the periodicMeterReads
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, data);
             this.meterResponseDataRepository.save(meterResponseData);
