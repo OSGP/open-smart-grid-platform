@@ -37,10 +37,6 @@ public class ManagementService {
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
-    public ManagementService() {
-        // Parameterless constructor required for transactions...
-    }
-
     // === FIND EVENTS ===
 
     public void findEvents(final String organisationIdentification, final String deviceIdentification,

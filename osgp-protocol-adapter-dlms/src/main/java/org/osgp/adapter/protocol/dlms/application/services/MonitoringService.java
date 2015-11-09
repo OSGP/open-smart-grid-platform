@@ -39,10 +39,6 @@ public class MonitoringService {
     @Autowired
     private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
 
-    public MonitoringService() {
-        // Parameterless constructor required for transactions...
-    }
-
     // === REQUEST PERIODIC METER DATA ===
 
     public void requestPeriodicMeterReads(final String organisationIdentification, final String deviceIdentification,
@@ -53,21 +49,15 @@ public class MonitoringService {
         LOGGER.info("requestPeriodicMeterReads called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
+        ClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final PeriodicMeterReadsContainer periodicMeterReadsContainer;
-            try {
-                periodicMeterReadsContainer = this.getPeriodicMeterReadsCommandExecutor.execute(conn,
-                        periodicMeterReadsRequest);
-            } finally {
-                if (conn != null && conn.isConnected()) {
-                    conn.close();
-                }
-            }
+            final PeriodicMeterReadsContainer periodicMeterReadsContainer = this.getPeriodicMeterReadsCommandExecutor
+                    .execute(conn, periodicMeterReadsRequest);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
@@ -79,6 +69,10 @@ public class MonitoringService {
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
     }
 
