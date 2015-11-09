@@ -70,7 +70,8 @@
 	<xsd:element name="RetrieveActualMeterReadsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+				<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" />
+				<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -78,10 +79,7 @@
 	<xsd:element name="RetrieveActualMeterReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="PositiveActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-				<xsd:element name="PositiveActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-				<xsd:element name="NegativeActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-				<xsd:element name="NegativeActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+				<xsd:element name="ActualMeterReads" type="tns:ActualMeterReads" minOccurs="1" maxOccurs="1" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -133,6 +131,16 @@
 			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ActualMeterReads">
+		<xsd:sequence>
+			<xsd:element name="LogTime" type="xsd:date" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="PositiveActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="PositiveActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="NegativeActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="NegativeActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

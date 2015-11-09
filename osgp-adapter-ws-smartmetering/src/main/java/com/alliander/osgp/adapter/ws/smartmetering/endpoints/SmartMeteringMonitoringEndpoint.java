@@ -29,6 +29,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Monitorin
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -186,12 +187,47 @@ public class SmartMeteringMonitoringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RetrieveActualMeterReadsRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming RetreiveActualMeterReadsRequest for meter: {}", request.getAsyncRequest()
-                .getDeviceIdentification());
+        LOGGER.info("Incoming RetreiveActualMeterReadsRequest for meter: {}", request.getDeviceIdentification());
 
         final RetrieveActualMeterReadsResponse response = new RetrieveActualMeterReadsResponse();
 
-        // TODO: fill in actual response message.
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataRepository
+                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+
+            if (meterResponseData == null) {
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
+                        ComponentType.WS_SMART_METERING);
+            }
+
+            if (meterResponseData.getMessageData() instanceof ActualMeterReads) {
+                response.setActualMeterReads(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads.class));
+
+                this.meterResponseDataRepository.delete(meterResponseData);
+            } else {
+                LOGGER.info(
+                        "findEventsByCorrelationUid  found other type of meter response data: {} for correlation UID: {}",
+                        meterResponseData.getClass().getName(), request.getCorrelationUid());
+            }
+
+        } catch (final Exception e) {
+            if ((e instanceof FunctionalException)
+                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+
+                LOGGER.warn("No response data for correlation UID {} in RetrieveActualMeterReadsRequest",
+                        request.getCorrelationUid());
+
+                throw e;
+
+            } else {
+
+                LOGGER.error("Exception: {} while sending ActualMeterReads of device: {} for organisation {}.",
+                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+
+                this.handleException(e);
+            }
+        }
 
         return response;
     }
