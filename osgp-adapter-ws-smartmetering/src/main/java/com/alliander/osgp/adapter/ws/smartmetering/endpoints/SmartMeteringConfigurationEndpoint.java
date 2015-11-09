@@ -24,6 +24,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarm
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetTariffRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetTariffRequestData;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetTariffResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
@@ -82,8 +85,8 @@ public class SmartMeteringConfigurationEndpoint {
                 .map(request,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
-        final String correlationUid = this.configurationService.setConfigurationObject(
-                organisationIdentification, dataRequest);
+        final String correlationUid = this.configurationService.setConfigurationObject(organisationIdentification,
+                dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
@@ -93,6 +96,43 @@ public class SmartMeteringConfigurationEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "SetTariffRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetTariffResponse setTariff(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetTariffRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetTariffRequest for meter: {}.", request.getDeviceIdentification());
+        final SetTariffResponse response = new SetTariffResponse();
+
+        try {
+
+            final String deviceIdentification = request.getDeviceIdentification();
+            final SetTariffRequestData requestData = request.getSetTariffRequestData();
+
+            // final AlarmNotifications alarmNotifications =
+            // this.configurationMapper.map(
+            // requestData.getAlarmNotifications(), AlarmNotifications.class);
+            // hiero
+            final String correlationUid = this.configurationService.setTariff(organisationIdentification,
+                    deviceIdentification, requestData.getTariff());
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+
+        } catch (final Exception e) {
+
+            LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        return response;
+
+    }
+
     @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public SetAlarmNotificationsResponse setAlarmNotifications(
@@ -100,6 +140,8 @@ public class SmartMeteringConfigurationEndpoint {
             @RequestPayload final SetAlarmNotificationsRequest request) throws OsgpException {
 
         LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
+
+        LOGGER.info("=============> Platform, setAlarmNotifications, call received");
 
         final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
 

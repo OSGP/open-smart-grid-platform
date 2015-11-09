@@ -61,6 +61,23 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="SetTariffRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				<xsd:element name="SetTariffRequestData" type="tns:SetTariffRequestData" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="SetTariffResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
 	<!-- DATATYPES -->
 
 	<xsd:complexType name="SpecialDaysRequestData">
@@ -101,6 +118,16 @@
 			<xsd:extension base="common:Command">
 				<xsd:sequence>
 					<xsd:element name="AlarmNotifications" type="tns:AlarmNotifications" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+		<xsd:complexType name="SetTariffRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="Tariff" type="xsd:string" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

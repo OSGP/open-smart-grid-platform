@@ -131,6 +131,24 @@ public class ConfigurationService {
                 deviceIdentification, alarmNotificationsDto), messageType);
     }
 
+    public void setTariff(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String tariff,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info("setTariff for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        // TODO: bypassing authorization, this should be fixed.
+        // Organisation organisation =
+        // this.findOrganisation(organisationIdentification);
+        // final Device device = this.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, tariff), messageType);
+    }
+
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
@@ -161,5 +179,21 @@ public class ConfigurationService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, null), messageType);
+    }
+
+    public void handleSetTariffResponse(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException exception) {
+        LOGGER.info("handleSetTariffResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = responseMessageResultType;
+        if (exception != null) {
+            LOGGER.error("Set Alarm Notifications Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
+
     }
 }

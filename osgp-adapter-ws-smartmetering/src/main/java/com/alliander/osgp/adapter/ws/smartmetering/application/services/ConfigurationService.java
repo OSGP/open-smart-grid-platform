@@ -37,7 +37,7 @@ public class ConfigurationService {
 
     public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -97,7 +97,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -114,6 +114,24 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public String enqueueSetTariffRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String tariff) throws FunctionalException {
+
+        LOGGER.debug("enqueueSetTariffRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_TARIFF, correlationUid, organisationIdentification,
+                deviceIdentification, tariff);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
     /**
      * @param organisationIdentification
      * @param deviceIdentification
@@ -124,5 +142,10 @@ public class ConfigurationService {
             final AlarmNotifications alarmSwitches) throws FunctionalException {
         return this
                 .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification, alarmSwitches);
+    }
+
+    public String setTariff(final String organisationIdentification, final String deviceIdentification,
+            final String tariff) throws FunctionalException {
+        return this.enqueueSetTariffRequest(organisationIdentification, deviceIdentification, tariff);
     }
 }
