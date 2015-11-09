@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Random;
 
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
@@ -91,8 +92,7 @@ public class MonitoringService {
             final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                correlationUid, organisationIdentification, deviceIdentification, result, osgpException,
-                responseObject);
+                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, responseObject);
 
         responseMessageSender.send(responseMessage);
     }
@@ -108,6 +108,7 @@ public class MonitoringService {
         try {
             // Mock a return value for actual meter reads.
             final ActualMeterReads actualMeterReads = new ActualMeterReads();
+            actualMeterReads.setLogTime(new Date());
             actualMeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
             actualMeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
             actualMeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
