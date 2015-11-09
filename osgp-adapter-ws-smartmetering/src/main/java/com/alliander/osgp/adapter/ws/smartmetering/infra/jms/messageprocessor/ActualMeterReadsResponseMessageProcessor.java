@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 @Component("domainSmartMeteringActualMeterReadslResponseMessageProcessor")
@@ -20,6 +23,9 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private MeterResponseDataRepository meterResponseDataRepository;
 
     protected ActualMeterReadsResponseMessageProcessor() {
         super(DeviceFunction.REQUEST_ACTUAL_METER_DATA);
@@ -61,6 +67,15 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
+            // Convert and Persist data
+            final ActualMeterReads data = (ActualMeterReads) message.getObject();
+
+            // Convert the events to entity and save the periodicMeterReads
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, data);
+            this.meterResponseDataRepository.save(meterResponseData);
+
+            // Send notification indicating data is available.
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
                     correlationUid, notificationMessage, notificationType);
 
@@ -68,5 +83,4 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
     }
-
 }
