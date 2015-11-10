@@ -4,11 +4,14 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
 	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+	xmlns:tariff="http://www.alliander.com/schemas/osgp/smartmetering/sm-activitycalendar/2014/10"
 	attributeFormDefault="unqualified" elementFormDefault="qualified"
 	targetNamespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10">
 	
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
+	<xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-activitycalendar/2014/10"
+		schemaLocation="sm-activitycalendar.xsd" />
 
 	<xsd:element name="SpecialDaysRequest">
 		<xsd:complexType>
@@ -122,12 +125,12 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 		<xsd:complexType name="SetTariffRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
 				<xsd:sequence>
-					<xsd:element name="Tariff" type="xsd:string" />
+					<xsd:element name="Tariff" type="tariff:ActivityCalendar" minOccurs="1" maxOccurs="1"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
