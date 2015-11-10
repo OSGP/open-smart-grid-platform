@@ -21,14 +21,16 @@ public class User {
     private String lastName;
     private String emailAddress;
     private Date startDate;
-    private Date expiryDateBEIInstruction;;
+    private Date expiryDateContract;
+    private Date expiryDateBEIInstruction;
+    private boolean accountBlocked;
 
     public User() {
 
     }
 
     public User(final AccountData accountData, final String firstName, final String middleName, final String lastName,
-            final String emailAddress, final AccountDates accountDates) {
+            final String emailAddress, final AccountDates accountDates, final boolean accountBlocked) {
         this.organisationIdentification = accountData.getOrganisationIdentification();
         this.username = accountData.getUsername();
         this.password = accountData.getPassword();
@@ -40,6 +42,7 @@ public class User {
         this.emailAddress = emailAddress;
         this.startDate = accountDates.getStartDate();
         this.expiryDateBEIInstruction = accountDates.getExpiryDateBEIInstruction();
+        this.accountBlocked = accountBlocked;
     }
 
     public String getOrganisationIdentification() {
@@ -84,5 +87,9 @@ public class User {
 
     public Date getExpiryDateBEIInstruction() {
         return this.expiryDateBEIInstruction;
+    }
+
+    public boolean getAccountBlocked() {
+        return this.accountBlocked;
     }
 }
