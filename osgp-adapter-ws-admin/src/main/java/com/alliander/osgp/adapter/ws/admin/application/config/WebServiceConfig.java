@@ -56,8 +56,6 @@ public class WebServiceConfig {
 
     /**
      * Method for creating the Marshaller for device management.
-     *
-     * @return Jaxb2Marshaller
      */
     @Bean
     public Jaxb2Marshaller deviceManagementMarshaller() {
@@ -74,8 +72,6 @@ public class WebServiceConfig {
     /**
      * Method for creating the Marshalling Payload Method Processor for device
      * management.
-     *
-     * @return MarshallingPayloadMethodProcessor
      */
     @Bean
     public MarshallingPayloadMethodProcessor deviceManagementMarshallingPayloadMethodProcessor() {
@@ -87,8 +83,6 @@ public class WebServiceConfig {
 
     /**
      * Method for creating the Default Method Endpoint Adapter.
-     *
-     * @return DefaultMethodEndpointAdapter
      */
     @Bean
     public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
@@ -126,9 +120,6 @@ public class WebServiceConfig {
         return exceptionResolver;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public SoapHeaderEndpointInterceptor organisationIdentificationInterceptor() {
         LOGGER.debug("Creating Organisation Identification Interceptor Bean");
@@ -137,9 +128,6 @@ public class WebServiceConfig {
                 ORGANISATION_IDENTIFICATION_CONTEXT);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public X509CertificateRdnAttributeValueEndpointInterceptor x509CertificateSubjectCnEndpointInterceptor() {
         LOGGER.debug("Creating X509 Certificate Subject CN Endpoint Interceptor Bean");
@@ -148,9 +136,6 @@ public class WebServiceConfig {
                 X509_RDN_ATTRIBUTE_VALUE_CONTEXT_PROPERTY_NAME);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public CertificateAndSoapHeaderAuthorizationEndpointInterceptor organisationIdentificationInCertificateCnEndpointInterceptor() {
         LOGGER.debug("Creating Certificate And Soap Header Authorization Endpoint Interceptor Bean");

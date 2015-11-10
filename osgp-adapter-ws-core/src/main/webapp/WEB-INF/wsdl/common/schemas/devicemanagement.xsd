@@ -205,6 +205,9 @@
 			<xsd:sequence>
 				<xsd:element name="OutputSettings" type="tns:DeviceOutputSetting" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
+			<xsd:sequence>
+				<xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -337,7 +340,7 @@
 			<xsd:element name="relayFunction" type="tns:RelayFunction" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:simpleType name="RelayType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="LIGHT" />
@@ -356,4 +359,16 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<xsd:complexType name="Ean">
+		<xsd:sequence>
+			<xsd:element name="code" minOccurs="1" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="common:AlphaNumericType">
+							<xsd:length value="18" />
+						</xsd:restriction>
+					</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="description" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>

@@ -38,7 +38,7 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
  */
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.domain.core", "com.alliander.osgp.adapter.ws.core",
-        "com.alliander.osgp.domain.logging" })
+"com.alliander.osgp.domain.logging" })
 @ImportResource("classpath:applicationContext.xml")
 @Import({ PersistenceConfig.class, WritablePersistenceConfig.class, ReadOnlyLoggingConfig.class })
 @PropertySource("file:${osp/osgpAdapterWsCore/config}")
@@ -60,6 +60,8 @@ public class ApplicationContext {
     private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
             / DateTimeConstants.MILLIS_PER_MINUTE;
 
+    private static final String PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION = "net.management.organisation";
+
     @Resource
     private Environment environment;
 
@@ -78,19 +80,13 @@ public class ApplicationContext {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_RECENT_DEVICES_PERIOD));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public PagingSettings pagingSettings() {
         return new PagingSettings(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)), Integer.parseInt(this.environment
-                .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
+                        .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public FirmwareLocation firmwareLocation() {
         return new FirmwareLocation(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN),
@@ -98,9 +94,6 @@ public class ApplicationContext {
                 this.environment.getProperty(PROPERTY_NAME_FIRMWARE_FILE_EXTENSION));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public EventSpecifications eventSpecifications() {
         return new JpaEventSpecifications();
@@ -111,9 +104,6 @@ public class ApplicationContext {
         return new JpaDeviceSpecifications();
     }
 
-    /**
-     * @return
-     */
     @Bean
     public LocalValidatorFactoryBean validator() {
         final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -122,9 +112,6 @@ public class ApplicationContext {
         return localValidatorFactoryBean;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
         final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
@@ -145,5 +132,10 @@ public class ApplicationContext {
     @Bean
     public int timeZoneOffsetMinutes() {
         return TIME_ZONE_OFFSET_MINUTES;
+    }
+
+    @Bean
+    public String netMangementOrganisation() {
+        return this.environment.getRequiredProperty(PROPERTY_NAME_NET_MANAGEMENT_ORGANISATION);
     }
 }
