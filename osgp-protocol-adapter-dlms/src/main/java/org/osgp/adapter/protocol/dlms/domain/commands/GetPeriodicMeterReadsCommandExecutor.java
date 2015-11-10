@@ -25,7 +25,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsReque
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
+CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -134,50 +134,54 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     && endMonthOfYear >= bufferedDateTime.getMonthOfYear()
                     && endDayOfMonth >= bufferedDateTime.getDayOfMonth();
 
-            if (useBufferedObject) {
-                LOGGER.debug("Using object from capture buffer, because the date matches the given period.");
-            } else {
-                LOGGER.debug("Not using an object from capture buffer, because the date does not match the given period.");
-                continue;
-            }
+                    if (useBufferedObject) {
+                        LOGGER.debug("Using object from capture buffer, because the date matches the given period.");
+                    } else {
+                        LOGGER.debug("Not using an object from capture buffer, because the date does not match the given period.");
+                        continue;
+                    }
 
-            LOGGER.debug("clock: {}", this.dlmsHelperService.getDebugInfo(clock));
+                    LOGGER.debug("clock: {}", this.dlmsHelperService.getDebugInfo(clock));
 
-            final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-            LOGGER.debug("Skipping amrStatus ({}) and M-Bus values.", this.dlmsHelperService.getDebugInfo(amrStatus));
-            /*
-             * for DAILY and MONTHLY we have 4 entries (2 pos, 2 neg), for
-             * INTERVAL only 2 (1 pos, 1 neg)
-             */
-            final boolean interval = periodType == PeriodType.INTERVAL;
+                    final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
+                    LOGGER.debug("Skipping amrStatus ({}) and M-Bus values.", this.dlmsHelperService.getDebugInfo(amrStatus));
+                    /*
+                     * for DAILY and MONTHLY we have 4 entries (2 pos, 2 neg), for
+                     * INTERVAL only 2 (1 pos, 1 neg)
+                     */
+                    final boolean interval = periodType == PeriodType.INTERVAL;
 
-            final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_POS
-                    : BUFFER_INDEX_A_POS_RATE_1);
-            LOGGER.debug("positiveActiveEnergyTariff1: {}",
-                    this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
-            final DataObject positiveActiveEnergyTariff2 = interval ? null : bufferedObjects
+                    final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_POS
+                            : BUFFER_INDEX_A_POS_RATE_1);
+                    LOGGER.debug("positiveActiveEnergyTariff1: {}",
+                            this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
+                    final DataObject positiveActiveEnergyTariff2 = interval ? null : bufferedObjects
                             .get(BUFFER_INDEX_A_POS_RATE_2);
-            LOGGER.debug("positiveActiveEnergyTariff2: {}",
-                    this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff2));
-            final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_NEG
-                    : BUFFER_INDEX_A_NEG_RATE_1);
-            LOGGER.debug("negativeActiveEnergyTariff1: {}",
-                    this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
-            final DataObject negativeActiveEnergyTariff2 = interval ? null : bufferedObjects
-                    .get(BUFFER_INDEX_A_NEG_RATE_2);
-            LOGGER.debug("negativeActiveEnergyTariff2: {}",
-                    this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
+                    if (positiveActiveEnergyTariff2 != null) {
+                        LOGGER.debug("positiveActiveEnergyTariff2: {}",
+                                this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff2));
+                    }
+                    final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_NEG
+                            : BUFFER_INDEX_A_NEG_RATE_1);
+                    LOGGER.debug("negativeActiveEnergyTariff1: {}",
+                            this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
+                    final DataObject negativeActiveEnergyTariff2 = interval ? null : bufferedObjects
+                            .get(BUFFER_INDEX_A_NEG_RATE_2);
+                    if (negativeActiveEnergyTariff2 != null) {
+                        LOGGER.debug("negativeActiveEnergyTariff2: {}",
+                                this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
+                    }
 
-            final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads();
-            nextPeriodicMeterReads.setLogTime(bufferedDateTime.toDate());
-            nextPeriodicMeterReads.setPeriodType(periodType);
-            nextPeriodicMeterReads.setActiveEnergyImportTariffOne((Long) positiveActiveEnergyTariff1.value());
-            nextPeriodicMeterReads.setActiveEnergyImportTariffTwo(interval ? 0 : (Long) positiveActiveEnergyTariff2
+                    final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads();
+                    nextPeriodicMeterReads.setLogTime(bufferedDateTime.toDate());
+                    nextPeriodicMeterReads.setPeriodType(periodType);
+                    nextPeriodicMeterReads.setActiveEnergyImportTariffOne((Long) positiveActiveEnergyTariff1.value());
+                    nextPeriodicMeterReads.setActiveEnergyImportTariffTwo(interval ? 0 : (Long) positiveActiveEnergyTariff2
                             .value());
-            nextPeriodicMeterReads.setActiveEnergyExportTariffOne((Long) negativeActiveEnergyTariff1.value());
-            nextPeriodicMeterReads.setActiveEnergyExportTariffTwo(interval ? 0 : (Long) negativeActiveEnergyTariff2
+                    nextPeriodicMeterReads.setActiveEnergyExportTariffOne((Long) negativeActiveEnergyTariff1.value());
+                    nextPeriodicMeterReads.setActiveEnergyExportTariffTwo(interval ? 0 : (Long) negativeActiveEnergyTariff2
                             .value());
-            periodicMeterReads.add(nextPeriodicMeterReads);
+                    periodicMeterReads.add(nextPeriodicMeterReads);
         }
 
         return periodicMeterReadsContainer;
