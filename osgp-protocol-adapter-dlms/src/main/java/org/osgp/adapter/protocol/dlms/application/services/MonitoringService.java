@@ -11,17 +11,20 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Random;
 
+import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -35,12 +38,14 @@ public class MonitoringService {
 
     private static final Random generator = new Random();
 
-    /**
-     * Constructor
-     */
-    public MonitoringService() {
-        // Parameterless constructor required for transactions...
-    }
+    @Autowired
+    private DomainHelperService domainHelperService;
+
+    @Autowired
+    private DlmsConnectionFactory dlmsConnectionFactory;
+
+    @Autowired
+    private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
 
     // === REQUEST PERIODIC METER DATA ===
 
@@ -52,25 +57,15 @@ public class MonitoringService {
         LOGGER.info("requestPeriodicMeterReads called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
+        ClientConnection conn = null;
         try {
-            // creating duMy periodicMeterReads
 
-            final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer();
-            periodicMeterReadsContainer.setDeviceIdentification(deviceIdentification);
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            PeriodicMeterReads periodicMeterReads;
-            for (final PeriodicMeterReadsRequestData p : periodicMeterReadsRequest.getPeriodicMeterReadsRequestData()) {
-                // DuMy MeterReads with random values
-                periodicMeterReads = new PeriodicMeterReads();
-                periodicMeterReads.setLogTime(p.getDate());
-                periodicMeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
-                periodicMeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
-                periodicMeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
-                periodicMeterReads.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
-                periodicMeterReads.setPeriodicMeterReads(periodicMeterReadsContainer);
-                periodicMeterReadsContainer.addPeriodicMeterReads(periodicMeterReads);
-            }
+            final PeriodicMeterReadsContainer periodicMeterReadsContainer = this.getPeriodicMeterReadsCommandExecutor
+                    .execute(conn, periodicMeterReadsRequest);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
@@ -78,12 +73,25 @@ public class MonitoringService {
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
+    }
+
+    private OsgpException ensureOsgpException(final Exception e) {
+
+        if (e instanceof OsgpException) {
+            return (OsgpException) e;
+        }
+
+        return new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                "Unexpected exception while handling protocol request/response message", e);
     }
 
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
