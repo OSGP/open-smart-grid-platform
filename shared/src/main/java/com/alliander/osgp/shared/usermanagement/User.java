@@ -41,7 +41,6 @@ public class User {
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.startDate = accountDates.getStartDate();
-        this.expiryDateContract = accountDates.getExpiryDateContract();
         this.expiryDateBEIInstruction = accountDates.getExpiryDateBEIInstruction();
         this.accountBlocked = accountBlocked;
     }
@@ -84,10 +83,6 @@ public class User {
 
     public Date getStartDate() {
         return this.startDate;
-    }
-
-    public Date getExpiryDateContract() {
-        return this.expiryDateContract;
     }
 
     public Date getExpiryDateBEIInstruction() {

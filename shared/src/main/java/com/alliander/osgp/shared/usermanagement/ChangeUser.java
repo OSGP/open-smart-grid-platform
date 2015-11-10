@@ -22,7 +22,6 @@ public class ChangeUser {
     private String newLastName;
     private String newEmailAddress;
     private Date startDate;
-    private Date expiryDateContract;
     private Date expiryDateBEIInstruction;
 
     public ChangeUser() {
@@ -42,7 +41,6 @@ public class ChangeUser {
         this.newLastName = newLastName;
         this.newEmailAddress = newEmailAddress;
         this.startDate = accountDates.getStartDate();
-        this.expiryDateContract = accountDates.getExpiryDateContract();
         this.expiryDateBEIInstruction = accountDates.getExpiryDateBEIInstruction();
     }
 
@@ -88,10 +86,6 @@ public class ChangeUser {
 
     public Date getStartDate() {
         return this.startDate;
-    }
-
-    public Date getExpiryDateContract() {
-        return this.expiryDateContract;
     }
 
     public Date getExpiryDateBEIInstruction() {
