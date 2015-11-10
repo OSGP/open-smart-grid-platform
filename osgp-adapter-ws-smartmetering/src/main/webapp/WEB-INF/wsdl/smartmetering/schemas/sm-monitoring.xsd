@@ -137,10 +137,10 @@
 	<xsd:complexType name="ActualMeterReads">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:date" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="PositiveActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="PositiveActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="NegativeActiveEnergyTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="NegativeActiveEnergyTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
