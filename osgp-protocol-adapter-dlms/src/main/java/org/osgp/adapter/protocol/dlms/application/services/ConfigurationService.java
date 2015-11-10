@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetTariffCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -46,6 +47,9 @@ public class ConfigurationService {
 
     @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+
+    @Autowired
+    private SetTariffCommandExecutor setTariffCommandExecutor;
 
     /**
      * Constructor
@@ -128,6 +132,47 @@ public class ConfigurationService {
             LOGGER.error("Unexpected exception during set Configuration Object", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception during set Configuration Object", e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        }
+    }
+
+    public void setTariff(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String tariff, final DeviceResponseMessageSender responseMessageSender,
+            final String domain, final String domainVersion, final String messageType) {
+
+        LOGGER.info("setTariff called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        try {
+
+            LOGGER.info("Tariff to set on the device: {}", tariff);
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+
+            LOGGER.info("device for Tariff is: {}", device);
+
+            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+
+            try {
+                final AccessResultCode accessResultCode = this.setTariffCommandExecutor.execute(conn, tariff);
+                if (AccessResultCode.SUCCESS != accessResultCode) {
+                    throw new ProtocolAdapterException("AccessResultCode for set tariff was not SUCCESS: "
+                            + accessResultCode);
+                }
+            } finally {
+                if (conn != null && conn.isConnected()) {
+                    conn.close();
+                }
+            }
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setTariff", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
