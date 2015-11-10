@@ -19,8 +19,10 @@ public class PeriodicMeterReads implements Serializable {
     private PeriodicMeterReadsContainer periodicMeterReadsContainer;
     private Date logTime;
     private long activeEnergyImportTariffOne;
+    // will be empty for INTERVAL
     private long activeEnergyImportTariffTwo;
     private long activeEnergyExportTariffOne;
+    // will be empty for INTERVAL
     private long activeEnergyExportTariffTwo;
     private PeriodType periodType;
 
@@ -32,6 +34,11 @@ public class PeriodicMeterReads implements Serializable {
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
     }
 
+    /**
+     * will be empty for INTERVAL
+     * 
+     * @return
+     */
     public long getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
     }
@@ -48,6 +55,11 @@ public class PeriodicMeterReads implements Serializable {
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
     }
 
+    /**
+     * will be empty for INTERVAL
+     * 
+     * @return
+     */
     public long getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
     }
