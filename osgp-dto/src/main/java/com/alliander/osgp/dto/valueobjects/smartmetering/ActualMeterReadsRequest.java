@@ -7,11 +7,11 @@ public class ActualMeterReadsRequest implements Serializable {
 
     private String deviceIdentification;
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
+    public ActualMeterReadsRequest(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
     }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 }
