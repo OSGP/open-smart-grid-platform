@@ -36,7 +36,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-        NetworkAddressInterface {
+NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -103,6 +103,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @ManyToOne()
     @JoinColumn(name = "protocol_info_id")
     private ProtocolInfo protocolInfo;
+
+    @OneToMany(mappedBy = "device", targetEntity = Ean.class)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private final List<Ean> eans = new ArrayList<Ean>();
 
     public Device() {
         // Default constructor
@@ -322,6 +326,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
                 : device.networkAddress != null) {
             return false;
         }
+        if (this.eans != null ? !this.eans.equals(device.eans) : device.eans != null) {
+            return false;
+        }
         return true;
     }
 
@@ -333,6 +340,7 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         result = 31 * result + (this.isActivated ? 1 : 0);
         result = 31 * result + (this.hasSchedule ? 1 : 0);
         result = 31 * result + (this.authorizations != null ? this.authorizations.hashCode() : 0);
+        result = 31 * result + (this.eans != null ? this.eans.hashCode() : 0);
         return result;
     }
 
@@ -350,6 +358,15 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @Transient
     public List<String> getOrganisations() {
         return this.organisations;
+    }
+
+    /**
+     * Get the Ean codes for this device.
+     *
+     * @return List of Ean codes for this device.
+     */
+    public List<Ean> getEans() {
+        return this.eans;
     }
 
     public void addOrganisation(final String organisationIdentification) {
@@ -370,7 +387,7 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
 
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
             defaultConfiguration
-                    .add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
+            .add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
             defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "Gemeentehuis",
                     RelayFunction.EVENING_MORNING));
             defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, "Belastingdienst",

@@ -83,5 +83,11 @@
 				<xsd:element name="InnerMessage" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
-	</xsd:element>	
+	</xsd:element>
+	
+	<xsd:simpleType name="AlphaNumericType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[a-zA-Z0-9 ]+" />
+		</xsd:restriction>
+	</xsd:simpleType>	
 </xsd:schema>
