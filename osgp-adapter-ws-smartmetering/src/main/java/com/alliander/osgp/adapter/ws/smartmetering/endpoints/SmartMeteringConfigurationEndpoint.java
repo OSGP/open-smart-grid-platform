@@ -31,6 +31,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialD
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -109,9 +110,8 @@ public class SmartMeteringConfigurationEndpoint {
             final String deviceIdentification = request.getDeviceIdentification();
             final SetTariffRequestData requestData = request.getSetTariffRequestData();
 
-            // final AlarmNotifications alarmNotifications =
-            // this.configurationMapper.map(
-            // requestData.getAlarmNotifications(), AlarmNotifications.class);
+            final ActivityCalendar alarmNotifications = this.configurationMapper.map(requestData.getTariff(),
+                    ActivityCalendar.class);
             // hiero
             final String correlationUid = this.configurationService.setTariff(organisationIdentification,
                     deviceIdentification, requestData.getTariff());

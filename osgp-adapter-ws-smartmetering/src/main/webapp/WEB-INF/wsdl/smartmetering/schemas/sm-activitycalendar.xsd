@@ -48,6 +48,12 @@
 	<xsd:complexType name="DayType">		
 		<xsd:sequence>
 			<xsd:element name="day_id" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="day_schedule" type="tns:DayProfileActionsType" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="DayProfileActionsType">		
+		<xsd:sequence>
 			<xsd:element name="day_profile_action" type="tns:DayProfileActionType" minOccurs="1" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
