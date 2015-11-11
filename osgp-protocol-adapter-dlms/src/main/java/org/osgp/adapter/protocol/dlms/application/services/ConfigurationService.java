@@ -153,22 +153,22 @@ public class ConfigurationService {
 
             LOGGER.info("device for Tariff is: {}", device);
 
-            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
-
-            try {
-                final AccessResultCode accessResultCode = this.setTariffCommandExecutor.execute(conn, tariff);
-                if (AccessResultCode.SUCCESS != accessResultCode) {
-                    throw new ProtocolAdapterException("AccessResultCode for set tariff was not SUCCESS: "
-                            + accessResultCode);
-                }
-            } finally {
-                if (conn != null && conn.isConnected()) {
-                    conn.close();
-                }
-            }
-
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+//            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+//
+//            try {
+//                final AccessResultCode accessResultCode = this.setTariffCommandExecutor.execute(conn, tariff);
+//                if (AccessResultCode.SUCCESS != accessResultCode) {
+//                    throw new ProtocolAdapterException("AccessResultCode for set tariff was not SUCCESS: "
+//                            + accessResultCode);
+//                }
+//            } finally {
+//                if (conn != null && conn.isConnected()) {
+//                    conn.close();
+//                }
+//            }
+//
+//            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+//                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setTariff", e);
