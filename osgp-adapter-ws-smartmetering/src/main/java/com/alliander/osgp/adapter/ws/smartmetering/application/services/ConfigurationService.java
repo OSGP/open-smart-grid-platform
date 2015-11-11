@@ -18,11 +18,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.schemas.osgp.smartmetering.sm_activitycalendar._2014._10.ActivityCalendar;
 
 @Service(value = "wsSmartMeteringConfigurationService")
 @Validated
@@ -147,7 +147,7 @@ public class ConfigurationService {
     }
 
     public String setTariff(final String organisationIdentification, final String deviceIdentification,
-            final String tariff) throws FunctionalException {
-        return this.enqueueSetTariffRequest(organisationIdentification, deviceIdentification, tariff);
+            final ActivityCalendar activityCalendar) throws FunctionalException {
+        return this.enqueueSetTariffRequest(organisationIdentification, deviceIdentification, activityCalendar);
     }
 }

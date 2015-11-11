@@ -110,11 +110,11 @@ public class SmartMeteringConfigurationEndpoint {
             final String deviceIdentification = request.getDeviceIdentification();
             final SetTariffRequestData requestData = request.getSetTariffRequestData();
 
-            final ActivityCalendar alarmNotifications = this.configurationMapper.map(requestData.getTariff(),
+            final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getTariff(),
                     ActivityCalendar.class);
             // hiero
             final String correlationUid = this.configurationService.setTariff(organisationIdentification,
-                    deviceIdentification, requestData.getTariff());
+                    deviceIdentification, activityCalendar);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
