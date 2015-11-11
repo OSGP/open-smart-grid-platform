@@ -12,44 +12,35 @@ public class ActualMeterReads implements Serializable {
     private long activeEnergyExportTariffOne;
     private long activeEnergyExportTariffTwo;
 
-    public Date getLogTime() {
-        return this.logTime;
+    public ActualMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
+            final long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final long activeEnergyExportTariffTwo) {
+        super();
+        this.logTime = logTime;
+        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
+        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
+        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
+        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
     }
 
-    public void setLogTime(final Date logTime) {
-        this.logTime = logTime;
+    public Date getLogTime() {
+        return this.logTime;
     }
 
     public long getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
     }
 
-    public void setActiveEnergyImportTariffOne(final long activeEnergyImportTariffOne) {
-        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
-    }
-
     public long getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
-    }
-
-    public void setActiveEnergyImportTariffTwo(final long activeEnergyImportTariffTwo) {
-        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
     }
 
     public long getActiveEnergyExportTariffOne() {
         return this.activeEnergyExportTariffOne;
     }
 
-    public void setActiveEnergyExportTariffOne(final long activeEnergyExportTariffOne) {
-        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
-    }
-
     public long getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
-    }
-
-    public void setActiveEnergyExportTariffTwo(final long activeEnergyExportTariffTwo) {
-        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
     }
 
     @Override

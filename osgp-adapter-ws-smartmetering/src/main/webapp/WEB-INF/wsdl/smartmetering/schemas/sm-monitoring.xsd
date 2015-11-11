@@ -136,7 +136,7 @@
 	
 	<xsd:complexType name="ActualMeterReads">
 		<xsd:sequence>
-			<xsd:element name="LogTime" type="xsd:date" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="LogTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:meterValue" minOccurs="1" maxOccurs="1" />
