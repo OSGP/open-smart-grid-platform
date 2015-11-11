@@ -37,9 +37,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
-// MethodConstraintViolationException is deprecated.
-// Will by replaced by equivalent functionality defined
-// by the Bean Validation 1.1 API as of Hibernate Validator 5.
 @Endpoint
 public class SmartMeteringMonitoringEndpoint {
 
