@@ -115,12 +115,8 @@ public class MonitoringService {
 
         try {
             // Mock a return value for actual meter reads.
-            final ActualMeterReads actualMeterReads = new ActualMeterReads();
-            actualMeterReads.setLogTime(new Date());
-            actualMeterReads.setActiveEnergyImportTariffOne(Math.abs(generator.nextLong()));
-            actualMeterReads.setActiveEnergyImportTariffTwo(Math.abs(generator.nextLong()));
-            actualMeterReads.setActiveEnergyExportTariffOne(Math.abs(generator.nextLong()));
-            actualMeterReads.setActiveEnergyExportTariffTwo(Math.abs(generator.nextLong()));
+            final ActualMeterReads actualMeterReads = new ActualMeterReads(new Date(), Math.abs(generator.nextLong()),
+                    Math.abs(generator.nextLong()), Math.abs(generator.nextLong()), Math.abs(generator.nextLong()));
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, actualMeterReads);
