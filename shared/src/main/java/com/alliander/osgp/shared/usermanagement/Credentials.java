@@ -13,12 +13,16 @@ public class Credentials {
     private final String functionGroup;
     private final Date expiryDateContract;
     private final boolean enabled;
+    private String emailAddress;
+    private String phoneNumber;
 
-    public Credentials(final String functionGroup, final Date expiryDateContract, final boolean enabled) {
-        super();
+    public Credentials(final String functionGroup, final Date expiryDateContract, final boolean enabled,
+            final String emailAddress, final String phoneNumber) {
         this.functionGroup = functionGroup;
         this.expiryDateContract = expiryDateContract;
         this.enabled = enabled;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getFunctionGroup() {
@@ -31,5 +35,13 @@ public class Credentials {
 
     public boolean isEnabled() {
         return this.enabled;
+    }
+
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+    public String getPhoneNumber() {
+        return this.phoneNumber;
     }
 }

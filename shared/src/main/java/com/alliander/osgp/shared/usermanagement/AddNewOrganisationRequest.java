@@ -17,20 +17,23 @@ public class AddNewOrganisationRequest {
     private String functionGroup;
     private boolean enabled;
     private Date expiryDateContract;
+    private String emailAddress;
+    private String phoneNumber;
 
     public AddNewOrganisationRequest() {
 
     }
 
     public AddNewOrganisationRequest(final String organisationIdentification, final String organisationName,
-            final String organisationPrefix, final String functionGroup, final boolean enabled,
-            final Date expiryDateContract) {
+            final String organisationPrefix, final Credentials credentials) {
         this.organisationIdentification = organisationIdentification;
         this.organisationName = organisationName;
         this.organisationPrefix = organisationPrefix;
-        this.functionGroup = functionGroup;
-        this.enabled = enabled;
-        this.expiryDateContract = expiryDateContract;
+        this.functionGroup = credentials.getFunctionGroup();
+        this.enabled = credentials.isEnabled();
+        this.expiryDateContract = credentials.getExpiryDateContract();
+        this.emailAddress = credentials.getEmailAddress();
+        this.phoneNumber = credentials.getPhoneNumber();
     }
 
     public String getOrganisationIdentification() {
@@ -55,5 +58,13 @@ public class AddNewOrganisationRequest {
 
     public Date getExpiryDateContract() {
         return this.expiryDateContract;
+    }
+
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+    public String getPhoneNumber() {
+        return this.phoneNumber;
     }
 }

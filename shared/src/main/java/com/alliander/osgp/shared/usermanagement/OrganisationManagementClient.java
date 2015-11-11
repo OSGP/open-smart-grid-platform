@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.net.ssl.TrustManagerFactory;
@@ -204,8 +203,7 @@ public class OrganisationManagementClient extends AbstractClient {
             final String token) throws OrganisationManagementClientException {
 
         final AddNewOrganisationRequest addNewOrganisationRequest = new AddNewOrganisationRequest(
-                newOrganisationIdentification, name, prefix, credentials.getFunctionGroup(), credentials.isEnabled(),
-                credentials.getExpiryDateContract());
+                newOrganisationIdentification, name, prefix, credentials);
 
         final Response response = this.getWebClientInstance().path(this.addNewOrganisationPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(addNewOrganisationRequest);
@@ -318,12 +316,13 @@ public class OrganisationManagementClient extends AbstractClient {
      */
     public String changeOrganisationData(final String organisationIdentificationToChange,
             final String newOrganisationIdentification, final String newOrganisationName,
-            final Date newExpiryDateContract, final String functionGroup, final String organisationIdentification,
-            final String token) throws OrganisationManagementClientException {
+            final Credentials credentials, final String organisationIdentification, final String token)
+                    throws OrganisationManagementClientException {
 
         final ChangeOrganisationRequest changeOrganisationRequest = new ChangeOrganisationRequest(
-                organisationIdentificationToChange, newOrganisationIdentification, newOrganisationName, functionGroup,
-                newExpiryDateContract);
+                organisationIdentificationToChange, newOrganisationIdentification, newOrganisationName,
+                credentials.getFunctionGroup(), credentials.getExpiryDateContract(), credentials.getEmailAddress(),
+                credentials.getPhoneNumber());
 
         final Response response = this.getWebClientInstance().path(this.changeOrganisationDataPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(changeOrganisationRequest);
