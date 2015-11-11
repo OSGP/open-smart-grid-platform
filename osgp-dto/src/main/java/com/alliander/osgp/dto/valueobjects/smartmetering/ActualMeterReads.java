@@ -16,7 +16,7 @@ public class ActualMeterReads implements Serializable {
             final long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
             final long activeEnergyExportTariffTwo) {
         super();
-        this.logTime = logTime;
+        this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
@@ -24,7 +24,7 @@ public class ActualMeterReads implements Serializable {
     }
 
     public Date getLogTime() {
-        return this.logTime;
+        return new Date(this.logTime.getTime());
     }
 
     public long getActiveEnergyImportTariffOne() {
