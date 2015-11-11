@@ -17,14 +17,19 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveActualMeterReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveActualMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -32,10 +37,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
-// MethodConstraintViolationException is deprecated.
-// Will by replaced by equivalent functionality defined
-// by the Bean Validation 1.1 API as of Hibernate Validator 5.
-@SuppressWarnings("deprecation")
 @Endpoint
 public class SmartMeteringMonitoringEndpoint {
 
@@ -143,15 +144,95 @@ public class SmartMeteringMonitoringEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "ActualMeterReadsRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public ActualMeterReadsResponse requestActualMeterReads(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ActualMeterReadsRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming ActualMeterReadsRequest for meter: {}", request.getDeviceIdentification());
+
+        final ActualMeterReadsResponse response = new ActualMeterReadsResponse();
+
+        try {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest requestValueObject = this.monitoringMapper
+                    .map(request,
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest.class);
+
+            final String correlationUid = this.monitoringService.requestActualMeterReads(organisationIdentification,
+                    requestValueObject);
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while requesting actual meter reads for device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "RetrieveActualMeterReadsRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public RetrieveActualMeterReadsResponse retrieveActualMeterReads(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RetrieveActualMeterReadsRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming RetreiveActualMeterReadsRequest for meter: {}", request.getDeviceIdentification());
+
+        final RetrieveActualMeterReadsResponse response = new RetrieveActualMeterReadsResponse();
+
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataRepository
+                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+
+            if (meterResponseData == null) {
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
+                        ComponentType.WS_SMART_METERING);
+            }
+
+            if (meterResponseData.getMessageData() instanceof ActualMeterReads) {
+                response.setActualMeterReads(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads.class));
+
+                this.meterResponseDataRepository.delete(meterResponseData);
+            } else {
+                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
+                        .getName(), request.getCorrelationUid());
+            }
+
+        } catch (final Exception e) {
+            if ((e instanceof FunctionalException)
+                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+
+                LOGGER.warn("No response data for correlation UID {} in RetrieveActualMeterReadsRequest",
+                        request.getCorrelationUid());
+
+                throw e;
+
+            } else {
+                LOGGER.error("Exception: {} while sending ActualMeterReads of device: {} for organisation {}.",
+                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+
+                this.handleException(e);
+            }
+        }
+
+        return response;
+    }
+
     private void handleException(final Exception e) throws OsgpException {
         // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
+        // exception, otherwise throw new technical exception.
+        LOGGER.error("Exception occurred: ", e);
         if (e instanceof OsgpException) {
-            LOGGER.error("Exception occurred: ", e);
             throw (OsgpException) e;
         } else {
-            LOGGER.error("Exception occurred: ", e);
             throw new TechnicalException(ComponentType.WS_SMART_METERING, e);
         }
     }
