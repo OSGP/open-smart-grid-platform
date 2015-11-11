@@ -7,23 +7,32 @@
  */
 package com.alliander.osgp.shared.usermanagement;
 
+import java.util.Date;
+
 public class ChangeOrganisationRequest {
 
     private String organisationIdentificationToChange;
     private String newOrganisationIdentification;
     private String newOrganisationName;
     private String functionGroup;
+    private Date expiryDateContract;
+    private String emailAddress;
+    private String phoneNumber;
 
     public ChangeOrganisationRequest() {
 
     }
 
     public ChangeOrganisationRequest(final String organisationIdentificationToChange,
-            final String newOrganisationIdentification, final String newOrganisationName, final String functionGroup) {
+            final String newOrganisationIdentification, final String newOrganisationName, final String functionGroup,
+            final Date expiryDateContract, final String emailAddress, final String phoneNumber) {
         this.organisationIdentificationToChange = organisationIdentificationToChange;
         this.newOrganisationIdentification = newOrganisationIdentification;
         this.newOrganisationName = newOrganisationName;
         this.functionGroup = functionGroup;
+        this.expiryDateContract = expiryDateContract;
+        this.emailAddress = emailAddress;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getOrganisationIdentificationToChange() {
@@ -40,5 +49,17 @@ public class ChangeOrganisationRequest {
 
     public String getFunctionGroup() {
         return this.functionGroup;
+    }
+
+    public Date getExpiryDateContract() {
+        return this.expiryDateContract;
+    }
+
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+    public String getPhoneNumber() {
+        return this.phoneNumber;
     }
 }

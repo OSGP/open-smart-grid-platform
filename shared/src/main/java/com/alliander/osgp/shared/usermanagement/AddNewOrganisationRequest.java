@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.shared.usermanagement;
 
+import java.util.Date;
+
 public class AddNewOrganisationRequest {
 
     private String organisationIdentification;
@@ -14,18 +16,24 @@ public class AddNewOrganisationRequest {
     private String organisationPrefix;
     private String functionGroup;
     private boolean enabled;
+    private Date expiryDateContract;
+    private String emailAddress;
+    private String phoneNumber;
 
     public AddNewOrganisationRequest() {
 
     }
 
     public AddNewOrganisationRequest(final String organisationIdentification, final String organisationName,
-            final String organisationPrefix, final String functionGroup, final boolean enabled) {
+            final String organisationPrefix, final Credentials credentials) {
         this.organisationIdentification = organisationIdentification;
         this.organisationName = organisationName;
         this.organisationPrefix = organisationPrefix;
-        this.functionGroup = functionGroup;
-        this.enabled = enabled;
+        this.functionGroup = credentials.getFunctionGroup();
+        this.enabled = credentials.isEnabled();
+        this.expiryDateContract = credentials.getExpiryDateContract();
+        this.emailAddress = credentials.getEmailAddress();
+        this.phoneNumber = credentials.getPhoneNumber();
     }
 
     public String getOrganisationIdentification() {
@@ -46,5 +54,17 @@ public class AddNewOrganisationRequest {
 
     public boolean isEnabled() {
         return this.enabled;
+    }
+
+    public Date getExpiryDateContract() {
+        return this.expiryDateContract;
+    }
+
+    public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+    public String getPhoneNumber() {
+        return this.phoneNumber;
     }
 }

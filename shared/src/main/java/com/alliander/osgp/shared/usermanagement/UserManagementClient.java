@@ -40,6 +40,7 @@ public class UserManagementClient extends AbstractClient {
     private String changeUserPasswordPath = "/changepassword";
     private String removeUserPath = "/remove";
     private String changeUserDataPath = "/change";
+    private String resetBlockedAccountPath = "/reset-blocked-user-account";
 
     private String rolesPath = "/roles";
     private String applicationsPath = "/applications";
@@ -378,6 +379,39 @@ public class UserManagementClient extends AbstractClient {
             apiResponse = this.checkResponse(response);
         } catch (final ResponseException e) {
             throw new UserManagementClientException("change user data response exception", e);
+        }
+
+        return apiResponse;
+    }
+
+    /**
+     * @param username
+     *            The user name of the user.
+     * @param organisationIdentificationOfUser
+     *            The organisation the user belongs to.
+     * @param organisationIdentification
+     *            The organisation identification of the organisation issuing
+     *            the request.
+     * @param token
+     *            The authentication token.
+     * @return A JSON string containing a succesMessage or errorMessage.
+     * @throws UserManagementClientException
+     *             In case the response is null, the HTTP status code is not
+     *             equal to 200 OK or if the response body is empty.
+     */
+    public String resetBlockedUserAccount(final String username, final String organisationIdentificationOfUser,
+            final String organisationIdentification, final String token) throws UserManagementClientException {
+
+        final Response response = this.getWebClientInstance()
+                .path(this.userPath + username + this.resetBlockedAccountPath)
+                .headers(this.createHeaders(organisationIdentification, token))
+                .post(new ResetBlockedUserAccountRequest(username));
+
+        String apiResponse;
+        try {
+            apiResponse = this.checkResponse(response);
+        } catch (final ResponseException e) {
+            throw new UserManagementClientException("reset blocked user account response exception", e);
         }
 
         return apiResponse;
