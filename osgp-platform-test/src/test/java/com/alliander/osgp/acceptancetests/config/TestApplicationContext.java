@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -144,6 +145,7 @@ public class TestApplicationContext {
     }
 
     @Bean
+    @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
     public String netManagementOrganisation() {
         return NET_MANAGEMENT_ORGANISATION;
     }
