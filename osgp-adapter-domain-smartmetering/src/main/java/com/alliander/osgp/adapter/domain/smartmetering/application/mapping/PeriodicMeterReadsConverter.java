@@ -13,31 +13,32 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PeriodicMeterReadsConverter extends
 BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest, PeriodicMeterReadsRequest> {
 
     @Override
     public PeriodicMeterReadsRequest convertTo(com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest source, Type<PeriodicMeterReadsRequest> destinationType) {
-        PeriodicMeterReadsRequest periodicMeterReadsRequest = new PeriodicMeterReadsRequest(source.getDeviceIdentification());
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData> periodicMeterReadsRequestData = new ArrayList<>();
         for (PeriodicMeterReadsRequestData pmrd : source.getPeriodicMeterReadsRequestData()) {
-            periodicMeterReadsRequest.addPeriodicMeterReadsRequestData(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData(
+            periodicMeterReadsRequestData.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData(
                     pmrd.getDeviceIdentification(), PeriodType.valueOf(pmrd.getPeriodType().name()), pmrd.getBeginDate(), pmrd.getEndDate())
             );
         }
-        return periodicMeterReadsRequest;
+        return new PeriodicMeterReadsRequest(source.getDeviceIdentification(),periodicMeterReadsRequestData);
     }
 
     @Override
     public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest convertFrom(PeriodicMeterReadsRequest source, Type<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest> destinationType) {
-        com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest periodicMeterReadsRequest = 
-                new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest(source.getDeviceIdentification());
+        List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData = new ArrayList<>();
         for (com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData pmrd : source.getPeriodicMeterReadsRequestData()) {
-            periodicMeterReadsRequest.addPeriodicMeterReadsRequestData(new PeriodicMeterReadsRequestData(
+            periodicMeterReadsRequestData.add(new PeriodicMeterReadsRequestData(
                     pmrd.getDeviceIdentification(), com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType.valueOf(pmrd.getPeriodType().name()), pmrd.getBeginDate(), pmrd.getEndDate())
             );
         }
-        return periodicMeterReadsRequest;
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest(source.getDeviceIdentification(),periodicMeterReadsRequestData);
     }
 
 }

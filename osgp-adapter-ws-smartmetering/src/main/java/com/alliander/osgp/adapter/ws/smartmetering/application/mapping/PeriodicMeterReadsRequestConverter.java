@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PeriodicMeterReadsRequestConverter
         extends
@@ -57,9 +59,8 @@ public class PeriodicMeterReadsRequestConverter
     public PeriodicMeterReadsRequest convertFrom(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest source,
             final Type<PeriodicMeterReadsRequest> destinationType) {
-        final PeriodicMeterReadsRequest periodicMeterReadsRequest = new PeriodicMeterReadsRequest(
-                source.getDeviceIdentification());
 
+        final List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData = new ArrayList<>();
         for (final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData pmrd : source
                 .getPeriodicMeterReadsRequestData()) {
 
@@ -68,9 +69,9 @@ public class PeriodicMeterReadsRequestConverter
                     com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(pmrd.getPeriodType()
                             .name()), pmrd.getBeginDate().toGregorianCalendar().getTime(), pmrd.getEndDate()
                             .toGregorianCalendar().getTime());
-            periodicMeterReadsRequest.addPeriodicMeterReadsRequestData(pm);
+            periodicMeterReadsRequestData.add(pm);
         }
-        return periodicMeterReadsRequest;
+        return new PeriodicMeterReadsRequest(source.getDeviceIdentification(),periodicMeterReadsRequestData);
     }
 
 }
