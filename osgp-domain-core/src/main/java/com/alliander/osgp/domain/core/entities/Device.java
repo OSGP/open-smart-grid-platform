@@ -28,7 +28,6 @@ import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.domain.core.valueobjects.RelayFunction;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -386,17 +385,17 @@ NetworkAddressInterface {
         }
 
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration
-            .add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
-            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "Gemeentehuis",
-                    RelayFunction.EVENING_MORNING));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, "Belastingdienst",
-                    RelayFunction.TARIFF));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, ""));
+            //            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(4, 4, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(0, 0, RelayType.LIGHT, ""));
+
             return defaultConfiguration;
         }
 
         if (this.deviceType.equalsIgnoreCase(PSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "UWV", RelayFunction.SPECIAL));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
             return defaultConfiguration;
         }
 
