@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.core.application.services;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -50,6 +51,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
@@ -112,6 +114,9 @@ public class DeviceManagementService {
     @Autowired
     private WritableDeviceRepository writableDeviceRepository;
 
+    @Autowired
+    private String netMangementOrganisation;
+
     /**
      * Constructor
      */
@@ -128,14 +133,22 @@ public class DeviceManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
-        return this.organisationRepository.findAll();
+        if (this.netMangementOrganisation.equals(organisationIdentification)) {
+            return this.organisationRepository.findAll();
+        } else {
+            final Organisation org = this.organisationRepository
+                    .findByOrganisationIdentification(organisationIdentification);
+            final List<Organisation> organisations = new ArrayList<>();
+            organisations.add(org);
+            return organisations;
+        }
     }
 
     // TODO remove
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -237,7 +250,19 @@ public class DeviceManagementService {
         final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
-        final Page<Device> devices = this.applyFilter(deviceFilter, organisation, request);
+        Page<Device> devices = null;
+        if (!this.netMangementOrganisation.equals(organisationIdentification)) {
+            if (deviceFilter == null) {
+                final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
+                        null, null, DeviceActivatedFilterType.BOTH, null, null);
+                devices = this.applyFilter(df, organisation, request);
+            } else {
+                deviceFilter.updateOrganisationIdentification(organisationIdentification);
+                devices = this.applyFilter(deviceFilter, organisation, request);
+            }
+        } else {
+            devices = this.applyFilter(deviceFilter, organisation, request);
+        }
 
         if (devices == null) {
             LOGGER.info("No devices found");
@@ -298,6 +323,10 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
                             .getMunicipality() + "%"));
                 }
+                if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
+                    specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
+                            .getDeviceActivated().getValue()));
+                }
 
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
@@ -318,7 +347,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
