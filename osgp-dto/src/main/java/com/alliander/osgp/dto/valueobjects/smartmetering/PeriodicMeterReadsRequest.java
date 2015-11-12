@@ -8,7 +8,6 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,9 +18,9 @@ public class PeriodicMeterReadsRequest implements Serializable {
     private final String deviceIdentification;
     private final List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData;
 
-    public PeriodicMeterReadsRequest(String deviceIdentification) {
+    public PeriodicMeterReadsRequest(String deviceIdentification, List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData) {
         this.deviceIdentification = deviceIdentification;
-        this.periodicMeterReadsRequestData = new ArrayList<>();
+        this.periodicMeterReadsRequestData = Collections.unmodifiableList(periodicMeterReadsRequestData);
     }
 
     public String getDeviceIdentification() {
@@ -29,12 +28,7 @@ public class PeriodicMeterReadsRequest implements Serializable {
     }
 
     public List<PeriodicMeterReadsRequestData> getPeriodicMeterReadsRequestData() {
-        return Collections.unmodifiableList(periodicMeterReadsRequestData);
-    }
-
-    public PeriodicMeterReadsRequest addPeriodicMeterReadsRequestData(final PeriodicMeterReadsRequestData periodicMeterReadsRequestData) {
-        this.periodicMeterReadsRequestData.add(periodicMeterReadsRequestData);
-        return this;
+        return periodicMeterReadsRequestData;
     }
 
 }
