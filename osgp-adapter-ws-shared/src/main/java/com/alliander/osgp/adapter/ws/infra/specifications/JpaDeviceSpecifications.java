@@ -167,4 +167,21 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         };
     }
 
+    @Override
+    public Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException {
+
+        if (activated == null) {
+            throw new ArgumentNullOrEmptyException("activated");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.and(cb.equal(deviceRoot.<Boolean> get("isActivated"), activated));
+            }
+        };
+    }
+
 }

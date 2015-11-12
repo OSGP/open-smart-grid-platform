@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.core.application.services;
 
 import static org.springframework.data.jpa.domain.Specifications.where;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -20,6 +21,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -50,6 +52,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
@@ -112,6 +115,10 @@ public class DeviceManagementService {
     @Autowired
     private WritableDeviceRepository writableDeviceRepository;
 
+    @Autowired
+    @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
+    private String netMangementOrganisation;
+
     /**
      * Constructor
      */
@@ -128,7 +135,15 @@ public class DeviceManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
-        return this.organisationRepository.findAll();
+        if (this.netMangementOrganisation.equals(organisationIdentification)) {
+            return this.organisationRepository.findAll();
+        } else {
+            final Organisation org = this.organisationRepository
+                    .findByOrganisationIdentification(organisationIdentification);
+            final List<Organisation> organisations = new ArrayList<>();
+            organisations.add(org);
+            return organisations;
+        }
     }
 
     // TODO remove
@@ -236,7 +251,19 @@ public class DeviceManagementService {
         final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
-        final Page<Device> devices = this.applyFilter(deviceFilter, organisation, request);
+        Page<Device> devices = null;
+        if (!this.netMangementOrganisation.equals(organisationIdentification)) {
+            if (deviceFilter == null) {
+                final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
+                        null, null, DeviceActivatedFilterType.BOTH, null, null);
+                devices = this.applyFilter(df, organisation, request);
+            } else {
+                deviceFilter.updateOrganisationIdentification(organisationIdentification);
+                devices = this.applyFilter(deviceFilter, organisation, request);
+            }
+        } else {
+            devices = this.applyFilter(deviceFilter, organisation, request);
+        }
 
         if (devices == null) {
             LOGGER.info("No devices found");
@@ -296,6 +323,10 @@ public class DeviceManagementService {
                 if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
                             .getMunicipality() + "%"));
+                }
+                if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
+                    specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
+                            .getDeviceActivated().getValue()));
                 }
 
                 devices = this.deviceRepository.findAll(specifications, request);

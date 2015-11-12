@@ -138,9 +138,6 @@ public class MessagingConfig {
 
     // === JMS SETTINGS: ADMIN REQUESTS ===
 
-    /**
-     * @return
-     */
     @Bean(name = "wsAdminOutgoingRequestsJmsTemplate")
     public JmsTemplate adminRequestsJmsTemplate() {
         LOGGER.debug("Creating Admin Requests JMS Template Bean");
@@ -186,9 +183,6 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public AdminRequestMessageSender adminRequestMessageSender() {
         LOGGER.debug("Creating Admin Requests Message Sender Bean");
@@ -198,9 +192,6 @@ public class MessagingConfig {
 
     // === JMS SETTINGS: ADMIN RESPONSES ===
 
-    /**
-     * @return
-     */
     @Bean(name = "wsAdminIncomingResponsesJmsTemplate")
     public JmsTemplate adminResponsesJmsTemplate() {
         LOGGER.debug("Creating Admin Responses JMS Template Bean");
@@ -248,9 +239,6 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public AdminResponseMessageFinder adminResponseMessageFinder() {
         LOGGER.debug("Creating Admin Response Message Finder Bean");
@@ -267,9 +255,6 @@ public class MessagingConfig {
         return new ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_COMMON_LOGGING_QUEUE));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public JmsTemplate loggingJmsTemplate() {
         LOGGER.debug("Creating Admin Logging JMS Template Bean");
@@ -287,9 +272,6 @@ public class MessagingConfig {
         return jmsTemplate;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public RedeliveryPolicy adminLoggingRedeliveryPolicy() {
         LOGGER.debug("Creating Admin Logging Redelivery Policy Bean");

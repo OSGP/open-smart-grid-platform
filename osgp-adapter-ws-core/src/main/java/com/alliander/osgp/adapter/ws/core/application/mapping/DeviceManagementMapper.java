@@ -76,8 +76,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                     newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
                             deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
-                            com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
-                                    .getRelayType().name()), deviceOutputSetting.getAlias());
+                            deviceOutputSetting.getRelayType() == null ? null : com.alliander.osgp.domain.core.valueobjects.RelayType
+                                    .valueOf(deviceOutputSetting.getRelayType().name()), deviceOutputSetting.getAlias());
 
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
@@ -152,4 +152,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
             return null;
         }
     }
+}
+null;
+}
+}
 }
