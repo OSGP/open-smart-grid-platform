@@ -153,7 +153,3 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         }
     }
 }
-null;
-}
-}
-}
