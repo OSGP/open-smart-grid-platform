@@ -28,5 +28,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
 
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
+        mapperFactory.getConverterFactory().registerConverter(new SetAdministrationConverter());
+        mapperFactory.getConverterFactory().registerConverter(new GetAdministrationConverter());
     }
 }

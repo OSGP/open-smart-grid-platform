@@ -53,6 +53,21 @@
         </wsdl:part>
     </wsdl:message>
 
+
+	<wsdl:message name="SetAdministrationRequest">
+		<wsdl:part element="smconf:SetAdministrationRequest" name="SetAdministrationRequest" />
+	</wsdl:message>
+	<wsdl:message name="SetAdministrationResponse">
+		<wsdl:part element="smconf:SetAdministrationResponse" name="SetAdministrationResponse" />
+	</wsdl:message>
+	
+	<wsdl:message name="GetAdministrationRequest">
+		<wsdl:part element="smconf:GetAdministrationRequest" name="GetAdministrationRequest" />
+	</wsdl:message>
+	<wsdl:message name="GetAdministrationnResponse">
+		<wsdl:part element="smconf:GetAdministrationResponse" name="GetAdministrationResponse" />
+	</wsdl:message>	
+
     <wsdl:portType name="SmartmeterconfigurationPort">
         <wsdl:operation name="RequestSpecialDays">
             <wsdl:input message="tns:SpecialDaysRequest" name="SpecialDaysRequest">
@@ -74,10 +89,47 @@
             <wsdl:output message="tns:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
             </wsdl:output>
 		</wsdl:operation>
+		
+		<wsdl:operation name="SetAdministration">
+			<wsdl:input message="tns:SetAdministrationRequest" name="SetAdministrationRequest" />
+			<wsdl:input message="tns:SetAdministrationResponse" name="SetAdministrationResponse" /> 
+		</wsdl:operation>
+		<wsdl:operation name="GetAdministration">
+			<wsdl:input message="tns:GetAdministrationRequest" name="GetAdministrationRequest" />
+			<wsdl:input message="tns:GetAdministrationResponse" name="GetAdministrationResponse" /> 
+		</wsdl:operation>		
+		
     </wsdl:portType>
 
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        
+        <wsdl:operation name="SetAdministration">
+        	<soap:operation soapAction="" />
+        	<wsdl:input name="SetAdministrationRequest">
+        		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+        		<soap:body use="literal" />
+        	</wsdl:input>
+        	<wsdl:output name="SetAdministrationResponse">
+        		<soap:body use="literal" />
+        	</wsdl:output>
+        </wsdl:operation>
+
+		<wsdl:operation name="GetAdministration">
+			<soap:operation soapAction="" />
+            <wsdl:input name="GetAdministrationRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="GetAdministrationResponse">
+                <soap:body use="literal" />
+            </wsdl:output>			
+		</wsdl:operation>        
+
         <wsdl:operation name="RequestSpecialDays">
             <soap:operation soapAction="" />
             <wsdl:input name="SpecialDaysRequest">

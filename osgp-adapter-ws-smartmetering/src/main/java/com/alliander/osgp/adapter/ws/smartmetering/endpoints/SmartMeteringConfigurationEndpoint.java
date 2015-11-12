@@ -19,6 +19,10 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrationRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrationResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrationRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrationResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
@@ -46,6 +50,49 @@ public class SmartMeteringConfigurationEndpoint {
     private ConfigurationMapper configurationMapper;
 
     public SmartMeteringConfigurationEndpoint() {
+    }
+
+    @PayloadRoot(localPart = "SetAdministration", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetAdministrationResponse setAdministration(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetAdministrationRequest request) throws OsgpException {
+
+        final SetAdministrationResponse response = new SetAdministrationResponse();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration dataRequest = this.configurationMapper
+                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration.class);
+
+        final String correlationUid = this.configurationService.enqueueSetAdministration(organisationIdentification,
+                dataRequest);
+
+        final AsyncResponse asyncResponse = new AsyncResponse();
+        asyncResponse.setCorrelationUid(correlationUid);
+        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+        response.setAsyncResponse(asyncResponse);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetAdministration", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetAdministrationResponse getAdministration(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetAdministrationRequest request) throws OsgpException {
+
+        final GetAdministrationResponse response = new GetAdministrationResponse();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration dataRequest = this.configurationMapper
+                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration.class);
+
+        final String correlationUid = this.configurationService.enqueueGetAdministration(organisationIdentification,
+                dataRequest);
+
+        final AsyncResponse asyncResponse = new AsyncResponse();
+        asyncResponse.setCorrelationUid(correlationUid);
+        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+        response.setAsyncResponse(asyncResponse);
+        return response;
     }
 
     @PayloadRoot(localPart = "SpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -82,8 +129,8 @@ public class SmartMeteringConfigurationEndpoint {
                 .map(request,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
-        final String correlationUid = this.configurationService.setConfigurationObject(
-                organisationIdentification, dataRequest);
+        final String correlationUid = this.configurationService.setConfigurationObject(organisationIdentification,
+                dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);

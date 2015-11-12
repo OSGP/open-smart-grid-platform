@@ -21,6 +21,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -129,6 +131,32 @@ public class ConfigurationService {
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, alarmNotificationsDto), messageType);
+    }
+
+    public void setAdministration(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final SetAdministration setAdministration, final String messageType) throws FunctionalException {
+
+        LOGGER.info("SetAdministration for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, setAdministration), messageType);
+    }
+
+    public void getAdministration(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final GetAdministration getAdministration, final String messageType) throws FunctionalException {
+
+        LOGGER.info("SetAdministration for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, getAdministration), messageType);
     }
 
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,

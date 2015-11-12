@@ -19,6 +19,8 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -35,9 +37,45 @@ public class ConfigurationService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
+    public String enqueueGetAdministration(@Identification final String organisationIdentification,
+            @Identification final GetAdministration requestData) throws FunctionalException {
+
+        LOGGER.debug("enqueueDaysRequest called with organisation {} and device {}", organisationIdentification,
+                requestData.getDeviceIdentification());
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                requestData.getDeviceIdentification());
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.GET_ADMINISTRATION, correlationUid, organisationIdentification,
+                requestData.getDeviceIdentification(), requestData);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueSetAdministration(@Identification final String organisationIdentification,
+            @Identification final SetAdministration requestData) throws FunctionalException {
+
+        LOGGER.debug("enqueueDaysRequest called with organisation {} and device {}", organisationIdentification,
+                requestData.getDeviceIdentification());
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                requestData.getDeviceIdentification());
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_ADMINISTRATION, correlationUid, organisationIdentification,
+                requestData.getDeviceIdentification(), requestData);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
     public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -97,7 +135,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
