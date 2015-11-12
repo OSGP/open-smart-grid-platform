@@ -23,7 +23,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministration;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetAdministration;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -121,6 +123,62 @@ public class ConfigurationService {
             LOGGER.error("Unexpected exception during set Configuration Object", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception during set Configuration Object", e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        }
+    }
+
+    public void setAdministration(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SetAdministration setAdministration,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
+
+        LOGGER.info("requestSpecialDays called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        LOGGER.info("******************************************************");
+        LOGGER.info(" SetAdministration      ******************************");
+        LOGGER.info("******************************************************");
+        LOGGER.info("DeviceIdentification = {} ", setAdministration.getDeviceIdentification());
+        LOGGER.info("DeviceIdentification = {} ", setAdministration.isEnabled() ? "Enabled" : "Disabled");
+        LOGGER.info("******************************************************");
+
+        try {
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setAdministration", e);
+
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        }
+
+    }
+
+    public void getAdministration(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final GetAdministration getAdministration,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
+
+        LOGGER.info("requestSpecialDays called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        LOGGER.info("******************************************************");
+        LOGGER.info(" GetAdministration      ******************************");
+        LOGGER.info("******************************************************");
+        LOGGER.info("DeviceIdentification = {} ", getAdministration.getDeviceIdentification());
+        LOGGER.info("******************************************************");
+
+        try {
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during getAdministration", e);
+
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
