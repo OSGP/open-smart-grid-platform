@@ -66,8 +66,6 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
     private Float gpsLongitude;
 
     @Transient
-    // @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class,
-    // fetch = FetchType.EAGER)
     private final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
 
     @Transient

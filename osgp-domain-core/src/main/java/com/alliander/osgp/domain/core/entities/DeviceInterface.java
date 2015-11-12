@@ -30,5 +30,4 @@ public interface DeviceInterface {
     String getOwner();
 
     List<String> getOrganisations();
-
 }

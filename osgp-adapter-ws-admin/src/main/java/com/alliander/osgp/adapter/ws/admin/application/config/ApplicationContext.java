@@ -65,9 +65,6 @@ public class ApplicationContext {
         return Integer.parseInt(this.environment.getRequiredProperty(PROPERTY_NAME_RECENT_DEVICES_PERIOD));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public PagingSettings pagingSettings() {
         return new PagingSettings(Integer.parseInt(this.environment
@@ -75,9 +72,6 @@ public class ApplicationContext {
                         .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public EventSpecifications eventSpecifications() {
         return new JpaEventSpecifications();
@@ -88,9 +82,6 @@ public class ApplicationContext {
         return new JpaDeviceSpecifications();
     }
 
-    /**
-     * @return
-     */
     @Bean
     public LocalValidatorFactoryBean validator() {
         final LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
@@ -99,9 +90,6 @@ public class ApplicationContext {
         return localValidatorFactoryBean;
     }
 
-    /**
-     * @return
-     */
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor() {
         final MethodValidationPostProcessor m = new MethodValidationPostProcessor();
