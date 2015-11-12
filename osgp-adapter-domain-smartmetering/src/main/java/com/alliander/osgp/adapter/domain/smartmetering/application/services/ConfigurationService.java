@@ -146,8 +146,11 @@ public class ConfigurationService {
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendarDto = this.configurationMapper
+                .map(activityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar.class);
+
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, activityCalendar), messageType);
+                deviceIdentification, activityCalendarDto), messageType);
     }
 
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,
