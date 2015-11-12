@@ -47,13 +47,6 @@ public class ConfigurationService {
     @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
-    /**
-     * Constructor
-     */
-    public ConfigurationService() {
-        // Parameterless constructor required for transactions...
-    }
-
     // === REQUEST Special Days DATA ===
 
     public void requestSpecialDays(final String organisationIdentification, final String deviceIdentification,

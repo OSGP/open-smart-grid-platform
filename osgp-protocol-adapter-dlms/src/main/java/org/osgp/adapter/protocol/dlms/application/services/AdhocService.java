@@ -37,13 +37,6 @@ public class AdhocService {
     @Autowired
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
-    /**
-     * Constructor
-     */
-    public AdhocService() {
-        // Parameterless constructor required for transactions...
-    }
-
     // === REQUEST Synchronize Time DATA ===
 
     public void synchronizeTime(final String organisationIdentification, final String deviceIdentification,
@@ -54,19 +47,14 @@ public class AdhocService {
         LOGGER.info("synchronizeTime called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
+        ClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
-            try {
-                this.synchronizeTimeCommandExecutor.execute(conn, null);
-            } finally {
-                if (conn != null && conn.isConnected()) {
-                    conn.close();
-                }
-            }
+            this.synchronizeTimeCommandExecutor.execute(conn, null);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
@@ -77,6 +65,10 @@ public class AdhocService {
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
     }
 
