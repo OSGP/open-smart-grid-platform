@@ -105,7 +105,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     + getResultList.size());
         }
 
-        final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer(periodicMeterReadsRequest.getDeviceIdentification());
+        final List<PeriodicMeterReads> periodicMeterReads = new ArrayList<>();
 
         final GetResult getResult = getResultList.get(0);
         final AccessResultCode resultCode = getResult.resultCode();
@@ -193,10 +193,10 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     (Long) negativeActiveEnergyTariff1.value(),
                     interval?null:(Long) negativeActiveEnergyTariff2.value(),
                     periodType);
-            periodicMeterReadsContainer.addPeriodicMeterReads(nextPeriodicMeterReads);
+            periodicMeterReads.add(nextPeriodicMeterReads);
         }
 
-        return periodicMeterReadsContainer;
+        return new PeriodicMeterReadsContainer(periodicMeterReadsRequest.getDeviceIdentification(), periodicMeterReads);
     }
 
 }
