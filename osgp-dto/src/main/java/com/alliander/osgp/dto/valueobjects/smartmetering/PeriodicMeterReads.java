@@ -16,80 +16,56 @@ public class PeriodicMeterReads implements Serializable {
 
     // TODO add status
 
-    private PeriodicMeterReadsContainer periodicMeterReadsContainer;
-    private Date logTime;
-    private long activeEnergyImportTariffOne;
+    private final Date logTime;
+    private final long activeEnergyImportTariffOne;
     // will be empty for INTERVAL
-    private Long activeEnergyImportTariffTwo;
-    private long activeEnergyExportTariffOne;
+    private final Long activeEnergyImportTariffTwo;
+    private final long activeEnergyExportTariffOne;
     // will be empty for INTERVAL
-    private Long activeEnergyExportTariffTwo;
-    private PeriodType periodType;
+    private final Long activeEnergyExportTariffTwo;
+    private final PeriodType periodType;
+
+    public PeriodicMeterReads(Date logTime, long activeEnergyImportTariffOne, Long activeEnergyImportTariffTwo, long activeEnergyExportTariffOne, Long activeEnergyExportTariffTwo, PeriodType periodType) {
+        this.logTime = logTime;
+        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
+        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
+        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
+        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
+        this.periodType = periodType;
+    }
 
     public long getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
     }
 
-    public void setActiveEnergyImportTariffOne(final long activeEnergyImportTariffOne) {
-        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
-    }
-
     /**
      * will be empty for INTERVAL
      *
-     * @return
+     * @return the value of ActiveEnergyImportTariffTwo
      */
     public Long getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
-    }
-
-    public void setActiveEnergyImportTariffTwo(final Long activeEnergyImportTariffTwo) {
-        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
     }
 
     public long getActiveEnergyExportTariffOne() {
         return this.activeEnergyExportTariffOne;
     }
 
-    public void setActiveEnergyExportTariffOne(final long activeEnergyExportTariffOne) {
-        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
-    }
-
     /**
      * will be empty for INTERVAL
      *
-     * @return
+     * @return the value of ActiveEnergyExportTariffTwo
      */
     public Long getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
-    }
-
-    public void setActiveEnergyExportTariffTwo(final Long activeEnergyExportTariffTwo) {
-        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
-    }
-
-    public PeriodicMeterReadsContainer getPeriodicMeterReads() {
-        return this.periodicMeterReadsContainer;
-    }
-
-    public void setPeriodicMeterReads(final PeriodicMeterReadsContainer periodicMeterReadsContainer) {
-        this.periodicMeterReadsContainer = periodicMeterReadsContainer;
     }
 
     public Date getLogTime() {
         return this.logTime;
     }
 
-    public void setLogTime(final Date logTime) {
-        this.logTime = logTime;
-    }
-
     public PeriodType getPeriodType() {
         return this.periodType;
-    }
-
-    public void setPeriodType(final PeriodType periodType) {
-        this.periodType = periodType;
     }
 
 }
