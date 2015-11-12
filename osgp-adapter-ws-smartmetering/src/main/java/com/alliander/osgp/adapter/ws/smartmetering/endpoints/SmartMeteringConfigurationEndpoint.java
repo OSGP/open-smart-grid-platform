@@ -112,7 +112,7 @@ public class SmartMeteringConfigurationEndpoint {
 
             final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getTariff(),
                     ActivityCalendar.class);
-            // hiero
+
             final String correlationUid = this.configurationService.setTariff(organisationIdentification,
                     deviceIdentification, activityCalendar);
 

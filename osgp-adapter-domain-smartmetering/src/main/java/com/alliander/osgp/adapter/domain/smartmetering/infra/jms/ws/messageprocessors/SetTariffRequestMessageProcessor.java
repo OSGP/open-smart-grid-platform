@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -43,7 +44,7 @@ public class SetTariffRequestMessageProcessor extends WebServiceRequestMessagePr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
@@ -76,10 +77,10 @@ public class SetTariffRequestMessageProcessor extends WebServiceRequestMessagePr
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final String tariff = (String) dataObject;
+            final ActivityCalendar activityCalendar = (ActivityCalendar) dataObject;
 
             this.configurationService.setTariff(organisationIdentification, deviceIdentification, correlationUid,
-                    tariff, messageType);
+                    activityCalendar, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Confi
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -132,8 +133,8 @@ public class ConfigurationService {
     }
 
     public void setTariff(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String tariff,
-            final String messageType) throws FunctionalException {
+            @Identification final String deviceIdentification, final String correlationUid,
+            final ActivityCalendar activityCalendar, final String messageType) throws FunctionalException {
 
         LOGGER.info("setTariff for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -146,7 +147,7 @@ public class ConfigurationService {
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, tariff), messageType);
+                deviceIdentification, activityCalendar), messageType);
     }
 
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,

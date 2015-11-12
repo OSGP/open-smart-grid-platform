@@ -38,7 +38,7 @@ public class ConfigurationService {
 
     public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -98,7 +98,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -117,7 +117,7 @@ public class ConfigurationService {
 
     public String enqueueSetTariffRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSetTariffRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

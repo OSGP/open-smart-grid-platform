@@ -1,32 +1,67 @@
 /**
  * Copyright 2015 Smart Society Services B.V.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collection;
 
-public class ActivityCalendar implements Serializable {
+public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializable {
 
-    private static final long serialVersionUID = -7121752155389808794L;
-    private final Set<AlarmNotification> alarmNotifications;
+    private static final long serialVersionUID = -8278955482889960359L;
 
-    public ActivityCalendar(final Set<AlarmNotification> alarmNotifications) {
-        this.alarmNotifications = new TreeSet<AlarmNotification>(alarmNotifications);
+    private String logical_name;
+
+    private String calendar_name;
+
+    private Collection<SeasonProfile> seasonProfileCollection;
+
+    public ActivityCalendar() {
+
+    }
+
+    public ActivityCalendar(final String logical_name, final String calendar_name,
+            final Collection<SeasonProfile> seasonProfileCollection) {
+        super();
+        this.logical_name = logical_name;
+        this.logical_name = calendar_name;
+        this.seasonProfileCollection = seasonProfileCollection;
+    }
+
+    public String getLogicalName() {
+        return this.logical_name;
+    }
+
+    public void setLogicalName(final String logical_name) {
+        this.logical_name = logical_name;
+    }
+
+    public String getCalendarName() {
+        return this.calendar_name;
+    }
+
+    public void setCalendarName(final String calendar_name) {
+        this.calendar_name = calendar_name;
+    }
+
+    public Collection<SeasonProfile> getSeasonProfileCollection() {
+        return this.seasonProfileCollection;
+    }
+
+    public void setSeasonProfileCollection(final Collection<SeasonProfile> seasonProfileCollection) {
+        this.seasonProfileCollection = seasonProfileCollection;
     }
 
     @Override
     public String toString() {
-        return "AlarmNotifications[" + String.valueOf(this.alarmNotifications) + "]";
+        return "ActivityCalendar [logical_name=" + this.logical_name + ", calendar_name=" + this.calendar_name
+                + ", seasonProfileCollection=" + this.seasonProfileCollection + "]";
     }
 
-    public Set<AlarmNotification> getAlarmNotifications() {
-        return Collections.unmodifiableSet(this.alarmNotifications);
+    @Override
+    public int compareTo(final ActivityCalendar o) {
+        // TODO Auto-generated method stub
+        return 0;
     }
+
 }
