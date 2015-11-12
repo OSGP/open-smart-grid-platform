@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -56,10 +57,10 @@ public class SetTariffRequestMessageProcessor extends DeviceRequestMessageProces
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            final String tariff = (String) message.getObject();
+            final ActivityCalendar activityCalendarDto = (ActivityCalendar) message.getObject();
 
             this.configurationService.setTariff(organisationIdentification, deviceIdentification, correlationUid,
-                    tariff, this.responseMessageSender, domain, domainVersion, messageType);
+                    activityCalendarDto, this.responseMessageSender, domain, domainVersion, messageType);
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);

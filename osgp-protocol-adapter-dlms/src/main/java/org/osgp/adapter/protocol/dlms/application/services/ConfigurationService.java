@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
@@ -139,36 +140,44 @@ public class ConfigurationService {
     }
 
     public void setTariff(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String tariff, final DeviceResponseMessageSender responseMessageSender,
-            final String domain, final String domainVersion, final String messageType) {
+            final String correlationUid, final ActivityCalendar activityCalendar,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
 
         LOGGER.info("setTariff called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
         try {
-
-            LOGGER.info("Tariff to set on the device: {}", tariff);
+            LOGGER.info("**************************************");
+            LOGGER.info("**********In protocol adapter*********");
+            LOGGER.info("**************************************");
+            LOGGER.info("Tariff to set on the device: {}", activityCalendar.getLogicalName());
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
             LOGGER.info("device for Tariff is: {}", device);
 
-//            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
-//
-//            try {
-//                final AccessResultCode accessResultCode = this.setTariffCommandExecutor.execute(conn, tariff);
-//                if (AccessResultCode.SUCCESS != accessResultCode) {
-//                    throw new ProtocolAdapterException("AccessResultCode for set tariff was not SUCCESS: "
-//                            + accessResultCode);
-//                }
-//            } finally {
-//                if (conn != null && conn.isConnected()) {
-//                    conn.close();
-//                }
-//            }
-//
-//            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-//                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+            // final ClientConnection conn =
+            // this.dlmsConnectionFactory.getConnection(device);
+            //
+            // try {
+            // final AccessResultCode accessResultCode =
+            // this.setTariffCommandExecutor.execute(conn, tariff);
+            // if (AccessResultCode.SUCCESS != accessResultCode) {
+            // throw new
+            // ProtocolAdapterException("AccessResultCode for set tariff was not SUCCESS: "
+            // + accessResultCode);
+            // }
+            // } finally {
+            // if (conn != null && conn.isConnected()) {
+            // conn.close();
+            // }
+            // }
+            //
+            // this.sendResponseMessage(domain, domainVersion, messageType,
+            // correlationUid, organisationIdentification,
+            // deviceIdentification, ResponseMessageResultType.OK, null,
+            // responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setTariff", e);
