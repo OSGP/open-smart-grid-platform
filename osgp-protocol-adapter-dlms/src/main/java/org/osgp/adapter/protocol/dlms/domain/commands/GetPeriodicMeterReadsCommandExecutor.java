@@ -82,6 +82,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 getProfileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
                         ATTRIBUTE_ID_BUFFER);
                 break;
+            default:
+                throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
 
         if (LOGGER.isDebugEnabled()) {
@@ -103,10 +105,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     + getResultList.size());
         }
 
-        final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer();
-        final List<PeriodicMeterReads> periodicMeterReads = new ArrayList<>();
-        periodicMeterReadsContainer.setPeriodicMeterReads(periodicMeterReads);
-        periodicMeterReadsContainer.setDeviceIdentification(periodicMeterReadsRequest.getDeviceIdentification());
+        final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer(periodicMeterReadsRequest.getDeviceIdentification());
 
         final GetResult getResult = getResultList.get(0);
         final AccessResultCode resultCode = getResult.resultCode();
@@ -144,7 +143,9 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 continue;
             }
 
-            LOGGER.debug("clock: {}", this.dlmsHelperService.getDebugInfo(clock));
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("clock: {}", this.dlmsHelperService.getDebugInfo(clock));
+            }
 
             final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
             if (LOGGER.isDebugEnabled()) {
@@ -185,20 +186,14 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 }
             }
 
-            final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads();
-            nextPeriodicMeterReads.setLogTime(bufferedDateTime.toDate());
-            nextPeriodicMeterReads.setPeriodType(periodType);
-            nextPeriodicMeterReads.setActiveEnergyImportTariffOne((Long) positiveActiveEnergyTariff1.value());
-            if (!interval) {
-                nextPeriodicMeterReads.setActiveEnergyImportTariffTwo((Long) positiveActiveEnergyTariff2
-                        .value());
-            }
-            nextPeriodicMeterReads.setActiveEnergyExportTariffOne((Long) negativeActiveEnergyTariff1.value());
-            if (!interval) {
-                nextPeriodicMeterReads.setActiveEnergyExportTariffTwo((Long) negativeActiveEnergyTariff2
-                        .value());
-            }
-            periodicMeterReads.add(nextPeriodicMeterReads);
+            final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(
+                    bufferedDateTime.toDate(),
+                    (Long) positiveActiveEnergyTariff1.value(),
+                    interval?null:(Long) positiveActiveEnergyTariff2.value(),
+                    (Long) negativeActiveEnergyTariff1.value(),
+                    interval?null:(Long) negativeActiveEnergyTariff2.value(),
+                    periodType);
+            periodicMeterReadsContainer.addPeriodicMeterReads(nextPeriodicMeterReads);
         }
 
         return periodicMeterReadsContainer;
