@@ -14,40 +14,32 @@ public class PeriodicMeterReadsRequestData implements Serializable {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
-    private String deviceIdentification;
-    private PeriodType periodType;
-    private Date beginDate;
-    private Date endDate;
+    private final String deviceIdentification;
+    private final PeriodType periodType;
+    private final Date beginDate;
+    private final Date endDate;
+
+    public PeriodicMeterReadsRequestData(String deviceIdentification, PeriodType periodType, Date beginDate, Date endDate) {
+        this.deviceIdentification = deviceIdentification;
+        this.periodType = periodType;
+        this.beginDate = beginDate;
+        this.endDate = endDate;
+    }
 
     public PeriodType getPeriodType() {
         return this.periodType;
-    }
-
-    public void setPeriodType(final PeriodType periodType) {
-        this.periodType = periodType;
     }
 
     public Date getBeginDate() {
         return this.beginDate;
     }
 
-    public void setBeginDate(final Date beginDate) {
-        this.beginDate = beginDate;
-    }
-
     public Date getEndDate() {
         return this.endDate;
-    }
-
-    public void setEndDate(final Date endDate) {
-        this.endDate = endDate;
     }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
 }
