@@ -234,7 +234,6 @@ public class DeviceManagementService {
             final Integer pageNumber, final DeviceFilter deviceFilter) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.FIND_DEVICES);
-
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
         Sort.Direction sortDir = Sort.Direction.DESC;
         String sortedBy = "creationTime";
