@@ -13,9 +13,6 @@ import java.util.Collection;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayProfileActionType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayProfileActionsType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayType;
@@ -32,15 +29,12 @@ public class ActivityCalendarConverter
         extends
 BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActivityCalendarConverter.class);
-
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar convertTo(
             final ActivityCalendar source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> destinationType) {
 
-        return new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createActivityCalendar();
+        throw new IllegalStateException("convertTo is not supported");
     }
 
     @Override

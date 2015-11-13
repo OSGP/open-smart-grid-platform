@@ -141,8 +141,6 @@ public class SmartMeteringConfigurationEndpoint {
 
         LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
 
-        LOGGER.info("=============> Platform, setAlarmNotifications, call received");
-
         final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
 
         try {
