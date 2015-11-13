@@ -115,9 +115,7 @@ public class WeekProfile implements Comparable<WeekProfile>, Serializable {
     }
 
     @Override
-    public int compareTo(final WeekProfile o) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int compareTo(final WeekProfile other) {
+        return other.week_profile_name.compareTo(this.week_profile_name);
     }
-
 }

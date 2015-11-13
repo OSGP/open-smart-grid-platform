@@ -59,9 +59,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
     }
 
     @Override
-    public int compareTo(final ActivityCalendar o) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int compareTo(final ActivityCalendar other) {
+        return other.logical_name.compareTo(this.logical_name);
     }
-
 }

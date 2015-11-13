@@ -70,9 +70,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
     }
 
     @Override
-    public int compareTo(final SeasonProfile o) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int compareTo(final SeasonProfile other) {
+        return other.season_profile_name.compareTo(this.season_profile_name);
     }
-
 }

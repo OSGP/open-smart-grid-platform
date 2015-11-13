@@ -47,9 +47,7 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
     }
 
     @Override
-    public int compareTo(final DayProfile o) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int compareTo(final DayProfile other) {
+        return other.day_id.compareTo(this.day_id);
     }
-
 }

@@ -72,9 +72,7 @@ public class DayProfileAction implements Comparable<DayProfileAction>, Serializa
     }
 
     @Override
-    public int compareTo(final DayProfileAction o) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int compareTo(final DayProfileAction other) {
+        return other.script_logical_name.compareTo(this.script_logical_name);
     }
-
 }
