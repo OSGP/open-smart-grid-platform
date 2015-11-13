@@ -25,7 +25,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsReque
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
+CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -70,27 +70,25 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         GetRequestParameter getProfileBuffer = null;
 
         switch (periodType) {
-            case INTERVAL:
-                getProfileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING,
-                        ATTRIBUTE_ID_BUFFER);
-                break;
-            case DAILY:
-                getProfileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING,
-                        ATTRIBUTE_ID_BUFFER);
-                break;
-            case MONTHLY:
-                getProfileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
-                        ATTRIBUTE_ID_BUFFER);
-                break;
-            default:
-                throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
+        case INTERVAL:
+            getProfileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING,
+                    ATTRIBUTE_ID_BUFFER);
+            break;
+        case DAILY:
+            getProfileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING,
+                    ATTRIBUTE_ID_BUFFER);
+            break;
+        case MONTHLY:
+            getProfileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
+                    ATTRIBUTE_ID_BUFFER);
+            break;
+        default:
+            throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(
-                    "Retrieving current billing period and profiles for class id: {}, obis code: {}, attribute id: {}",
-                    getProfileBuffer.classId(), getProfileBuffer.obisCode(), getProfileBuffer.attributeId());
-        }
+        LOGGER.debug(
+                "Retrieving current billing period and profiles for class id: {}, obis code: {}, attribute id: {}",
+                getProfileBuffer.classId(), getProfileBuffer.obisCode(), getProfileBuffer.attributeId());
 
         // we retrieve it all and filter results based on request data later on
         final List<GetResult> getResultList = conn.get(getProfileBuffer);
@@ -111,9 +109,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         final AccessResultCode resultCode = getResult.resultCode();
         LOGGER.info("AccessResultCode: {}({})", resultCode.name(), resultCode.value());
         final DataObject resultData = getResult.resultData();
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(this.dlmsHelperService.getDebugInfo(resultData));
-        }
+        LOGGER.debug(this.dlmsHelperService.getDebugInfo(resultData));
         final List<DataObject> bufferedObjectsList = resultData.value();
 
         final int beginYear = beginDateTime.getYear();
@@ -136,64 +132,49 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     && endMonthOfYear >= bufferedDateTime.getMonthOfYear()
                     && endDayOfMonth >= bufferedDateTime.getDayOfMonth();
 
-            if (useBufferedObject) {
-                LOGGER.debug("Using object from capture buffer, because the date matches the given period.");
-            } else {
-                LOGGER.debug("Not using an object from capture buffer, because the date does not match the given period.");
-                continue;
-            }
+                    if (useBufferedObject) {
+                        LOGGER.debug("Using object from capture buffer, because the date matches the given period.");
+                    } else {
+                        LOGGER.debug("Not using an object from capture buffer, because the date does not match the given period.");
+                        continue;
+                    }
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("clock: {}", this.dlmsHelperService.getDebugInfo(clock));
-            }
+                    LOGGER.debug("clock: {}", this.dlmsHelperService.getDebugInfo(clock));
 
-            final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Skipping amrStatus ({}) and M-Bus values.", this.dlmsHelperService.getDebugInfo(amrStatus));
-            }
-            /*
+                    final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
+                    LOGGER.debug("Skipping amrStatus ({}) and M-Bus values.", this.dlmsHelperService.getDebugInfo(amrStatus));
+                    /*
                      * for DAILY and MONTHLY we have 4 entries (2 pos, 2 neg), for
                      * INTERVAL only 2 (1 pos, 1 neg)
-             */
-            final boolean interval = periodType == PeriodType.INTERVAL;
+                     */
+                    final boolean interval = periodType == PeriodType.INTERVAL;
 
-            final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_POS
-                    : BUFFER_INDEX_A_POS_RATE_1);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("positiveActiveEnergyTariff1: {}",
-                        this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
-            }
-            final DataObject positiveActiveEnergyTariff2 = interval ? null : bufferedObjects
-                    .get(BUFFER_INDEX_A_POS_RATE_2);
-            if (positiveActiveEnergyTariff2 != null) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("positiveActiveEnergyTariff2: {}",
-                            this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff2));
-                }
-            }
-            final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_NEG
-                    : BUFFER_INDEX_A_NEG_RATE_1);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("negativeActiveEnergyTariff1: {}",
-                        this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
-            }
-            final DataObject negativeActiveEnergyTariff2 = interval ? null : bufferedObjects
-                    .get(BUFFER_INDEX_A_NEG_RATE_2);
-            if (negativeActiveEnergyTariff2 != null) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("negativeActiveEnergyTariff2: {}",
-                            this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
-                }
-            }
+                    final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_POS
+                            : BUFFER_INDEX_A_POS_RATE_1);
+                    LOGGER.debug("positiveActiveEnergyTariff1: {}",
+                            this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
+                    final DataObject positiveActiveEnergyTariff2 = interval ? null : bufferedObjects
+                            .get(BUFFER_INDEX_A_POS_RATE_2);
+                    if (positiveActiveEnergyTariff2 != null) {
+                        LOGGER.debug("positiveActiveEnergyTariff2: {}",
+                                this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff2));
+                    }
+                    final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_NEG
+                            : BUFFER_INDEX_A_NEG_RATE_1);
+                    LOGGER.debug("negativeActiveEnergyTariff1: {}",
+                            this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
+                    final DataObject negativeActiveEnergyTariff2 = interval ? null : bufferedObjects
+                            .get(BUFFER_INDEX_A_NEG_RATE_2);
+                    if (negativeActiveEnergyTariff2 != null) {
+                        LOGGER.debug("negativeActiveEnergyTariff2: {}",
+                                this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
+                    }
 
-            final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(
-                    bufferedDateTime.toDate(),
-                    (Long) positiveActiveEnergyTariff1.value(),
-                    interval?null:(Long) positiveActiveEnergyTariff2.value(),
-                    (Long) negativeActiveEnergyTariff1.value(),
-                    interval?null:(Long) negativeActiveEnergyTariff2.value(),
-                    periodType);
-            periodicMeterReads.add(nextPeriodicMeterReads);
+                    final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
+                            (Long) positiveActiveEnergyTariff1.value(), interval ? null
+                                    : (Long) positiveActiveEnergyTariff2.value(), (Long) negativeActiveEnergyTariff1.value(),
+                                    interval ? null : (Long) negativeActiveEnergyTariff2.value(), periodType);
+                    periodicMeterReads.add(nextPeriodicMeterReads);
         }
 
         return new PeriodicMeterReadsContainer(periodicMeterReadsRequest.getDeviceIdentification(), periodicMeterReads);
