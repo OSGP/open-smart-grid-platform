@@ -10,69 +10,39 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
     private static final long serialVersionUID = -9110599718005128216L;
 
-    private String season_profile_name;
+    private String seasonProfileName;
 
-    private Date season_start;
+    private Date seasonStart;
 
     private WeekProfile weekProfile;
 
-    private ActivityCalendar activityCalendar;
-
-    public SeasonProfile() {
-
-    }
-
-    public SeasonProfile(final String season_profile_name, final Date season_start, final WeekProfile weekProfile,
-            final ActivityCalendar activityCalendar) {
+    public SeasonProfile(final String seasonProfileName, final Date seasonStart, final WeekProfile weekProfile) {
         super();
-        this.season_profile_name = season_profile_name;
-        this.season_start = season_start;
+        this.seasonProfileName = seasonProfileName;
+        this.seasonStart = seasonStart;
         this.weekProfile = weekProfile;
-        this.activityCalendar = activityCalendar;
     }
 
     public String getSeasonProfileName() {
-        return this.season_profile_name;
-    }
-
-    public void setSeasonProfileName(final String season_profile_name) {
-        this.season_profile_name = season_profile_name;
+        return this.seasonProfileName;
     }
 
     public Date getSeasonStart() {
-        return this.season_start;
-    }
-
-    public void setSeasonStart(final Date season_start) {
-        this.season_start = season_start;
+        return this.seasonStart;
     }
 
     public WeekProfile getWeekProfile() {
         return this.weekProfile;
     }
 
-    public void setWeekProfile(final WeekProfile weekProfile) {
-        this.weekProfile = weekProfile;
-    }
-
-    public ActivityCalendar getActivityCalendar() {
-        return this.activityCalendar;
-    }
-
-    public void setActivityCalendar(final ActivityCalendar activityCalendar) {
-        this.activityCalendar = activityCalendar;
-    }
-
     @Override
     public String toString() {
-        return "SeasonProfile [season_profile_name=" + this.season_profile_name + ", season_start=" + this.season_start
-                + ", weekProfile=" + this.weekProfile + ", activityCalendar=" + this.activityCalendar + "]";
+        return "SeasonProfile [seasonProfileName=" + this.seasonProfileName + ", seasonStart=" + this.seasonStart
+                + ", weekProfile=" + this.weekProfile + "]";
     }
 
     @Override
     public int compareTo(final SeasonProfile o) {
-        // TODO Auto-generated method stub
-        return 0;
+        return o.seasonProfileName.compareTo(this.seasonProfileName);
     }
-
 }

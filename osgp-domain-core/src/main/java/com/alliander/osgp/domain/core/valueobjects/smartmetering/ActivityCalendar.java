@@ -10,58 +10,40 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     private static final long serialVersionUID = -8278955482889960359L;
 
-    private String logical_name;
+    private String logicalName;
 
-    private String calendar_name;
+    private String calendarName;
 
     private Collection<SeasonProfile> seasonProfileCollection;
 
-    public ActivityCalendar() {
-
-    }
-
-    public ActivityCalendar(final String logical_name, final String calendar_name,
+    public ActivityCalendar(final String logicalName, final String calendarName,
             final Collection<SeasonProfile> seasonProfileCollection) {
         super();
-        this.logical_name = logical_name;
-        this.logical_name = calendar_name;
+        this.logicalName = logicalName;
+        this.calendarName = calendarName;
         this.seasonProfileCollection = seasonProfileCollection;
     }
 
     public String getLogicalName() {
-        return this.logical_name;
-    }
-
-    public void setLogicalName(final String logical_name) {
-        this.logical_name = logical_name;
+        return this.logicalName;
     }
 
     public String getCalendarName() {
-        return this.calendar_name;
-    }
-
-    public void setCalendarName(final String calendar_name) {
-        this.calendar_name = calendar_name;
+        return this.calendarName;
     }
 
     public Collection<SeasonProfile> getSeasonProfileCollection() {
         return this.seasonProfileCollection;
     }
 
-    public void setSeasonProfileCollection(final Collection<SeasonProfile> seasonProfileCollection) {
-        this.seasonProfileCollection = seasonProfileCollection;
-    }
-
     @Override
     public String toString() {
-        return "ActivityCalendar [logical_name=" + this.logical_name + ", calendar_name=" + this.calendar_name
+        return "ActivityCalendar [logicalName=" + this.logicalName + ", calendarName=" + this.calendarName
                 + ", seasonProfileCollection=" + this.seasonProfileCollection + "]";
     }
 
     @Override
     public int compareTo(final ActivityCalendar o) {
-        // TODO Auto-generated method stub
-        return 0;
+        return o.logicalName.compareTo(this.logicalName);
     }
-
 }

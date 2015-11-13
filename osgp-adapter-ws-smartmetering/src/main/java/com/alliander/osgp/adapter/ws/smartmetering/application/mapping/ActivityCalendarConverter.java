@@ -29,8 +29,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter
-extends
-        BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
+        extends
+BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActivityCalendarConverter.class);
 
@@ -39,7 +39,8 @@ extends
             final ActivityCalendar source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> destinationType) {
 
-        return new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar();
+        return new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+                .createActivityCalendar();
     }
 
     @Override
@@ -50,13 +51,8 @@ extends
             return null;
         }
 
-        final ActivityCalendar activityCalendar = new ActivityCalendar();
-
-        activityCalendar.setCalendarName(source.getCalendarName());
-        activityCalendar.setLogicalName(source.getLogicalName());
-        activityCalendar.setSeasonProfileCollection(this.processSeasonProfile(source.getSeasonProfile()));
-
-        return activityCalendar;
+        return new ActivityCalendar(source.getLogicalName(), source.getCalendarName(), this.processSeasonProfile(source
+                .getSeasonProfile()));
     }
 
     private Collection<SeasonProfile> processSeasonProfile(final SeasonsType seasonsType) {
@@ -70,34 +66,20 @@ extends
     }
 
     private SeasonProfile processSeasonType(final SeasonType st) {
-        final SeasonProfile sp = new SeasonProfile();
-        sp.setSeasonProfileName(st.getSeasonProfileName());
-        if (st.getSeasonStart() != null) {
-            sp.setSeasonStart(st.getSeasonStart().toGregorianCalendar().getTime());
-        }
-        sp.setWeekProfile(this.processWeekProfile(st.getWeekProfile()));
-        return sp;
+        return new SeasonProfile(st.getSeasonProfileName(), st.getSeasonStart().toGregorianCalendar().getTime(),
+                this.processWeekProfile(st.getWeekProfile()));
     }
 
     private WeekProfile processWeekProfile(final WeekType weekProfile) {
-        final WeekProfile wp = new WeekProfile();
-        wp.setMonday(this.processDayProfile(weekProfile.getMonday()));
-        wp.setTuesday(this.processDayProfile(weekProfile.getTuesday()));
-        wp.setWednesday(this.processDayProfile(weekProfile.getWednesday()));
-        wp.setThursday(this.processDayProfile(weekProfile.getThursday()));
-        wp.setFriday(this.processDayProfile(weekProfile.getFriday()));
-        wp.setSaturday(this.processDayProfile(weekProfile.getSaturday()));
-        wp.setSunday(this.processDayProfile(weekProfile.getSunday()));
-        return wp;
+        return new WeekProfile(weekProfile.getWeekProfileName(), this.processDayProfile(weekProfile.getMonday()),
+                this.processDayProfile(weekProfile.getTuesday()), this.processDayProfile(weekProfile.getWednesday()),
+                this.processDayProfile(weekProfile.getThursday()), this.processDayProfile(weekProfile.getFriday()),
+                this.processDayProfile(weekProfile.getSaturday()), this.processDayProfile(weekProfile.getSunday()));
     }
 
     private DayProfile processDayProfile(final DayType day) {
-        final DayProfile dp = new DayProfile();
-        if (day.getDayId() != null) {
-            dp.setDayId(day.getDayId().intValue());
-        }
-        dp.setDayProfileActionCollection(this.processDayProfileAction(day.getDaySchedule()));
-        return dp;
+        return new DayProfile((day.getDayId() != null ? day.getDayId().intValue() : null),
+                this.processDayProfileAction(day.getDaySchedule()));
     }
 
     private Collection<DayProfileAction> processDayProfileAction(final DayProfileActionsType dayScheduleActionsType) {
@@ -111,13 +93,9 @@ extends
     }
 
     private DayProfileAction processDayProfileActionType(final DayProfileActionType dpat) {
-        final DayProfileAction dayProfileAction = new DayProfileAction();
+        return new DayProfileAction(dpat.getScriptLogicalName(), (dpat.getScriptSelector() != null ? dpat
+                .getScriptSelector().intValue() : null), (dpat.getStartTime() != null ? dpat.getStartTime()
+                .toGregorianCalendar().getTime() : null));
 
-        dayProfileAction.setScript_selector(dpat.getScriptSelector().intValue());
-        dayProfileAction.setScriptLogicalName(dpat.getScriptLogicalName());
-        if (dpat.getStartTime() != null) {
-            dayProfileAction.setStart_time(dpat.getStartTime().toGregorianCalendar().getTime());
-        }
-        return dayProfileAction;
     }
 }

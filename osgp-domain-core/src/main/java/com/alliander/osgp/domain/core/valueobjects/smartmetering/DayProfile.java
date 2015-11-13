@@ -10,46 +10,32 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
 
     private static final long serialVersionUID = 3513563551917685789L;
 
-    private Integer day_id;
+    private Integer dayId;
 
     private Collection<DayProfileAction> dayProfileActionCollection;
 
-    public DayProfile() {
-
-    }
-
-    public DayProfile(final Integer day_id, final Collection<DayProfileAction> dayProfileActionCollection) {
+    public DayProfile(final Integer dayId, final Collection<DayProfileAction> dayProfileActionCollection) {
         super();
-        this.day_id = day_id;
+        this.dayId = dayId;
         this.dayProfileActionCollection = dayProfileActionCollection;
     }
 
     public Integer getDayId() {
-        return this.day_id;
-    }
-
-    public void setDayId(final Integer day_id) {
-        this.day_id = day_id;
+        return this.dayId;
     }
 
     public Collection<DayProfileAction> getDayProfileActionCollection() {
         return this.dayProfileActionCollection;
     }
 
-    public void setDayProfileActionCollection(final Collection<DayProfileAction> dayProfileActionCollection) {
-        this.dayProfileActionCollection = dayProfileActionCollection;
-    }
-
     @Override
     public String toString() {
-        return "DayProfile [day_id=" + this.day_id + ", dayProfileActionCollection=" + this.dayProfileActionCollection
+        return "DayProfile [dayId=" + this.dayId + ", dayProfileActionCollection=" + this.dayProfileActionCollection
                 + "]";
     }
 
     @Override
     public int compareTo(final DayProfile o) {
-        // TODO Auto-generated method stub
-        return 0;
+        return o.dayId.compareTo(this.dayId);
     }
-
 }

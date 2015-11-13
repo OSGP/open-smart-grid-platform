@@ -25,13 +25,7 @@ public class ActivityCalendarConverter extends
     @Override
     public ActivityCalendar convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar source,
             final Type<ActivityCalendar> destinationType) {
-        if (source == null) {
-            return null;
-        }
-
-        final ActivityCalendar activityCalendar = new ActivityCalendar();
-
-        return activityCalendar;
+        return null;
     }
 
     @Override
@@ -42,13 +36,8 @@ public class ActivityCalendarConverter extends
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendar = new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar();
-
-        activityCalendar.setCalendarName(source.getCalendarName());
-        activityCalendar.setLogicalName(source.getLogicalName());
-        activityCalendar.setSeasonProfileCollection(this.processSeasonProfile(source.getSeasonProfileCollection()));
-
-        return activityCalendar;
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(source.getLogicalName(),
+                source.getCalendarName(), this.processSeasonProfile(source.getSeasonProfileCollection()));
     }
 
     private Collection<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> processSeasonProfile(
@@ -63,35 +52,22 @@ public class ActivityCalendarConverter extends
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile processSeasonProfile(final SeasonProfile sp) {
-        final com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile spDto = new com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile();
-        spDto.setSeasonProfileName(sp.getSeasonProfileName());
-        if (sp.getSeasonStart() != null) {
-            spDto.setSeasonStart(sp.getSeasonStart());
-        }
-        spDto.setWeekProfile(this.processWeekProfile(sp.getWeekProfile()));
-        return spDto;
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile(sp.getSeasonProfileName(),
+                sp.getSeasonStart(), this.processWeekProfile(sp.getWeekProfile()));
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile processWeekProfile(
             final WeekProfile weekProfile) {
-        final com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile wp = new com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile();
-        wp.setMonday(this.processDayProfile(weekProfile.getMonday()));
-        wp.setTuesday(this.processDayProfile(weekProfile.getTuesday()));
-        wp.setWednesday(this.processDayProfile(weekProfile.getWednesday()));
-        wp.setThursday(this.processDayProfile(weekProfile.getThursday()));
-        wp.setFriday(this.processDayProfile(weekProfile.getFriday()));
-        wp.setSaturday(this.processDayProfile(weekProfile.getSaturday()));
-        wp.setSunday(this.processDayProfile(weekProfile.getSunday()));
-        return wp;
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile(weekProfile.getWeekProfileName(),
+                this.processDayProfile(weekProfile.getMonday()), this.processDayProfile(weekProfile.getTuesday()),
+                this.processDayProfile(weekProfile.getWednesday()), this.processDayProfile(weekProfile.getThursday()),
+                this.processDayProfile(weekProfile.getFriday()), this.processDayProfile(weekProfile.getSaturday()),
+                this.processDayProfile(weekProfile.getSunday()));
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile processDayProfile(final DayProfile dp) {
-        final com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile dpDto = new com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile();
-        if (dp.getDayId() != null) {
-            dpDto.setDayId(dp.getDayId().intValue());
-        }
-        dpDto.setDayProfileActionCollection(this.processDayProfileAction(dp.getDayProfileActionCollection()));
-        return dpDto;
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile(dp.getDayId(),
+                this.processDayProfileAction(dp.getDayProfileActionCollection()));
     }
 
     private Collection<com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction> processDayProfileAction(
@@ -107,11 +83,8 @@ public class ActivityCalendarConverter extends
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction processDayProfileActionType(
             final DayProfileAction dpat) {
-        final com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction dpaDto = new com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction();
 
-        dpaDto.setScript_selector(dpat.getScript_selector());
-        dpaDto.setScriptLogicalName(dpat.getScriptLogicalName());
-        dpaDto.setStart_time(dpat.getStart_time());
-        return dpaDto;
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction(dpat.getScriptLogicalName(),
+                dpat.getScriptSelector(), dpat.getStartTime());
     }
 }
