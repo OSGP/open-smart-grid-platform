@@ -35,16 +35,13 @@ public class SetTariffRequestMessageProcessor extends WebServiceRequestMessagePr
     @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
 
-    /**
-     * @param deviceFunction
-     */
     protected SetTariffRequestMessageProcessor() {
         super(DeviceFunction.SET_TARIFF);
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
