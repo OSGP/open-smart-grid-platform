@@ -14,8 +14,7 @@ public class SetTariffCommandExecutor implements CommandExecutor<String> {
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final String tariff) throws IOException {
-        this.logger.debug(String.format("====================> SetTariffCommandExecutor.execute <%s>called!! :-)",
-                tariff));
+        this.logger.debug(String.format("SetTariffCommandExecutor.execute <%s>called!! :-)", tariff));
         return AccessResultCode.SUCCESS;
     }
 }
