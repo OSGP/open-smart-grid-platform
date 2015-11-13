@@ -123,7 +123,7 @@ public class SmartMeteringConfigurationEndpoint {
 
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
+            LOGGER.error("Exception: {} while setting tariffs on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
