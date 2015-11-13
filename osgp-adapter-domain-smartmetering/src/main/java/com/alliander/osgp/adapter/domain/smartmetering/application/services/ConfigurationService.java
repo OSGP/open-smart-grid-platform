@@ -192,7 +192,7 @@ public class ConfigurationService {
 
         ResponseMessageResultType result = responseMessageResultType;
         if (exception != null) {
-            LOGGER.error("Set Alarm Notifications Response not ok. Unexpected Exception", exception);
+            LOGGER.error("Set Tariff Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
