@@ -41,6 +41,15 @@ As an operator I want to create a new organisation
 !2 Scenario: Operator can query all organisations on the platform
 
 -|script|
-|given|two organisations                            |
-|when |the operator views the list of organisations |
-|then |a list with the two organisations is returned|
+|given|two organisations                                   |
+|and  |an operator part of the grid management organisation|
+|when |the grid managment organisation operator views the list of organisations        |
+|then |a list with the two organisations is returned       |
+
+!2 Scenario: Operator of a municipality organisation can query municipality organisation on the platform
+
+-|script|
+|given|two organisations                                          |
+|and  |an operator part of a municipality organisation            |
+|when |the operator views the list of organisations               |
+|then |a list containing the municipality organisation is returned|

@@ -49,6 +49,7 @@ public class CreateNewOrganisationSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateNewOrganisationSteps.class);
 
     private static final String ORGANISATION_ROOT = "Heerlen";
+    private static final String GRID_MANAGMENT_ORGANISATION = "LianderNetManagement";
     private static final String ORGANISATION_IDENTIFICATION = "GemeenteArnhem";
     private static final String ORGANISATION_NAME = "Gemeente Arnhem";
     private static final String ORGANISATION_PREFIX = "ORG";
@@ -148,6 +149,16 @@ public class CreateNewOrganisationSteps {
         this.organisations.add(organisation);
     }
 
+    @DomainStep("an operator part of the grid management organisation")
+    public void anOperatorPartOfTheGridManagementOrganisation() {
+        // nothing special needed here, organisations list index 1
+    }
+
+    @DomainStep("an operator part of a municipality organisation")
+    public void givenAnOperatorPartOfMunicipalityOrganisation() {
+        // nothing special needed here, organisations list index 0
+    }
+
     @DomainStep("creating a new organization")
     public void whenCreatingANewOrganization() throws Throwable {
 
@@ -223,6 +234,27 @@ public class CreateNewOrganisationSteps {
         }
     }
 
+    @DomainStep("the grid managment organisation operator views the list of organisations")
+    public void whenTheGridManagementOrganisationOperatorViewsTheListOfOrganisations() throws Throwable {
+
+        LOGGER.info("WHEN: \"the operator views the list of organisations\".");
+
+        // Expect the organisation being search, and found.
+        MockitoAnnotations.initMocks(this);
+        // Make sure that the adding organisation is authorized.
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(GRID_MANAGMENT_ORGANISATION)).thenReturn(
+                new Organisation(GRID_MANAGMENT_ORGANISATION, GRID_MANAGMENT_ORGANISATION, "LIA",
+                        PlatformFunctionGroup.ADMIN));
+
+        when(this.organisationRepositoryMock.findAll()).thenReturn(this.organisations);
+
+        final FindAllOrganisationsRequest request = new FindAllOrganisationsRequest();
+
+        // Find all organisations.
+        this.responseList = this.coreDeviceManagementEndpoint
+                .findAllOrganisations(GRID_MANAGMENT_ORGANISATION, request);
+    }
+
     @DomainStep("the operator views the list of organisations")
     public void whenTheOperatorViewsTheListOfOrganisations() throws Throwable {
 
@@ -236,7 +268,8 @@ public class CreateNewOrganisationSteps {
                         new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
                                 PlatformFunctionGroup.ADMIN));
 
-        when(this.organisationRepositoryMock.findAll()).thenReturn(this.organisations);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
+                this.organisations.get(0));
 
         final FindAllOrganisationsRequest request = new FindAllOrganisationsRequest();
 
@@ -287,7 +320,7 @@ public class CreateNewOrganisationSteps {
 
         // Verify that the findByOrganisationIdentification() method is
         // executed.
-        verify(this.organisationRepositoryMock, times(1)).findByOrganisationIdentification(ORGANISATION_ROOT);
+        verify(this.organisationRepositoryMock, times(1)).findAll();
 
         // Verify that the requested organisation exists.
         for (final Organisation organisation : this.organisations) {
@@ -299,7 +332,7 @@ public class CreateNewOrganisationSteps {
                     organisationFoundInResultList = true;
                     if (organisation.getName().equals(resultOrganisation.getName())
                             && organisation.getFunctionGroup().ordinal() == resultOrganisation.getFunctionGroup()
-                                    .ordinal()) {
+                            .ordinal()) {
                         // Do nothing, oke
                     } else {
                         return false;
@@ -311,8 +344,40 @@ public class CreateNewOrganisationSteps {
                 return false;
             }
         }
-        // And that the list is returned.
-        return this.responseList.getOrganisations().size() == this.organisations.size();
+        return true;
+    }
+
+    @DomainStep("a list containing the municipality organisation is returned")
+    public boolean thenAListContainingTheMunicipalityOrganisationIsReturned() {
+
+        LOGGER.info("THEN: \"a list containing the municipality organisation is returned\".");
+
+        // Verify that the findByOrganisationIdentification() method is
+        // executed.
+        verify(this.organisationRepositoryMock, times(2)).findByOrganisationIdentification(ORGANISATION_ROOT);
+
+        // Verify that the requested organisation exists.
+        final Organisation organisation = this.organisations.get(0);
+
+        boolean organisationFoundInResultList = false;
+        for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation resultOrganisation : this.responseList
+                .getOrganisations()) {
+            if (organisation.getOrganisationIdentification().equals(resultOrganisation.getOrganisationIdentification())) {
+                organisationFoundInResultList = true;
+                if (organisation.getName().equals(resultOrganisation.getName())
+                        && organisation.getFunctionGroup().ordinal() == resultOrganisation.getFunctionGroup().ordinal()) {
+                    // Do nothing, oke
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        if (!organisationFoundInResultList) {
+            return false;
+        }
+
+        return true;
     }
 
     @DomainStep("the operator receives feedback about the addition")
