@@ -8,7 +8,8 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -49,19 +50,19 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
                 .getSeasonProfile()));
     }
 
-    private Collection<SeasonProfile> processSeasonProfile(final SeasonsType seasonsType) {
-        final Collection<SeasonProfile> spl = new ArrayList<>();
+    private List<SeasonProfile> processSeasonProfile(final SeasonsType seasonsType) {
+        final List<SeasonProfile> spl = new ArrayList<>();
 
         for (final SeasonType st : seasonsType.getSeason()) {
             spl.add(this.processSeasonType(st));
         }
 
-        return spl;
+        return Collections.unmodifiableList(spl);
     }
 
     private SeasonProfile processSeasonType(final SeasonType st) {
-        return new SeasonProfile(st.getSeasonProfileName(), st.getSeasonStart().toGregorianCalendar().getTime(),
-                this.processWeekProfile(st.getWeekProfile()));
+        return new SeasonProfile(st.getSeasonProfileName(), st.getSeasonStart() != null ? st.getSeasonStart()
+                .toGregorianCalendar().getTime() : null, this.processWeekProfile(st.getWeekProfile()));
     }
 
     private WeekProfile processWeekProfile(final WeekType weekProfile) {
@@ -76,14 +77,14 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
                 this.processDayProfileAction(day.getDaySchedule()));
     }
 
-    private Collection<DayProfileAction> processDayProfileAction(final DayProfileActionsType dayScheduleActionsType) {
-        final Collection<DayProfileAction> dayProfileActionList = new ArrayList<>();
+    private List<DayProfileAction> processDayProfileAction(final DayProfileActionsType dayScheduleActionsType) {
+        final List<DayProfileAction> dayProfileActionList = new ArrayList<>();
 
         for (final DayProfileActionType dpat : dayScheduleActionsType.getDayProfileAction()) {
             dayProfileActionList.add(this.processDayProfileActionType(dpat));
         }
 
-        return dayProfileActionList;
+        return Collections.unmodifiableList(dayProfileActionList);
     }
 
     private DayProfileAction processDayProfileActionType(final DayProfileActionType dpat) {

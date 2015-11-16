@@ -45,4 +45,50 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
     public int compareTo(final SeasonProfile o) {
         return o.seasonProfileName.compareTo(this.seasonProfileName);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.seasonProfileName == null) ? 0 : this.seasonProfileName.hashCode());
+        result = prime * result + ((this.seasonStart == null) ? 0 : this.seasonStart.hashCode());
+        result = prime * result + ((this.weekProfile == null) ? 0 : this.weekProfile.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final SeasonProfile other = (SeasonProfile) obj;
+        if (this.seasonProfileName == null) {
+            if (other.seasonProfileName != null) {
+                return false;
+            }
+        } else if (!this.seasonProfileName.equals(other.seasonProfileName)) {
+            return false;
+        }
+        if (this.seasonStart == null) {
+            if (other.seasonStart != null) {
+                return false;
+            }
+        } else if (!this.seasonStart.equals(other.seasonStart)) {
+            return false;
+        }
+        if (this.weekProfile == null) {
+            if (other.weekProfile != null) {
+                return false;
+            }
+        } else if (!this.weekProfile.equals(other.weekProfile)) {
+            return false;
+        }
+        return true;
+    }
 }

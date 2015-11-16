@@ -8,7 +8,8 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
@@ -20,7 +21,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar, ActivityCalendar> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar, ActivityCalendar> {
 
     @Override
     public ActivityCalendar convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar source,
@@ -37,18 +38,18 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Activit
         }
 
         return new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(source.getLogicalName(),
-                source.getCalendarName(), this.processSeasonProfile(source.getSeasonProfileCollection()));
+                source.getCalendarName(), this.processSeasonProfile(source.getSeasonProfileList()));
     }
 
-    private Collection<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> processSeasonProfile(
-            final Collection<SeasonProfile> seasonProfiles) {
-        final Collection<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> spl = new ArrayList<>();
+    private List<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> processSeasonProfile(
+            final List<SeasonProfile> seasonProfiles) {
+        final List<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> spl = new ArrayList<>();
 
         for (final SeasonProfile sp : seasonProfiles) {
             spl.add(this.processSeasonProfile(sp));
         }
 
-        return spl;
+        return Collections.unmodifiableList(spl);
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile processSeasonProfile(final SeasonProfile sp) {
@@ -67,18 +68,17 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Activit
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile processDayProfile(final DayProfile dp) {
         return new com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile(dp.getDayId(),
-                this.processDayProfileAction(dp.getDayProfileActionCollection()));
+                this.processDayProfileAction(dp.getDayProfileActionList()));
     }
 
-    private Collection<com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction> processDayProfileAction(
-            final Collection<DayProfileAction> dpas) {
-        final Collection<com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction> dpaDto = new ArrayList<>();
+    private List<com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction> processDayProfileAction(
+            final List<DayProfileAction> dpas) {
+        final List<com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction> dpaDto = new ArrayList<>();
 
         for (final DayProfileAction dpat : dpas) {
             dpaDto.add(this.processDayProfileActionType(dpat));
         }
-
-        return dpaDto;
+        return Collections.unmodifiableList(dpaDto);
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction processDayProfileActionType(
