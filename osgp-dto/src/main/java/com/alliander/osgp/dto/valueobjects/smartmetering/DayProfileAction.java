@@ -45,4 +45,50 @@ public class DayProfileAction implements Comparable<DayProfileAction>, Serializa
     public int compareTo(final DayProfileAction other) {
         return other.scriptLogicalName.compareTo(this.scriptLogicalName);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.scriptLogicalName == null) ? 0 : this.scriptLogicalName.hashCode());
+        result = prime * result + ((this.scriptSelector == null) ? 0 : this.scriptSelector.hashCode());
+        result = prime * result + ((this.startTime == null) ? 0 : this.startTime.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final DayProfileAction other = (DayProfileAction) obj;
+        if (this.scriptLogicalName == null) {
+            if (other.scriptLogicalName != null) {
+                return false;
+            }
+        } else if (!this.scriptLogicalName.equals(other.scriptLogicalName)) {
+            return false;
+        }
+        if (this.scriptSelector == null) {
+            if (other.scriptSelector != null) {
+                return false;
+            }
+        } else if (!this.scriptSelector.equals(other.scriptSelector)) {
+            return false;
+        }
+        if (this.startTime == null) {
+            if (other.startTime != null) {
+                return false;
+            }
+        } else if (!this.startTime.equals(other.startTime)) {
+            return false;
+        }
+        return true;
+    }
 }
