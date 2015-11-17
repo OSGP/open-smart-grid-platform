@@ -19,7 +19,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
     public SeasonProfile(final String seasonProfileName, final Date seasonStart, final WeekProfile weekProfile) {
         super();
         this.seasonProfileName = seasonProfileName;
-        this.seasonStart = seasonStart;
+        this.seasonStart = new Date(seasonStart.getTime());
         this.weekProfile = weekProfile;
     }
 
@@ -28,7 +28,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
     }
 
     public Date getSeasonStart() {
-        return this.seasonStart;
+        return new Date(this.seasonStart.getTime());
     }
 
     public WeekProfile getWeekProfile() {
