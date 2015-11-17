@@ -6,6 +6,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializable {
@@ -35,7 +36,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
     }
 
     public List<SeasonProfile> getSeasonProfileList() {
-        return this.seasonProfileList;
+        return Collections.unmodifiableList(this.seasonProfileList);
     }
 
     @Override

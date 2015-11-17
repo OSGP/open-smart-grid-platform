@@ -4,6 +4,8 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DayProfile implements Comparable<DayProfile>, Serializable {
@@ -17,7 +19,7 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
     public DayProfile(final Integer dayId, final List<DayProfileAction> dayProfileActionList) {
         super();
         this.dayId = dayId;
-        this.dayProfileActionList = dayProfileActionList;
+        this.dayProfileActionList = new ArrayList<DayProfileAction>(dayProfileActionList);
     }
 
     public Integer getDayId() {
@@ -25,7 +27,7 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
     }
 
     public List<DayProfileAction> getDayProfileActionList() {
-        return this.dayProfileActionList;
+        return Collections.unmodifiableList(this.dayProfileActionList);
     }
 
     @Override
