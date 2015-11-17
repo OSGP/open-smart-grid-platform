@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -57,7 +56,7 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
             spl.add(this.processSeasonType(st));
         }
 
-        return Collections.unmodifiableList(spl);
+        return spl;
     }
 
     private SeasonProfile processSeasonType(final SeasonType st) {
@@ -84,7 +83,7 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
             dayProfileActionList.add(this.processDayProfileActionType(dpat));
         }
 
-        return Collections.unmodifiableList(dayProfileActionList);
+        return dayProfileActionList;
     }
 
     private DayProfileAction processDayProfileActionType(final DayProfileActionType dpat) {

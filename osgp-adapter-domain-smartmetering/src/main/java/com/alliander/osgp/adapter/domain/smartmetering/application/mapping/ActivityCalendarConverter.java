@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -49,7 +48,7 @@ public class ActivityCalendarConverter extends
             spl.add(this.processSeasonProfile(sp));
         }
 
-        return Collections.unmodifiableList(spl);
+        return spl;
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile processSeasonProfile(final SeasonProfile sp) {
@@ -78,7 +77,7 @@ public class ActivityCalendarConverter extends
         for (final DayProfileAction dpat : dpas) {
             dpaDto.add(this.processDayProfileActionType(dpat));
         }
-        return Collections.unmodifiableList(dpaDto);
+        return dpaDto;
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction processDayProfileActionType(
