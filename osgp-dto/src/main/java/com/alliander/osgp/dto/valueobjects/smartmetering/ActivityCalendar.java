@@ -4,6 +4,8 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializable {
@@ -21,7 +23,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         super();
         this.logicalName = logicalName;
         this.calendarName = calendarName;
-        this.seasonProfileList = seasonProfileList;
+        this.seasonProfileList = new ArrayList<SeasonProfile>(seasonProfileList);
     }
 
     public String getLogicalName() {
@@ -33,7 +35,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
     }
 
     public List<SeasonProfile> getSeasonProfileList() {
-        return this.seasonProfileList;
+        return Collections.unmodifiableList(this.seasonProfileList);
     }
 
     @Override
