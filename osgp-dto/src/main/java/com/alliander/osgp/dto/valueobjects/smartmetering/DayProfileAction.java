@@ -20,7 +20,7 @@ public class DayProfileAction implements Comparable<DayProfileAction>, Serializa
         super();
         this.scriptLogicalName = scriptLogicalName;
         this.scriptSelector = scriptSelector;
-        this.startTime = startTime;
+        this.startTime = new Date(startTime.getTime());
     }
 
     public String getScriptLogicalName() {
@@ -32,7 +32,7 @@ public class DayProfileAction implements Comparable<DayProfileAction>, Serializa
     }
 
     public Date getStartTime() {
-        return this.startTime;
+        return new Date(this.startTime.getTime());
     }
 
     @Override
