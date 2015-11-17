@@ -7,6 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.util.Random;
+
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
@@ -157,6 +159,15 @@ public class ConfigurationService {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
             LOGGER.info("device for Tariff is: {}", device);
+
+            ResponseMessageResultType responseMessageResultType = null;
+            if (new Random().nextBoolean() == true) {
+                responseMessageResultType = ResponseMessageResultType.OK;
+            } else {
+                responseMessageResultType = ResponseMessageResultType.NOT_OK;
+            }
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, responseMessageResultType, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setTariff", e);
