@@ -34,13 +34,6 @@ public class InstallationService {
     @Autowired
     private InstallationMapper installationMapper;
 
-    /**
-     * Constructor
-     */
-    public InstallationService() {
-        // Parameterless constructor required for transactions...
-    }
-
     // === ADD METER ===
 
     public void addMeter(final String organisationIdentification, final String deviceIdentification,

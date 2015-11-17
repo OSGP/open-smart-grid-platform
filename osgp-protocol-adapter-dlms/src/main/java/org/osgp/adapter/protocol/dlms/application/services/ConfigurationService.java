@@ -54,13 +54,6 @@ public class ConfigurationService {
     @Autowired
     private SetTariffCommandExecutor setTariffCommandExecutor;
 
-    /**
-     * Constructor
-     */
-    public ConfigurationService() {
-        // Parameterless constructor required for transactions...
-    }
-
     // === REQUEST Special Days DATA ===
 
     public void requestSpecialDays(final String organisationIdentification, final String deviceIdentification,
