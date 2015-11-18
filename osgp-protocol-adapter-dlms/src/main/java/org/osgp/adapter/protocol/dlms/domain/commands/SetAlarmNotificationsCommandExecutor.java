@@ -152,15 +152,12 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         }
 
         if (!(alarmFilter.value() instanceof Number)) {
-            throw new ProtocolAdapterException(
-                    "Value in DataObject is not a java.lang.Number: " + alarmFilter.value() == null ? "null"
-                            : alarmFilter.value().getClass().getName());
+            throw new ProtocolAdapterException("Value in DataObject is not a java.lang.Number: "
+                    + alarmFilter.value().getClass().getName());
         }
 
-        final AlarmNotifications alarmNotifications = this.alarmNotifications(((Number) alarmFilter.value())
-                .longValue());
+        return this.alarmNotifications(((Number) alarmFilter.value()).longValue());
 
-        return alarmNotifications;
     }
 
     public long calculateAlarmFilterLongValue(final AlarmNotifications alarmNotificationsOnDevice,

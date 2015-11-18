@@ -20,8 +20,6 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.OsgpRequestMessageSender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -116,8 +114,6 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_REDELIVERY_DELAY = "jms.osgp.responses.redelivery.delay";
     private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_BACK_OFF_MULTIPLIER = "jms.osgp.responses.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.osgp.responses.use.exponential.back.off";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationContext.class);
 
     @Resource
     private Environment environment;
@@ -313,12 +309,6 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    // @Bean
-    // public DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender()
-    // {
-    // return new DlmsLogItemRequestMessageSender();
-    // }
-
     // === OSGP REQUESTS ===
 
     @Bean
@@ -402,7 +392,6 @@ public class MessagingConfig {
                 .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_CONCURRENT_CONSUMERS)));
         messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_OSGP_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
-        // messageListenerContainer.setMessageListener(this.osgpResponseMessageListener());
         messageListenerContainer.setSessionTransacted(true);
         return messageListenerContainer;
     }

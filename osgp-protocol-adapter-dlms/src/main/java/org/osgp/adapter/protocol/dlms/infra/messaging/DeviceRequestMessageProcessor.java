@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
 import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +34,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceRequestMessageProcessor.class);
 
-    // @Autowired
-    // protected DeviceService deviceService;
-
     @Autowired
     protected DeviceResponseMessageSender responseMessageSender;
-
-    // @Autowired
-    // protected DeviceResponseService deviceResponseService;
 
     @Autowired
     @Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
@@ -71,69 +66,6 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 this.deviceRequestMessageType.name(), this);
     }
 
-    // TODO: change these two methods handleEmptyDeviceResponse and
-    // handleScheduledEmptyDeviceResponse to have less double code
-
-    // protected void handleEmptyDeviceResponse(final DeviceResponse
-    // deviceResponse,
-    // final ResponseMessageSender responseMessageSender, final String domain,
-    // final String domainVersion,
-    // final String messageType, final int retryCount) {
-    //
-    // ResponseMessageResultType result = ResponseMessageResultType.OK;
-    // OsgpException ex = null;
-    //
-    // try {
-    // final EmptyDeviceResponse response = (EmptyDeviceResponse)
-    // deviceResponse;
-    // this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-    // } catch (final Exception e) {
-    // LOGGER.error("Device Response Exception", e);
-    // result = ResponseMessageResultType.NOT_OK;
-    // ex = new TechnicalException(ComponentType.UNKNOWN,
-    // "Unexpected exception while retrieving response message", e);
-    // }
-    //
-    // final ProtocolResponseMessage responseMessage = new
-    // ProtocolResponseMessage(domain, domainVersion, messageType,
-    // deviceResponse.getCorrelationUid(),
-    // deviceResponse.getOrganisationIdentification(),
-    // deviceResponse.getDeviceIdentification(), result, ex, null, retryCount);
-    //
-    // responseMessageSender.send(responseMessage);
-    // }
-
-    // protected void handleScheduledEmptyDeviceResponse(final DeviceResponse
-    // deviceResponse,
-    // final ResponseMessageSender responseMessageSender, final String domain,
-    // final String domainVersion,
-    // final String messageType, final boolean isScheduled, final int
-    // retryCount) {
-    //
-    // ResponseMessageResultType result = ResponseMessageResultType.OK;
-    // OsgpException ex = null;
-    //
-    // try {
-    // final EmptyDeviceResponse response = (EmptyDeviceResponse)
-    // deviceResponse;
-    // this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-    // } catch (final Exception e) {
-    // LOGGER.error("Device Response Exception", e);
-    // result = ResponseMessageResultType.NOT_OK;
-    // ex = new TechnicalException(ComponentType.UNKNOWN,
-    // "Unexpected exception while retrieving response message", e);
-    // }
-    //
-    // final ProtocolResponseMessage responseMessage = new
-    // ProtocolResponseMessage(domain, domainVersion, messageType,
-    // deviceResponse.getCorrelationUid(),
-    // deviceResponse.getOrganisationIdentification(),
-    // deviceResponse.getDeviceIdentification(), result, ex, null, isScheduled,
-    // retryCount);
-    //
-    // responseMessageSender.send(responseMessage);
-    // }
-
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
@@ -160,28 +92,23 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         this.responseMessageSender.send(protocolResponseMessage);
     }
-    //
-    // public void handleUnableToConnectDeviceResponse(final DeviceResponse
-    // deviceResponse, final Throwable t,
-    // final Serializable messageData, final DeviceResponseMessageSender
-    // responseMessageSender,
-    // final DeviceResponse deviceResponse2, final String domain, final String
-    // domainVersion,
-    // final String messageType, final boolean isScheduled, final int
-    // retryCount) {
-    //
-    // final ResponseMessageResultType result =
-    // ResponseMessageResultType.NOT_OK;
-    // final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN,
-    // "Unexpected exception while retrieving response message", t);
-    //
-    // final ProtocolResponseMessage responseMessage = new
-    // ProtocolResponseMessage(domain, domainVersion, messageType,
-    // deviceResponse.getCorrelationUid(),
-    // deviceResponse.getOrganisationIdentification(),
-    // deviceResponse.getDeviceIdentification(), result, ex, messageData,
-    // isScheduled, retryCount);
-    //
-    // this.responseMessageSender.send(responseMessage);
-    // }
+
+    /**
+     * @param logger
+     *            the logger from the calling subClass
+     * @param exception
+     *            the exception to be logged
+     * @param device
+     *            a DlmsMessagingDevice containing debug info to be logged
+     */
+    protected void logJmsException(final Logger logger, final JMSException exception, final DlmsMessagingDevice device) {
+        logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
+        logger.debug("correlationUid: {}", device.getCorrelationUid());
+        logger.debug("domain: {}", device.getDomain());
+        logger.debug("domainVersion: {}", device.getDomainVersion());
+        logger.debug("messageType: {}", device.getMessageType());
+        logger.debug("organisationIdentification: {}", device.getOrganisationIdentification());
+        logger.debug("deviceIdentification: {}", device.getDeviceIdentification());
+
+    }
 }
