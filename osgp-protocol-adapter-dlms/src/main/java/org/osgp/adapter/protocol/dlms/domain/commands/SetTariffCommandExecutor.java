@@ -8,7 +8,7 @@ import org.openmuc.jdlms.ClientConnection;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class SetTariffCommandExecutor implements CommandExecutor<String> {
+public class SetTariffCommandExecutor implements CommandExecutor<String, AccessResultCode> {
 
     private Logger logger = Logger.getLogger(SetTariffCommandExecutor.class);
 

@@ -27,7 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 
 @Component()
-public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<AlarmNotifications> {
+public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<AlarmNotifications, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
 
@@ -103,7 +103,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     public AlarmNotifications retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
-            ProtocolAdapterException {
+    ProtocolAdapterException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
