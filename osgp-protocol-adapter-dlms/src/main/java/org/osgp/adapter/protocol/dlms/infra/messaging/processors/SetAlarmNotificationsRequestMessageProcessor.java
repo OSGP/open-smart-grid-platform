@@ -13,13 +13,13 @@ import javax.jms.ObjectMessage;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing set alarm notifications request messages
@@ -42,35 +42,19 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing set alarm notifications request message");
 
-        String correlationUid = null;
-        String domain = null;
-        String domainVersion = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+        final DlmsDeviceMessageMetadata messageMetadate = new DlmsDeviceMessageMetadata();
 
         try {
-            correlationUid = message.getJMSCorrelationID();
-            domain = message.getStringProperty(Constants.DOMAIN);
-            domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            messageMetadate.handleMessage(message);
 
             final AlarmNotifications alarmNotifications = (AlarmNotifications) message.getObject();
 
-            this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
-                    correlationUid, alarmNotifications, this.responseMessageSender, domain, domainVersion, messageType);
+            this.configurationService.setAlarmNotifications(messageMetadate.getOrganisationIdentification(),
+                    messageMetadate.getDeviceIdentification(), messageMetadate.getCorrelationUid(), alarmNotifications,
+                    this.responseMessageSender, messageMetadate.getDomain(), messageMetadate.getDomainVersion(), messageMetadate.getMessageType());
 
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("domain: {}", domain);
-            LOGGER.debug("domainVersion: {}", domainVersion);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            return;
+        } catch (final JMSException exception) {
+            this.logJmsException(LOGGER, exception, messageMetadate);
         }
     }
 }
