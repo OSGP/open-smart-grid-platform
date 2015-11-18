@@ -6,6 +6,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializable {
@@ -16,13 +17,16 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     private String calendarName;
 
+    private Date activatePassiveCalendarTime;
+
     private List<SeasonProfile> seasonProfileList;
 
     public ActivityCalendar(final String logicalName, final String calendarName,
-            final List<SeasonProfile> seasonProfileList) {
+            final Date activatePassiveCalendarTime, final List<SeasonProfile> seasonProfileList) {
         super();
         this.logicalName = logicalName;
         this.calendarName = calendarName;
+        this.activatePassiveCalendarTime = new Date(activatePassiveCalendarTime.getTime());
         this.seasonProfileList = new ArrayList<SeasonProfile>(seasonProfileList);
     }
 
@@ -32,6 +36,10 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     public String getCalendarName() {
         return this.calendarName;
+    }
+
+    public Date getActivatePassiveCalendarTime() {
+        return new Date(this.activatePassiveCalendarTime.getTime());
     }
 
     public List<SeasonProfile> getSeasonProfileList() {
@@ -55,6 +63,8 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         int result = 1;
         result = prime * result + ((this.calendarName == null) ? 0 : this.calendarName.hashCode());
         result = prime * result + ((this.logicalName == null) ? 0 : this.logicalName.hashCode());
+        result = prime * result
+                + ((this.activatePassiveCalendarTime == null) ? 0 : this.activatePassiveCalendarTime.hashCode());
         result = prime * result + ((this.seasonProfileList == null) ? 0 : this.seasonProfileList.hashCode());
         return result;
     }
@@ -83,6 +93,13 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
                 return false;
             }
         } else if (!this.logicalName.equals(other.logicalName)) {
+            return false;
+        }
+        if (this.activatePassiveCalendarTime == null) {
+            if (other.activatePassiveCalendarTime != null) {
+                return false;
+            }
+        } else if (!this.activatePassiveCalendarTime.equals(other.activatePassiveCalendarTime)) {
             return false;
         }
         if (this.seasonProfileList == null) {
