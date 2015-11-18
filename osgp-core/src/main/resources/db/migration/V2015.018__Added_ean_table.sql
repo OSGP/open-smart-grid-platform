@@ -11,7 +11,7 @@ CREATE TABLE ean (
 ALTER TABLE public.ean OWNER TO osp_admin;
 
 --
--- Name: device_authorization_id_seq; Type: SEQUENCE; Schema: public; Owner: osp_admin
+-- Name: ean_id_seq; Type: SEQUENCE; Schema: public; Owner: osp_admin
 --
 
 CREATE SEQUENCE ean_id_seq

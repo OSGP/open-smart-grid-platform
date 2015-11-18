@@ -18,7 +18,6 @@ import ma.glasnost.orika.metadata.Type;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ws.EventTypeConverter;
-import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayFunction;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
@@ -77,12 +76,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                     newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
                             deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
-                            deviceOutputSetting.getRelayType() == null ? null
-                                    : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
-                                            .getRelayType().name()), deviceOutputSetting.getAlias(),
-                                            deviceOutputSetting.getRelayType() == null ? null
-                                                    : com.alliander.osgp.domain.core.valueobjects.RelayFunction
-                                                    .valueOf(deviceOutputSetting.getRelayFunction().name()));
+                            deviceOutputSetting.getRelayType() == null ? null : com.alliander.osgp.domain.core.valueobjects.RelayType
+                                    .valueOf(deviceOutputSetting.getRelayType().name()), deviceOutputSetting.getAlias());
 
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
@@ -110,9 +105,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                     newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
                     newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
-                    newDeviceOutputSetting.setRelayType(RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
-                    newDeviceOutputSetting.setRelayFunction(deviceOutputSetting.getRelayFunction() == null ? null
-                            : RelayFunction.valueOf(deviceOutputSetting.getRelayFunction().name()));
+                    newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
+                            .valueOf(deviceOutputSetting.getOutputType().name()));
                     newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
