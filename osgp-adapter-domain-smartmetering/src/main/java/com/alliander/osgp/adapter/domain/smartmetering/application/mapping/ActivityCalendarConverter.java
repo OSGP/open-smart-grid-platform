@@ -37,7 +37,8 @@ public class ActivityCalendarConverter extends
         }
 
         return new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(source.getLogicalName(),
-                source.getCalendarName(), this.processSeasonProfile(source.getSeasonProfileList()));
+                source.getCalendarName(), source.getActivatePassiveCalendarTime(), this.processSeasonProfile(source
+                        .getSeasonProfileList()));
     }
 
     private List<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> processSeasonProfile(

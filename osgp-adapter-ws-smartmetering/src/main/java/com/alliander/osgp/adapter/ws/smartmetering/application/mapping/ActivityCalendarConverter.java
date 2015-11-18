@@ -45,8 +45,9 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
             return null;
         }
 
-        return new ActivityCalendar(source.getLogicalName(), source.getCalendarName(), this.processSeasonProfile(source
-                .getSeasonProfile()));
+        return new ActivityCalendar(source.getLogicalName(), source.getCalendarName(),
+                source.getActivatePassiveCalendarTime() != null ? source.getActivatePassiveCalendarTime()
+                        .toGregorianCalendar().getTime() : null, this.processSeasonProfile(source.getSeasonProfile()));
     }
 
     private List<SeasonProfile> processSeasonProfile(final SeasonsType seasonsType) {
