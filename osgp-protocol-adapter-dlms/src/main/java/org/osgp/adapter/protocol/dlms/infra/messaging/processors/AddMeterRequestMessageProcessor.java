@@ -13,7 +13,7 @@ import javax.jms.ObjectMessage;
 import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessagingDevice;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,18 +42,18 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing add meter request message");
 
-        final DlmsMessagingDevice device = new DlmsMessagingDevice();
+        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
         try {
-            device.handleMessage(message);
+            messageMetadata.handleMessage(message);
             final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) message.getObject();
 
-            this.installationService.addMeter(device.getOrganisationIdentification(), device.getDeviceIdentification(),
-                    device.getCorrelationUid(), smartMeteringDevice, this.responseMessageSender, device.getDomain(),
-                    device.getDomainVersion(), device.getMessageType());
+            this.installationService.addMeter(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
+                    messageMetadata.getCorrelationUid(), smartMeteringDevice, this.responseMessageSender, messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
 
         } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, device);
+            this.logJmsException(LOGGER, exception, messageMetadata);
         }
     }
 }

@@ -98,17 +98,18 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      *            the logger from the calling subClass
      * @param exception
      *            the exception to be logged
-     * @param device
-     *            a DlmsMessagingDevice containing debug info to be logged
+     * @param messageMetadata
+     *            a DlmsDeviceMessageMetadata containing debug info to be logged
      */
-    protected void logJmsException(final Logger logger, final JMSException exception, final DlmsMessagingDevice device) {
+    protected void logJmsException(final Logger logger, final JMSException exception,
+            final DlmsDeviceMessageMetadata messageMetadata) {
         logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
-        logger.debug("correlationUid: {}", device.getCorrelationUid());
-        logger.debug("domain: {}", device.getDomain());
-        logger.debug("domainVersion: {}", device.getDomainVersion());
-        logger.debug("messageType: {}", device.getMessageType());
-        logger.debug("organisationIdentification: {}", device.getOrganisationIdentification());
-        logger.debug("deviceIdentification: {}", device.getDeviceIdentification());
+        logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
+        logger.debug("domain: {}", messageMetadata.getDomain());
+        logger.debug("domainVersion: {}", messageMetadata.getDomainVersion());
+        logger.debug("messageType: {}", messageMetadata.getMessageType());
+        logger.debug("organisationIdentification: {}", messageMetadata.getOrganisationIdentification());
+        logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
 
     }
 }

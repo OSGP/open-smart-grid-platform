@@ -13,7 +13,7 @@ import javax.jms.ObjectMessage;
 import org.osgp.adapter.protocol.dlms.application.services.ManagementService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessagingDevice;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,19 +42,19 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing find events request message");
 
-        final DlmsMessagingDevice device = new DlmsMessagingDevice();
+        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
         Object data = null;
 
         try {
-            device.handleMessage(message);
+            messageMetadata.handleMessage(message);
             data = message.getObject();
         } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, device);
+            this.logJmsException(LOGGER, exception, messageMetadata);
             return;
         }
 
-        this.managementService.findEvents(device.getOrganisationIdentification(), device.getDeviceIdentification(),
-                device.getCorrelationUid(), this.responseMessageSender, device.getDomain(), device.getDomainVersion(),
-                device.getMessageType(), (FindEventsQueryMessageDataContainer) data);
+        this.managementService.findEvents(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
+                messageMetadata.getCorrelationUid(), this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(),
+                messageMetadata.getMessageType(), (FindEventsQueryMessageDataContainer) data);
     }
 }

@@ -11,7 +11,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * processors
  *
  */
-public class DlmsMessagingDevice {
+public class DlmsDeviceMessageMetadata {
     private String correlationUid;
     private String domain;
     private String domainVersion;

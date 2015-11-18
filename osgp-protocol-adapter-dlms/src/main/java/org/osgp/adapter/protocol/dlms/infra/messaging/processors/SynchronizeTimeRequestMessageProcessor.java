@@ -13,7 +13,7 @@ import javax.jms.ObjectMessage;
 import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessagingDevice;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,19 +42,19 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing synchronize time request message");
 
-        final DlmsMessagingDevice device = new DlmsMessagingDevice();
+        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
         try {
-            device.handleMessage(message);
+            messageMetadata.handleMessage(message);
 
             final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) message.getObject();
 
-            this.adhocService.synchronizeTime(device.getOrganisationIdentification(), device.getDeviceIdentification(),
-                    device.getCorrelationUid(), synchronizeTimeRequest, this.responseMessageSender, device.getDomain(),
-                    device.getDomainVersion(), device.getMessageType());
+            this.adhocService.synchronizeTime(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
+                    messageMetadata.getCorrelationUid(), synchronizeTimeRequest, this.responseMessageSender, messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
 
         } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, device);
+            this.logJmsException(LOGGER, exception, messageMetadata);
         }
     }
 }

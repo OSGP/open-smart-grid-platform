@@ -13,7 +13,7 @@ import javax.jms.ObjectMessage;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsMessagingDevice;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,19 +42,19 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing set alarm notifications request message");
 
-        final DlmsMessagingDevice device = new DlmsMessagingDevice();
+        final DlmsDeviceMessageMetadata messageMetadate = new DlmsDeviceMessageMetadata();
 
         try {
-            device.handleMessage(message);
+            messageMetadate.handleMessage(message);
 
             final AlarmNotifications alarmNotifications = (AlarmNotifications) message.getObject();
 
-            this.configurationService.setAlarmNotifications(device.getOrganisationIdentification(),
-                    device.getDeviceIdentification(), device.getCorrelationUid(), alarmNotifications,
-                    this.responseMessageSender, device.getDomain(), device.getDomainVersion(), device.getMessageType());
+            this.configurationService.setAlarmNotifications(messageMetadate.getOrganisationIdentification(),
+                    messageMetadate.getDeviceIdentification(), messageMetadate.getCorrelationUid(), alarmNotifications,
+                    this.responseMessageSender, messageMetadate.getDomain(), messageMetadate.getDomainVersion(), messageMetadate.getMessageType());
 
         } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, device);
+            this.logJmsException(LOGGER, exception, messageMetadate);
         }
     }
 }
