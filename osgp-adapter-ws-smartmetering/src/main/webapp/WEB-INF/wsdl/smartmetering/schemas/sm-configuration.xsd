@@ -135,8 +135,8 @@
 	
 	<xsd:complexType name="ActivityCalendar">
 		<xsd:sequence>
-			<xsd:element name="LogicalName" type="tns:NameType" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="CalendarName" type="tns:NameType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="ActivatePassiveCalendarTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="SeasonProfile" type="tns:SeasonsType" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
