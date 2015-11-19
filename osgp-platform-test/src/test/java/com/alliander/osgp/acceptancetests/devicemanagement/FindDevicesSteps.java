@@ -54,8 +54,8 @@ import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 public class FindDevicesSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FindDevicesSteps.class);
-    private static final String ORGANISATION_ID = "ORGANISATION-01";
-    private static final String ORGANISATION_PREFIX = "ORG";
+    private static final String ORGANISATION_ID = "LianderNetManagement";
+    private static final String ORGANISATION_PREFIX = "LIA";
     private static final int DEFAULT_PAGE = 0;
     private static final int DEFAULT_PAGESIZE = 25;
     private DeviceManagementEndpoint deviceManagementEndpoint;
