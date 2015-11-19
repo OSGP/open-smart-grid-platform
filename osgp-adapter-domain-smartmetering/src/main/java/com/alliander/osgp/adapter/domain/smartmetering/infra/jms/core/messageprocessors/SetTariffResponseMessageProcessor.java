@@ -77,8 +77,10 @@ public class SetTariffResponseMessageProcessor extends OsgpCoreResponseMessagePr
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
+            final String resultString = (String) responseMessage.getDataObject();
+
             this.configurationService.handleSetTariffResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException);
+                    correlationUid, messageType, responseMessageResultType, osgpException, resultString);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

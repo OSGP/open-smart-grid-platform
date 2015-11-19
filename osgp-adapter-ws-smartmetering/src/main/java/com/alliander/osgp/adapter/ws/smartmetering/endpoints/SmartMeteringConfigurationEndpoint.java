@@ -19,6 +19,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetTariffResultRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetTariffResultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
@@ -31,9 +33,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialD
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
@@ -48,6 +54,9 @@ public class SmartMeteringConfigurationEndpoint {
 
     @Autowired
     private ConfigurationMapper configurationMapper;
+
+    @Autowired
+    private MeterResponseDataRepository meterResponseDataRepository;
 
     public SmartMeteringConfigurationEndpoint() {
     }
@@ -131,6 +140,53 @@ public class SmartMeteringConfigurationEndpoint {
 
         return response;
 
+    }
+
+    @PayloadRoot(localPart = "RetrieveSetTariffResultRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public RetrieveSetTariffResultResponse retrieveSetTariffResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RetrieveSetTariffResultRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming RetrieveSetTariffResultRequest for meter: {}", request.getDeviceIdentification());
+
+        final RetrieveSetTariffResultResponse response = new RetrieveSetTariffResultResponse();
+
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataRepository
+                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+
+            if (meterResponseData == null) {
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
+                        ComponentType.WS_SMART_METERING);
+            }
+
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setResult((String) meterResponseData.getMessageData());
+                this.meterResponseDataRepository.delete(meterResponseData);
+            } else {
+                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
+                        .getName(), request.getCorrelationUid());
+            }
+
+        } catch (final Exception e) {
+            if ((e instanceof FunctionalException)
+                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+
+                LOGGER.warn("No response data for correlation UID {} in RetrieveSetTariffResultRequest",
+                        request.getCorrelationUid());
+
+                throw e;
+
+            } else {
+                LOGGER.error("Exception: {} while sending SetTariffResult of device: {} for organisation {}.",
+                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+
+                this.handleException(e);
+            }
+        }
+
+        return response;
     }
 
     @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)

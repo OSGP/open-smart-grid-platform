@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SetTariffResultData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.SetTariffResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -32,6 +34,9 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
     private static final Logger LOGGER = LoggerFactory.getLogger(SetTariffResponseMessageProcessor.class);
 
     @Autowired
+    private SetTariffResponseDataRepository setTariffResponseDataRepository;
+
+    @Autowired
     private NotificationService notificationService;
 
     protected SetTariffResponseMessageProcessor() {
@@ -39,7 +44,7 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
     }
 
     @Override
-    public void processMessage(final ObjectMessage objectMessage) throws JMSException {
+    public void processMessage(final ObjectMessage message) throws JMSException {
         LOGGER.debug("Processing smart metering set tariff response message");
 
         String correlationUid = null;
@@ -50,17 +55,17 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
         final OsgpException osgpException = null;
 
         String result = null;
-        String message = null;
+        String notificationMessage = null;
         NotificationType notificationType = null;
 
         try {
-            correlationUid = objectMessage.getJMSCorrelationID();
-            messageType = objectMessage.getJMSType();
-            organisationIdentification = objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            correlationUid = message.getJMSCorrelationID();
+            messageType = message.getJMSType();
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            result = objectMessage.getStringProperty(Constants.RESULT);
-            message = objectMessage.getStringProperty(Constants.DESCRIPTION);
+            result = message.getStringProperty(Constants.RESULT);
+            notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -75,9 +80,16 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
+            final String resultString = (String) message.getObject();
+
+            // Convert the events to entity and save the Set Tariff result
+            final SetTariffResultData setTariffResultData = new SetTariffResultData(organisationIdentification,
+                    messageType, deviceIdentification, correlationUid, resultString);
+            this.setTariffResponseDataRepository.save(setTariffResultData);
+
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
-                    correlationUid, message, notificationType);
+                    correlationUid, notificationMessage, notificationType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);

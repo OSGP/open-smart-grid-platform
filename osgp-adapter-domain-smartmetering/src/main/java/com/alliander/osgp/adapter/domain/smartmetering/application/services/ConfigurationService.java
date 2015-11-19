@@ -187,7 +187,8 @@ public class ConfigurationService {
 
     public void handleSetTariffResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException exception) {
+            final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
+            final String resultString) {
         LOGGER.info("handleSetTariffResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = responseMessageResultType;
@@ -197,7 +198,7 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, resultString), messageType);
 
     }
 }

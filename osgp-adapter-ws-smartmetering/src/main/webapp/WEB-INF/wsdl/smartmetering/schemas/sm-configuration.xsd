@@ -224,6 +224,24 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<!-- Set Tariff Result type -->
+	<xsd:element name="RetrieveSetTariffResultRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
+				<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="RetrieveSetTariffResultResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="result" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
 	<!-- Set Tariff type -->
 	<xsd:complexType name="SeasonsType">		
 		<xsd:sequence>

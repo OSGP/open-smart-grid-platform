@@ -61,6 +61,13 @@
         <wsdl:part element="smconf:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
         </wsdl:part>
     </wsdl:message>
+    
+    <wsdl:message name="RetrieveSetTariffResultRequest">
+    	<wsdl:part element="smconf:RetrieveSetTariffResultRequest"  name="RetrieveSetTariffResultRequest" />
+    </wsdl:message>
+    <wsdl:message name="RetrieveSetTariffResultResponse">
+    	<wsdl:part element="smconf:RetrieveSetTariffResultResponse" name="RetrieveSetTariffResultResponse" />
+    </wsdl:message>
 
     <wsdl:portType name="SmartmeterconfigurationPort">
         <wsdl:operation name="RequestSpecialDays">
@@ -90,6 +97,13 @@
             <wsdl:output message="tns:SetTariffResponse" name="SetTariffResponse">
             </wsdl:output>
 		</wsdl:operation>
+		
+		 <wsdl:operation name="RetrieveSetTariffResult">
+        	<wsdl:input message="tns:RetrieveSetTariffResultRequest" name="RetrieveSetTariffResultRequest">
+        	</wsdl:input>
+        	<wsdl:output message="tns:RetrieveSetTariffResultResponse" name="RetrieveSetTariffResultResponse">
+        	</wsdl:output>
+        </wsdl:operation>
     </wsdl:portType>
 
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
@@ -145,6 +159,18 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+        
+        <wsdl:operation name="RetrieveSetTariffResult">
+			<soap:operation soapAction="" />
+			<wsdl:input name="RetrieveSetTariffResultRequest">
+        		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="RetrieveSetTariffResultResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
 
     </wsdl:binding>
     
