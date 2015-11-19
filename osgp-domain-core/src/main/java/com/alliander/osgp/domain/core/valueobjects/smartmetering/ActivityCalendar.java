@@ -13,25 +13,18 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     private static final long serialVersionUID = -8278955482889960359L;
 
-    private String logicalName;
-
     private String calendarName;
 
     private Date activatePassiveCalendarTime;
 
     private List<SeasonProfile> seasonProfileList;
 
-    public ActivityCalendar(final String logicalName, final String calendarName,
-            final Date activatePassiveCalendarTime, final List<SeasonProfile> seasonProfileList) {
+    public ActivityCalendar(final String calendarName, final Date activatePassiveCalendarTime,
+            final List<SeasonProfile> seasonProfileList) {
         super();
-        this.logicalName = logicalName;
         this.calendarName = calendarName;
         this.activatePassiveCalendarTime = new Date(activatePassiveCalendarTime.getTime());
         this.seasonProfileList = new ArrayList<>(seasonProfileList);
-    }
-
-    public String getLogicalName() {
-        return this.logicalName;
     }
 
     public String getCalendarName() {
@@ -48,13 +41,13 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     @Override
     public String toString() {
-        return "ActivityCalendar [logicalName=" + this.logicalName + ", calendarName=" + this.calendarName
-                + ", seasonProfileList=" + this.seasonProfileList + "]";
+        return "ActivityCalendar [calendarName=" + this.calendarName + ", seasonProfileList=" + this.seasonProfileList
+                + "]";
     }
 
     @Override
     public int compareTo(final ActivityCalendar o) {
-        return o.logicalName.compareTo(this.logicalName);
+        return o.calendarName.compareTo(this.calendarName);
     }
 
     @Override
@@ -62,7 +55,6 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.calendarName == null) ? 0 : this.calendarName.hashCode());
-        result = prime * result + ((this.logicalName == null) ? 0 : this.logicalName.hashCode());
         result = prime * result
                 + ((this.activatePassiveCalendarTime == null) ? 0 : this.activatePassiveCalendarTime.hashCode());
         result = prime * result + ((this.seasonProfileList == null) ? 0 : this.seasonProfileList.hashCode());
@@ -86,13 +78,6 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
                 return false;
             }
         } else if (!this.calendarName.equals(other.calendarName)) {
-            return false;
-        }
-        if (this.logicalName == null) {
-            if (other.logicalName != null) {
-                return false;
-            }
-        } else if (!this.logicalName.equals(other.logicalName)) {
             return false;
         }
         if (this.activatePassiveCalendarTime == null) {

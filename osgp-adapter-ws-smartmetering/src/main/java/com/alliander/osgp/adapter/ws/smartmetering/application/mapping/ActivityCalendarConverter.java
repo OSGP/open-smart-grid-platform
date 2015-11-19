@@ -26,8 +26,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter
-        extends
-BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
+extends
+        BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar convertTo(
@@ -45,9 +45,9 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
             return null;
         }
 
-        return new ActivityCalendar(source.getLogicalName(), source.getCalendarName(),
-                source.getActivatePassiveCalendarTime() != null ? source.getActivatePassiveCalendarTime()
-                        .toGregorianCalendar().getTime() : null, this.processSeasonProfile(source.getSeasonProfile()));
+        return new ActivityCalendar(source.getCalendarName(), source.getActivatePassiveCalendarTime() != null ? source
+                .getActivatePassiveCalendarTime().toGregorianCalendar().getTime() : null,
+                this.processSeasonProfile(source.getSeasonProfile()));
     }
 
     private List<SeasonProfile> processSeasonProfile(final SeasonsType seasonsType) {
@@ -90,7 +90,7 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
     private DayProfileAction processDayProfileActionType(final DayProfileActionType dpat) {
         return new DayProfileAction(dpat.getScriptLogicalName(), (dpat.getScriptSelector() != null ? dpat
                 .getScriptSelector().intValue() : null), (dpat.getStartTime() != null ? dpat.getStartTime()
-                .toGregorianCalendar().getTime() : null));
+                        .toGregorianCalendar().getTime() : null));
 
     }
 }

@@ -20,7 +20,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar, ActivityCalendar> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar, ActivityCalendar> {
 
     @Override
     public ActivityCalendar convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar source,
@@ -36,9 +36,8 @@ public class ActivityCalendarConverter extends
             return null;
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(source.getLogicalName(),
-                source.getCalendarName(), source.getActivatePassiveCalendarTime(), this.processSeasonProfile(source
-                        .getSeasonProfileList()));
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(source.getCalendarName(),
+                source.getActivatePassiveCalendarTime(), this.processSeasonProfile(source.getSeasonProfileList()));
     }
 
     private List<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> processSeasonProfile(
