@@ -146,7 +146,9 @@ public class ConfigurationService {
             LOGGER.info("**************************************");
             LOGGER.info("**********In protocol adapter*********");
             LOGGER.info("**************************************");
-            LOGGER.info("Tariff to set on the device: {}", activityCalendar.getLogicalName());
+            LOGGER.info("*************0-0:13.0.0.255***********");
+            LOGGER.info("**************************************");
+            LOGGER.info("Tariff to set on the device: {}", activityCalendar.getCalendarName());
             LOGGER.info("********** activityCalendar " + activityCalendar);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
