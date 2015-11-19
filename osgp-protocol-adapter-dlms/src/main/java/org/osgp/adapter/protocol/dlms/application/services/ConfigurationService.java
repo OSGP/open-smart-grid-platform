@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.util.Random;
+import java.io.Serializable;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
@@ -153,14 +153,9 @@ public class ConfigurationService {
 
             LOGGER.info("device for Tariff is: {}", device);
 
-            ResponseMessageResultType responseMessageResultType = null;
-            if (new Random().nextBoolean() == true) {
-                responseMessageResultType = ResponseMessageResultType.OK;
-            } else {
-                responseMessageResultType = ResponseMessageResultType.NOT_OK;
-            }
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, responseMessageResultType, null, responseMessageSender);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
+                    "Set Tariff Result is OK");
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setTariff", e);
@@ -227,9 +222,18 @@ public class ConfigurationService {
             final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender) {
 
+        this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, responseMessageSender, null);
+    }
+
+    private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
+            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
+
         // Creating a ProtocolResponseMessage without a Serializable object
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null);
+                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, responseObject);
 
         responseMessageSender.send(responseMessage);
     }
