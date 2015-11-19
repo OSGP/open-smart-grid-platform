@@ -229,12 +229,16 @@ public class DeviceManagementEndpoint {
                             this.deviceManagementMapper.map(request.getDeviceFilter(),
                                     com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
 
-            response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
-
-            response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
-            response.getPage().setPageSize(result.getSize());
-            response.getPage().setTotalPages(result.getTotalPages());
-            response.getPage().setCurrentPage(result.getNumber());
+            if (result != null) {
+                if (response.getDevices() != null) {
+                    response.getDevices().addAll(
+                            this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
+                    response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
+                    response.getPage().setPageSize(result.getSize());
+                    response.getPage().setTotalPages(result.getTotalPages());
+                    response.getPage().setCurrentPage(result.getNumber());
+                }
+            }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
