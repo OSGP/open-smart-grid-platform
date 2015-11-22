@@ -27,10 +27,9 @@ public class DlmsHelperService {
         // final int clockStatus =
         bb.get();
 
-        final DateTime dateTime = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
+        return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
                 hundredthsOfSecond * 10);
 
-        return dateTime;
     }
 
     public DataObject asDataObject(final DateTime dateTime) {
@@ -53,13 +52,50 @@ public class DlmsHelperService {
         // clock status
         bb.put((byte) 128);
 
-        final DataObject obj = DataObject.newOctetStringData(bb.array());
-
-        return obj;
+        return DataObject.newOctetStringData(bb.array());
     }
 
     public String getDebugInfo(final DataObject dataObject) {
 
+        final String dataType = getDataType(dataObject);
+
+        String objectText;
+        if (dataObject.isComplex()) {
+            if (dataObject.value() instanceof List) {
+                final StringBuilder builder = new StringBuilder();
+                builder.append("[");
+                builder.append(System.lineSeparator());
+                this.appendItemValues(dataObject, builder);
+                builder.append("]");
+                builder.append(System.lineSeparator());
+                objectText = builder.toString();
+            } else {
+                objectText = String.valueOf(dataObject.rawValue());
+            }
+        } else if (dataObject.isByteArray()) {
+            objectText = this.getDebugInfoDateTimeBytes((byte[]) dataObject.value());
+        } else {
+            objectText = String.valueOf(dataObject.rawValue());
+        }
+
+        return "DataObject: Choice=" + dataObject.choiceIndex().name() + "(" + dataObject.choiceIndex().getValue()
+                + "), ResultData is" + dataType + ", value=[" + dataObject.rawValue().getClass().getName() + "]: "
+                + objectText;
+    }
+
+    private void appendItemValues(final DataObject dataObject, final StringBuilder builder) {
+        for (final Object obj : (List<?>) dataObject.value()) {
+            builder.append("\t");
+            if (obj instanceof DataObject) {
+                builder.append(this.getDebugInfo((DataObject) obj));
+            } else {
+                builder.append(String.valueOf(obj));
+            }
+            builder.append(System.lineSeparator());
+        }
+    }
+
+    private static String getDataType(final DataObject dataObject) {
         String dataType;
         if (dataObject.isBitString()) {
             dataType = "BitString";
@@ -78,33 +114,7 @@ public class DlmsHelperService {
         } else {
             dataType = "?";
         }
-
-        String objectText;
-        if (dataObject.isComplex()) {
-            if (dataObject.value() instanceof List) {
-                objectText = "[" + System.lineSeparator();
-                for (final Object obj : (List<?>) dataObject.value()) {
-                    objectText += "\t";
-                    if (obj instanceof DataObject) {
-                        objectText += this.getDebugInfo((DataObject) obj);
-                    } else {
-                        objectText += String.valueOf(obj);
-                    }
-                    objectText += System.lineSeparator();
-                }
-                objectText += "]" + System.lineSeparator();
-            } else {
-                objectText = String.valueOf(dataObject.rawValue());
-            }
-        } else if (dataObject.isByteArray()) {
-            objectText = this.getDebugInfoDateTimeBytes((byte[]) dataObject.value());
-        } else {
-            objectText = String.valueOf(dataObject.rawValue());
-        }
-
-        return "DataObject: Choice=" + dataObject.choiceIndex().name() + "(" + dataObject.choiceIndex().getValue()
-                + "), ResultData is" + dataType + ", value=" + dataObject.rawValue() == null ? "null" : "["
-                        + dataObject.rawValue().getClass().getName() + "]: " + objectText;
+        return dataType;
     }
 
     public String getDebugInfoByteArray(final byte[] bytes) {
@@ -143,8 +153,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -170,10 +180,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }

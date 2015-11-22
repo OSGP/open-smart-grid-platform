@@ -115,8 +115,8 @@ public class MonitoringService {
 
         try {
             // Mock a return value for actual meter reads.
-            final ActualMeterReads actualMeterReads = new ActualMeterReads(new Date(), Math.abs(generator.nextLong()),
-                    Math.abs(generator.nextLong()), Math.abs(generator.nextLong()), Math.abs(generator.nextLong()));
+            final ActualMeterReads actualMeterReads = new ActualMeterReads(new Date(), this.getRandomPositive(),
+                    this.getRandomPositive(), this.getRandomPositive(), this.getRandomPositive());
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, actualMeterReads);
@@ -129,5 +129,16 @@ public class MonitoringService {
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
         }
+    }
+
+    private long getRandomPositive() {
+        long randomLong = generator.nextLong();
+
+        // if the random long returns Long.MIN_VALUE, the absolute of that is
+        // not a long.
+        if (randomLong == Long.MIN_VALUE) {
+            randomLong += 1;
+        }
+        return Math.abs(randomLong);
     }
 }
