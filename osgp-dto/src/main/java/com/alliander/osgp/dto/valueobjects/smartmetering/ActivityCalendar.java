@@ -46,7 +46,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     @Override
     public int compareTo(final ActivityCalendar other) {
-        return other.calendarName.compareTo(this.calendarName);
+        return this.calendarName.compareTo(other.calendarName);
     }
 
     @Override
