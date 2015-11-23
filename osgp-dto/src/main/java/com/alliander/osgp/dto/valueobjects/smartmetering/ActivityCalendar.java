@@ -21,7 +21,6 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     public ActivityCalendar(final String calendarName, final Date activatePassiveCalendarTime,
             final List<SeasonProfile> seasonProfileList) {
-        super();
         this.calendarName = calendarName;
         this.activatePassiveCalendarTime = new Date(activatePassiveCalendarTime.getTime());
         this.seasonProfileList = new ArrayList<SeasonProfile>(seasonProfileList);
