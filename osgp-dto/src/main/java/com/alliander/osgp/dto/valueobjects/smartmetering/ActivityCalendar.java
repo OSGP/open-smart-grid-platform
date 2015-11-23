@@ -53,7 +53,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.calendarName == null) ? 0 : this.calendarName.hashCode());
+        result = prime * result + this.calendarName.hashCode();
         result = prime * result
                 + ((this.activatePassiveCalendarTime == null) ? 0 : this.activatePassiveCalendarTime.hashCode());
         result = prime * result + ((this.seasonProfileList == null) ? 0 : this.seasonProfileList.hashCode());
@@ -72,11 +72,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
             return false;
         }
         final ActivityCalendar other = (ActivityCalendar) obj;
-        if (this.calendarName == null) {
-            if (other.calendarName != null) {
-                return false;
-            }
-        } else if (!this.calendarName.equals(other.calendarName)) {
+        if (!this.calendarName.equals(other.calendarName)) {
             return false;
         }
         if (this.activatePassiveCalendarTime == null) {
