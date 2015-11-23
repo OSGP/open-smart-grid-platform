@@ -54,9 +54,8 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         final int prime = 31;
         int result = 1;
         result = prime * result + this.calendarName.hashCode();
-        result = prime * result
-                + ((this.activatePassiveCalendarTime == null) ? 0 : this.activatePassiveCalendarTime.hashCode());
-        result = prime * result + ((this.seasonProfileList == null) ? 0 : this.seasonProfileList.hashCode());
+        result = prime * result + this.activatePassiveCalendarTime.hashCode();
+        result = prime * result + this.seasonProfileList.hashCode();
         return result;
     }
 
@@ -75,18 +74,10 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         if (!this.calendarName.equals(other.calendarName)) {
             return false;
         }
-        if (this.activatePassiveCalendarTime == null) {
-            if (other.activatePassiveCalendarTime != null) {
-                return false;
-            }
-        } else if (!this.activatePassiveCalendarTime.equals(other.activatePassiveCalendarTime)) {
+        if (!this.activatePassiveCalendarTime.equals(other.activatePassiveCalendarTime)) {
             return false;
         }
-        if (this.seasonProfileList == null) {
-            if (other.seasonProfileList != null) {
-                return false;
-            }
-        } else if (!this.seasonProfileList.equals(other.seasonProfileList)) {
+        if (!this.seasonProfileList.equals(other.seasonProfileList)) {
             return false;
         }
         return true;
