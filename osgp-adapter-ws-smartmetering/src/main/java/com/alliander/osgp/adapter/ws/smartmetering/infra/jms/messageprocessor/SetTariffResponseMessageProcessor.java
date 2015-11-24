@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.SetTariffResultData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.SetTariffResponseDataRepository;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -34,7 +34,7 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
     private static final Logger LOGGER = LoggerFactory.getLogger(SetTariffResponseMessageProcessor.class);
 
     @Autowired
-    private SetTariffResponseDataRepository setTariffResponseDataRepository;
+    private MeterResponseDataRepository meterResponseDataRepository;
 
     @Autowired
     private NotificationService notificationService;
@@ -83,9 +83,9 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
             final String resultString = (String) message.getObject();
 
             // Convert the events to entity and save the Set Tariff result
-            final SetTariffResultData setTariffResultData = new SetTariffResultData(organisationIdentification,
-                    messageType, deviceIdentification, correlationUid, resultString);
-            this.setTariffResponseDataRepository.save(setTariffResultData);
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, resultString);
+            this.meterResponseDataRepository.save(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
