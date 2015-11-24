@@ -61,16 +61,16 @@
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="SetTariffRequest">
+	<xsd:element name="SetActivityCalendarRequest">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-				<xsd:element name="SetTariffRequestData" type="tns:SetTariffRequestData" />
+				<xsd:element name="ActivityCalendarData" type="tns:ActivityCalendarDataType" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="SetTariffResponse">
+	<xsd:element name="SetActivityCalendarAsyncResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
@@ -123,17 +123,17 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-		<xsd:complexType name="SetTariffRequestData">
+	<xsd:complexType name="ActivityCalendarDataType">
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
 				<xsd:sequence>
-					<xsd:element name="Tariff" type="tns:ActivityCalendar" minOccurs="1" maxOccurs="1"/>
+					<xsd:element name="ActivityCalendar" type="tns:ActivityCalendarType" minOccurs="1" maxOccurs="1"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
 	
-	<xsd:complexType name="ActivityCalendar">
+	<xsd:complexType name="ActivityCalendarType">
 		<xsd:sequence>
 			<xsd:element name="CalendarName" type="tns:NameType" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="ActivatePassiveCalendarTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>

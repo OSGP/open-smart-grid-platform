@@ -132,7 +132,7 @@ public class ConfigurationService {
                 deviceIdentification, alarmNotificationsDto), messageType);
     }
 
-    public void setTariff(@Identification final String organisationIdentification,
+    public void setActivityCalendar(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final ActivityCalendar activityCalendar, final String messageType) throws FunctionalException {
 

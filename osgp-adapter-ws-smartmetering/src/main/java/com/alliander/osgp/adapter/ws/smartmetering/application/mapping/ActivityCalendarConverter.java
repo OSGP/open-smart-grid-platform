@@ -27,19 +27,19 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter
         extends
-BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
+        BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType> {
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar convertTo(
+    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType convertTo(
             final ActivityCalendar source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType> destinationType) {
 
         throw new IllegalStateException("convertTo is not supported");
     }
 
     @Override
     public ActivityCalendar convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar source,
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType source,
             final Type<ActivityCalendar> destinationType) {
         if (source == null) {
             return null;

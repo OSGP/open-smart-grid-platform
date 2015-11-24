@@ -19,16 +19,16 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetTariffResultRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetTariffResultResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetTariffRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetTariffRequestData;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetTariffResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
@@ -108,18 +108,19 @@ public class SmartMeteringConfigurationEndpoint {
 
     @PayloadRoot(localPart = "SetTariffRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetTariffResponse setTariff(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetTariffRequest request) throws OsgpException {
+    public SetActivityCalendarAsyncResponse setTariff(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetActivityCalendarRequest request) throws OsgpException {
 
         LOGGER.info("Incoming SetTariffRequest for meter: {}.", request.getDeviceIdentification());
-        final SetTariffResponse response = new SetTariffResponse();
+        final SetActivityCalendarAsyncResponse response = new SetActivityCalendarAsyncResponse();
 
         try {
 
             final String deviceIdentification = request.getDeviceIdentification();
-            final SetTariffRequestData requestData = request.getSetTariffRequestData();
+            final ActivityCalendarDataType requestData = request.getActivityCalendarData();
 
-            final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getTariff(),
+            final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getActivityCalendar(),
                     ActivityCalendar.class);
 
             final String correlationUid = this.configurationService.setTariff(organisationIdentification,
