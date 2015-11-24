@@ -1,12 +1,6 @@
-<!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+	License, Version 2.0 (the "License"); you may not use this file except in 
+	compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
 	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
@@ -19,12 +13,13 @@
 	<xsd:element name="PeriodicMeterReadsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-			<xsd:element name="DeviceIdentification" minOccurs="1" maxOccurs="1" type="common:DeviceIdentification"/>
-				<xsd:element name="PeriodicMeterReadsRequestData" type="tns:PeriodicMeterReadsRequestData" minOccurs="0" maxOccurs="unbounded" />
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				<xsd:element name="PeriodicMeterReadsRequestData" type="tns:PeriodicMeterReadsRequestData"
+					minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
 	<xsd:element name="PeriodicMeterReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -32,16 +27,9 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
-	<xsd:element name="RetrievePeriodicMeterReadsRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
-			<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-			
+
+	<xsd:element name="RetrievePeriodicMeterReadsRequest" type="tns:RetrieveRequestType" />
+
 	<xsd:element name="RetrievePeriodicMeterReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -49,7 +37,18 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
+	<xsd:element name="RetrievePeriodicMeterReadsRequestGas"
+		type="tns:RetrieveRequestType" />
+
+	<xsd:element name="RetrievePeriodicMeterReadsResponseGas">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="PeriodicMeterReadsContainerGas" type="tns:PeriodicMeterReadsContainerGas" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
 	<xsd:element name="ActualMeterReadsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -57,7 +56,7 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
 	<xsd:element name="ActualMeterReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -65,38 +64,49 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
-	<xsd:element name="RetrieveActualMeterReadsRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
-				<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	
+
+	<xsd:element name="RetrieveActualMeterReadsRequest" type="tns:RetrieveRequestType" />
+
 	<xsd:element name="RetrieveActualMeterReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="ActualMeterReads" type="tns:ActualMeterReads" minOccurs="1" maxOccurs="1" />
+				<xsd:element name="ActualMeterReads" type="tns:ActualMeterReads" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
+	<xsd:element name="RetrieveActualMeterReadsRequestGas"
+		type="tns:RetrieveRequestType" />
+
+	<xsd:element name="RetrieveActualMeterReadsResponseGas">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="ActualMeterReadsGas" type="tns:ActualMeterReadsGas" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
 	<!-- DATATYPES -->
-		
+
+	<xsd:complexType name="RetrieveRequestType">
+		<xsd:sequence>
+			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+			<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<xsd:complexType name="PeriodicMeterReadsRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="common:Query">
 				<xsd:sequence>
-					<xsd:element name="PeriodType" type="tns:PeriodType" minOccurs="1" maxOccurs="1" />
-					<xsd:element name="BeginDate" type="xsd:date" minOccurs="1" maxOccurs="1" />
-					<xsd:element name="EndDate" type="xsd:date" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="PeriodType" type="tns:PeriodType" />
+					<xsd:element name="BeginDate" type="xsd:date" />
+					<xsd:element name="EndDate" type="xsd:date" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<xsd:simpleType name="PeriodType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="DAILY" />
@@ -104,41 +114,70 @@
 			<xsd:enumeration value="INTERVAL" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<xsd:complexType name="PeriodicMeterReadsContainer">
 		<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
-			<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />	
-			<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+			<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
+			<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
+				minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
-			<xsd:element name="LogTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="PeriodType" type="tns:PeriodType" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="LogTime" type="xsd:dateTime" />
+			<xsd:element name="PeriodType" type="tns:PeriodType" />
+			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue"
+				minOccurs="0" />
+			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue"
+				minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="ActualMeterReads">
 		<xsd:sequence>
-			<xsd:element name="LogTime" type="xsd:dateTime" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="LogTime" type="xsd:dateTime" />
+			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
+			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
+	<xsd:complexType name="PeriodicMeterReadsContainerGas">
+		<xsd:sequence>
+			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+			<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
+			<xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="PeriodicMeterReadsGas">
+		<xsd:sequence>
+			<xsd:element name="LogTime" type="xsd:dateTime" />
+			<xsd:element name="PeriodType" type="tns:PeriodType" />
+			<xsd:element name="Consumption" type="tns:MeterValue" />
+			<xsd:element name="CaptureTime" type="xsd:dateTime" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="ActualMeterReadsGas">
+		<xsd:sequence>
+			<xsd:element name="LogTime" type="xsd:dateTime" />
+			<xsd:element name="Consumption" type="tns:MeterValue" />
+			<xsd:element name="CaptureTime" type="xsd:dateTime" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<xsd:simpleType name="MeterValue">
-		 <xsd:restriction base="xsd:long">
-			 <xsd:minInclusive value="0"/>
-			 <xsd:maxInclusive value="9223372036854775807"/>
-		 </xsd:restriction>
+		<xsd:restriction base="xsd:long">
+			<xsd:minInclusive value="0" />
+			<xsd:maxInclusive value="9223372036854775807" />
+		</xsd:restriction>
 	</xsd:simpleType>
 
 </xsd:schema>

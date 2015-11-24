@@ -17,7 +17,16 @@
     <xsd:element name="OrganisationIdentification" type="tns:Identification"/>
     <xsd:element name="UserName" type="tns:Identification"/>
     <xsd:element name="ApplicationName" type="tns:Identification"/>
-
+    
+	<xsd:complexType name="ActionHeaderType">
+		<xsd:sequence>
+			<xsd:element type="tns:Identification"
+				name="OrganisationIdentification" />
+			<xsd:element type="tns:Identification" name="UserName" />
+			<xsd:element type="tns:Identification" name="ApplicationName" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	<xsd:simpleType name="Identification">
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:minLength value="1"/>

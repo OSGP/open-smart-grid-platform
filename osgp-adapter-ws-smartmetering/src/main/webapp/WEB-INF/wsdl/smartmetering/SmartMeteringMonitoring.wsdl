@@ -1,158 +1,249 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Platform version: ${display.version} -->
 
-<wsdl:definitions 
-    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
-    xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
-    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-    xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0"
-    targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0">
-        
-    <wsdl:types>
-        <xsd:schema 
-            targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring/imports" 
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-            
-            <xsd:import 
-                namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10" 
-                schemaLocation="schemas/sm-monitoring.xsd" />
-        </xsd:schema>
-    </wsdl:types>    
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+	xmlns:common="http://www.alliander.com/schemas/osgp/common/2014/10"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0"
+	targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring-v1.0">
 
-    <wsdl:message name="ActionHeader">
-        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
-        <wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-    </wsdl:message>
-    
-    <!-- REQUEST_PERIODIC_METER_DATA -->
-    
-    <wsdl:message name="PeriodicMeterReadsRequest">
-        <wsdl:part element="smmon:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="PeriodicMeterReadsResponse">
-        <wsdl:part element="smmon:PeriodicMeterReadsResponse" name="PeriodicMeterReadsResponse">
-        </wsdl:part>
-    </wsdl:message>
-    
-    <wsdl:message name="RetrievePeriodicMeterReadsRequest">
-        <wsdl:part element="smmon:RetrievePeriodicMeterReadsRequest" name="RetrievePeriodicMeterReadsRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="RetrievePeriodicMeterReadsResponse">
-        <wsdl:part element="smmon:RetrievePeriodicMeterReadsResponse" name="RetrievePeriodicMeterReadsResponse">
-        </wsdl:part>
-    </wsdl:message>
-    
-    <!--  ACTUAL METER READS -->
-    <wsdl:message name="ActualMeterReadsRequest">
-    	<wsdl:part element="smmon:ActualMeterReadsRequest" name="ActualMeterReadsRequest" />
-    </wsdl:message>
-    <wsdl:message name="ActualMeterReadsResponse">
-    	<wsdl:part element="smmon:ActualMeterReadsResponse" name="ActualMeterReadsResponse" />
-    </wsdl:message>
-    
-    <wsdl:message name="RetrieveActualMeterReadsRequest">
-    	<wsdl:part element="smmon:RetrieveActualMeterReadsRequest"  name="RetrieveActualMeterReadsRequest" />
-    </wsdl:message>
-    <wsdl:message name="RetrieveActualMeterReadsResponse">
-    	<wsdl:part element="smmon:RetrieveActualMeterReadsResponse" name="RetrieveActualMeterReadsResponse" />
-    </wsdl:message>
-    
-    
-    <wsdl:portType name="SmartmetermonitoringPort">
-   
-        <wsdl:operation name="RequestPeriodicMeterReads">
-            <wsdl:input message="tns:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:PeriodicMeterReadsResponse" name="PeriodicMeterReadsResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        
-         <wsdl:operation name="RetrievePeriodicMeterReads">
-            <wsdl:input message="tns:RetrievePeriodicMeterReadsRequest" name="RetrievePeriodicMeterReadsRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:RetrievePeriodicMeterReadsResponse" name="RetrievePeriodicMeterReadsResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        
-        <wsdl:operation name="RequestActualMeterReads">
-        	<wsdl:input message="tns:ActualMeterReadsRequest" name="ActualMeterReadsRequest">
-        	</wsdl:input>
-        	<wsdl:output message="tns:ActualMeterReadsResponse" name="ActualMeterReadsResponse">
-        	</wsdl:output>
-        </wsdl:operation>
-        
-        <wsdl:operation name="RetrieveActualMeterReads">
-        	<wsdl:input message="tns:RetrieveActualMeterReadsRequest" name="RetrieveActualMeterReadsRequest">
-        	</wsdl:input>
-        	<wsdl:output message="tns:RetrieveActualMeterReadsResponse" name="RetrieveActualMeterReadsResponse">
-        	</wsdl:output>
-        </wsdl:operation>
+	<wsdl:types>
+		<xsd:schema
+			targetNamespace="http://www.alliander.com/definitions/osgp/smartmetering/sm-monitoring/imports"
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-    </wsdl:portType>
-    
-    <wsdl:binding name="SmartmetermonitoringPortSoap11" type="tns:SmartmetermonitoringPort">
-        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+			<xsd:import
+				namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+				schemaLocation="schemas/sm-monitoring.xsd" />
+				
+			<xsd:element name="ActionHeader" type="common:ActionHeaderType"/>
+		</xsd:schema>
+	</wsdl:types>
 
-        <wsdl:operation name="RequestPeriodicMeterReads">
-            <soap:operation soapAction="" />
-            <wsdl:input name="PeriodicMeterReadsRequest">
-                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output name="PeriodicMeterReadsResponse">
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
+	<!-- REQUEST_PERIODIC_METER_DATA -->
 
- 		<wsdl:operation name="RetrievePeriodicMeterReads">
-            <soap:operation soapAction="" />
-            <wsdl:input name="RetrievePeriodicMeterReadsRequest">
-                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output name="RetrievePeriodicMeterReadsResponse">
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
-        
-        <wsdl:operation name="RequestActualMeterReads">
-        	<soap:operation soapAction="" />
-        	<wsdl:input name="ActualMeterReadsRequest">
-        		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-        	</wsdl:input>
-        	<wsdl:output name="ActualMeterReadsResponse">
-                <soap:body use="literal" />
-        	</wsdl:output>
-        </wsdl:operation>
-        
+	<wsdl:message name="PeriodicMeterReadsRequest">
+		<wsdl:part element="smmon:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="PeriodicMeterReadsResponse">
+		<wsdl:part element="smmon:PeriodicMeterReadsResponse" name="PeriodicMeterReadsResponse">
+		</wsdl:part>
+	</wsdl:message>
+
+	<wsdl:message name="RetrievePeriodicMeterReadsRequest">
+		<wsdl:part element="smmon:RetrievePeriodicMeterReadsRequest"
+			name="RetrievePeriodicMeterReadsRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="RetrievePeriodicMeterReadsResponse">
+		<wsdl:part element="smmon:RetrievePeriodicMeterReadsResponse"
+			name="RetrievePeriodicMeterReadsResponse">
+		</wsdl:part>
+	</wsdl:message>
+
+	<!-- REQUEST_PERIODIC_METER_DATA GAS -->
+	<wsdl:message name="RetrievePeriodicMeterReadsResponseGas">
+		<wsdl:part element="smmon:RetrievePeriodicMeterReadsResponseGas"
+			name="RetrievePeriodicMeterReadsResponseGas">
+		</wsdl:part>
+	</wsdl:message>
+
+	<!-- ACTUAL METER READS -->
+	<wsdl:message name="ActualMeterReadsRequest">
+		<wsdl:part element="smmon:ActualMeterReadsRequest" name="ActualMeterReadsRequest" />
+	</wsdl:message>
+	<wsdl:message name="ActualMeterReadsResponse">
+		<wsdl:part element="smmon:ActualMeterReadsResponse" name="ActualMeterReadsResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="RetrieveActualMeterReadsRequest">
+		<wsdl:part element="smmon:RetrieveActualMeterReadsRequest"
+			name="RetrieveActualMeterReadsRequest" />
+	</wsdl:message>
+	<wsdl:message name="RetrieveActualMeterReadsResponse">
+		<wsdl:part element="smmon:RetrieveActualMeterReadsResponse"
+			name="RetrieveActualMeterReadsResponse" />
+	</wsdl:message>
+
+	<!-- ACTUAL METER READS GAS -->
+
+	<wsdl:message name="RetrieveActualMeterReadsResponseGas">
+		<wsdl:part element="smmon:RetrieveActualMeterReadsResponseGas"
+			name="RetrieveActualMeterReadsResponseGas" />
+	</wsdl:message>
+
+	<!-- FOR USE IN BINDING -->
+	<wsdl:message name="SoapHeaders">
+		<wsdl:part name="ActionHeaders" element="ActionHeader"/>
+	</wsdl:message>
+
+
+	<wsdl:portType name="SmartmetermonitoringPort">
+
+		<wsdl:operation name="RequestPeriodicMeterReads">
+			<wsdl:input message="tns:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:PeriodicMeterReadsResponse"
+				name="PeriodicMeterReadsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrievePeriodicMeterReads">
+			<wsdl:input message="tns:RetrievePeriodicMeterReadsRequest"
+				name="RetrievePeriodicMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:RetrievePeriodicMeterReadsResponse"
+				name="RetrievePeriodicMeterReadsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RequestPeriodicMeterReadsGas">
+			<wsdl:input message="tns:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:PeriodicMeterReadsResponse"
+				name="PeriodicMeterReadsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrievePeriodicMeterReadsGas">
+			<wsdl:input message="tns:RetrievePeriodicMeterReadsRequest"
+				name="RetrievePeriodicMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:RetrievePeriodicMeterReadsResponseGas"
+				name="RetrievePeriodicMeterReadsResponseGas">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RequestActualMeterReads">
+			<wsdl:input message="tns:ActualMeterReadsRequest" name="ActualMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:ActualMeterReadsResponse" name="ActualMeterReadsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrieveActualMeterReads">
+			<wsdl:input message="tns:RetrieveActualMeterReadsRequest"
+				name="RetrieveActualMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:RetrieveActualMeterReadsResponse"
+				name="RetrieveActualMeterReadsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RequestActualMeterReadsGas">
+			<wsdl:input message="tns:ActualMeterReadsRequest" name="ActualMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:ActualMeterReadsResponse" name="ActualMeterReadsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrieveActualMeterReadsGas">
+			<wsdl:input message="tns:RetrieveActualMeterReadsRequest"
+				name="RetrieveActualMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:RetrieveActualMeterReadsResponseGas"
+				name="RetrieveActualMeterReadsResponseGas">
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="SmartmetermonitoringPortSoap11" type="tns:SmartmetermonitoringPort">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+
+		<wsdl:operation name="RequestPeriodicMeterReads">
+			<soap:operation soapAction="" />
+			<wsdl:input name="PeriodicMeterReadsRequest">
+				<soap:header message="tns:SoapHeaders" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="PeriodicMeterReadsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrievePeriodicMeterReads">
+			<soap:operation soapAction="" />
+			<wsdl:input name="RetrievePeriodicMeterReadsRequest">
+				<soap:header message="tns:SoapHeaders" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="RetrievePeriodicMeterReadsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RequestActualMeterReads">
+			<soap:operation soapAction="" />
+			<wsdl:input name="ActualMeterReadsRequest">
+				<soap:header message="tns:SoapHeaders" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="ActualMeterReadsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
 		<wsdl:operation name="RetrieveActualMeterReads">
 			<soap:operation soapAction="" />
 			<wsdl:input name="RetrieveActualMeterReadsRequest">
-        		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" use="literal" />
 			</wsdl:input>
 			<wsdl:output name="RetrieveActualMeterReadsResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
-        
-    </wsdl:binding>
-    <wsdl:service name="SmartmetermonitoringPortService">
-        <wsdl:port binding="tns:SmartmetermonitoringPortSoap11" name="SmartmetermonitoringPortSoap11">
-            <soap:address
-                location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/" />
-        </wsdl:port>
-    </wsdl:service>
+
+		<wsdl:operation name="RequestPeriodicMeterReadsGas">
+			<soap:operation soapAction="" />
+			<wsdl:input name="PeriodicMeterReadsRequestGas">
+				<soap:header message="tns:SoapHeaders" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="PeriodicMeterReadsResponseGas">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrievePeriodicMeterReadsGas">
+			<soap:operation soapAction="" />
+			<wsdl:input name="RetrievePeriodicMeterReadsRequestGas">
+				<soap:header message="tns:SoapHeaders" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="RetrievePeriodicMeterReadsResponseGas">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RequestActualMeterReadsGas">
+			<soap:operation soapAction="" />
+			<wsdl:input name="ActualMeterReadsRequestGas">
+				<soap:header message="tns:SoapHeaders" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="ActualMeterReadsResponseGas">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="RetrieveActualMeterReadsGas">
+			<soap:operation soapAction="" />
+			<wsdl:input name="RetrieveActualMeterReadsRequestGas">
+				<soap:header message="tns:SoapHeaders" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="RetrieveActualMeterReadsResponseGas">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="SmartmetermonitoringPortService">
+		<wsdl:port binding="tns:SmartmetermonitoringPortSoap11"
+			name="SmartmetermonitoringPortSoap11">
+			<soap:address
+				location="http://localhost:8080/osgp-adapter-ws-smartmetering/smartMetering/monitoringService/" />
+		</wsdl:port>
+	</wsdl:service>
 </wsdl:definitions>

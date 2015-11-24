@@ -21,10 +21,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeter
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveActualMeterReadsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveRequestType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -91,7 +90,7 @@ public class SmartMeteringMonitoringEndpoint {
     @ResponsePayload
     public RetrievePeriodicMeterReadsResponse requestPeriodicData(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RetrievePeriodicMeterReadsRequest request) throws OsgpException {
+            @RequestPayload final RetrieveRequestType request) throws OsgpException {
 
         LOGGER.info("Incoming RetrievePeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -181,7 +180,7 @@ public class SmartMeteringMonitoringEndpoint {
     @ResponsePayload
     public RetrieveActualMeterReadsResponse retrieveActualMeterReads(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RetrieveActualMeterReadsRequest request) throws OsgpException {
+            @RequestPayload final RetrieveRequestType request) throws OsgpException {
 
         LOGGER.info("Incoming RetreiveActualMeterReadsRequest for meter: {}", request.getDeviceIdentification());
 
