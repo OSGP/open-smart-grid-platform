@@ -44,7 +44,7 @@ public class SetTariffRequestMessageProcessor extends DeviceRequestMessageProces
 
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
         try {
-
+            messageMetadata.handleMessage(message);
             final ActivityCalendar activityCalendarDto = (ActivityCalendar) message.getObject();
 
             this.configurationService.setTariff(messageMetadata.getOrganisationIdentification(),
