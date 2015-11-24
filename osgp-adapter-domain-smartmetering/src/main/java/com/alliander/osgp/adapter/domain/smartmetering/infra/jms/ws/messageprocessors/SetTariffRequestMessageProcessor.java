@@ -41,7 +41,7 @@ public class SetTariffRequestMessageProcessor extends WebServiceRequestMessagePr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
@@ -76,8 +76,8 @@ public class SetTariffRequestMessageProcessor extends WebServiceRequestMessagePr
 
             final ActivityCalendar activityCalendar = (ActivityCalendar) dataObject;
 
-            this.configurationService.setTariff(organisationIdentification, deviceIdentification, correlationUid,
-                    activityCalendar, messageType);
+            this.configurationService.setActivityCalendar(organisationIdentification, deviceIdentification,
+                    correlationUid, activityCalendar, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

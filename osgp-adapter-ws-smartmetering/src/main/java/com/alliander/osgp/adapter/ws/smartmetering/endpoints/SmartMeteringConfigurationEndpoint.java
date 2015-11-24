@@ -106,13 +106,13 @@ public class SmartMeteringConfigurationEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SetTariffRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetActivityCalendarRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public SetActivityCalendarAsyncResponse setTariff(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetActivityCalendarRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming SetTariffRequest for meter: {}.", request.getDeviceIdentification());
+        LOGGER.info("Incoming SetActivityCalendarRequest for meter: {}.", request.getDeviceIdentification());
         final SetActivityCalendarAsyncResponse response = new SetActivityCalendarAsyncResponse();
 
         try {
@@ -133,7 +133,7 @@ public class SmartMeteringConfigurationEndpoint {
 
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while setting tariffs on device: {} for organisation {}.",
+            LOGGER.error("Exception: {} while setting activity calendar on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);

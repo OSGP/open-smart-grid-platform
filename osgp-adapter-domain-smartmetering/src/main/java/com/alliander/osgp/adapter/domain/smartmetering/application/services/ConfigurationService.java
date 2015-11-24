@@ -136,7 +136,7 @@ public class ConfigurationService {
             @Identification final String deviceIdentification, final String correlationUid,
             final ActivityCalendar activityCalendar, final String messageType) throws FunctionalException {
 
-        LOGGER.info("setTariff for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("set Activity Calendar for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
