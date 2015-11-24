@@ -17,7 +17,6 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
     private List<DayProfileAction> dayProfileActionList;
 
     public DayProfile(final Integer dayId, final List<DayProfileAction> dayProfileActionList) {
-        super();
         this.dayId = dayId;
         this.dayProfileActionList = new ArrayList<DayProfileAction>(dayProfileActionList);
     }
@@ -36,16 +35,16 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
     }
 
     @Override
-    public int compareTo(final DayProfile o) {
-        return o.dayId.compareTo(this.dayId);
+    public int compareTo(final DayProfile other) {
+        return this.dayId.compareTo(other.dayId);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.dayId == null) ? 0 : this.dayId.hashCode());
-        result = prime * result + ((this.dayProfileActionList == null) ? 0 : this.dayProfileActionList.hashCode());
+        result = prime * result + this.dayId.hashCode();
+        result = prime * result + this.dayProfileActionList.hashCode();
         return result;
     }
 
@@ -61,18 +60,10 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
             return false;
         }
         final DayProfile other = (DayProfile) obj;
-        if (this.dayId == null) {
-            if (other.dayId != null) {
-                return false;
-            }
-        } else if (!this.dayId.equals(other.dayId)) {
+        if (!this.dayId.equals(other.dayId)) {
             return false;
         }
-        if (this.dayProfileActionList == null) {
-            if (other.dayProfileActionList != null) {
-                return false;
-            }
-        } else if (!this.dayProfileActionList.equals(other.dayProfileActionList)) {
+        if (!this.dayProfileActionList.equals(other.dayProfileActionList)) {
             return false;
         }
         return true;

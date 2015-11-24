@@ -28,7 +28,6 @@ public class WeekProfile implements Comparable<WeekProfile>, Serializable {
     public WeekProfile(final String weekProfileName, final DayProfile monday, final DayProfile tuesday,
             final DayProfile wednesday, final DayProfile thursday, final DayProfile friday, final DayProfile saturday,
             final DayProfile sunday) {
-        super();
         this.weekProfileName = weekProfileName;
         this.monday = monday;
         this.tuesday = tuesday;
@@ -79,8 +78,8 @@ public class WeekProfile implements Comparable<WeekProfile>, Serializable {
     }
 
     @Override
-    public int compareTo(final WeekProfile o) {
-        return o.weekProfileName.compareTo(this.weekProfileName);
+    public int compareTo(final WeekProfile other) {
+        return this.weekProfileName.compareTo(other.weekProfileName);
     }
 
     @Override
@@ -110,60 +109,28 @@ public class WeekProfile implements Comparable<WeekProfile>, Serializable {
             return false;
         }
         final WeekProfile other = (WeekProfile) obj;
-        if (this.friday == null) {
-            if (other.friday != null) {
-                return false;
-            }
-        } else if (!this.friday.equals(other.friday)) {
+        if (!this.friday.equals(other.friday)) {
             return false;
         }
-        if (this.monday == null) {
-            if (other.monday != null) {
-                return false;
-            }
-        } else if (!this.monday.equals(other.monday)) {
+        if (!this.monday.equals(other.monday)) {
             return false;
         }
-        if (this.saturday == null) {
-            if (other.saturday != null) {
-                return false;
-            }
-        } else if (!this.saturday.equals(other.saturday)) {
+        if (!this.saturday.equals(other.saturday)) {
             return false;
         }
-        if (this.sunday == null) {
-            if (other.sunday != null) {
-                return false;
-            }
-        } else if (!this.sunday.equals(other.sunday)) {
+        if (!this.sunday.equals(other.sunday)) {
             return false;
         }
-        if (this.thursday == null) {
-            if (other.thursday != null) {
-                return false;
-            }
-        } else if (!this.thursday.equals(other.thursday)) {
+        if (!this.thursday.equals(other.thursday)) {
             return false;
         }
-        if (this.tuesday == null) {
-            if (other.tuesday != null) {
-                return false;
-            }
-        } else if (!this.tuesday.equals(other.tuesday)) {
+        if (!this.tuesday.equals(other.tuesday)) {
             return false;
         }
-        if (this.wednesday == null) {
-            if (other.wednesday != null) {
-                return false;
-            }
-        } else if (!this.wednesday.equals(other.wednesday)) {
+        if (!this.wednesday.equals(other.wednesday)) {
             return false;
         }
-        if (this.weekProfileName == null) {
-            if (other.weekProfileName != null) {
-                return false;
-            }
-        } else if (!this.weekProfileName.equals(other.weekProfileName)) {
+        if (!this.weekProfileName.equals(other.weekProfileName)) {
             return false;
         }
         return true;

@@ -286,7 +286,6 @@
 	<xsd:complexType name="DayProfileActionType">		
 		<xsd:sequence>
 			<xsd:element name="StartTime" type="xsd:time" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="ScriptLogicalName" type="tns:NameType" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="ScriptSelector" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>

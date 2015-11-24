@@ -17,7 +17,6 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
     private WeekProfile weekProfile;
 
     public SeasonProfile(final String seasonProfileName, final Date seasonStart, final WeekProfile weekProfile) {
-        super();
         this.seasonProfileName = seasonProfileName;
         this.seasonStart = seasonStart;
         this.weekProfile = weekProfile;
@@ -42,17 +41,17 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
     }
 
     @Override
-    public int compareTo(final SeasonProfile o) {
-        return o.seasonProfileName.compareTo(this.seasonProfileName);
+    public int compareTo(final SeasonProfile other) {
+        return this.seasonProfileName.compareTo(other.seasonProfileName);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.seasonProfileName == null) ? 0 : this.seasonProfileName.hashCode());
-        result = prime * result + ((this.seasonStart == null) ? 0 : this.seasonStart.hashCode());
-        result = prime * result + ((this.weekProfile == null) ? 0 : this.weekProfile.hashCode());
+        result = prime * result + this.seasonProfileName.hashCode();
+        result = prime * result + this.seasonStart.hashCode();
+        result = prime * result + this.weekProfile.hashCode();
         return result;
     }
 
@@ -68,25 +67,13 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
             return false;
         }
         final SeasonProfile other = (SeasonProfile) obj;
-        if (this.seasonProfileName == null) {
-            if (other.seasonProfileName != null) {
-                return false;
-            }
-        } else if (!this.seasonProfileName.equals(other.seasonProfileName)) {
+        if (!this.seasonProfileName.equals(other.seasonProfileName)) {
             return false;
         }
-        if (this.seasonStart == null) {
-            if (other.seasonStart != null) {
-                return false;
-            }
-        } else if (!this.seasonStart.equals(other.seasonStart)) {
+        if (!this.seasonStart.equals(other.seasonStart)) {
             return false;
         }
-        if (this.weekProfile == null) {
-            if (other.weekProfile != null) {
-                return false;
-            }
-        } else if (!this.weekProfile.equals(other.weekProfile)) {
+        if (!this.weekProfile.equals(other.weekProfile)) {
             return false;
         }
         return true;

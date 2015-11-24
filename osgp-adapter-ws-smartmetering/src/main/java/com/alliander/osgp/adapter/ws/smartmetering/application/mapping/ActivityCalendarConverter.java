@@ -26,8 +26,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter
-extends
-        BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
+        extends
+BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendar convertTo(
@@ -88,9 +88,8 @@ extends
     }
 
     private DayProfileAction processDayProfileActionType(final DayProfileActionType dpat) {
-        return new DayProfileAction(dpat.getScriptLogicalName(), (dpat.getScriptSelector() != null ? dpat
-                .getScriptSelector().intValue() : null), (dpat.getStartTime() != null ? dpat.getStartTime()
-                        .toGregorianCalendar().getTime() : null));
+        return new DayProfileAction((dpat.getScriptSelector() != null ? dpat.getScriptSelector().intValue() : null),
+                (dpat.getStartTime() != null ? dpat.getStartTime().toGregorianCalendar().getTime() : null));
 
     }
 }
