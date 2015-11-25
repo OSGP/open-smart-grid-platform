@@ -22,19 +22,19 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
 
 /**
- * Class for processing set alarm notifications request messages
+ * Class for processing set Activity Calendar request messages
  */
 @Component("dlmsSetTariffRequestMessageProcessor")
-public class SetTariffRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetTariffRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarRequestMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public SetTariffRequestMessageProcessor() {
+    public SetActivityCalendarRequestMessageProcessor() {
         super(DeviceRequestMessageType.SET_TARIFF);
     }
 
