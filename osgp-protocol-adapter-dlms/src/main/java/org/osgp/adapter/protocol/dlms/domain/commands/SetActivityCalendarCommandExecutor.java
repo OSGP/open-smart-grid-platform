@@ -2,19 +2,20 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 
-import org.jboss.logging.Logger;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component()
-public class SetTariffCommandExecutor implements CommandExecutor<String, AccessResultCode> {
+public class SetActivityCalendarCommandExecutor implements CommandExecutor<String, AccessResultCode> {
 
-    private Logger logger = Logger.getLogger(SetTariffCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarCommandExecutor.class);
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final String tariff) throws IOException {
-        this.logger.debug(String.format("SetTariffCommandExecutor.execute <%s>called!! :-)", tariff));
+        LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", tariff);
         return AccessResultCode.SUCCESS;
     }
 }

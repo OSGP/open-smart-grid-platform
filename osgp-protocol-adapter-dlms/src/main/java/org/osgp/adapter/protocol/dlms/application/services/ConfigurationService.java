@@ -12,7 +12,7 @@ import java.io.Serializable;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.SetTariffCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -52,7 +52,7 @@ public class ConfigurationService {
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     @Autowired
-    private SetTariffCommandExecutor setTariffCommandExecutor;
+    private SetActivityCalendarCommandExecutor setTariffCommandExecutor;
 
     // === REQUEST Special Days DATA ===
 
