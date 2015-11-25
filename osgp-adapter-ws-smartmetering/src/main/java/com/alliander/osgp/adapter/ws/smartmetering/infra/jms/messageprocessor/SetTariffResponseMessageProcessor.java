@@ -22,7 +22,6 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Notifica
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 @Component("domainSmartMeteringSetTariffResponseMessageProcessor")
@@ -52,8 +51,6 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        final OsgpException osgpException = null;
-
         String result = null;
         String notificationMessage = null;
         NotificationType notificationType = null;
@@ -73,7 +70,6 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
             LOGGER.info("messageType: {}", messageType);
             LOGGER.info("organisationIdentification: {}", organisationIdentification);
             LOGGER.info("deviceIdentification: {}", deviceIdentification);
-            LOGGER.info("osgpException: {}", osgpException);
             return;
         }
 
