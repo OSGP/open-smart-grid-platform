@@ -22,10 +22,6 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-/**
- * @author OSGP
- *
- */
 @Component("domainSmartmeteringSetTariffRequestMessageProcessor")
 public class SetTariffRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
@@ -41,7 +37,7 @@ public class SetTariffRequestMessageProcessor extends WebServiceRequestMessagePr
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
