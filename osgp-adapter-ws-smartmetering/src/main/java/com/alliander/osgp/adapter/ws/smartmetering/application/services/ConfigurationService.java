@@ -38,7 +38,7 @@ public class ConfigurationService {
 
     public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -98,7 +98,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -115,18 +115,18 @@ public class ConfigurationService {
         return correlationUid;
     }
 
-    public String enqueueSetTariffRequest(@Identification final String organisationIdentification,
+    public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
-                    throws FunctionalException {
+            throws FunctionalException {
 
-        LOGGER.debug("enqueueSetTariffRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_TARIFF, correlationUid, organisationIdentification,
+                SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR, correlationUid, organisationIdentification,
                 deviceIdentification, activityCalendar);
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -146,8 +146,9 @@ public class ConfigurationService {
                 .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification, alarmSwitches);
     }
 
-    public String setTariff(final String organisationIdentification, final String deviceIdentification,
+    public String setActivityCalendar(final String organisationIdentification, final String deviceIdentification,
             final ActivityCalendar activityCalendar) throws FunctionalException {
-        return this.enqueueSetTariffRequest(organisationIdentification, deviceIdentification, activityCalendar);
+        return this.enqueueSetActivityCalendarRequest(organisationIdentification, deviceIdentification,
+                activityCalendar);
     }
 }

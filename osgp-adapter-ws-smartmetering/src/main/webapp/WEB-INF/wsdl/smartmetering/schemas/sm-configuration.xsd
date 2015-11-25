@@ -224,8 +224,8 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<!-- Set Tariff Result type -->
-	<xsd:element name="RetrieveSetTariffResultRequest">
+	<!-- Set ActivityCalendar Result type -->
+	<xsd:element name="RetrieveSetActivityCalendarResultRequest">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
@@ -234,7 +234,7 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="RetrieveSetTariffResultResponse">
+	<xsd:element name="RetrieveSetActivityCalendarResultResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="result" type="xsd:string" minOccurs="1" maxOccurs="1"/>
@@ -242,7 +242,7 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<!-- Set Tariff type -->
+	<!-- Set ActivityCalendar type -->
 	<xsd:complexType name="SeasonsType">		
 		<xsd:sequence>
 			<xsd:element name="Season" type="tns:SeasonType" minOccurs="1" maxOccurs="4"/>

@@ -24,13 +24,13 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResp
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-@Component("domainSmartMeteringSetTariffResponseMessageProcessor")
-public class SetTariffResponseMessageProcessor extends DomainResponseMessageProcessor {
+@Component("domainSmartMeteringSetActivityCalendarResponseMessageProcessor")
+public class SetActivityCalendarResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetTariffResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarResponseMessageProcessor.class);
 
     @Autowired
     private MeterResponseDataRepository meterResponseDataRepository;
@@ -38,13 +38,13 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
     @Autowired
     private NotificationService notificationService;
 
-    protected SetTariffResponseMessageProcessor() {
-        super(DeviceFunction.SET_TARIFF);
+    protected SetActivityCalendarResponseMessageProcessor() {
+        super(DeviceFunction.SET_ACTIVITY_CALENDAR);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering set tariff response message");
+        LOGGER.debug("Processing smart metering set Activity Calendar response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -78,7 +78,8 @@ public class SetTariffResponseMessageProcessor extends DomainResponseMessageProc
 
             final String resultString = (String) message.getObject();
 
-            // Convert the events to entity and save the Set Tariff result
+            // Convert the events to entity and save the Set Activity Calendar
+            // result
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, resultString);
             this.meterResponseDataRepository.save(meterResponseData);

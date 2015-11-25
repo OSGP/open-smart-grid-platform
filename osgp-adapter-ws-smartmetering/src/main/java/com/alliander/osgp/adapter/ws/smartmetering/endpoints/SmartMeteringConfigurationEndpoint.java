@@ -20,8 +20,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetTariffResultRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetTariffResultResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
@@ -108,7 +108,7 @@ public class SmartMeteringConfigurationEndpoint {
 
     @PayloadRoot(localPart = "SetActivityCalendarRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetActivityCalendarAsyncResponse setTariff(
+    public SetActivityCalendarAsyncResponse setActivityCalendar(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetActivityCalendarRequest request) throws OsgpException {
 
@@ -123,7 +123,7 @@ public class SmartMeteringConfigurationEndpoint {
             final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getActivityCalendar(),
                     ActivityCalendar.class);
 
-            final String correlationUid = this.configurationService.setTariff(organisationIdentification,
+            final String correlationUid = this.configurationService.setActivityCalendar(organisationIdentification,
                     deviceIdentification, activityCalendar);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
@@ -143,15 +143,15 @@ public class SmartMeteringConfigurationEndpoint {
 
     }
 
-    @PayloadRoot(localPart = "RetrieveSetTariffResultRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "RetrieveSetActivityCalendarResultRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public RetrieveSetTariffResultResponse retrieveSetTariffResponse(
+    public RetrieveSetActivityCalendarResultResponse retrieveSetActivityCalendarResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RetrieveSetTariffResultRequest request) throws OsgpException {
+            @RequestPayload final RetrieveSetActivityCalendarResultRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming RetrieveSetTariffResultRequest for meter: {}", request.getDeviceIdentification());
+        LOGGER.info("Incoming retrieveSetActivityCalendarResponse for meter: {}", request.getDeviceIdentification());
 
-        final RetrieveSetTariffResultResponse response = new RetrieveSetTariffResultResponse();
+        final RetrieveSetActivityCalendarResultResponse response = new RetrieveSetActivityCalendarResultResponse();
 
         try {
             final MeterResponseData meterResponseData = this.meterResponseDataRepository
@@ -174,13 +174,14 @@ public class SmartMeteringConfigurationEndpoint {
             if ((e instanceof FunctionalException)
                     && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
 
-                LOGGER.warn("No response data for correlation UID {} in RetrieveSetTariffResultRequest",
+                LOGGER.warn("No response data for correlation UID {} in RetrieveSetActivityCalendarResultRequest",
                         request.getCorrelationUid());
 
                 throw e;
 
             } else {
-                LOGGER.error("Exception: {} while sending SetTariffResult of device: {} for organisation {}.",
+                LOGGER.error(
+                        "Exception: {} while sending SetActivityCalendarResult of device: {} for organisation {}.",
                         new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
 
                 this.handleException(e);

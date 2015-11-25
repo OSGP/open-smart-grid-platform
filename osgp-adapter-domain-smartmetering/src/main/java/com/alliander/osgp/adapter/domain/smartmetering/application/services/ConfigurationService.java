@@ -185,15 +185,15 @@ public class ConfigurationService {
                 deviceIdentification, result, exception, null), messageType);
     }
 
-    public void handleSetTariffResponse(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType,
+    public void handleSetActivityCalendarResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
             final String resultString) {
-        LOGGER.info("handleSetTariffResponse for MessageType: {}", messageType);
+        LOGGER.info("handleSetActivityCalendarResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = responseMessageResultType;
         if (exception != null) {
-            LOGGER.error("Set Tariff Response not ok. Unexpected Exception", exception);
+            LOGGER.error("Set Activity Calendar Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
