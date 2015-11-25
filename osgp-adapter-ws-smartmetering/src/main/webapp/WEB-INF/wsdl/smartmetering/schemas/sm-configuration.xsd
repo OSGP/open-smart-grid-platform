@@ -251,7 +251,7 @@
 	
 	<xsd:complexType name="SeasonType">		
 		<xsd:sequence>
-			<xsd:element name="SeasonProfile_name" type="tns:NameType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="SeasonProfileName" type="tns:NameType" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="SeasonStart" type="xsd:dateTime" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="WeekProfile" type="tns:WeekType" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>
