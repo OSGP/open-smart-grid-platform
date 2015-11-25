@@ -157,7 +157,8 @@ public class ConfigurationService {
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
-                    "Set Activity Calendar Result is OK");
+                    "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
+                            + activityCalendar.getCalendarName());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setActivityCalendar", e);
