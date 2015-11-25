@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -20,6 +21,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.LazyCollection;
@@ -107,6 +109,22 @@ NetworkAddressInterface {
     @LazyCollection(LazyCollectionOption.FALSE)
     private final List<Ean> eans = new ArrayList<Ean>();
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "relay_status_one")
+    private RelayStatus relayOneStatus;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "relay_status_two")
+    private RelayStatus relayTwoStatus;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "relay_status_three")
+    private RelayStatus relayThreeStatus;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "relay_status_four")
+    private RelayStatus relayFourStatus;
+
     public Device() {
         // Default constructor
     }
@@ -136,6 +154,14 @@ NetworkAddressInterface {
         this.containerMunicipality = containerMunicipality;
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
+    }
+
+    public void setRelayStatus(final RelayStatus relayOneStatus, final RelayStatus relayTwoStatus,
+            final RelayStatus relayThreeStatus, final RelayStatus relayFourStatus) {
+        this.relayOneStatus = relayOneStatus;
+        this.relayTwoStatus = relayTwoStatus;
+        this.relayThreeStatus = relayThreeStatus;
+        this.relayFourStatus = relayFourStatus;
     }
 
     @Override
@@ -366,6 +392,38 @@ NetworkAddressInterface {
      */
     public List<Ean> getEans() {
         return this.eans;
+    }
+
+    public RelayStatus getRelayOneStatus() {
+        return this.relayOneStatus;
+    }
+
+    public void setRelayOneStatus(final RelayStatus relayOneStatus) {
+        this.relayOneStatus = relayOneStatus;
+    }
+
+    public RelayStatus getRelayTwoStatus() {
+        return this.relayTwoStatus;
+    }
+
+    public void setRelayTwoStatus(final RelayStatus relayTwoStatus) {
+        this.relayTwoStatus = relayTwoStatus;
+    }
+
+    public RelayStatus getRelayThreeStatus() {
+        return this.relayThreeStatus;
+    }
+
+    public void setRelayThreeStatus(final RelayStatus relayThreeStatus) {
+        this.relayThreeStatus = relayThreeStatus;
+    }
+
+    public RelayStatus getRelayFourStatus() {
+        return this.relayFourStatus;
+    }
+
+    public void setRelayFourStatus(final RelayStatus relayFourStatus) {
+        this.relayFourStatus = relayFourStatus;
     }
 
     public void addOrganisation(final String organisationIdentification) {
