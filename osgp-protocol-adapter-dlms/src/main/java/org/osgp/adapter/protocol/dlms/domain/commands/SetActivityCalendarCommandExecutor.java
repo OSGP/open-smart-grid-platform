@@ -14,8 +14,8 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Strin
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarCommandExecutor.class);
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final String tariff) throws IOException {
-        LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", tariff);
+    public AccessResultCode execute(final ClientConnection conn, final String activityCalendarName) throws IOException {
+        LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendarName);
         return AccessResultCode.SUCCESS;
     }
 }

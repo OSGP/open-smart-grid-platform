@@ -11,8 +11,8 @@ import java.io.Serializable;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -52,7 +52,7 @@ public class ConfigurationService {
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     @Autowired
-    private SetActivityCalendarCommandExecutor setTariffCommandExecutor;
+    private SetActivityCalendarCommandExecutor setActicityCalendarCommandExecutor;
 
     // === REQUEST Special Days DATA ===
 
@@ -134,12 +134,12 @@ public class ConfigurationService {
         }
     }
 
-    public void setTariff(final String organisationIdentification, final String deviceIdentification,
+    public void setActivityCalendar(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final ActivityCalendar activityCalendar,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
-        LOGGER.info("setTariff called for device: {} for organisation: {}", deviceIdentification,
+        LOGGER.info("setActivityCalendar called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
         try {
@@ -148,19 +148,19 @@ public class ConfigurationService {
             LOGGER.info("**************************************");
             LOGGER.info("*************0-0:13.0.0.255***********");
             LOGGER.info("**************************************");
-            LOGGER.info("Tariff to set on the device: {}", activityCalendar.getCalendarName());
+            LOGGER.info("Activity Calendar to set on the device: {}", activityCalendar.getCalendarName());
             LOGGER.info("********** activityCalendar " + activityCalendar);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            LOGGER.info("device for Tariff is: {}", device);
+            LOGGER.info("device for Activity Calendar is: {}", device);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
-                    "Set Tariff Result is OK");
+                    "Set Activity Calendar Result is OK");
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setTariff", e);
+            LOGGER.error("Unexpected exception during setActivityCalendar", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,

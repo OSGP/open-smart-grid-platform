@@ -24,7 +24,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
 /**
  * Class for processing set Activity Calendar request messages
  */
-@Component("dlmsSetTariffRequestMessageProcessor")
+@Component("dlmsSetActicityCalendarRequestMessageProcessor")
 public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
@@ -35,19 +35,19 @@ public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMes
     private ConfigurationService configurationService;
 
     public SetActivityCalendarRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_TARIFF);
+        super(DeviceRequestMessageType.SET_ACTIVITY_CALENDAR);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing set tariff request message");
+        LOGGER.debug("Processing set activity calendar request message");
 
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
         try {
             messageMetadata.handleMessage(message);
             final ActivityCalendar activityCalendarDto = (ActivityCalendar) message.getObject();
 
-            this.configurationService.setTariff(messageMetadata.getOrganisationIdentification(),
+            this.configurationService.setActivityCalendar(messageMetadata.getOrganisationIdentification(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(),
                     activityCalendarDto, this.responseMessageSender, messageMetadata.getDomain(),
                     messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
