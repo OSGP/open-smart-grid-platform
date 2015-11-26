@@ -52,7 +52,7 @@ public class ConfigurationService {
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     @Autowired
-    private SetActivityCalendarCommandExecutor setActicityCalendarCommandExecutor;
+    private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
     // === REQUEST Special Days DATA ===
 
@@ -155,10 +155,24 @@ public class ConfigurationService {
 
             LOGGER.info("device for Activity Calendar is: {}", device);
 
+            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            AccessResultCode accessResultCode = null;
+            try {
+                accessResultCode = this.setActivityCalendarCommandExecutor.execute(conn, activityCalendar);
+                if (AccessResultCode.SUCCESS != accessResultCode) {
+                    throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar was not SUCCESS: "
+                            + accessResultCode);
+                }
+            } finally {
+                if (conn != null && conn.isConnected()) {
+                    conn.close();
+                }
+            }
+
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
-                    "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
-                            + activityCalendar.getCalendarName());
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, ""
+                            + accessResultCode + " Set Activity Calendar Result is OK for device id: "
+                            + deviceIdentification + " calendar name: " + activityCalendar.getCalendarName());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setActivityCalendar", e);
@@ -167,6 +181,7 @@ public class ConfigurationService {
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
+
     }
 
     public void setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
