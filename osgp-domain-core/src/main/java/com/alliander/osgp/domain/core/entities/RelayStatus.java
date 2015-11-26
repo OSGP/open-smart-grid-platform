@@ -43,6 +43,11 @@ public class RelayStatus extends AbstractEntity {
         this.lastKnowSwitchingTime = lastKnowSwitchingTime;
     }
 
+    public void updateStatus(final boolean lastKnownState, final Date lastKnowSwitchingTime) {
+        this.lastKnownState = lastKnownState;
+        this.lastKnowSwitchingTime = lastKnowSwitchingTime;
+    }
+
     public boolean isLastKnownState() {
         return this.lastKnownState;
     }
