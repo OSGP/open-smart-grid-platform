@@ -127,19 +127,18 @@ CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
                     this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
             final DataObject positiveActiveEnergyTariff2 = interval ? null : bufferedObjects
                     .get(BUFFER_INDEX_A_POS_RATE_2);
-            logPositiveActiveEnergyTariff2(positiveActiveEnergyTariff2);
+            this.logPositiveActiveEnergyTariff2(positiveActiveEnergyTariff2);
             final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_NEG
                     : BUFFER_INDEX_A_NEG_RATE_1);
             LOGGER.debug("negativeActiveEnergyTariff1: {}",
                     this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
             final DataObject negativeActiveEnergyTariff2 = interval ? null : bufferedObjects
                     .get(BUFFER_INDEX_A_NEG_RATE_2);
-            logNegativeActiveEnergyTariff2(negativeActiveEnergyTariff2);
-
+            this.logNegativeActiveEnergyTariff2(negativeActiveEnergyTariff2);
             final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                     (Long) positiveActiveEnergyTariff1.value(), getActiveEnergyTariff2(interval,
                             positiveActiveEnergyTariff2), (Long) negativeActiveEnergyTariff1.value(),
-                            getActiveEnergyTariff2(interval, negativeActiveEnergyTariff2), periodType);
+                    getActiveEnergyTariff2(interval, negativeActiveEnergyTariff2), periodType);
             periodicMeterReads.add(nextPeriodicMeterReads);
         }
 
@@ -174,7 +173,7 @@ CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
                 && endMonthOfYear >= bufferedDateTime.getMonthOfYear()
                 && endDayOfMonth >= bufferedDateTime.getDayOfMonth();
 
-                return checkBegin && checkEnd;
+        return checkBegin && checkEnd;
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
