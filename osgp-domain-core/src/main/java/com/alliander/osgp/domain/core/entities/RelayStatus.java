@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -24,7 +25,7 @@ public class RelayStatus extends AbstractEntity {
 
     private static final long serialVersionUID = -6288672019209482063L;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 
@@ -41,7 +42,10 @@ public class RelayStatus extends AbstractEntity {
         // Default constructor
     }
 
-    public RelayStatus(final boolean lastKnownState, final Date lastKnowSwitchingTime) {
+    public RelayStatus(final Device device, final int index, final boolean lastKnownState,
+            final Date lastKnowSwitchingTime) {
+        this.device = device;
+        this.index = index;
         this.lastKnownState = lastKnownState;
         this.lastKnowSwitchingTime = lastKnowSwitchingTime;
     }
@@ -73,5 +77,13 @@ public class RelayStatus extends AbstractEntity {
 
     public void Device(final Device device) {
         this.device = device;
+    }
+
+    public int getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(final int index) {
+        this.index = index;
     }
 }

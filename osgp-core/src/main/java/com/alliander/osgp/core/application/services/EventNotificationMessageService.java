@@ -15,12 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.RelayStatus;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
+import com.alliander.osgp.domain.core.valueobjects.RelayType;
 
 @Service
 @Transactional
@@ -56,35 +58,33 @@ public class EventNotificationMessageService {
         }
     }
 
-    public void handleLightSwitchingEvent(final Device device, final EventType eventType, final int index) {
+    private void handleLightSwitchingEvent(final Device device, final EventType eventType, final int index) {
+
+        // if the index == 0 handle all LIGHT relays, otherwise just handle the
+        // index
+        if (index == 0) {
+            for (final DeviceOutputSetting d : device.getOutputSettings()) {
+                if (d.getOutputType().equals(RelayType.LIGHT)) {
+                    this.updateRelayStatus(index, device, eventType);
+                }
+            }
+        } else {
+            this.updateRelayStatus(index, device, eventType);
+        }
+    }
+
+    private void updateRelayStatus(final int index, final Device device, final EventType eventType) {
 
         final boolean lightsOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType);
 
-        // if (index == 1) {
-        //
-        // LOGGER.info("Handling new {} for device {}.", eventType.name(),
-        // device.getDeviceIdentification());
-        //
-        // fnly handle fhe event if fhe relay doesn't have a status yet, or
+        // Only handle the event if the relay doesn't have a status yet, or
         // if the state changed
-        // if ((device.getRelayOneStatus() == null) ||
-        // (device.getRelayOneStatus().isLastKnownState() != lightsOn)) {
-        //
-        // LOGGER.info("Handling new {} for device {}.", eventType.name(),
-        // device.getDeviceIdentification());
-        // }
-        // } else {
-        //
-        // }
+        if ((device.getRelayStatusByIndex(index) == null)
+                || (device.getRelayStatusByIndex(index).isLastKnownState() != lightsOn)) {
+            LOGGER.info("Handling new {} for device {}.", eventType.name(), device.getDeviceIdentification());
 
-    }
-
-    private RelayStatus updateRelayStatus(RelayStatus relay, final boolean lightsOn) {
-        if (relay == null) {
-            relay = new RelayStatus(lightsOn, DateTime.now().toDate());
-        } else {
-            relay.updateStatus(lightsOn, DateTime.now().toDate());
+            device.updateRelayStatusByIndex(index, new RelayStatus(device, index, lightsOn, DateTime.now().toDate()));
+            this.deviceRepository.save(device);
         }
-        return relay;
     }
 }

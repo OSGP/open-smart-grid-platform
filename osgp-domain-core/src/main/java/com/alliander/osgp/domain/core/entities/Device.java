@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -35,7 +36,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-NetworkAddressInterface {
+        NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -107,7 +108,7 @@ NetworkAddressInterface {
     @LazyCollection(LazyCollectionOption.FALSE)
     private final List<Ean> eans = new ArrayList<Ean>();
 
-    @OneToMany(mappedBy = "device")
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<RelayStatus> relayStatusses;
 
@@ -293,6 +294,47 @@ NetworkAddressInterface {
 
     public List<RelayStatus> getRelayStatusses() {
         return this.relayStatusses;
+    }
+
+    /**
+     * Returns the {@link RelayStatus} for the given index, or null if it
+     * doesn't exist.
+     *
+     * @param index
+     * @return
+     */
+    public RelayStatus getRelayStatusByIndex(final int index) {
+        final RelayStatus output = null;
+
+        for (final RelayStatus r : this.relayStatusses) {
+            if (r.getIndex() == index) {
+                return r;
+            }
+        }
+        return output;
+    }
+
+    /**
+     * Updates the {@link RelayStatus} for the given index if it exists.
+     *
+     * @param index
+     * @return
+     */
+    public void updateRelayStatusByIndex(final int index, final RelayStatus relayStatus) {
+
+        boolean found = false;
+
+        for (final RelayStatus r : this.relayStatusses) {
+            if (r.getIndex() == index) {
+                r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            this.relayStatusses.add(relayStatus);
+        }
     }
 
     @Override
