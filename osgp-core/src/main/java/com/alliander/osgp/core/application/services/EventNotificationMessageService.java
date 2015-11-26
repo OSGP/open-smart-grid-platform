@@ -60,14 +60,22 @@ public class EventNotificationMessageService {
 
         final boolean lightsOn = EventType.LIGHT_EVENTS_LIGHT_ON.equals(eventType);
 
-        if (index != 0) {
-            // only handle the event if the relay doesn't have a status yet, or
-            // if the state changed
-            if ((device.getRelayOneStatus() == null) || (device.getRelayOneStatus().isLastKnownState() != lightsOn)) {
-
-                LOGGER.info("Handling new {} for device {}.", eventType.name(), device.getDeviceIdentification());
-            }
-        }
+        // if (index == 1) {
+        //
+        // LOGGER.info("Handling new {} for device {}.", eventType.name(),
+        // device.getDeviceIdentification());
+        //
+        // fnly handle fhe event if fhe relay doesn't have a status yet, or
+        // if the state changed
+        // if ((device.getRelayOneStatus() == null) ||
+        // (device.getRelayOneStatus().isLastKnownState() != lightsOn)) {
+        //
+        // LOGGER.info("Handling new {} for device {}.", eventType.name(),
+        // device.getDeviceIdentification());
+        // }
+        // } else {
+        //
+        // }
 
     }
 

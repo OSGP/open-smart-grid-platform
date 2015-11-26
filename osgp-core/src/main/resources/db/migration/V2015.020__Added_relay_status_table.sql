@@ -3,8 +3,10 @@ CREATE TABLE relay_status (
     creation_time timestamp without time zone NOT NULL,
     modification_time timestamp without time zone NOT NULL,
     version bigint,
+    index smallint NOT NULL,
     last_known_state boolean NOT NULL,
-    last_know_switching_time timestamp without time zone NOT NULL
+    last_know_switching_time timestamp without time zone NOT NULL,
+    device_id bigint NOT NULL
 );
 
 ALTER TABLE public.relay_status OWNER TO osp_admin;

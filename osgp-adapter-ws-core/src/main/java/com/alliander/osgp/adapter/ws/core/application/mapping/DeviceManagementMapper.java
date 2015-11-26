@@ -157,10 +157,14 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                 destination.getEans().addAll(eans);
 
-                destination.setRelayOneStatus(this.convertRelayStatus(source.getRelayOneStatus()));
-                destination.setRelayTwoStatus(this.convertRelayStatus(source.getRelayTwoStatus()));
-                destination.setRelayThreeStatus(this.convertRelayStatus(source.getRelayThreeStatus()));
-                destination.setRelayFourStatus(this.convertRelayStatus(source.getRelayFourStatus()));
+                RelayStatus temp = null;
+                for (final com.alliander.osgp.domain.core.entities.RelayStatus r : source.getRelayStatusses()) {
+                    temp = this.convertRelayStatus(r);
+
+                    if (temp != null) {
+                        destination.getRelayStatuses().add(temp);
+                    }
+                }
 
                 return destination;
             }

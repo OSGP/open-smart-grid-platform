@@ -11,8 +11,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -24,9 +24,12 @@ public class RelayStatus extends AbstractEntity {
 
     private static final long serialVersionUID = -6288672019209482063L;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
+    @ManyToOne()
+    @JoinColumn(name = "device_id", nullable = false)
     private Device device;
+
+    @Column
+    private int index;
 
     @Column
     private boolean lastKnownState;
