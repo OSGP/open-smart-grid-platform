@@ -37,9 +37,12 @@
 
 	<xsd:element name="PeriodicMeterReadsResponse">
 		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="tns:PeriodicMeterReadsContainer"></xsd:extension>
-			</xsd:complexContent>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
+				<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
+					minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
@@ -70,9 +73,12 @@
 
 	<xsd:element name="PeriodicMeterReadsGasResponse">
 		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="tns:PeriodicMeterReadsContainerGas"></xsd:extension>
-			</xsd:complexContent>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
+				<xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas"
+					minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
@@ -103,9 +109,13 @@
 
 	<xsd:element name="ActualMeterReadsResponse">
 		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="tns:ActualMeterReads"></xsd:extension>
-			</xsd:complexContent>
+			<xsd:sequence>
+				<xsd:element name="LogTime" type="xsd:dateTime" />
+				<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
@@ -136,9 +146,11 @@
 
 	<xsd:element name="ActualMeterReadsGasResponse">
 		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="tns:ActualMeterReadsGas"></xsd:extension>
-			</xsd:complexContent>
+			<xsd:sequence>
+				<xsd:element name="LogTime" type="xsd:dateTime" />
+				<xsd:element name="Consumption" type="tns:MeterValue" />
+				<xsd:element name="CaptureTime" type="xsd:dateTime" />
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
@@ -165,15 +177,6 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<xsd:complexType name="PeriodicMeterReadsContainer">
-		<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-			<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
-			<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
-				minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
-	</xsd:complexType>
-
 	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:dateTime" />
@@ -187,37 +190,10 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="ActualMeterReads">
-		<xsd:sequence>
-			<xsd:element name="LogTime" type="xsd:dateTime" />
-			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
-			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
-			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
-			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="PeriodicMeterReadsContainerGas">
-		<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-			<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
-			<xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas"
-				minOccurs="0" maxOccurs="unbounded" />
-		</xsd:sequence>
-	</xsd:complexType>
-
 	<xsd:complexType name="PeriodicMeterReadsGas">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:dateTime" />
 			<xsd:element name="PeriodType" type="tns:PeriodType" />
-			<xsd:element name="Consumption" type="tns:MeterValue" />
-			<xsd:element name="CaptureTime" type="xsd:dateTime" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="ActualMeterReadsGas">
-		<xsd:sequence>
-			<xsd:element name="LogTime" type="xsd:dateTime" />
 			<xsd:element name="Consumption" type="tns:MeterValue" />
 			<xsd:element name="CaptureTime" type="xsd:dateTime" />
 		</xsd:sequence>

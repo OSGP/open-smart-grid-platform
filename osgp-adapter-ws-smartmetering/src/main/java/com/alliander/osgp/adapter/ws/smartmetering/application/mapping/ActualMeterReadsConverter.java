@@ -19,20 +19,22 @@ import ma.glasnost.orika.metadata.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 
 public class ActualMeterReadsConverter
-        extends
-        BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads> {
+extends
+BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads convertTo(
+    public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse convertTo(
             final ActualMeterReads source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> destinationType) {
 
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads destination = new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads();
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
+                .createActualMeterReadsResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -55,7 +57,7 @@ public class ActualMeterReadsConverter
 
     @Override
     public ActualMeterReads convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads source,
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse source,
             final Type<ActualMeterReads> destinationType) {
 
         return new ActualMeterReads(source.getLogTime().toGregorianCalendar().getTime(),
