@@ -17,7 +17,6 @@
 				namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
 				schemaLocation="schemas/sm-monitoring.xsd" />
 				
-			<xsd:element name="ActionHeader" type="common:ActionHeaderType"/>
 		</xsd:schema>
 	</wsdl:types>
 
@@ -27,26 +26,44 @@
 		<wsdl:part element="smmon:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="PeriodicMeterReadsResponse">
-		<wsdl:part element="smmon:PeriodicMeterReadsResponse" name="PeriodicMeterReadsResponse">
+	
+	<wsdl:message name="PeriodicMeterReadsAsyncResponse">
+		<wsdl:part element="smmon:PeriodicMeterReadsAsyncResponse" name="PeriodicMeterReadsAsyncResponse">
 		</wsdl:part>
 	</wsdl:message>
 
-	<wsdl:message name="RetrievePeriodicMeterReadsRequest">
-		<wsdl:part element="smmon:RetrievePeriodicMeterReadsRequest"
-			name="RetrievePeriodicMeterReadsRequest">
+	<wsdl:message name="PeriodicMeterReadsAsyncRequest">
+		<wsdl:part element="smmon:PeriodicMeterReadsAsyncRequest"
+			name="PeriodicMeterReadsAsyncRequest">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="RetrievePeriodicMeterReadsResponse">
-		<wsdl:part element="smmon:RetrievePeriodicMeterReadsResponse"
-			name="RetrievePeriodicMeterReadsResponse">
+	
+	<wsdl:message name="PeriodicMeterReadsResponse">
+		<wsdl:part element="smmon:PeriodicMeterReadsResponse"
+			name="PeriodicMeterReadsResponse">
 		</wsdl:part>
 	</wsdl:message>
 
 	<!-- REQUEST_PERIODIC_METER_DATA GAS -->
-	<wsdl:message name="RetrievePeriodicMeterReadsResponseGas">
-		<wsdl:part element="smmon:RetrievePeriodicMeterReadsResponseGas"
-			name="RetrievePeriodicMeterReadsResponseGas">
+	<wsdl:message name="PeriodicMeterReadsGasRequest">
+		<wsdl:part element="smmon:PeriodicMeterReadsGasRequest" name="PeriodicMeterReadsGasRequest">
+		</wsdl:part>
+	</wsdl:message>
+	
+	<wsdl:message name="PeriodicMeterReadsGasAsyncResponse">
+		<wsdl:part element="smmon:PeriodicMeterReadsGasAsyncResponse" name="PeriodicMeterReadsGasAsyncResponse">
+		</wsdl:part>
+	</wsdl:message>
+
+	<wsdl:message name="PeriodicMeterReadsGasAsyncRequest">
+		<wsdl:part element="smmon:PeriodicMeterReadsGasAsyncRequest"
+			name="PeriodicMeterReadsGasAsyncRequest">
+		</wsdl:part>
+	</wsdl:message>
+	
+	<wsdl:message name="PeriodicMeterReadsGasResponse">
+		<wsdl:part element="smmon:PeriodicMeterReadsGasResponse"
+			name="PeriodicMeterReadsGasResponse">
 		</wsdl:part>
 	</wsdl:message>
 
@@ -54,97 +71,112 @@
 	<wsdl:message name="ActualMeterReadsRequest">
 		<wsdl:part element="smmon:ActualMeterReadsRequest" name="ActualMeterReadsRequest" />
 	</wsdl:message>
-	<wsdl:message name="ActualMeterReadsResponse">
-		<wsdl:part element="smmon:ActualMeterReadsResponse" name="ActualMeterReadsResponse" />
+	<wsdl:message name="ActualMeterReadsAsyncResponse">
+		<wsdl:part element="smmon:ActualMeterReadsAsyncResponse" name="ActualMeterReadsAsyncResponse" />
 	</wsdl:message>
 
-	<wsdl:message name="RetrieveActualMeterReadsRequest">
-		<wsdl:part element="smmon:RetrieveActualMeterReadsRequest"
-			name="RetrieveActualMeterReadsRequest" />
+	<wsdl:message name="ActualMeterReadsAsyncRequest">
+		<wsdl:part element="smmon:ActualMeterReadsAsyncRequest"
+			name="ActualMeterReadsAsyncRequest" />
 	</wsdl:message>
-	<wsdl:message name="RetrieveActualMeterReadsResponse">
-		<wsdl:part element="smmon:RetrieveActualMeterReadsResponse"
-			name="RetrieveActualMeterReadsResponse" />
+	
+	<wsdl:message name="ActualMeterReadsResponse">
+		<wsdl:part element="smmon:ActualMeterReadsResponse"
+			name="ActualMeterReadsResponse" />
 	</wsdl:message>
 
 	<!-- ACTUAL METER READS GAS -->
 
-	<wsdl:message name="RetrieveActualMeterReadsResponseGas">
-		<wsdl:part element="smmon:RetrieveActualMeterReadsResponseGas"
-			name="RetrieveActualMeterReadsResponseGas" />
+	<wsdl:message name="ActualMeterReadsGasRequest">
+		<wsdl:part element="smmon:ActualMeterReadsGasRequest" name="ActualMeterReadsGasRequest" />
+	</wsdl:message>
+	<wsdl:message name="ActualMeterReadsGasAsyncResponse">
+		<wsdl:part element="smmon:ActualMeterReadsGasAsyncResponse" name="ActualMeterReadsGasAsyncResponse" />
+	</wsdl:message>
+
+	<wsdl:message name="ActualMeterReadsGasAsyncRequest">
+		<wsdl:part element="smmon:ActualMeterReadsGasAsyncRequest"
+			name="ActualMeterReadsGasAsyncRequest" />
+	</wsdl:message>
+	
+	<wsdl:message name="ActualMeterReadsGasResponse">
+		<wsdl:part element="smmon:ActualMeterReadsGasResponse"
+			name="ActualMeterReadsGasResponse" />
 	</wsdl:message>
 
 	<!-- FOR USE IN BINDING -->
 	<wsdl:message name="SoapHeaders">
-		<wsdl:part name="ActionHeaders" element="ActionHeader"/>
+		<wsdl:part name="org" element="common:OrganisationIdentification"/>
+		<wsdl:part name="user" element="common:UserName"/>
+		<wsdl:part name="app" element="common:ApplicationName"/>
 	</wsdl:message>
 
 
 	<wsdl:portType name="SmartmetermonitoringPort">
 
-		<wsdl:operation name="RequestPeriodicMeterReads">
+		<wsdl:operation name="GetPeriodicMeterReads">
 			<wsdl:input message="tns:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:PeriodicMeterReadsAsyncResponse"
+				name="PeriodicMeterReadsAsyncResponse">
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="GetPeriodicMeterReadsResponse">
+			<wsdl:input message="tns:PeriodicMeterReadsAsyncRequest"
+				name="PeriodicMeterReadsAsyncRequest">
 			</wsdl:input>
 			<wsdl:output message="tns:PeriodicMeterReadsResponse"
 				name="PeriodicMeterReadsResponse">
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RetrievePeriodicMeterReads">
-			<wsdl:input message="tns:RetrievePeriodicMeterReadsRequest"
-				name="RetrievePeriodicMeterReadsRequest">
+		<wsdl:operation name="GetPeriodicMeterReadsGas">
+			<wsdl:input message="tns:PeriodicMeterReadsGasRequest" name="PeriodicMeterReadsGasRequest">
 			</wsdl:input>
-			<wsdl:output message="tns:RetrievePeriodicMeterReadsResponse"
-				name="RetrievePeriodicMeterReadsResponse">
+			<wsdl:output message="tns:PeriodicMeterReadsGasAsyncResponse"
+				name="PeriodicMeterReadsGasAsyncResponse">
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RequestPeriodicMeterReadsGas">
-			<wsdl:input message="tns:PeriodicMeterReadsRequest" name="PeriodicMeterReadsRequest">
+		<wsdl:operation name="GetPeriodicMeterReadsGasResponse">
+			<wsdl:input message="tns:PeriodicMeterReadsGasAsyncRequest"
+				name="PeriodicMeterReadsGasAsyncRequest">
 			</wsdl:input>
-			<wsdl:output message="tns:PeriodicMeterReadsResponse"
-				name="PeriodicMeterReadsResponse">
+			<wsdl:output message="tns:PeriodicMeterReadsGasResponse"
+				name="PeriodicMeterReadsGasResponse">
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RetrievePeriodicMeterReadsGas">
-			<wsdl:input message="tns:RetrievePeriodicMeterReadsRequest"
-				name="RetrievePeriodicMeterReadsRequest">
-			</wsdl:input>
-			<wsdl:output message="tns:RetrievePeriodicMeterReadsResponseGas"
-				name="RetrievePeriodicMeterReadsResponseGas">
-			</wsdl:output>
-		</wsdl:operation>
-
-		<wsdl:operation name="RequestActualMeterReads">
+		<wsdl:operation name="GetActualMeterReads">
 			<wsdl:input message="tns:ActualMeterReadsRequest" name="ActualMeterReadsRequest">
 			</wsdl:input>
-			<wsdl:output message="tns:ActualMeterReadsResponse" name="ActualMeterReadsResponse">
+			<wsdl:output message="tns:ActualMeterReadsAsyncResponse" name="ActualMeterReadsAsyncResponse">
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RetrieveActualMeterReads">
-			<wsdl:input message="tns:RetrieveActualMeterReadsRequest"
-				name="RetrieveActualMeterReadsRequest">
+		<wsdl:operation name="GetActualMeterReadsResponse">
+			<wsdl:input message="tns:ActualMeterReadsAsyncRequest"
+				name="ActualMeterReadsAsyncRequest">
 			</wsdl:input>
-			<wsdl:output message="tns:RetrieveActualMeterReadsResponse"
-				name="RetrieveActualMeterReadsResponse">
+			<wsdl:output message="tns:ActualMeterReadsResponse"
+				name="ActualMeterReadsResponse">
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RequestActualMeterReadsGas">
-			<wsdl:input message="tns:ActualMeterReadsRequest" name="ActualMeterReadsRequest">
+		<wsdl:operation name="GetActualMeterReadsGas">
+			<wsdl:input message="tns:ActualMeterReadsGasRequest" name="ActualMeterReadsGasRequest">
 			</wsdl:input>
-			<wsdl:output message="tns:ActualMeterReadsResponse" name="ActualMeterReadsResponse">
+			<wsdl:output message="tns:ActualMeterReadsGasAsyncResponse" name="ActualMeterReadsGasAsyncResponse">
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RetrieveActualMeterReadsGas">
-			<wsdl:input message="tns:RetrieveActualMeterReadsRequest"
-				name="RetrieveActualMeterReadsRequest">
+		<wsdl:operation name="GetActualMeterReadsGasResponse">
+			<wsdl:input message="tns:ActualMeterReadsGasAsyncRequest"
+				name="ActualMeterReadsGasAsyncRequest">
 			</wsdl:input>
-			<wsdl:output message="tns:RetrieveActualMeterReadsResponseGas"
-				name="RetrieveActualMeterReadsResponseGas">
+			<wsdl:output message="tns:ActualMeterReadsGasResponse"
+				name="ActualMeterReadsGasResponse">
 			</wsdl:output>
 		</wsdl:operation>
 	</wsdl:portType>
@@ -153,10 +185,25 @@
 		<soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 
-		<wsdl:operation name="RequestPeriodicMeterReads">
+		<wsdl:operation name="GetPeriodicMeterReads">
 			<soap:operation soapAction="" />
 			<wsdl:input name="PeriodicMeterReadsRequest">
-				<soap:header message="tns:SoapHeaders" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="PeriodicMeterReadsAsyncResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
+		<wsdl:operation name="GetPeriodicMeterReadsResponse">
+			<soap:operation soapAction="" />
+			<wsdl:input name="PeriodicMeterReadsAsyncRequest">
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="PeriodicMeterReadsResponse">
@@ -164,77 +211,78 @@
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RetrievePeriodicMeterReads">
+		<wsdl:operation name="GetActualMeterReads">
 			<soap:operation soapAction="" />
-			<wsdl:input name="RetrievePeriodicMeterReadsRequest">
-				<soap:header message="tns:SoapHeaders" use="literal" />
+			<wsdl:input name="ActualMeterReadsRequest">
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
-			<wsdl:output name="RetrievePeriodicMeterReadsResponse">
+			<wsdl:output name="ActualMeterReadsAsyncResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RequestActualMeterReads">
+		<wsdl:operation name="GetActualMeterReadsResponse">
 			<soap:operation soapAction="" />
-			<wsdl:input name="ActualMeterReadsRequest">
-				<soap:header message="tns:SoapHeaders" use="literal" />
-				<soap:body use="literal" />
+			<wsdl:input name="ActualMeterReadsAsyncRequest">
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
 			</wsdl:input>
 			<wsdl:output name="ActualMeterReadsResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RetrieveActualMeterReads">
+		<wsdl:operation name="GetPeriodicMeterReadsGas">
 			<soap:operation soapAction="" />
-			<wsdl:input name="RetrieveActualMeterReadsRequest">
-				<soap:header message="tns:SoapHeaders" use="literal" />
+			<wsdl:input name="PeriodicMeterReadsGasRequest">
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
+				<soap:body use="literal" />
 			</wsdl:input>
-			<wsdl:output name="RetrieveActualMeterReadsResponse">
+			<wsdl:output name="PeriodicMeterReadsGasAsyncResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RequestPeriodicMeterReadsGas">
+		<wsdl:operation name="GetPeriodicMeterReadsGasResponse">
 			<soap:operation soapAction="" />
-			<wsdl:input name="PeriodicMeterReadsRequestGas">
-				<soap:header message="tns:SoapHeaders" use="literal" />
+			<wsdl:input name="PeriodicMeterReadsGasAsynRequest">
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
-			<wsdl:output name="PeriodicMeterReadsResponseGas">
+			<wsdl:output name="PeriodicMeterReadsGasResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RetrievePeriodicMeterReadsGas">
+		<wsdl:operation name="GetActualMeterReadsGas">
 			<soap:operation soapAction="" />
-			<wsdl:input name="RetrievePeriodicMeterReadsRequestGas">
-				<soap:header message="tns:SoapHeaders" use="literal" />
+			<wsdl:input name="ActualMeterReadsGasRequest">
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
-			<wsdl:output name="RetrievePeriodicMeterReadsResponseGas">
+			<wsdl:output name="ActualMeterReadsGasAsyncResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name="RequestActualMeterReadsGas">
+		<wsdl:operation name="GetActualMeterReadsGasResponse">
 			<soap:operation soapAction="" />
-			<wsdl:input name="ActualMeterReadsRequestGas">
-				<soap:header message="tns:SoapHeaders" use="literal" />
-				<soap:body use="literal" />
+			<wsdl:input name="ActualMeterReadsGasAsyncRequest">
+				<soap:header message="tns:SoapHeaders" part="org" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="user" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="app" use="literal" />
 			</wsdl:input>
-			<wsdl:output name="ActualMeterReadsResponseGas">
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
-
-		<wsdl:operation name="RetrieveActualMeterReadsGas">
-			<soap:operation soapAction="" />
-			<wsdl:input name="RetrieveActualMeterReadsRequestGas">
-				<soap:header message="tns:SoapHeaders" use="literal" />
-			</wsdl:input>
-			<wsdl:output name="RetrieveActualMeterReadsResponseGas">
+			<wsdl:output name="ActualMeterReadsGasResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>

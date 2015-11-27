@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -44,7 +44,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequest
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
@@ -77,7 +77,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequest
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) dataObject;
+            final PeriodicMeterReadsRequestData periodicMeterReadsRequest = (PeriodicMeterReadsRequestData) dataObject;
 
             this.monitoringService.requestPeriodicMeterReads(organisationIdentification, deviceIdentification,
                     correlationUid, periodicMeterReadsRequest, messageType);

@@ -19,9 +19,10 @@ public class MonitoringMapper extends ConfigurableMapper {
 
         // domain value object -> dto value object
         mapperFactory
-                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest.class).byDefault()
-                .register();
+        .classMap(
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData.class,
+                com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData.class)
+                .byDefault().register();
 
         mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsConverter());
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsConverter());

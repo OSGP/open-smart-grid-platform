@@ -19,7 +19,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "wsSmartMeteringMonitoringService")
@@ -36,7 +36,7 @@ public class MonitoringService {
 
     private String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            @Identification final PeriodicMeterReadsRequest requestData) throws FunctionalException {
+            @Identification final PeriodicMeterReadsRequestData requestData) throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -69,14 +69,14 @@ public class MonitoringService {
      * @throws FunctionalException
      */
     public String requestPeriodicMeterReads(final String organisationIdentification,
-            final PeriodicMeterReadsRequest requestData) throws FunctionalException {
+            final PeriodicMeterReadsRequestData requestData) throws FunctionalException {
         return this.enqueuePeriodicMeterReadsRequestData(organisationIdentification,
                 requestData.getDeviceIdentification(), requestData);
     }
 
     private String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualMeterReadsRequest requestData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);

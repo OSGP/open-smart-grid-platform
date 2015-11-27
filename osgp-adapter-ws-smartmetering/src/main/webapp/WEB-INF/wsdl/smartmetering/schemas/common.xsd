@@ -1,37 +1,20 @@
-<!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
-<xsd:schema 
- 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10" 
-	attributeFormDefault="unqualified" 
-	elementFormDefault="qualified" 
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+	License, Version 2.0 (the "License"); you may not use this file except in 
+	compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
 	targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10">
-	
-    <xsd:element name="OrganisationIdentification" type="tns:Identification"/>
-    <xsd:element name="UserName" type="tns:Identification"/>
-    <xsd:element name="ApplicationName" type="tns:Identification"/>
-    
-	<xsd:complexType name="ActionHeaderType">
-		<xsd:sequence>
-			<xsd:element type="tns:Identification"
-				name="OrganisationIdentification" />
-			<xsd:element type="tns:Identification" name="UserName" />
-			<xsd:element type="tns:Identification" name="ApplicationName" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
+
+	<xsd:element name="OrganisationIdentification" type="tns:Identification" />
+	<xsd:element name="UserName" type="tns:Identification" />
+	<xsd:element name="ApplicationName" type="tns:Identification" />
+
 	<xsd:simpleType name="Identification">
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:minLength value="1"/>
-			<xsd:maxLength value="40"/>
-			<xsd:pattern value="[^ ]{0,40}"/>
+			<xsd:minLength value="1" />
+			<xsd:maxLength value="40" />
+			<xsd:pattern value="[^ ]{0,40}" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -40,7 +23,7 @@
 			<xsd:length value="17" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<xsd:simpleType name="AlphaNumericType">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[a-zA-Z0-9 ]+" />
@@ -49,9 +32,9 @@
 
 	<xsd:complexType name="Page">
 		<xsd:sequence>
-			<xsd:element name="TotalPages" type="xsd:int" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="PageSize" type="xsd:int" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="CurrentPage" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="TotalPages" type="xsd:int" />
+			<xsd:element name="PageSize" type="xsd:int" />
+			<xsd:element name="CurrentPage" type="xsd:int" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -60,7 +43,7 @@
 			<xsd:minLength value="20" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<xsd:complexType name="Action" abstract="true">
 		<xsd:sequence>
 		</xsd:sequence>
@@ -72,7 +55,7 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-		
+
 	<xsd:complexType name="Command" abstract="true">
 		<xsd:complexContent>
 			<xsd:extension base="tns:Action">
@@ -81,19 +64,40 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="AsyncRequest">
-		<xsd:sequence>
-			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" maxOccurs="1" />
-		</xsd:sequence>
+		<xsd:annotation>
+			<xsd:documentation>for retrieving data after it becomes available
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tns:AsyncProcessingInfo">
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="AsyncResponse">
+		<xsd:annotation>
+			<xsd:documentation>response to a request for data, use this to
+				retrieve data
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tns:AsyncProcessingInfo">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="AsyncProcessingInfo" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>for connecting request for data to an asynchronous
+				response
+			</xsd:documentation>
+		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" minOccurs="1" maxOccurs="1" />				
-			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" />
+			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" />
 		</xsd:sequence>
 	</xsd:complexType>
-	
+
 	<xsd:simpleType name="OsgpResultType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="OK" />
@@ -101,27 +105,27 @@
 			<xsd:enumeration value="NOT OK" />
 		</xsd:restriction>
 	</xsd:simpleType>
-				
+
 	<xsd:element name="FunctionalFault">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Code" type="xsd:int" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="Message" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="Component" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerException" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerMessage" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
+				<xsd:element name="Code" type="xsd:int"></xsd:element>
+				<xsd:element name="Message" type="xsd:string"></xsd:element>
+				<xsd:element name="Component" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerException" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
 	<xsd:element name="TechnicalFault">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Message" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="Component" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerException" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerMessage" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
+				<xsd:element name="Message" type="xsd:string"></xsd:element>
+				<xsd:element name="Component" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerException" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
-	</xsd:element>	
+	</xsd:element>
 </xsd:schema>

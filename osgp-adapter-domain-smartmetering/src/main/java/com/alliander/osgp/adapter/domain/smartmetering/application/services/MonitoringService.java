@@ -21,7 +21,6 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -55,7 +54,7 @@ public class MonitoringService {
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             final String correlationUid,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest periodicMeterReadsRequestValueObject,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData periodicMeterReadsRequestValueObject,
             final String messageType) throws FunctionalException {
 
         LOGGER.info("requestPeriodicMeterReads for organisationIdentification: {} for deviceIdentification: {}",
@@ -74,8 +73,9 @@ public class MonitoringService {
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        final PeriodicMeterReadsRequest periodicMeterReadsRequestDto = this.monitoringMapper.map(
-                periodicMeterReadsRequestValueObject, PeriodicMeterReadsRequest.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData periodicMeterReadsRequestDto = this.monitoringMapper
+                .map(periodicMeterReadsRequestValueObject,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, periodicMeterReadsRequestDto), messageType);

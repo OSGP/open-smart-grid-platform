@@ -10,95 +10,145 @@
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
+	<!-- smart meter periodic -->
 	<xsd:element name="PeriodicMeterReadsRequest">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-				<xsd:element name="PeriodicMeterReadsRequestData" type="tns:PeriodicMeterReadsRequestData"
-					minOccurs="0" maxOccurs="unbounded" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="tns:PeriodicMeterReadsRequestData"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="PeriodicMeterReadsAsyncResponse">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncResponse"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="PeriodicMeterReadsAsyncRequest">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncRequest"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
 	<xsd:element name="PeriodicMeterReadsResponse">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="tns:PeriodicMeterReadsContainer"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="RetrievePeriodicMeterReadsRequest" type="tns:RetrieveRequestType" />
-
-	<xsd:element name="RetrievePeriodicMeterReadsResponse">
+	<!-- gas meter periodic -->
+	<xsd:element name="PeriodicMeterReadsGasRequest">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="PeriodicMeterReadsContainer" type="tns:PeriodicMeterReadsContainer" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="tns:PeriodicMeterReadsRequestData"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="RetrievePeriodicMeterReadsRequestGas"
-		type="tns:RetrieveRequestType" />
-
-	<xsd:element name="RetrievePeriodicMeterReadsResponseGas">
+	<xsd:element name="PeriodicMeterReadsGasAsyncResponse">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="PeriodicMeterReadsContainerGas" type="tns:PeriodicMeterReadsContainerGas" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncResponse"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="PeriodicMeterReadsGasAsyncRequest">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncRequest"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="PeriodicMeterReadsGasResponse">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="tns:PeriodicMeterReadsContainerGas"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<!-- smart meter actual -->
 	<xsd:element name="ActualMeterReadsRequest">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
-			</xsd:sequence>
+			<xsd:simpleContent>
+				<xsd:extension base="common:DeviceIdentification"></xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ActualMeterReadsAsyncResponse">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncResponse"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ActualMeterReadsAsyncRequest">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncRequest"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
 	<xsd:element name="ActualMeterReadsResponse">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="tns:ActualMeterReads"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="RetrieveActualMeterReadsRequest" type="tns:RetrieveRequestType" />
-
-	<xsd:element name="RetrieveActualMeterReadsResponse">
+	<!-- gas meter actual -->
+	<xsd:element name="ActualMeterReadsGasRequest">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="ActualMeterReads" type="tns:ActualMeterReads" />
-			</xsd:sequence>
+			<xsd:simpleContent>
+				<xsd:extension base="common:DeviceIdentification"></xsd:extension>
+			</xsd:simpleContent>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="RetrieveActualMeterReadsRequestGas"
-		type="tns:RetrieveRequestType" />
-
-	<xsd:element name="RetrieveActualMeterReadsResponseGas">
+	<xsd:element name="ActualMeterReadsGasAsyncResponse">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="ActualMeterReadsGas" type="tns:ActualMeterReadsGas" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncResponse"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ActualMeterReadsGasAsyncRequest">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncRequest"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ActualMeterReadsGasResponse">
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="tns:ActualMeterReadsGas"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 
 	<!-- DATATYPES -->
 
-	<xsd:complexType name="RetrieveRequestType">
-		<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-			<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
-		</xsd:sequence>
-	</xsd:complexType>
-
 	<xsd:complexType name="PeriodicMeterReadsRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="common:Query">
 				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
 					<xsd:element name="PeriodType" type="tns:PeriodType" />
 					<xsd:element name="BeginDate" type="xsd:date" />
 					<xsd:element name="EndDate" type="xsd:date" />
