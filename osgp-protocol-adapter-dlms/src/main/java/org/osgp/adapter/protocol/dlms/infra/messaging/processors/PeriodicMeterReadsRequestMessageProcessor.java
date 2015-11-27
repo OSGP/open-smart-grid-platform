@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 
 /**
  * Class for processing Periodic Meter Request messages
@@ -46,11 +46,13 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
         try {
             messageMetadata.handleMessage(message);
 
-            final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) message.getObject();
+            final PeriodicMeterReadsRequestData periodicMeterReadsRequest = (PeriodicMeterReadsRequestData) message
+                    .getObject();
 
             this.monitoringService.requestPeriodicMeterReads(messageMetadata.getOrganisationIdentification(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(), periodicMeterReadsRequest,
-                    this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(),
+                    periodicMeterReadsRequest, this.responseMessageSender, messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -50,7 +50,7 @@ public class MonitoringService {
     // === REQUEST PERIODIC METER DATA ===
 
     public void requestPeriodicMeterReads(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final PeriodicMeterReadsRequest periodicMeterReadsRequest,
+            final String correlationUid, final PeriodicMeterReadsRequestData periodicMeterReadsRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 

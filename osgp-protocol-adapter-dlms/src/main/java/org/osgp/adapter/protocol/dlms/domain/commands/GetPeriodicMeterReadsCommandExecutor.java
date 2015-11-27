@@ -20,12 +20,11 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
+        CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -49,18 +48,15 @@ CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
 
     @Override
     public PeriodicMeterReadsContainer execute(final ClientConnection conn,
-            final PeriodicMeterReadsRequest periodicMeterReadsRequest) throws IOException, ProtocolAdapterException {
-
-        final List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData = periodicMeterReadsRequest
-                .getPeriodicMeterReadsRequestData();
+            final PeriodicMeterReadsRequestData periodicMeterReadsRequest) throws IOException, ProtocolAdapterException {
 
         final PeriodType periodType;
         final DateTime beginDateTime;
         final DateTime endDateTime;
-        if (periodicMeterReadsRequestData != null && !periodicMeterReadsRequestData.isEmpty()) {
-            periodType = periodicMeterReadsRequestData.get(0).getPeriodType();
-            beginDateTime = new DateTime(periodicMeterReadsRequestData.get(0).getBeginDate());
-            endDateTime = new DateTime(periodicMeterReadsRequestData.get(0).getEndDate());
+        if (periodicMeterReadsRequest != null) {
+            periodType = periodicMeterReadsRequest.getPeriodType();
+            beginDateTime = new DateTime(periodicMeterReadsRequest.getBeginDate());
+            endDateTime = new DateTime(periodicMeterReadsRequest.getEndDate());
         } else {
             periodType = PeriodType.MONTHLY;
             beginDateTime = DateTime.now();
@@ -127,19 +123,19 @@ CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
                     this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
             final DataObject positiveActiveEnergyTariff2 = interval ? null : bufferedObjects
                     .get(BUFFER_INDEX_A_POS_RATE_2);
-            logPositiveActiveEnergyTariff2(positiveActiveEnergyTariff2);
+            this.logPositiveActiveEnergyTariff2(positiveActiveEnergyTariff2);
             final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(interval ? BUFFER_INDEX_A_NEG
                     : BUFFER_INDEX_A_NEG_RATE_1);
             LOGGER.debug("negativeActiveEnergyTariff1: {}",
                     this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
             final DataObject negativeActiveEnergyTariff2 = interval ? null : bufferedObjects
                     .get(BUFFER_INDEX_A_NEG_RATE_2);
-            logNegativeActiveEnergyTariff2(negativeActiveEnergyTariff2);
+            this.logNegativeActiveEnergyTariff2(negativeActiveEnergyTariff2);
 
             final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                     (Long) positiveActiveEnergyTariff1.value(), getActiveEnergyTariff2(interval,
                             positiveActiveEnergyTariff2), (Long) negativeActiveEnergyTariff1.value(),
-                            getActiveEnergyTariff2(interval, negativeActiveEnergyTariff2), periodType);
+                    getActiveEnergyTariff2(interval, negativeActiveEnergyTariff2), periodType);
             periodicMeterReads.add(nextPeriodicMeterReads);
         }
 
@@ -174,7 +170,7 @@ CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
                 && endMonthOfYear >= bufferedDateTime.getMonthOfYear()
                 && endDayOfMonth >= bufferedDateTime.getDayOfMonth();
 
-                return checkBegin && checkEnd;
+        return checkBegin && checkEnd;
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
