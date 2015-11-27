@@ -65,12 +65,14 @@ public class EventNotificationMessageService {
         if (index == 0) {
             for (final DeviceOutputSetting d : device.getOutputSettings()) {
                 if (d.getOutputType().equals(RelayType.LIGHT)) {
-                    this.updateRelayStatus(index, device, eventType);
+                    this.updateRelayStatus(d.getExternalId(), device, eventType);
                 }
             }
         } else {
             this.updateRelayStatus(index, device, eventType);
         }
+
+        this.deviceRepository.save(device);
     }
 
     private void updateRelayStatus(final int index, final Device device, final EventType eventType) {
@@ -84,7 +86,6 @@ public class EventNotificationMessageService {
             LOGGER.info("Handling new {} for device {}.", eventType.name(), device.getDeviceIdentification());
 
             device.updateRelayStatusByIndex(index, new RelayStatus(device, index, lightsOn, DateTime.now().toDate()));
-            this.deviceRepository.save(device);
         }
     }
 }
