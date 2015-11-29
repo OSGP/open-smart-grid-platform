@@ -2,6 +2,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -20,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile;
 
@@ -30,7 +33,6 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     private static final int CLASS_ID = 20;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
-    private static final int ATTRIBUTE_ID = 2;
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -40,53 +42,119 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             throws IOException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendar.getCalendarName());
 
-        this.setCalendar(conn, activityCalendar);
+        this.getValues(conn);
 
-        final RequestParameterFactory factoryC = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 6);
-        final RequestParameterFactory factoryS = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 7);
-        final RequestParameterFactory factoryW = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 8);
-        final RequestParameterFactory factoryD = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 9);
-        final RequestParameterFactory factoryT = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 10);
+        final AccessResultCode accessResultCode = this.setCalendar(conn, activityCalendar);
 
         this.getValues(conn);
 
-        final DataObject obj = DataObject.newOctetStringData("fooBar".getBytes());
-
-        final SetRequestParameter request = factoryC.createSetRequestParameter(obj);
-
-        final List<AccessResultCode> l = conn.set(request);
-
-        this.getValues(conn);
-
-        // final AccessResultCode r = l.get(0);
-        // return r;
-        // return conn.set(request).get(0);
-        return AccessResultCode.SUCCESS;
+        return accessResultCode;
     }
 
-    private void setCalendar(final ClientConnection conn, final ActivityCalendar activityCalendar) throws IOException {
+    private AccessResultCode setCalendar(final ClientConnection conn, final ActivityCalendar activityCalendar)
+            throws IOException {
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 6);
         final DataObject obj = DataObject.newOctetStringData(activityCalendar.getCalendarName().getBytes());
         final SetRequestParameter request = factory.createSetRequestParameter(obj);
         final List<AccessResultCode> l = conn.set(request);
 
-        this.setSeasons(conn, activityCalendar.getSeasonProfileList());
+        AccessResultCode accessResultCode = this.setSeasons(conn, activityCalendar.getSeasonProfileList());
+        if (accessResultCode != AccessResultCode.SUCCESS) {
+            return accessResultCode;
+        }
         final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(activityCalendar.getSeasonProfileList());
-        this.setWeeks(conn, weekProfileSet);
-        // TODO
-        // this.setDays(conn, this.getDayProfileSet(weekProfileSet);
+        accessResultCode = this.setWeeks(conn, weekProfileSet);
+        if (accessResultCode != AccessResultCode.SUCCESS) {
+            return accessResultCode;
+        }
+        return this.setDays(conn, this.getDayProfileSet(weekProfileSet));
     }
 
-    private void setWeeks(final ClientConnection conn, final HashSet<WeekProfile> weekProfileSet) throws IOException {
+    private AccessResultCode setDays(final ClientConnection conn, final HashSet<DayProfile> dayProfileSet)
+            throws IOException {
+        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 9);
+        final DataObject dayArray = DataObject.newArrayData(this.getDayObjectList(dayProfileSet));
+        final SetRequestParameter request = factory.createSetRequestParameter(dayArray);
+        final List<AccessResultCode> l = conn.set(request);
+        return l.get(0);
+
+    }
+
+    private List<DataObject> getDayObjectList(final HashSet<DayProfile> dayProfileSet) {
+        final List<DataObject> dayObjectList = new ArrayList<>();
+
+        for (final DayProfile dayProfile : dayProfileSet) {
+            final DataObject dayObject = DataObject.newStructureData(this.getDayObjectElements(dayProfile));
+            dayObjectList.add(dayObject);
+        }
+
+        return dayObjectList;
+    }
+
+    private List<DataObject> getDayObjectElements(final DayProfile dayProfile) {
+        final List<DataObject> dayObjectElements = new ArrayList<>();
+
+        final DataObject dayId = DataObject.newUInteger32Data(dayProfile.getDayId());
+        final DataObject dayActionObjectList = DataObject.newArrayData(this.getDayActionObjectList(dayProfile
+                .getDayProfileActionList()));
+        dayObjectElements.addAll(Arrays.asList(dayId, dayActionObjectList));
+
+        return dayObjectElements;
+    }
+
+    private List<DataObject> getDayActionObjectList(final List<DayProfileAction> dayProfileActionList) {
+        final List<DataObject> dayActionObjectList = new ArrayList<>();
+        for (final DayProfileAction dayProfileAction : dayProfileActionList) {
+
+            final DataObject dayObject = DataObject.newStructureData(this.getDayActionObjectElements(dayProfileAction));
+            dayActionObjectList.add(dayObject);
+
+        }
+        return dayActionObjectList;
+    }
+
+    private List<DataObject> getDayActionObjectElements(final DayProfileAction dayProfileAction) {
+        final List<DataObject> dayActionObjectElements = new ArrayList<>();
+
+        final DateTime dt = new DateTime(dayProfileAction.getStartTime());
+        final DataObject startTimeObject = this.dlmsHelperService.asDataObject(dt);
+
+        // TODO which field represents the script_logical_name?
+        final DataObject nameObject = DataObject.newOctetStringData(dayProfileAction.getScriptSelector().toString()
+                .getBytes());
+        final DataObject scriptSelectorObject = DataObject.newUInteger64Data(dayProfileAction.getScriptSelector());
+
+        dayActionObjectElements.addAll(Arrays.asList(startTimeObject, nameObject, scriptSelectorObject));
+        return dayActionObjectElements;
+    }
+
+    /**
+     * get all day profiles from all the week profiles
+     *
+     * @param weekProfileSet
+     * @return
+     */
+    private HashSet<DayProfile> getDayProfileSet(final HashSet<WeekProfile> weekProfileSet) {
+        final HashSet<DayProfile> dayProfileHashSet = new HashSet<>();
+
+        for (final WeekProfile weekProfile : weekProfileSet) {
+            dayProfileHashSet.addAll(weekProfile.getAllDaysAsList());
+        }
+
+        return dayProfileHashSet;
+    }
+
+    private AccessResultCode setWeeks(final ClientConnection conn, final HashSet<WeekProfile> weekProfileSet)
+            throws IOException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 8);
-        final DataObject weekArray = DataObject.newArrayData(this.getWeekList(weekProfileSet));
+        final DataObject weekArray = DataObject.newArrayData(this.getWeekObjectList(weekProfileSet));
         final SetRequestParameter request = factory.createSetRequestParameter(weekArray);
         final List<AccessResultCode> l = conn.set(request);
-
+        return l.get(0);
     }
 
-    private List<DataObject> getWeekList(final HashSet<WeekProfile> weekProfileSet) {
+    private List<DataObject> getWeekObjectList(final HashSet<WeekProfile> weekProfileSet) {
         final List<DataObject> weekList = new ArrayList<>();
         for (final WeekProfile weekProfile : weekProfileSet) {
 
@@ -123,13 +191,14 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return weekProfileSet;
     }
 
-    private void setSeasons(final ClientConnection conn, final List<SeasonProfile> seasonProfileList)
+    private AccessResultCode setSeasons(final ClientConnection conn, final List<SeasonProfile> seasonProfileList)
             throws IOException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 7);
         final DataObject seasonsArray = DataObject.newArrayData(this.getSeasonList(conn, seasonProfileList));
         final SetRequestParameter request = factory.createSetRequestParameter(seasonsArray);
         final List<AccessResultCode> l = conn.set(request);
+        return l.get(0);
     }
 
     private List<DataObject> getSeasonList(final ClientConnection conn, final List<SeasonProfile> seasonProfileList)
@@ -165,6 +234,12 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return seasonElements;
     }
 
+    /**
+     * Method for debugging purposes. Can be removed.
+     * 
+     * @param conn
+     * @throws IOException
+     */
     private void getValues(final ClientConnection conn) throws IOException {
         final GetRequestParameter reqParamC = new GetRequestParameter(CLASS_ID, OBIS_CODE, 6);
         final GetRequestParameter reqParamS = new GetRequestParameter(CLASS_ID, OBIS_CODE, 7);
