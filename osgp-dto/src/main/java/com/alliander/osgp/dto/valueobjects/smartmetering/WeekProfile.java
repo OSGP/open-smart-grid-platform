@@ -8,6 +8,8 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 public class WeekProfile implements Comparable<WeekProfile>, Serializable {
 
@@ -40,6 +42,11 @@ public class WeekProfile implements Comparable<WeekProfile>, Serializable {
         this.friday = friday;
         this.saturday = saturday;
         this.sunday = sunday;
+    }
+
+    public List<DayProfile> getAllDaysAsList() {
+        return Arrays.asList(this.monday, this.tuesday, this.wednesday, this.thursday, this.friday, this.saturday,
+                this.sunday);
     }
 
     public String getWeekProfileName() {
