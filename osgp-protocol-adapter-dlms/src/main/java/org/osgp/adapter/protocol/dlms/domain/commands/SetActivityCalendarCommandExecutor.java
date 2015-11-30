@@ -1,12 +1,9 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.DataObject;
@@ -23,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile;
 
@@ -37,9 +33,6 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     @Autowired
     private ConfigurationMapper configurationMapper;
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final ActivityCalendar activityCalendar)
@@ -77,59 +70,13 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private AccessResultCode setDays(final ClientConnection conn, final HashSet<DayProfile> dayProfileSet)
             throws IOException {
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 9);
-        final DataObject dayArray = DataObject.newArrayData(this.getDayObjectList(dayProfileSet));
+
+        final DataObject dayArray = this.configurationMapper.map(dayProfileSet, DataObject.class);
+
         final SetRequestParameter request = factory.createSetRequestParameter(dayArray);
         final List<AccessResultCode> l = conn.set(request);
         return l.get(0);
 
-    }
-
-    private List<DataObject> getDayObjectList(final HashSet<DayProfile> dayProfileSet) {
-        final List<DataObject> dayObjectList = new ArrayList<>();
-
-        for (final DayProfile dayProfile : dayProfileSet) {
-            final DataObject dayObject = DataObject.newStructureData(this.getDayObjectElements(dayProfile));
-            dayObjectList.add(dayObject);
-        }
-
-        return dayObjectList;
-    }
-
-    private List<DataObject> getDayObjectElements(final DayProfile dayProfile) {
-        final List<DataObject> dayObjectElements = new ArrayList<>();
-
-        final DataObject dayId = DataObject.newUInteger32Data(dayProfile.getDayId());
-        final DataObject dayActionObjectList = DataObject.newArrayData(this.getDayActionObjectList(dayProfile
-                .getDayProfileActionList()));
-        dayObjectElements.addAll(Arrays.asList(dayId, dayActionObjectList));
-
-        return dayObjectElements;
-    }
-
-    private List<DataObject> getDayActionObjectList(final List<DayProfileAction> dayProfileActionList) {
-        final List<DataObject> dayActionObjectList = new ArrayList<>();
-        for (final DayProfileAction dayProfileAction : dayProfileActionList) {
-
-            final DataObject dayObject = DataObject.newStructureData(this.getDayActionObjectElements(dayProfileAction));
-            dayActionObjectList.add(dayObject);
-
-        }
-        return dayActionObjectList;
-    }
-
-    private List<DataObject> getDayActionObjectElements(final DayProfileAction dayProfileAction) {
-        final List<DataObject> dayActionObjectElements = new ArrayList<>();
-
-        final DateTime dt = new DateTime(dayProfileAction.getStartTime());
-        final DataObject startTimeObject = this.dlmsHelperService.asDataObject(dt);
-
-        // TODO which field represents the script_logical_name?
-        final DataObject nameObject = DataObject.newOctetStringData(dayProfileAction.getScriptSelector().toString()
-                .getBytes());
-        final DataObject scriptSelectorObject = DataObject.newUInteger64Data(dayProfileAction.getScriptSelector());
-
-        dayActionObjectElements.addAll(Arrays.asList(startTimeObject, nameObject, scriptSelectorObject));
-        return dayActionObjectElements;
     }
 
     /**
@@ -152,36 +99,12 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             throws IOException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 8);
-        final DataObject weekArray = DataObject.newArrayData(this.getWeekObjectList(weekProfileSet));
+
+        final DataObject weekArray = this.configurationMapper.map(weekProfileSet, DataObject.class);
+
         final SetRequestParameter request = factory.createSetRequestParameter(weekArray);
         final List<AccessResultCode> l = conn.set(request);
         return l.get(0);
-    }
-
-    private List<DataObject> getWeekObjectList(final HashSet<WeekProfile> weekProfileSet) {
-        final List<DataObject> weekList = new ArrayList<>();
-        for (final WeekProfile weekProfile : weekProfileSet) {
-
-            final DataObject weekStructure = DataObject.newStructureData(this.getWeekStructure(weekProfile));
-
-            weekList.add(weekStructure);
-        }
-        return weekList;
-    }
-
-    private List<DataObject> getWeekStructure(final WeekProfile weekProfile) {
-        final List<DataObject> weekElements = new ArrayList<>();
-
-        weekElements.add(DataObject.newOctetStringData(weekProfile.getWeekProfileName().getBytes()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getMonday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getTuesday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getWednesday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getThursday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getFriday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getSaturday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getSunday().getDayId()));
-
-        return weekElements;
     }
 
     private HashSet<WeekProfile> getWeekProfileSet(final List<SeasonProfile> seasonProfileList) {
@@ -202,45 +125,9 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final DataObject seasonsArray = this.configurationMapper.map(seasonProfileList, DataObject.class);
 
-        // final DataObject seasonsArray =
-        // DataObject.newArrayData(this.getSeasonList(conn, seasonProfileList));
-        // TODO
         final SetRequestParameter request = factory.createSetRequestParameter(seasonsArray);
         final List<AccessResultCode> l = conn.set(request);
         return l.get(0);
-    }
-
-    private List<DataObject> getSeasonList(final ClientConnection conn, final List<SeasonProfile> seasonProfileList)
-            throws IOException {
-        final List<DataObject> seasonList = new ArrayList<>();
-        for (final SeasonProfile seasonProfile : seasonProfileList) {
-            final DataObject seasonStructure = DataObject.newStructureData(this.getSeason(conn, seasonProfile));
-            seasonList.add(seasonStructure);
-        }
-        return seasonList;
-    }
-
-    private List<DataObject> getSeason(final ClientConnection conn, final SeasonProfile seasonProfile)
-            throws IOException {
-        final List<DataObject> seasonElements = new ArrayList<>();
-
-        seasonProfile.getSeasonProfileName();
-        seasonProfile.getSeasonStart();
-        seasonProfile.getWeekProfile().getWeekProfileName();
-
-        final DataObject seasonProfileNameObject = DataObject.newOctetStringData(seasonProfile.getSeasonProfileName()
-                .getBytes());
-        seasonElements.add(seasonProfileNameObject);
-
-        final DateTime dt = new DateTime(seasonProfile.getSeasonStart());
-        final DataObject seasonStartObject = this.dlmsHelperService.asDataObject(dt);
-        seasonElements.add(seasonStartObject);
-
-        final DataObject seasonWeekProfileNameObject = DataObject.newOctetStringData(seasonProfile.getWeekProfile()
-                .getWeekProfileName().getBytes());
-        seasonElements.add(seasonWeekProfileNameObject);
-
-        return seasonElements;
     }
 
     /**
