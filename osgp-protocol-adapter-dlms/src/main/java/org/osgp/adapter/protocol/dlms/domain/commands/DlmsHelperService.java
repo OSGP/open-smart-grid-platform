@@ -56,6 +56,9 @@ public class DlmsHelperService {
     }
 
     public String getDebugInfo(final DataObject dataObject) {
+        if (dataObject == null) {
+            return null;
+        }
 
         final String dataType = getDataType(dataObject);
 
