@@ -53,7 +53,8 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
             return;
         }
 
-        this.managementService.findEvents(messageMetadata, this.responseMessageSender,
-                (FindEventsQueryMessageDataContainer) data);
+        this.managementService.findEvents(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
+                messageMetadata.getCorrelationUid(), this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(),
+                messageMetadata.getMessageType(), (FindEventsQueryMessageDataContainer) data);
     }
 }

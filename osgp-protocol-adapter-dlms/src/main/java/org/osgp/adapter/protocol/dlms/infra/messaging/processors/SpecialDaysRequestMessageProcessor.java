@@ -50,8 +50,9 @@ public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProc
 
             final SpecialDaysRequest specialDaysRequest = (SpecialDaysRequest) message.getObject();
 
-            this.configurationService.requestSpecialDays(messageMetadata, specialDaysRequest,
-                    this.responseMessageSender);
+            this.configurationService.requestSpecialDays(messageMetadata.getOrganisationIdentification(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(), specialDaysRequest,
+                    this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

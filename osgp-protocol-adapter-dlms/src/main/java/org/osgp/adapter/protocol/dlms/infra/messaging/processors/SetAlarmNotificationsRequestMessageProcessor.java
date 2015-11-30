@@ -49,8 +49,9 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
 
             final AlarmNotifications alarmNotifications = (AlarmNotifications) message.getObject();
 
-            this.configurationService.setAlarmNotifications(messageMetadate, alarmNotifications,
-                    this.responseMessageSender);
+            this.configurationService.setAlarmNotifications(messageMetadate.getOrganisationIdentification(),
+                    messageMetadate.getDeviceIdentification(), messageMetadate.getCorrelationUid(), alarmNotifications,
+                    this.responseMessageSender, messageMetadate.getDomain(), messageMetadate.getDomainVersion(), messageMetadate.getMessageType());
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadate);

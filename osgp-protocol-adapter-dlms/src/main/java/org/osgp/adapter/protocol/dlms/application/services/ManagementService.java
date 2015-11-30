@@ -7,13 +7,13 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +24,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContain
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsManagementService")
-public class ManagementService extends DlmsApplicationService {
+public class ManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
 
@@ -37,11 +39,13 @@ public class ManagementService extends DlmsApplicationService {
 
     // === FIND EVENTS ===
 
-    public void findEvents(final DlmsDeviceMessageMetadata messageMetadata,
-            final DeviceResponseMessageSender responseMessageSender,
+    public void findEvents(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final DeviceResponseMessageSender responseMessageSender, final String domain,
+            final String domainVersion, final String messageType,
             final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) {
 
-        logStart(LOGGER, messageMetadata, "findEvents");
+        LOGGER.info("findEvents called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
 
         try {
             // Debug logging which can be removed.
@@ -72,7 +76,8 @@ public class ManagementService extends DlmsApplicationService {
             events.add(new Event(DateTime.now(), 12));
             final EventMessageDataContainer eventMessageDataContainer = new EventMessageDataContainer(events);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
                     eventMessageDataContainer);
 
         } catch (final Exception e) {
@@ -80,8 +85,19 @@ public class ManagementService extends DlmsApplicationService {
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception while retrieving response message", e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
         }
     }
 
+    private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
+            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender, final Serializable dataObject) {
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject);
+
+        responseMessageSender.send(responseMessage);
+    }
 }
