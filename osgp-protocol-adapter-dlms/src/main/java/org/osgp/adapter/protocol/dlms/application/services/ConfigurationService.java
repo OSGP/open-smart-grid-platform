@@ -7,8 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.io.Serializable;
+
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -19,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
@@ -46,6 +50,9 @@ public class ConfigurationService {
 
     @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+
+    @Autowired
+    private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
     // === REQUEST Special Days DATA ===
 
@@ -127,6 +134,41 @@ public class ConfigurationService {
         }
     }
 
+    public void setActivityCalendar(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final ActivityCalendar activityCalendar,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
+
+        LOGGER.info("setActivityCalendar called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        try {
+            LOGGER.info("**************************************");
+            LOGGER.info("**********In protocol adapter*********");
+            LOGGER.info("**************************************");
+            LOGGER.info("*************0-0:13.0.0.255***********");
+            LOGGER.info("**************************************");
+            LOGGER.info("Activity Calendar to set on the device: {}", activityCalendar.getCalendarName());
+            LOGGER.info("********** activityCalendar " + activityCalendar);
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+
+            LOGGER.info("device for Activity Calendar is: {}", device);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
+                    "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
+                            + activityCalendar.getCalendarName());
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setActivityCalendar", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        }
+    }
+
     public void setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final AlarmNotifications alarmNotifications,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
@@ -184,8 +226,17 @@ public class ConfigurationService {
             final DeviceResponseMessageSender responseMessageSender) {
 
         // Creating a ProtocolResponseMessage without a Serializable object
+        this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, responseMessageSender, null);
+    }
+
+    private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
+            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
+
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null);
+                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, responseObject);
 
         responseMessageSender.send(responseMessage);
     }

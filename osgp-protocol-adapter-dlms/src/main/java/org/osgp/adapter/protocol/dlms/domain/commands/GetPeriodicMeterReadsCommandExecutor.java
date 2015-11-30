@@ -29,7 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsReque
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
+        CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
