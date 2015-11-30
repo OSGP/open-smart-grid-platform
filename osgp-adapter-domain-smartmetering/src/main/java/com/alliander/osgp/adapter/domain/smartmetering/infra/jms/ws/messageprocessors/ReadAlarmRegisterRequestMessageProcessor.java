@@ -22,7 +22,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-@Component("domainSmartmeteringActualMeterReadsRequestMessageProcessor")
+@Component("domainSmartmeteringReadAlarmRegisterRequestMessageProcessor")
 public class ReadAlarmRegisterRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterRequestMessageProcessor.class);
