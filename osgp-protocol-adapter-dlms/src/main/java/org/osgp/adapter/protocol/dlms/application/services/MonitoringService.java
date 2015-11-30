@@ -9,7 +9,9 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
@@ -23,8 +25,12 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -123,6 +129,34 @@ public class MonitoringService {
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during requestActualMeterReads", e);
+            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        }
+    }
+
+    public void requestReadAlarmRegister(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final ReadAlarmRegisterRequest readAlarmRegisterRequest,
+            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType) {
+
+        LOGGER.info("requestActualMeterReads called for device: {} for organisation: {}", deviceIdentification,
+                organisationIdentification);
+
+        try {
+            // Mock a return value for read alarm register
+            final Set<AlarmNotification> notifications = new HashSet<>();
+            notifications.add(new AlarmNotification(AlarmType.CLOCK_INVALID, true));
+
+            final AlarmNotifications alarmNotifications = new AlarmNotifications(notifications);
+
+            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, alarmNotifications);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during requestReadAlarmRegister", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception while retrieving response message", e);
 
