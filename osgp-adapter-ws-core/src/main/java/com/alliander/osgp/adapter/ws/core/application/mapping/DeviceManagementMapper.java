@@ -41,13 +41,13 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                .byDefault().toClassMap());
+                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                        .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
@@ -55,7 +55,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     }
 
     private static class DeviceConverter extends
-            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
@@ -188,7 +188,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     output.setLastKnowSwitchingTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar));
                 } catch (final DatatypeConfigurationException e) {
                     // This won't happen, so no further action is needed.
-                    LOGGER.info("Bad date format in one of theRelay Status dates");
+                    LOGGER.info("Bad date format in one of theRelay Status dates. Message {}", e.getMessage());
                 }
             }
             return output;
