@@ -34,6 +34,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Monitori
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -274,8 +275,25 @@ public class SmartMeteringMonitoringEndpoint {
         final RetrieveReadAlarmRegisterResponse response = new RetrieveReadAlarmRegisterResponse();
 
         try {
-            // TODO: implementation
-            LOGGER.info("RetrieveReadAlarmRegisterRequest is not implemented yet.");
+
+            final MeterResponseData meterResponseData = this.meterResponseDataRepository
+                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+
+            if (meterResponseData == null) {
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
+                        ComponentType.WS_SMART_METERING);
+            }
+
+            if (meterResponseData.getMessageData() instanceof AlarmNotifications) {
+                response.setAlarmNotifications(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications.class));
+
+                this.meterResponseDataRepository.delete(meterResponseData);
+            } else {
+                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
+                        .getName(), request.getCorrelationUid());
+            }
+
         } catch (final Exception e) {
             if ((e instanceof FunctionalException)
                     && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
