@@ -9,12 +9,11 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
@@ -25,9 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
@@ -52,6 +49,9 @@ public class MonitoringService {
 
     @Autowired
     private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+
+    @Autowired
+    private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
 
     // === REQUEST PERIODIC METER DATA ===
 
@@ -145,12 +145,14 @@ public class MonitoringService {
         LOGGER.info("requestActualMeterReads called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
+        ClientConnection conn = null;
         try {
-            // Mock a return value for read alarm register
-            final Set<AlarmNotification> notifications = new HashSet<>();
-            notifications.add(new AlarmNotification(AlarmType.CLOCK_INVALID, true));
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            final AlarmNotifications alarmNotifications = new AlarmNotifications(notifications);
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final AlarmNotifications alarmNotifications = this.readAlarmRegisterCommandExecutor.execute(conn,
+                    readAlarmRegisterRequest);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, alarmNotifications);
@@ -162,6 +164,10 @@ public class MonitoringService {
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
     }
 
