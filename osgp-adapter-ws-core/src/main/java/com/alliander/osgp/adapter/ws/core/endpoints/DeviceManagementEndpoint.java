@@ -42,8 +42,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
-import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -284,31 +284,29 @@ public class DeviceManagementEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "UpdateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @PayloadRoot(localPart = "SetMaintenanceStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
-    public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
+    public SetMaintenanceStatusResponse setMaintenanceStatus(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetMaintenanceStatusRequest request) throws OsgpException {
 
-        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(), request
-                .getUpdatedDevice().getDeviceIdentification());
+        LOGGER.info("Setting maintenance for device:{} to: {}.", request.getDeviceIdentification(), request.isStatus());
 
         try {
-            final com.alliander.osgp.domain.core.entities.Device device = this.deviceManagementMapper.map(
-                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Device.class);
-
-            this.deviceManagementService.updateDevice(organisationIdentification, device);
+            this.deviceManagementService.setMaintenanceStatus(organisationIdentification,
+                    request.getDeviceIdentification(), request.isStatus());
 
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, new Object[] { e.getMessage(),
-                    request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE,
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
             this.handleException(e);
         }
 
-        final UpdateDeviceResponse updateDeviceResponse = new UpdateDeviceResponse();
+        final SetMaintenanceStatusResponse updateDeviceResponse = new SetMaintenanceStatusResponse();
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 request.getDeviceIdentification());

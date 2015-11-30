@@ -442,4 +442,20 @@ public class DeviceManagementService {
 
         this.writableDeviceRepository.save(existingDevice);
     }
+
+    @Transactional(value = "writableTransactionManager")
+    public void setMaintenanceStatus(@Identification final String organisationIdentification,
+            final String deviceIdentification, final boolean status) throws FunctionalException {
+
+        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (existingDevice == null) {
+            // device does not exist
+            LOGGER.info("Device does not exist, cannot set maintenance status.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        }
+
+        existingDevice.updateInMaintenance(status);
+        this.writableDeviceRepository.save(existingDevice);
+    }
 }
