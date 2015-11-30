@@ -75,7 +75,7 @@ public class RelayStatus extends AbstractEntity {
         return this.device;
     }
 
-    public void Device(final Device device) {
+    public void setDevice(final Device device) {
         this.device = device;
     }
 
