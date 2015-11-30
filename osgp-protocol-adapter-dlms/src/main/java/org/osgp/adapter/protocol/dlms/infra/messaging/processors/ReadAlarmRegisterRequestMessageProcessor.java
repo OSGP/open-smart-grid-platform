@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 
-@Component("dlmsActualMeterReadsRequestMessageProcessor")
+@Component("dlmsReadAlarmRegisterRequestMessageProcessor")
 public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterRequestMessageProcessor.class);
