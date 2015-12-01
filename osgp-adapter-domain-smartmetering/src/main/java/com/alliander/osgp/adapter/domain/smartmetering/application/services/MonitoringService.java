@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
@@ -167,7 +167,7 @@ public class MonitoringService {
     public void handleReadAlarmRegisterResponse(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final AlarmNotifications alarmNotificationsDto) {
+            final AlarmRegister alarmRegisterDto) {
 
         LOGGER.info("handleReadAlarmRegisterResponse for MessageType: {}", messageType);
 
@@ -177,11 +177,10 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications alarmNotificationsValueDomain = this.monitoringMapper
-                .map(alarmNotificationsDto,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister AlarmRegisterValueDomain = this.monitoringMapper
+                .map(alarmRegisterDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, alarmNotificationsValueDomain), messageType);
+                deviceIdentification, result, exception, AlarmRegisterValueDomain), messageType);
     }
 }

@@ -290,8 +290,8 @@ public class SmartMeteringMonitoringEndpoint {
 
                 this.meterResponseDataRepository.delete(meterResponseData);
             } else {
-                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
-                        .getName(), request.getCorrelationUid());
+                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData
+                        .getMessageData().getClass().getName(), request.getCorrelationUid());
             }
 
         } catch (final Exception e) {

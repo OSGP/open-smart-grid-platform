@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -66,10 +66,10 @@ public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseM
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final AlarmNotifications alarmNotificationsDto = (AlarmNotifications) responseMessage.getDataObject();
+            final AlarmRegister alarmRegisterDto = (AlarmRegister) responseMessage.getDataObject();
 
             this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException, alarmNotificationsDto);
+                    correlationUid, messageType, responseMessageResultType, osgpException, alarmRegisterDto);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
