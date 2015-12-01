@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
@@ -151,11 +151,11 @@ public class MonitoringService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AlarmNotifications alarmNotifications = this.readAlarmRegisterCommandExecutor.execute(conn,
+            final AlarmRegister alarmRegister = this.readAlarmRegisterCommandExecutor.execute(conn,
                     readAlarmRegisterRequest);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, alarmNotifications);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, alarmRegister);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during requestReadAlarmRegister", e);
