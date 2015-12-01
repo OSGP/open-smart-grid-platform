@@ -1,11 +1,11 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.DataObject;
 import org.openmuc.jdlms.GetRequestParameter;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
@@ -13,6 +13,7 @@ import org.openmuc.jdlms.RequestParameterFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
@@ -28,22 +29,18 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.00.255");
     private static final int ATTRIBUTE_ID = 2;
 
+    @Autowired
+    private AlarmHelperService alarmHelperService;
+
     @Override
     public AlarmRegister execute(final ClientConnection conn, final ReadAlarmRegisterRequest object)
             throws IOException, ProtocolAdapterException {
 
-        this.retrieveAlarmRegister(conn);
-
-        // Mock a return value for read alarm register
-        final Set<AlarmType> types = new HashSet<>();
-        types.add(AlarmType.CLOCK_INVALID);
-
-        final AlarmRegister AlarmRegister = new AlarmRegister(types);
-
-        return AlarmRegister;
+        return new AlarmRegister(this.retrieveAlarmRegister(conn));
     }
 
-    private void retrieveAlarmRegister(final ClientConnection conn) throws IOException, ProtocolAdapterException {
+    private Set<AlarmType> retrieveAlarmRegister(final ClientConnection conn) throws IOException,
+            ProtocolAdapterException {
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();
@@ -59,13 +56,13 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
                     + getResultList.size());
         }
 
-        for (final GetResult result : getResultList) {
-            if (result.resultData().isNumber()) {
-                LOGGER.info("Result: {} --> {}", result.resultCode().value(),
-                        Long.toBinaryString((Long) result.resultData().value()));
-            } else {
-                LOGGER.info("Result: {} --> {}", result.resultCode().value(), result.resultData());
-            }
+        final GetResult result = getResultList.get(0);
+        final DataObject resultData = result.resultData();
+        if (resultData != null && resultData.isNumber()) {
+            return this.alarmHelperService.toAlarmTypes((Long) result.resultData().value());
+        } else {
+            LOGGER.error("Result: {} --> {}", result.resultCode().value(), result.resultData());
+            throw new ProtocolAdapterException("Invalid register value received from the meter.");
         }
     }
 }
