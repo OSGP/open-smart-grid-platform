@@ -34,7 +34,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Monitori
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -284,9 +284,9 @@ public class SmartMeteringMonitoringEndpoint {
                         ComponentType.WS_SMART_METERING);
             }
 
-            if (meterResponseData.getMessageData() instanceof AlarmNotifications) {
-                response.setAlarmNotifications(this.monitoringMapper.map(meterResponseData.getMessageData(),
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications.class));
+            if (meterResponseData.getMessageData() instanceof AlarmRegister) {
+                response.setAlarmRegister(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class));
 
                 this.meterResponseDataRepository.delete(meterResponseData);
             } else {

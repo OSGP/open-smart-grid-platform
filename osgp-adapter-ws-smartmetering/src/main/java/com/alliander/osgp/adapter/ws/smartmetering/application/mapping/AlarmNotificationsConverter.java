@@ -22,29 +22,29 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotificati
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
 public class AlarmNotificationsConverter
-extends
-        BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications> {
+        extends
+BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlarmNotificationsConverter.class);
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications convertTo(
+    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications convertTo(
             final AlarmNotifications source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications> destinationType) {
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications result = new com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications();
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications result = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications();
 
-        final List<com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotification> alarmNotifications = result
+        final List<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification> alarmNotifications = result
                 .getAlarmNotification();
 
         final Set<AlarmNotification> sourceNotifications = source.getAlarmNotifications();
 
         for (final AlarmNotification sourceNotification : sourceNotifications) {
 
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotification alarmNotification = new com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotification();
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification alarmNotification = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification();
 
             alarmNotification.setAlarmType(com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType
                     .valueOf(sourceNotification.getAlarmType().name()));
@@ -58,7 +58,7 @@ extends
 
     @Override
     public AlarmNotifications convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotifications source,
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications source,
             final Type<AlarmNotifications> destinationType) {
         if (source == null) {
             return null;
@@ -66,10 +66,10 @@ extends
 
         final Set<AlarmNotification> alarmNotifications = new TreeSet<AlarmNotification>();
 
-        final List<com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotification> sourceNotifications = source
+        final List<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification> sourceNotifications = source
                 .getAlarmNotification();
 
-        for (final com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmNotification sourceNotification : sourceNotifications) {
+        for (final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification sourceNotification : sourceNotifications) {
 
             final AlarmType alarmType = AlarmType.valueOf(sourceNotification.getAlarmType().name());
             final boolean enabled = sourceNotification.isEnabled();

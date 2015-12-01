@@ -103,6 +103,19 @@
 		</xsd:sequence>
 	</xsd:complexType>
 	
+	<xsd:complexType name="AlarmNotifications">
+		<xsd:sequence maxOccurs="unbounded">
+			<xsd:element name="AlarmNotification" type="tns:AlarmNotification" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="AlarmNotification">
+		<xsd:sequence>
+			<xsd:element name="AlarmType" type="common:AlarmType" />
+			<xsd:element name="Enabled" type="xsd:boolean" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	<xsd:complexType name="SetConfigurationObjectRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
@@ -117,7 +130,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
 				<xsd:sequence>
-					<xsd:element name="AlarmNotifications" type="common:AlarmNotifications" />
+					<xsd:element name="AlarmNotifications" type="tns:AlarmNotifications" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
