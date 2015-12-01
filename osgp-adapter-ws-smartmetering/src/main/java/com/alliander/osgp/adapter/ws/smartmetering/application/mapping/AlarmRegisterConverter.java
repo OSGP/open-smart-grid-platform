@@ -18,8 +18,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
 public class AlarmRegisterConverter
-extends
-        BidirectionalConverter<AlarmRegister, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister> {
+        extends
+BidirectionalConverter<AlarmRegister, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister convertTo(

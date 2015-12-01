@@ -275,7 +275,6 @@ public class SmartMeteringMonitoringEndpoint {
         final RetrieveReadAlarmRegisterResponse response = new RetrieveReadAlarmRegisterResponse();
 
         try {
-
             final MeterResponseData meterResponseData = this.meterResponseDataRepository
                     .findSingleResultByCorrelationUid(request.getCorrelationUid());
 

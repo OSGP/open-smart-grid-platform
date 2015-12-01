@@ -76,7 +76,6 @@
     	<wsdl:part element="smmon:RetrieveReadAlarmRegisterResponse" name="RetrieveAlarmRegisterResponse" />
     </wsdl:message>
     
-    
     <wsdl:portType name="SmartmetermonitoringPort">
    
         <wsdl:operation name="RequestPeriodicMeterReads">

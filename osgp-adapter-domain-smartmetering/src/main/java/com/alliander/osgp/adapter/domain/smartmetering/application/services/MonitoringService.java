@@ -177,10 +177,10 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister AlarmRegisterValueDomain = this.monitoringMapper
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister alarmRegisterValueDomain = this.monitoringMapper
                 .map(alarmRegisterDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, AlarmRegisterValueDomain), messageType);
+                deviceIdentification, result, exception, alarmRegisterValueDomain), messageType);
     }
 }
