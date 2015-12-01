@@ -3,6 +3,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -298,7 +299,18 @@ public class GetPeriodicMeterReadsCommandExecutor implements
             throw new AssertionError("Unknown PeriodType: " + periodType);
         }
 
-        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
+        /*
+         * For properly limiting data retrieved from the meter selectedValues
+         * should be something like: DataObject.newArrayData(objectDefinitions);
+         */
+        LOGGER.warn("TODO - figure out how to set selectedValues to something like: "
+                + this.dlmsHelperService.getDebugInfo(DataObject.newArrayData(objectDefinitions)));
+        /*
+         * As long as specifying a subset of captured objects from the buffer
+         * through selectedValues does not work, retrieve all captured objects
+         * by setting selectedValues to an empty array.
+         */
+        final DataObject selectedValues = DataObject.newArrayData(Collections.<DataObject> emptyList());
 
         final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
                 toValue, selectedValues));
