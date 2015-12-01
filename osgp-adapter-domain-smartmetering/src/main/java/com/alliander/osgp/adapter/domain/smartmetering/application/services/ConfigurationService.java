@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Confi
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -131,6 +132,27 @@ public class ConfigurationService {
                 deviceIdentification, alarmNotificationsDto), messageType);
     }
 
+    public void setActivityCalendar(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final ActivityCalendar activityCalendar, final String messageType) throws FunctionalException {
+
+        LOGGER.info("set Activity Calendar for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        // TODO: bypassing authorization, this should be fixed.
+        // Organisation organisation =
+        // this.findOrganisation(organisationIdentification);
+        // final Device device = this.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendarDto = this.configurationMapper
+                .map(activityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, activityCalendarDto), messageType);
+    }
+
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
@@ -161,5 +183,22 @@ public class ConfigurationService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, null), messageType);
+    }
+
+    public void handleSetActivityCalendarResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
+            final String resultString) {
+        LOGGER.info("handleSetActivityCalendarResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = responseMessageResultType;
+        if (exception != null) {
+            LOGGER.error("Set Activity Calendar Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, resultString), messageType);
+
     }
 }
