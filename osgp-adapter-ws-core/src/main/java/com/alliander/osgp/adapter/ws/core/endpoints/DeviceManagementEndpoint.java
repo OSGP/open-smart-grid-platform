@@ -44,6 +44,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -284,6 +286,44 @@ public class DeviceManagementEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "UpdateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public UpdateDeviceResponse updateDevice(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateDeviceRequest request) throws OsgpException {
+
+        LOGGER.info("Updating device: Original {}, Updated: {}.", request.getDeviceIdentification(), request
+                .getUpdatedDevice().getDeviceIdentification());
+
+        try {
+            final com.alliander.osgp.domain.core.entities.Device device = this.deviceManagementMapper.map(
+                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Device.class);
+
+            this.deviceManagementService.updateDevice(organisationIdentification, device);
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE, new Object[] { e.getMessage(),
+                    request.getUpdatedDevice().getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final UpdateDeviceResponse updateDeviceResponse = new UpdateDeviceResponse();
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                request.getDeviceIdentification());
+
+        final AsyncResponse AsyncResponse = new AsyncResponse();
+        AsyncResponse.setCorrelationUid(correlationUid);
+        AsyncResponse.setDeviceId(request.getDeviceIdentification());
+
+        updateDeviceResponse.setAsyncResponse(AsyncResponse);
+
+        return updateDeviceResponse;
+    }
+
     @PayloadRoot(localPart = "SetMaintenanceStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
     @ResponsePayload
     public SetMaintenanceStatusResponse setMaintenanceStatus(
@@ -296,6 +336,9 @@ public class DeviceManagementEndpoint {
             this.deviceManagementService.setMaintenanceStatus(organisationIdentification,
                     request.getDeviceIdentification(), request.isStatus());
 
+            throw new FunctionalException(FunctionalExceptionType.METHOD_NOT_ALLOWED_FOR_DEVICE_IN_MAINTENANCE,
+                    ComponentType.WS_CORE, new ValidationException("BESJE"));
+
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -306,7 +349,7 @@ public class DeviceManagementEndpoint {
             this.handleException(e);
         }
 
-        final SetMaintenanceStatusResponse updateDeviceResponse = new SetMaintenanceStatusResponse();
+        final SetMaintenanceStatusResponse setMaintenanceStatusResponse = new SetMaintenanceStatusResponse();
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 request.getDeviceIdentification());
@@ -315,9 +358,9 @@ public class DeviceManagementEndpoint {
         AsyncResponse.setCorrelationUid(correlationUid);
         AsyncResponse.setDeviceId(request.getDeviceIdentification());
 
-        updateDeviceResponse.setAsyncResponse(AsyncResponse);
+        setMaintenanceStatusResponse.setAsyncResponse(AsyncResponse);
 
-        return updateDeviceResponse;
+        return setMaintenanceStatusResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {
