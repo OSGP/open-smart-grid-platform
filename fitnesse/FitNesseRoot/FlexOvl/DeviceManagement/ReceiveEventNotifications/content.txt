@@ -18,8 +18,8 @@ OSGP does not store event notification settings and does not know whether a devi
 |device1|HARDWARE_FAILURE_RELAY             |Some description|EMPTY|
 |device1|LIGHT_FAILURE_DALI_COMMUNICATION   |Some description|EMPTY|
 |device1|LIGHT_FAILURE_BALLAST              |Some description|EMPTY|
-|device1|LIGHT_EVENTS_LIGHT_ON              |Some description|EMPTY|
-|device1|LIGHT_EVENTS_LIGHT_OFF             |Some description|EMPTY|
+|device1|LIGHT_EVENTS_LIGHT_ON              |Some description|0    |
+|device1|LIGHT_EVENTS_LIGHT_OFF             |Some description|0    |
 |device1|MONITOR_EVENTS_LONG_BUFFER_FULL    |Some description|EMPTY|
 |device1|FIRMWARE_EVENTS_ACTIVATING         |Some description|EMPTY|
 |device1|FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND  |Some description|EMPTY|
