@@ -10,7 +10,8 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 public enum PeriodType {
 
     DAILY,
-    MONTHLY;
+    MONTHLY,
+    INTERVAL;
 
     public String value() {
         return this.name();

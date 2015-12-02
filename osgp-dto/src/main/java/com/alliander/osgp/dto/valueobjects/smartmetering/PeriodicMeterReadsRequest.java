@@ -8,29 +8,27 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 public class PeriodicMeterReadsRequest implements Serializable {
 
     private static final long serialVersionUID = 2120695527724031374L;
 
-    private String deviceIdentification;
-    private List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData;
+    private final String deviceIdentification;
+    private final List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData;
+
+    public PeriodicMeterReadsRequest(String deviceIdentification, List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData) {
+        this.deviceIdentification = deviceIdentification;
+        this.periodicMeterReadsRequestData = Collections.unmodifiableList(periodicMeterReadsRequestData);
+    }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
-
     public List<PeriodicMeterReadsRequestData> getPeriodicMeterReadsRequestData() {
-        return this.periodicMeterReadsRequestData;
-    }
-
-    public void setPeriodicMeterReadsRequestData(final List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData) {
-        this.periodicMeterReadsRequestData = periodicMeterReadsRequestData;
+        return periodicMeterReadsRequestData;
     }
 
 }
