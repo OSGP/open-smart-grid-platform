@@ -67,7 +67,6 @@ public class AlarmHelperService {
         ALARM_REGISTER_BIT_INDEX_PER_ALARM_TYPE = Collections.unmodifiableMap(map);
 
         // Create a flipped version of the map.
-        // Maybe replace this with a bidirectional map from Apache Commons.
         final HashMap<Integer, AlarmType> tempReversed = new HashMap<>();
         for (final Entry<AlarmType, Integer> val : ALARM_REGISTER_BIT_INDEX_PER_ALARM_TYPE.entrySet()) {
             tempReversed.put(val.getValue(), val.getKey());
@@ -77,7 +76,7 @@ public class AlarmHelperService {
     }
 
     /**
-     * Returns the positition of the bitvalue for the given AlarmType, in the
+     * Returns the position of the bit value for the given AlarmType, in the
      * 4-byte register space.
      *
      * @param alarmType
