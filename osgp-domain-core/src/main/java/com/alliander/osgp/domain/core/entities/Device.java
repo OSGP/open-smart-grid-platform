@@ -304,14 +304,14 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
      * @return
      */
     public RelayStatus getRelayStatusByIndex(final int index) {
-        final RelayStatus output = null;
-
-        for (final RelayStatus r : this.relayStatusses) {
-            if (r.getIndex() == index) {
-                return r;
+        if (this.relayStatusses != null) {
+            for (final RelayStatus r : this.relayStatusses) {
+                if (r.getIndex() == index) {
+                    return r;
+                }
             }
         }
-        return output;
+        return null;
     }
 
     /**
@@ -323,17 +323,18 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     public void updateRelayStatusByIndex(final int index, final RelayStatus relayStatus) {
 
         boolean found = false;
-
-        for (final RelayStatus r : this.relayStatusses) {
-            if (r.getIndex() == index) {
-                r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
-                found = true;
-                break;
+        if (this.relayStatusses != null) {
+            for (final RelayStatus r : this.relayStatusses) {
+                if (r.getIndex() == index) {
+                    r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
+                    found = true;
+                    break;
+                }
             }
-        }
 
-        if (!found) {
-            this.relayStatusses.add(relayStatus);
+            if (!found) {
+                this.relayStatusses.add(relayStatus);
+            }
         }
     }
 
