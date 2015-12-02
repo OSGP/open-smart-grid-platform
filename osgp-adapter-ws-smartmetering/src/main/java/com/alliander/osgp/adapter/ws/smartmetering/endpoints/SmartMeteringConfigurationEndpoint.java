@@ -23,6 +23,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrationResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrationRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrationResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
@@ -32,8 +37,13 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialD
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
@@ -48,6 +58,9 @@ public class SmartMeteringConfigurationEndpoint {
 
     @Autowired
     private ConfigurationMapper configurationMapper;
+
+    @Autowired
+    private MeterResponseDataRepository meterResponseDataRepository;
 
     public SmartMeteringConfigurationEndpoint() {
     }
@@ -136,6 +149,91 @@ public class SmartMeteringConfigurationEndpoint {
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
         response.setAsyncResponse(asyncResponse);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetActivityCalendarRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetActivityCalendarAsyncResponse setActivityCalendar(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetActivityCalendarRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetActivityCalendarRequest for meter: {}.", request.getDeviceIdentification());
+        final SetActivityCalendarAsyncResponse response = new SetActivityCalendarAsyncResponse();
+
+        try {
+
+            final String deviceIdentification = request.getDeviceIdentification();
+            final ActivityCalendarDataType requestData = request.getActivityCalendarData();
+
+            final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getActivityCalendar(),
+                    ActivityCalendar.class);
+
+            final String correlationUid = this.configurationService.setActivityCalendar(organisationIdentification,
+                    deviceIdentification, activityCalendar);
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+
+        } catch (final Exception e) {
+
+            LOGGER.error("Exception: {} while setting activity calendar on device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+
+            this.handleException(e);
+        }
+
+        return response;
+
+    }
+
+    @PayloadRoot(localPart = "RetrieveSetActivityCalendarResultRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public RetrieveSetActivityCalendarResultResponse retrieveSetActivityCalendarResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RetrieveSetActivityCalendarResultRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming retrieveSetActivityCalendarResponse for meter: {}", request.getDeviceIdentification());
+
+        final RetrieveSetActivityCalendarResultResponse response = new RetrieveSetActivityCalendarResultResponse();
+
+        try {
+            final MeterResponseData meterResponseData = this.meterResponseDataRepository
+                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+
+            if (meterResponseData == null) {
+                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
+                        ComponentType.WS_SMART_METERING);
+            }
+
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setResult((String) meterResponseData.getMessageData());
+                this.meterResponseDataRepository.delete(meterResponseData);
+            } else {
+                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
+                        .getName(), request.getCorrelationUid());
+            }
+
+        } catch (final Exception e) {
+            if ((e instanceof FunctionalException)
+                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+
+                LOGGER.warn("No response data for correlation UID {} in RetrieveSetActivityCalendarResultRequest",
+                        request.getCorrelationUid());
+
+                throw e;
+
+            } else {
+                LOGGER.error(
+                        "Exception: {} while sending SetActivityCalendarResult of device: {} for organisation {}.",
+                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+
+                this.handleException(e);
+            }
+        }
 
         return response;
     }

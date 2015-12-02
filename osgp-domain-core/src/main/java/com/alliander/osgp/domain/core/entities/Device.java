@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -28,7 +29,6 @@ import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.domain.core.valueobjects.RelayFunction;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -36,7 +36,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-NetworkAddressInterface {
+        NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -107,6 +107,10 @@ NetworkAddressInterface {
     @OneToMany(mappedBy = "device", targetEntity = Ean.class)
     @LazyCollection(LazyCollectionOption.FALSE)
     private final List<Ean> eans = new ArrayList<Ean>();
+
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<RelayStatus> relayStatusses;
 
     public Device() {
         // Default constructor
@@ -288,6 +292,51 @@ NetworkAddressInterface {
         return retval;
     }
 
+    public List<RelayStatus> getRelayStatusses() {
+        return this.relayStatusses;
+    }
+
+    /**
+     * Returns the {@link RelayStatus} for the given index, or null if it
+     * doesn't exist.
+     *
+     * @param index
+     * @return
+     */
+    public RelayStatus getRelayStatusByIndex(final int index) {
+        final RelayStatus output = null;
+
+        for (final RelayStatus r : this.relayStatusses) {
+            if (r.getIndex() == index) {
+                return r;
+            }
+        }
+        return output;
+    }
+
+    /**
+     * Updates the {@link RelayStatus} for the given index if it exists.
+     *
+     * @param index
+     * @return
+     */
+    public void updateRelayStatusByIndex(final int index, final RelayStatus relayStatus) {
+
+        boolean found = false;
+
+        for (final RelayStatus r : this.relayStatusses) {
+            if (r.getIndex() == index) {
+                r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            this.relayStatusses.add(relayStatus);
+        }
+    }
+
     @Override
     public DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
         // TODO: Make sure that there is only one owner authorization.
@@ -386,17 +435,16 @@ NetworkAddressInterface {
         }
 
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration
-            .add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "Kerktoren", RelayFunction.SPECIAL));
-            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, "Gemeentehuis",
-                    RelayFunction.EVENING_MORNING));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, "Belastingdienst",
-                    RelayFunction.TARIFF));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(4, 4, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(0, 0, RelayType.LIGHT, ""));
+
             return defaultConfiguration;
         }
 
         if (this.deviceType.equalsIgnoreCase(PSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, "UWV", RelayFunction.SPECIAL));
+            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
             return defaultConfiguration;
         }
 

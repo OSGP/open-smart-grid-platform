@@ -28,6 +28,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
         mapperFactory.getConverterFactory().registerConverter(new SetAdministrationConverter());
         mapperFactory.getConverterFactory().registerConverter(new GetAdministrationConverter());
-
+        mapperFactory.getConverterFactory().registerConverter(new ActivityCalendarConverter());
     }
 }

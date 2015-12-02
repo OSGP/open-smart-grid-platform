@@ -43,6 +43,20 @@
         <wsdl:part element="smconf:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
         </wsdl:part>
     </wsdl:message>
+	
+	<wsdl:message name="ActivityCalendarHeader">
+		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+		<wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+	</wsdl:message>
+	<wsdl:message name="SetActivityCalendarRequest">
+		<wsdl:part element="smconf:SetActivityCalendarRequest" name="setActivityCalendarRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="SetActivityCalendarAsyncResponse">
+		<wsdl:part element="smconf:SetActivityCalendarAsyncResponse" name="setActivityCalendarAsyncResponse">
+		</wsdl:part>
+	</wsdl:message>
     
     <wsdl:message name="SetConfigurationObjectRequest">
         <wsdl:part element="smconf:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
@@ -51,6 +65,13 @@
     <wsdl:message name="SetConfigurationObjectResponse">
         <wsdl:part element="smconf:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
         </wsdl:part>
+    </wsdl:message>
+    
+    <wsdl:message name="RetrieveSetActivityCalendarResultRequest">
+    	<wsdl:part element="smconf:RetrieveSetActivityCalendarResultRequest"  name="RetrieveSetActivityCalendarResultRequest" />
+    </wsdl:message>
+    <wsdl:message name="RetrieveSetActivityCalendarResultResponse">
+    	<wsdl:part element="smconf:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse" />
     </wsdl:message>
 
 
@@ -99,6 +120,20 @@
 			<wsdl:output message="tns:GetAdministrationResponse" name="GetAdministrationResponse" /> 
 		</wsdl:operation>		
 		
+
+		<wsdl:operation name="SetActivityCalendar">
+            <wsdl:input message="tns:SetActivityCalendarRequest" name="SetActivityCalendarRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetActivityCalendarAsyncResponse" name="SetActivityCalendarAsyncResponse">
+            </wsdl:output>
+		</wsdl:operation>
+		
+		 <wsdl:operation name="RetrieveSetActivityCalendarResult">
+        	<wsdl:input message="tns:RetrieveSetActivityCalendarResultRequest" name="RetrieveSetActivityCalendarResultRequest">
+        	</wsdl:input>
+        	<wsdl:output message="tns:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse">
+        	</wsdl:output>
+        </wsdl:operation>
     </wsdl:portType>
 
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
@@ -168,6 +203,31 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+
+		<wsdl:operation name="SetActivityCalendar">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetActivityCalendarRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetActivityCalendarAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="RetrieveSetActivityCalendarResult">
+			<soap:operation soapAction="" />
+			<wsdl:input name="RetrieveSetActivityCalendarResultRequest">
+        		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+			</wsdl:input>
+			<wsdl:output name="RetrieveSetActivityCalendarResultResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
 
     </wsdl:binding>
     

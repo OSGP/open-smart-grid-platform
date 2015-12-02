@@ -8,17 +8,23 @@
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import ma.glasnost.orika.metadata.Type;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ws.EventTypeConverter;
-import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayFunction;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayStatus;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
@@ -26,6 +32,8 @@ import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter
 
 @Component(value = "coreDeviceManagementMapper")
 public class DeviceManagementMapper extends ConfigurableMapper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementMapper.class);
 
     @Override
     public void configure(final MapperFactory mapperFactory) {
@@ -79,10 +87,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                             deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
                             deviceOutputSetting.getRelayType() == null ? null
                                     : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
-                                            .getRelayType().name()), deviceOutputSetting.getAlias(),
-                            deviceOutputSetting.getRelayType() == null ? null
-                                    : com.alliander.osgp.domain.core.valueobjects.RelayFunction
-                                            .valueOf(deviceOutputSetting.getRelayFunction().name()));
+                                            .getRelayType().name()), deviceOutputSetting.getAlias());
 
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
@@ -110,9 +115,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                     newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
                     newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
-                    newDeviceOutputSetting.setRelayType(RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
-                    newDeviceOutputSetting.setRelayFunction(deviceOutputSetting.getRelayFunction() == null ? null
-                            : RelayFunction.valueOf(deviceOutputSetting.getRelayFunction().name()));
+                    newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
+                            .valueOf(deviceOutputSetting.getOutputType().name()));
                     newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
@@ -153,9 +157,41 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                 destination.getEans().addAll(eans);
 
+                RelayStatus temp = null;
+                for (final com.alliander.osgp.domain.core.entities.RelayStatus r : source.getRelayStatusses()) {
+                    temp = this.convertRelayStatus(r);
+
+                    if (temp != null) {
+                        destination.getRelayStatuses().add(temp);
+                    }
+                }
+
                 return destination;
             }
             return null;
+        }
+
+        private RelayStatus convertRelayStatus(final com.alliander.osgp.domain.core.entities.RelayStatus status) {
+
+            RelayStatus output = null;
+
+            if (status != null) {
+
+                output = new RelayStatus();
+                output.setIndex(status.getIndex());
+                output.setLastKnownState(status.isLastKnownState());
+
+                final GregorianCalendar gCalendar = new GregorianCalendar();
+                gCalendar.setTime(status.getLastKnowSwitchingTime());
+
+                try {
+                    output.setLastKnowSwitchingTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(gCalendar));
+                } catch (final DatatypeConfigurationException e) {
+                    // This won't happen, so no further action is needed.
+                    LOGGER.error("Bad date format in one of theRelay Status dates", e);
+                }
+            }
+            return output;
         }
     }
 }

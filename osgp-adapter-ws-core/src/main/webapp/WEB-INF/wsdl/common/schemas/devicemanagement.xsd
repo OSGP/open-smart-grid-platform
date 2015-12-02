@@ -208,6 +208,17 @@
 			<xsd:sequence>
 				<xsd:element name="Eans" type="tns:Ean" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
+			<xsd:sequence>
+				<xsd:element name="RelayStatuses" type="tns:RelayStatus" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="RelayStatus">
+		<xsd:sequence>
+			<xsd:element name="Index" type="xsd:int" minOccurs="0" />
+			<xsd:element name="LastKnownState" type="xsd:boolean" minOccurs="0" />
+			<xsd:element name="LastKnowSwitchingTime" type="xsd:dateTime"  minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -337,7 +348,6 @@
 			<xsd:element name="externalId" type="xsd:int" />
 			<xsd:element name="alias" type="xsd:string" />
 			<xsd:element name="relayType" type="tns:RelayType" />
-			<xsd:element name="relayFunction" type="tns:RelayFunction" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -349,16 +359,6 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<xsd:simpleType name="RelayFunction">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="BURNER" />
-			<xsd:enumeration value="EVENING_MORNING" />
-			<xsd:enumeration value="TARIFF" />
-			<xsd:enumeration value="SPECIAL" />
-			<xsd:enumeration value="NOT_CONNECTED" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	
 	<xsd:complexType name="Ean">
 		<xsd:sequence>
 			<xsd:element name="code" minOccurs="1" maxOccurs="1">

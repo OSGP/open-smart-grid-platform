@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration;
@@ -176,6 +177,25 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
+            throws FunctionalException {
+
+        LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR, correlationUid, organisationIdentification,
+                deviceIdentification, activityCalendar);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
     /**
      * @param organisationIdentification
      * @param deviceIdentification
@@ -186,5 +206,11 @@ public class ConfigurationService {
             final AlarmNotifications alarmSwitches) throws FunctionalException {
         return this
                 .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification, alarmSwitches);
+    }
+
+    public String setActivityCalendar(final String organisationIdentification, final String deviceIdentification,
+            final ActivityCalendar activityCalendar) throws FunctionalException {
+        return this.enqueueSetActivityCalendarRequest(organisationIdentification, deviceIdentification,
+                activityCalendar);
     }
 }
