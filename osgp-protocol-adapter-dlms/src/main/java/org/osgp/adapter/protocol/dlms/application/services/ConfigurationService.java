@@ -281,6 +281,16 @@ public class ConfigurationService {
     private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        // Creating a ProtocolResponseMessage without a Serializable object
+        this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, responseMessageSender, null);
+    }
+
+    private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
+            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
+            final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
