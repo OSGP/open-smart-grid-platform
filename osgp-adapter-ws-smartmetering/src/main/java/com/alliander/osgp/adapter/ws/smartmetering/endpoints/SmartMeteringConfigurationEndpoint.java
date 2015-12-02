@@ -52,7 +52,7 @@ public class SmartMeteringConfigurationEndpoint {
     public SmartMeteringConfigurationEndpoint() {
     }
 
-    @PayloadRoot(localPart = "SetAdministration", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetAdministrationRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public SetAdministrationResponse setAdministration(
             @OrganisationIdentification final String organisationIdentification,
@@ -63,7 +63,7 @@ public class SmartMeteringConfigurationEndpoint {
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration dataRequest = this.configurationMapper
                 .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration.class);
 
-        final String correlationUid = this.configurationService.enqueueSetAdministration(organisationIdentification,
+        final String correlationUid = this.configurationService.requestSetAdministration(organisationIdentification,
                 dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
@@ -74,7 +74,7 @@ public class SmartMeteringConfigurationEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "GetAdministration", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "GetAdministrationRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public GetAdministrationResponse getAdministration(
             @OrganisationIdentification final String organisationIdentification,
@@ -85,7 +85,7 @@ public class SmartMeteringConfigurationEndpoint {
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration dataRequest = this.configurationMapper
                 .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration.class);
 
-        final String correlationUid = this.configurationService.enqueueGetAdministration(organisationIdentification,
+        final String correlationUid = this.configurationService.requestGetAdministration(organisationIdentification,
                 dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();

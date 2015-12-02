@@ -64,7 +64,7 @@
 	<wsdl:message name="GetAdministrationRequest">
 		<wsdl:part element="smconf:GetAdministrationRequest" name="GetAdministrationRequest" />
 	</wsdl:message>
-	<wsdl:message name="GetAdministrationnResponse">
+	<wsdl:message name="GetAdministrationResponse">
 		<wsdl:part element="smconf:GetAdministrationResponse" name="GetAdministrationResponse" />
 	</wsdl:message>	
 
@@ -92,11 +92,11 @@
 		
 		<wsdl:operation name="SetAdministration">
 			<wsdl:input message="tns:SetAdministrationRequest" name="SetAdministrationRequest" />
-			<wsdl:input message="tns:SetAdministrationResponse" name="SetAdministrationResponse" /> 
+			<wsdl:output message="tns:SetAdministrationResponse" name="SetAdministrationResponse" /> 
 		</wsdl:operation>
 		<wsdl:operation name="GetAdministration">
 			<wsdl:input message="tns:GetAdministrationRequest" name="GetAdministrationRequest" />
-			<wsdl:input message="tns:GetAdministrationResponse" name="GetAdministrationResponse" /> 
+			<wsdl:output message="tns:GetAdministrationResponse" name="GetAdministrationResponse" /> 
 		</wsdl:operation>		
 		
     </wsdl:portType>

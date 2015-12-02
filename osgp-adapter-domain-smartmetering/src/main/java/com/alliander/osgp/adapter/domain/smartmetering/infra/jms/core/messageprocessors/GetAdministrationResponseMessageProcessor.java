@@ -14,7 +14,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-@Component("domainSmartMeteringSetAdministrationResponseMessageProcessor")
+@Component("domainSmartMeteringGetAdministrationResponseMessageProcessor")
 public class GetAdministrationResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrationResponseMessageProcessor.class);
