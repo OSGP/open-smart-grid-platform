@@ -13,34 +13,38 @@ import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 public class DlmsApplicationService {
-    protected static void logStart(final Logger logger, final DlmsDeviceMessageMetadata messageMetadata,
+    protected void logStart(final Logger logger, final DlmsDeviceMessageMetadata messageMetadata,
             final String methodName) {
-        logger.info(methodName + " called for device: {} for organisation: {}",
+        logger.info("{} called for device: {} for organisation: {}", methodName,
                 messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
     }
 
     protected OsgpException ensureOsgpException(final Exception e) {
-    
+
         if (e instanceof OsgpException) {
             return (OsgpException) e;
         }
-    
+
         return new TechnicalException(ComponentType.PROTOCOL_DLMS,
                 "Unexpected exception while handling protocol request/response message", e);
     }
 
-    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata, final ResponseMessageResultType result, final OsgpException osgpException, final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
-    
+    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
+
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(messageMetadata.getDomain(),
                 messageMetadata.getDomainVersion(), messageMetadata.getMessageType(),
                 messageMetadata.getCorrelationUid(), messageMetadata.getOrganisationIdentification(),
                 messageMetadata.getDeviceIdentification(), result, osgpException, responseObject);
-    
+
         responseMessageSender.send(responseMessage);
     }
 
-    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata, final ResponseMessageResultType result, final OsgpException osgpException, final DeviceResponseMessageSender responseMessageSender) {
-    
+    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender) {
+
         this.sendResponseMessage(messageMetadata, result, osgpException, responseMessageSender, null);
     }
 

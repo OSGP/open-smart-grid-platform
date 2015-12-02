@@ -40,7 +40,7 @@ public class AdhocService extends DlmsApplicationService {
     public void synchronizeTime(final DlmsDeviceMessageMetadata messageMetadata,
             final SynchronizeTimeRequest synchronizeTimeRequest, final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "synchronizeTime");
+        this.logStart(LOGGER, messageMetadata, "synchronizeTime");
 
         ClientConnection conn = null;
         try {

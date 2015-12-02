@@ -59,7 +59,7 @@ public class ConfigurationService extends DlmsApplicationService {
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "requestSpecialDays");
+        this.logStart(LOGGER, messageMetadata, "requestSpecialDays");
 
         try {
             // The Special days towards the Smart Meter
@@ -90,7 +90,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final SetConfigurationObjectRequest setConfigurationObjectRequest,
             final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "requestSetConfiguration");
+        this.logStart(LOGGER, messageMetadata, "requestSetConfiguration");
 
         try {
             // Configuration Object towards the Smart Meter
@@ -128,7 +128,7 @@ public class ConfigurationService extends DlmsApplicationService {
     public void setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
             final ActivityCalendar activityCalendar, final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "setActivityCalendar");
+        this.logStart(LOGGER, messageMetadata, "setActivityCalendar");
 
         try {
             LOGGER.info(LOG_SEPERATOR);
@@ -159,7 +159,7 @@ public class ConfigurationService extends DlmsApplicationService {
     public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
             final AlarmNotifications alarmNotifications, final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "setAlarmNotifications");
+        this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
 
         try {
 

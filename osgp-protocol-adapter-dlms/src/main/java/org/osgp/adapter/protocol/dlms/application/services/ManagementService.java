@@ -41,7 +41,7 @@ public class ManagementService extends DlmsApplicationService {
             final DeviceResponseMessageSender responseMessageSender,
             final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) {
 
-        logStart(LOGGER, messageMetadata, "findEvents");
+        this.logStart(LOGGER, messageMetadata, "findEvents");
 
         try {
             // Debug logging which can be removed.

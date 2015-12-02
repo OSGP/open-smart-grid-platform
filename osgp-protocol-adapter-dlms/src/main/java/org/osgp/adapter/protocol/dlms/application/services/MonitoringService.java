@@ -52,7 +52,7 @@ public class MonitoringService extends DlmsApplicationService {
             final PeriodicMeterReadsRequest periodicMeterReadsRequest,
             final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
+        this.logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
 
         ClientConnection conn = null;
         try {
@@ -84,7 +84,7 @@ public class MonitoringService extends DlmsApplicationService {
             final ActualMeterReadsRequest actualMeterReadsRequest,
             final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "requestActualMeterReads");
+        this.logStart(LOGGER, messageMetadata, "requestActualMeterReads");
 
         try {
             // Mock a return value for actual meter reads.

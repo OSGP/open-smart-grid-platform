@@ -38,7 +38,7 @@ public class InstallationService extends DlmsApplicationService {
     public void addMeter(final DlmsDeviceMessageMetadata messageMetadata,
             final SmartMeteringDevice smartMeteringDevice, final DeviceResponseMessageSender responseMessageSender) {
 
-        logStart(LOGGER, messageMetadata, "addMeter");
+        this.logStart(LOGGER, messageMetadata, "addMeter");
 
         try {
             final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
