@@ -24,7 +24,7 @@ public class AlarmRegister implements Serializable {
 
     @Override
     public String toString() {
-        return "AlarmTypes[" + String.valueOf(this.alarmTypes) + "]";
+        return "AlarmTypes[" + this.alarmTypes + "]";
     }
 
     public Set<AlarmType> getAlarmTypes() {
