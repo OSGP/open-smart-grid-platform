@@ -5,7 +5,6 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import javax.jms.JMSException;
@@ -20,44 +19,41 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
 
 /**
- * Class for processing Set Configuration Request messages
+ * Class for processing set Activity Calendar request messages
  */
-@Component("dlmsSetConfigurationObjectRequestMessageProcessor")
-public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
+@Component("dlmsSetActicityCalendarRequestMessageProcessor")
+public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarRequestMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public SetConfigurationObjectRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_CONFIGURATION_OBJECT);
+    public SetActivityCalendarRequestMessageProcessor() {
+        super(DeviceRequestMessageType.SET_ACTIVITY_CALENDAR);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing special days request message");
+        LOGGER.debug("Processing set activity calendar request message");
 
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
         try {
             messageMetadata.handleMessage(message);
+            final ActivityCalendar activityCalendarDto = (ActivityCalendar) message.getObject();
 
-            final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) message
-                    .getObject();
-
-            this.configurationService.requestSetConfiguration(messageMetadata.getOrganisationIdentification(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(), setConfigurationObjectRequest,
-                    this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.configurationService.setActivityCalendar(messageMetadata.getOrganisationIdentification(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(),
+                    activityCalendarDto, this.responseMessageSender, messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
         }
     }
-
 }

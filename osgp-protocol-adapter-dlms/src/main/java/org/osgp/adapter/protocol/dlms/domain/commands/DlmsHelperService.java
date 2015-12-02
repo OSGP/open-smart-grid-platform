@@ -4,11 +4,18 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.internal.CosemDate;
+import org.openmuc.jdlms.internal.CosemDateTime;
+import org.openmuc.jdlms.internal.CosemDateTime.ClockStatus;
+import org.openmuc.jdlms.internal.CosemTime;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
+
+    public static final int MILLISECONDS_PER_MINUTE = 60000;
 
     public DateTime fromDateTimeValue(final byte[] dateTimeValue) {
 
@@ -22,44 +29,78 @@ public class DlmsHelperService {
         final int minuteOfHour = bb.get();
         final int secondOfMinute = bb.get();
         final int hundredthsOfSecond = bb.get();
-        // final int deviation =
-        bb.getShort();
+        final int deviation = bb.getShort();
         // final int clockStatus =
         bb.get();
 
-        final DateTime dateTime = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
-                hundredthsOfSecond * 10);
-
-        return dateTime;
+        return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
+                hundredthsOfSecond * 10, DateTimeZone.forOffsetMillis(-deviation * MILLISECONDS_PER_MINUTE));
     }
 
     public DataObject asDataObject(final DateTime dateTime) {
 
-        final ByteBuffer bb = ByteBuffer.allocate(12);
-
-        bb.putShort((short) dateTime.getYear());
-        bb.put((byte) dateTime.getMonthOfYear());
-        bb.put((byte) dateTime.getDayOfMonth());
-        // leave day of week unspecified (0xFF)
-        bb.put((byte) 0xFF);
-        bb.put((byte) dateTime.getHourOfDay());
-        bb.put((byte) dateTime.getMinuteOfHour());
-        bb.put((byte) dateTime.getSecondOfMinute());
-        bb.put((byte) (dateTime.getMillisOfSecond() / 10));
-        // deviation high byte
-        bb.put((byte) 0x80);
-        // deviation low byte
-        bb.put((byte) 0x00);
-        // clock status
-        bb.put((byte) 128);
-
-        final DataObject obj = DataObject.newOctetStringData(bb.array());
-
-        return obj;
+        final CosemDate cosemDate = new CosemDate(dateTime.getYear(), dateTime.getMonthOfYear(),
+                dateTime.getDayOfMonth());
+        final CosemTime cosemTime = new CosemTime(dateTime.getHourOfDay(), dateTime.getMinuteOfHour(),
+                dateTime.getSecondOfMinute(), dateTime.getMillisOfSecond() / 10);
+        final int deviation = -(dateTime.getZone().getOffset(dateTime.getMillis()) / MILLISECONDS_PER_MINUTE);
+        final ClockStatus[] clockStatusBits;
+        if (dateTime.getZone().isStandardOffset(dateTime.getMillis())) {
+            clockStatusBits = new ClockStatus[0];
+        } else {
+            clockStatusBits = new ClockStatus[1];
+            clockStatusBits[0] = ClockStatus.DAYLIGHT_SAVING_ACTIVE;
+        }
+        final CosemDateTime cosemDateTime = new CosemDateTime(cosemDate, cosemTime, deviation, clockStatusBits);
+        return DataObject.newDateTimeData(cosemDateTime);
     }
 
     public String getDebugInfo(final DataObject dataObject) {
+        if (dataObject == null) {
+            return null;
+        }
 
+        final String dataType = getDataType(dataObject);
+
+        String objectText;
+        if (dataObject.isComplex()) {
+            if (dataObject.value() instanceof List) {
+                final StringBuilder builder = new StringBuilder();
+                builder.append("[");
+                builder.append(System.lineSeparator());
+                this.appendItemValues(dataObject, builder);
+                builder.append("]");
+                builder.append(System.lineSeparator());
+                objectText = builder.toString();
+            } else {
+                objectText = String.valueOf(dataObject.rawValue());
+            }
+        } else if (dataObject.isByteArray()) {
+            objectText = this.getDebugInfoByteArray((byte[]) dataObject.value());
+        } else if (dataObject.isCosemDateFormat() && dataObject.value() instanceof CosemDateTime) {
+            objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.value()).ocletString());
+        } else {
+            objectText = String.valueOf(dataObject.rawValue());
+        }
+
+        return "DataObject: Choice=" + dataObject.choiceIndex().name() + "(" + dataObject.choiceIndex().getValue()
+                + "), ResultData is" + dataType + ", value=[" + dataObject.rawValue().getClass().getName() + "]: "
+                + objectText;
+    }
+
+    private void appendItemValues(final DataObject dataObject, final StringBuilder builder) {
+        for (final Object obj : (List<?>) dataObject.value()) {
+            builder.append("\t");
+            if (obj instanceof DataObject) {
+                builder.append(this.getDebugInfo((DataObject) obj));
+            } else {
+                builder.append(String.valueOf(obj));
+            }
+            builder.append(System.lineSeparator());
+        }
+    }
+
+    private static String getDataType(final DataObject dataObject) {
         String dataType;
         if (dataObject.isBitString()) {
             dataType = "BitString";
@@ -78,33 +119,7 @@ public class DlmsHelperService {
         } else {
             dataType = "?";
         }
-
-        String objectText;
-        if (dataObject.isComplex()) {
-            if (dataObject.value() instanceof List) {
-                objectText = "[" + System.lineSeparator();
-                for (final Object obj : (List<?>) dataObject.value()) {
-                    objectText += "\t";
-                    if (obj instanceof DataObject) {
-                        objectText += this.getDebugInfo((DataObject) obj);
-                    } else {
-                        objectText += String.valueOf(obj);
-                    }
-                    objectText += System.lineSeparator();
-                }
-                objectText += "]" + System.lineSeparator();
-            } else {
-                objectText = String.valueOf(dataObject.rawValue());
-            }
-        } else if (dataObject.isByteArray()) {
-            objectText = this.getDebugInfoDateTimeBytes((byte[]) dataObject.value());
-        } else {
-            objectText = String.valueOf(dataObject.rawValue());
-        }
-
-        return "DataObject: Choice=" + dataObject.choiceIndex().name() + "(" + dataObject.choiceIndex().getValue()
-                + "), ResultData is" + dataType + ", value=" + dataObject.rawValue() == null ? "null" : "["
-                + dataObject.rawValue().getClass().getName() + "]: " + objectText;
+        return dataType;
     }
 
     public String getDebugInfoByteArray(final byte[] bytes) {
