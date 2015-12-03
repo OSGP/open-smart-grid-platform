@@ -91,7 +91,7 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="ReadAlarmRegisterResponse">
+	<xsd:element name="ReadAlarmRegisterAsyncResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
@@ -99,7 +99,7 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="RetrieveReadAlarmRegisterRequest">
+	<xsd:element name="ReadAlarmRegisterAsyncRequest">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
@@ -108,7 +108,7 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="RetrieveReadAlarmRegisterResponse">
+	<xsd:element name="ReadAlarmRegisterResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AlarmRegister" type="tns:AlarmRegister" minOccurs="1" maxOccurs="1" />

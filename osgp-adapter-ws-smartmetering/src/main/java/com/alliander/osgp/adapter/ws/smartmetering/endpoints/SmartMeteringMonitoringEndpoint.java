@@ -21,14 +21,14 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeter
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveActualMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveReadAlarmRegisterRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveReadAlarmRegisterResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -233,13 +233,13 @@ public class SmartMeteringMonitoringEndpoint {
 
     @PayloadRoot(localPart = "ReadAlarmRegisterRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
-    public ReadAlarmRegisterResponse requestReadAlarmRegister(
+    public ReadAlarmRegisterAsyncResponse readAlarmRegister(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ReadAlarmRegisterRequest request) throws OsgpException {
 
         LOGGER.info("Incoming ReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
 
-        final ReadAlarmRegisterResponse response = new ReadAlarmRegisterResponse();
+        final ReadAlarmRegisterAsyncResponse response = new ReadAlarmRegisterAsyncResponse();
 
         try {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest requestValueObject = this.monitoringMapper
@@ -264,15 +264,15 @@ public class SmartMeteringMonitoringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "RetrieveReadAlarmRegisterRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @PayloadRoot(localPart = "ReadAlarmRegisterAsyncRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
-    public RetrieveReadAlarmRegisterResponse retrieveReadAlarmRegister(
+    public ReadAlarmRegisterResponse getReadAlarmRegisterResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RetrieveReadAlarmRegisterRequest request) throws OsgpException {
+            @RequestPayload final ReadAlarmRegisterAsyncRequest request) throws OsgpException {
 
         LOGGER.info("Incoming RetrieveReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
 
-        final RetrieveReadAlarmRegisterResponse response = new RetrieveReadAlarmRegisterResponse();
+        final ReadAlarmRegisterResponse response = new ReadAlarmRegisterResponse();
 
         try {
             final MeterResponseData meterResponseData = this.meterResponseDataRepository

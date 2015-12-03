@@ -65,15 +65,15 @@
     <wsdl:message name="ReadAlarmRegisterRequest">
     	<wsdl:part element="smmon:ReadAlarmRegisterRequest" name="AlarmRegisterRequest" />
     </wsdl:message>
-    <wsdl:message name="ReadAlarmRegisterResponse">
-    	<wsdl:part element="smmon:ReadAlarmRegisterResponse" name="AlarmRegisterResponse" />
+    <wsdl:message name="ReadAlarmRegisterAsyncResponse">
+    	<wsdl:part element="smmon:ReadAlarmRegisterAsyncResponse" name="AlarmRegisterResponse" />
     </wsdl:message> 
     
-    <wsdl:message name="RetrieveReadAlarmRegisterRequest">
-    	<wsdl:part element="smmon:RetrieveReadAlarmRegisterRequest" name="RetrieveAlarmRegisterRequest" />
-    </wsdl:message>
-    <wsdl:message name="RetrieveReadAlarmRegisterResponse">
-    	<wsdl:part element="smmon:RetrieveReadAlarmRegisterResponse" name="RetrieveAlarmRegisterResponse" />
+    <wsdl:message name="ReadAlarmRegisterAsyncRequest">
+    	<wsdl:part element="smmon:ReadAlarmRegisterAsyncRequest" name="RetrieveAlarmRegisterRequest" />
+    </wsdl:message> 
+    <wsdl:message name="ReadAlarmRegisterResponse">
+    	<wsdl:part element="smmon:ReadAlarmRegisterResponse" name="RetrieveAlarmRegisterResponse" />
     </wsdl:message>
     
     <wsdl:portType name="SmartmetermonitoringPort">
@@ -106,13 +106,13 @@
         	</wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="RequestReadAlarmRegister">
+        <wsdl:operation name="ReadAlarmRegister">
         	<wsdl:input message="tns:ReadAlarmRegisterRequest" name="ReadAlarmRegisterRequest" />
-        	<wsdl:output message="tns:ReadAlarmRegisterResponse" name="ReadAlarmRegisterResponse" />
+        	<wsdl:output message="tns:ReadAlarmRegisterAsyncResponse" name="ReadAlarmRegisterAsyncResponse" />
         </wsdl:operation>
-        <wsdl:operation name="RetrieveReadAlarmRegister">
-        	<wsdl:input message="tns:RetrieveReadAlarmRegisterRequest" name="RetrieveReadAlarmRegisterRequest" />
-        	<wsdl:output message="tns:RetrieveReadAlarmRegisterResponse" name="RetrieveReadAlarmRegisterResponse" />
+        <wsdl:operation name="GetReadAlarmRegisterReponse">
+        	<wsdl:input message="tns:ReadAlarmRegisterAsyncRequest" name="ReadAlarmRegisterAsyncRequest" />
+        	<wsdl:output message="tns:ReadAlarmRegisterResponse" name="ReadAlarmRegisterResponse" />
         </wsdl:operation>
         
 
@@ -172,7 +172,7 @@
 			</wsdl:output>
 		</wsdl:operation>
 		        
-        <wsdl:operation name="RequestReadAlarmRegister">
+        <wsdl:operation name="ReadAlarmRegister">
         	<soap:operation soapAction="" />
         	<wsdl:input name="ReadAlarmRegisterRequest">
         		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
@@ -180,19 +180,19 @@
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
         	</wsdl:input>
-        	<wsdl:output name="ReadAlarmRegisterResponse">
+        	<wsdl:output name="ReadAlarmRegisterAsyncResponse">
                 <soap:body use="literal" />
         	</wsdl:output>
         </wsdl:operation>
         
-		<wsdl:operation name="RetrieveReadAlarmRegister">
+		<wsdl:operation name="GetReadAlarmRegisterReponse">
 			<soap:operation soapAction="" />
-			<wsdl:input name="RetrieveReadAlarmRegisterRequest">
+			<wsdl:input name="ReadAlarmRegisterAsyncRequest">
         		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
 			</wsdl:input>
-			<wsdl:output name="RetrieveReadAlarmRegisterResponse">
+			<wsdl:output name="ReadAlarmRegisterResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
