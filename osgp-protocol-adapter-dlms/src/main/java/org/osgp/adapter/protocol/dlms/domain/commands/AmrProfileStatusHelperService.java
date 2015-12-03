@@ -4,8 +4,11 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Set;
 
+import org.springframework.stereotype.Service;
+
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatus;
 
+@Service("amrProfileStatusHelperService")
 public class AmrProfileStatusHelperService {
     private static final int NUMBER_OF_BITS_IN_REGISTER = 8;
 
@@ -30,11 +33,11 @@ public class AmrProfileStatusHelperService {
         return BYTE_REGISTER_CONVERTER.toBitPosition(amrProfileStatus);
     }
 
-    public Set<AmrProfileStatus> toAmrProfileStatusses(final Long registerValue) {
-        return BYTE_REGISTER_CONVERTER.toTypes(registerValue);
+    public Set<AmrProfileStatus> toAmrProfileStatusses(final Number registerValue) {
+        return BYTE_REGISTER_CONVERTER.toTypes(registerValue.longValue());
     }
 
-    public Long toLongValue(final Set<AmrProfileStatus> amrProfileStatusses) {
-        return BYTE_REGISTER_CONVERTER.toLongValue(amrProfileStatusses);
+    public Short toValue(final Set<AmrProfileStatus> amrProfileStatusses) {
+        return BYTE_REGISTER_CONVERTER.toLongValue(amrProfileStatusses).shortValue();
     }
 }

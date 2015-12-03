@@ -21,12 +21,12 @@ public class AmrProfileStatusHelperServiceTest {
         amrStatusses.add(AmrProfileStatus.DATA_NOT_VALID);
         amrStatusses.add(AmrProfileStatus.POWER_DOWN);
 
-        assertEquals(132L, (long) this.helperService.toLongValue(amrStatusses));
+        assertEquals((short) 132, (short) this.helperService.toValue(amrStatusses));
     }
 
     @Test
     public void testConvertToAmrProfileStatuss() {
-        final long registerValue = Long.parseLong("00100100", 2);
+        final short registerValue = Short.parseShort("00100100", 2);
 
         final Set<AmrProfileStatus> amrStatusses = this.helperService.toAmrProfileStatusses(registerValue);
 

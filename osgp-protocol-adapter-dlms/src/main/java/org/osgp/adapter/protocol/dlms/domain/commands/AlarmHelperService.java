@@ -83,8 +83,8 @@ public class AlarmHelperService {
      *            Value of the register.
      * @return List of active alarm types.
      */
-    public Set<AlarmType> toAlarmTypes(final Long registerValue) {
-        return BYTE_REGISTER_CONVERTER.toTypes(registerValue);
+    public Set<AlarmType> toAlarmTypes(final Number registerValue) {
+        return BYTE_REGISTER_CONVERTER.toTypes(registerValue.longValue());
     }
 
     /**
