@@ -20,6 +20,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "wsSmartMeteringMonitoringService")
@@ -76,7 +77,7 @@ public class MonitoringService {
 
     private String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualMeterReadsRequest requestData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -97,6 +98,32 @@ public class MonitoringService {
             final ActualMeterReadsRequest requestData) throws FunctionalException {
 
         return this.enqueueActualMeterReadsRequestData(organisationIdentification,
+                requestData.getDeviceIdentification(), requestData);
+    }
+
+    private String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData)
+                    throws FunctionalException {
+
+        LOGGER.debug("enqueueReadAlarmRegisterRequestData called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.READ_ALARM_REGISTER, correlationUid, organisationIdentification,
+                deviceIdentification, requestData);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String requestReadAlarmRegister(final String organisationIdentification,
+            final ReadAlarmRegisterRequest requestData) throws FunctionalException {
+
+        return this.enqueueReadAlarmRegisterRequestData(organisationIdentification,
                 requestData.getDeviceIdentification(), requestData);
     }
 }
