@@ -23,6 +23,7 @@ public class MonitoringMapper extends ConfigurableMapper {
                         com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest.class).byDefault()
                 .register();
 
+        mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
         mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsConverter());
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsConverter());
     }
