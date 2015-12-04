@@ -49,33 +49,20 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             throws IOException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendar.getCalendarName());
 
-        // this.printAllValues(conn);
-
-        final AccessResultCode accessResultCode = this.setCalendar(conn, activityCalendar);
-
-        // this.printAllValues(conn);
-
-        return accessResultCode;
-    }
-
-    private AccessResultCode setCalendar(final ClientConnection conn, final ActivityCalendar activityCalendar)
-            throws IOException {
-
         final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
 
         final List<SetRequestParameter> requests = new ArrayList<>();
         requests.add(this.getCalendarNameRequest(activityCalendar));
 
         final List<SeasonProfile> seasonProfileList = activityCalendar.getSeasonProfileList();
-        // requests.add(this.getSeasonsRequest(conn,
-        // Arrays.asList(seasonProfileList.get(0))));
+        requests.add(this.getSeasonsRequest(conn, seasonProfileList));
 
         final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
-        // requests.add(this.getWeeksRequest(conn, weekProfileSet));
-        // requests.add(this.getDaysRequest(conn,
-        // this.getDayProfileSet(weekProfileSet)));
+        requests.add(this.getWeeksRequest(conn, weekProfileSet));
+        requests.add(this.getDaysRequest(conn, this.getDayProfileSet(weekProfileSet)));
 
-        final List<AccessResultCode> l = conn.set(this.dlmsHelperService.LONG_CONNECTION_TIMEOUT, requests.get(0));
+        final List<AccessResultCode> l = conn.set(this.dlmsHelperService.LONG_CONNECTION_TIMEOUT, requests.get(0),
+                requests.get(1));
 
         LOGGER.info("Result of setting request {} is {}: ", requests, l);
         if (l != null && l.get(0) != AccessResultCode.SUCCESS) {
@@ -94,7 +81,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         // LOGGER.info("Time Resultaat is: !!!!!!!!!!!!!!!!!!!!!!!!!!!!! " +
         // lt.get(0));
 
-        return AccessResultCode.SUCCESS;
+        return accessResultCode;
     }
 
     private SetRequestParameter getCalendarNameRequest(final ActivityCalendar activityCalendar) {
