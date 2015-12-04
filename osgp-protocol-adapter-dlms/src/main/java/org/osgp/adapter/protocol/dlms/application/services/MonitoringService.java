@@ -23,13 +23,18 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import java.util.ArrayList;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
@@ -64,12 +69,19 @@ public class MonitoringService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final PeriodicMeterReadsContainer periodicMeterReadsContainer = this.getPeriodicMeterReadsCommandExecutor
-                    .execute(conn, periodicMeterReadsRequest);
+            Serializable response = null;
+            if (periodicMeterReadsRequest.isGas()) {
+                // TODO implement GAS
+                ArrayList<PeriodicMeterReadsGas> reads = new ArrayList<PeriodicMeterReadsGas>(1);
+                reads.add(new PeriodicMeterReadsGas(new Date(), PeriodType.valueOf(periodicMeterReadsRequest
+                        .getPeriodType().name()), 1000, new Date()));
+                response = new PeriodicMeterReadsContainerGas(deviceIdentification, reads);
+            } else {
+                response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, periodicMeterReadsRequest);
+            }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
-                    periodicMeterReadsContainer);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, response);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
@@ -115,8 +127,9 @@ public class MonitoringService {
 
         try {
             // Mock a return value for actual meter reads.
-            final ActualMeterReads actualMeterReads = new ActualMeterReads(new Date(), this.getRandomPositive(),
-                    this.getRandomPositive(), this.getRandomPositive(), this.getRandomPositive());
+            Serializable actualMeterReads = actualMeterReadsRequest.isGas() ? new MeterReadsGas(new Date(), 1000,
+                    new Date()) : new ActualMeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
+                    this.getRandomPositive(), this.getRandomPositive());
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, actualMeterReads);
