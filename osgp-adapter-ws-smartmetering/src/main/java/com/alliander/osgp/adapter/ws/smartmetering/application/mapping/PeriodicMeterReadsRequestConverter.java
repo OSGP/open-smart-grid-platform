@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 
 public class PeriodicMeterReadsRequestConverter
@@ -32,8 +33,9 @@ public class PeriodicMeterReadsRequestConverter
             final PeriodicMeterReadsRequestData source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData> destinationType) {
 
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData data = new ObjectFactory()
-        .createPeriodicMeterReadsRequestData();
+        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData data = source
+                .isGas() ? new ObjectFactory().createPeriodicMeterReadsGasRequest() : new ObjectFactory()
+                .createPeriodicMeterReadsRequest();
 
         data.setDeviceIdentification(source.getDeviceIdentification());
 
@@ -57,7 +59,7 @@ public class PeriodicMeterReadsRequestConverter
         return new PeriodicMeterReadsRequestData(source.getDeviceIdentification(),
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
                         .name()), source.getBeginDate().toGregorianCalendar().getTime(), source.getEndDate()
-                        .toGregorianCalendar().getTime());
+                        .toGregorianCalendar().getTime(), source instanceof PeriodicMeterReadsGasRequest);
     }
 
 }

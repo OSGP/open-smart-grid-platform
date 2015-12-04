@@ -17,10 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.entities.GASMeterDevice;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -71,14 +76,25 @@ public class MonitoringService {
         // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
         // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
-
-        final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData periodicMeterReadsRequestDto = this.monitoringMapper
-                .map(periodicMeterReadsRequestValueObject,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData.class);
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, periodicMeterReadsRequestDto), messageType);
+        if (periodicMeterReadsRequestValueObject.isGas()) {
+            GASMeterDevice findGASMeteringDevice = domainHelperService.findGASMeteringDevice(deviceIdentification);
+            com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData periodicMeterReadsRequestDto = new PeriodicMeterReadsRequestData(
+                    findGASMeteringDevice.getDeviceIdentification(),
+                    PeriodType.valueOf(periodicMeterReadsRequestValueObject.getPeriodType().name()),
+                    periodicMeterReadsRequestValueObject.getBeginDate(),
+                    periodicMeterReadsRequestValueObject.getEndDate(), true, findGASMeteringDevice.getChannel());
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, periodicMeterReadsRequestDto), messageType);
+        } else {
+            // call triggers functionalexception when no device found
+            domainHelperService.findSmartMeteringDevice(deviceIdentification);
+            com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData periodicMeterReadsRequestDto = new PeriodicMeterReadsRequestData(
+                    deviceIdentification, PeriodType.valueOf(periodicMeterReadsRequestValueObject.getPeriodType()
+                            .name()), periodicMeterReadsRequestValueObject.getBeginDate(),
+                    periodicMeterReadsRequestValueObject.getEndDate());
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, periodicMeterReadsRequestDto), messageType);
+        }
     }
 
     public void handlePeriodicMeterReadsresponse(final String deviceIdentification,
@@ -103,6 +119,28 @@ public class MonitoringService {
 
     }
 
+    public void handlePeriodicMeterReadsresponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final PeriodicMeterReadsContainerGas periodMeterReadsValueDTO) {
+
+        LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas periodMeterReadsValueDomain = this.monitoringMapper
+                .map(periodMeterReadsValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, periodMeterReadsValueDomain), messageType);
+
+    }
+
     public void requestActualMeterReads(
             @Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
@@ -113,13 +151,20 @@ public class MonitoringService {
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
-
-        final ActualMeterReadsRequest actualMeterReadsRequestDto = this.monitoringMapper.map(
-                actualMeterReadsRequestValueObject, ActualMeterReadsRequest.class);
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, actualMeterReadsRequestDto), messageType);
+        if (actualMeterReadsRequestValueObject.isGas()) {
+            GASMeterDevice findGASMeteringDevice = domainHelperService.findGASMeteringDevice(deviceIdentification);
+            com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest periodicMeterReadsRequestDto = new ActualMeterReadsRequest(
+                    findGASMeteringDevice.getDeviceIdentification(), true, findGASMeteringDevice.getChannel());
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, periodicMeterReadsRequestDto), messageType);
+        } else {
+            // call triggers functionalexception when no device found
+            domainHelperService.findSmartMeteringDevice(deviceIdentification);
+            com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest periodicMeterReadsRequestDto = new ActualMeterReadsRequest(
+                    deviceIdentification);
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, periodicMeterReadsRequestDto), messageType);
+        }
     }
 
     public void handleActualMeterReadsResponse(@Identification final String deviceIdentification,
@@ -142,4 +187,25 @@ public class MonitoringService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, actualMeterReadsValueDomain), messageType);
     }
+
+    public void handleActualMeterReadsResponse(@Identification final String deviceIdentification,
+            @Identification final String organisationIdentification, final String correlationUid,
+            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception,
+            final MeterReadsGas actualMeterReadsDto) {
+
+        LOGGER.info("handleActualMeterReadsResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas actualMeterReadsValueDomain = this.monitoringMapper
+                .map(actualMeterReadsDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, actualMeterReadsValueDomain), messageType);
+    }
+
 }

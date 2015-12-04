@@ -34,7 +34,7 @@ public class ActualMeterReadsGasConverter
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse destination = new ObjectFactory()
-        .createActualMeterReadsGasResponse();
+                .createActualMeterReadsGasResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());

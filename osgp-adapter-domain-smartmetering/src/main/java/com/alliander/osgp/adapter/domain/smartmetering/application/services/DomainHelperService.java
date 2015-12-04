@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
+import com.alliander.osgp.domain.core.entities.GASMeterDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,13 @@ public class DomainHelperService {
     @Autowired
     private SmartMeteringDeviceDomainService smartMeteringDeviceDomainService;
 
+    /**
+     * 
+     * @param deviceIdentification
+     * @return
+     * @throws FunctionalException
+     *             when there is no device
+     */
     public SmartMeteringDevice findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
         final SmartMeteringDevice smartMeteringDevice;
         try {
@@ -36,16 +44,22 @@ public class DomainHelperService {
     }
 
     /**
-     * Makes sure a FunctionalException is thrown if there is no known device
-     * for the provided deviceIdentification.
-     * <p>
-     * If you need access to the SmartMeteringDevice if it exists, call
-     * {@link #findSmartMeteringDevice(String)} instead.
-     *
+     * 
      * @param deviceIdentification
-     *            the identification for which a smart metering device is looked
-     *            for.
+     * @return
+     * @throws FunctionalException
+     *             when there is no device
      */
+    public GASMeterDevice findGASMeteringDevice(final String deviceIdentification) throws FunctionalException {
+        final GASMeterDevice gASMeteringDevice;
+        try {
+            gASMeteringDevice = this.smartMeteringDeviceDomainService.searchGASMeteringDevice(deviceIdentification);
+        } catch (final UnknownEntityException e) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
+        }
+        return gASMeteringDevice;
+    }
+
     public void ensureFunctionalExceptionForUnknownDevice(final String deviceIdentification) throws FunctionalException {
 
         /*

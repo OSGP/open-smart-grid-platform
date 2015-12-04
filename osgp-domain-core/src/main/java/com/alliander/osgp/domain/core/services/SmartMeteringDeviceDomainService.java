@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.services;
 
+import com.alliander.osgp.domain.core.entities.GASMeterDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
+import com.alliander.osgp.domain.core.repositories.GASMeterDeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 
@@ -25,15 +27,32 @@ public class SmartMeteringDeviceDomainService {
     @Autowired
     private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
 
+    @Autowired
+    private GASMeterDeviceRepository gASMeterDeviceRepository;
+
     public SmartMeteringDevice searchSmartMeteringDevice(@Identification final String deviceIdentification)
             throws UnknownEntityException {
 
-        final SmartMeteringDevice smartMeteringDevice = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final SmartMeteringDevice smartMeteringDevice = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
 
         if (smartMeteringDevice == null) {
             throw new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification);
         }
 
         return smartMeteringDevice;
+    }
+
+    public GASMeterDevice searchGASMeteringDevice(@Identification final String deviceIdentification)
+            throws UnknownEntityException {
+
+        final GASMeterDevice gASMeteringDevice = this.gASMeterDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+
+        if (gASMeteringDevice == null) {
+            throw new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification);
+        }
+
+        return gASMeteringDevice;
     }
 }
