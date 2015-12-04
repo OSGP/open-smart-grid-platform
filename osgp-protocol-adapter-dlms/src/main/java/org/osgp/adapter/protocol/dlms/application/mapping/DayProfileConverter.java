@@ -12,24 +12,22 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
 
-public class DayProfileConverter extends BidirectionalConverter<HashSet<DayProfile>, DataObject> {
+@Component(value = "dayProfileConverter")
+public class DayProfileConverter {
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    @Override
-    public DataObject convertTo(final HashSet<DayProfile> source, final Type<DataObject> destinationType) {
+    public DataObject convert(final HashSet<DayProfile> source) {
         if (source == null) {
             return null;
         }
@@ -38,12 +36,6 @@ public class DayProfileConverter extends BidirectionalConverter<HashSet<DayProfi
 
         return dayArray;
 
-    }
-
-    @Override
-    public HashSet<DayProfile> convertFrom(final DataObject source, final Type<HashSet<DayProfile>> destinationType) {
-
-        throw new IllegalStateException("convertTo is not supported");
     }
 
     private List<DataObject> getDayObjectList(final HashSet<DayProfile> dayProfileSet) {
@@ -85,9 +77,9 @@ public class DayProfileConverter extends BidirectionalConverter<HashSet<DayProfi
         final DateTime dt = new DateTime(dayProfileAction.getStartTime());
         final DataObject startTimeObject = this.dlmsHelperService.asDataObject(dt);
 
-        // TODO which field represents the script_logical_name?
-        final DataObject nameObject = DataObject.newOctetStringData(dayProfileAction.getScriptSelector().toString()
-                .getBytes());
+        // See "DSMR P3 v4.2.2 Final P3.pdf" Tariffication Script Table (Class
+        // ID: 9). Value: 0-0:10.0.100.255
+        final DataObject nameObject = DataObject.newOctetStringData(new byte[] { 0, 0, 10, 0, 100, (byte) 255 });
         final DataObject scriptSelectorObject = DataObject.newUInteger64Data(dayProfileAction.getScriptSelector());
 
         dayActionObjectElements.addAll(Arrays.asList(startTimeObject, nameObject, scriptSelectorObject));

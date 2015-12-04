@@ -8,26 +8,26 @@
 package org.osgp.adapter.protocol.dlms.application.mapping;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
 
-public class SeasonProfileConverter extends BidirectionalConverter<List<SeasonProfile>, DataObject> {
+@Component(value = "seasonProfileConverter")
+public class SeasonProfileConverter {
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    @Override
-    public DataObject convertTo(final List<SeasonProfile> source, final Type<DataObject> destinationType) {
+    public DataObject convert(final List<SeasonProfile> source) {
         if (source == null) {
             return null;
         }
@@ -44,17 +44,16 @@ public class SeasonProfileConverter extends BidirectionalConverter<List<SeasonPr
 
     }
 
-    @Override
-    public List<SeasonProfile> convertFrom(final DataObject source, final Type<List<SeasonProfile>> destinationType) {
-
-        throw new IllegalStateException("convertTo is not supported");
-    }
-
-    private List<DataObject> getSeasonList(final List<SeasonProfile> seasonProfileList) throws IOException {
+    private List<DataObject> getSeasonList(List<SeasonProfile> seasonProfileList) throws IOException {
         final List<DataObject> seasonList = new ArrayList<>();
+
+        // tijdelijk omdat 2 wel werkt ipv 4
+        seasonProfileList = Arrays.asList(seasonProfileList.get(0), seasonProfileList.get(1));
+
         for (final SeasonProfile seasonProfile : seasonProfileList) {
             final DataObject seasonStructure = DataObject.newStructureData(this.getSeason(seasonProfile));
             seasonList.add(seasonStructure);
+            // break;
         }
         return seasonList;
     }
@@ -67,7 +66,7 @@ public class SeasonProfileConverter extends BidirectionalConverter<List<SeasonPr
         seasonProfile.getWeekProfile().getWeekProfileName();
 
         final DataObject seasonProfileNameObject = DataObject.newOctetStringData(seasonProfile.getSeasonProfileName()
-                .getBytes());
+                .getBytes(StandardCharsets.UTF_8));
         seasonElements.add(seasonProfileNameObject);
 
         final DateTime dt = new DateTime(seasonProfile.getSeasonStart());
@@ -75,7 +74,7 @@ public class SeasonProfileConverter extends BidirectionalConverter<List<SeasonPr
         seasonElements.add(seasonStartObject);
 
         final DataObject seasonWeekProfileNameObject = DataObject.newOctetStringData(seasonProfile.getWeekProfile()
-                .getWeekProfileName().getBytes());
+                .getWeekProfileName().getBytes(StandardCharsets.UTF_8));
         seasonElements.add(seasonWeekProfileNameObject);
 
         return seasonElements;

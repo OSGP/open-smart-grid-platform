@@ -7,26 +7,25 @@
  */
 package org.osgp.adapter.protocol.dlms.application.mapping;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-
 import org.openmuc.jdlms.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile;
 
-public class WeekProfileConverter extends BidirectionalConverter<HashSet<WeekProfile>, DataObject> {
+@Component(value = "weekProfileConverter")
+public class WeekProfileConverter {
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    @Override
-    public DataObject convertTo(final HashSet<WeekProfile> source, final Type<DataObject> destinationType) {
+    public DataObject convert(final HashSet<WeekProfile> source) {
         if (source == null) {
             return null;
         }
@@ -35,12 +34,6 @@ public class WeekProfileConverter extends BidirectionalConverter<HashSet<WeekPro
 
         return weekArray;
 
-    }
-
-    @Override
-    public HashSet<WeekProfile> convertFrom(final DataObject source, final Type<HashSet<WeekProfile>> destinationType) {
-
-        throw new IllegalStateException("convertTo is not supported");
     }
 
     private List<DataObject> getWeekObjectList(final HashSet<WeekProfile> weekProfileSet) {
@@ -57,7 +50,8 @@ public class WeekProfileConverter extends BidirectionalConverter<HashSet<WeekPro
     private List<DataObject> getWeekStructure(final WeekProfile weekProfile) {
         final List<DataObject> weekElements = new ArrayList<>();
 
-        weekElements.add(DataObject.newOctetStringData(weekProfile.getWeekProfileName().getBytes()));
+        weekElements.add(DataObject.newOctetStringData(weekProfile.getWeekProfileName()
+                .getBytes(StandardCharsets.UTF_8)));
         weekElements.add(DataObject.newUInteger32Data(weekProfile.getMonday().getDayId()));
         weekElements.add(DataObject.newUInteger32Data(weekProfile.getTuesday().getDayId()));
         weekElements.add(DataObject.newUInteger32Data(weekProfile.getWednesday().getDayId()));

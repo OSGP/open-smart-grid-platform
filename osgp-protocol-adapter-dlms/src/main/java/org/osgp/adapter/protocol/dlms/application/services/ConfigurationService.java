@@ -156,6 +156,7 @@ public class ConfigurationService {
             LOGGER.info("device for Activity Calendar is: {}", device);
 
             final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+
             AccessResultCode accessResultCode = null;
             try {
                 accessResultCode = this.setActivityCalendarCommandExecutor.execute(conn, activityCalendar);
@@ -165,6 +166,7 @@ public class ConfigurationService {
                 }
             } finally {
                 if (conn != null && conn.isConnected()) {
+                    LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
                     conn.close();
                 }
             }
