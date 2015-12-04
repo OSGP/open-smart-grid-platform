@@ -49,11 +49,11 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             throws IOException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendar.getCalendarName());
 
-        this.printAllValues(conn);
+        // this.printAllValues(conn);
 
         final AccessResultCode accessResultCode = this.setCalendar(conn, activityCalendar);
 
-        this.printAllValues(conn);
+        // this.printAllValues(conn);
 
         return accessResultCode;
     }
@@ -65,17 +65,20 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final List<SetRequestParameter> requests = new ArrayList<>();
         requests.add(this.getCalendarNameRequest(activityCalendar));
-        requests.add(this.getSeasonsRequest(conn, activityCalendar.getSeasonProfileList()));
 
-        final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(activityCalendar.getSeasonProfileList());
-        requests.add(this.getWeeksRequest(conn, weekProfileSet));
-        requests.add(this.getDaysRequest(conn, this.getDayProfileSet(weekProfileSet)));
+        final List<SeasonProfile> seasonProfileList = activityCalendar.getSeasonProfileList();
+        // requests.add(this.getSeasonsRequest(conn,
+        // Arrays.asList(seasonProfileList.get(0))));
 
-        final List<AccessResultCode> l = conn.set(this.dlmsHelperService.LONG_CONNECTION_TIMEOUT,
-                (SetRequestParameter[]) requests.toArray());
+        final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
+        // requests.add(this.getWeeksRequest(conn, weekProfileSet));
+        // requests.add(this.getDaysRequest(conn,
+        // this.getDayProfileSet(weekProfileSet)));
 
-        LOGGER.info("Result of setting calendar name is: " + l.get(0));
-        if (l.get(0) != AccessResultCode.SUCCESS) {
+        final List<AccessResultCode> l = conn.set(this.dlmsHelperService.LONG_CONNECTION_TIMEOUT, requests.get(0));
+
+        LOGGER.info("Result of setting request {} is {}: ", requests, l);
+        if (l != null && l.get(0) != AccessResultCode.SUCCESS) {
             return l.get(0);
         }
 
@@ -91,7 +94,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         // LOGGER.info("Time Resultaat is: !!!!!!!!!!!!!!!!!!!!!!!!!!!!! " +
         // lt.get(0));
 
-        return null;
+        return AccessResultCode.SUCCESS;
     }
 
     private SetRequestParameter getCalendarNameRequest(final ActivityCalendar activityCalendar) {
@@ -151,9 +154,6 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final AccessResultCode accesResultCode = AccessResultCode.SUCCESS;
         final SetRequestParameter request = factory.createSetRequestParameter(seasonsArray);
-
-        LOGGER.info("About to set one DataObject seasons element: ");
-        LOGGER.info(this.dlmsHelperService.getDebugInfo(seasonsArray));
 
         return request;
     }

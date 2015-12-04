@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.application.mapping;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -44,11 +43,10 @@ public class SeasonProfileConverter {
 
     }
 
-    private List<DataObject> getSeasonList(List<SeasonProfile> seasonProfileList) throws IOException {
+    private List<DataObject> getSeasonList(final List<SeasonProfile> seasonProfileList) throws IOException {
         final List<DataObject> seasonList = new ArrayList<>();
 
         // tijdelijk omdat 2 wel werkt ipv 4
-        seasonProfileList = Arrays.asList(seasonProfileList.get(0), seasonProfileList.get(1));
 
         for (final SeasonProfile seasonProfile : seasonProfileList) {
             final DataObject seasonStructure = DataObject.newStructureData(this.getSeason(seasonProfile));
