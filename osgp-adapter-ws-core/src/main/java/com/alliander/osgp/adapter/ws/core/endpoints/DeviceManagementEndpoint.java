@@ -335,10 +335,6 @@ public class DeviceManagementEndpoint {
         try {
             this.deviceManagementService.setMaintenanceStatus(organisationIdentification,
                     request.getDeviceIdentification(), request.isStatus());
-
-            throw new FunctionalException(FunctionalExceptionType.METHOD_NOT_ALLOWED_FOR_DEVICE_IN_MAINTENANCE,
-                    ComponentType.WS_CORE, new ValidationException("BESJE"));
-
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
