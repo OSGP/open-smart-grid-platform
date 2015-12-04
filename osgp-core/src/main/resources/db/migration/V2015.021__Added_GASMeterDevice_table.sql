@@ -1,4 +1,4 @@
-CREATE TABLE gas_meter_device (
+CREATE TABLE gasmeter_device (
     id bigserial NOT NULL,
     creation_time timestamp without time zone NOT NULL,
     modification_time timestamp without time zone NOT NULL,

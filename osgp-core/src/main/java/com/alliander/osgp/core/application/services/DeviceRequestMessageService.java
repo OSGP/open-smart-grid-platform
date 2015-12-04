@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.GASMeterDevice;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
@@ -52,8 +53,19 @@ public class DeviceRequestMessageService {
             // TODO workaround for SSLD specific authorization
             if (message.getDomain().equals("SMART_METERING")) {
 
-                final SmartMeteringDevice smartMeteringDevice = this.domainHelperService
-                        .findSmartMeteringDevice(message.getDeviceIdentification());
+                SmartMeteringDevice smartMeteringDevice = null;
+                try {
+                    smartMeteringDevice = this.domainHelperService.findSmartMeteringDevice(message
+                            .getDeviceIdentification());
+                } catch (FunctionalException functionalException) {
+                    if (functionalException.getExceptionType().equals(FunctionalExceptionType.UNKNOWN_DEVICE)) {
+                        // try GAS meter
+                        GASMeterDevice findGASMeterDevice = domainHelperService.findGASMeterDevice(message
+                                .getDeviceIdentification());
+                        smartMeteringDevice = domainHelperService.findSmartMeteringDevice(findGASMeterDevice
+                                .getSmartMeterId());
+                    }
+                }
                 protocolInfo = smartMeteringDevice.getProtocolInfo();
             } else {
 

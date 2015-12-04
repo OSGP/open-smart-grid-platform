@@ -79,9 +79,8 @@ public class MonitoringService {
         if (periodicMeterReadsRequestValueObject.isGas()) {
             GASMeterDevice findGASMeteringDevice = domainHelperService.findGASMeteringDevice(deviceIdentification);
             com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData periodicMeterReadsRequestDto = new PeriodicMeterReadsRequestData(
-                    findGASMeteringDevice.getDeviceIdentification(),
-                    PeriodType.valueOf(periodicMeterReadsRequestValueObject.getPeriodType().name()),
-                    periodicMeterReadsRequestValueObject.getBeginDate(),
+                    findGASMeteringDevice.getSmartMeterId(), PeriodType.valueOf(periodicMeterReadsRequestValueObject
+                            .getPeriodType().name()), periodicMeterReadsRequestValueObject.getBeginDate(),
                     periodicMeterReadsRequestValueObject.getEndDate(), true, findGASMeteringDevice.getChannel());
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                     deviceIdentification, periodicMeterReadsRequestDto), messageType);
@@ -154,7 +153,7 @@ public class MonitoringService {
         if (actualMeterReadsRequestValueObject.isGas()) {
             GASMeterDevice findGASMeteringDevice = domainHelperService.findGASMeteringDevice(deviceIdentification);
             com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest periodicMeterReadsRequestDto = new ActualMeterReadsRequest(
-                    findGASMeteringDevice.getDeviceIdentification(), true, findGASMeteringDevice.getChannel());
+                    findGASMeteringDevice.getSmartMeterId(), true, findGASMeteringDevice.getChannel());
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                     deviceIdentification, periodicMeterReadsRequestDto), messageType);
         } else {
