@@ -9,16 +9,32 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+/**
+ * request actual reads for E or GAS meters
+ * 
+ * @author dev
+ */
 public class ActualMeterReadsRequest implements Serializable {
     private static final long serialVersionUID = 3751586818507193990L;
 
-    private String deviceIdentification;
+    private final String deviceIdentification;
+    private final boolean gas;
 
     public ActualMeterReadsRequest(final String deviceIdentification) {
+        this(deviceIdentification, false);
+    }
+
+    public ActualMeterReadsRequest(final String deviceIdentification, final boolean gas) {
         this.deviceIdentification = deviceIdentification;
+        this.gas = gas;
     }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
+
+    public boolean isGas() {
+        return gas;
+    }
+
 }
