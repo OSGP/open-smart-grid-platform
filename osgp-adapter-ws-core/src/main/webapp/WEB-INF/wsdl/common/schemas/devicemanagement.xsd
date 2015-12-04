@@ -162,7 +162,7 @@
 	<xsd:element name="SetMaintenanceStatusResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>

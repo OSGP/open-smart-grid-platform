@@ -346,15 +346,7 @@ public class DeviceManagementEndpoint {
         }
 
         final SetMaintenanceStatusResponse setMaintenanceStatusResponse = new SetMaintenanceStatusResponse();
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                request.getDeviceIdentification());
-
-        final AsyncResponse AsyncResponse = new AsyncResponse();
-        AsyncResponse.setCorrelationUid(correlationUid);
-        AsyncResponse.setDeviceId(request.getDeviceIdentification());
-
-        setMaintenanceStatusResponse.setAsyncResponse(AsyncResponse);
+        setMaintenanceStatusResponse.setResult(OsgpResultType.OK);
 
         return setMaintenanceStatusResponse;
     }
