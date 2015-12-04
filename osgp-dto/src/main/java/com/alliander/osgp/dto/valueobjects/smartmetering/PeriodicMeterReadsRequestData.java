@@ -61,4 +61,8 @@ public class PeriodicMeterReadsRequestData implements Serializable {
         return gas;
     }
 
+    public int getChannel() {
+        return channel;
+    }
+
 }

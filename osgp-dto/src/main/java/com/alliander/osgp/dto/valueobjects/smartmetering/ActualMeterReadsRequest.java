@@ -39,4 +39,8 @@ public class ActualMeterReadsRequest implements Serializable {
         return gas;
     }
 
+    public int getChannel() {
+        return channel;
+    }
+
 }
