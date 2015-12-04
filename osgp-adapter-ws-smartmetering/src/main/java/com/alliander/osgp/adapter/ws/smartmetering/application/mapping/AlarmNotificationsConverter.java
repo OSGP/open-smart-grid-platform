@@ -22,8 +22,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotificati
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
 public class AlarmNotificationsConverter
-extends
-        BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> {
+        extends
+BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AlarmNotificationsConverter.class);
 
@@ -46,7 +46,7 @@ extends
 
             final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification alarmNotification = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification();
 
-            alarmNotification.setAlarmType(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmType
+            alarmNotification.setAlarmType(com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType
                     .valueOf(sourceNotification.getAlarmType().name()));
             alarmNotification.setEnabled(sourceNotification.isEnabled());
 
