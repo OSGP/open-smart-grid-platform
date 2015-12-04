@@ -64,11 +64,13 @@ public class ScheduleManagementService {
     public String enqueueSetTariffSchedule(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             @NotNull @Size(min = 1, max = 50) @Valid final List<Schedule> mapAsList, final DateTime scheduledTime)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_TARIFF_SCHEDULE);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueSetTariffSchedule called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

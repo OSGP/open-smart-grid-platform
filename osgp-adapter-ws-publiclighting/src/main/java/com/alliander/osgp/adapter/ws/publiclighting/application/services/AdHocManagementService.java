@@ -92,6 +92,7 @@ public class AdHocManagementService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueSetLightRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -146,12 +147,13 @@ public class AdHocManagementService {
 
     public String enqueueResumeScheduleRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final ResumeScheduleData resumeScheduleData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.RESUME_SCHEDULE);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueResumeScheduleRequest called with organisation {}, device {} and resumeScheduleData {} ",
                 organisationIdentification, deviceIdentification, resumeScheduleData);
@@ -180,6 +182,7 @@ public class AdHocManagementService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_TRANSITION);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueTransitionRequest called with organisation {}, device {} ", organisationIdentification,
                 deviceIdentification);
