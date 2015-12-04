@@ -19,14 +19,16 @@ public class ActualMeterReadsRequest implements Serializable {
 
     private final String deviceIdentification;
     private final boolean gas;
+    private final int channel;
 
     public ActualMeterReadsRequest(final String deviceIdentification) {
-        this(deviceIdentification, false);
+        this(deviceIdentification, false, -1);
     }
 
-    public ActualMeterReadsRequest(final String deviceIdentification, final boolean gas) {
+    public ActualMeterReadsRequest(final String deviceIdentification, final boolean gas, final int channel) {
         this.deviceIdentification = deviceIdentification;
         this.gas = gas;
+        this.channel = channel;
     }
 
     public String getDeviceIdentification() {
