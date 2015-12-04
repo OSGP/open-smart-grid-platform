@@ -112,6 +112,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<RelayStatus> relayStatusses;
 
+    @Column
+    private boolean inMaintenance;
+
     public Device() {
         // Default constructor
     }
@@ -222,6 +225,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         return this.protocolInfo;
     }
 
+    public boolean isInMaintenance() {
+        return this.inMaintenance;
+    }
+
     public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
             final String containerStreet, final String containerNumber, final String containerMunicipality,
             final Float gpsLatitude, final Float gpsLongitude) {
@@ -249,6 +256,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
 
     public void updateProtocol(final ProtocolInfo protocolInfo) {
         this.protocolInfo = protocolInfo;
+    }
+
+    public void updateInMaintenance(final boolean inMaintenance) {
+        this.inMaintenance = inMaintenance;
     }
 
     public void clearNetworkAddress() {

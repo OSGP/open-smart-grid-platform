@@ -65,7 +65,9 @@ public class ScheduleManagementService {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_LIGHT_SCHEDULE);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueSetLightSchedule called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

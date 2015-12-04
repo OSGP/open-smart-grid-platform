@@ -241,6 +241,7 @@ public class DeviceInstallationService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.START_SELF_TEST);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueStartDeviceTestRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -273,6 +274,7 @@ public class DeviceInstallationService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.STOP_SELF_TEST);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueStopDeviceTestRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);

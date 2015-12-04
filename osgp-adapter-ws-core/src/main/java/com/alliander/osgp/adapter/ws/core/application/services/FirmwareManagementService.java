@@ -54,7 +54,9 @@ public class FirmwareManagementService {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.UPDATE_FIRMWARE);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueUpdateFirmwareRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -78,7 +80,9 @@ public class FirmwareManagementService {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_FIRMWARE_VERSION);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueGetFirmwareRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
