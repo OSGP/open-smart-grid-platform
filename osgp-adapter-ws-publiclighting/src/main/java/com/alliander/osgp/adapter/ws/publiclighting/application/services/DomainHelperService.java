@@ -70,7 +70,8 @@ public class DomainHelperService {
         return organisation;
     }
 
-    public void isAllowed(final Organisation organisation, final PlatformFunction platformFunction) throws FunctionalException {
+    public void isAllowed(final Organisation organisation, final PlatformFunction platformFunction)
+            throws FunctionalException {
         try {
             this.securityService.checkAuthorization(organisation, platformFunction);
         } catch (final NotAuthorizedException e) {
@@ -78,11 +79,18 @@ public class DomainHelperService {
         }
     }
 
-    public void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction) throws FunctionalException {
+    public void isAllowed(final Organisation organisation, final Device device, final DeviceFunction deviceFunction)
+            throws FunctionalException {
         try {
             this.securityService.checkAuthorization(organisation, device, deviceFunction);
         } catch (final NotAuthorizedException e) {
             throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, COMPONENT_TYPE, e);
+        }
+    }
+
+    public void isInMaintenance(final Device device) throws FunctionalException {
+        if (device.isInMaintenance()) {
+            throw new FunctionalException(FunctionalExceptionType.DEVICE_IN_MAINTENANCE, COMPONENT_TYPE);
         }
     }
 }
