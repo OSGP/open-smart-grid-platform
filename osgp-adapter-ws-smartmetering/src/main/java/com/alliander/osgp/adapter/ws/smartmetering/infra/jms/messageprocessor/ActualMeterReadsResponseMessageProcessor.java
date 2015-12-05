@@ -81,7 +81,7 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
                 this.meterResponseDataRepository.save(meterResponseData);
 
             } else {
-                MeterReadsGas meterReadsGas = message.getObject();
+                MeterReadsGas meterReadsGas = (MeterReadsGas) message.getObject();
                 final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
                         messageType, deviceIdentification, correlationUid, meterReadsGas);
                 this.meterResponseDataRepository.save(meterResponseData);
