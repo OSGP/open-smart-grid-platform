@@ -12,6 +12,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Moni
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -66,10 +67,16 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final ActualMeterReads actualMeterReadsDto = (ActualMeterReads) responseMessage.getDataObject();
+            if (responseMessage.getDataObject() instanceof ActualMeterReads) {
+                final ActualMeterReads actualMeterReadsDto = (ActualMeterReads) responseMessage.getDataObject();
 
-            this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException, actualMeterReadsDto);
+                this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
+                        correlationUid, messageType, responseMessageResultType, osgpException, actualMeterReadsDto);
+            } else {
+                MeterReadsGas meterReadsGas = (MeterReadsGas) responseMessage.getDataObject();
+                this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
+                        correlationUid, messageType, responseMessageResultType, osgpException, meterReadsGas);
+            }
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
