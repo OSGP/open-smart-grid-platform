@@ -190,7 +190,7 @@ public class MonitoringService {
     public void handleActualMeterReadsResponse(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final MeterReadsGas actualMeterReadsDto) {
+            final MeterReadsGas meterReadsGas) {
 
         LOGGER.info("handleActualMeterReadsResponse for MessageType: {}", messageType);
 
@@ -201,7 +201,7 @@ public class MonitoringService {
         }
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas actualMeterReadsValueDomain = this.monitoringMapper
-                .map(actualMeterReadsDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas.class);
+                .map(meterReadsGas, com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, actualMeterReadsValueDomain), messageType);
