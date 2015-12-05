@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -85,14 +85,14 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
             if (objectMessage.getObject() instanceof PeriodicMeterReadContainer) {
-                PeriodicMeterReadContainer data = (PeriodicMeterReadContainer) objectMessage.getObject();
+                final PeriodicMeterReadContainer data = (PeriodicMeterReadContainer) objectMessage.getObject();
 
                 // Convert the events to entity and save the periodicMeterReads
                 final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
                         messageType, deviceIdentification, correlationUid, data);
                 this.meterResponseDataRepository.save(meterResponseData);
             } else {
-                PeriodicMeterReadsGas data = (PeriodicMeterReadsGas) objectMessage.getObject();
+                final PeriodicMeterReadsContainerGas data = (PeriodicMeterReadsContainerGas) objectMessage.getObject();
 
                 // Convert the events to entity and save the periodicMeterReads
                 final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,

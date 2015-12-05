@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +22,15 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.GASMeterDevice;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -110,9 +116,18 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer periodMeterReadsValueDomain = this.monitoringMapper
-                .map(periodMeterReadsValueDTO,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class);
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> r = new ArrayList<>(
+                periodMeterReadsValueDTO.getPeriodicMeterReads().size());
+        for (final PeriodicMeterReads pmr : periodMeterReadsValueDTO.getPeriodicMeterReads()) {
+            r.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(pmr.getLogTime(),
+                    pmr.getActiveEnergyImportTariffOne(), pmr.getActiveEnergyImportTariffTwo(), pmr
+                            .getActiveEnergyExportTariffOne(), pmr.getActiveEnergyExportTariffTwo(),
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(pmr.getPeriodType()
+                            .name())));
+        }
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer periodMeterReadsValueDomain = new PeriodicMeterReadContainer(
+                periodMeterReadsValueDTO.getDeviceIdentification(), r);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, periodMeterReadsValueDomain), messageType);
@@ -132,12 +147,18 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas periodMeterReadsValueDomain = this.monitoringMapper
-                .map(periodMeterReadsValueDTO,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas.class);
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> r = new ArrayList<>(
+                periodMeterReadsValueDTO.getPeriodicMeterReadsGas().size());
+        for (final PeriodicMeterReadsGas pmr : periodMeterReadsValueDTO.getPeriodicMeterReadsGas()) {
+            r.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas(pmr.getLogTime(),
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(pmr.getPeriodType()
+                            .name()), pmr.getConsumption(), pmr.getCaptureTime()));
+        }
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas pmMeterReadsContainerGas = new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas(
+                periodMeterReadsValueDTO.getDeviceIdentification(), r);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, periodMeterReadsValueDomain), messageType);
+                deviceIdentification, result, exception, pmMeterReadsContainerGas), messageType);
 
     }
 

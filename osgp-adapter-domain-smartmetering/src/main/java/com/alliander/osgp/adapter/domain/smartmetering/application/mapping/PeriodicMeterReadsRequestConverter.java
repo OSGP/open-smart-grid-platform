@@ -12,7 +12,7 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 
-public class PeriodicMeterReadsConverter
+public class PeriodicMeterReadsRequestConverter
 extends
 BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData, PeriodicMeterReadsRequestData> {
 
