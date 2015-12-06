@@ -15,7 +15,7 @@
     <artifactId>platform</artifactId>
     <version>0.11.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
+    <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
     <description>Main Components of OSGP and Protocol Adapters.</description>
     <organization>
         <name>OSGP</name>
@@ -46,8 +46,6 @@
 
         <!-- Domain -->
         <module>osgp-domain-core</module>
-        <module>osgp-domain-publiclighting</module>
-        <module>osgp-domain-tariffswitching</module>
         <module>osgp-domain-logging</module>
 
         <module>osgp-adapter-domain-shared</module>
