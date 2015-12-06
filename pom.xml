@@ -54,8 +54,6 @@
         <!-- Platform -->
         <module>Platform/osgp-domain-core</module>
         <module>Platform/osgp-domain-logging</module>
-        <module>Platform/osgp-domain-publiclighting</module>
-        <module>Platform/osgp-domain-tariffswitching</module>
 
         <module>Platform/osgp-adapter-domain-shared</module>
 
