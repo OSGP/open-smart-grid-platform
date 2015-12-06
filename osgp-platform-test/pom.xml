@@ -57,14 +57,6 @@
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-domain-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-domain-publiclighting</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-domain-tariffswitching</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.alliander.osgp</groupId>
