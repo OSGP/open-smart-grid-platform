@@ -49,6 +49,7 @@ public class CreateNewOrganisationSteps {
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateNewOrganisationSteps.class);
 
     private static final String ORGANISATION_ROOT = "Heerlen";
+    private static final String GRID_MANAGMENT_ORGANISATION = "LianderNetManagement";
     private static final String ORGANISATION_IDENTIFICATION = "GemeenteArnhem";
     private static final String ORGANISATION_NAME = "Gemeente Arnhem";
     private static final String ORGANISATION_PREFIX = "ORG";
@@ -79,19 +80,23 @@ public class CreateNewOrganisationSteps {
 
         this.adminDeviceManagementEndpoint = new DeviceManagementEndpoint(this.adminDeviceManagementService,
                 new com.alliander.osgp.adapter.ws.admin.application.mapping.DeviceManagementMapper());
-        this.coreDeviceManagementEndpoint = new com.alliander.osgp.adapter.ws.core.endpoints.DeviceManagementEndpoint(this.coreDeviceManagementService,
+        this.coreDeviceManagementEndpoint = new com.alliander.osgp.adapter.ws.core.endpoints.DeviceManagementEndpoint(
+                this.coreDeviceManagementService,
                 new com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper());
 
-        this.newOrganisation = new OrganisationBuilder().withOrganisationIdentification(ORGANISATION_IDENTIFICATION).withName(ORGANISATION_NAME)
-                .withPrefix(ORGANISATION_PREFIX).withFunctionGroup(PlatformFunctionGroup.USER).build();
+        this.newOrganisation = new OrganisationBuilder().withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
+                .withName(ORGANISATION_NAME).withPrefix(ORGANISATION_PREFIX)
+                .withFunctionGroup(PlatformFunctionGroup.USER).build();
 
         this.throwable = null;
     }
 
     @DomainStep("a valid organisation (.*) with (.*) and functionGroup (.*)")
-    public void givenAValidOrganisationWithAndFunctionGroup(final String name, final String organisationIdentification, final String functionGroup) {
+    public void givenAValidOrganisationWithAndFunctionGroup(final String name, final String organisationIdentification,
+            final String functionGroup) {
 
-        LOGGER.info("GIVEN: \"a valid organisation {} with {} and functiongroup {}\".", name, organisationIdentification, functionGroup);
+        LOGGER.info("GIVEN: \"a valid organisation {} with {} and functiongroup {}\".", name,
+                organisationIdentification, functionGroup);
 
         this.setUp();
 
@@ -100,17 +105,20 @@ public class CreateNewOrganisationSteps {
         this.organisationToBeAdded.setOrganisationIdentification(organisationIdentification);
         this.organisationToBeAdded.setName(name);
         this.organisationToBeAdded.setPrefix(ORGANISATION_PREFIX);
-        this.organisationToBeAdded.setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.valueOf(functionGroup));
+        this.organisationToBeAdded
+                .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup
+                        .valueOf(functionGroup));
         this.organisationToBeAdded.getDomains().add(PlatformDomain.COMMON);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.PUBLIC_LIGHTING);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.TARIFF_SWITCHING);
     }
 
     @DomainStep("an invalid organisation (.*) with (.*) and functionGroup (.*)")
-    public void givenAnInvalidOrganisationWithAndFunctionGroup(final String name, final String organisationIdentification, final String functionGroup)
-            throws IOException {
+    public void givenAnInvalidOrganisationWithAndFunctionGroup(final String name,
+            final String organisationIdentification, final String functionGroup) throws IOException {
 
-        LOGGER.info("GIVEN: \"an invalid organisation {} with {} and functiongroup {}\".", name, organisationIdentification, functionGroup);
+        LOGGER.info("GIVEN: \"an invalid organisation {} with {} and functiongroup {}\".", name,
+                organisationIdentification, functionGroup);
 
         this.setUp();
         // Create a invalid organisation with an invalid identification to be
@@ -119,7 +127,9 @@ public class CreateNewOrganisationSteps {
         this.organisationToBeAdded.setOrganisationIdentification(organisationIdentification);
         this.organisationToBeAdded.setName(name);
         this.organisationToBeAdded.setPrefix(ORGANISATION_PREFIX);
-        this.organisationToBeAdded.setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.valueOf(functionGroup));
+        this.organisationToBeAdded
+                .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup
+                        .valueOf(functionGroup));
         this.organisationToBeAdded.getDomains().add(PlatformDomain.COMMON);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.PUBLIC_LIGHTING);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.TARIFF_SWITCHING);
@@ -134,8 +144,19 @@ public class CreateNewOrganisationSteps {
         this.organisations = new ArrayList<Organisation>();
         Organisation organisation = new Organisation("GemeenteHeerlen", "Heerlen", "HRL", PlatformFunctionGroup.USER);
         this.organisations.add(organisation);
-        organisation = new Organisation("GemeenteEindhoven", "Eindhoven", "EDH", PlatformFunctionGroup.USER);
+        organisation = new Organisation("LianderNetManagement", "Liander Net Management", "LIA",
+                PlatformFunctionGroup.ADMIN);
         this.organisations.add(organisation);
+    }
+
+    @DomainStep("an operator part of the grid management organisation")
+    public void anOperatorPartOfTheGridManagementOrganisation() {
+        // nothing special needed here, organisations list index 1
+    }
+
+    @DomainStep("an operator part of a municipality organisation")
+    public void givenAnOperatorPartOfMunicipalityOrganisation() {
+        // nothing special needed here, organisations list index 0
     }
 
     @DomainStep("creating a new organization")
@@ -151,9 +172,12 @@ public class CreateNewOrganisationSteps {
         MockitoAnnotations.initMocks(this);
         when(this.organisationRepositoryMock.save(any(Organisation.class))).thenReturn(this.newOrganisation);
 
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
-                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX, PlatformFunctionGroup.ADMIN));
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_IDENTIFICATION)).thenReturn(null);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
+                .thenReturn(
+                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                                PlatformFunctionGroup.ADMIN));
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_IDENTIFICATION)).thenReturn(
+                null);
 
         this.adminDeviceManagementEndpoint.createOrganisation(ORGANISATION_ROOT, request);
     }
@@ -170,11 +194,14 @@ public class CreateNewOrganisationSteps {
         // Expect the organisation being search, and found.
         MockitoAnnotations.initMocks(this);
         // Make sure that the adding organisation is authorized.
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
-                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX, PlatformFunctionGroup.ADMIN));
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
+                .thenReturn(
+                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                                PlatformFunctionGroup.ADMIN));
 
         // And that when saving the organisation an exception is thrown.
-        when(this.organisationRepositoryMock.save(any(Organisation.class))).thenThrow(new JpaSystemException(new PersistenceException("Duplicate entry")));
+        when(this.organisationRepositoryMock.save(any(Organisation.class))).thenThrow(
+                new JpaSystemException(new PersistenceException("Duplicate entry")));
 
         try {
             this.adminDeviceManagementEndpoint.createOrganisation(ORGANISATION_ROOT, request);
@@ -195,14 +222,37 @@ public class CreateNewOrganisationSteps {
         // Expect the organisation being search, and found.
         MockitoAnnotations.initMocks(this);
         // Make sure that the adding organisation is authorized.
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
-                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX, PlatformFunctionGroup.ADMIN));
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
+                .thenReturn(
+                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                                PlatformFunctionGroup.ADMIN));
 
         try {
             this.adminDeviceManagementEndpoint.createOrganisation(ORGANISATION_ROOT, request);
         } catch (final Throwable t) {
             this.throwable = t;
         }
+    }
+
+    @DomainStep("the grid managment organisation operator views the list of organisations")
+    public void whenTheGridManagementOrganisationOperatorViewsTheListOfOrganisations() throws Throwable {
+
+        LOGGER.info("WHEN: \"the operator views the list of organisations\".");
+
+        // Expect the organisation being search, and found.
+        MockitoAnnotations.initMocks(this);
+        // Make sure that the adding organisation is authorized.
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(GRID_MANAGMENT_ORGANISATION)).thenReturn(
+                new Organisation(GRID_MANAGMENT_ORGANISATION, GRID_MANAGMENT_ORGANISATION, "LIA",
+                        PlatformFunctionGroup.ADMIN));
+
+        when(this.organisationRepositoryMock.findAll()).thenReturn(this.organisations);
+
+        final FindAllOrganisationsRequest request = new FindAllOrganisationsRequest();
+
+        // Find all organisations.
+        this.responseList = this.coreDeviceManagementEndpoint
+                .findAllOrganisations(GRID_MANAGMENT_ORGANISATION, request);
     }
 
     @DomainStep("the operator views the list of organisations")
@@ -213,10 +263,13 @@ public class CreateNewOrganisationSteps {
         // Expect the organisation being search, and found.
         MockitoAnnotations.initMocks(this);
         // Make sure that the adding organisation is authorized.
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
-                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX, PlatformFunctionGroup.ADMIN));
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
+                .thenReturn(
+                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                                PlatformFunctionGroup.ADMIN));
 
-        when(this.organisationRepositoryMock.findAll()).thenReturn(this.organisations);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
+                this.organisations.get(0));
 
         final FindAllOrganisationsRequest request = new FindAllOrganisationsRequest();
 
@@ -265,18 +318,21 @@ public class CreateNewOrganisationSteps {
 
         LOGGER.info("THEN: \"a list with the two organisations is returned\".");
 
-        // Verify that the findall method is executed.
+        // Verify that the findByOrganisationIdentification() method is
+        // executed.
         verify(this.organisationRepositoryMock, times(1)).findAll();
 
-        // Verify that all organisations exist in the result no mather the
-        // order.
+        // Verify that the requested organisation exists.
         for (final Organisation organisation : this.organisations) {
             boolean organisationFoundInResultList = false;
-            for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation resultOrganisation : this.responseList.getOrganisations()) {
-                if (organisation.getOrganisationIdentification().equals(resultOrganisation.getOrganisationIdentification())) {
+            for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation resultOrganisation : this.responseList
+                    .getOrganisations()) {
+                if (organisation.getOrganisationIdentification().equals(
+                        resultOrganisation.getOrganisationIdentification())) {
                     organisationFoundInResultList = true;
                     if (organisation.getName().equals(resultOrganisation.getName())
-                            && organisation.getFunctionGroup().ordinal() == resultOrganisation.getFunctionGroup().ordinal()) {
+                            && organisation.getFunctionGroup().ordinal() == resultOrganisation.getFunctionGroup()
+                            .ordinal()) {
                         // Do nothing, oke
                     } else {
                         return false;
@@ -288,8 +344,40 @@ public class CreateNewOrganisationSteps {
                 return false;
             }
         }
-        // And that the list is returned.
-        return true && this.responseList.getOrganisations().size() == this.organisations.size();
+        return true;
+    }
+
+    @DomainStep("a list containing the municipality organisation is returned")
+    public boolean thenAListContainingTheMunicipalityOrganisationIsReturned() {
+
+        LOGGER.info("THEN: \"a list containing the municipality organisation is returned\".");
+
+        // Verify that the findByOrganisationIdentification() method is
+        // executed.
+        verify(this.organisationRepositoryMock, times(2)).findByOrganisationIdentification(ORGANISATION_ROOT);
+
+        // Verify that the requested organisation exists.
+        final Organisation organisation = this.organisations.get(0);
+
+        boolean organisationFoundInResultList = false;
+        for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Organisation resultOrganisation : this.responseList
+                .getOrganisations()) {
+            if (organisation.getOrganisationIdentification().equals(resultOrganisation.getOrganisationIdentification())) {
+                organisationFoundInResultList = true;
+                if (organisation.getName().equals(resultOrganisation.getName())
+                        && organisation.getFunctionGroup().ordinal() == resultOrganisation.getFunctionGroup().ordinal()) {
+                    // Do nothing, oke
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        if (!organisationFoundInResultList) {
+            return false;
+        }
+
+        return true;
     }
 
     @DomainStep("the operator receives feedback about the addition")

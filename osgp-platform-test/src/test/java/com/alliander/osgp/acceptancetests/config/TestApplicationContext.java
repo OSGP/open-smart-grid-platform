@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -56,6 +57,7 @@ public class TestApplicationContext {
     private static final String DEFAULT_PROTOCOL_VERSION = "1.0";
     private static final Integer RECENT_DEVICES_PERIOD = 3;
     private static final int MAX_RETRY_COUNT = 3;
+    private static final String NET_MANAGEMENT_ORGANISATION = "LianderNetManagement";
 
     @Resource
     Environment environment;
@@ -140,5 +142,11 @@ public class TestApplicationContext {
     @Bean
     public int getMaxRetryCount() {
         return MAX_RETRY_COUNT;
+    }
+
+    @Bean
+    @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
+    public String netManagementOrganisation() {
+        return NET_MANAGEMENT_ORGANISATION;
     }
 }
