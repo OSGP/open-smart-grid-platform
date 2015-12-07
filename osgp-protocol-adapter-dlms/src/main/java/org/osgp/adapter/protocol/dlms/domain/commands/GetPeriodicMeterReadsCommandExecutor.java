@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -22,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatus;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusses;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -69,6 +72,9 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    @Autowired
+    private AmrProfileStatusHelperService amrProfileStatusHelperService;
 
     @Override
     public PeriodicMeterReadsContainer execute(final ClientConnection conn,
@@ -159,8 +165,14 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
 
-        final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
+        AmrProfileStatusses amrProfileStatusses = null;
+        final DataObject amrStatusData = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
+        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatusData));
+        if (amrStatusData.isNumber()) {
+            final Set<AmrProfileStatus> statusses = this.amrProfileStatusHelperService
+                    .toAmrProfileStatusses((Number) amrStatusData.value());
+            amrProfileStatusses = new AmrProfileStatusses(statusses);
+        }
 
         final DataObject positiveActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_POS);
         LOGGER.debug("positiveActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(positiveActiveEnergy));
@@ -170,15 +182,21 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
         final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                 (Long) positiveActiveEnergy.value(), null, (Long) negativeActiveEnergy.value(), null,
-                PeriodType.INTERVAL);
+                PeriodType.INTERVAL, amrProfileStatusses);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
     private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
 
-        final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
+        AmrProfileStatusses amrProfileStatusses = null;
+        final DataObject amrStatusData = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
+        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatusData));
+        if (amrStatusData.isNumber()) {
+            final Set<AmrProfileStatus> statusses = this.amrProfileStatusHelperService
+                    .toAmrProfileStatusses((Number) amrStatusData.value());
+            amrProfileStatusses = new AmrProfileStatusses(statusses);
+        }
 
         final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1);
         LOGGER.debug("positiveActiveEnergyTariff1: {}",
@@ -196,7 +214,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                 (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
                 (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value(),
-                PeriodType.DAILY);
+                PeriodType.DAILY, amrProfileStatusses);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
