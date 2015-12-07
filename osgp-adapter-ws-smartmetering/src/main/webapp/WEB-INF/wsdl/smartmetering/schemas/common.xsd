@@ -112,6 +112,16 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<xsd:simpleType name="AmrProfileStatus">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CRITICAL_ERROR" />
+			<xsd:enumeration value="CLOCK_INVALID" />
+			<xsd:enumeration value="DATA_NOT_VALID" />
+			<xsd:enumeration value="DAYLIGHT_SAVING" />
+			<xsd:enumeration value="CLOCK_ADJUSTED" />
+			<xsd:enumeration value="POWER_DOWN" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	
 	<xsd:simpleType name="OsgpResultType">
 		<xsd:restriction base="xsd:string">

@@ -146,6 +146,12 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<xsd:complexType name="AmrProfileStatusses">
+		<xsd:sequence maxOccurs="unbounded">
+			<xsd:element name="AmrProfileStatus" type="common:AmrProfileStatus" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	<xsd:complexType name="PeriodicMeterReadsContainer">
 		<xsd:sequence>
 			<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
@@ -162,6 +168,7 @@
 			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="AmrProfileStatusses" type="tns:AmrProfileStatusses" minOccurs="0" maxOccurs="1" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
