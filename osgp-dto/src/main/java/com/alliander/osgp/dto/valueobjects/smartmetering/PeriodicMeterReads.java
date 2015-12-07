@@ -24,14 +24,31 @@ public class PeriodicMeterReads implements Serializable {
     // will be empty for INTERVAL
     private final Long activeEnergyExportTariffTwo;
     private final PeriodType periodType;
+    private final AmrProfileStatusses amrProfileStatusses;
 
-    public PeriodicMeterReads(Date logTime, long activeEnergyImportTariffOne, Long activeEnergyImportTariffTwo, long activeEnergyExportTariffOne, Long activeEnergyExportTariffTwo, PeriodType periodType) {
+    public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
+            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final Long activeEnergyExportTariffTwo, final PeriodType periodType) {
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
         this.periodType = periodType;
+        this.amrProfileStatusses = null;
+    }
+
+    public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
+            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final Long activeEnergyExportTariffTwo, final PeriodType periodType,
+            final AmrProfileStatusses amrProfileStatusses) {
+        this.logTime = new Date(logTime.getTime());
+        this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
+        this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
+        this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
+        this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
+        this.periodType = periodType;
+        this.amrProfileStatusses = amrProfileStatusses;
     }
 
     public long getActiveEnergyImportTariffOne() {
@@ -68,4 +85,7 @@ public class PeriodicMeterReads implements Serializable {
         return this.periodType;
     }
 
+    public AmrProfileStatusses getAmrProfileStatusses() {
+        return this.amrProfileStatusses;
+    }
 }
