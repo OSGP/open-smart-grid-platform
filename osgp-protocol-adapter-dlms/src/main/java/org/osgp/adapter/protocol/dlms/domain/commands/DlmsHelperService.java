@@ -4,11 +4,18 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.internal.CosemDate;
+import org.openmuc.jdlms.internal.CosemDateTime;
+import org.openmuc.jdlms.internal.CosemDateTime.ClockStatus;
+import org.openmuc.jdlms.internal.CosemTime;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
+
+    public static final int MILLISECONDS_PER_MINUTE = 60000;
 
     static int LONG_CONNECTION_TIMEOUT = 1000 * 30;
 
@@ -24,40 +31,36 @@ public class DlmsHelperService {
         final int minuteOfHour = bb.get();
         final int secondOfMinute = bb.get();
         final int hundredthsOfSecond = bb.get();
-        // final int deviation =
-        bb.getShort();
+        final int deviation = bb.getShort();
         // final int clockStatus =
         bb.get();
 
         return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
-                hundredthsOfSecond * 10);
-
+                hundredthsOfSecond * 10, DateTimeZone.forOffsetMillis(-deviation * MILLISECONDS_PER_MINUTE));
     }
 
     public DataObject asDataObject(final DateTime dateTime) {
 
-        final ByteBuffer bb = ByteBuffer.allocate(12);
-
-        bb.putShort((short) dateTime.getYear());
-        bb.put((byte) dateTime.getMonthOfYear());
-        bb.put((byte) dateTime.getDayOfMonth());
-        // leave day of week unspecified (0xFF)
-        bb.put((byte) 0xFF);
-        bb.put((byte) dateTime.getHourOfDay());
-        bb.put((byte) dateTime.getMinuteOfHour());
-        bb.put((byte) dateTime.getSecondOfMinute());
-        bb.put((byte) (dateTime.getMillisOfSecond() / 10));
-        // deviation high byte
-        bb.put((byte) 0x80);
-        // deviation low byte
-        bb.put((byte) 0x00);
-        // clock status
-        bb.put((byte) 128);
-
-        return DataObject.newOctetStringData(bb.array());
+        final CosemDate cosemDate = new CosemDate(dateTime.getYear(), dateTime.getMonthOfYear(),
+                dateTime.getDayOfMonth());
+        final CosemTime cosemTime = new CosemTime(dateTime.getHourOfDay(), dateTime.getMinuteOfHour(),
+                dateTime.getSecondOfMinute(), dateTime.getMillisOfSecond() / 10);
+        final int deviation = -(dateTime.getZone().getOffset(dateTime.getMillis()) / MILLISECONDS_PER_MINUTE);
+        final ClockStatus[] clockStatusBits;
+        if (dateTime.getZone().isStandardOffset(dateTime.getMillis())) {
+            clockStatusBits = new ClockStatus[0];
+        } else {
+            clockStatusBits = new ClockStatus[1];
+            clockStatusBits[0] = ClockStatus.DAYLIGHT_SAVING_ACTIVE;
+        }
+        final CosemDateTime cosemDateTime = new CosemDateTime(cosemDate, cosemTime, deviation, clockStatusBits);
+        return DataObject.newDateTimeData(cosemDateTime);
     }
 
     public String getDebugInfo(final DataObject dataObject) {
+        if (dataObject == null) {
+            return null;
+        }
 
         final String dataType = getDataType(dataObject);
 
@@ -76,6 +79,8 @@ public class DlmsHelperService {
             }
         } else if (dataObject.isByteArray()) {
             objectText = this.getDebugInfoByteArray((byte[]) dataObject.value());
+        } else if (dataObject.isCosemDateFormat() && dataObject.value() instanceof CosemDateTime) {
+            objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.value()).ocletString());
         } else {
             objectText = String.valueOf(dataObject.rawValue());
         }
@@ -155,8 +160,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -182,10 +187,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
     }
