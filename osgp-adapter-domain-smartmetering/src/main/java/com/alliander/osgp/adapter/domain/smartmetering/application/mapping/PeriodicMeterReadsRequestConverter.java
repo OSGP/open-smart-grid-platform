@@ -10,7 +10,8 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 
 public class PeriodicMeterReadsRequestConverter
 extends
@@ -20,18 +21,18 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Periodi
     public PeriodicMeterReadsRequestData convertTo(
             final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData source,
             final Type<PeriodicMeterReadsRequestData> destinationType) {
-        return new PeriodicMeterReadsRequestData(source.getDeviceIdentification(),
-                com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType().name()),
-                source.getBeginDate(), source.getEndDate());
+        return new PeriodicMeterReadsRequestData(source.getDeviceIdentification(), PeriodType.valueOf(source
+                .getPeriodType().name()), source.getBeginDate(), source.getEndDate(), source.isGas());
     }
 
     @Override
     public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData convertFrom(
             final PeriodicMeterReadsRequestData source,
             final Type<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData> destinationType) {
-        return new PeriodicMeterReadsRequestData(source.getDeviceIdentification(),
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData(
+                source.getDeviceIdentification(),
                 com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType().name()),
-                source.getBeginDate(), source.getEndDate());
+                source.getBeginDate(), source.getEndDate(), source.isGas(), -1);
     }
 
 }
