@@ -58,6 +58,7 @@ public class SmartMeteringMonitoringEndpoint {
     private MeterResponseDataRepository meterResponseDataRepository;
 
     public SmartMeteringMonitoringEndpoint() {
+        // Empty constructor
     }
 
     @PayloadRoot(localPart = "PeriodicMeterReadsRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)

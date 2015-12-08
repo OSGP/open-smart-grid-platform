@@ -47,6 +47,7 @@ public class SmartMeteringInstallationEndpoint {
     private InstallationMapper installationMapper;
 
     public SmartMeteringInstallationEndpoint() {
+        // Empty constructor
     }
 
     @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)

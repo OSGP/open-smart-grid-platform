@@ -17,8 +17,11 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing smart metering default response messages
@@ -33,6 +36,9 @@ public class AddMeterResponseMessageProcessor extends DomainResponseMessageProce
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private MeterResponseDataRepository meterResponseDataRepository;
+
     protected AddMeterResponseMessageProcessor() {
         super(DeviceFunction.ADD_METER);
     }
@@ -46,7 +52,7 @@ public class AddMeterResponseMessageProcessor extends DomainResponseMessageProce
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String result = null;
+        ResponseMessageResultType resultType = null;
         String message = null;
         NotificationType notificationType = null;
 
@@ -56,7 +62,7 @@ public class AddMeterResponseMessageProcessor extends DomainResponseMessageProce
             organisationIdentification = objectMessage.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
-            result = objectMessage.getStringProperty(Constants.RESULT);
+            resultType = ResponseMessageResultType.valueOf(objectMessage.getStringProperty(Constants.RESULT));
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
 
@@ -73,8 +79,12 @@ public class AddMeterResponseMessageProcessor extends DomainResponseMessageProce
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
-                    correlationUid, message, notificationType);
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, resultType, null);
+            this.meterResponseDataRepository.save(meterResponseData);
+
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
+                    resultType.name(), correlationUid, message, notificationType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
