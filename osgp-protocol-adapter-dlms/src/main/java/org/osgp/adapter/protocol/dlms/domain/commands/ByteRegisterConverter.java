@@ -49,7 +49,7 @@ public class ByteRegisterConverter<T extends Enum<T>> {
 
     /**
      * Create a set of alarm types representing the active bits in the register
-     * value.
+     * value. Returns empty set if no bits are active.
      *
      * @param registerValue
      *            Value of the register.

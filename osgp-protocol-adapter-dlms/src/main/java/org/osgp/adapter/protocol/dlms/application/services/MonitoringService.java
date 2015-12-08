@@ -65,7 +65,6 @@ public class MonitoringService {
 
         ClientConnection conn = null;
         try {
-
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
             conn = this.dlmsConnectionFactory.getConnection(device);

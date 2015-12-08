@@ -132,7 +132,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
             final DateTime endDateTime, final List<PeriodicMeterReads> periodicMeterReads,
-            final List<DataObject> bufferedObjects) {
+            final List<DataObject> bufferedObjects) throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final DateTime bufferedDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -163,16 +163,10 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     }
 
     private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        AmrProfileStatusses amrProfileStatusses = null;
-        final DataObject amrStatusData = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatusData));
-        if (amrStatusData.isNumber()) {
-            final Set<AmrProfileStatus> statusses = this.amrProfileStatusHelperService
-                    .toAmrProfileStatusses((Number) amrStatusData.value());
-            amrProfileStatusses = new AmrProfileStatusses(statusses);
-        }
+        final AmrProfileStatusses amrProfileStatusses = this.readAmrProfileStatusses(bufferedObjects
+                .get(BUFFER_INDEX_AMR_STATUS));
 
         final DataObject positiveActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_POS);
         LOGGER.debug("positiveActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(positiveActiveEnergy));
@@ -187,16 +181,10 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     }
 
     private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        AmrProfileStatusses amrProfileStatusses = null;
-        final DataObject amrStatusData = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatusData));
-        if (amrStatusData.isNumber()) {
-            final Set<AmrProfileStatus> statusses = this.amrProfileStatusHelperService
-                    .toAmrProfileStatusses((Number) amrStatusData.value());
-            amrProfileStatusses = new AmrProfileStatusses(statusses);
-        }
+        final AmrProfileStatusses amrProfileStatusses = this.readAmrProfileStatusses(bufferedObjects
+                .get(BUFFER_INDEX_AMR_STATUS));
 
         final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1);
         LOGGER.debug("positiveActiveEnergyTariff1: {}",
@@ -216,6 +204,31 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value(),
                 PeriodType.DAILY, amrProfileStatusses);
         periodicMeterReads.add(nextPeriodicMeterReads);
+    }
+
+    /**
+     * Reads AmrProfileStatusses from DataObject holding a bitvalue in a numeric
+     * datatype.
+     *
+     * @param amrProfileStatusData
+     *            AMR profile register value.
+     * @return AmrProfileStatusses object holding status enum values.
+     * @throws ProtocolAdapterException
+     *             on invalid register data.
+     */
+    private AmrProfileStatusses readAmrProfileStatusses(final DataObject amrProfileStatusData)
+            throws ProtocolAdapterException {
+        AmrProfileStatusses amrProfileStatusses = null;
+
+        if (!amrProfileStatusData.isNumber()) {
+            throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
+        }
+
+        final Set<AmrProfileStatus> statusses = this.amrProfileStatusHelperService
+                .toAmrProfileStatusses((Number) amrProfileStatusData.value());
+        amrProfileStatusses = new AmrProfileStatusses(statusses);
+
+        return amrProfileStatusses;
     }
 
     private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReads> periodicMeterReads,
