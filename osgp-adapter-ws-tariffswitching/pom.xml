@@ -99,24 +99,19 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <!-- Alliander -->
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>shared</artifactId>
         </dependency>
-        
-        <!-- New for splitting platform into webservice tiers -->
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-domain-tariffswitching</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-adapter-ws-shared</artifactId>
         </dependency>
-            <!-- Spring Framework -->
+
+        <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
@@ -165,7 +160,7 @@
             <groupId>org.springframework.ws</groupId>
             <artifactId>spring-ws-support</artifactId>
         </dependency>
-        
+
         <!-- Joda Time (Date/Time util) -->
         <dependency>
             <groupId>joda-time</groupId>
@@ -187,7 +182,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
         </dependency>
-        
+
         <!-- Hibernate validator -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -213,7 +208,7 @@
             <groupId>org.logback-extensions</groupId>
             <artifactId>logback-ext-spring</artifactId>
         </dependency>
-        
+
         <!-- Servlet API 3.0 -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -233,18 +228,18 @@
             <artifactId>xmlschema-core</artifactId>
             <version>${apache.commons.schema}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        
+
         <!-- Orika (mapping framework) -->
         <dependency>
            <groupId>ma.glasnost.orika</groupId>
            <artifactId>orika-core</artifactId>
         </dependency>
-        
+
         <!--  Apache ActiveMQ -->    
         <dependency> 
             <groupId>org.apache.activemq</groupId>
