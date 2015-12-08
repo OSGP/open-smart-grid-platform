@@ -35,7 +35,7 @@ public class DayProfile implements Comparable<DayProfile>, Serializable {
 
     @Override
     public String toString() {
-        return "DayProfile [dayId=" + this.dayId + ", dayProfileActionList=" + this.dayProfileActionList + "]";
+        return "DayProfile [\ndayId=" + this.dayId + ", dayProfileActionList=" + this.dayProfileActionList + "]";
     }
 
     @Override

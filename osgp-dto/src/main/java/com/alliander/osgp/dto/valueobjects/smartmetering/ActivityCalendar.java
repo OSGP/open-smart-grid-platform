@@ -28,6 +28,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         this.calendarName = calendarName;
         this.activatePassiveCalendarTime = new Date(activatePassiveCalendarTime.getTime());
         this.seasonProfileList = new ArrayList<SeasonProfile>(seasonProfileList);
+        Collections.sort(this.seasonProfileList);
     }
 
     public String getCalendarName() {
@@ -44,8 +45,8 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     @Override
     public String toString() {
-        return "ActivityCalendar [calendarName=" + this.calendarName + ", seasonProfileList=" + this.seasonProfileList
-                + "]";
+        return "ActivityCalendar [\ncalendarName=" + this.calendarName + ", seasonProfileList="
+                + this.seasonProfileList + "]";
     }
 
     @Override

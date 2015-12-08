@@ -83,7 +83,7 @@ public class WeekProfile implements Comparable<WeekProfile>, Serializable {
 
     @Override
     public String toString() {
-        return "WeekProfile [weekProfileName=" + this.weekProfileName + ", monday=" + this.monday + ", tuesday="
+        return "WeekProfile [\nweekProfileName=" + this.weekProfileName + ", monday=" + this.monday + ", tuesday="
                 + this.tuesday + ", wednesday=" + this.wednesday + ", thursday=" + this.thursday + ", friday="
                 + this.friday + ", saturday=" + this.saturday + ", sunday=" + this.sunday + "]";
     }

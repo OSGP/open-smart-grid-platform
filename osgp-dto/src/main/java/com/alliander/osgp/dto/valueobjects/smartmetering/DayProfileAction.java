@@ -33,7 +33,7 @@ public class DayProfileAction implements Comparable<DayProfileAction>, Serializa
 
     @Override
     public String toString() {
-        return "DayProfileAction [scriptSelector=" + this.scriptSelector + ", startTime=" + this.startTime + "]";
+        return "DayProfileAction [\nscriptSelector=" + this.scriptSelector + ", startTime=" + this.startTime + "]";
     }
 
     @Override
