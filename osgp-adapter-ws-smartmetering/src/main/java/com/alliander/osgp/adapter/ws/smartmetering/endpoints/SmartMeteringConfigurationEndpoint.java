@@ -27,10 +27,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActiv
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -61,13 +61,13 @@ public class SmartMeteringConfigurationEndpoint {
     public SmartMeteringConfigurationEndpoint() {
     }
 
-    @PayloadRoot(localPart = "SpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetSpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SpecialDaysResponse requestSpecialDaysData(
+    public SetSpecialDaysAsyncResponse requestSpecialDaysData(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SpecialDaysRequest request) throws OsgpException {
+            @RequestPayload final SetSpecialDaysRequest request) throws OsgpException {
 
-        final SpecialDaysResponse response = new SpecialDaysResponse();
+        final SetSpecialDaysAsyncResponse response = new SetSpecialDaysAsyncResponse();
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest dataRequest = this.configurationMapper
                 .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
@@ -85,11 +85,11 @@ public class SmartMeteringConfigurationEndpoint {
 
     @PayloadRoot(localPart = "SetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetConfigurationObjectResponse setConfigurationObject(
+    public SetConfigurationObjectAsyncResponse setConfigurationObject(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetConfigurationObjectRequest request) throws OsgpException {
 
-        final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
+        final SetConfigurationObjectAsyncResponse response = new SetConfigurationObjectAsyncResponse();
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest dataRequest = this.configurationMapper
                 .map(request,

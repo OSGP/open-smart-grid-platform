@@ -18,8 +18,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -52,12 +52,12 @@ public class SmartMeteringInstallationEndpoint {
 
     @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public AddDeviceResponse addDevice(@OrganisationIdentification final String organisationIdentification,
+    public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request) throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
-        final AddDeviceResponse response = new AddDeviceResponse();
+        final AddDeviceAsyncResponse response = new AddDeviceAsyncResponse();
 
         try {
 

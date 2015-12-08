@@ -18,8 +18,8 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -38,10 +38,11 @@ public class SmartMeteringAdhocEndpoint {
 
     @PayloadRoot(localPart = "SynchronizeTimeRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SynchronizeTimeResponse synchronizeTime(@OrganisationIdentification final String organisationIdentification,
+    public SynchronizeTimeAsyncResponse synchronizeTime(
+            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SynchronizeTimeRequest request) throws OsgpException {
 
-        final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
+        final SynchronizeTimeAsyncResponse response = new SynchronizeTimeAsyncResponse();
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest(
                 request.getDeviceIdentification());
