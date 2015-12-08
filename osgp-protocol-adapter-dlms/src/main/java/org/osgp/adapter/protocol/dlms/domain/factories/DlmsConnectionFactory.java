@@ -26,7 +26,7 @@ public class DlmsConnectionFactory {
     // private final static String REMOTE_HOST = "89.200.91.92";
 
     // Kaifa E9998000014122714
-    private final static String REMOTE_HOST = "89.200.96.233";
+    private final static String REMOTE_HOST = "89.200.96.223";
 
     /**
      * Returns an open connection using the appropriate security settings for

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.DataObject;
@@ -51,37 +52,43 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
 
+        // Set calendar Name
         final List<SetRequestParameter> requests = new ArrayList<>();
         requests.add(this.getCalendarNameRequest(activityCalendar));
 
+        // Set seasons
         final List<SeasonProfile> seasonProfileList = activityCalendar.getSeasonProfileList();
         requests.add(this.getSeasonsRequest(conn, seasonProfileList));
 
+        // Set weeks
         final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
         requests.add(this.getWeeksRequest(conn, weekProfileSet));
+        // Set days
         requests.add(this.getDaysRequest(conn, this.getDayProfileSet(weekProfileSet)));
 
-        final List<AccessResultCode> l = conn.set(this.dlmsHelperService.LONG_CONNECTION_TIMEOUT, requests.get(0),
-                requests.get(1));
+        // Set activation time to now.
+        requests.add(this.getActivateTimeNow());
 
-        LOGGER.info("Result of setting request {} is {}: ", requests, l);
-        if (l != null && l.get(0) != AccessResultCode.SUCCESS) {
-            return l.get(0);
+        final List<AccessResultCode> accessResultCodeList = conn.set(this.dlmsHelperService.LONG_CONNECTION_TIMEOUT,
+                (SetRequestParameter[]) requests.toArray());
+
+        for (final AccessResultCode arc : accessResultCodeList) {
+            if (AccessResultCode.SUCCESS != arc) {
+                LOGGER.warn("Zero or more requests for setting ActivityCalendar failed");
+                return arc;
+            }
         }
 
-        // final RequestParameterFactory factoryT = new
-        // RequestParameterFactory(CLASS_ID, OBIS_CODE, 10);
-        // final DateTime dt = new DateTime();
-        // final DataObject seasonStartObject =
-        // this.dlmsHelperService.asDataObject(dt);
-        // final DataObject tobj = seasonStartObject;
-        // final SetRequestParameter requestT =
-        // factoryT.createSetRequestParameter(tobj);
-        // final List<AccessResultCode> lt = conn.set(requestT);
-        // LOGGER.info("Time Resultaat is: !!!!!!!!!!!!!!!!!!!!!!!!!!!!! " +
-        // lt.get(0));
+        return AccessResultCode.SUCCESS;
+    }
 
-        return accessResultCode;
+    private SetRequestParameter getActivateTimeNow() {
+        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 10);
+        final DateTime datetime = new DateTime();
+        final DataObject seasonStartObject = this.dlmsHelperService.asDataObject(datetime);
+        final SetRequestParameter request = factory.createSetRequestParameter(seasonStartObject);
+
+        return request;
     }
 
     private SetRequestParameter getCalendarNameRequest(final ActivityCalendar activityCalendar) {

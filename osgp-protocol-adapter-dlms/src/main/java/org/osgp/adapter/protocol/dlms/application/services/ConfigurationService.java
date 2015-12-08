@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -44,6 +45,9 @@ public class ConfigurationService {
 
     @Autowired
     private DomainHelperService domainHelperService;
+
+    @Autowired
+    private DlmsHelperService dlmsHelperService;
 
     @Autowired
     private DlmsConnectionFactory dlmsConnectionFactory;
@@ -141,34 +145,20 @@ public class ConfigurationService {
 
         LOGGER.info("setActivityCalendar called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
+        LOGGER.info("Activity Calendar to set on the device: {}", activityCalendar);
 
+        ClientConnection conn = null;
+        DlmsDevice device = null;
         try {
-            LOGGER.info("**************************************");
-            LOGGER.info("**********In protocol adapter*********");
-            LOGGER.info("**************************************");
-            LOGGER.info("*************0-0:13.0.0.255***********");
-            LOGGER.info("**************************************");
-            LOGGER.info("Activity Calendar to set on the device: {}", activityCalendar.getCalendarName());
-            LOGGER.info("********** activityCalendar " + activityCalendar);
+            device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            LOGGER.info("Device for Activity Calendar is: {}", device);
 
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            conn = this.dlmsConnectionFactory.getConnection(device);
+            final AccessResultCode accessResultCode = this.setActivityCalendarCommandExecutor.execute(conn,
+                    activityCalendar);
 
-            LOGGER.info("device for Activity Calendar is: {}", device);
-
-            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
-
-            AccessResultCode accessResultCode = null;
-            try {
-                accessResultCode = this.setActivityCalendarCommandExecutor.execute(conn, activityCalendar);
-                if (AccessResultCode.SUCCESS != accessResultCode) {
-                    throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar was not SUCCESS: "
-                            + accessResultCode);
-                }
-            } finally {
-                if (conn != null && conn.isConnected()) {
-                    LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
-                    conn.close();
-                }
+            if (AccessResultCode.SUCCESS != accessResultCode) {
+                throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + accessResultCode);
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
@@ -182,6 +172,11 @@ public class ConfigurationService {
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.close();
+            }
         }
 
     }
