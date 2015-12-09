@@ -364,7 +364,7 @@
 		<xsd:sequence>
 			<xsd:element name="internalId" type="xsd:int" />
 			<xsd:element name="externalId" type="xsd:int" />
-			<xsd:element name="alias" type="xsd:string" />
+			<xsd:element minOccurs="0" name="alias" type="xsd:string" />
 			<xsd:element name="relayType" type="tns:RelayType" />
 		</xsd:sequence>
 	</xsd:complexType>
