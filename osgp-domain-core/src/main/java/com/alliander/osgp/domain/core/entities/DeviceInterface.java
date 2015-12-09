@@ -27,7 +27,7 @@ public interface DeviceInterface {
 
     DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup);
 
-    String getOwner();
+    Organisation getOwner();
 
     List<String> getOrganisations();
 }

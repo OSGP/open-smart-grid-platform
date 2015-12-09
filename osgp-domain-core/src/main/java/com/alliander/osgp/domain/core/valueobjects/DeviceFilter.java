@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects;
 
+
 public class DeviceFilter {
 
     private String organisationIdentification;
@@ -18,6 +19,7 @@ public class DeviceFilter {
     private String number;
     private String municipality;
     private DeviceActivatedFilterType deviceActivated;
+    private DeviceInMaintenanceFilterType deviceInMaintenance;
     private String sortDir;
     private String sortedBy;
 
@@ -27,8 +29,8 @@ public class DeviceFilter {
 
     public DeviceFilter(final String organisationIdentification, final String deviceIdentification,
             final String street, final String city, final String postalCode, final String alias, final String number,
-            final String municipality, final DeviceActivatedFilterType deviceActivated, final String sortDir,
-            final String sortedBy) {
+            final String municipality, final DeviceActivatedFilterType deviceActivated,
+            final DeviceInMaintenanceFilterType deviceInMaintenance, final String sortDir, final String sortedBy) {
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.alias = alias;
@@ -38,6 +40,7 @@ public class DeviceFilter {
         this.number = number;
         this.municipality = municipality;
         this.deviceActivated = deviceActivated;
+        this.deviceInMaintenance = deviceInMaintenance;
         this.sortDir = sortDir;
         this.sortedBy = sortedBy;
     }
@@ -88,5 +91,13 @@ public class DeviceFilter {
 
     public void updateOrganisationIdentification(final String organisationIdentification) {
         this.organisationIdentification = organisationIdentification;
+    }
+
+    public DeviceInMaintenanceFilterType getDeviceInMaintenance() {
+        return this.deviceInMaintenance;
+    }
+
+    public void setDeviceInMaintenance(final DeviceInMaintenanceFilterType deviceInMaintenance) {
+        this.deviceInMaintenance = deviceInMaintenance;
     }
 }

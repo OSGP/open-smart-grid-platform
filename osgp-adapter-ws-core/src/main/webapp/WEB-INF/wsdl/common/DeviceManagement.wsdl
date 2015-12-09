@@ -292,6 +292,20 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+
+        <wsdl:operation name="SetMaintenanceStatus">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetMaintenanceStatusRequest">
+                <soap:header message="tns:SetMaintenanceStatusHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SetMaintenanceStatusHeader" part="UserName" use="literal" />
+				<soap:header message="tns:SetMaintenanceStatusHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetMaintenanceStatusResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
 	</wsdl:binding>
 	
 	<wsdl:service name="DeviceManagementPortService">
