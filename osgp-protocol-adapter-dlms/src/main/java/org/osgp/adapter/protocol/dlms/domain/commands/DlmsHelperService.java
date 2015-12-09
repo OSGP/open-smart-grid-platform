@@ -58,6 +58,16 @@ public class DlmsHelperService {
         return DataObject.newOctetStringData(bb.array());
     }
 
+    public byte[] asOctetStringData(final String hexString) {
+        final int len = hexString.length();
+        final byte[] byteArray = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            byteArray[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character.digit(
+                    hexString.charAt(i + 1), 16));
+        }
+        return byteArray;
+    }
+
     public String getDebugInfo(final DataObject dataObject) {
 
         final String dataType = getDataType(dataObject);
@@ -158,8 +168,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -185,10 +195,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }
@@ -199,7 +209,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-                .append(", bits=").append(stringValue);
+        .append(", bits=").append(stringValue);
 
         return sb.toString();
     }

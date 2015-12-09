@@ -8,12 +8,14 @@
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -50,6 +52,9 @@ public class ConfigurationService {
     private DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
+    private SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
+
+    @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     @Autowired
@@ -72,12 +77,26 @@ public class ConfigurationService {
             // The Special days towards the Smart Meter
             final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
 
-            LOGGER.info("SpecialDaysRequest : {}", specialDaysRequest.getSpecialDaysRequestData());
-            for (final SpecialDay specialDay : specialDaysRequestData.getSpecialDays()) {
-                LOGGER.info("******************************************************");
-                LOGGER.info("Special Day date :{} ", specialDay.getSpecialDayDate());
-                LOGGER.info("Special Day dayId :{} ", specialDay.getDayId());
-                LOGGER.info("******************************************************");
+            LOGGER.info("******************************************************");
+            LOGGER.info("********** Set Special Days: 0-0:11.0.0.255 **********");
+            LOGGER.info("******************************************************");
+            final List<SpecialDay> specialDays = specialDaysRequestData.getSpecialDays();
+            for (final SpecialDay specialDay : specialDays) {
+                LOGGER.info("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
+            }
+            LOGGER.info("******************************************************");
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            try {
+                final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
+                if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+                    throw new ProtocolAdapterException("Set special days reported result is: " + accessResultCode);
+                }
+            } finally {
+                if (conn != null && conn.isConnected()) {
+                    conn.close();
+                }
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
@@ -128,7 +147,7 @@ public class ConfigurationService {
             try {
                 final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
                         configurationObject);
-                if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
+                if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
                     throw new ProtocolAdapterException("Set configuration object reported result is: "
                             + accessResultCode);
                 }

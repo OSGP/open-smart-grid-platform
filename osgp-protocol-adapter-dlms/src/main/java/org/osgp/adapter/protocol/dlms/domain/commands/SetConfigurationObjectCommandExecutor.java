@@ -165,7 +165,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObject retrieveConfigurationObject(final ClientConnection conn) throws IOException,
-            ProtocolAdapterException {
+    ProtocolAdapterException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();

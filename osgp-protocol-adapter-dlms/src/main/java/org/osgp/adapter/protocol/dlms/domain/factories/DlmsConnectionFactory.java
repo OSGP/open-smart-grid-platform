@@ -22,10 +22,11 @@ public class DlmsConnectionFactory {
     private final static int RESPONSE_TIMEOUT = 60000;
 
     // TODO REPLACE HARD-CODED IP-ADDRESS!!!
-    private final static String REMOTE_HOST = "89.200.91.92";
+    private final static String REMOTE_HOST = "89.200.96.223";
 
     /**
-     * Returns an open connection using the appropriate security settings for the device
+     * Returns an open connection using the appropriate security settings for
+     * the device
      *
      * @param device
      * @return an open connection
@@ -45,7 +46,7 @@ public class DlmsConnectionFactory {
     private ClientConnection getHls5Connection(final DlmsDevice device) throws IOException {
 
         final byte[] authenticationKey = Hex.decode(device.getAuthenticationKey());
-        final byte[] encryptionKey = Hex.decode(device.getGlobalEncryptionUnicastKey()); 
+        final byte[] encryptionKey = Hex.decode(device.getGlobalEncryptionUnicastKey());
 
         final ClientSap clientSap = new TcpClientSap(InetAddress.getByName(REMOTE_HOST));
         clientSap.enableGmacAuthentication(authenticationKey, encryptionKey);
