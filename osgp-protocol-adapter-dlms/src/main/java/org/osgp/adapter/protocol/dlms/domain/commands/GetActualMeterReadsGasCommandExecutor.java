@@ -25,8 +25,8 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
     private static final int CLASS_ID_MBUS = 4;
-    private static final byte ATTRIBUTE_ID_VALUE = 1;
-    private static final byte ATTRIBUTE_ID_TIME = 4;
+    private static final byte ATTRIBUTE_ID_VALUE = 2;
+    private static final byte ATTRIBUTE_ID_TIME = 5;
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_1 = new ObisCode("0.1.24.2.1.255");
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_2 = new ObisCode("0.2.24.2.1.255");
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_3 = new ObisCode("0.3.24.2.1.255");
