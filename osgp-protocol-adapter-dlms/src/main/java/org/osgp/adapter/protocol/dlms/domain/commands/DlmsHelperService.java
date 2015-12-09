@@ -1,10 +1,13 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.internal.BitString;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
@@ -74,6 +77,8 @@ public class DlmsHelperService {
             }
         } else if (dataObject.isByteArray()) {
             objectText = this.getDebugInfoDateTimeBytes((byte[]) dataObject.value());
+        } else if (dataObject.isBitString()) {
+            objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.value()).bitString());
         } else {
             objectText = String.valueOf(dataObject.rawValue());
         }
@@ -153,8 +158,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -180,11 +185,47 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
+    }
+
+    public String getDebugInfoBitStringBytes(final byte[] bitStringValue) {
+        final BigInteger bigValue = this.byteArrayToBigInteger(bitStringValue);
+        final String stringValue = this.byteArrayToString(bitStringValue);
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
+                .append(", bits=").append(stringValue);
+
+        return sb.toString();
+    }
+
+    private String byteArrayToString(final byte[] bitStringValue) {
+        final StringBuilder sb = new StringBuilder();
+        for (final byte element : bitStringValue) {
+            sb.append(StringUtils.leftPad(Integer.toBinaryString(element & 0xFF), 8, "0"));
+            sb.append(" ");
+        }
+        if (sb.length() == 0) {
+            return null;
+        }
+        return sb.toString();
+    }
+
+    private BigInteger byteArrayToBigInteger(final byte[] bitStringValue) {
+        BigInteger value = null;
+        for (final byte element : bitStringValue) {
+            if (value != null) {
+                value = value.shiftLeft(8);
+            } else if (value == null) {
+                value = BigInteger.valueOf(0);
+            }
+            value = value.add(BigInteger.valueOf(element & 0xFF));
+        }
+        return value;
     }
 }

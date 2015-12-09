@@ -13,6 +13,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -50,6 +51,9 @@ public class ConfigurationService {
 
     @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+
+    @Autowired
+    private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActicityCalendarCommandExecutor;
@@ -108,17 +112,30 @@ public class ConfigurationService {
             final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
             LOGGER.info("******************************************************");
-            LOGGER.info("Configuration Object   ******************************");
+            LOGGER.info("Configuration Object: 0-0:94.31.3.255*****************");
             LOGGER.info("******************************************************");
-            LOGGER.info("Configuration Object operation mode:{} ", GprsOperationModeType.value());
-            LOGGER.info("******************************************************");
-            LOGGER.info("Flags:   ********************************************");
+            LOGGER.info("Operation mode:{} ", GprsOperationModeType.value());
+            LOGGER.info("Flags:");
 
             for (final ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
-                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag
-                        .getConfigurationFlagType().toString());
-                LOGGER.info("Configuration Object configuration flag enabled:{} ", configurationFlag.isEnabled());
-                LOGGER.info("******************************************************");
+                LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
+                        configurationFlag.isEnabled());
+            }
+            LOGGER.info("******************************************************");
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            try {
+                final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
+                        configurationObject);
+                if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
+                    throw new ProtocolAdapterException("Set configuration object reported result is: "
+                            + accessResultCode);
+                }
+            } finally {
+                if (conn != null && conn.isConnected()) {
+                    conn.close();
+                }
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
