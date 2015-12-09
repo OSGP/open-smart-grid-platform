@@ -24,13 +24,13 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
@@ -50,6 +50,9 @@ public class MonitoringService {
 
     @Autowired
     private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+
+    @Autowired
+    private GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
 
     // === REQUEST PERIODIC METER DATA ===
 
@@ -120,23 +123,37 @@ public class MonitoringService {
         LOGGER.info("requestActualMeterReads called for device: {} for organisation: {}", deviceIdentification,
                 organisationIdentification);
 
+        ClientConnection conn = null;
         try {
-            // Mock a return value for actual meter reads.
-            final Serializable actualMeterReads = actualMeterReadsRequest.isGas() ? new MeterReadsGas(new Date(), 1000,
-                    new Date()) : new ActualMeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
-                    this.getRandomPositive(), this.getRandomPositive());
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            Serializable response = null;
+            if (actualMeterReadsRequest.isGas()) {
+                response = this.actualMeterReadsGasCommandExecutor.execute(conn, actualMeterReadsRequest);
+            } else {
+                // mock for now
+                response = new ActualMeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
+                        this.getRandomPositive(), this.getRandomPositive());
+            }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, actualMeterReads);
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, response);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestActualMeterReads", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+            LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
+
     }
 
     private long getRandomPositive() {

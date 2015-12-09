@@ -29,7 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsReque
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
+        CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -49,13 +49,6 @@ CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
     private static final int CLASS_ID_DATA = 1;
     private static final byte[] OBIS_BYTES_AMR_PROFILE_STATUS = new byte[] { 0, 0, 96, 10, 2, (byte) 255 };
 
-    private static final int CLASS_ID_REGISTER = 3;
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT = new byte[] { 1, 0, 1, 8, 0, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1 = new byte[] { 1, 0, 1, 8, 1, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2 = new byte[] { 1, 0, 1, 8, 2, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT = new byte[] { 1, 0, 2, 8, 0, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1 = new byte[] { 1, 0, 2, 8, 1, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2 = new byte[] { 1, 0, 2, 8, 2, (byte) 255 };
     private static final byte ATTRIBUTE_ID_VALUE = 2;
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
@@ -64,10 +57,8 @@ CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
     private static final int BUFFER_INDEX_AMR_STATUS = 1;
     private static final int BUFFER_INDEX_MBUS_VALUE_FIRST = 6;
     private static final int BUFFER_INDEX_MBUS_CAPTURETIME_FIRST = 7;
-    private static final int BUFFER_INDEX_A_POS = 2;
-    private static final int BUFFER_INDEX_A_NEG = 3;
-    private static final int BUFFER_INDEX_MBUS_VALUE_INT = BUFFER_INDEX_A_POS;
-    private static final int BUFFER_INDEX_MBUS_CAPTURETIME_INT = BUFFER_INDEX_A_NEG;
+    private static final int BUFFER_INDEX_MBUS_VALUE_INT = 2;
+    private static final int BUFFER_INDEX_MBUS_CAPTURETIME_INT = 3;
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -325,8 +316,6 @@ CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
          * Available objects in the profile buffer (1-0:99.1.0.255):
          * {8,0-0:1.0.0.255,2,0}    -  clock
          * {1,0-0:96.10.2.255,2,0}  -  AMR profile status
-         * {3,1-0:1.8.0.255,2,0}    -  Active energy import (+A)
-         * {3,1-0:2.8.0.255,2,0}    -  Active energy export (-A)
          */
 
         /*
@@ -339,17 +328,6 @@ CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
                 DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
-        // {3,1-0:1.8.0.255,2,0} - Active energy import (+A)
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:2.8.0.255,2,0} - Active energy export (-A)
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addSelectedValuesForDaily(final List<DataObject> objectDefinitions) {
@@ -357,10 +335,6 @@ CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
          * Available objects in the profile buffer (1-0:99.2.0.255):
          * {8,0-0:1.0.0.255,2,0}    -  clock
          * {1,0-0:96.10.2.255,2,0}  -  AMR profile status
-         * {3,1-0:1.8.1.255,2,0}    -  Active energy import (+A) rate 1
-         * {3,1-0:1.8.2.255,2,0}    -  Active energy import (+A) rate 2
-         * {3,1-0:2.8.1.255,2,0}    -  Active energy export (-A) rate 1
-         * {3,1-0:2.8.2.255,2,0}    -  Active energy export (-A) rate 2
          *
          * Objects not retrieved with E meter readings:
          * {4,0-1.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 1
@@ -383,39 +357,12 @@ CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
                 DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
-        // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addSelectedValuesForMonthly(final List<DataObject> objectDefinitions) {
         /*-
          * Available objects in the profile buffer (0-0:98.1.0.255):
          * {8,0-0:1.0.0.255,2,0}    -  clock
-         * {3,1-0:1.8.1.255,2,0}    -  Active energy import (+A) rate 1
-         * {3,1-0:1.8.2.255,2,0}    -  Active energy import (+A) rate 2
-         * {3,1-0:2.8.1.255,2,0}    -  Active energy export (-A) rate 1
-         * {3,1-0:2.8.2.255,2,0}    -  Active energy export (-A) rate 2
          *
          * Objects not retrieved with E meter readings:
          * {4,0-1.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 1
@@ -433,28 +380,5 @@ CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
          * already used as restricting object.
          */
 
-        // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 }
