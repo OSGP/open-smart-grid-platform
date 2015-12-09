@@ -107,6 +107,9 @@ public class SmartMeteringInstallationEndpoint {
         final AddDeviceResponse response = new AddDeviceResponse();
         if (meterResponseData != null) {
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
         } else {
             response.setResult(OsgpResultType.NOT_FOUND);
         }

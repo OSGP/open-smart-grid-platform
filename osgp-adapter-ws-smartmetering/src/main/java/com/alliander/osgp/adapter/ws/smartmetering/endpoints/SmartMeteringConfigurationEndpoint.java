@@ -101,6 +101,9 @@ public class SmartMeteringConfigurationEndpoint {
         final SetSpecialDaysResponse response = new SetSpecialDaysResponse();
         if (meterResponseData != null) {
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
         } else {
             response.setResult(OsgpResultType.NOT_FOUND);
         }
@@ -144,6 +147,9 @@ public class SmartMeteringConfigurationEndpoint {
         final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
         if (meterResponseData != null) {
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
         } else {
             response.setResult(OsgpResultType.NOT_FOUND);
         }

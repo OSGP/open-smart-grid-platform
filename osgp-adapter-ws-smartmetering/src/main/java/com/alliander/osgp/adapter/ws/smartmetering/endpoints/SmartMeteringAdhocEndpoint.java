@@ -72,6 +72,9 @@ public class SmartMeteringAdhocEndpoint {
         final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
         if (meterResponseData != null) {
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
         } else {
             response.setResult(OsgpResultType.NOT_FOUND);
         }

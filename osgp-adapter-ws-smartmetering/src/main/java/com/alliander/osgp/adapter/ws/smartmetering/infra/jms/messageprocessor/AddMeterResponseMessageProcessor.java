@@ -81,7 +81,7 @@ public class AddMeterResponseMessageProcessor extends DomainResponseMessageProce
 
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, ResponseMessageResultType.valueOf(result), message);
-            this.meterResponseDataService.queue(meterResponseData);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
                     correlationUid, message, notificationType);

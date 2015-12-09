@@ -24,7 +24,7 @@ public class MeterResponseDataService {
      * 
      * @param meterResponseData
      */
-    public void queue(final MeterResponseData meterResponseData) {
+    public void enqueue(final MeterResponseData meterResponseData) {
         this.meterResponseDataRepository.save(meterResponseData);
     }
 

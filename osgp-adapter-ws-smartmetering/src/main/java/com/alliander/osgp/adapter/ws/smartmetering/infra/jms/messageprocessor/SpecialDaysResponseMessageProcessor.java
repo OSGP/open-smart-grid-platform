@@ -83,7 +83,7 @@ public class SpecialDaysResponseMessageProcessor extends DomainResponseMessagePr
 
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, ResponseMessageResultType.valueOf(result), message);
-            this.meterResponseDataService.queue(meterResponseData);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
