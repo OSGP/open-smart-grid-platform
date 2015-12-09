@@ -184,4 +184,19 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
         };
     }
 
+    @Override
+    public Specification<Device> isInMaintetance(final Boolean inMaintenance) throws ArgumentNullOrEmptyException {
+        if (inMaintenance == null) {
+            throw new ArgumentNullOrEmptyException("inMaintenance");
+        }
+
+        return new Specification<Device>() {
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+
+                return cb.and(cb.equal(deviceRoot.<Boolean> get("inMaintenance"), inMaintenance));
+            }
+        };
+    }
 }

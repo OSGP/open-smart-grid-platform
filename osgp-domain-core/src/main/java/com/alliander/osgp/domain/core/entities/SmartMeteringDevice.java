@@ -223,18 +223,16 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
      * @see com.alliander.osgp.domain.core.entities.DeviceInterface#getOwner()
      */
     @Override
-    public String getOwner() {
-        String retval = "";
-
+    public Organisation getOwner() {
         if (this.authorizations != null) {
             for (final DeviceAuthorization authorization : this.authorizations) {
                 if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
-                    retval = authorization.getOrganisation().getName();
+                    authorization.getOrganisation();
                 }
             }
         }
 
-        return retval;
+        return null;
     }
 
     /*
