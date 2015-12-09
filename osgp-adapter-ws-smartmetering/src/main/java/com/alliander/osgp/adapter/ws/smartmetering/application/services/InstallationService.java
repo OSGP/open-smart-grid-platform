@@ -43,8 +43,8 @@ public class InstallationService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SmartMeteringDevice device)
+                    throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
