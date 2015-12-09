@@ -151,7 +151,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -354,7 +354,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -460,9 +460,16 @@ public class DeviceManagementService {
             LOGGER.info("Device does not exist, cannot set maintenance status.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
                     new UnknownEntityException(Device.class, deviceIdentification));
-        }
+        } else if (existingDevice.getOwner().getOrganisationIdentification().equals(organisationIdentification)
+                || existingDevice.getOwner().getOrganisationIdentification().equals(this.netMangementOrganisation)) {
 
-        existingDevice.updateInMaintenance(status);
-        this.writableDeviceRepository.save(existingDevice);
+            // if the organization is OWNER or MANAGER, you can save it.
+            existingDevice.updateInMaintenance(status);
+            this.writableDeviceRepository.save(existingDevice);
+        } else {
+            // unauthorized, throwing exception.
+            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        }
     }
 }
