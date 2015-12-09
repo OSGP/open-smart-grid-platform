@@ -48,15 +48,14 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
 
         final ConfigurationObject configurationObjectOnDevice = this.retrieveConfigurationObject(conn);
 
-        // if (this.isRequestValid(configurationObject,
-        // configurationObjectOnDevice)) {
-        final SetRequestParameter request = this.buildRequest(configurationObject, configurationObjectOnDevice);
+        if (this.isRequestValid(configurationObject, configurationObjectOnDevice)) {
+            final SetRequestParameter request = this.buildRequest(configurationObject, configurationObjectOnDevice);
 
-        return AccessResultCode.SUCCESS; // conn.set(request).get(0);
-        // } else {
-        // throw new ProtocolAdapterException(
-        // "Not a valid change request. One of the flags HLS_3_on_P3_enable or HLS_3_on_P3_enable or HLS_3_on_P3_enable must be enabled!");
-        // }
+            return AccessResultCode.SUCCESS; // conn.set(request).get(0);
+        } else {
+            throw new ProtocolAdapterException(
+                    "Not a valid change request. One of the flags HLS_3_on_P3_enable or HLS_3_on_P3_enable or HLS_3_on_P3_enable must be enabled!");
+        }
     }
 
     private SetRequestParameter buildRequest(final ConfigurationObject configurationObject,
@@ -122,49 +121,38 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
      * meter when at least one of the following flags are enabled:
      * HLS_3_on_P3_enable HLS_4_on_P3_enable HLS_5_on_P3_enable
      */
-    // private boolean isRequestValid(final ConfigurationObject
-    // configurationObject,
-    // final ConfigurationObject configurationObjectOnDevice) {
-    //
-    // final List<ConfigurationFlag> configurationFlags =
-    // configurationObject.getConfigurationFlags()
-    // .getConfigurationFlag();
-    // final List<ConfigurationFlag> configurationFlagsOnDevice =
-    // configurationObjectOnDevice.getConfigurationFlags()
-    // .getConfigurationFlag();
-    //
-    // final boolean hls3onP3enable = this.isFlagEnabled(configurationFlags,
-    // configurationFlagsOnDevice,
-    // ConfigurationFlagType.HLS_3_ON_P_3_ENABLE);
-    // final boolean hls4onP3enable = this.isFlagEnabled(configurationFlags,
-    // configurationFlagsOnDevice,
-    // ConfigurationFlagType.HLS_4_ON_P_3_ENABLE);
-    // final boolean hls5onP3enable = this.isFlagEnabled(configurationFlags,
-    // configurationFlagsOnDevice,
-    // ConfigurationFlagType.HLS_5_ON_P_3_ENABLE);
-    //
-    // return hls3onP3enable || hls4onP3enable || hls5onP3enable;
-    // }
+    private boolean isRequestValid(final ConfigurationObject configurationObject,
+            final ConfigurationObject configurationObjectOnDevice) {
 
-    // private boolean isFlagEnabled(final List<ConfigurationFlag>
-    // configurationFlags,
-    // final List<ConfigurationFlag> configurationFlagsOnDevice, final
-    // ConfigurationFlagType flagType) {
-    // final ConfigurationFlag newConfigurationFlag =
-    // this.getConfigurationFlag(configurationFlags, flagType);
-    // if (newConfigurationFlag != null && newConfigurationFlag.isEnabled()) {
-    // return true;
-    // } else {
-    // final ConfigurationFlag currentConfigurationFlag =
-    // this.getConfigurationFlag(configurationFlagsOnDevice,
-    // flagType);
-    // if (currentConfigurationFlag != null &&
-    // currentConfigurationFlag.isEnabled()) {
-    // return true;
-    // }
-    // }
-    // return false;
-    // }
+        final List<ConfigurationFlag> configurationFlags = configurationObject.getConfigurationFlags()
+                .getConfigurationFlag();
+        final List<ConfigurationFlag> configurationFlagsOnDevice = configurationObjectOnDevice.getConfigurationFlags()
+                .getConfigurationFlag();
+
+        final boolean hls3onP3enable = this.isFlagEnabled(configurationFlags, configurationFlagsOnDevice,
+                ConfigurationFlagType.HLS_3_ON_P_3_ENABLE);
+        final boolean hls4onP3enable = this.isFlagEnabled(configurationFlags, configurationFlagsOnDevice,
+                ConfigurationFlagType.HLS_4_ON_P_3_ENABLE);
+        final boolean hls5onP3enable = this.isFlagEnabled(configurationFlags, configurationFlagsOnDevice,
+                ConfigurationFlagType.HLS_5_ON_P_3_ENABLE);
+
+        return hls3onP3enable || hls4onP3enable || hls5onP3enable;
+    }
+
+    private boolean isFlagEnabled(final List<ConfigurationFlag> configurationFlags,
+            final List<ConfigurationFlag> configurationFlagsOnDevice, final ConfigurationFlagType flagType) {
+        final ConfigurationFlag newConfigurationFlag = this.getConfigurationFlag(configurationFlags, flagType);
+        if (newConfigurationFlag != null && newConfigurationFlag.isEnabled()) {
+            return true;
+        } else {
+            final ConfigurationFlag currentConfigurationFlag = this.getConfigurationFlag(configurationFlagsOnDevice,
+                    flagType);
+            if (currentConfigurationFlag != null && currentConfigurationFlag.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private ConfigurationFlag getConfigurationFlag(final Collection<ConfigurationFlag> flags,
             final ConfigurationFlagType flagType) {
@@ -177,7 +165,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObject retrieveConfigurationObject(final ClientConnection conn) throws IOException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();

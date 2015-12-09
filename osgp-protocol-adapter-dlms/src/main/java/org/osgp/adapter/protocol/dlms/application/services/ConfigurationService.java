@@ -112,7 +112,7 @@ public class ConfigurationService {
             final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
             LOGGER.info("******************************************************");
-            LOGGER.info("Configuration Object: 0-0:94.31.3.255*****************");
+            LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
             LOGGER.info("******************************************************");
             LOGGER.info("Operation mode:{} ", GprsOperationModeType.value());
             LOGGER.info("Flags:");
