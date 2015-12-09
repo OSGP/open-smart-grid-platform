@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -33,9 +34,12 @@ public class AdhocService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
+    @Autowired
+    private MeterReponseDataService meterResponseDataService;
+
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -52,9 +56,7 @@ public class AdhocService {
         return correlationUid;
     }
 
-    public String synchronizeTime(final String organisationIdentification,
-            final SynchronizeTimeRequest synchronizeTimeRequest) throws FunctionalException {
-        return this.enqueueSynchronizeTimeRequest(organisationIdentification,
-                synchronizeTimeRequest.getDeviceIdentification(), synchronizeTimeRequest);
+    public MeterResponseData dequeueSynchronizeTimeResponse(final String correlationUid) throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
     }
 }

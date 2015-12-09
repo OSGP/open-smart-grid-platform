@@ -18,10 +18,14 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -60,11 +64,11 @@ public class SmartMeteringInstallationEndpoint {
         final AddDeviceAsyncResponse response = new AddDeviceAsyncResponse();
 
         try {
-
             final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
                     SmartMeteringDevice.class);
 
-            final String correlationUid = this.installationService.addDevice(organisationIdentification, device);
+            final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
+                    organisationIdentification, device.getDeviceIdentification(), device);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -85,6 +89,26 @@ public class SmartMeteringInstallationEndpoint {
                     request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "AddDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public AddDeviceResponse getSetConfigurationObjectResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddDeviceAsyncRequest request) throws OsgpException {
+
+        final MeterResponseData meterResponseData = this.installationService.dequeueAddSmartMeterResponse(request
+                .getCorrelationUid());
+
+        // Map response type, and return.
+        final AddDeviceResponse response = new AddDeviceResponse();
+        if (meterResponseData != null) {
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+        } else {
+            response.setResult(OsgpResultType.NOT_FOUND);
         }
 
         return response;

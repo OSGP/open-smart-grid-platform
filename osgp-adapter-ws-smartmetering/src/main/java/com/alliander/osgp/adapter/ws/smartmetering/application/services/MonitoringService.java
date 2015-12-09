@@ -41,14 +41,6 @@ public class MonitoringService {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
-        // final Organisation organisation =
-        // this.domainHelperService.findOrganisation(organisationIdentification);
-        // final Device device =
-        // this.domainHelperService.findActiveDevice(deviceIdentification);
-        //
-        // this.domainHelperService.isAllowed(organisation, device,
-        // DeviceFunction.GET_STATUS);
-
         LOGGER.debug("enqueuePeriodicMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
@@ -77,7 +69,7 @@ public class MonitoringService {
 
     private String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualMeterReadsRequest requestData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -103,7 +95,7 @@ public class MonitoringService {
 
     private String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueReadAlarmRegisterRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);

@@ -30,15 +30,14 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveAct
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterReponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
@@ -55,7 +54,7 @@ public class SmartMeteringMonitoringEndpoint {
     private MonitoringMapper monitoringMapper;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterReponseDataService meterResponseDataService;
 
     public SmartMeteringMonitoringEndpoint() {
         // Empty constructor
@@ -104,47 +103,20 @@ public class SmartMeteringMonitoringEndpoint {
         final RetrievePeriodicMeterReadsResponse response = new RetrievePeriodicMeterReadsResponse();
 
         try {
+            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
+                    request.getCorrelationUid(), PeriodicMeterReadContainer.class);
 
-            final MeterResponseData meterResponseData = this.meterResponseDataRepository
-                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
-
-            if (meterResponseData == null) {
-
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                        ComponentType.WS_SMART_METERING);
-            }
-
-            if (meterResponseData.getMessageData() instanceof PeriodicMeterReadContainer) {
-
+            if (meterResponseData != null) {
                 response.setPeriodicMeterReadsContainer(this.monitoringMapper.map(meterResponseData.getMessageData(),
                         com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsContainer.class));
-
-                // removing
-                LOGGER.info("deleting MeterResponseData for CorrelationUid {}", request.getCorrelationUid());
-                this.meterResponseDataRepository.delete(meterResponseData);
-            } else {
-                LOGGER.info(
-                        "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
-                        meterResponseData.getClass().getName(), request.getCorrelationUid());
             }
-
+        } catch (final FunctionalException e) {
+            throw e;
         } catch (final Exception e) {
+            LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
 
-            if ((e instanceof FunctionalException)
-                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-
-                LOGGER.warn("No response data for correlation UID {} in RetrievePeriodicMeterReadsRequest",
-                        request.getCorrelationUid());
-
-                throw e;
-
-            } else {
-
-                LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
-                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
-
-                this.handleException(e);
-            }
+            this.handleException(e);
         }
 
         return response;
@@ -194,39 +166,20 @@ public class SmartMeteringMonitoringEndpoint {
         final RetrieveActualMeterReadsResponse response = new RetrieveActualMeterReadsResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataRepository
-                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
+                    request.getCorrelationUid(), ActualMeterReads.class);
 
-            if (meterResponseData == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                        ComponentType.WS_SMART_METERING);
-            }
-
-            if (meterResponseData.getMessageData() instanceof ActualMeterReads) {
+            if (meterResponseData != null) {
                 response.setActualMeterReads(this.monitoringMapper.map(meterResponseData.getMessageData(),
                         com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads.class));
-
-                this.meterResponseDataRepository.delete(meterResponseData);
-            } else {
-                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
-                        .getName(), request.getCorrelationUid());
             }
-
+        } catch (final FunctionalException e) {
+            throw e;
         } catch (final Exception e) {
-            if ((e instanceof FunctionalException)
-                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+            LOGGER.error("Exception: {} while sending ActualMeterReads of device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
 
-                LOGGER.warn("No response data for correlation UID {} in RetrieveActualMeterReadsRequest",
-                        request.getCorrelationUid());
-
-                throw e;
-
-            } else {
-                LOGGER.error("Exception: {} while sending ActualMeterReads of device: {} for organisation {}.",
-                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
-
-                this.handleException(e);
-            }
+            this.handleException(e);
         }
 
         return response;
@@ -276,40 +229,21 @@ public class SmartMeteringMonitoringEndpoint {
         final ReadAlarmRegisterResponse response = new ReadAlarmRegisterResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataRepository
-                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
+                    request.getCorrelationUid(), AlarmRegister.class);
 
-            if (meterResponseData == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                        ComponentType.WS_SMART_METERING);
-            }
-
-            if (meterResponseData.getMessageData() instanceof AlarmRegister) {
+            if (meterResponseData != null) {
                 response.setAlarmRegister(this.monitoringMapper.map(meterResponseData.getMessageData(),
                         com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class));
-
-                this.meterResponseDataRepository.delete(meterResponseData);
-            } else {
-                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData
-                        .getMessageData().getClass().getName(), request.getCorrelationUid());
             }
-
+        } catch (final FunctionalException e) {
+            throw e;
         } catch (final Exception e) {
-            if ((e instanceof FunctionalException)
-                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+            LOGGER.error(
+                    "Exception: {} while sending RetrieveReadAlarmRegisterRequest of device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
 
-                LOGGER.warn("No response data for correlation UID {} in RetrieveReadAlarmRegisterRequest",
-                        request.getCorrelationUid());
-
-                throw e;
-
-            } else {
-                LOGGER.error(
-                        "Exception: {} while sending RetrieveReadAlarmRegisterRequest of device: {} for organisation {}.",
-                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
-
-                this.handleException(e);
-            }
+            this.handleException(e);
         }
 
         return response;

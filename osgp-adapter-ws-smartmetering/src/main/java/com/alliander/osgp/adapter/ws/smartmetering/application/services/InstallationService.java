@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -38,23 +39,14 @@ public class InstallationService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-    // public InstallationService() {
-    // // Parameterless constructor required for transactions
-    // }
+    @Autowired
+    private MeterReponseDataService meterResponseDataService;
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
-
-        // final Organisation organisation =
-        // this.domainHelperService.findOrganisation(organisationIdentification);
-        // final Device device =
-        // this.domainHelperService.findActiveDevice(deviceIdentification);
-        //
-        // this.domainHelperService.isAllowed(organisation, device,
-        // DeviceFunction.GET_STATUS);
 
         LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -71,13 +63,7 @@ public class InstallationService {
         return correlationUid;
     }
 
-    /**
-     * @param organisationIdentification
-     * @param device
-     * @throws FunctionalException
-     */
-    public String addDevice(final String organisationIdentification, final SmartMeteringDevice device)
-            throws FunctionalException {
-        return this.enqueueAddSmartMeterRequest(organisationIdentification, device.getDeviceIdentification(), device);
+    public MeterResponseData dequeueAddSmartMeterResponse(final String correlationUid) throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
     }
 }
