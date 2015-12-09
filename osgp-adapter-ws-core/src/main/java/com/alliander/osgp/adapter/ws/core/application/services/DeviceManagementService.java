@@ -56,6 +56,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.DeviceInMaintenanceFilterType;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
@@ -255,7 +256,7 @@ public class DeviceManagementService {
         if (!this.netMangementOrganisation.equals(organisationIdentification)) {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
-                        null, null, DeviceActivatedFilterType.BOTH, null, null);
+                        null, null, DeviceActivatedFilterType.BOTH, DeviceInMaintenanceFilterType.BOTH, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -327,6 +328,11 @@ public class DeviceManagementService {
                 if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
                     specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
                             .getDeviceActivated().getValue()));
+                }
+
+                if (!DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
+                    specifications = specifications.and(this.deviceSpecifications.isInMaintetance(deviceFilter
+                            .getDeviceInMaintenance().getValue()));
                 }
 
                 devices = this.deviceRepository.findAll(specifications, request);
