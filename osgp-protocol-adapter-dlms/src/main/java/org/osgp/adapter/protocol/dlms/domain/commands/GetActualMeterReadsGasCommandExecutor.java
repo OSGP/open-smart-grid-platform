@@ -39,19 +39,19 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
     public MeterReadsGas execute(final ClientConnection conn, final ActualMeterReadsRequest actualMeterReadsRequest)
             throws IOException, ProtocolAdapterException {
 
-        final GetRequestParameter masterValue = new GetRequestParameter(CLASS_ID_MBUS,
+        final GetRequestParameter mbusValue = new GetRequestParameter(CLASS_ID_MBUS,
                 this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_VALUE);
 
         LOGGER.debug("Retrieving current MBUS master value for class id: {}, obis code: {}, attribute id: {}",
-                masterValue.classId(), masterValue.obisCode(), masterValue.attributeId());
+                mbusValue.classId(), mbusValue.obisCode(), mbusValue.attributeId());
 
-        final GetRequestParameter masterTime = new GetRequestParameter(CLASS_ID_MBUS,
+        final GetRequestParameter mbusTime = new GetRequestParameter(CLASS_ID_MBUS,
                 this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_TIME);
 
         LOGGER.debug("Retrieving current MBUS master capture time for class id: {}, obis code: {}, attribute id: {}",
-                masterTime.classId(), masterTime.obisCode(), masterTime.attributeId());
+                mbusTime.classId(), mbusTime.obisCode(), mbusTime.attributeId());
 
-        final List<GetResult> getResultList = conn.get(masterValue, masterTime);
+        final List<GetResult> getResultList = conn.get(mbusValue, mbusTime);
 
         checkResultList(getResultList);
 
@@ -77,7 +77,7 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
                     "No GetResult received while retrieving current MBUS master capture time.");
         }
 
-        if (getResultList.size() > 2) {
+        if (getResultList.size() > 1) {
             LOGGER.info("Expected 2 GetResult while retrieving current MBUS master capture time, got "
                     + getResultList.size());
         }

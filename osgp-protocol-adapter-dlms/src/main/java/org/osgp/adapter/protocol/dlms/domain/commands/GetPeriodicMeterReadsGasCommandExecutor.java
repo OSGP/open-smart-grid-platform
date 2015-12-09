@@ -29,15 +29,15 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsReque
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
+CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
     private static final int CLASS_ID_PROFILE_GENERIC = 7;
-    private static final ObisCode OBIS_CODE_INTERVAL_BILLING_1 = new ObisCode("0.1.24.3.0.255");
-    private static final ObisCode OBIS_CODE_INTERVAL_BILLING_2 = new ObisCode("0.2.24.3.0.255");
-    private static final ObisCode OBIS_CODE_INTERVAL_BILLING_3 = new ObisCode("0.3.24.3.0.255");
-    private static final ObisCode OBIS_CODE_INTERVAL_BILLING_4 = new ObisCode("0.4.24.3.0.255");
+    private static final ObisCode OBIS_CODE_INTERVAL_MBUS_1 = new ObisCode("0.1.24.3.0.255");
+    private static final ObisCode OBIS_CODE_INTERVAL_MBUS_2 = new ObisCode("0.2.24.3.0.255");
+    private static final ObisCode OBIS_CODE_INTERVAL_MBUS_3 = new ObisCode("0.3.24.3.0.255");
+    private static final ObisCode OBIS_CODE_INTERVAL_MBUS_4 = new ObisCode("0.4.24.3.0.255");
     private static final ObisCode OBIS_CODE_DAILY_BILLING = new ObisCode("1.0.99.2.0.255");
     private static final ObisCode OBIS_CODE_MONTHLY_BILLING = new ObisCode("0.0.98.1.0.255");
     private static final byte ATTRIBUTE_ID_BUFFER = 2;
@@ -219,13 +219,13 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     private ObisCode intervalForChannel(final int channel) throws ProtocolAdapterException {
         switch (channel) {
         case 1:
-            return OBIS_CODE_INTERVAL_BILLING_1;
+            return OBIS_CODE_INTERVAL_MBUS_1;
         case 2:
-            return OBIS_CODE_INTERVAL_BILLING_2;
+            return OBIS_CODE_INTERVAL_MBUS_2;
         case 3:
-            return OBIS_CODE_INTERVAL_BILLING_3;
+            return OBIS_CODE_INTERVAL_MBUS_3;
         case 4:
-            return OBIS_CODE_INTERVAL_BILLING_4;
+            return OBIS_CODE_INTERVAL_MBUS_4;
         default:
             throw new ProtocolAdapterException(String.format("channel %s not supported", channel));
         }
