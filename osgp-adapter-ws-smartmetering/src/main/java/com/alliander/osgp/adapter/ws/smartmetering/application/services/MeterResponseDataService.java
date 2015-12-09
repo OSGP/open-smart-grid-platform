@@ -12,12 +12,21 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service
-public class MeterReponseDataService {
+public class MeterResponseDataService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MeterReponseDataService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MeterResponseDataService.class);
 
     @Autowired
     private MeterResponseDataRepository meterResponseDataRepository;
+
+    /**
+     * Queue response data object.
+     * 
+     * @param meterResponseData
+     */
+    public void queue(final MeterResponseData meterResponseData) {
+        this.meterResponseDataRepository.save(meterResponseData);
+    }
 
     /**
      * Dequeue meter response data.

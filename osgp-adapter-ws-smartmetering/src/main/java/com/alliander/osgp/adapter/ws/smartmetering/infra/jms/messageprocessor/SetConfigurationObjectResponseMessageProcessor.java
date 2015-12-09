@@ -18,10 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("domainSmartMeteringSetConfigurationObjectResponseMessageProcessor")
 public class SetConfigurationObjectResponseMessageProcessor extends DomainResponseMessageProcessor {
@@ -33,6 +36,9 @@ public class SetConfigurationObjectResponseMessageProcessor extends DomainRespon
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private MeterResponseDataService meterResponseDataService;
 
     protected SetConfigurationObjectResponseMessageProcessor() {
         super(DeviceFunction.SET_CONFIGURATION_OBJECT);
@@ -74,6 +80,10 @@ public class SetConfigurationObjectResponseMessageProcessor extends DomainRespon
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, ResponseMessageResultType.valueOf(result), message);
+            this.meterResponseDataService.queue(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

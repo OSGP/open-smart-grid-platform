@@ -30,7 +30,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveAct
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterReponseDataService;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
@@ -54,7 +54,7 @@ public class SmartMeteringMonitoringEndpoint {
     private MonitoringMapper monitoringMapper;
 
     @Autowired
-    private MeterReponseDataService meterResponseDataService;
+    private MeterResponseDataService meterResponseDataService;
 
     public SmartMeteringMonitoringEndpoint() {
         // Empty constructor

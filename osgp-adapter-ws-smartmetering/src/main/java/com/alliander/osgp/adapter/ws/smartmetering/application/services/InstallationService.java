@@ -40,7 +40,7 @@ public class InstallationService {
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     @Autowired
-    private MeterReponseDataService meterResponseDataService;
+    private MeterResponseDataService meterResponseDataService;
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SmartMeteringDevice device)

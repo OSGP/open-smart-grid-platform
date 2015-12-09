@@ -35,7 +35,7 @@ public class AdhocService {
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     @Autowired
-    private MeterReponseDataService meterResponseDataService;
+    private MeterResponseDataService meterResponseDataService;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest)

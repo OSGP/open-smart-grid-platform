@@ -38,11 +38,11 @@ public class ConfigurationService {
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
     @Autowired
-    private MeterReponseDataService meterResponseDataService;
+    private MeterResponseDataService meterResponseDataService;
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SpecialDaysRequest requestData)
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -89,7 +89,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -108,7 +108,7 @@ public class ConfigurationService {
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
