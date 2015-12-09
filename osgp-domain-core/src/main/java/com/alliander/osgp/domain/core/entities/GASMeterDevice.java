@@ -14,6 +14,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
+ * 
  * @author OSGP
  * @deprecated temporary GAS meter administration
  */
@@ -35,9 +36,6 @@ public class GASMeterDevice extends AbstractEntity {
 
     @Column(nullable = false)
     private short channel;
-
-    @Column(nullable = false)
-    private boolean wired;
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
@@ -61,14 +59,6 @@ public class GASMeterDevice extends AbstractEntity {
 
     public void setChannel(final short channel) {
         this.channel = channel;
-    }
-
-    public boolean isWired() {
-        return this.wired;
-    }
-
-    public void setWired(final boolean wired) {
-        this.wired = wired;
     }
 
 }
