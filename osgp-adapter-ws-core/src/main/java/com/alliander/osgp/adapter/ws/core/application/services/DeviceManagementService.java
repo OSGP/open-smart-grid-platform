@@ -469,7 +469,7 @@ public class DeviceManagementService {
         } else {
             // unauthorized, throwing exception.
             throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
-                    new UnknownEntityException(Device.class, deviceIdentification));
+                    new NotAuthorizedException(organisationIdentification));
         }
     }
 }
