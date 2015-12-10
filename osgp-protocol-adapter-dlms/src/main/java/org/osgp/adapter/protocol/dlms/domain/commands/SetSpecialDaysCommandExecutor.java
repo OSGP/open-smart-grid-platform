@@ -40,8 +40,7 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
 
             final ArrayList<DataObject> specDayEntry = new ArrayList<DataObject>();
             specDayEntry.add(DataObject.newUInteger32Data(i));
-            specDayEntry.add(DataObject.newOctetStringData(this.dlmsHelperService.asOctetStringData(specialDay
-                    .getSpecialDayDate())));
+            specDayEntry.add(this.dlmsHelperService.dateStringToOctetString(specialDay.getSpecialDayDate()));
             specDayEntry.add(DataObject.newUInteger8Data((short) i));
 
             final DataObject dayStruct = DataObject.newStructureData(specDayEntry);
@@ -53,7 +52,7 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final SetRequestParameter request = factory.createSetRequestParameter(arrayData);
 
-        return AccessResultCode.SUCCESS; // conn.set(request).get(0);
+        return conn.set(request).get(0);
     }
 
 }

@@ -13,6 +13,12 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
 
+    private static final String LAST_DAY_OF_MONTH = "FE";
+    private static final String SECOND_LAST_DAY_OF_MONTH = "FD";
+    private static final String DAYLIGHT_SAVINGS_BEGIN = LAST_DAY_OF_MONTH;
+    private static final String DAYLIGHT_SAVINGS_END = SECOND_LAST_DAY_OF_MONTH;
+    private static final String NOT_SPECIFIED = "FF";
+
     public DateTime fromDateTimeValue(final byte[] dateTimeValue) {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
@@ -58,14 +64,52 @@ public class DlmsHelperService {
         return DataObject.newOctetStringData(bb.array());
     }
 
-    public byte[] asOctetStringData(final String hexString) {
-        final int len = hexString.length();
-        final byte[] byteArray = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            byteArray[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character.digit(
-                    hexString.charAt(i + 1), 16));
+    /**
+     * The format of the datestring is YYMMDD and if the year is unspecified the
+     * year positions should hold "FF" as value
+     *
+     * @param date
+     *            the date as String object
+     * @return DateObject as OctetString
+     */
+    public DataObject dateStringToOctetString(final String date) {
+
+        final ByteBuffer bb = ByteBuffer.allocate(5);
+
+        final String year = date.substring(0, 2);
+        if (NOT_SPECIFIED.equalsIgnoreCase(year)) {
+            bb.putShort((short) 0xFFFF);
+        } else {
+            bb.put(Integer.valueOf(20).byteValue());
+            bb.put(Integer.valueOf(year).byteValue());
         }
-        return byteArray;
+
+        final String month = date.substring(2, 4);
+        if (NOT_SPECIFIED.equalsIgnoreCase(month)) {
+            bb.put((byte) 0xFF);
+        } else if (DAYLIGHT_SAVINGS_END.equalsIgnoreCase(month)) {
+            bb.put((byte) 0xFD);
+        } else if (DAYLIGHT_SAVINGS_BEGIN.equalsIgnoreCase(month)) {
+            bb.put((byte) 0xFD);
+        } else {
+            bb.put(Integer.valueOf(month).byteValue());
+        }
+
+        final String dayOfMonth = date.substring(4);
+        if (NOT_SPECIFIED.equalsIgnoreCase(dayOfMonth)) {
+            bb.put((byte) 0xFF);
+        } else if (SECOND_LAST_DAY_OF_MONTH.equalsIgnoreCase(month)) {
+            bb.put((byte) 0xFD);
+        } else if (LAST_DAY_OF_MONTH.equalsIgnoreCase(month)) {
+            bb.put((byte) 0xFE);
+        } else {
+            bb.put(Integer.valueOf(dayOfMonth).byteValue());
+        }
+
+        // leave day of week unspecified (0xFF)
+        bb.put((byte) 0xFF);
+
+        return DataObject.newOctetStringData(bb.array());
     }
 
     public String getDebugInfo(final DataObject dataObject) {
@@ -168,8 +212,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -195,10 +239,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
     }
@@ -209,7 +253,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-        .append(", bits=").append(stringValue);
+                .append(", bits=").append(stringValue);
 
         return sb.toString();
     }
