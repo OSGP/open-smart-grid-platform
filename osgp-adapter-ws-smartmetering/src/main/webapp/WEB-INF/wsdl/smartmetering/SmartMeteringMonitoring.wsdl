@@ -275,7 +275,7 @@
 
         <wsdl:operation name="GetPeriodicMeterReadsGasResponse">
             <soap:operation soapAction="" />
-            <wsdl:input name="PeriodicMeterReadsGasAsynRequest">
+            <wsdl:input name="PeriodicMeterReadsGasAsyncRequest">
                 <soap:header message="tns:SoapHeaders" part="org" use="literal" />
                 <soap:header message="tns:SoapHeaders" part="user" use="literal" />
                 <soap:header message="tns:SoapHeaders" part="app" use="literal" />
