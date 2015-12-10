@@ -9,12 +9,12 @@ CREATE TABLE gasmeter_device (
     channel smallint not null
 );
 
-ALTER TABLE public.gas_meter_device OWNER TO osp_admin;
+ALTER TABLE public.gasmeter_device OWNER TO osp_admin;
 
-ALTER TABLE public.gas_meter_device_id_seq OWNER TO osp_admin;
+ALTER TABLE public.gasmeter_device_id_seq OWNER TO osp_admin;
 
-ALTER SEQUENCE gas_meter_device_id_seq OWNED BY smart_metering_device.id;
+ALTER SEQUENCE gasmeter_device_id_seq OWNED BY smart_metering_device.id;
 
-ALTER TABLE ONLY gas_meter_device ALTER COLUMN id SET DEFAULT nextval('gas_meter_device_id_seq'::regclass);
+ALTER TABLE ONLY gasmeter_device ALTER COLUMN id SET DEFAULT nextval('gas_meter_device_id_seq'::regclass);
 
-ALTER TABLE ONLY gas_meter_device ADD CONSTRAINT gas_meter_device_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY gasmeter_device ADD CONSTRAINT gasmeter_device_pkey PRIMARY KEY (id);
