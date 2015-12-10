@@ -75,6 +75,7 @@ public class ConfigurationManagementService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_CONFIGURATION);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueSetConfigurationRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -101,6 +102,7 @@ public class ConfigurationManagementService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_CONFIGURATION);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueGetConfigurationRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);

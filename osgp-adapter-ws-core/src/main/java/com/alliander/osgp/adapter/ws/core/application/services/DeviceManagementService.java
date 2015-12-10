@@ -56,6 +56,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.domain.core.valueobjects.DeviceInMaintenanceFilterType;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
@@ -255,7 +256,7 @@ public class DeviceManagementService {
         if (!this.netMangementOrganisation.equals(organisationIdentification)) {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
-                        null, null, DeviceActivatedFilterType.BOTH, null, null);
+                        null, null, DeviceActivatedFilterType.BOTH, DeviceInMaintenanceFilterType.BOTH, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -329,6 +330,11 @@ public class DeviceManagementService {
                             .getDeviceActivated().getValue()));
                 }
 
+                if (!DeviceInMaintenanceFilterType.BOTH.equals(deviceFilter.getDeviceInMaintenance())) {
+                    specifications = specifications.and(this.deviceSpecifications.isInMaintetance(deviceFilter
+                            .getDeviceInMaintenance().getValue()));
+                }
+
                 devices = this.deviceRepository.findAll(specifications, request);
             } else {
                 devices = this.deviceRepository.findAll(request);
@@ -354,6 +360,7 @@ public class DeviceManagementService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_EVENT_NOTIFICATIONS);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueSetEventNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -441,5 +448,28 @@ public class DeviceManagementService {
         existingDevice.updateOutputSettings(updateDevice.receiveOutputSettings());
 
         this.writableDeviceRepository.save(existingDevice);
+    }
+
+    @Transactional(value = "writableTransactionManager")
+    public void setMaintenanceStatus(@Identification final String organisationIdentification,
+            final String deviceIdentification, final boolean status) throws FunctionalException {
+
+        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (existingDevice == null) {
+            // device does not exist
+            LOGGER.info("Device does not exist, cannot set maintenance status.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        } else if (existingDevice.getOwner().getOrganisationIdentification().equals(organisationIdentification)
+                || existingDevice.getOwner().getOrganisationIdentification().equals(this.netMangementOrganisation)) {
+
+            // if the organization is OWNER or MANAGER, you can save it.
+            existingDevice.updateInMaintenance(status);
+            this.writableDeviceRepository.save(existingDevice);
+        } else {
+            // unauthorized, throwing exception.
+            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
+                    new NotAuthorizedException(organisationIdentification));
+        }
     }
 }

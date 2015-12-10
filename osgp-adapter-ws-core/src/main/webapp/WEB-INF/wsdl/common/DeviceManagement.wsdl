@@ -122,6 +122,20 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="SetMaintenanceStatusHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="SetMaintenanceStatusResponse">
+        <wsdl:part element="dman:SetMaintenanceStatusResponse" name="SetMaintenanceStatusResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetMaintenanceStatusRequest">
+        <wsdl:part element="dman:SetMaintenanceStatusRequest" name="SetMaintenanceStatusRequest">
+        </wsdl:part>
+    </wsdl:message>
+
 	<wsdl:portType name="DeviceManagementPort">
 		<wsdl:operation name="FindEvents">
 			<wsdl:input message="tns:FindEventsRequest" name="FindEventsRequest">
@@ -176,7 +190,14 @@
             <wsdl:output message="tns:UpdateDeviceResponse" name="UpdateDeviceResponse">
             </wsdl:output>
         </wsdl:operation>
-        
+
+        <wsdl:operation name="SetMaintenanceStatus">
+            <wsdl:input message="tns:SetMaintenanceStatusRequest" name="SetMaintenanceStatusRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetMaintenanceStatusResponse" name="SetMaintenanceStatusResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
 	</wsdl:portType>
 	
 	<wsdl:binding name="DeviceManagementPortSoap11" type="tns:DeviceManagementPort">
@@ -271,6 +292,20 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+
+        <wsdl:operation name="SetMaintenanceStatus">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetMaintenanceStatusRequest">
+                <soap:header message="tns:SetMaintenanceStatusHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SetMaintenanceStatusHeader" part="UserName" use="literal" />
+				<soap:header message="tns:SetMaintenanceStatusHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetMaintenanceStatusResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
 	</wsdl:binding>
 	
 	<wsdl:service name="DeviceManagementPortService">

@@ -112,6 +112,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<RelayStatus> relayStatusses;
 
+    @Column
+    private boolean inMaintenance;
+
     public Device() {
         // Default constructor
     }
@@ -222,6 +225,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         return this.protocolInfo;
     }
 
+    public boolean isInMaintenance() {
+        return this.inMaintenance;
+    }
+
     public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
             final String containerStreet, final String containerNumber, final String containerMunicipality,
             final Float gpsLatitude, final Float gpsLongitude) {
@@ -251,6 +258,10 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         this.protocolInfo = protocolInfo;
     }
 
+    public void updateInMaintenance(final boolean inMaintenance) {
+        this.inMaintenance = inMaintenance;
+    }
+
     public void clearNetworkAddress() {
         this.networkAddress = null;
     }
@@ -273,23 +284,21 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     }
 
     /**
-     * Get the owner organisation name of the device.
+     * Get the owner organisation of the device.
      *
-     * @return The organisation name when an owner was set, "" otherwise.
+     * @return The organisation when an owner was set, null otherwise.
      */
     @Override
-    public String getOwner() {
-        String retval = "";
-
+    public Organisation getOwner() {
         if (this.authorizations != null) {
             for (final DeviceAuthorization authorization : this.authorizations) {
                 if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
-                    retval = authorization.getOrganisation().getName();
+                    return authorization.getOrganisation();
                 }
             }
         }
 
-        return retval;
+        return null;
     }
 
     public List<RelayStatus> getRelayStatusses() {
@@ -304,14 +313,14 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
      * @return
      */
     public RelayStatus getRelayStatusByIndex(final int index) {
-        final RelayStatus output = null;
-
-        for (final RelayStatus r : this.relayStatusses) {
-            if (r.getIndex() == index) {
-                return r;
+        if (this.relayStatusses != null) {
+            for (final RelayStatus r : this.relayStatusses) {
+                if (r.getIndex() == index) {
+                    return r;
+                }
             }
         }
-        return output;
+        return null;
     }
 
     /**
@@ -323,17 +332,18 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     public void updateRelayStatusByIndex(final int index, final RelayStatus relayStatus) {
 
         boolean found = false;
-
-        for (final RelayStatus r : this.relayStatusses) {
-            if (r.getIndex() == index) {
-                r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
-                found = true;
-                break;
+        if (this.relayStatusses != null) {
+            for (final RelayStatus r : this.relayStatusses) {
+                if (r.getIndex() == index) {
+                    r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
+                    found = true;
+                    break;
+                }
             }
-        }
 
-        if (!found) {
-            this.relayStatusses.add(relayStatus);
+            if (!found) {
+                this.relayStatusses.add(relayStatus);
+            }
         }
     }
 
@@ -437,8 +447,7 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
         if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
             defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
             defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, ""));
-            defaultConfiguration.add(new DeviceOutputSetting(4, 4, RelayType.LIGHT, ""));
-            defaultConfiguration.add(new DeviceOutputSetting(0, 0, RelayType.LIGHT, ""));
+            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, ""));
 
             return defaultConfiguration;
         }

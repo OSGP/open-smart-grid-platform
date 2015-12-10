@@ -19,6 +19,7 @@ public class MonitoringMapper extends ConfigurableMapper {
 
         mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsConverter());
         mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsGasConverter());
+        mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
     }
 }

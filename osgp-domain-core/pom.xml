@@ -27,7 +27,7 @@
     <properties>
         <display.version>${project.version}-${BUILD_TAG}</display.version>
     </properties>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -53,14 +53,14 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
         <!-- Alliander -->
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>shared</artifactId>
         </dependency>
-        
+
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -90,7 +90,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
         </dependency>
-        
+
         <!-- Spring Data -->
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -110,7 +110,7 @@
             <groupId>org.springframework.ws</groupId>
             <artifactId>spring-ws-support</artifactId>
         </dependency>
-        
+
         <!-- Joda Time (Date/Time util) -->
         <dependency>
             <groupId>joda-time</groupId>
@@ -126,7 +126,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
         </dependency>
-        
+
         <!-- Hibernate validator -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -152,7 +152,7 @@
             <groupId>org.logback-extensions</groupId>
             <artifactId>logback-ext-spring</artifactId>
         </dependency>
-        
+
         <!-- Servlet API 3.0 -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -172,18 +172,18 @@
             <artifactId>xmlschema-core</artifactId>
             <version>${apache.commons.schema}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        
+
         <!-- Orika (mapping framework) -->
         <dependency>
            <groupId>ma.glasnost.orika</groupId>
            <artifactId>orika-core</artifactId>
         </dependency>
-        
+
         <!--  Apache ActiveMQ -->
         <dependency> 
             <groupId>org.apache.activemq</groupId>
@@ -193,7 +193,7 @@
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-spring</artifactId>
         </dependency>
-        
+
         <!-- Testing dependencies -->
         <dependency>
             <groupId>junit</groupId>

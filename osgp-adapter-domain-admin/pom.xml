@@ -50,12 +50,15 @@
     </build>
 
     <dependencies>
-        <!-- Domain model -->
+        <!-- Alliander -->
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-domain-core</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>shared</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-dto</artifactId>

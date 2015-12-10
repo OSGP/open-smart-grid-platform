@@ -42,6 +42,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -320,6 +322,33 @@ public class DeviceManagementEndpoint {
         updateDeviceResponse.setAsyncResponse(AsyncResponse);
 
         return updateDeviceResponse;
+    }
+
+    @PayloadRoot(localPart = "SetMaintenanceStatusRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public SetMaintenanceStatusResponse setMaintenanceStatus(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetMaintenanceStatusRequest request) throws OsgpException {
+
+        LOGGER.info("Setting maintenance for device:{} to: {}.", request.getDeviceIdentification(), request.isStatus());
+
+        try {
+            this.deviceManagementService.setMaintenanceStatus(organisationIdentification,
+                    request.getDeviceIdentification(), request.isStatus());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception update Device: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error(EXCEPTION_WHILE_UPDATING_DEVICE,
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final SetMaintenanceStatusResponse setMaintenanceStatusResponse = new SetMaintenanceStatusResponse();
+        setMaintenanceStatusResponse.setResult(OsgpResultType.OK);
+
+        return setMaintenanceStatusResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {

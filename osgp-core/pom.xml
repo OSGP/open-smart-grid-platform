@@ -46,19 +46,6 @@
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
-<!--             <plugin> -->
-<!--                 <groupId>org.apache.maven.plugins</groupId> -->
-<!--                 <artifactId>maven-pmd-plugin</artifactId> -->
-<!--                 <configuration> -->
-<!--                     <excludeRoots> -->
-<!--                         <excludeRoot> -->
-<!--                             target/generated-sources/jaxb -->
-<!--                         </excludeRoot> -->
-<!--                     </excludeRoots> -->
-<!--                     <verbose>true</verbose> -->
-<!--                 </configuration> -->
-<!--             </plugin> -->
-        
         </plugins>
     </build>
     
@@ -76,14 +63,6 @@
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-domain-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-domain-publiclighting</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-domain-tariffswitching</artifactId>
         </dependency>
 
         <!-- Spring Framework -->
@@ -143,7 +122,7 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
         </dependency>
-        
+
         <!-- Hibernate validator -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -204,7 +183,7 @@
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-spring</artifactId>
         </dependency>
-        
+
         <!-- Testing dependencies -->
         <dependency>
             <groupId>junit</groupId>

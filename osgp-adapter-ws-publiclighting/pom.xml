@@ -126,13 +126,7 @@
             <groupId>com.alliander.osgp</groupId>
             <artifactId>shared</artifactId>
         </dependency>
-
-        <!-- New for splitting platform into webservice tires -->
         <dependency>
-            <groupId>com.alliander.osgp</groupId>
-            <artifactId>osgp-domain-publiclighting</artifactId>
-        </dependency>
-          <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-adapter-ws-shared</artifactId>
         </dependency>
