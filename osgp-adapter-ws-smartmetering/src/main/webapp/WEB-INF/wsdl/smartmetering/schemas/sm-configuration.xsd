@@ -10,7 +10,7 @@
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
-	<xsd:element name="GetAdministrationRequest">
+	<xsd:element name="GetAdministrationStateRequest">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
@@ -18,25 +18,25 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="GetAdministrationResponse">
+	<xsd:element name="GetAdministrationStateResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-				<xsd:element name="Enabled" type="xsd:boolean" />
+				<xsd:element name="AdministrationStateType" type="tns:AdministrationStateType" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="SetAdministrationRequest">
+	<xsd:element name="SetAdministrationStateRequest">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-				<xsd:element name="Enabled" type="xsd:boolean" />
+				<xsd:element name="AdministrationStateType" type="tns:AdministrationStateType" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="SetAdministrationResponse">
+	<xsd:element name="SetAdministrationStateResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
@@ -230,6 +230,15 @@
 			<xsd:element name="Enabled" type="xsd:boolean" />
 		</xsd:sequence>
 	</xsd:complexType>
+
+	<!-- Administration State Types -->
+	<xsd:simpleType name="AdministrationStateType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="UNDEFINED" />
+			<xsd:enumeration value="OFF" />
+			<xsd:enumeration value="ON" />
+		</xsd:restriction>
+	</xsd:simpleType>
 
 	<!-- DSMR Alarm Codes -->
 	<xsd:simpleType name="AlarmType">

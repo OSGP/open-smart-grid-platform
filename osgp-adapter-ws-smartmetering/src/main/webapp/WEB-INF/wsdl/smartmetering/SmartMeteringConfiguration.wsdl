@@ -75,18 +75,18 @@
     </wsdl:message>
 
 
-	<wsdl:message name="SetAdministrationRequest">
-		<wsdl:part element="smconf:SetAdministrationRequest" name="SetAdministrationRequest" />
+	<wsdl:message name="SetAdministrationStateRequest">
+		<wsdl:part element="smconf:SetAdministrationStateRequest" name="SetAdministrationStateRequest" />
 	</wsdl:message>
-	<wsdl:message name="SetAdministrationResponse">
-		<wsdl:part element="smconf:SetAdministrationResponse" name="SetAdministrationResponse" />
+	<wsdl:message name="SetAdministrationStateResponse">
+		<wsdl:part element="smconf:SetAdministrationStateResponse" name="SetAdministrationStateResponse" />
 	</wsdl:message>
 	
-	<wsdl:message name="GetAdministrationRequest">
-		<wsdl:part element="smconf:GetAdministrationRequest" name="GetAdministrationRequest" />
+	<wsdl:message name="GetAdministrationStateRequest">
+		<wsdl:part element="smconf:GetAdministrationStateRequest" name="GetAdministrationStateRequest" />
 	</wsdl:message>
-	<wsdl:message name="GetAdministrationResponse">
-		<wsdl:part element="smconf:GetAdministrationResponse" name="GetAdministrationResponse" />
+	<wsdl:message name="GetAdministrationStateResponse">
+		<wsdl:part element="smconf:GetAdministrationStateResponse" name="GetAdministrationStateResponse" />
 	</wsdl:message>	
 
     <wsdl:portType name="SmartmeterconfigurationPort">
@@ -111,13 +111,13 @@
             </wsdl:output>
 		</wsdl:operation>
 		
-		<wsdl:operation name="SetAdministration">
-			<wsdl:input message="tns:SetAdministrationRequest" name="SetAdministrationRequest" />
-			<wsdl:output message="tns:SetAdministrationResponse" name="SetAdministrationResponse" /> 
+		<wsdl:operation name="SetAdministrationState">
+			<wsdl:input message="tns:SetAdministrationStateRequest" name="SetAdministrationStateRequest" />
+			<wsdl:output message="tns:SetAdministrationStateResponse" name="SetAdministrationStateResponse" /> 
 		</wsdl:operation>
-		<wsdl:operation name="GetAdministration">
-			<wsdl:input message="tns:GetAdministrationRequest" name="GetAdministrationRequest" />
-			<wsdl:output message="tns:GetAdministrationResponse" name="GetAdministrationResponse" /> 
+		<wsdl:operation name="GetAdministrationState">
+			<wsdl:input message="tns:GetAdministrationStateRequest" name="GetAdministrationStateRequest" />
+			<wsdl:output message="tns:GetAdministrationStateResponse" name="GetAdministrationStateResponse" /> 
 		</wsdl:operation>		
 		
 
@@ -139,28 +139,28 @@
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
         
-        <wsdl:operation name="SetAdministration">
+        <wsdl:operation name="SetAdministrationState">
         	<soap:operation soapAction="" />
-        	<wsdl:input name="SetAdministrationRequest">
+        	<wsdl:input name="SetAdministrationStateRequest">
         		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
         		<soap:body use="literal" />
         	</wsdl:input>
-        	<wsdl:output name="SetAdministrationResponse">
+        	<wsdl:output name="SetAdministrationStateResponse">
         		<soap:body use="literal" />
         	</wsdl:output>
         </wsdl:operation>
 
-		<wsdl:operation name="GetAdministration">
+		<wsdl:operation name="GetAdministrationState">
 			<soap:operation soapAction="" />
-            <wsdl:input name="GetAdministrationRequest">
+            <wsdl:input name="GetAdministrationStateRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
-            <wsdl:output name="GetAdministrationResponse">
+            <wsdl:output name="GetAdministrationStateResponse">
                 <soap:body use="literal" />
             </wsdl:output>			
 		</wsdl:operation>        

@@ -20,8 +20,8 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministrationState;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -43,14 +43,14 @@ public class ConfigurationService {
      * @param requestData
      * @throws FunctionalException
      */
-    public String requestGetAdministration(final String organisationIdentification, final GetAdministration requestData)
+    public String requestGetAdministrationState(final String organisationIdentification, final AdministrativeState requestData)
             throws FunctionalException {
-        return this.enqueueGetAdministration(organisationIdentification, requestData.getDeviceIdentification(),
+        return this.enqueueGetAdministrationState(organisationIdentification, requestData.getDeviceIdentification(),
                 requestData);
     }
 
-    public String enqueueGetAdministration(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final GetAdministration requestData)
+    public String enqueueGetAdministrationState(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @Identification final AdministrativeState requestData)
             throws FunctionalException {
 
         LOGGER.info("enqueueDaysRequest called with organisation {} and device {}", organisationIdentification,
@@ -60,7 +60,7 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_ADMINISTRATION, correlationUid, organisationIdentification,
+                SmartMeteringRequestMessageType.GET_ADMINISTRATION_STATE, correlationUid, organisationIdentification,
                 requestData.getDeviceIdentification(), requestData);
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -73,14 +73,14 @@ public class ConfigurationService {
      * @param requestData
      * @throws FunctionalException
      */
-    public String requestSetAdministration(final String organisationIdentification, final SetAdministration requestData)
+    public String requestSetAdministrationState(final String organisationIdentification, final SetAdministrationState requestData)
             throws FunctionalException {
-        return this.enqueueSetAdministration(organisationIdentification, requestData.getDeviceIdentification(),
+        return this.enqueueSetAdministrationState(organisationIdentification, requestData.getDeviceIdentification(),
                 requestData);
     }
 
-    public String enqueueSetAdministration(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SetAdministration requestData)
+    public String enqueueSetAdministrationState(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, @Identification final SetAdministrationState requestData)
             throws FunctionalException {
 
         LOGGER.debug("enqueueDaysRequest called with organisation {} and device {}", organisationIdentification,
@@ -90,7 +90,7 @@ public class ConfigurationService {
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ADMINISTRATION, correlationUid, organisationIdentification,
+                SmartMeteringRequestMessageType.SET_ADMINISTRATION_STATE, correlationUid, organisationIdentification,
                 deviceIdentification, requestData);
 
         this.smartMeteringRequestMessageSender.send(message);

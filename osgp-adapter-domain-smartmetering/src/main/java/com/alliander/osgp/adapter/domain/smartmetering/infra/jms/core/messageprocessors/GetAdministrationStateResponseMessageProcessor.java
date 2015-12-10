@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
 import javax.jms.JMSException;
@@ -11,24 +18,24 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-@Component("domainSmartMeteringSetAdministrationResponseMessageProcessor")
-public class SetAdministrationResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainSmartMeteringGetAdministrationStateResponseMessageProcessor")
+public class GetAdministrationStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrationResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrationStateResponseMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public SetAdministrationResponseMessageProcessor() {
-        super(DeviceFunction.SET_ADMINISTRATION);
+    public GetAdministrationStateResponseMessageProcessor() {
+        super(DeviceFunction.GET_ADMINISTRATION_STATE);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering set administration response message");
+        LOGGER.debug("Processing smart metering get administration response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -55,14 +62,15 @@ public class SetAdministrationResponseMessageProcessor extends OsgpCoreResponseM
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final SetAdministration setAdministration = (SetAdministration) dataObject;
+            final AdministrativeState getAdministration = (AdministrativeState) dataObject;
 
-            this.configurationService.setAdministration(organisationIdentification, deviceIdentification,
-                    correlationUid, setAdministration, messageType);
+            this.configurationService.getAdministrationState(organisationIdentification, deviceIdentification,
+                    correlationUid, getAdministration, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
+
     }
 
 }

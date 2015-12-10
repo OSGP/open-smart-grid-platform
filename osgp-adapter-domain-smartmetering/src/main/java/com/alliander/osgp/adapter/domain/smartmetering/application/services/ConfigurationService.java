@@ -22,8 +22,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministration;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministration;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministrationState;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -134,33 +134,33 @@ public class ConfigurationService {
                 deviceIdentification, alarmNotificationsDto), messageType);
     }
 
-    public void setAdministration(@Identification final String organisationIdentification,
+    public void setAdministrationState(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
-            final SetAdministration setAdministration, final String messageType) throws FunctionalException {
+            final SetAdministrationState setAdministrationState, final String messageType) throws FunctionalException {
 
-        LOGGER.info("SetAdministration for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("SetAdministrationState for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, setAdministration), messageType);
+                deviceIdentification, setAdministrationState), messageType);
     }
 
-    public void getAdministration(@Identification final String organisationIdentification,
+    public void getAdministrationState(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
-            final GetAdministration getAdministration, final String messageType) throws FunctionalException {
+            final AdministrativeState getAdministrationState, final String messageType) throws FunctionalException {
 
-        LOGGER.info("SetAdministration for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.info("SetAdministrationState for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, getAdministration), messageType);
+                deviceIdentification, getAdministrationState), messageType);
     }
-    
-        public void setActivityCalendar(@Identification final String organisationIdentification,
+
+    public void setActivityCalendar(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final ActivityCalendar activityCalendar, final String messageType) throws FunctionalException {
 
@@ -212,8 +212,8 @@ public class ConfigurationService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, null), messageType);
     }
-    
-        public void handleSetActivityCalendarResponse(final String deviceIdentification,
+
+    public void handleSetActivityCalendarResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
             final String resultString) {
