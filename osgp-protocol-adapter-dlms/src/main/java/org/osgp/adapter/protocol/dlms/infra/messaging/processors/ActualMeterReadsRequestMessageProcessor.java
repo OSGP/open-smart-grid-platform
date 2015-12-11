@@ -43,8 +43,9 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
             messageMetadata.handleMessage(message);
             final ActualMeterReadsRequest actualMeterReadsRequest = (ActualMeterReadsRequest) message.getObject();
 
-            this.monitoringService.requestActualMeterReads(messageMetadata, actualMeterReadsRequest,
-                    this.responseMessageSender);
+            this.monitoringService.requestActualMeterReads(messageMetadata.getOrganisationIdentification(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(), actualMeterReadsRequest,
+                    this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

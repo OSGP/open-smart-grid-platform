@@ -19,38 +19,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 
-/**
- * Class for processing Periodic Meter Request messages
- */
-@Component("dlmsPeriodicMeterRequestMessageProcessor")
-public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestMessageProcessor.class);
+@Component("dlmsReadAlarmRegisterRequestMessageProcessor")
+public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterRequestMessageProcessor.class);
 
     @Autowired
     private MonitoringService monitoringService;
 
-    public PeriodicMeterReadsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.REQUEST_PERIODIC_METER_DATA);
+    protected ReadAlarmRegisterRequestMessageProcessor() {
+        super(DeviceRequestMessageType.READ_ALARM_REGISTER);
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing periodic meter reads request message");
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing read alarm register request message");
 
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
+
         try {
             messageMetadata.handleMessage(message);
+            final ReadAlarmRegisterRequest readAlarmRegisterRequest = (ReadAlarmRegisterRequest) message.getObject();
 
-            final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) message.getObject();
-
-            this.monitoringService.requestPeriodicMeterReads(messageMetadata.getOrganisationIdentification(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(), periodicMeterReadsRequest,
-                    this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.monitoringService.requestReadAlarmRegister(messageMetadata.getOrganisationIdentification(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(),
+                    readAlarmRegisterRequest, this.responseMessageSender, messageMetadata.getDomain(),
+                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

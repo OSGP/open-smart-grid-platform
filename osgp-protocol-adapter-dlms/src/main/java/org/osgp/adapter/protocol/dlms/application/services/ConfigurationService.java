@@ -50,9 +50,7 @@ public class ConfigurationService extends DlmsApplicationService {
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     @Autowired
-    private SetActivityCalendarCommandExecutor setActicityCalendarCommandExecutor;
-
-    private static final String LOG_SEPERATOR = "******************************************************";
+    private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
     // === REQUEST Special Days DATA ===
 
@@ -67,10 +65,10 @@ public class ConfigurationService extends DlmsApplicationService {
 
             LOGGER.info("SpecialDaysRequest : {}", specialDaysRequest.getSpecialDaysRequestData());
             for (final SpecialDay specialDay : specialDaysRequestData.getSpecialDays()) {
-                LOGGER.info(LOG_SEPERATOR);
+                LOGGER.info("******************************************************");
                 LOGGER.info("Special Day date :{} ", specialDay.getSpecialDayDate());
                 LOGGER.info("Special Day dayId :{} ", specialDay.getDayId());
-                LOGGER.info(LOG_SEPERATOR);
+                LOGGER.info("******************************************************");
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
@@ -97,21 +95,21 @@ public class ConfigurationService extends DlmsApplicationService {
             final ConfigurationObject configurationObject = setConfigurationObjectRequest
                     .getSetConfigurationObjectRequestData().getConfigurationObject();
 
-            final GprsOperationModeType gprsOperationModeType = configurationObject.getGprsOperationMode();
+            final GprsOperationModeType GprsOperationModeType = configurationObject.getGprsOperationMode();
             final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
-            LOGGER.info(LOG_SEPERATOR);
+            LOGGER.info("******************************************************");
             LOGGER.info("Configuration Object   ******************************");
-            LOGGER.info(LOG_SEPERATOR);
-            LOGGER.info("Configuration Object operation mode:{} ", gprsOperationModeType.value());
-            LOGGER.info(LOG_SEPERATOR);
+            LOGGER.info("******************************************************");
+            LOGGER.info("Configuration Object operation mode:{} ", GprsOperationModeType.value());
+            LOGGER.info("******************************************************");
             LOGGER.info("Flags:   ********************************************");
 
             for (final ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
                 LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag
                         .getConfigurationFlagType().toString());
                 LOGGER.info("Configuration Object configuration flag enabled:{} ", configurationFlag.isEnabled());
-                LOGGER.info(LOG_SEPERATOR);
+                LOGGER.info("******************************************************");
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
@@ -131,13 +129,13 @@ public class ConfigurationService extends DlmsApplicationService {
         this.logStart(LOGGER, messageMetadata, "setActivityCalendar");
 
         try {
-            LOGGER.info(LOG_SEPERATOR);
-            LOGGER.info("*******************In protocol adapter****************");
-            LOGGER.info(LOG_SEPERATOR);
-            LOGGER.info("**********************0-0:13.0.0.255******************");
-            LOGGER.info(LOG_SEPERATOR);
+            LOGGER.info("**************************************");
+            LOGGER.info("**********In protocol adapter*********");
+            LOGGER.info("**************************************");
+            LOGGER.info("*************0-0:13.0.0.255***********");
+            LOGGER.info("**************************************");
             LOGGER.info("Activity Calendar to set on the device: {}", activityCalendar.getCalendarName());
-            LOGGER.info("********************* activityCalendar " + activityCalendar);
+            LOGGER.info("********** activityCalendar " + activityCalendar);
 
             final String deviceIdentification = messageMetadata.getDeviceIdentification();
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);

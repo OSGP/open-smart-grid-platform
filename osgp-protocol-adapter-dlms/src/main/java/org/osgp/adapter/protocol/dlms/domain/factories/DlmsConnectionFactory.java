@@ -22,7 +22,7 @@ public class DlmsConnectionFactory {
     private final static int RESPONSE_TIMEOUT = 60000;
 
     // TODO REPLACE HARD-CODED IP-ADDRESS!!!
-    private final static String REMOTE_HOST = "89.200.91.92";
+    private final static String REMOTE_HOST = "89.200.96.223";
 
     /**
      * Returns an open connection using the appropriate security settings for the device

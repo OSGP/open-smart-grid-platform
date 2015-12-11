@@ -12,6 +12,7 @@ import java.util.Random;
 
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
@@ -23,8 +24,10 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -45,6 +48,9 @@ public class MonitoringService extends DlmsApplicationService {
 
     @Autowired
     private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+
+    @Autowired
+    private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
 
     // === REQUEST PERIODIC METER DATA ===
 
@@ -103,6 +109,38 @@ public class MonitoringService extends DlmsApplicationService {
         }
     }
 
+    public void requestReadAlarmRegister(final DlmsDeviceMessageMetadata messageMetadata,
+            final ReadAlarmRegisterRequest readAlarmRegisterRequest,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "requestReadAlarmRegister");
+
+        ClientConnection conn = null;
+        try {
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final AlarmRegister alarmRegister = this.readAlarmRegisterCommandExecutor.execute(conn,
+                    readAlarmRegisterRequest);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    alarmRegister);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during requestReadAlarmRegister", e);
+            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
+        }
+    }
+
     private long getRandomPositive() {
         long randomLong = generator.nextLong();
 
@@ -113,4 +151,5 @@ public class MonitoringService extends DlmsApplicationService {
         }
         return Math.abs(randomLong);
     }
+
 }
