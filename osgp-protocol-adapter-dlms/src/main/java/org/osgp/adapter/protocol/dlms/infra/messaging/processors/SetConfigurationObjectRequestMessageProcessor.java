@@ -51,9 +51,8 @@ public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequest
             final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) message
                     .getObject();
 
-            this.configurationService.requestSetConfiguration(messageMetadata.getOrganisationIdentification(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(), setConfigurationObjectRequest,
-                    this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.configurationService.requestSetConfiguration(messageMetadata, setConfigurationObjectRequest,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
