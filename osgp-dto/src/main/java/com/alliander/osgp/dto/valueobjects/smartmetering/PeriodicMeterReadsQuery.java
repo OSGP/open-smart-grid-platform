@@ -32,8 +32,7 @@ public class PeriodicMeterReadsQuery implements Serializable {
         this.channel = channel;
     }
 
-    public PeriodicMeterReadsQuery(String deviceIdentification, PeriodType periodType, Date beginDate,
-            Date endDate) {
+    public PeriodicMeterReadsQuery(PeriodType periodType, Date beginDate, Date endDate) {
         this(periodType, beginDate, endDate, NOCHANNEL);
     }
 

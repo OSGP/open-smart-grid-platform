@@ -19,7 +19,7 @@ public class ActualMeterReadsQuery implements Serializable {
 
     private final int channel;
 
-    public ActualMeterReadsQuery(final String deviceIdentification) {
+    public ActualMeterReadsQuery() {
         this(NOCHANNEL);
     }
 
