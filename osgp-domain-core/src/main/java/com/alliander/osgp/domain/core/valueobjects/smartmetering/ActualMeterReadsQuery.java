@@ -14,23 +14,17 @@ import java.io.Serializable;
  * 
  * @author dev
  */
-public class ActualMeterReadsRequest implements Serializable {
+public class ActualMeterReadsQuery implements Serializable {
     private static final long serialVersionUID = 3751586818507193990L;
 
-    private final String deviceIdentification;
     private final boolean gas;
 
-    public ActualMeterReadsRequest(final String deviceIdentification) {
-        this(deviceIdentification, false);
+    public ActualMeterReadsQuery(final String deviceIdentification) {
+        this(false);
     }
 
-    public ActualMeterReadsRequest(final String deviceIdentification, final boolean gas) {
-        this.deviceIdentification = deviceIdentification;
+    public ActualMeterReadsQuery(final boolean gas) {
         this.gas = gas;
-    }
-
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
     }
 
     public boolean isGas() {

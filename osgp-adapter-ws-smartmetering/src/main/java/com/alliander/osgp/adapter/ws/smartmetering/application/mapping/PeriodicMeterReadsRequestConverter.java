@@ -20,24 +20,22 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 public class PeriodicMeterReadsRequestConverter
         extends
-        BidirectionalConverter<PeriodicMeterReadsRequestData, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData> {
+        BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestConverter.class);
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData convertTo(
-            final PeriodicMeterReadsRequestData source,
+            final PeriodicMeterReadsQuery source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData> destinationType) {
 
         com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData data = source
                 .isGas() ? new ObjectFactory().createPeriodicMeterReadsGasRequest() : new ObjectFactory()
                 .createPeriodicMeterReadsRequest();
-
-        data.setDeviceIdentification(source.getDeviceIdentification());
 
         try {
             data.setBeginDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(
@@ -52,11 +50,11 @@ public class PeriodicMeterReadsRequestConverter
     }
 
     @Override
-    public PeriodicMeterReadsRequestData convertFrom(
+    public PeriodicMeterReadsQuery convertFrom(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData source,
-            final Type<PeriodicMeterReadsRequestData> destinationType) {
+            final Type<PeriodicMeterReadsQuery> destinationType) {
 
-        return new PeriodicMeterReadsRequestData(source.getDeviceIdentification(),
+        return new PeriodicMeterReadsQuery(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
                         .name()), source.getBeginDate().toGregorianCalendar().getTime(), source.getEndDate()
                         .toGregorianCalendar().getTime(), source instanceof PeriodicMeterReadsGasRequest);
