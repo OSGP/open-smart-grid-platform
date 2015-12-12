@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -63,7 +63,7 @@ public class MonitoringService {
     // === REQUEST PERIODIC METER DATA ===
 
     public void requestPeriodicMeterReads(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final PeriodicMeterReadsRequestData periodicMeterReadsRequest,
+            final String correlationUid, final PeriodicMeterReadsQuery periodicMeterReadsRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
@@ -122,7 +122,7 @@ public class MonitoringService {
     }
 
     public void requestActualMeterReads(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ActualMeterReadsRequest actualMeterReadsRequest,
+            final String correlationUid, final ActualMeterReadsQuery actualMeterReadsRequest,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 

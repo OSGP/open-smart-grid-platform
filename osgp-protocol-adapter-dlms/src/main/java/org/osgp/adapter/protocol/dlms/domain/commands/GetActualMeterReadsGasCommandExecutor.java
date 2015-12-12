@@ -16,11 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 
 @Component()
-public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<ActualMeterReadsRequest, MeterReadsGas> {
+public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, MeterReadsGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -36,7 +36,7 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MeterReadsGas execute(final ClientConnection conn, final ActualMeterReadsRequest actualMeterReadsRequest)
+    public MeterReadsGas execute(final ClientConnection conn, final ActualMeterReadsQuery actualMeterReadsRequest)
             throws IOException, ProtocolAdapterException {
 
         final GetRequestParameter mbusValue = new GetRequestParameter(CLASS_ID_MBUS,

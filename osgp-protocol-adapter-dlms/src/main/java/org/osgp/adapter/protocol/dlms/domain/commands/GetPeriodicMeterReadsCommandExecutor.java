@@ -25,11 +25,11 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsRequestData, PeriodicMeterReadsContainer> {
+        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -71,7 +71,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
     @Override
     public PeriodicMeterReadsContainer execute(final ClientConnection conn,
-            final PeriodicMeterReadsRequestData periodicMeterReadsRequest) throws IOException, ProtocolAdapterException {
+            final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws IOException, ProtocolAdapterException {
 
         final PeriodType periodType;
         final DateTime beginDateTime;
