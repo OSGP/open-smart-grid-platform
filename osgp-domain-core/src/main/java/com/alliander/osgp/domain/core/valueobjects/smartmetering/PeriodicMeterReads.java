@@ -18,15 +18,15 @@ public class PeriodicMeterReads implements Serializable {
 
     private final Date logTime;
     private final long activeEnergyImportTariffOne;
-    private final Long activeEnergyImportTariffTwo;
+    private final long activeEnergyImportTariffTwo;
     private final long activeEnergyExportTariffOne;
-    private final Long activeEnergyExportTariffTwo;
+    private final long activeEnergyExportTariffTwo;
     private final PeriodType periodType;
     private final AmrProfileStatusses amrProfileStatusses;
 
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
-            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
-            final Long activeEnergyExportTariffTwo, final PeriodType periodType,
+            final long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final long activeEnergyExportTariffTwo, final PeriodType periodType,
             final AmrProfileStatusses amrProfileStatusses) {
         this.logTime = logTime;
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
@@ -41,7 +41,7 @@ public class PeriodicMeterReads implements Serializable {
         return this.activeEnergyImportTariffOne;
     }
 
-    public Long getActiveEnergyImportTariffTwo() {
+    public long getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
     }
 
@@ -49,7 +49,7 @@ public class PeriodicMeterReads implements Serializable {
         return this.activeEnergyExportTariffOne;
     }
 
-    public Long getActiveEnergyExportTariffTwo() {
+    public long getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
     }
 

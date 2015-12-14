@@ -27,7 +27,7 @@ public class AmrProfileStatusses implements Serializable {
         return "AmrProfileStatuss[" + String.valueOf(this.amrProfileStatusses) + "]";
     }
 
-    public Set<AmrProfileStatus> getAmrProfileStatuss() {
+    public Set<AmrProfileStatus> getAmrProfileStatusses() {
         return Collections.unmodifiableSet(this.amrProfileStatusses);
     }
 }

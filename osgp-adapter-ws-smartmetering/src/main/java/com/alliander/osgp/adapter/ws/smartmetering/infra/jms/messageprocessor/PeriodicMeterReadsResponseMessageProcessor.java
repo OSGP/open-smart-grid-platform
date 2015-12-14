@@ -26,11 +26,11 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 @Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
-public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMessageProcessor {
+public class PeriodicMeterReadsResponseMessageProcessor extends DomainResponseMessageProcessor {
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsresponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsResponseMessageProcessor.class);
 
     @Autowired
     private NotificationService notificationService;
@@ -41,7 +41,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
     @Autowired
     private MonitoringMapper monitoringMapper;
 
-    protected PeriodicMeterReadsresponseMessageProcessor() {
+    protected PeriodicMeterReadsResponseMessageProcessor() {
         super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
     }
 
