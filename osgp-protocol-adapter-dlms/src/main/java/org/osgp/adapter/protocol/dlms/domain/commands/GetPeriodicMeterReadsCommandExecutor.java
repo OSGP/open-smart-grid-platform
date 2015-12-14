@@ -117,7 +117,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     bufferedObjects);
         }
 
-        return new PeriodicMeterReadsContainer(periodicMeterReadsRequest.getDeviceIdentification(), periodicMeterReads);
+        return new PeriodicMeterReadsContainer(periodicMeterReads);
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,

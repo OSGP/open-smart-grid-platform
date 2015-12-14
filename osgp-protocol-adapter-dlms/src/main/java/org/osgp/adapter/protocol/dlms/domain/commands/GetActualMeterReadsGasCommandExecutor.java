@@ -77,7 +77,7 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
                     "No GetResult received while retrieving current MBUS master capture time.");
         }
 
-        if (getResultList.size() > 1) {
+        if (getResultList.size() > 2) {
             LOGGER.info("Expected 2 GetResult while retrieving current MBUS master capture time, got "
                     + getResultList.size());
         }
