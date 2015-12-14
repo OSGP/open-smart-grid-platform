@@ -10,22 +10,21 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class PeriodicMeterReads implements Serializable {
+public class MeterReads implements Serializable {
+    private static final long serialVersionUID = -297320204916085999L;
 
-    private static final long serialVersionUID = -156966569210717654L;
+    private Date logTime;
+    private long activeEnergyImportTariffOne;
+    // may be null
+    private Long activeEnergyImportTariffTwo;
+    private long activeEnergyExportTariffOne;
+    // may be null
+    private Long activeEnergyExportTariffTwo;
 
-    // TODO add status
-
-    private final Date logTime;
-    private final long activeEnergyImportTariffOne;
-    // will be empty for INTERVAL
-    private final Long activeEnergyImportTariffTwo;
-    private final long activeEnergyExportTariffOne;
-    // will be empty for INTERVAL
-    private final Long activeEnergyExportTariffTwo;
-
-    public PeriodicMeterReads(Date logTime, long activeEnergyImportTariffOne, Long activeEnergyImportTariffTwo,
-            long activeEnergyExportTariffOne, Long activeEnergyExportTariffTwo, PeriodType periodType) {
+    public MeterReads(final Date logTime, final long activeEnergyImportTariffOne,
+            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final Long activeEnergyExportTariffTwo) {
+        super();
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
@@ -33,15 +32,14 @@ public class PeriodicMeterReads implements Serializable {
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
     }
 
+    public Date getLogTime() {
+        return new Date(this.logTime.getTime());
+    }
+
     public long getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
     }
 
-    /**
-     * will be empty for INTERVAL
-     *
-     * @return the value of ActiveEnergyImportTariffTwo
-     */
     public Long getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
     }
@@ -50,17 +48,16 @@ public class PeriodicMeterReads implements Serializable {
         return this.activeEnergyExportTariffOne;
     }
 
-    /**
-     * will be empty for INTERVAL
-     *
-     * @return the value of ActiveEnergyExportTariffTwo
-     */
     public Long getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
     }
 
-    public Date getLogTime() {
-        return new Date(this.logTime.getTime());
+    @Override
+    public String toString() {
+        return "ActualMeterReads [logTime=" + this.logTime + ", activeEnergyImportTariffOne="
+                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
+                + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
+                + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
+                + this.activeEnergyExportTariffTwo + "]";
     }
-
 }
