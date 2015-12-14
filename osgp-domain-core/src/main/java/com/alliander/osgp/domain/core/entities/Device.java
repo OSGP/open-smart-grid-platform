@@ -284,23 +284,21 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
     }
 
     /**
-     * Get the owner organisation name of the device.
+     * Get the owner organisation of the device.
      *
-     * @return The organisation name when an owner was set, "" otherwise.
+     * @return The organisation when an owner was set, null otherwise.
      */
     @Override
-    public String getOwner() {
-        String retval = "";
-
+    public Organisation getOwner() {
         if (this.authorizations != null) {
             for (final DeviceAuthorization authorization : this.authorizations) {
                 if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
-                    retval = authorization.getOrganisation().getName();
+                    return authorization.getOrganisation();
                 }
             }
         }
 
-        return retval;
+        return null;
     }
 
     public List<RelayStatus> getRelayStatusses() {

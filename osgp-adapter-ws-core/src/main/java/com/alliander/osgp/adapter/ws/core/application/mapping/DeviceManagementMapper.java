@@ -41,13 +41,13 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                        .byDefault().toClassMap());
+                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
@@ -55,7 +55,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     }
 
     private static class DeviceConverter extends
-    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
@@ -144,7 +144,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setHasSchedule(source.getHasSchedule());
                 destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
                         .toString());
-                destination.setOwner(source.getOwner());
+                destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
                 destination.getOrganisations().addAll(source.getOrganisations());
 
                 final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
