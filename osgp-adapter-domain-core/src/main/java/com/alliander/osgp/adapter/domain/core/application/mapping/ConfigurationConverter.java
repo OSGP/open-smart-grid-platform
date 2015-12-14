@@ -19,11 +19,12 @@ import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.RelayConfiguration;
 
 public class ConfigurationConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.Configuration, Configuration> {
+CustomConverter<com.alliander.osgp.dto.valueobjects.Configuration, Configuration> {
 
     @Override
     public Configuration convert(final com.alliander.osgp.dto.valueobjects.Configuration source,
             final Type<? extends Configuration> destinationType) {
+
 
         final LightType lightType = this.mapperFacade.map(source.getLightType(), LightType.class);
 
