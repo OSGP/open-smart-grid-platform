@@ -465,19 +465,19 @@ public class DeviceManagementService {
 
             // Check to see if the organisation is CONFIGURATION or OWNER
             // authorized
-            boolean isConfigurationAuthorized = false;
+            boolean isAuthorized = false;
             for (final DeviceAuthorization authorizations : existingDevice.getAuthorizations()) {
                 if (organisationIdentification.equals(authorizations.getOrganisation().getOrganisationIdentification())
                         && (DeviceFunctionGroup.OWNER.equals(authorizations.getFunctionGroup()) || DeviceFunctionGroup.CONFIGURATION
                                 .equals(authorizations.getFunctionGroup()))) {
-                    isConfigurationAuthorized = true;
+                    isAuthorized = true;
                     existingDevice.updateInMaintenance(status);
                     this.writableDeviceRepository.save(existingDevice);
                     break;
                 }
             }
 
-            if (!isConfigurationAuthorized) {
+            if (!isAuthorized) {
                 // unauthorized, throwing exception.
                 throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
                         new NotAuthorizedException(organisationIdentification));
