@@ -14,21 +14,14 @@ public class PeriodicMeterReadContainer implements Serializable {
 
     private static final long serialVersionUID = -156966569210717657L;
 
-    private final String deviceIdentification;
     private final List<PeriodicMeterReads> periodicMeterReads;
 
-    public PeriodicMeterReadContainer(String deviceIdentification, List<PeriodicMeterReads> periodicMeterReads) {
-        this.deviceIdentification = deviceIdentification;
+    public PeriodicMeterReadContainer(List<PeriodicMeterReads> periodicMeterReads) {
         this.periodicMeterReads = periodicMeterReads;
-    }
-
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
     }
 
     public List<PeriodicMeterReads> getPeriodicMeterReads() {
         return this.periodicMeterReads;
     }
-
 
 }

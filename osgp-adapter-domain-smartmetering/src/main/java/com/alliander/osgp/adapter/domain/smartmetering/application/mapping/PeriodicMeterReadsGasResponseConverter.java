@@ -18,8 +18,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
 public class PeriodicMeterReadsGasResponseConverter
-extends
-BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> {
+        extends
+        BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> {
 
     @Override
     public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas convertTo(
@@ -32,8 +32,7 @@ BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.dto.va
                     .getConsumption(), pmr.getCaptureTime()));
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas(
-                source.getDeviceIdentification(), r);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas(r);
     }
 
     @Override
@@ -48,7 +47,7 @@ BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.dto.va
                             .name()), pmr.getConsumption(), pmr.getCaptureTime()));
         }
 
-        return new PeriodicMeterReadsContainerGas(source.getDeviceIdentification(), r);
+        return new PeriodicMeterReadsContainerGas(r);
     }
 
 }

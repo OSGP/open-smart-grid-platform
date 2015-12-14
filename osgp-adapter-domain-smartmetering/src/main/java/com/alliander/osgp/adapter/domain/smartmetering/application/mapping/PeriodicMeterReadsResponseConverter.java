@@ -19,8 +19,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 
 public class PeriodicMeterReadsResponseConverter
-extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+        extends
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
 
     @Override
     public PeriodicMeterReadContainer convertTo(final PeriodicMeterReadsContainer source,
@@ -35,7 +35,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Periodi
                             .name())));
         }
 
-        return new PeriodicMeterReadContainer(source.getDeviceIdentification(), r);
+        return new PeriodicMeterReadContainer(r);
     }
 
     @Override
@@ -49,7 +49,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Periodi
                     .getActiveEnergyExportTariffTwo(), PeriodType.valueOf(pmr.getPeriodType().name())));
         }
 
-        return new PeriodicMeterReadsContainer(source.getDeviceIdentification(), r);
+        return new PeriodicMeterReadsContainer(r);
     }
 
 }
