@@ -7,7 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
@@ -20,6 +19,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +35,11 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsConfigurationService")
-public class ConfigurationService {
+public class ConfigurationService extends DlmsApplicationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
     @Autowired
@@ -65,13 +62,10 @@ public class ConfigurationService {
 
     // === REQUEST Special Days DATA ===
 
-    public void requestSpecialDays(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SpecialDaysRequest specialDaysRequest,
-            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType) {
+    public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
+            final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
 
-        LOGGER.info("requestSpecialDays called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        this.logStart(LOGGER, messageMetadata, "requestSpecialDays");
 
         try {
             // The Special days towards the Smart Meter
@@ -86,8 +80,13 @@ public class ConfigurationService {
             }
             LOGGER.info("******************************************************");
 
+            final String deviceIdentification = messageMetadata.getDeviceIdentification();
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+
+            LOGGER.info("device for Set Configuration Object is: {}", device);
+
             final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+
             try {
                 final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
                 if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
@@ -99,28 +98,23 @@ public class ConfigurationService {
                 }
             }
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during set special days", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during set special days", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
     // === REQUEST Configuration Object DATA ===
 
-    public void requestSetConfiguration(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SetConfigurationObjectRequest setConfigurationObjectRequest,
-            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType) {
+    public void requestSetConfiguration(final DlmsDeviceMessageMetadata messageMetadata,
+            final SetConfigurationObjectRequest setConfigurationObjectRequest,
+            final DeviceResponseMessageSender responseMessageSender) {
 
-        LOGGER.info("requestSetConfiguration called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        this.logStart(LOGGER, messageMetadata, "requestSetConfiguration");
 
         try {
             // Configuration Object towards the Smart Meter
@@ -142,8 +136,13 @@ public class ConfigurationService {
             }
             LOGGER.info("******************************************************");
 
+            final String deviceIdentification = messageMetadata.getDeviceIdentification();
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+
+            LOGGER.info("device for Set Configuration Object is: {}", device);
+
             final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+
             try {
                 final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
                         configurationObject);
@@ -157,26 +156,20 @@ public class ConfigurationService {
                 }
             }
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during set Configuration Object", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during set Configuration Object", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
-    public void setActivityCalendar(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ActivityCalendar activityCalendar,
-            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType) {
+    public void setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
+            final ActivityCalendar activityCalendar, final DeviceResponseMessageSender responseMessageSender) {
 
-        LOGGER.info("setActivityCalendar called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        this.logStart(LOGGER, messageMetadata, "setActivityCalendar");
 
         try {
             LOGGER.info("**************************************");
@@ -187,12 +180,12 @@ public class ConfigurationService {
             LOGGER.info("Activity Calendar to set on the device: {}", activityCalendar.getCalendarName());
             LOGGER.info("********** activityCalendar " + activityCalendar);
 
+            final String deviceIdentification = messageMetadata.getDeviceIdentification();
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
             LOGGER.info("device for Activity Calendar is: {}", device);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender,
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
                             + activityCalendar.getCalendarName());
 
@@ -200,24 +193,21 @@ public class ConfigurationService {
             LOGGER.error("Unexpected exception during setActivityCalendar", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
-    public void setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final AlarmNotifications alarmNotifications,
-            final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
-            final String messageType) {
+    public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
+            final AlarmNotifications alarmNotifications, final DeviceResponseMessageSender responseMessageSender) {
 
-        LOGGER.info("setAlarmNotifications called for device: {} for organisation: {}", deviceIdentification,
-                organisationIdentification);
+        this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
 
         try {
 
             LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
 
             final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
 
@@ -234,46 +224,14 @@ public class ConfigurationService {
                 }
             }
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setAlarmNotifications", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
-    private OsgpException ensureOsgpException(final Exception e) {
-
-        if (e instanceof OsgpException) {
-            return (OsgpException) e;
-        }
-
-        return new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                "Unexpected exception while handling protocol request/response message", e);
-    }
-
-    private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
-            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender) {
-
-        // Creating a ProtocolResponseMessage without a Serializable object
-        this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, responseMessageSender, null);
-    }
-
-    private void sendResponseMessage(final String domain, final String domainVersion, final String messageType,
-            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
-
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
-                correlationUid, organisationIdentification, deviceIdentification, result, osgpException, responseObject);
-
-        responseMessageSender.send(responseMessage);
-    }
 }

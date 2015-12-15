@@ -48,9 +48,8 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
 
             final PeriodicMeterReadsRequest periodicMeterReadsRequest = (PeriodicMeterReadsRequest) message.getObject();
 
-            this.monitoringService.requestPeriodicMeterReads(messageMetadata.getOrganisationIdentification(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(), periodicMeterReadsRequest,
-                    this.responseMessageSender, messageMetadata.getDomain(), messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.monitoringService.requestPeriodicMeterReads(messageMetadata, periodicMeterReadsRequest,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

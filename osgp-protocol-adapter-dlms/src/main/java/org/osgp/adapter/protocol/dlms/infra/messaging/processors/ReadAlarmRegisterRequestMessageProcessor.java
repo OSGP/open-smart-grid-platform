@@ -43,10 +43,8 @@ public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessa
             messageMetadata.handleMessage(message);
             final ReadAlarmRegisterRequest readAlarmRegisterRequest = (ReadAlarmRegisterRequest) message.getObject();
 
-            this.monitoringService.requestReadAlarmRegister(messageMetadata.getOrganisationIdentification(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(),
-                    readAlarmRegisterRequest, this.responseMessageSender, messageMetadata.getDomain(),
-                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.monitoringService.requestReadAlarmRegister(messageMetadata, readAlarmRegisterRequest,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
