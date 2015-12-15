@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -36,7 +36,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
     @Autowired
     private MonitoringMapper monitoringMapper;
@@ -89,7 +89,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             // Convert the events to entity and save the periodicMeterReads
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, data);
-            this.meterResponseDataRepository.save(meterResponseData);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

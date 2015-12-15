@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -33,7 +33,7 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
     protected ActualMeterReadsResponseMessageProcessor() {
         super(DeviceFunction.REQUEST_ACTUAL_METER_DATA);
@@ -78,7 +78,7 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
             final ActualMeterReads data = (ActualMeterReads) message.getObject();
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, resultType, data);
-            this.meterResponseDataRepository.save(meterResponseData);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             // Send notification indicating data is available.
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
