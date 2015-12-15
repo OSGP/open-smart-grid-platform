@@ -30,12 +30,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrieveAct
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePeriodicMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -52,9 +48,6 @@ public class SmartMeteringMonitoringEndpoint {
 
     @Autowired
     private MonitoringMapper monitoringMapper;
-
-    @Autowired
-    private MeterResponseDataService meterResponseDataService;
 
     public SmartMeteringMonitoringEndpoint() {
         // Empty constructor
@@ -75,8 +68,8 @@ public class SmartMeteringMonitoringEndpoint {
                     .map(request,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest.class);
 
-            final String correlationUid = this.monitoringService.requestPeriodicMeterReads(organisationIdentification,
-                    dataRequest);
+            final String correlationUid = this.monitoringService.enqueuePeriodicMeterReadsRequestData(
+                    organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -103,8 +96,8 @@ public class SmartMeteringMonitoringEndpoint {
         final RetrievePeriodicMeterReadsResponse response = new RetrievePeriodicMeterReadsResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), PeriodicMeterReadContainer.class);
+            final MeterResponseData meterResponseData = this.monitoringService
+                    .dequeuePeriodicMeterReadsResponse(request.getCorrelationUid());
 
             if (meterResponseData != null) {
                 response.setPeriodicMeterReadsContainer(this.monitoringMapper.map(meterResponseData.getMessageData(),
@@ -137,8 +130,8 @@ public class SmartMeteringMonitoringEndpoint {
                     .map(request,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest.class);
 
-            final String correlationUid = this.monitoringService.requestActualMeterReads(organisationIdentification,
-                    requestValueObject);
+            final String correlationUid = this.monitoringService.enqueueActualMeterReadsRequestData(
+                    organisationIdentification, request.getDeviceIdentification(), requestValueObject);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -166,8 +159,8 @@ public class SmartMeteringMonitoringEndpoint {
         final RetrieveActualMeterReadsResponse response = new RetrieveActualMeterReadsResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), ActualMeterReads.class);
+            final MeterResponseData meterResponseData = this.monitoringService.dequeueActualMeterReadsResponse(request
+                    .getCorrelationUid());
 
             if (meterResponseData != null) {
                 response.setActualMeterReads(this.monitoringMapper.map(meterResponseData.getMessageData(),
@@ -200,8 +193,8 @@ public class SmartMeteringMonitoringEndpoint {
                     .map(request,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
 
-            final String correlationUid = this.monitoringService.requestReadAlarmRegister(organisationIdentification,
-                    requestValueObject);
+            final String correlationUid = this.monitoringService.enqueueReadAlarmRegisterRequestData(
+                    organisationIdentification, request.getDeviceIdentification(), requestValueObject);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -229,8 +222,8 @@ public class SmartMeteringMonitoringEndpoint {
         final ReadAlarmRegisterResponse response = new ReadAlarmRegisterResponse();
 
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataService.dequeue(
-                    request.getCorrelationUid(), AlarmRegister.class);
+            final MeterResponseData meterResponseData = this.monitoringService.dequeueReadAlarmRegisterResponse(request
+                    .getCorrelationUid());
 
             if (meterResponseData != null) {
                 response.setAlarmRegister(this.monitoringMapper.map(meterResponseData.getMessageData(),
