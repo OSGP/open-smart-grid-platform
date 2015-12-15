@@ -1,9 +1,15 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -15,7 +21,6 @@ import org.openmuc.jdlms.DataObject;
 import org.openmuc.jdlms.GetRequestParameter;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 @Component()
@@ -41,17 +45,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     private static final ObisCode OBIS_CODE_DAILY_BILLING = new ObisCode("1.0.99.2.0.255");
     private static final ObisCode OBIS_CODE_MONTHLY_BILLING = new ObisCode("0.0.98.1.0.255");
     private static final byte ATTRIBUTE_ID_BUFFER = 2;
-
-    private static final int CLASS_ID_CLOCK = 8;
-    private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
-    private static final byte ATTRIBUTE_ID_TIME = 2;
-
-    private static final int CLASS_ID_DATA = 1;
-    private static final byte[] OBIS_BYTES_AMR_PROFILE_STATUS = new byte[] { 0, 0, 96, 10, 2, (byte) 255 };
-
-    private static final byte ATTRIBUTE_ID_VALUE = 2;
-
-    private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
     private static final int BUFFER_INDEX_CLOCK = 0;
     private static final int BUFFER_INDEX_AMR_STATUS = 1;
@@ -81,23 +74,17 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
 
         final GetRequestParameter profileBuffer = this.getProfileBuffer(periodType,
                 periodicMeterReadsRequest.getChannel());
-        final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(periodType,
-                beginDateTime, endDateTime);
-        profileBuffer.setAccessSelection(selectiveAccessDescription);
+        // TODO: implement selective access
 
         LOGGER.debug(
                 "Retrieving current billing period and profiles for class id: {}, obis code: {}, attribute id: {}",
                 profileBuffer.classId(), profileBuffer.obisCode(), profileBuffer.attributeId());
-        if (selectiveAccessDescription != null) {
-            LOGGER.debug("Selective access: selector=" + selectiveAccessDescription.accessSelector() + ", parameter="
-                    + this.dlmsHelperService.getDebugInfo(selectiveAccessDescription.accessParameter()));
-        }
 
         final List<GetResult> getResultList = conn.get(profileBuffer);
 
         checkResultList(getResultList);
 
-        final List<PeriodicMeterReadsGas> periodicMeterReads = new ArrayList<>();
+        final List<MeterReadsGas> periodicMeterReads = new ArrayList<>();
 
         final GetResult getResult = getResultList.get(0);
         final AccessResultCode resultCode = getResult.resultCode();
@@ -112,11 +99,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
                     bufferedObjects, periodicMeterReadsRequest.getChannel());
         }
 
-        return new PeriodicMeterReadsContainerGas(periodicMeterReads);
+        return new PeriodicMeterReadsContainerGas(periodType, periodicMeterReads);
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final List<PeriodicMeterReadsGas> periodicMeterReads,
+            final DateTime endDateTime, final List<MeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final int channel) {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
@@ -147,7 +134,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         }
     }
 
-    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsGas> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForInterval(final List<MeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
 
         final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
@@ -159,47 +146,51 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_INT);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
-        final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
-                PeriodType.INTERVAL, (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue(
-                        (byte[]) gasCaptureTime.value()).toDate());
+        final MeterReadsGas nextPeriodicMeterReads = new MeterReadsGas(bufferedDateTime.toDate(),
+                (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
+                        .toDate());
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReadsGas> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForDaily(final List<MeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final int channel) {
 
         final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
         LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
 
-        final DataObject gasValue = bufferedObjects.get(BUFFER_INDEX_MBUS_VALUE_FIRST + channel - 1);
+        // calculate offset from first entry
+        int offset = (channel - 1) * 2;
+
+        final DataObject gasValue = bufferedObjects.get(BUFFER_INDEX_MBUS_VALUE_FIRST + offset);
         LOGGER.debug("gasValue: {}", this.dlmsHelperService.getDebugInfo(gasValue));
-        final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + channel - 1);
+        final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + offset);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
-        final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
-                PeriodType.DAILY, (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue(
-                        (byte[]) gasCaptureTime.value()).toDate());
+        final MeterReadsGas nextPeriodicMeterReads = new MeterReadsGas(bufferedDateTime.toDate(),
+                (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
+                        .toDate());
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsGas> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForMonthly(final List<MeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final int channel) {
 
         /*
-         * Buffer indexes minus one, since Monthly captured objects don't
-         * include the AMR Profile status.
+         * TODO: look into AMR Profile status for MONTHLY.
          */
-        final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
 
-        final DataObject gasValue = bufferedObjects.get(BUFFER_INDEX_MBUS_VALUE_FIRST + channel - 2);
+        // calculate offset from first entry, -1 because MONTHLY has no AMR
+        // entry
+        int offset = ((channel - 1) * 2) - 1;
+
+        final DataObject gasValue = bufferedObjects.get(BUFFER_INDEX_MBUS_VALUE_FIRST + offset);
         LOGGER.debug("gasValue: {}", this.dlmsHelperService.getDebugInfo(gasValue));
-        final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + channel - 2);
+        final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + offset);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
-        final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
-                PeriodType.MONTHLY, (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue(
-                        (byte[]) gasCaptureTime.value()).toDate());
+        final MeterReadsGas nextPeriodicMeterReads = new MeterReadsGas(bufferedDateTime.toDate(),
+                (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
+                        .toDate());
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -253,131 +244,4 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         return profileBuffer;
     }
 
-    private SelectiveAccessDescription getSelectiveAccessDescription(final PeriodType periodType,
-            final DateTime beginDateTime, final DateTime endDateTime) {
-
-        final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
-
-        /*
-         * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
-         * restricting object in a range descriptor with a from value and to
-         * value to determine which elements from the buffered array should be
-         * retrieved.
-         */
-        final DataObject clockDefinition = DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_CLOCK), DataObject.newOctetStringData(OBIS_BYTES_CLOCK),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_TIME), DataObject.newUInteger16Data(0)));
-
-        final DataObject fromValue = this.dlmsHelperService.asDataObject(beginDateTime);
-        final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
-
-        /*
-         * List of object definitions to determine which of the capture objects
-         * to retrieve from the buffer.
-         */
-        final List<DataObject> objectDefinitions = new ArrayList<>();
-
-        switch (periodType) {
-        case INTERVAL:
-            this.addSelectedValuesForInterval(objectDefinitions);
-            break;
-        case DAILY:
-            this.addSelectedValuesForDaily(objectDefinitions);
-            break;
-        case MONTHLY:
-            this.addSelectedValuesForMonthly(objectDefinitions);
-            break;
-        default:
-            throw new AssertionError("Unknown PeriodType: " + periodType);
-        }
-
-        /*
-         * For properly limiting data retrieved from the meter selectedValues
-         * should be something like: DataObject.newArrayData(objectDefinitions);
-         */
-        LOGGER.warn("TODO - figure out how to set selectedValues to something like: "
-                + this.dlmsHelperService.getDebugInfo(DataObject.newArrayData(objectDefinitions)));
-        /*
-         * As long as specifying a subset of captured objects from the buffer
-         * through selectedValues does not work, retrieve all captured objects
-         * by setting selectedValues to an empty array.
-         */
-        final DataObject selectedValues = DataObject.newArrayData(Collections.<DataObject> emptyList());
-
-        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
-                toValue, selectedValues));
-
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
-    }
-
-    private void addSelectedValuesForInterval(final List<DataObject> objectDefinitions) {
-        /*-
-         * Available objects in the profile buffer (1-0:99.1.0.255):
-         * {8,0-0:1.0.0.255,2,0}    -  clock
-         * {1,0-0:96.10.2.255,2,0}  -  AMR profile status
-         */
-
-        /*
-         * Do not include {8,0-0:1.0.0.255,2,0} - clock here, since it is
-         * already used as restricting object.
-         */
-
-        // {1,0-0:96.10.2.255,2,0} - AMR profile status
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_DATA),
-                DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-    }
-
-    private void addSelectedValuesForDaily(final List<DataObject> objectDefinitions) {
-        /*-
-         * Available objects in the profile buffer (1-0:99.2.0.255):
-         * {8,0-0:1.0.0.255,2,0}    -  clock
-         * {1,0-0:96.10.2.255,2,0}  -  AMR profile status
-         *
-         * Objects not retrieved with E meter readings:
-         * {4,0-1.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 1
-         * {4,0-1.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 1 Capture time
-         * {4,0-2.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 2
-         * {4,0-2.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 2 Capture time
-         * {4,0-3.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 3
-         * {4,0-3.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 3 Capture time
-         * {4,0-4.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 4
-         * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
-         */
-
-        /*
-         * Do not include {8,0-0:1.0.0.255,2,0} - clock here, since it is
-         * already used as restricting object.
-         */
-
-        // {1,0-0:96.10.2.255,2,0} - AMR profile status
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_DATA),
-                DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-    }
-
-    private void addSelectedValuesForMonthly(final List<DataObject> objectDefinitions) {
-        /*-
-         * Available objects in the profile buffer (0-0:98.1.0.255):
-         * {8,0-0:1.0.0.255,2,0}    -  clock
-         *
-         * Objects not retrieved with E meter readings:
-         * {4,0-1.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 1
-         * {4,0-1.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 1 Capture time
-         * {4,0-2.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 2
-         * {4,0-2.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 2 Capture time
-         * {4,0-3.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 3
-         * {4,0-3.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 3 Capture time
-         * {4,0-4.24.2.1.255,2,0}  -  M-Bus Master Value 1 Channel 4
-         * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
-         */
-
-        /*
-         * Do not include {8,0-0:1.0.0.255,2,0} - clock here, since it is
-         * already used as restricting object.
-         */
-
-    }
 }

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
@@ -63,7 +63,7 @@ public class MonitoringService {
     // === REQUEST PERIODIC METER DATA ===
 
     public void requestPeriodicMeterReads(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final PeriodicMeterReadsQuery periodicMeterReadsRequest,
+            final String correlationUid, final PeriodicMeterReadsQuery periodicMeterReadsQuery,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
@@ -78,10 +78,10 @@ public class MonitoringService {
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             Serializable response = null;
-            if (periodicMeterReadsRequest.isGas()) {
-                response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, periodicMeterReadsRequest);
+            if (periodicMeterReadsQuery.isGas()) {
+                response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, periodicMeterReadsQuery);
             } else {
-                response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, periodicMeterReadsRequest);
+                response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, periodicMeterReadsQuery);
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
@@ -141,7 +141,7 @@ public class MonitoringService {
                 response = this.actualMeterReadsGasCommandExecutor.execute(conn, actualMeterReadsRequest);
             } else {
                 // mock for now
-                response = new ActualMeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
+                response = new MeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
                         this.getRandomPositive(), this.getRandomPositive());
             }
 

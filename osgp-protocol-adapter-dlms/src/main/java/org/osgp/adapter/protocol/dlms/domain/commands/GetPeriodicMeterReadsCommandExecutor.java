@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
@@ -23,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
@@ -102,7 +109,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
         checkResultList(getResultList);
 
-        final List<PeriodicMeterReads> periodicMeterReads = new ArrayList<>();
+        final List<MeterReads> periodicMeterReads = new ArrayList<>();
 
         final GetResult getResult = getResultList.get(0);
         final AccessResultCode resultCode = getResult.resultCode();
@@ -117,11 +124,11 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     bufferedObjects);
         }
 
-        return new PeriodicMeterReadsContainer(periodicMeterReads);
+        return new PeriodicMeterReadsContainer(periodType, periodicMeterReads);
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final List<PeriodicMeterReads> periodicMeterReads,
+            final DateTime endDateTime, final List<MeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects) {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
@@ -152,7 +159,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         }
     }
 
-    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForInterval(final List<MeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
 
         final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
@@ -164,13 +171,12 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         final DataObject negativeActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_NEG);
         LOGGER.debug("negativeActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(negativeActiveEnergy));
 
-        final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
-                (Long) positiveActiveEnergy.value(), null, (Long) negativeActiveEnergy.value(), null,
-                PeriodType.INTERVAL);
-        periodicMeterReads.add(nextPeriodicMeterReads);
+        final MeterReads nextMeterReads = new MeterReads(bufferedDateTime.toDate(),
+                (Long) positiveActiveEnergy.value(), null, (Long) negativeActiveEnergy.value(), null);
+        periodicMeterReads.add(nextMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForDaily(final List<MeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
 
         final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
@@ -189,14 +195,13 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         LOGGER.debug("negativeActiveEnergyTariff2: {}",
                 this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
 
-        final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
+        final MeterReads nextMeterReads = new MeterReads(bufferedDateTime.toDate(),
                 (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
-                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value(),
-                PeriodType.DAILY);
-        periodicMeterReads.add(nextPeriodicMeterReads);
+                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value());
+        periodicMeterReads.add(nextMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReads> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForMonthly(final List<MeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
 
         /*
@@ -216,11 +221,10 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         LOGGER.debug("negativeActiveEnergyTariff2: {}",
                 this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
 
-        final PeriodicMeterReads nextPeriodicMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
+        final MeterReads nextMeterReads = new MeterReads(bufferedDateTime.toDate(),
                 (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
-                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value(),
-                PeriodType.MONTHLY);
-        periodicMeterReads.add(nextPeriodicMeterReads);
+                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value());
+        periodicMeterReads.add(nextMeterReads);
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
