@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.domain.core.services;
 
-import com.alliander.osgp.domain.core.entities.GASMeterDevice;
+import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +15,9 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.repositories.GASMeterDeviceRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 
 @Service
 @Validated
@@ -28,7 +28,7 @@ public class SmartMeteringDeviceDomainService {
     private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
 
     @Autowired
-    private GASMeterDeviceRepository gASMeterDeviceRepository;
+    private GasMeterDeviceRepository gasMeterDeviceRepository;
 
     public SmartMeteringDevice searchSmartMeteringDevice(@Identification final String deviceIdentification)
             throws UnknownEntityException {
@@ -43,10 +43,10 @@ public class SmartMeteringDeviceDomainService {
         return smartMeteringDevice;
     }
 
-    public GASMeterDevice searchGASMeteringDevice(@Identification final String deviceIdentification)
+    public GasMeterDevice searchGASMeteringDevice(@Identification final String deviceIdentification)
             throws UnknownEntityException {
 
-        final GASMeterDevice gASMeteringDevice = this.gASMeterDeviceRepository
+        final GasMeterDevice gASMeteringDevice = this.gasMeterDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
 
         if (gASMeteringDevice == null) {

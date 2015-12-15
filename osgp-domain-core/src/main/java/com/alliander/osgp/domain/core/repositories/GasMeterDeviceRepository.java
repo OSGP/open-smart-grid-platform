@@ -10,14 +10,14 @@ package com.alliander.osgp.domain.core.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.alliander.osgp.domain.core.entities.GASMeterDevice;
+import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 
 /**
  * @author OSGP
- * @deprecated temporary GAS meter administration
+ * @deprecated temporary GAS meter administration, to be refactored
  */
 @Repository
 @Deprecated
-public interface GASMeterDeviceRepository extends JpaRepository<GASMeterDevice, Long> {
-    GASMeterDevice findByDeviceIdentification(String deviceIdentification);
+public interface GasMeterDeviceRepository extends JpaRepository<GasMeterDevice, Long> {
+    GasMeterDevice findByDeviceIdentification(String deviceIdentification);
 }

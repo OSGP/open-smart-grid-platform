@@ -15,7 +15,7 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 
 public class PeriodicMeterReadsResponseConverter
@@ -25,31 +25,31 @@ public class PeriodicMeterReadsResponseConverter
     @Override
     public PeriodicMeterReadContainer convertTo(final PeriodicMeterReadsContainer source,
             final Type<PeriodicMeterReadContainer> destinationType) {
-        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> r = new ArrayList<>(
-                source.getPeriodicMeterReads().size());
-        for (final PeriodicMeterReads pmr : source.getPeriodicMeterReads()) {
-            r.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(pmr.getLogTime(),
-                    pmr.getActiveEnergyImportTariffOne(), pmr.getActiveEnergyImportTariffTwo(), pmr
-                            .getActiveEnergyExportTariffOne(), pmr.getActiveEnergyExportTariffTwo(),
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(pmr.getPeriodType()
-                            .name())));
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads> periodicMeterReads = new ArrayList<>(
+                source.getMeterReads().size());
+        for (final MeterReads pmr : source.getMeterReads()) {
+            periodicMeterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads(pmr
+                    .getLogTime(), pmr.getActiveEnergyImportTariffOne(), pmr.getActiveEnergyImportTariffTwo(), pmr
+                    .getActiveEnergyExportTariffOne(), pmr.getActiveEnergyExportTariffTwo()));
         }
 
-        return new PeriodicMeterReadContainer(r);
+        return new PeriodicMeterReadContainer(
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
+                        .name()), periodicMeterReads);
     }
 
     @Override
     public PeriodicMeterReadsContainer convertFrom(final PeriodicMeterReadContainer source,
             final Type<PeriodicMeterReadsContainer> destinationType) {
-        final List<PeriodicMeterReads> r = new ArrayList<>(source.getPeriodicMeterReads().size());
-        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads pmr : source
+        final List<MeterReads> periodicMeterReads = new ArrayList<>(source.getPeriodicMeterReads().size());
+        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads pmr : source
                 .getPeriodicMeterReads()) {
-            r.add(new PeriodicMeterReads(pmr.getLogTime(), pmr.getActiveEnergyImportTariffOne(), pmr
+            periodicMeterReads.add(new MeterReads(pmr.getLogTime(), pmr.getActiveEnergyImportTariffOne(), pmr
                     .getActiveEnergyImportTariffTwo(), pmr.getActiveEnergyExportTariffOne(), pmr
-                    .getActiveEnergyExportTariffTwo(), PeriodType.valueOf(pmr.getPeriodType().name())));
+                    .getActiveEnergyExportTariffTwo()));
         }
 
-        return new PeriodicMeterReadsContainer(r);
+        return new PeriodicMeterReadsContainer(PeriodType.valueOf(source.getPeriodType().name()), periodicMeterReads);
     }
 
 }

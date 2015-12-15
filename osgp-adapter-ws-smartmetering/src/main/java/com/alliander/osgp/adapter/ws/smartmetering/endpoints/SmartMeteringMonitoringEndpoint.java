@@ -23,6 +23,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeter
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsAsyncResponse;
@@ -31,8 +32,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
@@ -41,7 +42,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Monitorin
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
@@ -77,7 +78,8 @@ public class SmartMeteringMonitoringEndpoint {
 
         LOGGER.debug("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
 
-        return (PeriodicMeterReadsAsyncResponse) this.getPeriodic(organisationIdentification, request);
+        return (PeriodicMeterReadsAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
+                request);
 
     }
 
@@ -89,12 +91,13 @@ public class SmartMeteringMonitoringEndpoint {
 
         LOGGER.debug("Incoming PeriodicMeterReadsGasRequest for meter: {}.", request.getDeviceIdentification());
 
-        return (PeriodicMeterReadsGasAsyncResponse) this.getPeriodic(organisationIdentification, request);
+        return (PeriodicMeterReadsGasAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
+                request);
 
     }
 
-    private AsyncResponse getPeriodic(final String organisationIdentification,
-            final PeriodicMeterReadsRequestData request) throws OsgpException {
+    private AsyncResponse getPeriodicAsyncResponseForEandG(final String organisationIdentification,
+            final PeriodicReadsRequest request) throws OsgpException {
         try {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery dataRequest = this.monitoringMapper
                     .map(request,
@@ -103,10 +106,8 @@ public class SmartMeteringMonitoringEndpoint {
             final String correlationUid = this.monitoringService.requestPeriodicMeterReads(organisationIdentification,
                     request.getDeviceIdentification(), dataRequest);
 
-            final AsyncResponse response = request instanceof PeriodicMeterReadsRequest ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                    .createPeriodicMeterReadsAsyncResponse()
-                    : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createPeriodicMeterReadsGasAsyncResponse();
+            final AsyncResponse response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
+                    : new PeriodicMeterReadsGasAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             return response;
@@ -233,7 +234,8 @@ public class SmartMeteringMonitoringEndpoint {
 
         LOGGER.debug("Incoming ActualMeterReadsRequest for meter: {}", deviceIdentification);
 
-        return (ActualMeterReadsAsyncResponse) this.getActual(organisationIdentification, deviceIdentification, false);
+        return (ActualMeterReadsAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
+                deviceIdentification, false);
     }
 
     @PayloadRoot(localPart = "ActualMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -246,12 +248,12 @@ public class SmartMeteringMonitoringEndpoint {
 
         LOGGER.debug("Incoming ActualMeterReadsGasRequest for meter: {}", deviceIdentification);
 
-        return (ActualMeterReadsGasAsyncResponse) this
-                .getActual(organisationIdentification, deviceIdentification, true);
+        return (ActualMeterReadsGasAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
+                deviceIdentification, true);
     }
 
-    private AsyncResponse getActual(final String organisationIdentification, final String deviceIdentification,
-            final boolean gas) throws OsgpException {
+    private AsyncResponse getActualAsyncResponseForEandG(final String organisationIdentification,
+            final String deviceIdentification, final boolean gas) throws OsgpException {
         try {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery requestValueObject = new com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery(
                     gas);
@@ -293,7 +295,7 @@ public class SmartMeteringMonitoringEndpoint {
                         ComponentType.WS_SMART_METERING);
             }
 
-            if (meterResponseData.getMessageData() instanceof ActualMeterReads) {
+            if (meterResponseData.getMessageData() instanceof MeterReads) {
                 final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse response = this.monitoringMapper
                         .map(meterResponseData.getMessageData(),
                                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse.class);
@@ -320,6 +322,7 @@ public class SmartMeteringMonitoringEndpoint {
 
         LOGGER.debug("Incoming ActualMeterReadsGasAsyncRequest for meter: {}", request.getDeviceIdentification());
 
+        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse response = new ActualMeterReadsGasResponse();
         try {
             final MeterResponseData meterResponseData = this.meterResponseDataRepository
                     .findSingleResultByCorrelationUid(request.getCorrelationUid());
@@ -330,7 +333,7 @@ public class SmartMeteringMonitoringEndpoint {
             }
 
             if (meterResponseData.getMessageData() instanceof MeterReadsGas) {
-                final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse response = this.monitoringMapper
+                response = this.monitoringMapper
                         .map(meterResponseData.getMessageData(),
                                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse.class);
 
@@ -345,7 +348,7 @@ public class SmartMeteringMonitoringEndpoint {
             this.handleRetrieveException(e, request, organisationIdentification);
         }
 
-        return null;
+        return response;
     }
 
     @PayloadRoot(localPart = "ReadAlarmRegisterRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)

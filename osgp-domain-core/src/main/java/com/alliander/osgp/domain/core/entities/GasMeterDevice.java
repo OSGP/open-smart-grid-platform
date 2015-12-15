@@ -16,11 +16,11 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 /**
  * 
  * @author OSGP
- * @deprecated temporary GAS meter administration
+ * @deprecated temporary GAS meter administration, to be refactored
  */
 @Entity
 @Deprecated
-public class GASMeterDevice extends AbstractEntity {
+public class GasMeterDevice extends AbstractEntity {
 
     /**
      * Serial Version UID

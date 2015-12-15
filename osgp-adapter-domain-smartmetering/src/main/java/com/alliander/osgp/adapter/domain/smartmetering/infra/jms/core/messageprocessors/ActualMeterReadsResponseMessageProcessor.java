@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -67,8 +67,8 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            if (responseMessage.getDataObject() instanceof ActualMeterReads) {
-                final ActualMeterReads actualMeterReadsDto = (ActualMeterReads) responseMessage.getDataObject();
+            if (responseMessage.getDataObject() instanceof MeterReads) {
+                final MeterReads actualMeterReadsDto = (MeterReads) responseMessage.getDataObject();
 
                 this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
                         correlationUid, messageType, responseMessageResultType, osgpException, actualMeterReadsDto);

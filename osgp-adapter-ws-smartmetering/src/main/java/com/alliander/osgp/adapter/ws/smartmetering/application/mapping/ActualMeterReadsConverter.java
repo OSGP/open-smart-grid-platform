@@ -20,17 +20,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 
 public class ActualMeterReadsConverter
-extends
-BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
+        extends
+        BidirectionalConverter<MeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse convertTo(
-            final ActualMeterReads source,
+            final MeterReads source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
@@ -56,11 +56,11 @@ BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.sm
     }
 
     @Override
-    public ActualMeterReads convertFrom(
+    public MeterReads convertFrom(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse source,
-            final Type<ActualMeterReads> destinationType) {
+            final Type<MeterReads> destinationType) {
 
-        return new ActualMeterReads(source.getLogTime().toGregorianCalendar().getTime(),
+        return new MeterReads(source.getLogTime().toGregorianCalendar().getTime(),
                 source.getActiveEnergyImportTariffOne(), source.getActiveEnergyImportTariffTwo(),
                 source.getActiveEnergyExportTariffOne(), source.getActiveEnergyExportTariffTwo());
     }
