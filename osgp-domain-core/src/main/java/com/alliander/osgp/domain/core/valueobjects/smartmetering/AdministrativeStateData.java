@@ -13,13 +13,13 @@ public class AdministrativeStateData implements Serializable {
 
     private static final long serialVersionUID = -1399391398920839144L;
 
-    private final AdministrativeStateType status;
+    private final AdministrativeStatusType status;
 
-    public AdministrativeStateData(final AdministrativeStateType status) {
+    public AdministrativeStateData(final AdministrativeStatusType status) {
         this.status = status;
     }
 
-    public AdministrativeStateType getAdministrationStateData() {
+    public AdministrativeStatusType getAdministrationStateData() {
         return this.status;
     }
 }

@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
+package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -13,29 +13,30 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
-import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-@Component("domainSmartMeteringGetAdministrationStateResponseMessageProcessor")
-public class GetAdministrationStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainSmartmeteringSetAdministrativeStatusRequestMessageProcessor")
+public class SetAdministrativeStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrationStateResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusRequestMessageProcessor.class);
 
     @Autowired
+    @Qualifier("domainSmartMeteringConfigurationService")
     private ConfigurationService configurationService;
 
-    public GetAdministrationStateResponseMessageProcessor() {
-        super(DeviceFunction.GET_ADMINISTRATIVE_STATUS);
+    protected SetAdministrativeStatusRequestMessageProcessor() {
+        super(DeviceFunction.SET_ADMINISTRATIVE_STATUS);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering get administration response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -64,7 +65,7 @@ public class GetAdministrationStateResponseMessageProcessor extends OsgpCoreResp
 
             final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) dataObject;
 
-            this.configurationService.getAdministrationState(organisationIdentification, deviceIdentification,
+            this.configurationService.setAdministrativeStatus(organisationIdentification, deviceIdentification,
                     correlationUid, administrativeStatusType, messageType);
 
         } catch (final Exception e) {

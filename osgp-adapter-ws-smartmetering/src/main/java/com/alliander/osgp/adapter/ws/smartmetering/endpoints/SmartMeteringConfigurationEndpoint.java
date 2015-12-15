@@ -20,14 +20,12 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrationStateRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrationStateResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrationStateRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrationStateResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
@@ -65,19 +63,20 @@ public class SmartMeteringConfigurationEndpoint {
     public SmartMeteringConfigurationEndpoint() {
     }
 
-    @PayloadRoot(localPart = "SetAdministrationStateRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetAdministrationStateResponse setAdministrationState(
+    public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetAdministrationStateRequest request) throws OsgpException {
+            @RequestPayload final SetAdministrativeStatusRequest request) throws OsgpException {
 
-        final SetAdministrationStateResponse response = new SetAdministrationStateResponse();
+        final SetAdministrativeStatusAsyncResponse response = new SetAdministrativeStatusAsyncResponse();
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministrationState dataRequest = this.configurationMapper
-                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministrationState.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType dataRequest = this.configurationMapper
+                .map(request.getEnabled(),
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
 
-        final String correlationUid = this.configurationService.requestSetAdministrationState(
-                organisationIdentification, dataRequest);
+        final String correlationUid = this.configurationService.requestSetAdministrativeStatus(
+                organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
@@ -87,26 +86,33 @@ public class SmartMeteringConfigurationEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "GetAdministrationStateRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
-    @ResponsePayload
-    public GetAdministrationStateResponse getAdministrationState(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetAdministrationStateRequest request) throws OsgpException {
-
-        final GetAdministrationStateResponse response = new GetAdministrationStateResponse();
-
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState dataRequest = this.configurationMapper
-                .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState.class);
-
-        final String correlationUid = this.configurationService.requestGetAdministrationState(
-                organisationIdentification, dataRequest);
-
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
-        response.setAsyncResponse(asyncResponse);
-        return response;
-    }
+    // @PayloadRoot(localPart = "GetAdministrationStateRequest", namespace =
+    // SMARTMETER_CONFIGURATION_NAMESPACE)
+    // @ResponsePayload
+    // public GetAdministrationStateResponse getAdministrationState(
+    // @OrganisationIdentification final String organisationIdentification,
+    // @RequestPayload final GetAdministrationStateRequest request) throws
+    // OsgpException {
+    //
+    // final GetAdministrationStateResponse response = new
+    // GetAdministrationStateResponse();
+    //
+    // final
+    // com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState
+    // dataRequest = this.configurationMapper
+    // .map(request,
+    // com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState.class);
+    //
+    // final String correlationUid =
+    // this.configurationService.requestGetAdministrationState(
+    // organisationIdentification, dataRequest);
+    //
+    // final AsyncResponse asyncResponse = new AsyncResponse();
+    // asyncResponse.setCorrelationUid(correlationUid);
+    // asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+    // response.setAsyncResponse(asyncResponse);
+    // return response;
+    // }
 
     @PayloadRoot(localPart = "SpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload

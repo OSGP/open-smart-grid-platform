@@ -19,9 +19,8 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministrationState;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -43,54 +42,63 @@ public class ConfigurationService {
      * @param requestData
      * @throws FunctionalException
      */
-    public String requestGetAdministrationState(final String organisationIdentification, final AdministrativeState requestData)
-            throws FunctionalException {
-        return this.enqueueGetAdministrationState(organisationIdentification, requestData.getDeviceIdentification(),
-                requestData);
-    }
-
-    public String enqueueGetAdministrationState(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final AdministrativeState requestData)
-            throws FunctionalException {
-
-        LOGGER.info("enqueueDaysRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_ADMINISTRATION_STATE, correlationUid, organisationIdentification,
-                requestData.getDeviceIdentification(), requestData);
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
+    // public String requestGetAdministrationState(final String
+    // organisationIdentification, final AdministrativeState requestData)
+    // throws FunctionalException {
+    // return this.enqueueGetAdministrationState(organisationIdentification,
+    // requestData.getDeviceIdentification(),
+    // requestData);
+    // }
+    //
+    // public String enqueueGetAdministrationState(@Identification final String
+    // organisationIdentification,
+    // @Identification final String deviceIdentification, @Identification final
+    // AdministrativeState requestData)
+    // throws FunctionalException {
+    //
+    // LOGGER.info("enqueueDaysRequest called with organisation {} and device {}",
+    // organisationIdentification,
+    // deviceIdentification);
+    //
+    // final String correlationUid =
+    // this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+    // deviceIdentification);
+    //
+    // final SmartMeteringRequestMessage message = new
+    // SmartMeteringRequestMessage(
+    // SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS,
+    // correlationUid,
+    // organisationIdentification,
+    // requestData.getDeviceIdentification(), requestData);
+    //
+    // this.smartMeteringRequestMessageSender.send(message);
+    //
+    // return correlationUid;
+    // }
 
     /**
      * @param organisationIdentification
      * @param requestData
      * @throws FunctionalException
      */
-    public String requestSetAdministrationState(final String organisationIdentification, final SetAdministrationState requestData)
-            throws FunctionalException {
-        return this.enqueueSetAdministrationState(organisationIdentification, requestData.getDeviceIdentification(),
-                requestData);
+    public String requestSetAdministrativeStatus(final String organisationIdentification,
+            final String deviceIdentification, final AdministrativeStatusType requestData) throws FunctionalException {
+        return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData);
     }
 
-    public String enqueueSetAdministrationState(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SetAdministrationState requestData)
-            throws FunctionalException {
+    public String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            @Identification final AdministrativeStatusType requestData) throws FunctionalException {
 
-        LOGGER.debug("enqueueDaysRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.info(
+                "enqueueSetAdministrativeStatus called with organisation {} and device {}, set administrative status to {}",
+                organisationIdentification, deviceIdentification, requestData);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ADMINISTRATION_STATE, correlationUid, organisationIdentification,
+                SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
                 deviceIdentification, requestData);
 
         this.smartMeteringRequestMessageSender.send(message);

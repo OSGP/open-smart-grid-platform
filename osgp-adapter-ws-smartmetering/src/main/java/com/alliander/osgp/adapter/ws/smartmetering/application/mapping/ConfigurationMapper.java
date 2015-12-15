@@ -22,14 +22,13 @@ public class ConfigurationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory
-                .classMap(SpecialDaysRequest.class,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
+        .classMap(SpecialDaysRequest.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
                 .register();
 
         mapperFactory.getConverterFactory().registerConverter(new ActivityCalendarConverter());
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
-        mapperFactory.getConverterFactory().registerConverter(new SetAdministrationStateConverter());
-        mapperFactory.getConverterFactory().registerConverter(new GetAdministrationStateConverter());
+        mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusConverter());
     }
 }

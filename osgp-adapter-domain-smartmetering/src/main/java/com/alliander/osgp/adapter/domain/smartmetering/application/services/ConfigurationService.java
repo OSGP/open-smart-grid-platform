@@ -21,9 +21,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeState;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministrationState;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -134,22 +133,30 @@ public class ConfigurationService {
                 deviceIdentification, alarmNotificationsDto), messageType);
     }
 
-    public void setAdministrationState(@Identification final String organisationIdentification,
+    public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
-            final SetAdministrationState setAdministrationState, final String messageType) throws FunctionalException {
+            final AdministrativeStatusType administrativeStatusType, final String messageType)
+            throws FunctionalException {
 
-        LOGGER.info("SetAdministrationState for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
+        LOGGER.info(
+                "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
+                organisationIdentification, deviceIdentification, administrativeStatusType);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, setAdministrationState), messageType);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto = this.configurationMapper
+                .map(administrativeStatusType,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class);
+
+        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, administrativeStatusTypeDto);
+        this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
     }
 
     public void getAdministrationState(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
-            final AdministrativeState getAdministrationState, final String messageType) throws FunctionalException {
+            final AdministrativeStatusType administrativeStatusType, final String messageType)
+                    throws FunctionalException {
 
         LOGGER.info("SetAdministrationState for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -157,7 +164,7 @@ public class ConfigurationService {
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, getAdministrationState), messageType);
+                deviceIdentification, administrativeStatusType), messageType);
     }
 
     public void setActivityCalendar(@Identification final String organisationIdentification,

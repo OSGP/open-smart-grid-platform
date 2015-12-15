@@ -18,19 +18,19 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAdministrationState;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 @Component("domainSmartMeteringSetAdministrationStateResponseMessageProcessor")
-public class SetAdministrationStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class SetAdministrativeStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrationStateResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusResponseMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public SetAdministrationStateResponseMessageProcessor() {
-        super(DeviceFunction.SET_ADMINISTRATION_STATE);
+    public SetAdministrativeStatusResponseMessageProcessor() {
+        super(DeviceFunction.SET_ADMINISTRATIVE_STATUS);
     }
 
     @Override
@@ -62,10 +62,10 @@ public class SetAdministrationStateResponseMessageProcessor extends OsgpCoreResp
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final SetAdministrationState setAdministration = (SetAdministrationState) dataObject;
+            final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) dataObject;
 
-            this.configurationService.setAdministrationState(organisationIdentification, deviceIdentification,
-                    correlationUid, setAdministration, messageType);
+            this.configurationService.setAdministrativeStatus(organisationIdentification, deviceIdentification,
+                    correlationUid, administrativeStatusType, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

@@ -10,40 +10,6 @@
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
-	<xsd:element name="GetAdministrationStateRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="GetAdministrationStateResponse">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-				<xsd:element name="AdministrationStateType" type="tns:AdministrationStateType" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="SetAdministrationStateRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-				<xsd:element name="AdministrationStateType" type="tns:AdministrationStateType" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="SetAdministrationStateResponse">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="SpecialDaysRequest">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -105,6 +71,39 @@
 	</xsd:element>
 
 	<xsd:element name="SetActivityCalendarAsyncResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="GetAdministrativeStatusRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="GetAdministrativeStatusAsyncResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="SetAdministrativeStatusRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				<xsd:element name="Enabled" type="tns:AdministrativeStatusType" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="SetAdministrativeStatusAsyncResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
@@ -231,8 +230,8 @@
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<!-- Administration State Types -->
-	<xsd:simpleType name="AdministrationStateType">
+	<!-- Administrative Status Types -->
+	<xsd:simpleType name="AdministrativeStatusType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="UNDEFINED" />
 			<xsd:enumeration value="OFF" />
