@@ -21,7 +21,7 @@ import com.alliander.osgp.oslp.Oslp.IndexAddressMap;
 import com.google.protobuf.ByteString;
 
 public class RelayConfigurationToOslpRelayConfigurationConverter extends
-        BidirectionalConverter<RelayConfiguration, Oslp.RelayConfiguration> {
+BidirectionalConverter<RelayConfiguration, Oslp.RelayConfiguration> {
     @Override
     public com.alliander.osgp.oslp.Oslp.RelayConfiguration convertTo(final RelayConfiguration source,
             final Type<com.alliander.osgp.oslp.Oslp.RelayConfiguration> destinationType) {
@@ -59,7 +59,7 @@ public class RelayConfigurationToOslpRelayConfigurationConverter extends
             indexAddressMap.add(new RelayMap(this.mapperFacade.map(entry.getIndex(), Integer.class), this.mapperFacade
                     .map(entry.getAddress(), Integer.class), entry.hasRelayType()
                     && entry.getRelayType() != Oslp.RelayType.RT_NOT_SET ? this.mapperFacade.map(entry.getRelayType(),
-                    RelayType.class) : null));
+                            RelayType.class) : null, null));
         }
 
         final List<RelayMap> relayMaps = new ArrayList<RelayMap>();
