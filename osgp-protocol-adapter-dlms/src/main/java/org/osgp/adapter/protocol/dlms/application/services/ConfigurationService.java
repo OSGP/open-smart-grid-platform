@@ -23,13 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministration;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetAdministration;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -137,7 +136,7 @@ public class ConfigurationService {
     }
 
     public void setAdministration(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SetAdministration setAdministration,
+            final String correlationUid, final AdministrativeStatusType administrativeStatusType,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
@@ -147,8 +146,8 @@ public class ConfigurationService {
         LOGGER.info("******************************************************");
         LOGGER.info(" SetAdministration      ******************************");
         LOGGER.info("******************************************************");
-        LOGGER.info("DeviceIdentification = {} ", setAdministration.getDeviceIdentification());
-        LOGGER.info("DeviceIdentification = {} ", setAdministration.isEnabled() ? "Enabled" : "Disabled");
+        LOGGER.info("DeviceIdentification = {} ", deviceIdentification);
+        LOGGER.info("Set status to = {} ", administrativeStatusType.value());
         LOGGER.info("******************************************************");
 
         try {
@@ -166,7 +165,7 @@ public class ConfigurationService {
     }
 
     public void getAdministration(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final GetAdministration getAdministration,
+            final String correlationUid, final AdministrativeStatusType administrativeStatusType,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType) {
 
@@ -176,7 +175,7 @@ public class ConfigurationService {
         LOGGER.info("******************************************************");
         LOGGER.info(" GetAdministration      ******************************");
         LOGGER.info("******************************************************");
-        LOGGER.info("DeviceIdentification = {} ", getAdministration.getDeviceIdentification());
+        LOGGER.info(" DeviceIdentification = {} ", deviceIdentification);
         LOGGER.info("******************************************************");
 
         try {
