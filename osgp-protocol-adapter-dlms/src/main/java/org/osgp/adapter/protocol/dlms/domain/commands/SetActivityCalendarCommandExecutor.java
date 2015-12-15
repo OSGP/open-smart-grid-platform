@@ -1,7 +1,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -50,27 +49,28 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             throws IOException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendar.getCalendarName());
 
-        final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
-
         // Set calendar Name
-        final List<SetRequestParameter> requests = new ArrayList<>();
-        requests.add(this.getCalendarNameRequest(activityCalendar));
+        final SetRequestParameter activityCalendarRequest = this.getCalendarNameRequest(activityCalendar);
 
         // Set seasons
         final List<SeasonProfile> seasonProfileList = activityCalendar.getSeasonProfileList();
-        requests.add(this.getSeasonsRequest(conn, seasonProfileList));
+        final SetRequestParameter seasonsRequest = this.getSeasonsRequest(conn, seasonProfileList);
 
         // Set weeks
         final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
-        requests.add(this.getWeeksRequest(conn, weekProfileSet));
+        final SetRequestParameter weeksRequest = this.getWeeksRequest(conn, weekProfileSet);
         // Set days
-        requests.add(this.getDaysRequest(conn, this.getDayProfileSet(weekProfileSet)));
+        final SetRequestParameter dayRequest = this.getDaysRequest(conn, this.getDayProfileSet(weekProfileSet));
 
         // Set activation time to now.
-        requests.add(this.getActivateTimeNow());
+        final SetRequestParameter activateTimeNowRequest = this.getActivateTimeNow();
 
-        final List<AccessResultCode> accessResultCodeList = conn.set(this.dlmsHelperService.LONG_CONNECTION_TIMEOUT,
-                (SetRequestParameter[]) requests.toArray());
+        LOGGER.info("Calling the DLMS library conn.set with timeout of {}", DlmsHelperService.LONG_CONNECTION_TIMEOUT);
+
+        final List<AccessResultCode> accessResultCodeList = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT,
+                activityCalendarRequest, seasonsRequest, weeksRequest, dayRequest, activateTimeNowRequest);
+
+        LOGGER.info("Finished calling conn.set");
 
         for (final AccessResultCode arc : accessResultCodeList) {
             if (AccessResultCode.SUCCESS != arc) {

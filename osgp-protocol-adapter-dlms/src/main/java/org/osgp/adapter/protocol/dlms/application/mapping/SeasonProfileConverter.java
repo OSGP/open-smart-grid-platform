@@ -51,7 +51,6 @@ public class SeasonProfileConverter {
         for (final SeasonProfile seasonProfile : seasonProfileList) {
             final DataObject seasonStructure = DataObject.newStructureData(this.getSeason(seasonProfile));
             seasonList.add(seasonStructure);
-            // break;
         }
         return seasonList;
     }
