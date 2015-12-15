@@ -15,14 +15,14 @@ public class GetAdministrationState implements Serializable {
 
     private final String deviceIdentification;
 
-    private final AdministrationStateType status;
+    private final AdministrativeStatusType status;
 
-    public GetAdministrationState(final String deviceIdentification, final AdministrationStateType status) {
+    public GetAdministrationState(final String deviceIdentification, final AdministrativeStatusType status) {
         this.deviceIdentification = deviceIdentification;
         this.status = status;
     }
 
-    public AdministrationStateType getStatus() {
+    public AdministrativeStatusType getStatus() {
         return this.status;
     }
 

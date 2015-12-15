@@ -7,19 +7,17 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public enum AdministrationStateType {
-    UNDEFINED(0),
-    OFF(1),
-    ON(2);
+public enum AdministrativeStatusType {
+    UNDEFINED,
+    OFF,
+    ON;
 
-    private final int value;
-
-    AdministrationStateType(final int value) {
-        this.value = value;
+    public String value() {
+        return this.name();
     }
 
-    public int getValue() {
-        return this.value;
+    public static AdministrativeStatusType fromValue(final String v) {
+        return valueOf(v);
     }
 
 }

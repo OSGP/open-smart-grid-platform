@@ -13,16 +13,16 @@ public class SetAdministrationState implements Serializable {
 
     private static final long serialVersionUID = 9204064540343962380L;
 
-    private AdministrationStateType status;
+    private AdministrativeStatusType status;
 
     private final String deviceIdentification;
 
-    public SetAdministrationState(final AdministrationStateType status, final String deviceIdentification) {
+    public SetAdministrationState(final AdministrativeStatusType status, final String deviceIdentification) {
         this.status = status;
         this.deviceIdentification = deviceIdentification;
     }
 
-    public AdministrationStateType getStatus() {
+    public AdministrativeStatusType getStatus() {
         return this.status;
     }
 
