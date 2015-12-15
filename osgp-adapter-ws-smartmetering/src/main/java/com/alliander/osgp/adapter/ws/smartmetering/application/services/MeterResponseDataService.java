@@ -21,7 +21,7 @@ public class MeterResponseDataService {
 
     /**
      * Queue response data object.
-     * 
+     *
      * @param meterResponseData
      */
     public void enqueue(final MeterResponseData meterResponseData) {
@@ -43,35 +43,33 @@ public class MeterResponseDataService {
      */
     public MeterResponseData dequeue(final String correlationUid, final Class<?> expectedClassType)
             throws FunctionalException {
-        try {
-            final MeterResponseData meterResponseData = this.meterResponseDataRepository
-                    .findSingleResultByCorrelationUid(correlationUid);
 
-            if (meterResponseData == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                        ComponentType.WS_SMART_METERING);
-            }
+        final MeterResponseData meterResponseData = this.meterResponseDataRepository
+                .findSingleResultByCorrelationUid(correlationUid);
 
-            if (!expectedClassType.isInstance(meterResponseData.getMessageData())) {
-                // Return null if data is not of the expected type.
-                // The Meter response data will not be removed, so it will be
-                // available for the right request type.
-                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
-                        .getName(), meterResponseData.getCorrelationUid());
-
-                return null;
-            }
-
-            this.remove(meterResponseData);
-            return meterResponseData;
-
-        } catch (final FunctionalException e) {
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                LOGGER.warn("No response data for correlation UID {}", correlationUid);
-            }
-
-            throw e;
+        if (meterResponseData == null) {
+            LOGGER.warn("No response data for correlation UID {}", correlationUid);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
+                    ComponentType.WS_SMART_METERING);
         }
+
+        if (!expectedClassType.isInstance(meterResponseData.getMessageData())) {
+            /**
+             * Return null if data is not of the expected type. The Meter
+             * response data will not be removed, so it will be available for
+             * the right request type.
+             */
+            final String warningResultClassType = meterResponseData.getMessageData() == null ? "NULL"
+                    : meterResponseData.getMessageData().getClass().getName();
+
+            LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", warningResultClassType,
+                    meterResponseData.getCorrelationUid());
+
+            return null;
+        }
+
+        this.remove(meterResponseData);
+        return meterResponseData;
     }
 
     public MeterResponseData dequeue(final String correlationUid) throws FunctionalException {
