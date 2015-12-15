@@ -58,7 +58,7 @@ public class ConfigurationService extends DlmsApplicationService {
     private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
 
     @Autowired
-    private SetActivityCalendarCommandExecutor setActicityCalendarCommandExecutor;
+    private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
     // === REQUEST Special Days DATA ===
 
@@ -67,6 +67,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestSpecialDays");
 
+        ClientConnection conn = null;
         try {
             // The Special days towards the Smart Meter
             final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
@@ -85,17 +86,11 @@ public class ConfigurationService extends DlmsApplicationService {
 
             LOGGER.info("device for Set Configuration Object is: {}", device);
 
-            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
-            try {
-                final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
-                if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                    throw new ProtocolAdapterException("Set special days reported result is: " + accessResultCode);
-                }
-            } finally {
-                if (conn != null && conn.isConnected()) {
-                    conn.close();
-                }
+            final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
+            if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+                throw new ProtocolAdapterException("Set special days reported result is: " + accessResultCode);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
@@ -105,6 +100,10 @@ public class ConfigurationService extends DlmsApplicationService {
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
     }
 
@@ -116,6 +115,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestSetConfiguration");
 
+        ClientConnection conn = null;
         try {
             // Configuration Object towards the Smart Meter
             final ConfigurationObject configurationObject = setConfigurationObjectRequest
@@ -141,19 +141,12 @@ public class ConfigurationService extends DlmsApplicationService {
 
             LOGGER.info("device for Set Configuration Object is: {}", device);
 
-            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
-            try {
-                final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
-                        configurationObject);
-                if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                    throw new ProtocolAdapterException("Set configuration object reported result is: "
-                            + accessResultCode);
-                }
-            } finally {
-                if (conn != null && conn.isConnected()) {
-                    conn.close();
-                }
+            final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
+                    configurationObject);
+            if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+                throw new ProtocolAdapterException("Set configuration object reported result is: " + accessResultCode);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
@@ -163,6 +156,10 @@ public class ConfigurationService extends DlmsApplicationService {
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
     }
 

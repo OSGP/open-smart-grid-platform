@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
@@ -56,29 +63,40 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private SetRequestParameter buildRequest(final ConfigurationObject configurationObject,
             final ConfigurationObject configurationObjectOnDevice) {
 
-        final BitString bitString = this.getMergedFlags(configurationObject, configurationObjectOnDevice);
-
-        final DataObject complexData = this.buildRequestObject(configurationObject, bitString);
+        final DataObject complexData = this.buildRequestObject(configurationObject, configurationObjectOnDevice);
         LOGGER.info("Configuration object complex data: {}", this.dlmsHelperService.getDebugInfo(complexData));
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final SetRequestParameter request = factory.createSetRequestParameter(complexData);
-        return request;
+
+        return factory.createSetRequestParameter(complexData);
     }
 
-    private DataObject buildRequestObject(final ConfigurationObject configurationObject, final BitString bitString) {
+    private DataObject buildRequestObject(final ConfigurationObject configurationObject,
+            final ConfigurationObject configurationObjectOnDevice) {
+
         final LinkedList<DataObject> linkedList = new LinkedList<DataObject>();
         if (GprsOperationModeType.ALWAYS_ON.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(1));
-        } else {
+        } else if (GprsOperationModeType.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(0));
+        } else {
+            // copy from meter
+            linkedList.add(DataObject.newEnumerateData(configurationObjectOnDevice.getGprsOperationMode().ordinal()));
         }
+
+        final BitString bitString = this.getMergedFlags(configurationObject, configurationObjectOnDevice);
         final DataObject newBitStringData = DataObject.newBitStringData(bitString);
         linkedList.add(newBitStringData);
-        final DataObject complexData = DataObject.newStructureData(linkedList);
-        return complexData;
+
+        return DataObject.newStructureData(linkedList);
     }
 
+    /*
+     * Merging flags to a new list of flags is done according the rule of (1) a
+     * new flag setting in the request, overrules existing flag setting on the
+     * meter (2) flag settings not present in the request are copied from the
+     * flag settings on the meter
+     */
     private BitString getMergedFlags(final ConfigurationObject configurationObject,
             final ConfigurationObject configurationObjectOnDevice) {
         final List<ConfigurationFlag> configurationFlags = new ArrayList<ConfigurationFlag>();
@@ -122,7 +140,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObject retrieveConfigurationObject(final ClientConnection conn) throws IOException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();

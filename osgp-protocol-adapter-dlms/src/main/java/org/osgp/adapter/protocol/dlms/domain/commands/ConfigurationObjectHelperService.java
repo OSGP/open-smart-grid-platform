@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.ArrayList;
@@ -22,11 +29,10 @@ public class ConfigurationObjectHelperService {
      * Gives the position of the flag as indicated by the FlagType in the bit
      * string representation of the Flags register.
      */
+    private static final Map<ConfigurationFlagType, Integer> BIT_INDEX_PER_CONFIGURATION_FLAG_TYPE;
+    private static final Map<Integer, ConfigurationFlagType> CONFIGURATION_FLAG_TYPE_PER_BIT_INDEX;
 
     private static final int NUMBER_OF_FLAG_BITS = 16;
-
-    private static final Map<ConfigurationFlagType, Integer> CONFIGURATION_FLAG_REGISTER_BIT_INDEX_PER_CONFIGUATION_FLAG_TYPE;
-    private static final Map<Integer, ConfigurationFlagType> CONFIGURATION_FLAG_TYPE_PER_REGISTER_BIT_INDEX;
 
     static {
         final EnumMap<ConfigurationFlagType, Integer> map = new EnumMap<>(ConfigurationFlagType.class);
@@ -39,20 +45,19 @@ public class ConfigurationObjectHelperService {
         map.put(ConfigurationFlagType.HLS_4_ON_P_3_ENABLE, 10);
         map.put(ConfigurationFlagType.HLS_5_ON_P_3_ENABLE, 9);
         map.put(ConfigurationFlagType.HLS_3_ON_PO_ENABLE, 8);
-        map.put(ConfigurationFlagType.HLS_4_ON_PO_ENABLE, 6);
-        map.put(ConfigurationFlagType.HLS_5_ON_PO_ENABLE, 5);
-        // bits 0 to 4 are not used
+        map.put(ConfigurationFlagType.HLS_4_ON_PO_ENABLE, 7);
+        map.put(ConfigurationFlagType.HLS_5_ON_PO_ENABLE, 6);
+        // bits 0 to 5 are not used
 
-        CONFIGURATION_FLAG_REGISTER_BIT_INDEX_PER_CONFIGUATION_FLAG_TYPE = Collections.unmodifiableMap(map);
+        BIT_INDEX_PER_CONFIGURATION_FLAG_TYPE = Collections.unmodifiableMap(map);
 
         // Create a flipped version of the map.
         final HashMap<Integer, ConfigurationFlagType> tempReversed = new HashMap<>();
-        for (final Entry<ConfigurationFlagType, Integer> val : CONFIGURATION_FLAG_REGISTER_BIT_INDEX_PER_CONFIGUATION_FLAG_TYPE
-                .entrySet()) {
+        for (final Entry<ConfigurationFlagType, Integer> val : BIT_INDEX_PER_CONFIGURATION_FLAG_TYPE.entrySet()) {
             tempReversed.put(val.getValue(), val.getKey());
         }
 
-        CONFIGURATION_FLAG_TYPE_PER_REGISTER_BIT_INDEX = Collections.unmodifiableMap(tempReversed);
+        CONFIGURATION_FLAG_TYPE_PER_BIT_INDEX = Collections.unmodifiableMap(tempReversed);
     }
 
     /**
@@ -64,7 +69,7 @@ public class ConfigurationObjectHelperService {
      * @return position of the bit holding the configuration flag type value.
      */
     public Integer toBitPosition(final ConfigurationFlagType configurationFlagType) {
-        return CONFIGURATION_FLAG_REGISTER_BIT_INDEX_PER_CONFIGUATION_FLAG_TYPE.get(configurationFlagType);
+        return BIT_INDEX_PER_CONFIGURATION_FLAG_TYPE.get(configurationFlagType);
     }
 
     /**
@@ -87,7 +92,7 @@ public class ConfigurationObjectHelperService {
         final BitSet bitSet = BitSet
                 .valueOf(new long[] { ((flagByteArray[0] & 0xFF) << 8) + (flagByteArray[1] & 0xFF) });
         for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i + 1)) {
-            final ConfigurationFlagType configurationFlagType = CONFIGURATION_FLAG_TYPE_PER_REGISTER_BIT_INDEX.get(i);
+            final ConfigurationFlagType configurationFlagType = CONFIGURATION_FLAG_TYPE_PER_BIT_INDEX.get(i);
             configurationFlags.add(new ConfigurationFlag(configurationFlagType, true));
         }
     }

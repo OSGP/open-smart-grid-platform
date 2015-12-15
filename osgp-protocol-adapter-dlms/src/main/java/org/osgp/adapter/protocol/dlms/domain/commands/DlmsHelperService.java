@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.math.BigInteger;
@@ -8,20 +15,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.internal.BitString;
-import org.springframework.stereotype.Service;
 import org.openmuc.jdlms.internal.CosemDate;
 import org.openmuc.jdlms.internal.CosemDateTime;
 import org.openmuc.jdlms.internal.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.internal.CosemTime;
+import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
 
     private static final String LAST_DAY_OF_MONTH = "FE";
     private static final String SECOND_LAST_DAY_OF_MONTH = "FD";
-    private static final String DAYLIGHT_SAVINGS_BEGIN = LAST_DAY_OF_MONTH;
-    private static final String DAYLIGHT_SAVINGS_END = SECOND_LAST_DAY_OF_MONTH;
+    private static final String DAYLIGHT_SAVINGS_BEGIN = "FE";
+    private static final String DAYLIGHT_SAVINGS_END = "FD";
     private static final String NOT_SPECIFIED = "FF";
     public static final int MILLISECONDS_PER_MINUTE = 60000;
 
@@ -214,8 +220,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -241,10 +247,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }
@@ -255,7 +261,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-                .append(", bits=").append(stringValue);
+        .append(", bits=").append(stringValue);
 
         return sb.toString();
     }
