@@ -48,9 +48,7 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
             messageMetadata.handleMessage(message);
             final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) message.getObject();
 
-            this.installationService.addMeter(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
-                    messageMetadata.getCorrelationUid(), smartMeteringDevice, this.responseMessageSender, messageMetadata.getDomain(),
-                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.installationService.addMeter(messageMetadata, smartMeteringDevice, this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
