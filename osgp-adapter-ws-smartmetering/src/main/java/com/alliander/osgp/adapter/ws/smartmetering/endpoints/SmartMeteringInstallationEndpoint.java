@@ -98,20 +98,23 @@ public class SmartMeteringInstallationEndpoint {
     @ResponsePayload
     public AddDeviceResponse getSetConfigurationObjectResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceAsyncRequest request) throws OsgpException {
+            @RequestPayload final AddDeviceAsyncRequest request) {
 
-        final MeterResponseData meterResponseData = this.installationService.dequeueAddSmartMeterResponse(request
-                .getCorrelationUid());
-
-        // Map response type, and return.
         final AddDeviceResponse response = new AddDeviceResponse();
-        if (meterResponseData != null) {
+        try {
+            final MeterResponseData meterResponseData = this.installationService.dequeueAddSmartMeterResponse(request
+                    .getCorrelationUid());
+
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } else {
-            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
         }
 
         return response;

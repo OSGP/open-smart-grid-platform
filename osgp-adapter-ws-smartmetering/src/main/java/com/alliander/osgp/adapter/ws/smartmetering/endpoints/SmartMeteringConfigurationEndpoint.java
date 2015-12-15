@@ -92,20 +92,23 @@ public class SmartMeteringConfigurationEndpoint {
     @ResponsePayload
     public SetSpecialDaysResponse getSetSpecialDaysResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetSpecialDaysAsyncRequest request) throws OsgpException {
+            @RequestPayload final SetSpecialDaysAsyncRequest request) {
 
-        final MeterResponseData meterResponseData = this.configurationService.dequeueSetSpecialDaysResponse(request
-                .getCorrelationUid());
-
-        // Map response type, and return.
         final SetSpecialDaysResponse response = new SetSpecialDaysResponse();
-        if (meterResponseData != null) {
+        try {
+            final MeterResponseData meterResponseData = this.configurationService.dequeueSetSpecialDaysResponse(request
+                    .getCorrelationUid());
+
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } else {
-            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
         }
 
         return response;
@@ -138,20 +141,23 @@ public class SmartMeteringConfigurationEndpoint {
     @ResponsePayload
     public SetConfigurationObjectResponse getSetConfigurationObjectResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetConfigurationObjectAsyncRequest request) throws OsgpException {
+            @RequestPayload final SetConfigurationObjectAsyncRequest request) {
 
-        final MeterResponseData meterResponseData = this.configurationService
-                .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
-
-        // Map response type, and return.
         final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
-        if (meterResponseData != null) {
+        try {
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
+
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } else {
-            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
         }
 
         return response;
