@@ -43,7 +43,7 @@ public class SmartMeteringDeviceDomainService {
         return smartMeteringDevice;
     }
 
-    public GasMeterDevice searchGASMeteringDevice(@Identification final String deviceIdentification)
+    public GasMeterDevice searchGasMeteringDevice(@Identification final String deviceIdentification)
             throws UnknownEntityException {
 
         final GasMeterDevice gASMeteringDevice = this.gasMeterDeviceRepository

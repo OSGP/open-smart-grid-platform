@@ -144,7 +144,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setHasSchedule(source.getHasSchedule());
                 destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
                         .toString());
-                destination.setOwner(source.getOwner().getName());
+                destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
                 destination.getOrganisations().addAll(source.getOrganisations());
 
                 final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();

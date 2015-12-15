@@ -118,7 +118,7 @@ public class DeviceManagementService {
 
     @Autowired
     @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
-    private String netMangementOrganisation;
+    private String netManagementOrganisation;
 
     /**
      * Constructor
@@ -136,7 +136,7 @@ public class DeviceManagementService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_ORGANISATIONS);
 
-        if (this.netMangementOrganisation.equals(organisationIdentification)) {
+        if (this.netManagementOrganisation.equals(organisationIdentification)) {
             return this.organisationRepository.findAll();
         } else {
             final Organisation org = this.organisationRepository
@@ -151,7 +151,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -253,7 +253,7 @@ public class DeviceManagementService {
                 this.pagingSettings.getPageSize(), sortDir, sortedBy);
 
         Page<Device> devices = null;
-        if (!this.netMangementOrganisation.equals(organisationIdentification)) {
+        if (!this.netManagementOrganisation.equals(organisationIdentification)) {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
                         null, null, DeviceActivatedFilterType.BOTH, DeviceInMaintenanceFilterType.BOTH, null, null);
@@ -354,7 +354,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -455,21 +455,33 @@ public class DeviceManagementService {
             final String deviceIdentification, final boolean status) throws FunctionalException {
 
         final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(deviceIdentification);
+
         if (existingDevice == null) {
             // device does not exist
             LOGGER.info("Device does not exist, cannot set maintenance status.");
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_CORE,
                     new UnknownEntityException(Device.class, deviceIdentification));
-        } else if (existingDevice.getOwner().getOrganisationIdentification().equals(organisationIdentification)
-                || existingDevice.getOwner().getOrganisationIdentification().equals(this.netMangementOrganisation)) {
-
-            // if the organization is OWNER or MANAGER, you can save it.
-            existingDevice.updateInMaintenance(status);
-            this.writableDeviceRepository.save(existingDevice);
         } else {
-            // unauthorized, throwing exception.
-            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
-                    new NotAuthorizedException(organisationIdentification));
+
+            // Check to see if the organisation is CONFIGURATION or OWNER
+            // authorized
+            boolean isAuthorized = false;
+            for (final DeviceAuthorization authorizations : existingDevice.getAuthorizations()) {
+                if (organisationIdentification.equals(authorizations.getOrganisation().getOrganisationIdentification())
+                        && (DeviceFunctionGroup.OWNER.equals(authorizations.getFunctionGroup()) || DeviceFunctionGroup.CONFIGURATION
+                                .equals(authorizations.getFunctionGroup()))) {
+                    isAuthorized = true;
+                    existingDevice.updateInMaintenance(status);
+                    this.writableDeviceRepository.save(existingDevice);
+                    break;
+                }
+            }
+
+            if (!isAuthorized) {
+                // unauthorized, throwing exception.
+                throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.WS_CORE,
+                        new NotAuthorizedException(organisationIdentification));
+            }
         }
     }
 }

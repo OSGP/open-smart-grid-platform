@@ -53,7 +53,7 @@ public class DomainHelperService {
     public GasMeterDevice findGASMeteringDevice(final String deviceIdentification) throws FunctionalException {
         final GasMeterDevice gasMeteringDevice;
         try {
-            gasMeteringDevice = this.smartMeteringDeviceDomainService.searchGASMeteringDevice(deviceIdentification);
+            gasMeteringDevice = this.smartMeteringDeviceDomainService.searchGasMeteringDevice(deviceIdentification);
         } catch (final UnknownEntityException e) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
         }
