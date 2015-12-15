@@ -99,10 +99,8 @@ public class SmartMeteringMonitoringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService
                     .dequeuePeriodicMeterReadsResponse(request.getCorrelationUid());
 
-            if (meterResponseData != null) {
-                response.setPeriodicMeterReadsContainer(this.monitoringMapper.map(meterResponseData.getMessageData(),
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsContainer.class));
-            }
+            response.setPeriodicMeterReadsContainer(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                    com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsContainer.class));
         } catch (final FunctionalException e) {
             throw e;
         } catch (final Exception e) {
@@ -162,10 +160,8 @@ public class SmartMeteringMonitoringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService.dequeueActualMeterReadsResponse(request
                     .getCorrelationUid());
 
-            if (meterResponseData != null) {
-                response.setActualMeterReads(this.monitoringMapper.map(meterResponseData.getMessageData(),
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads.class));
-            }
+            response.setActualMeterReads(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                    com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReads.class));
         } catch (final FunctionalException e) {
             throw e;
         } catch (final Exception e) {
@@ -225,10 +221,8 @@ public class SmartMeteringMonitoringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService.dequeueReadAlarmRegisterResponse(request
                     .getCorrelationUid());
 
-            if (meterResponseData != null) {
-                response.setAlarmRegister(this.monitoringMapper.map(meterResponseData.getMessageData(),
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class));
-            }
+            response.setAlarmRegister(this.monitoringMapper.map(meterResponseData.getMessageData(),
+                    com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class));
         } catch (final FunctionalException e) {
             throw e;
         } catch (final Exception e) {
