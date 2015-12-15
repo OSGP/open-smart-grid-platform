@@ -13,14 +13,14 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 
 public class PeriodicMeterReadsContainerConverter
-        extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+extends
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
 
     @Override
     public PeriodicMeterReadContainer convertTo(final PeriodicMeterReadsContainer source,
             final Type<PeriodicMeterReadContainer> destinationType) {
 
-        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> resultReads = new ArrayList();
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> resultReads = new ArrayList<>();
         final List<PeriodicMeterReads> sourceReads = source.getPeriodicMeterReads();
         for (final PeriodicMeterReads sourceRead : sourceReads) {
 
@@ -46,7 +46,7 @@ public class PeriodicMeterReadsContainerConverter
     public PeriodicMeterReadsContainer convertFrom(final PeriodicMeterReadContainer source,
             final Type<PeriodicMeterReadsContainer> destinationType) {
 
-        final List<PeriodicMeterReads> resultReads = new ArrayList();
+        final List<PeriodicMeterReads> resultReads = new ArrayList<>();
         final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> sourceReads = source
                 .getPeriodicMeterReads();
         for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads sourceRead : sourceReads) {

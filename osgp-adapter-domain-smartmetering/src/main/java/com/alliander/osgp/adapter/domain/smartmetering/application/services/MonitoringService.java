@@ -96,6 +96,7 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
+        // TODO: FIX MAPPING FOR INTERVAL.
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer periodMeterReadsValueDomain = this.monitoringMapper
                 .map(periodMeterReadsValueDTO,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class);
