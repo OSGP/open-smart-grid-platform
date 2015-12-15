@@ -73,25 +73,17 @@ public class MeterResponseDataService {
     }
 
     public MeterResponseData dequeue(final String correlationUid) throws FunctionalException {
-        try {
-            final MeterResponseData meterResponseData = this.meterResponseDataRepository
-                    .findSingleResultByCorrelationUid(correlationUid);
+        final MeterResponseData meterResponseData = this.meterResponseDataRepository
+                .findSingleResultByCorrelationUid(correlationUid);
 
-            if (meterResponseData == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                        ComponentType.WS_SMART_METERING);
-            }
-
-            this.remove(meterResponseData);
-            return meterResponseData;
-
-        } catch (final FunctionalException e) {
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                LOGGER.warn("No response data for correlation UID {}", correlationUid);
-            }
-
-            throw e;
+        if (meterResponseData == null) {
+            LOGGER.warn("No response data for correlation UID {}", correlationUid);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
+                    ComponentType.WS_SMART_METERING);
         }
+
+        this.remove(meterResponseData);
+        return meterResponseData;
     }
 
     private void remove(final MeterResponseData meterResponseData) {
