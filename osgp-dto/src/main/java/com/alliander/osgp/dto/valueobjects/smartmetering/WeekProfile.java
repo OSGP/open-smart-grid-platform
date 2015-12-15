@@ -81,12 +81,20 @@ public class WeekProfile implements Comparable<WeekProfile>, Serializable {
         return this.sunday;
     }
 
+    // @formatter:off
     @Override
     public String toString() {
-        return "WeekProfile [\nweekProfileName=" + this.weekProfileName + ", monday=" + this.monday + ", tuesday="
-                + this.tuesday + ", wednesday=" + this.wednesday + ", thursday=" + this.thursday + ", friday="
-                + this.friday + ", saturday=" + this.saturday + ", sunday=" + this.sunday + "]";
+        return "WeekProfile [\n\t\t\t\t\t weekProfileName=" + this.weekProfileName +
+                ", \n\t\t\t\t\t monday=" + this.monday +
+                ", \n\t\t\t\t\t tuesday=" + this.tuesday +
+                ", \n\t\t\t\t\t wednesday=" + this.wednesday +
+                ", \n\t\t\t\t\t thursday=" + this.thursday +
+                ", \n\t\t\t\t\t friday=" + this.friday +
+                ", \n\t\t\t\t\t saturday=" + this.saturday +
+                ", \n\t\t\t\t\t sunday=" + this.sunday +
+                "\n\t\t\t\t]";
     }
+    // @formatter:on
 
     @Override
     public int compareTo(final WeekProfile other) {

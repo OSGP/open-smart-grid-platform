@@ -45,8 +45,8 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     @Override
     public String toString() {
-        return "ActivityCalendar [\ncalendarName=" + this.calendarName + ", seasonProfileList="
-                + this.seasonProfileList + "]";
+        return "\nActivityCalendar [\n\tcalendarName=" + this.calendarName + ", \n\tseasonProfileList=\n\t\t"
+                + this.seasonProfileList + "\n]";
     }
 
     @Override
