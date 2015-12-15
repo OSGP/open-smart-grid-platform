@@ -44,7 +44,8 @@
 	<xsd:element name="PeriodicMeterReadsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
+                            <xsd:element name="PeriodType" type="tns:PeriodType" />
+                            <xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads"
 					minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
 		</xsd:complexType>
@@ -78,6 +79,7 @@
 	<xsd:element name="PeriodicMeterReadsGasResponse">
 		<xsd:complexType>
 			<xsd:sequence>
+                                <xsd:element name="PeriodType" type="tns:PeriodType" />
 				<xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas"
 					minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
@@ -237,7 +239,6 @@
 	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:dateTime" />
-			<xsd:element name="PeriodType" type="tns:PeriodType" />
 			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
 			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue"
 				minOccurs="0" />
@@ -250,7 +251,6 @@
 	<xsd:complexType name="PeriodicMeterReadsGas">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:dateTime" />
-			<xsd:element name="PeriodType" type="tns:PeriodType" />
 			<xsd:element name="Consumption" type="tns:MeterValue" />
 			<xsd:element name="CaptureTime" type="xsd:dateTime" />
 		</xsd:sequence>
