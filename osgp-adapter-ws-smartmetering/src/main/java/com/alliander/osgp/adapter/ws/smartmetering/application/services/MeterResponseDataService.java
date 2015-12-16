@@ -37,9 +37,10 @@ public class MeterResponseDataService {
      * @param correlationUid
      * @param expectedClassType
      *            type to check the data object against.
-     * @return MeterReponseData Response data. Null if expected class type does
-     *         not match.
+     * @return MeterReponseData Response data.
      * @throws FunctionalException
+     *             when correlationUid is not found, or when the expected class
+     *             type does not match.
      */
     public MeterResponseData dequeue(final String correlationUid, final Class<?> expectedClassType)
             throws FunctionalException {
@@ -65,7 +66,7 @@ public class MeterResponseDataService {
             LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", warningResultClassType,
                     meterResponseData.getCorrelationUid());
 
-            return null;
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING);
         }
 
         this.remove(meterResponseData);

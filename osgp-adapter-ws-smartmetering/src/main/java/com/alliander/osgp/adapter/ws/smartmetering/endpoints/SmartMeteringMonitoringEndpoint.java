@@ -105,7 +105,7 @@ public class SmartMeteringMonitoringEndpoint {
             throw e;
         } catch (final Exception e) {
             LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+                    e.getMessage(), request.getDeviceIdentification(), organisationIdentification);
 
             this.handleException(e);
         }

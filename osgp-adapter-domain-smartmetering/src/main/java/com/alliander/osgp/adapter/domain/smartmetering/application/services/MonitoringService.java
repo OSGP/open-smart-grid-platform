@@ -64,15 +64,6 @@ public class MonitoringService {
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
-
-        // TODO deviceAuthorization
-        // final DeviceAuthorization deviceAuthorization = new
-        // DeviceAuthorization(duMy, organisation,
-        // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
-        // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
