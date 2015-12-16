@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatus;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusses;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -165,7 +165,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        final AmrProfileStatusses amrProfileStatusses = this.readAmrProfileStatusses(bufferedObjects
+        final AmrProfileStatusCode amrProfileStatusses = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
 
         final DataObject positiveActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_POS);
@@ -183,7 +183,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        final AmrProfileStatusses amrProfileStatusses = this.readAmrProfileStatusses(bufferedObjects
+        final AmrProfileStatusCode amrProfileStatusses = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
 
         final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1);
@@ -216,19 +216,19 @@ public class GetPeriodicMeterReadsCommandExecutor implements
      * @throws ProtocolAdapterException
      *             on invalid register data.
      */
-    private AmrProfileStatusses readAmrProfileStatusses(final DataObject amrProfileStatusData)
+    private AmrProfileStatusCode readAmrProfileStatusCode(final DataObject amrProfileStatusData)
             throws ProtocolAdapterException {
-        AmrProfileStatusses amrProfileStatusses = null;
+        AmrProfileStatusCode amrProfileStatusCode = null;
 
         if (!amrProfileStatusData.isNumber()) {
             throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
         }
 
-        final Set<AmrProfileStatus> statusses = this.amrProfileStatusHelperService
-                .toAmrProfileStatusses((Number) amrProfileStatusData.value());
-        amrProfileStatusses = new AmrProfileStatusses(statusses);
+        final Set<AmrProfileStatusCodeFlag> flags = this.amrProfileStatusHelperService
+                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.value());
+        amrProfileStatusCode = new AmrProfileStatusCode(flags);
 
-        return amrProfileStatusses;
+        return amrProfileStatusCode;
     }
 
     private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReads> periodicMeterReads,
