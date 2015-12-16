@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
 
+    private static final String YEAR_MILLENIAL_PART = "20";
     private static final String LAST_DAY_OF_MONTH = "FE";
     private static final String SECOND_LAST_DAY_OF_MONTH = "FD";
     private static final String DAYLIGHT_SAVINGS_BEGIN = "FE";
@@ -70,8 +71,10 @@ public class DlmsHelperService {
     }
 
     /**
-     * The format of the datestring is YYMMDD and if the year is unspecified the
-     * year positions should hold "FF" as value
+     * The format of the date string is YYMMDD and if the year is unspecified
+     * the year positions should hold "FF" as value Also as the date string only
+     * holds the decade part of the year, the conversion uses the constant "20"
+     * as the centenial/millenial part of the year
      *
      * @param date
      *            the date as String object
@@ -85,8 +88,7 @@ public class DlmsHelperService {
         if (NOT_SPECIFIED.equalsIgnoreCase(year)) {
             bb.putShort((short) 0xFFFF);
         } else {
-            bb.put(Integer.valueOf(20).byteValue());
-            bb.put(Integer.valueOf(year).byteValue());
+            bb.putShort(Short.valueOf(YEAR_MILLENIAL_PART + year));
         }
 
         final String month = date.substring(2, 4);
@@ -97,7 +99,7 @@ public class DlmsHelperService {
         } else if (DAYLIGHT_SAVINGS_BEGIN.equalsIgnoreCase(month)) {
             bb.put((byte) 0xFD);
         } else {
-            bb.put(Integer.valueOf(month).byteValue());
+            bb.put(Byte.parseByte(month));
         }
 
         final String dayOfMonth = date.substring(4);
@@ -108,7 +110,7 @@ public class DlmsHelperService {
         } else if (LAST_DAY_OF_MONTH.equalsIgnoreCase(month)) {
             bb.put((byte) 0xFE);
         } else {
-            bb.put(Integer.valueOf(dayOfMonth).byteValue());
+            bb.put(Byte.parseByte(dayOfMonth));
         }
 
         // leave day of week unspecified (0xFF)
@@ -220,8 +222,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -247,10 +249,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
     }
@@ -261,19 +263,19 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-        .append(", bits=").append(stringValue);
+                .append(", bits=").append(stringValue);
 
         return sb.toString();
     }
 
     private String byteArrayToString(final byte[] bitStringValue) {
+        if (bitStringValue == null || bitStringValue.length == 0) {
+            return null;
+        }
         final StringBuilder sb = new StringBuilder();
         for (final byte element : bitStringValue) {
             sb.append(StringUtils.leftPad(Integer.toBinaryString(element & 0xFF), 8, "0"));
             sb.append(" ");
-        }
-        if (sb.length() == 0) {
-            return null;
         }
         return sb.toString();
     }
