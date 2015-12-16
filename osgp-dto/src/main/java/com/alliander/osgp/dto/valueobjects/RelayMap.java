@@ -19,11 +19,17 @@ public class RelayMap implements Serializable {
     private final Integer index;
     private final Integer address;
     private RelayType relayType;
+    private String alias;
 
-    public RelayMap(final Integer index, final Integer address, final RelayType relayType) {
+    public RelayMap(final Integer index, final Integer address, final RelayType relayType, final String alias) {
         this.index = index;
         this.address = address;
         this.relayType = relayType;
+        this.alias = alias;
+    }
+
+    public String getAlias() {
+        return this.alias;
     }
 
     public Integer getIndex() {
