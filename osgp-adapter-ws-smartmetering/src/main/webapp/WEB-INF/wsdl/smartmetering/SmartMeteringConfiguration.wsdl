@@ -84,6 +84,14 @@
 			name="setAdministrativeStatusAsyncResponse">
 		</wsdl:part>
 	</wsdl:message>
+    <wsdl:message name="SetAdministrativeStatusAsyncRequest">
+        <wsdl:part element="smconf:SetAdministrativeStatusAsyncRequest" name="SetAdministrativeStatusAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetAdministrativeStatusResponse">
+        <wsdl:part element="smconf:SetAdministrativeStatusResponse" name="SetAdministrativeStatusResponse">
+        </wsdl:part>
+    </wsdl:message>
 	
 	<wsdl:message name="GetAdministrativeStatusRequest">
 		<wsdl:part element="smconf:GetAdministrativeStatusRequest" 
@@ -136,6 +144,14 @@
 			<wsdl:output message="tns:SetAdministrativeStatusAsyncResponse" name="SetAdministrativeStatusAsyncResponse">
 			</wsdl:output> 
 		</wsdl:operation>
+        
+        <wsdl:operation name="GetSetAdministrativeStatusReponse">
+            <wsdl:input message="tns:SetAdministrativeStatusAsyncRequest" name="SetAdministrativeStatusAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetAdministrativeStatusResponse" name="SetAdministrativeStatusResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
 		<wsdl:operation name="GetAdministrativeStatus">
 			<wsdl:input message="tns:GetAdministrativeStatusRequest" name="GetAdministrativeStatusRequest">
 			</wsdl:input>
@@ -223,6 +239,19 @@
         	<wsdl:output name="SetAdministrativeStatusAsyncResponse">
         		<soap:body use="literal" />
         	</wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetAdministrativeStatusReponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetAdministrativeStatusAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetAdministrativeStatusResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
         </wsdl:operation>
 
 		<wsdl:operation name="GetAdministrativeStatus">

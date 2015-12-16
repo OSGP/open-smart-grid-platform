@@ -109,6 +109,23 @@
 				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
 			</xsd:sequence>
 		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:element name="SetAdministrativeStatusAsyncRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
+				<xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="SetAdministrativeStatusResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
+				<xsd:element name="Description" type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
 	</xsd:element>
 	
 	<!-- DATATYPES -->
