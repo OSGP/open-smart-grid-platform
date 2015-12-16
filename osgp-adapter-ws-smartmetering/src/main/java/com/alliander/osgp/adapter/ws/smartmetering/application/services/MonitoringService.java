@@ -19,11 +19,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
@@ -43,7 +43,7 @@ public class MonitoringService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PeriodicMeterReadsRequest requestData)
+            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData)
                     throws FunctionalException {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
@@ -68,7 +68,7 @@ public class MonitoringService {
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActualMeterReadsRequest requestData)
+            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData)
                     throws FunctionalException {
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
@@ -87,7 +87,7 @@ public class MonitoringService {
     }
 
     public MeterResponseData dequeueActualMeterReadsResponse(final String correlationUid) throws FunctionalException {
-        return this.meterResponseDataService.dequeue(correlationUid, ActualMeterReads.class);
+        return this.meterResponseDataService.dequeue(correlationUid, MeterReads.class);
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,

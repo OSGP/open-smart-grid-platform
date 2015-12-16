@@ -10,7 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class PeriodicMeterReads implements Serializable {
+public class MeterReads implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
@@ -21,17 +21,14 @@ public class PeriodicMeterReads implements Serializable {
     private final Long activeEnergyImportTariffTwo;
     private final long activeEnergyExportTariffOne;
     private final Long activeEnergyExportTariffTwo;
-    private final PeriodType periodType;
 
-    public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
-            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
-            final Long activeEnergyExportTariffTwo, final PeriodType periodType) {
+    public MeterReads(Date logTime, long activeEnergyImportTariffOne, Long activeEnergyImportTariffTwo,
+            long activeEnergyExportTariffOne, Long activeEnergyExportTariffTwo) {
         this.logTime = logTime;
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
-        this.periodType = periodType;
     }
 
     public long getActiveEnergyImportTariffOne() {
@@ -52,10 +49,6 @@ public class PeriodicMeterReads implements Serializable {
 
     public Date getLogTime() {
         return this.logTime;
-    }
-
-    public PeriodType getPeriodType() {
-        return this.periodType;
     }
 
 }

@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.services;
 
+import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 
 @Service
 @Validated
@@ -25,15 +27,32 @@ public class SmartMeteringDeviceDomainService {
     @Autowired
     private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
 
+    @Autowired
+    private GasMeterDeviceRepository gasMeterDeviceRepository;
+
     public SmartMeteringDevice searchSmartMeteringDevice(@Identification final String deviceIdentification)
             throws UnknownEntityException {
 
-        final SmartMeteringDevice smartMeteringDevice = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        final SmartMeteringDevice smartMeteringDevice = this.smartMeteringDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
 
         if (smartMeteringDevice == null) {
             throw new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification);
         }
 
         return smartMeteringDevice;
+    }
+
+    public GasMeterDevice searchGasMeteringDevice(@Identification final String deviceIdentification)
+            throws UnknownEntityException {
+
+        final GasMeterDevice gASMeteringDevice = this.gasMeterDeviceRepository
+                .findByDeviceIdentification(deviceIdentification);
+
+        if (gASMeteringDevice == null) {
+            throw new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification);
+        }
+
+        return gASMeteringDevice;
     }
 }

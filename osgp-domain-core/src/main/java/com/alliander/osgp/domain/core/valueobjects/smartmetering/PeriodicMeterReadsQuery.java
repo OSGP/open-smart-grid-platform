@@ -10,20 +10,30 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class PeriodicMeterReadsRequestData implements Serializable {
+/**
+ * request periodic reads for E or GAS meter
+ * 
+ * @author dev
+ */
+public class PeriodicMeterReadsQuery implements Serializable {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
-    private final String deviceIdentification;
     private final PeriodType periodType;
     private final Date beginDate;
     private final Date endDate;
+    private final boolean gas;
 
-    public PeriodicMeterReadsRequestData(String deviceIdentification, PeriodType periodType, Date beginDate, Date endDate) {
-        this.deviceIdentification = deviceIdentification;
+    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
+            final boolean gas) {
         this.periodType = periodType;
         this.beginDate = new Date(beginDate.getTime());
         this.endDate = new Date(endDate.getTime());
+        this.gas = gas;
+    }
+
+    public PeriodicMeterReadsQuery(String deviceIdentification, PeriodType periodType, Date beginDate, Date endDate) {
+        this(periodType, beginDate, endDate, false);
     }
 
     public PeriodType getPeriodType() {
@@ -38,8 +48,8 @@ public class PeriodicMeterReadsRequestData implements Serializable {
         return new Date(this.endDate.getTime());
     }
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
+    public boolean isGas() {
+        return gas;
     }
 
 }

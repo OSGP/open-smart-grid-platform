@@ -20,7 +20,8 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterRes
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
@@ -74,11 +75,18 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            // Convert and Persist data
-            final ActualMeterReads data = (ActualMeterReads) message.getObject();
-            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
-                    deviceIdentification, correlationUid, resultType, data);
-            this.meterResponseDataService.enqueue(meterResponseData);
+            if (message.getObject() instanceof MeterReads) {
+                // Convert and Persist data
+                final MeterReads data = (MeterReads) message.getObject();
+                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
+                        messageType, deviceIdentification, correlationUid, resultType, data);
+                this.meterResponseDataService.enqueue(meterResponseData);
+            } else {
+                final MeterReadsGas meterReadsGas = (MeterReadsGas) message.getObject();
+                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
+                        messageType, deviceIdentification, correlationUid, meterReadsGas);
+                this.meterResponseDataService.enqueue(meterResponseData);
+            }
 
             // Send notification indicating data is available.
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
