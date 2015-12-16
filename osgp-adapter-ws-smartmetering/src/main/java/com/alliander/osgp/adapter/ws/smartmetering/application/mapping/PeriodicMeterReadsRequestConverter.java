@@ -17,61 +17,52 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
-import java.util.ArrayList;
-import java.util.List;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 public class PeriodicMeterReadsRequestConverter
         extends
-        BidirectionalConverter<PeriodicMeterReadsRequest, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest> {
+        BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestConverter.class);
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest convertTo(
-            final PeriodicMeterReadsRequest source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest> destinationType) {
+    public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest convertTo(
+            final PeriodicMeterReadsQuery source,
+            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> destinationType) {
 
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest periodicMeterReadsRequest = new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest();
+        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest data = source.isGas() ? new PeriodicMeterReadsGasRequest()
+                : new PeriodicMeterReadsRequest();
+        data.setPeriodicReadsRequestData(new PeriodicReadsRequestData());
 
-        periodicMeterReadsRequest.setDeviceIdentification(source.getDeviceIdentification());
-
-        for (final PeriodicMeterReadsRequestData pmrd : source.getPeriodicMeterReadsRequestData()) {
-
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData pm = new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData();
-            try {
-                pm.setBeginDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                        new DateTime(pmrd.getBeginDate()).toGregorianCalendar()));
-                pm.setEndDate(DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                        new DateTime(pmrd.getEndDate()).toGregorianCalendar()));
-            } catch (final DatatypeConfigurationException e) {
-                LOGGER.error("problem converting date to xmlgergoriancalendat", e);
-            }
-            pm.setPeriodType(PeriodType.valueOf(pmrd.getPeriodType().name()));
-            periodicMeterReadsRequest.getPeriodicMeterReadsRequestData().add(pm);
+        try {
+            data.getPeriodicReadsRequestData().setBeginDate(
+                    DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                            new DateTime(source.getBeginDate()).toGregorianCalendar()));
+            data.getPeriodicReadsRequestData().setEndDate(
+                    DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                            new DateTime(source.getEndDate()).toGregorianCalendar()));
+        } catch (final DatatypeConfigurationException e) {
+            LOGGER.error("problem converting date to xmlgergoriancalendat", e);
         }
-        return periodicMeterReadsRequest;
+        data.getPeriodicReadsRequestData().setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
+        return data;
     }
 
     @Override
-    public PeriodicMeterReadsRequest convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest source,
-            final Type<PeriodicMeterReadsRequest> destinationType) {
+    public PeriodicMeterReadsQuery convertFrom(
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest source,
+            final Type<PeriodicMeterReadsQuery> destinationType) {
 
-        final List<PeriodicMeterReadsRequestData> periodicMeterReadsRequestData = new ArrayList<>();
-        for (final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData pmrd : source
-                .getPeriodicMeterReadsRequestData()) {
-
-            final PeriodicMeterReadsRequestData pm = new PeriodicMeterReadsRequestData(
-                    source.getDeviceIdentification(),
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(pmrd.getPeriodType()
-                            .name()), pmrd.getBeginDate().toGregorianCalendar().getTime(), pmrd.getEndDate()
-                            .toGregorianCalendar().getTime());
-            periodicMeterReadsRequestData.add(pm);
-        }
-        return new PeriodicMeterReadsRequest(source.getDeviceIdentification(),periodicMeterReadsRequestData);
+        return new PeriodicMeterReadsQuery(
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source
+                        .getPeriodicReadsRequestData().getPeriodType().name()), source.getPeriodicReadsRequestData()
+                        .getBeginDate().toGregorianCalendar().getTime(), source.getPeriodicReadsRequestData()
+                        .getEndDate().toGregorianCalendar().getTime(), source instanceof PeriodicMeterReadsGasRequest);
     }
 
 }
