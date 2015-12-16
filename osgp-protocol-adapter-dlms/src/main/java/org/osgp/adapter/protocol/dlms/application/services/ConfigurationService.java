@@ -83,9 +83,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
             final DlmsDevice device = this.domainHelperService
                     .findDlmsDevice(messageMetadata.getDeviceIdentification());
-
-            LOGGER.info("device for Set special day is: {}", device);
-
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
@@ -136,11 +133,8 @@ public class ConfigurationService extends DlmsApplicationService {
             }
             LOGGER.info("******************************************************");
 
-            final String deviceIdentification = messageMetadata.getDeviceIdentification();
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
-
-            LOGGER.info("device for Set Configuration Object is: {}", device);
-
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,

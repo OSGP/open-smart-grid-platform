@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.internal.BitString;
 import org.openmuc.jdlms.internal.CosemDate;
 import org.openmuc.jdlms.internal.CosemDateTime;
 import org.openmuc.jdlms.internal.CosemDateTime.ClockStatus;
@@ -141,6 +142,8 @@ public class DlmsHelperService {
             }
         } else if (dataObject.isByteArray()) {
             objectText = this.getDebugInfoByteArray((byte[]) dataObject.value());
+        } else if (dataObject.isBitString()) {
+            objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.value()).bitString());
         } else if (dataObject.isCosemDateFormat() && dataObject.value() instanceof CosemDateTime) {
             objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.value()).ocletString());
         } else {
