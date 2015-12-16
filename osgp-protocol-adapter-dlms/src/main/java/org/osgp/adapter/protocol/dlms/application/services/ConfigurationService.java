@@ -81,10 +81,10 @@ public class ConfigurationService extends DlmsApplicationService {
             }
             LOGGER.info("******************************************************");
 
-            final String deviceIdentification = messageMetadata.getDeviceIdentification();
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
 
-            LOGGER.info("device for Set Configuration Object is: {}", device);
+            LOGGER.info("device for Set special day is: {}", device);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
