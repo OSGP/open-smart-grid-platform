@@ -22,12 +22,12 @@ public class PeriodicMeterReads implements Serializable {
     private final long activeEnergyExportTariffOne;
     private final Long activeEnergyExportTariffTwo;
     private final PeriodType periodType;
-    private final AmrProfileStatusses amrProfileStatusses;
+    private final AmrProfileStatusCode amrProfileStatusses;
 
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
             final Long activeEnergyExportTariffTwo, final PeriodType periodType,
-            final AmrProfileStatusses amrProfileStatusses) {
+            final AmrProfileStatusCode amrProfileStatusses) {
         this.logTime = logTime;
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
@@ -61,7 +61,7 @@ public class PeriodicMeterReads implements Serializable {
         return this.periodType;
     }
 
-    public AmrProfileStatusses getAmrProfileStatusses() {
+    public AmrProfileStatusCode getAmrProfileStatusses() {
         return this.amrProfileStatusses;
     }
 

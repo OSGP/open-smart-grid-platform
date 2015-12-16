@@ -146,9 +146,9 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:complexType name="AmrProfileStatusses">
+	<xsd:complexType name="AmrProfileStatusCode">
 		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="AmrProfileStatus" type="common:AmrProfileStatus" />
+			<xsd:element name="AmrProfileStatusCodeFlag" type="common:AmrProfileStatusCodeFlag" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -168,7 +168,7 @@
 			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" minOccurs="0" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" minOccurs="1" maxOccurs="1" />
 			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" minOccurs="0" maxOccurs="1" />
-			<xsd:element name="AmrProfileStatusses" type="tns:AmrProfileStatusses" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" maxOccurs="1" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

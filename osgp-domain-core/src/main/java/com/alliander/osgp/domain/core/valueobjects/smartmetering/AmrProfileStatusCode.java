@@ -12,22 +12,22 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class AmrProfileStatusses implements Serializable {
+public class AmrProfileStatusCode implements Serializable {
 
     private static final long serialVersionUID = 2319359505656305783L;
 
-    private final Set<AmrProfileStatus> amrProfileStatusses;
+    private final Set<AmrProfileStatusCodeFlag> amrProfileStatusCodeFlags;
 
-    public AmrProfileStatusses(final Set<AmrProfileStatus> amrProfileStatusses) {
-        this.amrProfileStatusses = new TreeSet<AmrProfileStatus>(amrProfileStatusses);
+    public AmrProfileStatusCode(final Set<AmrProfileStatusCodeFlag> amrProfileStatusses) {
+        this.amrProfileStatusCodeFlags = new TreeSet<AmrProfileStatusCodeFlag>(amrProfileStatusses);
     }
 
     @Override
     public String toString() {
-        return "AmrProfileStatuss[" + String.valueOf(this.amrProfileStatusses) + "]";
+        return "AmrProfileStatusCode[" + String.valueOf(this.amrProfileStatusCodeFlags) + "]";
     }
 
-    public Set<AmrProfileStatus> getAmrProfileStatusses() {
-        return Collections.unmodifiableSet(this.amrProfileStatusses);
+    public Set<AmrProfileStatusCodeFlag> getAmrProfileStatusCodeFlags() {
+        return Collections.unmodifiableSet(this.amrProfileStatusCodeFlags);
     }
 }

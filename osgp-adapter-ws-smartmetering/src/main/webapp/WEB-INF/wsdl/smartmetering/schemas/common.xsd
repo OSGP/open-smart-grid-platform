@@ -112,7 +112,7 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="AmrProfileStatus">
+	<xsd:simpleType name="AmrProfileStatusCodeFlag">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="CRITICAL_ERROR" />
 			<xsd:enumeration value="CLOCK_INVALID" />
