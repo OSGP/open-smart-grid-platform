@@ -24,7 +24,7 @@ public class PeriodicMeterReads implements Serializable {
     // will be empty for INTERVAL
     private final Long activeEnergyExportTariffTwo;
     private final PeriodType periodType;
-    private final AmrProfileStatusses amrProfileStatusses;
+    private final AmrProfileStatusCode amrProfileStatusCode;
 
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
@@ -35,20 +35,20 @@ public class PeriodicMeterReads implements Serializable {
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
         this.periodType = periodType;
-        this.amrProfileStatusses = null;
+        this.amrProfileStatusCode = null;
     }
 
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
             final Long activeEnergyExportTariffTwo, final PeriodType periodType,
-            final AmrProfileStatusses amrProfileStatusses) {
+            final AmrProfileStatusCode amrProfileStatusCode) {
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
         this.periodType = periodType;
-        this.amrProfileStatusses = amrProfileStatusses;
+        this.amrProfileStatusCode = amrProfileStatusCode;
     }
 
     public long getActiveEnergyImportTariffOne() {
@@ -85,7 +85,7 @@ public class PeriodicMeterReads implements Serializable {
         return this.periodType;
     }
 
-    public AmrProfileStatusses getAmrProfileStatusses() {
-        return this.amrProfileStatusses;
+    public AmrProfileStatusCode getAmrProfileStatusCode() {
+        return this.amrProfileStatusCode;
     }
 }

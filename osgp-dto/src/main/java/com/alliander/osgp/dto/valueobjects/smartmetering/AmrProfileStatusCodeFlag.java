@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public enum AmrProfileStatus {
+public enum AmrProfileStatusCodeFlag {
 
     CRITICAL_ERROR,
     CLOCK_INVALID,
@@ -20,7 +20,7 @@ public enum AmrProfileStatus {
         return this.name();
     }
 
-    public static AmrProfileStatus fromValue(final String v) {
+    public static AmrProfileStatusCodeFlag fromValue(final String v) {
         return valueOf(v);
     }
 }
