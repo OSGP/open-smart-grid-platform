@@ -12,6 +12,7 @@ import java.util.Random;
 
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -22,16 +23,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import java.io.Serializable;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService extends DlmsApplicationService {
@@ -50,12 +52,18 @@ public class MonitoringService extends DlmsApplicationService {
     private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
 
     @Autowired
+    private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+
+    @Autowired
+    private GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
+
+    @Autowired
     private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
 
     // === REQUEST PERIODIC METER DATA ===
 
     public void requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
-            final PeriodicMeterReadsRequest periodicMeterReadsRequest,
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery,
             final DeviceResponseMessageSender responseMessageSender) {
 
         this.logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
@@ -68,11 +76,15 @@ public class MonitoringService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final PeriodicMeterReadsContainer periodicMeterReadsContainer = this.getPeriodicMeterReadsCommandExecutor
-                    .execute(conn, periodicMeterReadsRequest);
+            Serializable response = null;
+            if (periodicMeterReadsQuery.isGas()) {
+                response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, periodicMeterReadsQuery);
+            } else {
+                response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, periodicMeterReadsQuery);
+            }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    periodicMeterReadsContainer);
+                    response);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
@@ -87,26 +99,41 @@ public class MonitoringService extends DlmsApplicationService {
     }
 
     public void requestActualMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
-            final ActualMeterReadsRequest actualMeterReadsRequest,
-            final DeviceResponseMessageSender responseMessageSender) {
+            final ActualMeterReadsQuery actualMeterReadsRequest, final DeviceResponseMessageSender responseMessageSender) {
 
         this.logStart(LOGGER, messageMetadata, "requestActualMeterReads");
 
+        ClientConnection conn = null;
         try {
-            // Mock a return value for actual meter reads.
-            final ActualMeterReads actualMeterReads = new ActualMeterReads(new Date(), this.getRandomPositive(),
-                    this.getRandomPositive(), this.getRandomPositive(), this.getRandomPositive());
+
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            Serializable response = null;
+            if (actualMeterReadsRequest.isGas()) {
+                response = this.actualMeterReadsGasCommandExecutor.execute(conn, actualMeterReadsRequest);
+            } else {
+                // mock for now
+                response = new MeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
+                        this.getRandomPositive(), this.getRandomPositive());
+            }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    actualMeterReads);
+                    response);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestActualMeterReads", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+            LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
+
     }
 
     public void requestReadAlarmRegister(final DlmsDeviceMessageMetadata messageMetadata,

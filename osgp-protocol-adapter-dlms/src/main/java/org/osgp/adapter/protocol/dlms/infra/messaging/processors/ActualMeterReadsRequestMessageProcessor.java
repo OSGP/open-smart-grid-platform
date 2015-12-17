@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 
 @Component("dlmsActualMeterReadsRequestMessageProcessor")
 public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
@@ -41,7 +41,7 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
 
         try {
             messageMetadata.handleMessage(message);
-            final ActualMeterReadsRequest actualMeterReadsRequest = (ActualMeterReadsRequest) message.getObject();
+            final ActualMeterReadsQuery actualMeterReadsRequest = (ActualMeterReadsQuery) message.getObject();
 
             this.monitoringService.requestActualMeterReads(messageMetadata, actualMeterReadsRequest,
                     this.responseMessageSender);
