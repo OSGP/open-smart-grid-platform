@@ -11,20 +11,20 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class PeriodicMeterReadsContainer implements Serializable {
+public class PeriodicMeterReadsContainerGas implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    private final List<MeterReads> meterReads;
+    private final List<MeterReadsGas> meterReadsGas;
     private final PeriodType periodType;
 
-    public PeriodicMeterReadsContainer(final PeriodType periodType, List<MeterReads> meterReads) {
-        this.meterReads = Collections.unmodifiableList(meterReads);
+    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<MeterReadsGas> meterReadsGas) {
+        this.meterReadsGas = Collections.unmodifiableList(meterReadsGas);
         this.periodType = periodType;
     }
 
-    public List<MeterReads> getMeterReads() {
-        return meterReads;
+    public List<MeterReadsGas> getMeterReadsGas() {
+        return this.meterReadsGas;
     }
 
     public PeriodType getPeriodType() {
