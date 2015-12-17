@@ -20,7 +20,7 @@
     <parent>
         <artifactId>parent-shared</artifactId>
         <groupId>com.alliander.osgp</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.11.0-SNAPSHOT</version>
         <relativePath>parent-shared</relativePath>
     </parent>
 
