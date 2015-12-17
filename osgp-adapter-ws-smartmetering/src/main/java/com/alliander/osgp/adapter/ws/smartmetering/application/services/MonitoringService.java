@@ -22,7 +22,9 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -67,6 +69,11 @@ public class MonitoringService {
         return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadContainer.class);
     }
 
+    public MeterResponseData dequeuePeriodicMeterReadsGasResponse(final String correlationUid)
+            throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadsContainerGas.class);
+    }
+
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData)
                     throws FunctionalException {
@@ -88,6 +95,10 @@ public class MonitoringService {
 
     public MeterResponseData dequeueActualMeterReadsResponse(final String correlationUid) throws FunctionalException {
         return this.meterResponseDataService.dequeue(correlationUid, MeterReads.class);
+    }
+
+    public MeterResponseData dequeueActualMeterReadsGasResponse(final String correlationUid) throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid, MeterReadsGas.class);
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
