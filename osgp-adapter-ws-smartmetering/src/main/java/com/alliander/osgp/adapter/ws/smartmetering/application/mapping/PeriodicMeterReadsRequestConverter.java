@@ -17,7 +17,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
@@ -25,8 +24,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicRea
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 public class PeriodicMeterReadsRequestConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> {
+extends
+BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestConverter.class);
 
@@ -35,8 +34,8 @@ public class PeriodicMeterReadsRequestConverter
             final PeriodicMeterReadsQuery source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> destinationType) {
 
-        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest data = source.isGas() ? new PeriodicMeterReadsGasRequest()
-                : new PeriodicMeterReadsRequest();
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest data = source.isGas() ? new PeriodicMeterReadsGasRequest()
+        : new PeriodicMeterReadsRequest();
         data.setPeriodicReadsRequestData(new PeriodicReadsRequestData());
 
         try {
