@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
-import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
+import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
@@ -19,36 +19,32 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 
-/**
- * Class for processing add meter request messages
- */
-@Component("dlmsAddMeterRequestMessageProcessor")
-public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterRequestMessageProcessor.class);
+@Component("dlmsReadAlarmRegisterRequestMessageProcessor")
+public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterRequestMessageProcessor.class);
 
     @Autowired
-    private InstallationService installationService;
+    private MonitoringService monitoringService;
 
-    public AddMeterRequestMessageProcessor() {
-        super(DeviceRequestMessageType.ADD_METER);
+    protected ReadAlarmRegisterRequestMessageProcessor() {
+        super(DeviceRequestMessageType.READ_ALARM_REGISTER);
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing add meter request message");
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing read alarm register request message");
 
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
         try {
             messageMetadata.handleMessage(message);
-            final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) message.getObject();
+            final ReadAlarmRegisterRequest readAlarmRegisterRequest = (ReadAlarmRegisterRequest) message.getObject();
 
-            this.installationService.addMeter(messageMetadata, smartMeteringDevice, this.responseMessageSender);
+            this.monitoringService.requestReadAlarmRegister(messageMetadata, readAlarmRegisterRequest,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

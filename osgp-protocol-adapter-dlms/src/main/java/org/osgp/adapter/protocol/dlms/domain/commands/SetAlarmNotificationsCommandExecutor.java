@@ -1,11 +1,16 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -20,6 +25,7 @@ import org.openmuc.jdlms.SetRequestParameter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification;
@@ -35,56 +41,8 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.97.98.10.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    private static final int NUMBER_OF_BITS_IN_ALARM_FILTER = 32;
-
-    /**
-     * Gives the position of the alarm code as indicated by the AlarmType in the
-     * bit string representation of the alarm register.
-     * <p>
-     * A position of 0 means the least significant bit, up to the maximum of 31
-     * for the most significant bit. Since the 4 most significant bits in the
-     * object are not used according to the DSMR documentation, the practical
-     * meaningful most significant bit is bit 27.
-     */
-    private static final Map<AlarmType, Integer> alarmRegisterBitIndexPerAlarmType;
-
-    static {
-        final EnumMap<AlarmType, Integer> map = new EnumMap<>(AlarmType.class);
-
-        // Bits for group: Other Alarms
-        map.put(AlarmType.CLOCK_INVALID, 0);
-        map.put(AlarmType.REPLACE_BATTERY, 1);
-        map.put(AlarmType.POWER_UP, 2);
-        // bits 3 to 7 are not used
-
-        // Bits for group: Critical Alarms
-        map.put(AlarmType.PROGRAM_MEMORY_ERROR, 8);
-        map.put(AlarmType.RAM_ERROR, 9);
-        map.put(AlarmType.NV_MEMORY_ERROR, 10);
-        map.put(AlarmType.MEASUREMENT_SYSTEM_ERROR, 11);
-        map.put(AlarmType.WATCHDOG_ERROR, 12);
-        map.put(AlarmType.FRAUD_ATTEMPT, 13);
-        // bits 14 and 15 are not used
-
-        // Bits for group: M-Bus Alarms
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_1, 16);
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_2, 17);
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_3, 18);
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_4, 19);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_1, 20);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_2, 21);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_3, 22);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_4, 23);
-
-        // Bits for group: Reserved
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1, 24);
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2, 25);
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3, 26);
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4, 27);
-        // bits 28 to 31 are not used
-
-        alarmRegisterBitIndexPerAlarmType = Collections.unmodifiableMap(map);
-    }
+    @Autowired
+    private AlarmHelperService alarmHelperService;
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final AlarmNotifications alarmNotifications)
@@ -103,7 +61,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     public AlarmNotifications retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -166,11 +124,11 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         /*
          * Create a new (modifyable) set of alarm notifications, based on the
          * notifications to set.
-         * 
+         *
          * Next, add all notifications on the device. These will only really be
          * added to the new set of notifications if it did not contain a
          * notification for the alarm type for which the notification is added.
-         * 
+         *
          * This works because of the specification of addAll for the set,
          * claiming elements will only be added if not already present, and the
          * defintion of equals on the AlarmNotification, ensuring only a simgle
@@ -191,7 +149,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
         final AlarmType[] alarmTypes = AlarmType.values();
         for (final AlarmType alarmType : alarmTypes) {
-            final boolean enabled = bitSet.get(alarmRegisterBitIndexPerAlarmType.get(alarmType));
+            final boolean enabled = bitSet.get(this.alarmHelperService.toBitPosition(alarmType));
             notifications.add(new AlarmNotification(alarmType, enabled));
         }
 
@@ -199,14 +157,16 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     public long alarmFilterLongValue(final AlarmNotifications alarmNotifications) {
+        final Set<AlarmType> alarmTypes = new HashSet<>();
 
-        final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
+        // Group all active alarm types.
         final Set<AlarmNotification> notifications = alarmNotifications.getAlarmNotifications();
         for (final AlarmNotification alarmNotification : notifications) {
-            bitSet.set(alarmRegisterBitIndexPerAlarmType.get(alarmNotification.getAlarmType()),
-                    alarmNotification.isEnabled());
+            if (alarmNotification.isEnabled()) {
+                alarmTypes.add(alarmNotification.getAlarmType());
+            }
         }
 
-        return bitSet.toLongArray()[0];
+        return this.alarmHelperService.toLongValue(alarmTypes);
     }
 }

@@ -42,19 +42,18 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
     public void processMessage(final ObjectMessage message) {
         LOGGER.debug("Processing set alarm notifications request message");
 
-        final DlmsDeviceMessageMetadata messageMetadate = new DlmsDeviceMessageMetadata();
+        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
         try {
-            messageMetadate.handleMessage(message);
+            messageMetadata.handleMessage(message);
 
             final AlarmNotifications alarmNotifications = (AlarmNotifications) message.getObject();
 
-            this.configurationService.setAlarmNotifications(messageMetadate.getOrganisationIdentification(),
-                    messageMetadate.getDeviceIdentification(), messageMetadate.getCorrelationUid(), alarmNotifications,
-                    this.responseMessageSender, messageMetadate.getDomain(), messageMetadate.getDomainVersion(), messageMetadate.getMessageType());
+            this.configurationService.setAlarmNotifications(messageMetadata, alarmNotifications,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadate);
+            this.logJmsException(LOGGER, exception, messageMetadata);
         }
     }
 }

@@ -47,10 +47,8 @@ public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMes
             messageMetadata.handleMessage(message);
             final ActivityCalendar activityCalendarDto = (ActivityCalendar) message.getObject();
 
-            this.configurationService.setActivityCalendar(messageMetadata.getOrganisationIdentification(),
-                    messageMetadata.getDeviceIdentification(), messageMetadata.getCorrelationUid(),
-                    activityCalendarDto, this.responseMessageSender, messageMetadata.getDomain(),
-                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.configurationService.setActivityCalendar(messageMetadata, activityCalendarDto,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
