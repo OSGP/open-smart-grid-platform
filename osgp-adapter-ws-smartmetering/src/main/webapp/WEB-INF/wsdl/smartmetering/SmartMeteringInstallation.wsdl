@@ -24,12 +24,22 @@
         <wsdl:part element="common:UserName" name="UserName" />
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
-    <wsdl:message name="AddDeviceResponse">
-        <wsdl:part element="sminst:AddDeviceResponse" name="AddDeviceResponse">
-        </wsdl:part>
-    </wsdl:message>
+    
+    
     <wsdl:message name="AddDeviceRequest">
         <wsdl:part element="sminst:AddDeviceRequest" name="AddDeviceRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddDeviceAsyncResponse">
+        <wsdl:part element="sminst:AddDeviceAsyncResponse" name="AddDeviceAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddDeviceAsyncRequest">
+        <wsdl:part element="sminst:AddDeviceAsyncRequest" name="AddDeviceAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddDeviceResponse">
+        <wsdl:part element="sminst:AddDeviceResponse" name="AddDeviceResponse">
         </wsdl:part>
     </wsdl:message>
 
@@ -37,6 +47,12 @@
    
         <wsdl:operation name="AddDevice">
             <wsdl:input message="tns:AddDeviceRequest" name="AddDeviceRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:AddDeviceAsyncResponse" name="AddDeviceAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetAddDeviceReponse">
+            <wsdl:input message="tns:AddDeviceAsyncRequest" name="AddDeviceAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:AddDeviceResponse" name="AddDeviceResponse">
             </wsdl:output>
@@ -50,6 +66,19 @@
         <wsdl:operation name="AddDevice">
             <soap:operation soapAction="" />
             <wsdl:input name="AddDeviceRequest">
+                <soap:header message="tns:AddDeviceHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:AddDeviceHeader" part="UserName" use="literal" />
+				<soap:header message="tns:AddDeviceHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="AddDeviceAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetAddDeviceReponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="AddDeviceAsyncRequest">
                 <soap:header message="tns:AddDeviceHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:AddDeviceHeader" part="UserName" use="literal" />
 				<soap:header message="tns:AddDeviceHeader" part="ApplicationName" use="literal" />

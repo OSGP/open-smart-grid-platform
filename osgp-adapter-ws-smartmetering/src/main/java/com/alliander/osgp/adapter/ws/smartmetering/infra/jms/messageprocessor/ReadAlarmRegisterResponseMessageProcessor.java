@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -31,7 +31,7 @@ public class ReadAlarmRegisterResponseMessageProcessor extends DomainResponseMes
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
     protected ReadAlarmRegisterResponseMessageProcessor() {
         super(DeviceFunction.READ_ALARM_REGISTER);
@@ -74,7 +74,7 @@ public class ReadAlarmRegisterResponseMessageProcessor extends DomainResponseMes
             // Convert and Persist data
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, message.getObject());
-            this.meterResponseDataRepository.save(meterResponseData);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             // Send notification indicating data is available.
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

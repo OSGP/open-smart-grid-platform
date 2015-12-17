@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -43,7 +43,7 @@ public class FindEventsResponseMessageProcessor extends DomainResponseMessagePro
     private ManagementMapper managementMapper;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
     public FindEventsResponseMessageProcessor() {
         super(DeviceFunction.FIND_EVENTS);
@@ -92,7 +92,7 @@ public class FindEventsResponseMessageProcessor extends DomainResponseMessagePro
             // Convert the events to entity and save the events
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, data);
-            this.meterResponseDataRepository.save(meterResponseData);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
