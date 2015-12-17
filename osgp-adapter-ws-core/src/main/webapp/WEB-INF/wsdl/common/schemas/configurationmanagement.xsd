@@ -194,6 +194,7 @@
 				</xsd:simpleType>
 			</xsd:element>
 			<xsd:element name="RelayType" type="tns:RelayType" minOccurs="1" maxOccurs="1" />
+			<xsd:element minOccurs="0" name="alias" type="xsd:string" />
 		</xsd:sequence>
 	</xsd:complexType>
 </xsd:schema>

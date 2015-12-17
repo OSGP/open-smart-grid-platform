@@ -32,16 +32,20 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -143,19 +147,19 @@ public class SmartMeteringConfigurationEndpoint {
     // return response;
     // }
 
-    @PayloadRoot(localPart = "SpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetSpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SpecialDaysResponse requestSpecialDaysData(
+    public SetSpecialDaysAsyncResponse requestSpecialDaysData(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SpecialDaysRequest request) throws OsgpException {
+            @RequestPayload final SetSpecialDaysRequest request) throws OsgpException {
 
-        final SpecialDaysResponse response = new SpecialDaysResponse();
+        final SetSpecialDaysAsyncResponse response = new SetSpecialDaysAsyncResponse();
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest dataRequest = this.configurationMapper
                 .map(request, com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
 
-        final String correlationUid = this.configurationService.requestSpecialDaysData(organisationIdentification,
-                dataRequest);
+        final String correlationUid = this.configurationService.enqueueSetSpecialDaysRequest(
+                organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
@@ -165,25 +169,77 @@ public class SmartMeteringConfigurationEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "SetSpecialDaysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetSpecialDaysResponse getSetSpecialDaysResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetSpecialDaysAsyncRequest request) {
+
+        final SetSpecialDaysResponse response = new SetSpecialDaysResponse();
+        try {
+            final MeterResponseData meterResponseData = this.configurationService.dequeueSetSpecialDaysResponse(request
+                    .getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
+        }
+
+        return response;
+    }
+
     @PayloadRoot(localPart = "SetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetConfigurationObjectResponse setConfigurationObject(
+    public SetConfigurationObjectAsyncResponse setConfigurationObject(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetConfigurationObjectRequest request) throws OsgpException {
 
-        final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
+        final SetConfigurationObjectAsyncResponse response = new SetConfigurationObjectAsyncResponse();
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest dataRequest = this.configurationMapper
                 .map(request,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
-        final String correlationUid = this.configurationService.setConfigurationObject(organisationIdentification,
-                dataRequest);
+        final String correlationUid = this.configurationService.enqueueSetConfigurationObjectRequest(
+                organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest);
 
         final AsyncResponse asyncResponse = new AsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
         response.setAsyncResponse(asyncResponse);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetConfigurationObjectAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetConfigurationObjectResponse getSetConfigurationObjectResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetConfigurationObjectAsyncRequest request) {
+
+        final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
+        try {
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
+        }
 
         return response;
     }

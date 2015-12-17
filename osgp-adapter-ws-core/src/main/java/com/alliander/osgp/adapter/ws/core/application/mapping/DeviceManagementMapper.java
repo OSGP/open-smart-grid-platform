@@ -144,7 +144,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setHasSchedule(source.getHasSchedule());
                 destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
                         .toString());
-                destination.setOwner(source.getOwner());
+                destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
                 destination.getOrganisations().addAll(source.getOrganisations());
 
                 final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
@@ -156,15 +156,18 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 }
 
                 destination.getEans().addAll(eans);
+                if (source.getRelayStatusses() != null) {
+                    RelayStatus temp = null;
+                    for (final com.alliander.osgp.domain.core.entities.RelayStatus r : source.getRelayStatusses()) {
+                        temp = this.convertRelayStatus(r);
 
-                RelayStatus temp = null;
-                for (final com.alliander.osgp.domain.core.entities.RelayStatus r : source.getRelayStatusses()) {
-                    temp = this.convertRelayStatus(r);
-
-                    if (temp != null) {
-                        destination.getRelayStatuses().add(temp);
+                        if (temp != null) {
+                            destination.getRelayStatuses().add(temp);
+                        }
                     }
                 }
+
+                destination.setInMaintenance(source.isInMaintenance());
 
                 return destination;
             }

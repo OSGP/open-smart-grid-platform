@@ -26,12 +26,20 @@
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
-    <wsdl:message name="SpecialDaysRequest">
-        <wsdl:part element="smconf:SpecialDaysRequest" name="SpecialDaysRequest">
+    <wsdl:message name="SetSpecialDaysRequest">
+        <wsdl:part element="smconf:SetSpecialDaysRequest" name="SetSpecialDaysRequest">
         </wsdl:part>
     </wsdl:message>
-    <wsdl:message name="SpecialDaysResponse">
-        <wsdl:part element="smconf:SpecialDaysResponse" name="SpecialDaysResponse">
+    <wsdl:message name="SetSpecialDaysAsyncResponse">
+        <wsdl:part element="smconf:SetSpecialDaysAsyncResponse" name="SetSpecialDaysAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetSpecialDaysAsyncRequest">
+        <wsdl:part element="smconf:SetSpecialDaysAsyncRequest" name="SetSpecialDaysAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetSpecialDaysResponse">
+        <wsdl:part element="smconf:SetSpecialDaysResponse" name="SetSpecialDaysResponse">
         </wsdl:part>
     </wsdl:message>
 
@@ -60,6 +68,14 @@
     
     <wsdl:message name="SetConfigurationObjectRequest">
         <wsdl:part element="smconf:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetConfigurationObjectAsyncResponse"> 
+        <wsdl:part element="smconf:SetConfigurationObjectAsyncResponse" name="SetConfigurationObjectAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetConfigurationObjectAsyncRequest">
+        <wsdl:part element="smconf:SetConfigurationObjectAsyncRequest" name="SetConfigurationObjectAsyncRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SetConfigurationObjectResponse">
@@ -103,15 +119,28 @@
 	</wsdl:message>
 
     <wsdl:portType name="SmartmeterconfigurationPort">
-        <wsdl:operation name="RequestSpecialDays">
-            <wsdl:input message="tns:SpecialDaysRequest" name="SpecialDaysRequest">
+        <wsdl:operation name="SetSpecialDays">
+            <wsdl:input message="tns:SetSpecialDaysRequest" name="SetSpecialDaysRequest">
             </wsdl:input>
-            <wsdl:output message="tns:SpecialDaysResponse" name="SpecialDaysResponse">
+            <wsdl:output message="tns:SetSpecialDaysAsyncResponse" name="SetSpecialDaysAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetSpecialDaysReponse">
+            <wsdl:input message="tns:SetSpecialDaysAsyncRequest" name="SetSpecialDaysAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetSpecialDaysResponse" name="SetSpecialDaysResponse">
             </wsdl:output>
         </wsdl:operation>
         
         <wsdl:operation name="SetConfigurationObject">
             <wsdl:input message="tns:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetConfigurationObjectAsyncResponse" name="SetConfigurationObjectAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSetConfigurationObjectResponse">
+            <wsdl:input message="tns:SetConfigurationObjectAsyncRequest" name="SetConfigurationObjectAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
             </wsdl:output>
@@ -122,7 +151,7 @@
             </wsdl:input>
             <wsdl:output message="tns:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
             </wsdl:output>
-		</wsdl:operation>		
+		</wsdl:operation>
 
 		<wsdl:operation name="SetActivityCalendar">
             <wsdl:input message="tns:SetActivityCalendarRequest" name="SetActivityCalendarRequest">
@@ -162,17 +191,29 @@
     </wsdl:portType>
 
     <wsdl:binding name="SmartmeterconfigurationPortSoap11" type="tns:SmartmeterconfigurationPort">
-        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />      
-
-        <wsdl:operation name="RequestSpecialDays">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="SetSpecialDays">
             <soap:operation soapAction="" />
-            <wsdl:input name="SpecialDaysRequest">
+            <wsdl:input name="SetSpecialDaysRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
-            <wsdl:output name="SpecialDaysResponse">
+            <wsdl:output name="SetSpecialDaysAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetSpecialDaysReponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetSpecialDaysAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetSpecialDaysResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
@@ -180,6 +221,19 @@
         <wsdl:operation name="SetConfigurationObject">
             <soap:operation soapAction="" />
             <wsdl:input name="SetConfigurationObjectRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetConfigurationObjectAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetConfigurationObjectResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetConfigurationObjectAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />

@@ -18,10 +18,14 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -47,23 +51,24 @@ public class SmartMeteringInstallationEndpoint {
     private InstallationMapper installationMapper;
 
     public SmartMeteringInstallationEndpoint() {
+        // Empty constructor
     }
 
     @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public AddDeviceResponse addDevice(@OrganisationIdentification final String organisationIdentification,
+    public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request) throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
-        final AddDeviceResponse response = new AddDeviceResponse();
+        final AddDeviceAsyncResponse response = new AddDeviceAsyncResponse();
 
         try {
-
             final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
                     SmartMeteringDevice.class);
 
-            final String correlationUid = this.installationService.addDevice(organisationIdentification, device);
+            final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
+                    organisationIdentification, device.getDeviceIdentification(), device);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -84,6 +89,32 @@ public class SmartMeteringInstallationEndpoint {
                     request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "AddDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
+    @ResponsePayload
+    public AddDeviceResponse getSetConfigurationObjectResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddDeviceAsyncRequest request) {
+
+        final AddDeviceResponse response = new AddDeviceResponse();
+        try {
+            final MeterResponseData meterResponseData = this.installationService.dequeueAddSmartMeterResponse(request
+                    .getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
         }
 
         return response;

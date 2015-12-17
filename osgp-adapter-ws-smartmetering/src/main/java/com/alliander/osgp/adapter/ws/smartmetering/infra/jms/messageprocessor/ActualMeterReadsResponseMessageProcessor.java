@@ -16,12 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("domainSmartMeteringActualMeterReadslResponseMessageProcessor")
 public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMessageProcessor {
@@ -32,7 +34,7 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
     protected ActualMeterReadsResponseMessageProcessor() {
         super(DeviceFunction.REQUEST_ACTUAL_METER_DATA);
@@ -47,16 +49,17 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
         String organisationIdentification = null;
         String deviceIdentification = null;
 
-        String result = null;
         String notificationMessage = null;
         NotificationType notificationType = null;
+        ResponseMessageResultType resultType = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            result = message.getStringProperty(Constants.RESULT);
+            resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
+
             notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
 
@@ -72,15 +75,22 @@ public class ActualMeterReadsResponseMessageProcessor extends DomainResponseMess
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            // Convert and Persist data
-            final ActualMeterReads data = (ActualMeterReads) message.getObject();
-            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
-                    deviceIdentification, correlationUid, data);
-            this.meterResponseDataRepository.save(meterResponseData);
+            if (message.getObject() instanceof MeterReads) {
+                // Convert and Persist data
+                final MeterReads data = (MeterReads) message.getObject();
+                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
+                        messageType, deviceIdentification, correlationUid, resultType, data);
+                this.meterResponseDataService.enqueue(meterResponseData);
+            } else {
+                final MeterReadsGas meterReadsGas = (MeterReadsGas) message.getObject();
+                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
+                        messageType, deviceIdentification, correlationUid, meterReadsGas);
+                this.meterResponseDataService.enqueue(meterResponseData);
+            }
 
             // Send notification indicating data is available.
-            this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
-                    correlationUid, notificationMessage, notificationType);
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
+                    resultType.name(), correlationUid, notificationMessage, notificationType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);

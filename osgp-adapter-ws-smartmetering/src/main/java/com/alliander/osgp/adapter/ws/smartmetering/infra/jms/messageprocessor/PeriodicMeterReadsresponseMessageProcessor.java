@@ -17,11 +17,12 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -36,7 +37,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
     @Autowired
     private MonitoringMapper monitoringMapper;
@@ -59,7 +60,6 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         String result = null;
         String message = null;
         NotificationType notificationType = null;
-        PeriodicMeterReadContainer data = null;
 
         try {
             correlationUid = objectMessage.getJMSCorrelationID();
@@ -84,12 +84,21 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            data = (PeriodicMeterReadContainer) objectMessage.getObject();
+            if (objectMessage.getObject() instanceof PeriodicMeterReadContainer) {
+                final PeriodicMeterReadContainer data = (PeriodicMeterReadContainer) objectMessage.getObject();
 
-            // Convert the events to entity and save the periodicMeterReads
-            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
-                    deviceIdentification, correlationUid, data);
-            this.meterResponseDataRepository.save(meterResponseData);
+                // Convert the events to entity and save the periodicMeterReads
+                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
+                        messageType, deviceIdentification, correlationUid, data);
+                this.meterResponseDataService.enqueue(meterResponseData);
+            } else {
+                final PeriodicMeterReadsContainerGas data = (PeriodicMeterReadsContainerGas) objectMessage.getObject();
+
+                // Convert the events to entity and save the periodicMeterReads
+                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
+                        messageType, deviceIdentification, correlationUid, data);
+                this.meterResponseDataService.enqueue(meterResponseData);
+            }
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,

@@ -1,0 +1,37 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
+
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+
+public class PeriodicMeterReadsRequestConverter
+        extends
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery, PeriodicMeterReadsQuery> {
+
+    @Override
+    public PeriodicMeterReadsQuery convertTo(
+            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery source,
+            final Type<PeriodicMeterReadsQuery> destinationType) {
+        return new PeriodicMeterReadsQuery(PeriodType.valueOf(source.getPeriodType().name()), source.getBeginDate(),
+                source.getEndDate(), source.isGas());
+    }
+
+    @Override
+    public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery convertFrom(
+            final PeriodicMeterReadsQuery source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> destinationType) {
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery(
+                com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType().name()),
+                source.getBeginDate(), source.getEndDate());
+    }
+
+}

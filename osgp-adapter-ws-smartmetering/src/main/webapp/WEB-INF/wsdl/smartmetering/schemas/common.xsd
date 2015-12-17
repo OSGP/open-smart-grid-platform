@@ -7,22 +7,20 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<xsd:schema 
- 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10" 
-	attributeFormDefault="unqualified" 
-	elementFormDefault="qualified" 
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10"
+	attributeFormDefault="unqualified" elementFormDefault="qualified"
 	targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10">
-	
-    <xsd:element name="OrganisationIdentification" type="tns:Identification"/>
-    <xsd:element name="UserName" type="tns:Identification"/>
-    <xsd:element name="ApplicationName" type="tns:Identification"/>
+
+	<xsd:element name="OrganisationIdentification" type="tns:Identification" />
+	<xsd:element name="UserName" type="tns:Identification" />
+	<xsd:element name="ApplicationName" type="tns:Identification" />
 
 	<xsd:simpleType name="Identification">
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:minLength value="1"/>
-			<xsd:maxLength value="40"/>
-			<xsd:pattern value="[^ ]{0,40}"/>
+			<xsd:minLength value="1" />
+			<xsd:maxLength value="40" />
+			<xsd:pattern value="[^ ]{0,40}" />
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -31,7 +29,7 @@
 			<xsd:length value="17" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<xsd:simpleType name="AlphaNumericType">
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[a-zA-Z0-9 ]+" />
@@ -40,9 +38,9 @@
 
 	<xsd:complexType name="Page">
 		<xsd:sequence>
-			<xsd:element name="TotalPages" type="xsd:int" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="PageSize" type="xsd:int" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="CurrentPage" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="TotalPages" type="xsd:int" />
+			<xsd:element name="PageSize" type="xsd:int" />
+			<xsd:element name="CurrentPage" type="xsd:int" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -51,7 +49,7 @@
 			<xsd:minLength value="20" />
 		</xsd:restriction>
 	</xsd:simpleType>
-	
+
 	<xsd:complexType name="Action" abstract="true">
 		<xsd:sequence>
 		</xsd:sequence>
@@ -63,7 +61,7 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-		
+
 	<xsd:complexType name="Command" abstract="true">
 		<xsd:complexContent>
 			<xsd:extension base="tns:Action">
@@ -72,18 +70,77 @@
 	</xsd:complexType>
 
 	<xsd:complexType name="AsyncRequest">
-		<xsd:sequence>
-			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" minOccurs="1" maxOccurs="1" />
-			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" maxOccurs="1" />
-		</xsd:sequence>
+		<xsd:annotation>
+			<xsd:documentation>for retrieving data after it becomes available
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tns:AsyncProcessingInfo">
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
-	
+
 	<xsd:complexType name="AsyncResponse">
+		<xsd:annotation>
+			<xsd:documentation>response to a request for data, use this to
+				retrieve data
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="tns:AsyncProcessingInfo">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="AsyncProcessingInfo" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation>for connecting request for data to an asynchronous
+				response
+			</xsd:documentation>
+		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" minOccurs="1" maxOccurs="1" />				
-			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" />
+			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" />
 		</xsd:sequence>
 	</xsd:complexType>
+
+	<!-- DSMR Alarm Codes -->
+	<xsd:simpleType name="AlarmType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CLOCK_INVALID" />
+			<xsd:enumeration value="REPLACE_BATTERY" />
+			<xsd:enumeration value="POWER_UP" />
+			<xsd:enumeration value="PROGRAM_MEMORY_ERROR" />
+			<xsd:enumeration value="RAM_ERROR" />
+			<xsd:enumeration value="NV_MEMORY_ERROR" />
+			<xsd:enumeration value="MEASUREMENT_SYSTEM_ERROR" />
+			<xsd:enumeration value="WATCHDOG_ERROR" />
+			<xsd:enumeration value="FRAUD_ATTEMPT" />
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1" />
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2" />
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3" />
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4" />
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1" />
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1" />
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="AmrProfileStatus">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CRITICAL_ERROR" />
+			<xsd:enumeration value="CLOCK_INVALID" />
+			<xsd:enumeration value="DATA_NOT_VALID" />
+			<xsd:enumeration value="DAYLIGHT_SAVING" />
+			<xsd:enumeration value="CLOCK_ADJUSTED" />
+			<xsd:enumeration value="POWER_DOWN" />
+		</xsd:restriction>
+	</xsd:simpleType>
 	
 	<xsd:simpleType name="OsgpResultType">
 		<xsd:restriction base="xsd:string">
@@ -92,27 +149,27 @@
 			<xsd:enumeration value="NOT OK" />
 		</xsd:restriction>
 	</xsd:simpleType>
-				
+
 	<xsd:element name="FunctionalFault">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Code" type="xsd:int" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="Message" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="Component" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerException" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerMessage" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
+				<xsd:element name="Code" type="xsd:int"></xsd:element>
+				<xsd:element name="Message" type="xsd:string"></xsd:element>
+				<xsd:element name="Component" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerException" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
+
 	<xsd:element name="TechnicalFault">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Message" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="Component" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerException" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
-				<xsd:element name="InnerMessage" type="xsd:string" minOccurs="1" maxOccurs="1"></xsd:element>
+				<xsd:element name="Message" type="xsd:string"></xsd:element>
+				<xsd:element name="Component" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerException" type="xsd:string"></xsd:element>
+				<xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
-	</xsd:element>	
+	</xsd:element>
 </xsd:schema>

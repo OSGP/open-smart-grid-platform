@@ -24,10 +24,11 @@ public class FunctionalExceptionConverter extends CustomConverter<FunctionalExce
         destination.setCode(source.getCode());
         destination.setComponent(source.getComponentType().name());
         destination.setMessage(source.getMessage());
-        destination.setInnerException(source.getCause().getClass().getName());
-        destination.setInnerMessage(source.getCause().getMessage());
+        if (source.getCause() != null) {
+            destination.setInnerException(source.getCause().getClass().getName());
+            destination.setInnerMessage(source.getCause().getMessage());
+        }
 
         return destination;
     }
-
 }

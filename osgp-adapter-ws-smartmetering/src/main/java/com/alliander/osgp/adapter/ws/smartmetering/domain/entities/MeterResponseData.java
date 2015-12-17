@@ -52,6 +52,16 @@ public class MeterResponseData extends AbstractEntity {
 
     }
 
+    // TODO: delete constructor after refactoring complete.
+    public MeterResponseData(final String organisationIdentification, final String messageType,
+            final String deviceIdentification, final String correlationUid, final Serializable messageData) {
+        this.organisationIdentification = organisationIdentification;
+        this.messageType = messageType;
+        this.deviceIdentification = deviceIdentification;
+        this.correlationUid = correlationUid;
+        this.messageData = messageData;
+    }
+
     public MeterResponseData(final String organisationIdentification, final String messageType,
             final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
             final Serializable messageData) {
@@ -86,5 +96,4 @@ public class MeterResponseData extends AbstractEntity {
     public ResponseMessageResultType getResultType() {
         return this.resultType;
     }
-
 }

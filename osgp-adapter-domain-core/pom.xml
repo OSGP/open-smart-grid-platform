@@ -49,23 +49,21 @@
         </plugins>
     </build>
 
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>    
-        <!-- Domain model -->
+    <dependencies>
+        <!-- Alliander -->
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-domain-core</artifactId>
         </dependency>
-        
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>shared</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.alliander.osgp</groupId>
             <artifactId>osgp-dto</artifactId>
         </dependency>
-        
+
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -117,18 +115,12 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
         </dependency>
-        
+
         <!-- Hibernate validator -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
-
-        <!-- Flyway (DB Migration) -->
-<!--         <dependency> -->
-<!--             <groupId>com.googlecode.flyway</groupId> -->
-<!--             <artifactId>flyway-core</artifactId> -->
-<!--         </dependency> -->
 
         <!-- Logging -->
          <dependency>
@@ -143,7 +135,7 @@
             <groupId>org.logback-extensions</groupId>
             <artifactId>logback-ext-spring</artifactId>
         </dependency>
-        
+
         <!-- Servlet API 3.0 -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -162,13 +154,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        
+
         <!-- Orika (mapping framework) -->
         <dependency>
            <groupId>ma.glasnost.orika</groupId>
            <artifactId>orika-core</artifactId>
         </dependency>
-        
+
         <!-- Apache ActiveMQ -->
         <dependency> 
             <groupId>org.apache.activemq</groupId>
@@ -177,6 +169,13 @@
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-spring</artifactId>
+        </dependency>
+
+        <!-- Testing dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

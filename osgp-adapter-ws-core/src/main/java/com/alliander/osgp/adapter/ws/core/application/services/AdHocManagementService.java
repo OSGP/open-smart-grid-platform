@@ -79,6 +79,7 @@ public class AdHocManagementService {
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_REBOOT);
+        this.domainHelperService.isInMaintenance(device);
 
         LOGGER.debug("enqueueSetRebootRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

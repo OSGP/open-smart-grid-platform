@@ -13,22 +13,21 @@ import java.util.List;
 public class PeriodicMeterReadContainer implements Serializable {
 
     private static final long serialVersionUID = -156966569210717657L;
+    private final PeriodType periodType;
 
-    private final String deviceIdentification;
-    private final List<PeriodicMeterReads> periodicMeterReads;
+    private final List<MeterReads> periodicMeterReads;
 
-    public PeriodicMeterReadContainer(String deviceIdentification, List<PeriodicMeterReads> periodicMeterReads) {
-        this.deviceIdentification = deviceIdentification;
+    public PeriodicMeterReadContainer(final PeriodType periodType, List<MeterReads> periodicMeterReads) {
         this.periodicMeterReads = periodicMeterReads;
+        this.periodType = periodType;
     }
 
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
-    }
-
-    public List<PeriodicMeterReads> getPeriodicMeterReads() {
+    public List<MeterReads> getPeriodicMeterReads() {
         return this.periodicMeterReads;
     }
 
+    public PeriodType getPeriodType() {
+        return periodType;
+    }
 
 }

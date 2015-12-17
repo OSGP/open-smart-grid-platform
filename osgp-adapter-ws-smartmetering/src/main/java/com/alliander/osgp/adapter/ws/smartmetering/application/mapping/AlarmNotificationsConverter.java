@@ -14,9 +14,6 @@ import java.util.TreeSet;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
@@ -24,8 +21,6 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 public class AlarmNotificationsConverter
 extends
         BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AlarmNotificationsConverter.class);
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications convertTo(
@@ -46,7 +41,7 @@ extends
 
             final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification alarmNotification = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification();
 
-            alarmNotification.setAlarmType(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmType
+            alarmNotification.setAlarmType(com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType
                     .valueOf(sourceNotification.getAlarmType().name()));
             alarmNotification.setEnabled(sourceNotification.isEnabled());
 
