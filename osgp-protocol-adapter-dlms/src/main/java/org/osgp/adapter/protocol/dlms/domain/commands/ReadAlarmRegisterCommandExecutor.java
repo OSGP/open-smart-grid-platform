@@ -47,7 +47,7 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     }
 
     private Set<AlarmType> retrieveAlarmRegister(final ClientConnection conn) throws IOException,
-            ProtocolAdapterException {
+    ProtocolAdapterException {
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();

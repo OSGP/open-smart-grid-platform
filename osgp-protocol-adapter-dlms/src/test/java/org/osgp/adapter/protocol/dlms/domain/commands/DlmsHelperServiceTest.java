@@ -76,6 +76,14 @@ public class DlmsHelperServiceTest {
         assertEquals("2015-02-21T14:53:07.230+01:00", ISODateTimeFormat.dateTime().print(dateInWinterTime));
     }
 
+    @Test
+    public void testCorrectLogMessageForBitStringObject() {
+        final String expected = "number of bytes=2, value=37440, bits=10010010 01000000 ";
+        final String logMessage = this.dlmsHelperService.getDebugInfoBitStringBytes(new byte[] { -110, 64 });
+
+        assertEquals(expected, logMessage);
+    }
+
     private DateTime dateTimeSummerTime() {
         return new DateTime(YEAR, MONTH_SUMMER_TIME, DAY, HOUR, MINUTE, SECOND, HUNDREDTHS * 10,
                 DATE_TIME_ZONE_AMSTERDAM);

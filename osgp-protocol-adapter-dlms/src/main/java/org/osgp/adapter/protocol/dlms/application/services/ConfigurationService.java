@@ -7,10 +7,14 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.util.List;
+
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -31,9 +35,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsConfigurationService")
@@ -47,7 +49,13 @@ public class ConfigurationService extends DlmsApplicationService {
     private DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
+    private SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
+
+    @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+
+    @Autowired
+    private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
@@ -59,26 +67,40 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestSpecialDays");
 
+        ClientConnection conn = null;
         try {
             // The Special days towards the Smart Meter
             final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
 
-            LOGGER.info("SpecialDaysRequest : {}", specialDaysRequest.getSpecialDaysRequestData());
-            for (final SpecialDay specialDay : specialDaysRequestData.getSpecialDays()) {
-                LOGGER.info("******************************************************");
-                LOGGER.info("Special Day date :{} ", specialDay.getSpecialDayDate());
-                LOGGER.info("Special Day dayId :{} ", specialDay.getDayId());
-                LOGGER.info("******************************************************");
+            LOGGER.info("******************************************************");
+            LOGGER.info("********** Set Special Days: 0-0:11.0.0.255 **********");
+            LOGGER.info("******************************************************");
+            final List<SpecialDay> specialDays = specialDaysRequestData.getSpecialDays();
+            for (final SpecialDay specialDay : specialDays) {
+                LOGGER.info("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
+            }
+            LOGGER.info("******************************************************");
+
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
+            if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+                throw new ProtocolAdapterException("Set special days reported result is: " + accessResultCode);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during set special days", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during set special days", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
     }
 
@@ -90,6 +112,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestSetConfiguration");
 
+        ClientConnection conn = null;
         try {
             // Configuration Object towards the Smart Meter
             final ConfigurationObject configurationObject = setConfigurationObjectRequest
@@ -99,27 +122,38 @@ public class ConfigurationService extends DlmsApplicationService {
             final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
             LOGGER.info("******************************************************");
-            LOGGER.info("Configuration Object   ******************************");
+            LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
             LOGGER.info("******************************************************");
-            LOGGER.info("Configuration Object operation mode:{} ", GprsOperationModeType.value());
-            LOGGER.info("******************************************************");
-            LOGGER.info("Flags:   ********************************************");
+            LOGGER.info("Operation mode:{} ", GprsOperationModeType.value());
+            LOGGER.info("Flags:");
 
             for (final ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
-                LOGGER.info("Configuration Object configuration flag :{} ", configurationFlag
-                        .getConfigurationFlagType().toString());
-                LOGGER.info("Configuration Object configuration flag enabled:{} ", configurationFlag.isEnabled());
-                LOGGER.info("******************************************************");
+                LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
+                        configurationFlag.isEnabled());
+            }
+            LOGGER.info("******************************************************");
+
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
+                    configurationObject);
+            if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
+                throw new ProtocolAdapterException("Set configuration object reported result is: " + accessResultCode);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during set Configuration Object", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception during set Configuration Object", e);
+            final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                conn.close();
+            }
         }
     }
 
