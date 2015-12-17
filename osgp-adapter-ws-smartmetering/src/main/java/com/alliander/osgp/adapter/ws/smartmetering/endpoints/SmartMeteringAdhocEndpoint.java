@@ -24,6 +24,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Endpoint
@@ -63,20 +65,23 @@ public class SmartMeteringAdhocEndpoint {
     @ResponsePayload
     public SynchronizeTimeResponse getSynchronizeTimeResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SynchronizeTimeAsyncRequest request) throws OsgpException {
+            @RequestPayload final SynchronizeTimeAsyncRequest request) {
 
-        final MeterResponseData meterResponseData = this.adhocService.dequeueSynchronizeTimeResponse(request
-                .getCorrelationUid());
-
-        // Map response type, and return.
         final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
-        if (meterResponseData != null) {
+        try {
+            final MeterResponseData meterResponseData = this.adhocService.dequeueSynchronizeTimeResponse(request
+                    .getCorrelationUid());
+
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } else {
-            response.setResult(OsgpResultType.NOT_FOUND);
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
         }
 
         return response;

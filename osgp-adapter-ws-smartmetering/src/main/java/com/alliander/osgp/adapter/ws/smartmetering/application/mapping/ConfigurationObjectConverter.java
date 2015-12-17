@@ -13,9 +13,6 @@ import java.util.List;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationFlagType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationFlags;
@@ -23,10 +20,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationOb
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GprsOperationModeType;
 
 public class ConfigurationObjectConverter
-        extends
-BidirectionalConverter<ConfigurationObject, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationObjectConverter.class);
+extends
+        BidirectionalConverter<ConfigurationObject, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ConfigurationObject convertTo(

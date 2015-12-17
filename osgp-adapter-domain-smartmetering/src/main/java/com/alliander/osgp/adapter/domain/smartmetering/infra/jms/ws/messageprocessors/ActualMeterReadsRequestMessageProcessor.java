@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 @Component("domainSmartmeteringActualMeterReadsRequestMessageProcessor")
@@ -62,7 +62,7 @@ public class ActualMeterReadsRequestMessageProcessor extends WebServiceRequestMe
         try {
             LOGGER.info("Calling application service function: {}", messageType);
 
-            final ActualMeterReadsRequest actualMeterReadsRequest = (ActualMeterReadsRequest) dataObject;
+            final ActualMeterReadsQuery actualMeterReadsRequest = (ActualMeterReadsQuery) dataObject;
 
             this.monitoringService.requestActualMeterReads(organisationIdentification, deviceIdentification,
                     correlationUid, actualMeterReadsRequest, messageType);

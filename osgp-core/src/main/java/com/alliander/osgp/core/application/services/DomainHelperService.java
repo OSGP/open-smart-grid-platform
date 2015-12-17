@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
@@ -25,6 +26,7 @@ import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 
 @Service(value = "osgpCoreDomainHelperService")
 public class DomainHelperService {
@@ -39,6 +41,9 @@ public class DomainHelperService {
 
     @Autowired
     private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+
+    @Autowired
+    private GasMeterDeviceRepository gASMeterDeviceRepository;
 
     @Autowired
     private SecurityService securityService;
@@ -68,6 +73,15 @@ public class DomainHelperService {
     public SmartMeteringDevice findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
         final SmartMeteringDevice device = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
+        if (device == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                    new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification));
+        }
+        return device;
+    }
+
+    public GasMeterDevice findGASMeterDevice(final String deviceIdentification) throws FunctionalException {
+        final GasMeterDevice device = this.gASMeterDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
                     new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification));
