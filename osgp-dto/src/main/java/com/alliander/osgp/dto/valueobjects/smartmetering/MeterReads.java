@@ -10,18 +10,20 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class ActualMeterReads implements Serializable {
+public class MeterReads implements Serializable {
     private static final long serialVersionUID = -297320204916085999L;
 
     private Date logTime;
     private long activeEnergyImportTariffOne;
-    private long activeEnergyImportTariffTwo;
+    // may be null
+    private Long activeEnergyImportTariffTwo;
     private long activeEnergyExportTariffOne;
-    private long activeEnergyExportTariffTwo;
+    // may be null
+    private Long activeEnergyExportTariffTwo;
 
-    public ActualMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
-            final long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
-            final long activeEnergyExportTariffTwo) {
+    public MeterReads(final Date logTime, final long activeEnergyImportTariffOne,
+            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final Long activeEnergyExportTariffTwo) {
         super();
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
@@ -38,7 +40,7 @@ public class ActualMeterReads implements Serializable {
         return this.activeEnergyImportTariffOne;
     }
 
-    public long getActiveEnergyImportTariffTwo() {
+    public Long getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
     }
 
@@ -46,7 +48,7 @@ public class ActualMeterReads implements Serializable {
         return this.activeEnergyExportTariffOne;
     }
 
-    public long getActiveEnergyExportTariffTwo() {
+    public Long getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
     }
 
