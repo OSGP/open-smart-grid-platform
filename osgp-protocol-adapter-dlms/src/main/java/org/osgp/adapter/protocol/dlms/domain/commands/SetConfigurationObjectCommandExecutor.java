@@ -80,8 +80,11 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         } else if (GprsOperationModeType.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(0));
         } else {
-            // copy from meter
-            linkedList.add(DataObject.newEnumerateData(configurationObjectOnDevice.getGprsOperationMode().ordinal()));
+            // copy from meter if there is a set gprsoperationmode
+            if (configurationObjectOnDevice.getGprsOperationMode() != null) {
+                linkedList.add(DataObject
+                        .newEnumerateData(configurationObjectOnDevice.getGprsOperationMode().ordinal()));
+            }
         }
 
         final BitString bitString = this.getMergedFlags(configurationObject, configurationObjectOnDevice);
@@ -111,12 +114,14 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
 
     private void mergeOldFlags(final ConfigurationObject configurationObjectOnDevice,
             final List<ConfigurationFlag> configurationFlags) {
-        for (final ConfigurationFlag configurationFlagOnDevice : configurationObjectOnDevice.getConfigurationFlags()
-                .getConfigurationFlag()) {
-            final ConfigurationFlag configurationFlag = this.getConfigurationFlag(configurationFlags,
-                    configurationFlagOnDevice.getConfigurationFlagType());
-            if (configurationFlag == null) {
-                configurationFlags.add(configurationFlagOnDevice);
+        if (configurationObjectOnDevice != null) {
+            for (final ConfigurationFlag configurationFlagOnDevice : configurationObjectOnDevice
+                    .getConfigurationFlags().getConfigurationFlag()) {
+                final ConfigurationFlag configurationFlag = this.getConfigurationFlag(configurationFlags,
+                        configurationFlagOnDevice.getConfigurationFlagType());
+                if (configurationFlag == null) {
+                    configurationFlags.add(configurationFlagOnDevice);
+                }
             }
         }
     }
@@ -140,7 +145,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObject retrieveConfigurationObject(final ClientConnection conn) throws IOException,
-            ProtocolAdapterException {
+    ProtocolAdapterException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();
@@ -151,12 +156,18 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         final List<GetResult> getResultList = conn.get(getRequestParameter);
 
         if (getResultList == null || getResultList.isEmpty()) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving current configuration object.");
+            throw new ProtocolAdapterException("No result received while retrieving current configuration object.");
         }
 
         if (getResultList.size() > 1) {
+            throw new ProtocolAdapterException("Expected 1 result while retrieving current configuration object, got "
+                    + getResultList.size());
+        }
+
+        if (getResultList.get(0) == null) {
             throw new ProtocolAdapterException(
-                    "Expected 1 GetResult while retrieving current configuration object, got " + getResultList.size());
+                    "Expected data in result while retrieving current configuration object, got "
+                            + getResultList.size());
         }
 
         return this.getConfigurationObject(getResultList);
@@ -167,18 +178,30 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
 
         final DataObject resultData = resultList.get(0).resultData();
         LOGGER.info("Configuration object current complex data: {}", this.dlmsHelperService.getDebugInfo(resultData));
+
         final LinkedList<DataObject> linkedList = resultData.value();
+
+        if (linkedList == null || linkedList.isEmpty()) {
+            throw new ProtocolAdapterException(
+                    "Expected data in result while retrieving current configuration object, but got nothing");
+        }
+
         final DataObject GprsOperationModeData = linkedList.get(0);
+        if (GprsOperationModeData == null) {
+            throw new ProtocolAdapterException(
+                    "Expected Gprs operation mode data in result while retrieving current configuration object, but got nothing");
+        }
         GprsOperationModeType gprsOperationMode = null;
         if (((Number) GprsOperationModeData.value()).longValue() == 1) {
             gprsOperationMode = GprsOperationModeType.ALWAYS_ON;
-        } else {
+        } else if (((Number) GprsOperationModeData.value()).longValue() == 2) {
             gprsOperationMode = GprsOperationModeType.TRIGGERED;
         }
 
         final DataObject flagsData = linkedList.get(1);
         if (flagsData == null) {
-            throw new ProtocolAdapterException("DataObject expected to contain a configuration object is null.");
+            throw new ProtocolAdapterException(
+                    "Expected flag bit data in result while retrieving current configuration object, but got nothing");
         }
         if (!(flagsData.value() instanceof BitString)) {
             throw new ProtocolAdapterException("Value in DataObject is not a BitString: "

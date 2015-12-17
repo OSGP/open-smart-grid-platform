@@ -284,13 +284,12 @@ public class DlmsHelperService {
     }
 
     private BigInteger byteArrayToBigInteger(final byte[] bitStringValue) {
-        BigInteger value = null;
+        if (bitStringValue == null || bitStringValue.length == 0) {
+            return null;
+        }
+        BigInteger value = BigInteger.valueOf(0);
         for (final byte element : bitStringValue) {
-            if (value != null) {
-                value = value.shiftLeft(8);
-            } else if (value == null) {
-                value = BigInteger.valueOf(0);
-            }
+            value = value.shiftLeft(8);
             value = value.add(BigInteger.valueOf(element & 0xFF));
         }
         return value;
