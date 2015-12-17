@@ -19,13 +19,16 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
@@ -82,6 +85,32 @@ public class SmartMeteringConfigurationEndpoint {
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
         response.setAsyncResponse(asyncResponse);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetAdministrativeStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetAdministrativeStatusResponse getSetAdministrativeStatusResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetAdministrativeStatusAsyncRequest request) {
+
+        final SetAdministrativeStatusResponse response = new SetAdministrativeStatusResponse();
+        try {
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetAdministrativeStatusResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
+        }
 
         return response;
     }

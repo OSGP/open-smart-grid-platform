@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -36,6 +37,9 @@ public class ConfigurationService {
 
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
+
+    @Autowired
+    private MeterResponseDataService meterResponseDataService;
 
     /**
      * @param organisationIdentification
@@ -108,7 +112,7 @@ public class ConfigurationService {
 
     public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -168,7 +172,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -187,7 +191,7 @@ public class ConfigurationService {
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -220,5 +224,11 @@ public class ConfigurationService {
             final ActivityCalendar activityCalendar) throws FunctionalException {
         return this.enqueueSetActivityCalendarRequest(organisationIdentification, deviceIdentification,
                 activityCalendar);
+    }
+
+    public MeterResponseData dequeueSetAdministrativeStatusResponse(final String correlationUid)
+            throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+        return null;
     }
 }

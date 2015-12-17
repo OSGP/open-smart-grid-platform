@@ -11,11 +11,14 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Entity
 @Table(name = "meter_response_data")
@@ -38,6 +41,9 @@ public class MeterResponseData extends AbstractEntity {
     @Column(length = 255)
     private String correlationUid;
 
+    @Enumerated(EnumType.STRING)
+    private ResponseMessageResultType resultType;
+
     @Type(type = "java.io.Serializable")
     private Serializable messageData;
 
@@ -47,11 +53,13 @@ public class MeterResponseData extends AbstractEntity {
     }
 
     public MeterResponseData(final String organisationIdentification, final String messageType,
-            final String deviceIdentification, final String correlationUid, final Serializable messageData) {
+            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
+            final Serializable messageData) {
         this.organisationIdentification = organisationIdentification;
         this.messageType = messageType;
         this.deviceIdentification = deviceIdentification;
         this.correlationUid = correlationUid;
+        this.resultType = resultType;
         this.messageData = messageData;
     }
 
@@ -74,4 +82,9 @@ public class MeterResponseData extends AbstractEntity {
     public Serializable getMessageData() {
         return this.messageData;
     }
+
+    public ResponseMessageResultType getResultType() {
+        return this.resultType;
+    }
+
 }
