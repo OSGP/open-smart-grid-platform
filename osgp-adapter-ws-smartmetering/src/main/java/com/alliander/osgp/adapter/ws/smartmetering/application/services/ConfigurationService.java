@@ -110,9 +110,14 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public MeterResponseData dequeueSetAdministrativeStatusResponse(final String correlationUid)
+            throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SpecialDaysRequest requestData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -135,7 +140,7 @@ public class ConfigurationService {
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -159,7 +164,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -178,7 +183,7 @@ public class ConfigurationService {
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -211,10 +216,5 @@ public class ConfigurationService {
             final ActivityCalendar activityCalendar) throws FunctionalException {
         return this.enqueueSetActivityCalendarRequest(organisationIdentification, deviceIdentification,
                 activityCalendar);
-    }
-
-    public MeterResponseData dequeueSetAdministrativeStatusResponse(final String correlationUid)
-            throws FunctionalException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 }

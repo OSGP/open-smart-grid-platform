@@ -21,13 +21,13 @@ import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -86,7 +86,7 @@ public class MonitoringService {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
                             this.monitoringMapper.map(periodicMeterReadsValueQuery, PeriodicMeterReadsQuery.class)),
-                    messageType);
+                            messageType);
         }
     }
 
@@ -104,15 +104,15 @@ public class MonitoringService {
         }
 
         this.webServiceResponseMessageSender
-                .send(new ResponseMessage(
-                        correlationUid,
-                        organisationIdentification,
-                        deviceIdentification,
-                        result,
-                        exception,
-                        this.monitoringMapper
-                                .map(periodMeterReadsValueDTO,
-                                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class)),
+        .send(new ResponseMessage(
+                correlationUid,
+                organisationIdentification,
+                deviceIdentification,
+                result,
+                exception,
+                this.monitoringMapper
+                .map(periodMeterReadsValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class)),
                         messageType);
 
     }
@@ -131,15 +131,15 @@ public class MonitoringService {
         }
 
         this.webServiceResponseMessageSender
-                .send(new ResponseMessage(
-                        correlationUid,
-                        organisationIdentification,
-                        deviceIdentification,
-                        result,
-                        exception,
-                        this.monitoringMapper
-                                .map(periodMeterReadsValueDTO,
-                                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas.class)),
+        .send(new ResponseMessage(
+                correlationUid,
+                organisationIdentification,
+                deviceIdentification,
+                result,
+                exception,
+                this.monitoringMapper
+                .map(periodMeterReadsValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas.class)),
                         messageType);
 
     }
@@ -160,7 +160,7 @@ public class MonitoringService {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(correlationUid, organisationIdentification, findGASMeteringDevice
                             .getSmartMeterId(), new ActualMeterReadsQuery(findGASMeteringDevice.getChannel())),
-                    messageType);
+                            messageType);
         } else {
             // call triggers functionalexception when no device found
             this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
@@ -186,7 +186,7 @@ public class MonitoringService {
                 new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result,
                         exception, this.monitoringMapper.map(actualMeterReadsDto,
                                 com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads.class)),
-                messageType);
+                                messageType);
     }
 
     public void handleActualMeterReadsResponse(@Identification final String deviceIdentification,
@@ -206,7 +206,7 @@ public class MonitoringService {
                 new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result,
                         exception, this.monitoringMapper.map(meterReadsGas,
                                 com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas.class)),
-                messageType);
+                                messageType);
     }
 
     public void requestReadAlarmRegister(

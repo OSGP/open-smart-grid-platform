@@ -52,11 +52,6 @@
         </wsdl:part>
     </wsdl:message>
 	
-	<wsdl:message name="ActivityCalendarHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
 	<wsdl:message name="SetActivityCalendarRequest">
 		<wsdl:part element="smconf:SetActivityCalendarRequest" name="setActivityCalendarRequest">
 		</wsdl:part>
