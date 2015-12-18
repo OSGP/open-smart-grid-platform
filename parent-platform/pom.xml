@@ -58,6 +58,7 @@
     <properties>
         <module.baseUri>${project.baseUri}/../</module.baseUri>
         <osgp.version>${pom.version}</osgp.version>
+        <shared.version>3.0.0-SNAPSHOT</shared.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>    
         <spring.version>4.2.0.RELEASE</spring.version>
@@ -110,12 +111,12 @@
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>osgp-dto</artifactId>
-                <version>${osgp.version}</version>
+                <version>${shared.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>shared</artifactId>
-                <version>${osgp.version}</version>
+                <version>${shared.version}</version>
             </dependency>
 
             <dependency>
