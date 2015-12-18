@@ -199,11 +199,11 @@ public class OrganisationManagementClient extends AbstractClient {
      *             equal to 200 OK or if the response body is empty.
      */
     public String addNewOrganisation(final String newOrganisationIdentification, final String name,
-            final String prefix, final String functionGroup, final boolean enabled,
-            final String organisationIdentification, final String token) throws OrganisationManagementClientException {
+            final String prefix, final Credentials credentials, final String organisationIdentification,
+            final String token) throws OrganisationManagementClientException {
 
         final AddNewOrganisationRequest addNewOrganisationRequest = new AddNewOrganisationRequest(
-                newOrganisationIdentification, name, prefix, functionGroup, enabled);
+                newOrganisationIdentification, name, prefix, credentials);
 
         final Response response = this.getWebClientInstance().path(this.addNewOrganisationPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(addNewOrganisationRequest);
@@ -315,11 +315,14 @@ public class OrganisationManagementClient extends AbstractClient {
      *             equal to 200 OK or if the response body is empty.
      */
     public String changeOrganisationData(final String organisationIdentificationToChange,
-            final String newOrganisationIdentification, final String newOrganisationName, final String functionGroup,
-            final String organisationIdentification, final String token) throws OrganisationManagementClientException {
+            final String newOrganisationIdentification, final String newOrganisationName,
+            final Credentials credentials, final String organisationIdentification, final String token)
+                    throws OrganisationManagementClientException {
 
         final ChangeOrganisationRequest changeOrganisationRequest = new ChangeOrganisationRequest(
-                organisationIdentificationToChange, newOrganisationIdentification, newOrganisationName, functionGroup);
+                organisationIdentificationToChange, newOrganisationIdentification, newOrganisationName,
+                credentials.getFunctionGroup(), credentials.getExpiryDateContract(), credentials.getEmailAddress(),
+                credentials.getPhoneNumber());
 
         final Response response = this.getWebClientInstance().path(this.changeOrganisationDataPath)
                 .headers(this.createHeaders(organisationIdentification, token)).post(changeOrganisationRequest);
