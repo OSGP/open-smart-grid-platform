@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.openmuc.jdlms.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,7 @@ public class DayProfileConverter {
     private List<DataObject> getDayObjectElements(final DayProfile dayProfile) {
         final List<DataObject> dayObjectElements = new ArrayList<>();
 
-        final DataObject dayId = DataObject.newUInteger32Data(dayProfile.getDayId());
+        final DataObject dayId = DataObject.newUInteger8Data(dayProfile.getDayId().shortValue());
         final DataObject dayActionObjectList = DataObject.newArrayData(this.getDayActionObjectList(dayProfile
                 .getDayProfileActionList()));
         dayObjectElements.addAll(Arrays.asList(dayId, dayActionObjectList));
@@ -75,12 +77,15 @@ public class DayProfileConverter {
         final List<DataObject> dayActionObjectElements = new ArrayList<>();
 
         final DateTime dt = new DateTime(dayProfileAction.getStartTime());
-        final DataObject startTimeObject = this.dlmsHelperService.asDataObject(dt);
+
+        final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        final String dtStr = fmt.print(dt);
+        final DataObject startTimeObject = DataObject.newOctetStringData((new Integer(0)).toString().getBytes());// dtStr.getBytes());
 
         // See "DSMR P3 v4.2.2 Final P3.pdf" Tariffication Script Table (Class
         // ID: 9). Value: 0-0:10.0.100.255
         final DataObject nameObject = DataObject.newOctetStringData(new byte[] { 0, 0, 10, 0, 100, (byte) 255 });
-        final DataObject scriptSelectorObject = DataObject.newUInteger64Data(dayProfileAction.getScriptSelector());
+        final DataObject scriptSelectorObject = DataObject.newUInteger16Data(dayProfileAction.getScriptSelector());
 
         dayActionObjectElements.addAll(Arrays.asList(startTimeObject, nameObject, scriptSelectorObject));
         return dayActionObjectElements;
