@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.LnClientConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,8 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Strin
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarCommandExecutor.class);
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final String activityCalendarName) throws IOException {
+    public AccessResultCode execute(final LnClientConnection conn, final String activityCalendarName)
+            throws IOException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendarName);
         return AccessResultCode.SUCCESS;
     }

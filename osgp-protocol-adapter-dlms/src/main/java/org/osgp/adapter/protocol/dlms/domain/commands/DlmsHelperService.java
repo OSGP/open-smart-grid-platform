@@ -14,12 +14,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.internal.BitString;
-import org.openmuc.jdlms.internal.CosemDate;
-import org.openmuc.jdlms.internal.CosemDateTime;
-import org.openmuc.jdlms.internal.CosemDateTime.ClockStatus;
-import org.openmuc.jdlms.internal.CosemTime;
+import org.openmuc.jdlms.datatypes.BitString;
+import org.openmuc.jdlms.datatypes.CosemDate;
+import org.openmuc.jdlms.datatypes.CosemDateTime;
+import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
+import org.openmuc.jdlms.datatypes.CosemTime;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
@@ -145,7 +145,7 @@ public class DlmsHelperService {
         } else if (dataObject.isBitString()) {
             objectText = this.getDebugInfoBitStringBytes(((BitString) dataObject.value()).bitString());
         } else if (dataObject.isCosemDateFormat() && dataObject.value() instanceof CosemDateTime) {
-            objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.value()).ocletString());
+            objectText = this.getDebugInfoDateTimeBytes(((CosemDateTime) dataObject.value()).encode());
         } else {
             objectText = String.valueOf(dataObject.rawValue());
         }

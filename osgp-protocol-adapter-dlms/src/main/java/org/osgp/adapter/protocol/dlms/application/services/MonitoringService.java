@@ -7,10 +7,12 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Random;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.LnClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
@@ -23,17 +25,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import java.io.Serializable;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService extends DlmsApplicationService {
@@ -68,7 +68,7 @@ public class MonitoringService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService
@@ -92,7 +92,7 @@ public class MonitoringService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -103,7 +103,7 @@ public class MonitoringService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestActualMeterReads");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService
@@ -129,7 +129,7 @@ public class MonitoringService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -142,7 +142,7 @@ public class MonitoringService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestReadAlarmRegister");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
             final DlmsDevice device = this.domainHelperService
                     .findDlmsDevice(messageMetadata.getDeviceIdentification());
@@ -162,7 +162,7 @@ public class MonitoringService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }

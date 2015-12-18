@@ -48,21 +48,6 @@
       <artifactId>jdlms</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.openmuc</groupId>
-      <artifactId>jasn1</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>gnu.io</groupId>
-      <artifactId>rxtxcomm_api</artifactId>
-    </dependency>
-
   <!-- Alliander -->
   <dependency>
     <groupId>com.alliander.osgp</groupId>

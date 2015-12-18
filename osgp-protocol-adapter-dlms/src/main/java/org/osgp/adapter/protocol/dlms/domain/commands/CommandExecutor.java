@@ -8,8 +8,9 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 /**
@@ -23,6 +24,6 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
  */
 public interface CommandExecutor<T, R> {
 
-    R execute(ClientConnection conn, T object) throws IOException, ProtocolAdapterException;
+    R execute(LnClientConnection conn, T object) throws IOException, TimeoutException, ProtocolAdapterException;
 
 }

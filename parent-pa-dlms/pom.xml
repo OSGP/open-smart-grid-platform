@@ -58,10 +58,7 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
     <netty.version>3.9.4.Final</netty.version>
-    <openmuc.jdlms.version>0.10.0-SNAPSHOT</openmuc.jdlms.version>
-    <openmuc.jasn1.version>1.4.1-SNAPSHOT</openmuc.jasn1.version>
-    <bouncycastle.version>1.53</bouncycastle.version>
-    <rxtxcomm.version>2.2pre2</rxtxcomm.version>
+    <openmuc.jdlms.version>0.11.0</openmuc.jdlms.version>
   </properties>
 
   <repositories>
@@ -76,11 +73,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>local-repo</id>
-      <name>local-repo</name>
-      <url>file://${project.basedir}/../parent-pa-dlms/repo</url>
-    </repository>
   </repositories>
 
   <dependencyManagement>
@@ -90,25 +82,6 @@
         <groupId>org.openmuc</groupId>
         <artifactId>jdlms</artifactId>
         <version>${openmuc.jdlms.version}</version>
-      </dependency>
-
-      <!-- OpenMUC jDLMS dependencies -->
-      <dependency>
-        <groupId>org.openmuc</groupId>
-        <artifactId>jasn1</artifactId>
-        <version>${openmuc.jasn1.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
-        <version>${bouncycastle.version}</version>
-      </dependency>
-    
-      <dependency>
-        <groupId>gnu.io</groupId>
-        <artifactId>rxtxcomm_api</artifactId>
-        <version>${rxtxcomm.version}</version>
       </dependency>
 
       <!-- OSGP -->
