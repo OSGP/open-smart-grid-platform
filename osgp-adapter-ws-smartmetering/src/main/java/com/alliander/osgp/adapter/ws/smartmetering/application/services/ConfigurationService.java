@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -36,12 +37,15 @@ public class ConfigurationService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
-    public String enqueueSpecialDaysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, @Identification final SpecialDaysRequest requestData)
+    @Autowired
+    private MeterResponseDataService meterResponseDataService;
+
+    public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final SpecialDaysRequest requestData)
                     throws FunctionalException {
 
-        LOGGER.debug("enqueueSpecialDaysRequest called with organisation {} and device {}", organisationIdentification,
-                deviceIdentification);
+        LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
@@ -55,9 +59,13 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public MeterResponseData dequeueSetSpecialDaysResponse(final String correlationUid) throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification,
-            @Identification final SetConfigurationObjectRequest requestData) throws FunctionalException {
+            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData)
+                    throws FunctionalException {
 
         LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -74,26 +82,9 @@ public class ConfigurationService {
         return correlationUid;
     }
 
-    /**
-     * @param organisationIdentification
-     * @param requestData
-     * @throws FunctionalException
-     */
-    public String requestSpecialDaysData(final String organisationIdentification, final SpecialDaysRequest requestData)
+    public MeterResponseData dequeueSetConfigurationObjectResponse(final String correlationUid)
             throws FunctionalException {
-        return this.enqueueSpecialDaysRequest(organisationIdentification, requestData.getDeviceIdentification(),
-                requestData);
-    }
-
-    /**
-     * @param organisationIdentification
-     * @param requestData
-     * @throws FunctionalException
-     */
-    public String setConfigurationObject(final String organisationIdentification,
-            final SetConfigurationObjectRequest requestData) throws FunctionalException {
-        return this.enqueueSetConfigurationObjectRequest(organisationIdentification,
-                requestData.getDeviceIdentification(), requestData);
+        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,

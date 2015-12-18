@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
@@ -33,7 +33,7 @@ public class SetActivityCalendarResponseMessageProcessor extends DomainResponseM
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarResponseMessageProcessor.class);
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
     @Autowired
     private NotificationService notificationService;
@@ -82,7 +82,7 @@ public class SetActivityCalendarResponseMessageProcessor extends DomainResponseM
             // result
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
                     deviceIdentification, correlationUid, resultString);
-            this.meterResponseDataRepository.save(meterResponseData);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
