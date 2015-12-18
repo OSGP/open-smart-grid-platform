@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.ws.core.application.mapping.ws.EventTypeConver
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayStatus;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
@@ -41,13 +42,13 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                .byDefault().toClassMap());
+                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                        .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
@@ -55,7 +56,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     }
 
     private static class DeviceConverter extends
-            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
@@ -154,8 +155,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     newEan.setDescription(ean.getDescription());
                     eans.add(newEan);
                 }
-
                 destination.getEans().addAll(eans);
+
                 if (source.getRelayStatusses() != null) {
                     RelayStatus temp = null;
                     for (final com.alliander.osgp.domain.core.entities.RelayStatus r : source.getRelayStatusses()) {
@@ -168,6 +169,18 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 }
 
                 destination.setInMaintenance(source.isInMaintenance());
+
+                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization> deviceAuthorizations =
+                        new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization>();
+                for (final DeviceAuthorization deviceAuthorisation : source.getAuthorizations()) {
+                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization newDeviceAuthorization = new
+                            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization();
+
+                    newDeviceAuthorization.setFunctionGroup(deviceAuthorisation.getFunctionGroup().name());
+                    newDeviceAuthorization.setOrganisation(deviceAuthorisation.getOrganisation().getOrganisationIdentification());
+                    deviceAuthorizations.add(newDeviceAuthorization);
+                }
+                destination.getDeviceAuthorizations().addAll(deviceAuthorizations);
 
                 return destination;
             }
