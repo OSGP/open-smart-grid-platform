@@ -36,7 +36,7 @@ import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
 public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-        NetworkAddressInterface {
+NetworkAddressInterface {
 
     /**
      * Device type indicator for PSLD
@@ -94,9 +94,6 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
 
     private boolean hasSchedule;
 
-    @Transient
-    private final List<String> organisations = new ArrayList<String>();
-
     @Column()
     private boolean hasPublicKey;
 
@@ -114,6 +111,9 @@ public class Device extends AbstractEntity implements DeviceInterface, LocationI
 
     @Column
     private boolean inMaintenance;
+
+    @Transient
+    private final List<String> organisations = new ArrayList<String>();
 
     public Device() {
         // Default constructor
