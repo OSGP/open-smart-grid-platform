@@ -24,6 +24,7 @@ public class PowerUsageHistoryResponseMessageDataContainer implements Serializab
     private DateTime startTime;
     private DateTime endTime;
     private HistoryTermType historyTermType;
+    private PowerUsageHistoryMessageDataContainer requestContainer;
 
     public PowerUsageHistoryResponseMessageDataContainer(final List<PowerUsageData> powerUsageData) {
 
@@ -68,5 +69,13 @@ public class PowerUsageHistoryResponseMessageDataContainer implements Serializab
 
     public void setHistoryTermType(final HistoryTermType historyTermType) {
         this.historyTermType = historyTermType;
+    }
+
+    public PowerUsageHistoryMessageDataContainer getRequestContainer() {
+        return this.requestContainer;
+    }
+
+    public void setRequestContainer(final PowerUsageHistoryMessageDataContainer requestContainer) {
+        this.requestContainer = requestContainer;
     }
 }
