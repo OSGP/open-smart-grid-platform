@@ -25,6 +25,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.Retrieve
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsResponse;
@@ -250,13 +252,13 @@ public class SmartMeteringConfigurationEndpoint {
 
     @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetAlarmNotificationsResponse setAlarmNotifications(
+    public SetAlarmNotificationsAsyncResponse setAlarmNotifications(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetAlarmNotificationsRequest request) throws OsgpException {
 
         LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
 
-        final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
+        final SetAlarmNotificationsAsyncResponse response = new SetAlarmNotificationsAsyncResponse();
 
         try {
 
@@ -280,6 +282,32 @@ public class SmartMeteringConfigurationEndpoint {
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetAlarmNotificationsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetAlarmNotificationsResponse getSetAlarmNotificationsResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetAlarmNotificationsAsyncRequest request) {
+
+        final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
+        try {
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final FunctionalException e) {
+            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+                response.setResult(OsgpResultType.NOT_FOUND);
+            } else {
+                response.setResult(OsgpResultType.NOT_OK);
+            }
         }
 
         return response;
