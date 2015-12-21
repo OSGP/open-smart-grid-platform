@@ -28,7 +28,7 @@ public class DayProfileAction implements Comparable<DayProfileAction>, Serializa
     }
 
     public Date getStartTime() {
-        return new Date(this.startTime.getTime());
+        return this.startTime;
     }
 
     @Override
