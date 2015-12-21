@@ -1,21 +1,21 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.GetRequestParameter;
-import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.RequestParameterFactory;
 import org.openmuc.jdlms.SetRequestParameter;
 import org.osgp.adapter.protocol.dlms.application.mapping.DayProfileConverter;
 import org.osgp.adapter.protocol.dlms.application.mapping.SeasonProfileConverter;
 import org.osgp.adapter.protocol.dlms.application.mapping.WeekProfileConverter;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final ActivityCalendar activityCalendar)
-            throws IOException {
+            throws IOException, ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendar.getCalendarName());
 
         // Set calendar Name
@@ -62,33 +62,59 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         // Set days
         final SetRequestParameter dayRequest = this.getDaysRequest(conn, this.getDayProfileSet(weekProfileSet));
 
-        // Set activation time to now.
-        final SetRequestParameter activateTimeNowRequest = this.getActivateTimeNow();
+        final Map<String, AccessResultCode> allAccessResultCodeMap = new HashMap<>();
 
-        LOGGER.info("Calling the DLMS library conn.set with timeout of {}", DlmsHelperService.LONG_CONNECTION_TIMEOUT);
+        List<AccessResultCode> resultCode = conn
+                .set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, activityCalendarRequest);
+        allAccessResultCodeMap.put("Activity Calender Request", resultCode.get(0));
 
-        final List<AccessResultCode> accessResultCodeList = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT,
-                activityCalendarRequest, seasonsRequest, weeksRequest, dayRequest, activateTimeNowRequest);
+        LOGGER.info("WRITING SEASONS");
+        resultCode = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, seasonsRequest);
+        allAccessResultCodeMap.put("Seasons Request", resultCode.get(0));
 
-        LOGGER.info("Finished calling conn.set");
+        LOGGER.info("WRITING DAYS");
+        resultCode = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, dayRequest);
+        allAccessResultCodeMap.put("Day Request", resultCode.get(0));
 
-        for (final AccessResultCode arc : accessResultCodeList) {
-            if (AccessResultCode.SUCCESS != arc) {
-                LOGGER.warn("Zero or more requests for setting ActivityCalendar failed");
-                return arc;
+        LOGGER.info("WRITING WEEKS");
+        resultCode = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, weeksRequest);
+        allAccessResultCodeMap.put("Weeks Request", resultCode.get(0));
+
+        final Map<String, AccessResultCode> failureAccessResultMap = new HashMap<>();
+
+        for (final Map.Entry<String, AccessResultCode> entry : allAccessResultCodeMap.entrySet()) {
+            final String key = entry.getKey();
+            final AccessResultCode value = entry.getValue();
+
+            if (AccessResultCode.SUCCESS != value) {
+                failureAccessResultMap.put(key, value);
             }
         }
+
+        if (!failureAccessResultMap.isEmpty()) {
+            this.throwProtocolAdapterException(failureAccessResultMap);
+        }
+
+        LOGGER.info("Finished calling conn.set");
 
         return AccessResultCode.SUCCESS;
     }
 
-    private SetRequestParameter getActivateTimeNow() {
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 10);
-        final DateTime datetime = new DateTime();
-        final DataObject seasonStartObject = this.dlmsHelperService.asDataObject(datetime);
-        final SetRequestParameter request = factory.createSetRequestParameter(seasonStartObject);
+    private void throwProtocolAdapterException(final Map<String, AccessResultCode> failureAccessResultMap)
+            throws ProtocolAdapterException {
+        String keys = "";
+        String values = "";
 
-        return request;
+        for (final String key : failureAccessResultMap.keySet()) {
+            keys += key + " ";
+        }
+        for (final Object value : failureAccessResultMap.values()) {
+            values += value + " ";
+        }
+
+        LOGGER.error("ActivityCalendar: Requests for {} failed with result code: {}", keys, values);
+        throw new ProtocolAdapterException("AccessResultCode for <" + keys + "> + set Activity Calendar: <" + values
+                + ">");
     }
 
     private SetRequestParameter getCalendarNameRequest(final ActivityCalendar activityCalendar) {
@@ -101,6 +127,9 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
             throws IOException {
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 9);
         final DataObject dayArray = this.dayProfileConverter.convert(dayProfileSet);
+
+        LOGGER.info("DayRequest to set is: {}", this.dlmsHelperService.getDebugInfo(dayArray));
+
         return factory.createSetRequestParameter(dayArray);
     }
 
@@ -125,6 +154,9 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 8);
         final DataObject weekArray = this.weekProfileConverter.convert(weekProfileSet);
+
+        LOGGER.info("WeekArray to set is: {}", this.dlmsHelperService.getDebugInfo(weekArray));
+
         return factory.createSetRequestParameter(weekArray);
     }
 
@@ -146,53 +178,12 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final DataObject seasonsArray = this.seasonProfileConverter.convert(seasonProfileList);
 
+        LOGGER.info("getSeasonsRequest: debug output: {}", this.dlmsHelperService.getDebugInfo(seasonsArray));
+
         final AccessResultCode accesResultCode = AccessResultCode.SUCCESS;
         final SetRequestParameter request = factory.createSetRequestParameter(seasonsArray);
 
         return request;
     }
 
-    private enum CalendarElementsEnum {
-        LOGICAL_NAME(1),
-        CALENDAR_NAME_ACTIVE(2),
-        SEASON_PROFILE_ACTIVE(3),
-        WEEK_PROFILE_TABLE(4),
-        DAY_PROFILE_TABLE_ACTIVE(5),
-        CALENDAR_NAME_PASSIVE(6),
-        SEASON_PROFILE_PASSIVE(7),
-        WEEK_PROFILE_TABLE_PASSIVE(8),
-        DAY_PROFILE_TABLE_PASSIVE(9),
-        ACTIVATE_PASSIVE_CALENDAR_TIME(10);
-        private int num;
-
-        CalendarElementsEnum(final int i) {
-            this.num = i;
-        }
-
-        public static CalendarElementsEnum getIt(final int i) {
-            for (final CalendarElementsEnum e : CalendarElementsEnum.values()) {
-                if (e.num == i) {
-                    return e;
-                }
-            }
-            return null;
-        }
-    }
-
-    /**
-     * Method for debugging purposes. Can be removed.
-     *
-     * @param conn
-     * @throws IOException
-     */
-    private void printAllValues(final ClientConnection conn) throws IOException {
-
-        for (int i = 1; i <= 10; i++) {
-            final GetRequestParameter reqParam = new GetRequestParameter(CLASS_ID, OBIS_CODE, i);
-            final List<GetResult> getResultList = conn.get(reqParam);
-            LOGGER.info("\nFFFFFFor " + CalendarElementsEnum.getIt(i) + " result is: \n"
-                    + this.dlmsHelperService.getDebugInfo(getResultList.get(0).resultData()));
-        }
-
-    }
 }

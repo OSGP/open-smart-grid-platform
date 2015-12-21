@@ -12,9 +12,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.openmuc.jdlms.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,12 +73,8 @@ public class DayProfileConverter {
     private List<DataObject> getDayActionObjectElements(final DayProfileAction dayProfileAction) {
         final List<DataObject> dayActionObjectElements = new ArrayList<>();
 
-        final DateTime dt = new DateTime(dayProfileAction.getStartTime());
-
-        final DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        final String dtStr = fmt.print(dt);
-        final DataObject startTimeObject = DataObject.newOctetStringData((new Integer(0)).toString().getBytes());// dtStr.getBytes());
-
+        final DataObject startTimeObject = this.dlmsHelperService.dateAsDataObjectOctetString(dayProfileAction
+                .getStartTime());
         // See "DSMR P3 v4.2.2 Final P3.pdf" Tariffication Script Table (Class
         // ID: 9). Value: 0-0:10.0.100.255
         final DataObject nameObject = DataObject.newOctetStringData(new byte[] { 0, 0, 10, 0, 100, (byte) 255 });

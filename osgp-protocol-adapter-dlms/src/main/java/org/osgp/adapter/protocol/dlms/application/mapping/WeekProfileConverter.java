@@ -52,13 +52,13 @@ public class WeekProfileConverter {
 
         weekElements.add(DataObject.newOctetStringData(weekProfile.getWeekProfileName()
                 .getBytes(StandardCharsets.UTF_8)));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getMonday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getTuesday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getWednesday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getThursday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getFriday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getSaturday().getDayId()));
-        weekElements.add(DataObject.newUInteger32Data(weekProfile.getSunday().getDayId()));
+        weekElements.add(DataObject.newUInteger8Data(weekProfile.getMonday().getDayId().shortValue()));
+        weekElements.add(DataObject.newUInteger8Data(weekProfile.getTuesday().getDayId().shortValue()));
+        weekElements.add(DataObject.newUInteger8Data(weekProfile.getWednesday().getDayId().shortValue()));
+        weekElements.add(DataObject.newUInteger8Data(weekProfile.getThursday().getDayId().shortValue()));
+        weekElements.add(DataObject.newUInteger8Data(weekProfile.getFriday().getDayId().shortValue()));
+        weekElements.add(DataObject.newUInteger8Data(weekProfile.getSaturday().getDayId().shortValue()));
+        weekElements.add(DataObject.newUInteger8Data(weekProfile.getSunday().getDayId().shortValue()));
 
         return weekElements;
     }

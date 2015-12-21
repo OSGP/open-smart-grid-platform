@@ -46,8 +46,6 @@ public class SeasonProfileConverter {
     private List<DataObject> getSeasonList(final List<SeasonProfile> seasonProfileList) throws IOException {
         final List<DataObject> seasonList = new ArrayList<>();
 
-        // tijdelijk omdat 2 wel werkt ipv 4
-
         for (final SeasonProfile seasonProfile : seasonProfileList) {
             final DataObject seasonStructure = DataObject.newStructureData(this.getSeason(seasonProfile));
             seasonList.add(seasonStructure);

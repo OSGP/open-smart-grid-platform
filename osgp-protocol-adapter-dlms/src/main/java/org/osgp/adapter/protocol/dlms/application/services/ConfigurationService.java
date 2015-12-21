@@ -11,7 +11,9 @@ import java.io.Serializable;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -57,6 +59,9 @@ public class ConfigurationService {
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
+
+    @Autowired
+    private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
 
     // === REQUEST Special Days DATA ===
 
@@ -154,18 +159,18 @@ public class ConfigurationService {
             LOGGER.info("Device for Activity Calendar is: {}", device);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
-            final AccessResultCode accessResultCode = this.setActivityCalendarCommandExecutor.execute(conn,
-                    activityCalendar);
+            this.setActivityCalendarCommandExecutor.execute(conn, activityCalendar);
 
-            if (AccessResultCode.SUCCESS != accessResultCode) {
-                throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + accessResultCode);
+            final MethodResultCode methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, null);
+
+            if (MethodResultCode.SUCCESS != methodResult) {
+                throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + methodResult);
             }
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
-                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, ""
-                            + accessResultCode + " Set Activity Calendar Result is OK for device id: "
-                            + deviceIdentification + " calendar name: " + activityCalendar.getCalendarName());
-
+                    deviceIdentification, ResponseMessageResultType.OK, null, responseMessageSender, "" + methodResult
+                            + " Set Activity Calendar Result is OK for device id: " + deviceIdentification
+                            + " calendar name: " + activityCalendar.getCalendarName());
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during setActivityCalendar", e);
             final OsgpException ex = this.ensureOsgpException(e);
