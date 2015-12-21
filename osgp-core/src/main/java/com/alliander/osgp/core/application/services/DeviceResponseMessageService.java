@@ -56,7 +56,7 @@ public class DeviceResponseMessageService {
 
             // The array of exceptions which have to be retried.
             final String[] retryExceptions = { "Unable to connect", "ConnectException",
-            "Failed to receive response within timelimit" };
+                    "Failed to receive response within timelimit" };
             Boolean retryMessage = false;
 
             // Validate the actual exception with the list of exception to be
@@ -65,6 +65,7 @@ public class DeviceResponseMessageService {
                 for (final String retryException : retryExceptions) {
                     if (message.getOsgpException().getCause().toString().contains(retryException)) {
                         retryMessage = true;
+                        break;
                     }
                 }
             }
