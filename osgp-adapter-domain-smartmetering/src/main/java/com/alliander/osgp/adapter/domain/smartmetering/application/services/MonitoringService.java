@@ -20,14 +20,13 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -221,8 +220,9 @@ public class MonitoringService {
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        final ReadAlarmRegisterRequest readAlarmRegisterRequestDto = this.monitoringMapper.map(
-                readAlarmRegisterRequestValueObject, ReadAlarmRegisterRequest.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest readAlarmRegisterRequestDto = this.monitoringMapper
+                .map(readAlarmRegisterRequestValueObject,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, readAlarmRegisterRequestDto), messageType);
@@ -231,7 +231,7 @@ public class MonitoringService {
     public void handleReadAlarmRegisterResponse(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final AlarmRegister alarmRegisterDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister alarmRegisterDto) {
 
         LOGGER.info("handleReadAlarmRegisterResponse for MessageType: {}", messageType);
 
@@ -241,8 +241,7 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister alarmRegisterValueDomain = this.monitoringMapper
-                .map(alarmRegisterDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister.class);
+        final AlarmRegister alarmRegisterValueDomain = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, alarmRegisterValueDomain), messageType);
