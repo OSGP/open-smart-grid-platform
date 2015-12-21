@@ -136,7 +136,7 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
@@ -153,10 +153,26 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
     }
 
+    public void handleSetAdministrativeStatusResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleSpecialDaysresponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
+    }
+
     public void getAdministrationState(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("SetAdministrationState for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);

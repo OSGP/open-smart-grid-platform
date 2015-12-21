@@ -18,8 +18,10 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("domainSmartMeteringSetAdministrationStateResponseMessageProcessor")
 public class SetAdministrativeStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -35,37 +37,43 @@ public class SetAdministrativeStatusResponseMessageProcessor extends OsgpCoreRes
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering set administration response message");
+        LOGGER.debug("Processing smart metering default response message");
 
         String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        Object dataObject = null;
+
+        ResponseMessage responseMessage = null;
+        ResponseMessageResultType responseMessageResultType = null;
+        OsgpException osgpException = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            dataObject = message.getObject();
 
+            responseMessage = (ResponseMessage) message.getObject();
+            responseMessageResultType = responseMessage.getResult();
+            osgpException = responseMessage.getOsgpException();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
             LOGGER.debug("messageType: {}", messageType);
             LOGGER.debug("organisationIdentification: {}", organisationIdentification);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("osgpException: {}", osgpException);
             return;
         }
 
         try {
-            LOGGER.info("Calling application service function: {}", messageType);
+            LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) dataObject;
-
-            this.configurationService.setAdministrativeStatus(organisationIdentification, deviceIdentification,
-                    correlationUid, administrativeStatusType, messageType);
+            this.configurationService.handleSetAdministrativeStatusResponse(deviceIdentification,
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
