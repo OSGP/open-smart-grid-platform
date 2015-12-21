@@ -8,36 +8,30 @@
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
+import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainer;
 
 public class ResumeScheduleDeviceRequest extends DeviceRequest {
 
-    private Integer index;
-    private boolean immediate;
+    private ResumeScheduleMessageDataContainer resumeScheduleContainer;
 
     public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Integer index, final boolean immediate) {
+            final String correlationUid, final ResumeScheduleMessageDataContainer resumeScheduleContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
-        this.index = index;
-        this.immediate = immediate;
+        this.resumeScheduleContainer = resumeScheduleContainer;
     }
 
     public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Integer index, final boolean immediate, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
+            final String correlationUid, final ResumeScheduleMessageDataContainer resumeScheduleContainer,
+            final String domain, final String domainVersion, final String messageType, final String ipAddress,
+            final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
-        this.index = index;
-        this.immediate = immediate;
+        this.resumeScheduleContainer = resumeScheduleContainer;
     }
 
-    public Integer getIndex() {
-        return this.index;
-    }
-
-    public boolean isImmediate() {
-        return this.immediate;
+    public ResumeScheduleMessageDataContainer getResumeScheduleContainer() {
+        return this.resumeScheduleContainer;
     }
 }

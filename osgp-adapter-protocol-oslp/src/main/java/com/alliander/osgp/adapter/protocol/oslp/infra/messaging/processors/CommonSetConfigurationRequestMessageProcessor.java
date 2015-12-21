@@ -33,7 +33,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpCommonSetConfigurationRequestMessageProcessor")
 public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -124,8 +124,9 @@ OslpEnvelopeProcessor {
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSetConfigurationRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, null, CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender,
-                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+                        t, unsignedOslpEnvelopeDto.getExtraData(),
+                        CommonSetConfigurationRequestMessageProcessor.this.responseMessageSender, deviceResponse,
+                        domain, domainVersion, messageType, isScheduled, retryCount);
             }
         };
 

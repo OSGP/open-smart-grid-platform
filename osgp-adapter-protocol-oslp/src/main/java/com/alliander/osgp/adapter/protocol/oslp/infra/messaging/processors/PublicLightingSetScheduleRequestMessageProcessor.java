@@ -89,8 +89,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
-                    RelayType.LIGHT, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.LIGHT, domain,
+                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setSchedule(deviceRequest);
         } catch (final Exception e) {
@@ -128,7 +128,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
+                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
                         PublicLightingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }
@@ -136,8 +136,8 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         };
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(), RelayType.LIGHT,
-                domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.LIGHT, domain,
+                domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         try {
             this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,

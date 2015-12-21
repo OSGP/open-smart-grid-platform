@@ -7,40 +7,31 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
-import org.joda.time.DateTime;
-
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.TransitionType;
+import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
 
 public class SetTransitionDeviceRequest extends DeviceRequest {
 
-    private TransitionType transitionType;
-    private DateTime transitionTime;
+    private TransitionMessageDataContainer transitionTypeContainer;
 
     public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime) {
+            final String correlationUid, final TransitionMessageDataContainer transitionTypeContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
-        this.transitionType = transitionType;
-        this.transitionTime = transitionTime;
+        this.transitionTypeContainer = transitionTypeContainer;
     }
 
     public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionType transitionType, final DateTime transitionTime,
+            final String correlationUid, final TransitionMessageDataContainer transitionTypeContainer,
             final String domain, final String domainVersion, final String messageType, final String ipAddress,
             final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
-        this.transitionType = transitionType;
-        this.transitionTime = transitionTime;
+        this.transitionTypeContainer = transitionTypeContainer;
     }
 
-    public TransitionType getTransitionType() {
-        return this.transitionType;
-    }
-
-    public DateTime getTransitionTime() {
-        return this.transitionTime;
+    public TransitionMessageDataContainer getTransitionTypeContainer() {
+        return this.transitionTypeContainer;
     }
 }

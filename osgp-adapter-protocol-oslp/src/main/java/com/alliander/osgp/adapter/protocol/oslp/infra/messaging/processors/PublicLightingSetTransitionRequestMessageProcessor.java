@@ -34,7 +34,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpPublicLightingSetTransitionRequestMessageProcessor")
 public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -89,9 +89,8 @@ OslpEnvelopeProcessor {
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetTransitionDeviceRequest deviceRequest = new SetTransitionDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, transitionMessageDataContainer.getTransitionType(),
-                    transitionMessageDataContainer.getDateTime(), domain, domainVersion, messageType, ipAddress,
-                    retryCount, isScheduled);
+                    deviceIdentification, correlationUid, transitionMessageDataContainer, domain, domainVersion,
+                    messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setTransition(deviceRequest);
         } catch (final Exception e) {
@@ -127,7 +126,7 @@ OslpEnvelopeProcessor {
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetTransitionRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
+                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
                         PublicLightingSetTransitionRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }
