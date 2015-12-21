@@ -89,9 +89,9 @@
 	<!-- smart meter actual -->
 	<xsd:element name="ActualMeterReadsRequest">
 		<xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="common:DeviceIdentification"></xsd:extension>
-			</xsd:simpleContent>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
@@ -126,9 +126,9 @@
 	<!-- gas meter actual -->
 	<xsd:element name="ActualMeterReadsGasRequest">
 		<xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="common:DeviceIdentification"></xsd:extension>
-			</xsd:simpleContent>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
