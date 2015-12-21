@@ -25,7 +25,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileS
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsConverter
@@ -40,7 +39,8 @@ BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws
         final PeriodicMeterReadsResponse periodicMeterReadsResponse = new PeriodicMeterReadsResponse();
         periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
         final List<PeriodicMeterReads> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReads();
-        for (final MeterReads m : source.getPeriodicMeterReads()) {
+        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads m : source
+                .getPeriodicMeterReads()) {
             final PeriodicMeterReads meterReads = new PeriodicMeterReads();
             final GregorianCalendar c = new GregorianCalendar();
             c.setTime(m.getLogTime());
@@ -73,13 +73,14 @@ BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws
                 source.getPeriodicMeterReads().size());
         for (final PeriodicMeterReads reads : source.getPeriodicMeterReads()) {
 
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode amrProfileStatusCode =
-                    this.mapperFacade.map(reads.getAmrProfileStatusCode(), com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode.class)
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade
+                    .map(reads.getAmrProfileStatusCode(),
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode.class);
 
-                    meterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(reads
-                            .getLogTime().toGregorianCalendar().getTime(), reads.getActiveEnergyImportTariffOne(), reads
-                            .getActiveEnergyImportTariffTwo(), reads.getActiveEnergyExportTariffOne(), reads
-                            .getActiveEnergyExportTariffTwo(), amrProfileStatusCode));
+            meterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(reads
+                    .getLogTime().toGregorianCalendar().getTime(), reads.getActiveEnergyImportTariffOne(), reads
+                    .getActiveEnergyImportTariffTwo(), reads.getActiveEnergyExportTariffOne(), reads
+                    .getActiveEnergyExportTariffTwo(), amrProfileStatusCode));
         }
         return new PeriodicMeterReadContainer(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
