@@ -15,20 +15,20 @@ public class PeriodicMeterReadsContainerGas implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    private final List<MeterReadsGas> MeterReadsGas;
+    private final List<PeriodicMeterReadsGas> MeterReadsGas;
     private final PeriodType periodType;
 
-    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<MeterReadsGas> MeterReadsGas) {
+    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<PeriodicMeterReadsGas> MeterReadsGas) {
         this.MeterReadsGas = Collections.unmodifiableList(MeterReadsGas);
         this.periodType = periodType;
     }
 
-    public List<MeterReadsGas> getMeterReadsGas() {
+    public List<PeriodicMeterReadsGas> getMeterReadsGas() {
         return this.MeterReadsGas;
     }
 
     public PeriodType getPeriodType() {
-        return periodType;
+        return this.periodType;
     }
 
 }

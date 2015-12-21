@@ -251,6 +251,7 @@
 			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
 			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue"
 				minOccurs="0" />
+			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -259,6 +260,7 @@
 			<xsd:element name="LogTime" type="xsd:dateTime" />
 			<xsd:element name="Consumption" type="tns:MeterValue" />
 			<xsd:element name="CaptureTime" type="xsd:dateTime" />
+			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 

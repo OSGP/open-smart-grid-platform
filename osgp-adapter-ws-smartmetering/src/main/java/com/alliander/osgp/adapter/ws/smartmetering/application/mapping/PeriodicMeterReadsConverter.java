@@ -21,6 +21,7 @@ import ma.glasnost.orika.metadata.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
@@ -28,8 +29,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+extends
+BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsConverter.class);
 
@@ -50,11 +51,16 @@ public class PeriodicMeterReadsConverter
                 LOGGER.error("JAXB mapping: An error occured while converting calendar types.", e);
                 convertedDate = null;
             }
+
+            final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(m.getAmrProfileStatusCode(),
+                    AmrProfileStatusCode.class);
+
             meterReads.setLogTime(convertedDate);
             meterReads.setActiveEnergyImportTariffOne(m.getActiveEnergyImportTariffOne());
             meterReads.setActiveEnergyImportTariffTwo(m.getActiveEnergyImportTariffTwo());
             meterReads.setActiveEnergyExportTariffOne(m.getActiveEnergyExportTariffOne());
             meterReads.setActiveEnergyExportTariffTwo(m.getActiveEnergyExportTariffTwo());
+            meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
             periodicMeterReads.add(meterReads);
         }
         return periodicMeterReadsResponse;
@@ -63,15 +69,20 @@ public class PeriodicMeterReadsConverter
     @Override
     public PeriodicMeterReadContainer convertFrom(final PeriodicMeterReadsResponse source,
             final Type<PeriodicMeterReadContainer> destinationType) {
-        final List<MeterReads> meterReads = new ArrayList<MeterReads>(source.getPeriodicMeterReads().size());
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> meterReads = new ArrayList<>(
+                source.getPeriodicMeterReads().size());
         for (final PeriodicMeterReads reads : source.getPeriodicMeterReads()) {
-            meterReads.add(new MeterReads(reads.getLogTime().toGregorianCalendar().getTime(), reads
-                    .getActiveEnergyImportTariffOne(), reads.getActiveEnergyImportTariffTwo(), reads
-                    .getActiveEnergyExportTariffOne(), reads.getActiveEnergyExportTariffTwo()));
+
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode amrProfileStatusCode =
+                    this.mapperFacade.map(reads.getAmrProfileStatusCode(), com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode.class)
+
+                    meterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(reads
+                            .getLogTime().toGregorianCalendar().getTime(), reads.getActiveEnergyImportTariffOne(), reads
+                            .getActiveEnergyImportTariffTwo(), reads.getActiveEnergyExportTariffOne(), reads
+                            .getActiveEnergyExportTariffTwo(), amrProfileStatusCode));
         }
         return new PeriodicMeterReadContainer(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
                         .name()), meterReads);
     }
-
 }
