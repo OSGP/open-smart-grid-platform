@@ -49,9 +49,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
 
             final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) message.getObject();
 
-            this.adhocService.synchronizeTime(messageMetadata.getOrganisationIdentification(), messageMetadata.getDeviceIdentification(),
-                    messageMetadata.getCorrelationUid(), synchronizeTimeRequest, this.responseMessageSender, messageMetadata.getDomain(),
-                    messageMetadata.getDomainVersion(), messageMetadata.getMessageType());
+            this.adhocService.synchronizeTime(messageMetadata, synchronizeTimeRequest, this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

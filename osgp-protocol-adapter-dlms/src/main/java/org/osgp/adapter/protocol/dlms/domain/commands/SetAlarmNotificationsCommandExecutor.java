@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
@@ -103,7 +110,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     public AlarmNotifications retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
 
         final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -166,11 +173,11 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         /*
          * Create a new (modifyable) set of alarm notifications, based on the
          * notifications to set.
-         * 
+         *
          * Next, add all notifications on the device. These will only really be
          * added to the new set of notifications if it did not contain a
          * notification for the alarm type for which the notification is added.
-         * 
+         *
          * This works because of the specification of addAll for the set,
          * claiming elements will only be added if not already present, and the
          * defintion of equals on the AlarmNotification, ensuring only a simgle
