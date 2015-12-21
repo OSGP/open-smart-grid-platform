@@ -88,8 +88,8 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, lightValueMessageDataContainer.getLightValues(), domain,
-                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                    deviceIdentification, correlationUid, lightValueMessageDataContainer, domain, domainVersion,
+                    messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setLight(deviceRequest);
         } catch (final Exception e) {
@@ -125,10 +125,10 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingSetLightRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, null, PublicLightingSetLightRequestMessageProcessor.this.responseMessageSender,
-                        deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
+                        t, unsignedOslpEnvelopeDto.getExtraData(),
+                        PublicLightingSetLightRequestMessageProcessor.this.responseMessageSender, deviceResponse,
+                        domain, domainVersion, messageType, isScheduled, retryCount);
             }
-
         };
 
         final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,

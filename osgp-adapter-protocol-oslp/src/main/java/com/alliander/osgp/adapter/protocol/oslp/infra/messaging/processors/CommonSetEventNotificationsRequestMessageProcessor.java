@@ -90,8 +90,8 @@ OslpEnvelopeProcessor {
 
             final SetEventNotificationsDeviceRequest deviceRequest = new SetEventNotificationsDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
-                    eventNotificationMessageDataContainer.getEventNotifications(), domain, domainVersion, messageType,
-                    ipAddress, retryCount, isScheduled);
+                    eventNotificationMessageDataContainer, domain, domainVersion, messageType, ipAddress, retryCount,
+                    isScheduled);
 
             this.deviceService.setEventNotifications(deviceRequest);
         } catch (final Exception e) {
@@ -127,7 +127,7 @@ OslpEnvelopeProcessor {
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 CommonSetEventNotificationsRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
+                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
                         CommonSetEventNotificationsRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }

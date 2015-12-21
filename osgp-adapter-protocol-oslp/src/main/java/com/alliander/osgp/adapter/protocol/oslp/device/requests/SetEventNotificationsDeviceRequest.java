@@ -7,32 +7,31 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
-import java.util.List;
-
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.EventNotificationType;
+import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
 
 public class SetEventNotificationsDeviceRequest extends DeviceRequest {
 
-    private List<EventNotificationType> eventNotifications;
+    private EventNotificationMessageDataContainer eventNotificationsContainer;
 
     public SetEventNotificationsDeviceRequest(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final List<EventNotificationType> eventNotifications) {
+            final EventNotificationMessageDataContainer eventNotificationsContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
-        this.eventNotifications = eventNotifications;
+        this.eventNotificationsContainer = eventNotificationsContainer;
     }
 
     public SetEventNotificationsDeviceRequest(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final List<EventNotificationType> eventNotifications, final String domain, final String domainVersion,
-            final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
+            final EventNotificationMessageDataContainer eventNotificationsContainer, final String domain,
+            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
+            final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
-        this.eventNotifications = eventNotifications;
+        this.eventNotificationsContainer = eventNotificationsContainer;
     }
 
-    public List<EventNotificationType> getEventNotifications() {
-        return this.eventNotifications;
+    public EventNotificationMessageDataContainer getEventNotificationsContainer() {
+        return this.eventNotificationsContainer;
     }
 }

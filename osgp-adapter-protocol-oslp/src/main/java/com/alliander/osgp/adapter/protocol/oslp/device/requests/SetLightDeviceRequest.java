@@ -7,33 +7,31 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
-import java.util.List;
-
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.LightValue;
+import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainer;
 
 public class SetLightDeviceRequest extends DeviceRequest {
 
-    private List<LightValue> lightValues;
+    private LightValueMessageDataContainer lightValuesContainer;
 
     public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<LightValue> lightValues) {
+            final String correlationUid, final LightValueMessageDataContainer lightValuesContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
-        this.lightValues = lightValues;
+        this.lightValuesContainer = lightValuesContainer;
     }
 
     public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<LightValue> lightValues, final String domain,
-            final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
-            final boolean isScheduled) {
+            final String correlationUid, final LightValueMessageDataContainer lightValuesContainer,
+            final String domain, final String domainVersion, final String messageType, final String ipAddress,
+            final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
-        this.lightValues = lightValues;
+        this.lightValuesContainer = lightValuesContainer;
     }
 
-    public List<LightValue> getLightValues() {
-        return this.lightValues;
+    public LightValueMessageDataContainer getLightValuesContainer() {
+        return this.lightValuesContainer;
     }
 }

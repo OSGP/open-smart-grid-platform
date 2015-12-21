@@ -7,39 +7,38 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
-import java.util.List;
-
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
 import com.alliander.osgp.dto.valueobjects.RelayType;
-import com.alliander.osgp.dto.valueobjects.Schedule;
+import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
 
 public class SetScheduleDeviceRequest extends DeviceRequest {
 
-    private List<Schedule> schedules;
+    private ScheduleMessageDataContainer scheduleMessageDataContainer;
     private RelayType relayType;
 
     public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<Schedule> schedules, final RelayType relayType) {
+            final String correlationUid, final ScheduleMessageDataContainer scheduleMessageDataContainer,
+            final RelayType relayType) {
         super(organisationIdentification, deviceIdentification, correlationUid);
-        this.schedules = schedules;
+        this.scheduleMessageDataContainer = scheduleMessageDataContainer;
         this.relayType = relayType;
     }
 
     public SetScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final List<Schedule> schedules, final RelayType relayType,
-            final String domain, final String domainVersion, final String messageType, final String ipAddress,
-            final int retryCount, final boolean isScheduled) {
+            final String correlationUid, final ScheduleMessageDataContainer scheduleMessageDataContainer,
+            final RelayType relayType, final String domain, final String domainVersion, final String messageType,
+            final String ipAddress, final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
-        this.schedules = schedules;
+        this.scheduleMessageDataContainer = scheduleMessageDataContainer;
         this.relayType = relayType;
-    }
-
-    public List<Schedule> getSchedules() {
-        return this.schedules;
     }
 
     public RelayType getRelayType() {
         return this.relayType;
+    }
+
+    public ScheduleMessageDataContainer getScheduleMessageDataContainer() {
+        return this.scheduleMessageDataContainer;
     }
 }

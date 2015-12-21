@@ -91,8 +91,8 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
 
             final ResumeScheduleDeviceRequest deviceRequest = new ResumeScheduleDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
-                    resumeScheduleMessageDataContainer.getIndex(), resumeScheduleMessageDataContainer.isImmediate(),
-                    domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                    resumeScheduleMessageDataContainer, domain, domainVersion, messageType, ipAddress, retryCount,
+                    isScheduled);
 
             this.deviceService.resumeSchedule(deviceRequest);
         } catch (final Exception e) {
@@ -128,7 +128,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingResumeScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
+                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
                         PublicLightingResumeScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }

@@ -34,7 +34,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  */
 @Component("oslpTariffSwitchingSetScheduleRequestMessageProcessor")
 public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -89,8 +89,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(),
-                    RelayType.TARIFF, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.TARIFF, domain,
+                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setSchedule(deviceRequest);
         } catch (final Exception e) {
@@ -128,7 +128,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, null,
+                        deviceResponse, t, unsignedOslpEnvelopeDto.getExtraData(),
                         TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender, deviceResponse,
                         domain, domainVersion, messageType, isScheduled, retryCount);
             }
@@ -136,8 +136,8 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         };
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer.getScheduleList(), RelayType.TARIFF,
-                domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.TARIFF, domain,
+                domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         try {
             this.deviceService.doSetSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress, domain,
