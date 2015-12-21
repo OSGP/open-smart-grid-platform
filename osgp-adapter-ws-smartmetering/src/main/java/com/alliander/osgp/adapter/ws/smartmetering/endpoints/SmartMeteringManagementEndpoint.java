@@ -21,7 +21,6 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncResponse;
@@ -85,10 +84,8 @@ public class SmartMeteringManagementEndpoint {
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class));
 
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
         } catch (final Exception e) {
             this.handleException(e);
         }
@@ -103,15 +100,15 @@ public class SmartMeteringManagementEndpoint {
             @RequestPayload final FindEventsAsyncRequest request) throws OsgpException {
 
         LOGGER.info("Get find events response for organisation: {} and device: {}.", organisationIdentification,
-                request.getAsyncRequest().getDeviceIdentification());
+                request.getDeviceIdentification());
 
         // Create response.
         final FindEventsResponse response = new FindEventsResponse();
 
         try {
             // Get the request parameters, make sure that date time are in UTC.
-            final String deviceIdentification = request.getAsyncRequest().getDeviceIdentification();
-            final String correlationUid = request.getAsyncRequest().getCorrelationUid();
+            final String deviceIdentification = request.getDeviceIdentification();
+            final String correlationUid = request.getCorrelationUid();
 
             final List<Event> events = this.managementService.findEventsByCorrelationUid(organisationIdentification,
                     deviceIdentification, correlationUid);
