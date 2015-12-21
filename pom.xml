@@ -4,7 +4,7 @@
 
     <groupId>org.osgp</groupId>
     <artifactId>protocol-adapter-dlms</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>2.9.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
     <description>Protocol Adapter for DLMS smart devices.</description>
@@ -21,6 +21,20 @@
     <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
     <url>${maven.site.url}</url>
     <distributionManagement>
+	    <repository>
+	      <uniqueVersion>false</uniqueVersion>
+	      <id>smartsociety-releases</id>
+	      <name>Smart Society Release Repo</name>
+	      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-releases/</url>
+	      <layout>default</layout>
+	    </repository>
+	    <snapshotRepository>
+	      <uniqueVersion>false</uniqueVersion>
+	      <id>smartsociety-snapshots</id>
+	      <name>Smart Society Development Repo</name>
+	      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-snapshots/</url>
+		<layout>default</layout>
+	    </snapshotRepository>
         <site>
             <id>pa-dlms</id>
             <name>pa-dlms</name>
@@ -28,6 +42,30 @@
             <url>${maven.site.distributionManagement.site.url}</url>
         </site>
     </distributionManagement>
+
+	<build>
+	<plugins>
+	    <plugin>
+		<groupId>external.atlassian.jgitflow</groupId>
+		<artifactId>jgitflow-maven-plugin</artifactId>
+		<version>1.0-m5.1</version>
+		<configuration>
+		    <pushFeatures>true</pushFeatures>
+		    <pushHotfixes>true</pushHotfixes>
+		    <pushReleases>true</pushReleases>
+		    <enableSshAgent>true</enableSshAgent>
+		    <flowInitContext>
+			<masterBranchName>master</masterBranchName>
+			<developBranchName>development</developBranchName>
+			<featureBranchPrefix>feature-</featureBranchPrefix>
+			<releaseBranchPrefix>release-</releaseBranchPrefix>
+			<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+			<versionTagPrefix>${project.artifactId}-</versionTagPrefix>
+		    </flowInitContext>
+		</configuration>
+	    </plugin>
+	</plugins>
+	</build>
   
     <modules>
         <module>parent-pa-dlms</module>
