@@ -24,7 +24,7 @@ public class AmrProfileStatusCode implements Serializable {
 
     @Override
     public String toString() {
-        return "AmrProfileStatusCode[" + String.valueOf(this.amrProfileStatusCodeFlags) + "]";
+        return "AmrProfileStatusCode[" + this.amrProfileStatusCodeFlags + "]";
     }
 
     public Set<AmrProfileStatusCodeFlag> getAmrProfileStatusCodeFlags() {
