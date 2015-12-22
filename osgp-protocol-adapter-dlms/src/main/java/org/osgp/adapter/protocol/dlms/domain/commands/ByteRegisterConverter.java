@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.BitSet;
@@ -10,15 +17,15 @@ import java.util.Set;
 
 public class ByteRegisterConverter<T extends Enum<T>> {
 
-    private final Map<T, Integer> registerBitInderPerType;
+    private final Map<T, Integer> registerBitIndexPerType;
     private final Map<Integer, T> typePerRegisterBitIndex;
 
     private final int numberOfBitsInRegister;
 
-    public ByteRegisterConverter(final Map<T, Integer> registerBitInderPerType, final int numberOfBitsInRegister) {
+    public ByteRegisterConverter(final Map<T, Integer> registerBitIndexPerType, final int numberOfBitsInRegister) {
         this.numberOfBitsInRegister = numberOfBitsInRegister;
-        this.registerBitInderPerType = Collections.unmodifiableMap(registerBitInderPerType);
-        this.typePerRegisterBitIndex = this.createFlippedMap(this.registerBitInderPerType);
+        this.registerBitIndexPerType = Collections.unmodifiableMap(registerBitIndexPerType);
+        this.typePerRegisterBitIndex = this.createFlippedMap(this.registerBitIndexPerType);
     }
 
     /**
@@ -39,17 +46,17 @@ public class ByteRegisterConverter<T extends Enum<T>> {
      * Returns the position of the bit value for the given T, in the byte
      * register space.
      *
-     * @param T
+     * @param t
      *            T
-     * @return position of the bit holding the alarm type value.
+     * @return position of the bit holding the T value.
      */
-    public Integer toBitPosition(final T T) {
-        return this.registerBitInderPerType.get(T);
+    public Integer toBitPosition(final T t) {
+        return this.registerBitIndexPerType.get(t);
     }
 
     /**
-     * Create a set of alarm types representing the active bits in the register
-     * value. Returns empty set if no bits are active.
+     * Create a set of T representing the active bits in the register value.
+     * Returns empty set if no bits are active.
      *
      * @param registerValue
      *            Value of the register.
@@ -67,9 +74,9 @@ public class ByteRegisterConverter<T extends Enum<T>> {
     }
 
     /**
-     * Calculate the long value for the given set of Types
+     * Calculate the long value for the given set of T
      *
-     * @param Types
+     * @param types
      *            Set of types
      * @return Long value.
      */

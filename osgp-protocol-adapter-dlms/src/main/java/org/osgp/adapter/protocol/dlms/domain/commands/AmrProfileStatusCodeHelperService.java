@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.Collections;
@@ -8,8 +15,8 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 
-@Service("amrProfileStatusHelperService")
-public class AmrProfileStatusHelperService {
+@Service("amrProfileStatusCodeHelperService")
+public class AmrProfileStatusCodeHelperService {
     private static final int NUMBER_OF_BITS_IN_REGISTER = 8;
 
     private static final ByteRegisterConverter<AmrProfileStatusCodeFlag> BYTE_REGISTER_CONVERTER;
@@ -24,7 +31,6 @@ public class AmrProfileStatusHelperService {
         map.put(AmrProfileStatusCodeFlag.CLOCK_ADJUSTED, 5);
         map.put(AmrProfileStatusCodeFlag.POWER_DOWN, 7);
 
-        // TODO: Dependency injection of this instance?
         BYTE_REGISTER_CONVERTER = new ByteRegisterConverter<AmrProfileStatusCodeFlag>(Collections.unmodifiableMap(map),
                 NUMBER_OF_BITS_IN_REGISTER);
     }

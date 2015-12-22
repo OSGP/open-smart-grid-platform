@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -80,7 +80,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private DlmsHelperService dlmsHelperService;
 
     @Autowired
-    private AmrProfileStatusHelperService amrProfileStatusHelperService;
+    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
     public PeriodicMeterReadsContainer execute(final ClientConnection conn,
@@ -210,12 +210,12 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     }
 
     /**
-     * Reads AmrProfileStatusses from DataObject holding a bitvalue in a numeric
-     * datatype.
+     * Reads AmrProfileStatusCude from DataObject holding a bitvalue in a
+     * numeric datatype.
      *
      * @param amrProfileStatusData
      *            AMR profile register value.
-     * @return AmrProfileStatusses object holding status enum values.
+     * @return AmrProfileStatusCode object holding status enum values.
      * @throws ProtocolAdapterException
      *             on invalid register data.
      */
@@ -227,7 +227,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
             throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
         }
 
-        final Set<AmrProfileStatusCodeFlag> flags = this.amrProfileStatusHelperService
+        final Set<AmrProfileStatusCodeFlag> flags = this.amrProfileStatusCodeHelperService
                 .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.value());
         amrProfileStatusCode = new AmrProfileStatusCode(flags);
 

@@ -65,7 +65,6 @@ public class AlarmHelperService {
         map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4, 27);
         // bits 28 to 31 are not used
 
-        // TODO: Dependency injection of this instance?
         BYTE_REGISTER_CONVERTER = new ByteRegisterConverter<AlarmType>(Collections.unmodifiableMap(map),
                 NUMBER_OF_BITS_IN_REGISTER);
     }

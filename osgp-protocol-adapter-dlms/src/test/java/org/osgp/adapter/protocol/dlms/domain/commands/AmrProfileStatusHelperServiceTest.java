@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import static org.junit.Assert.assertEquals;
@@ -12,26 +19,27 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFla
 
 public class AmrProfileStatusHelperServiceTest {
 
-    private final AmrProfileStatusHelperService helperService = new AmrProfileStatusHelperService();
+    private final AmrProfileStatusCodeHelperService helperService = new AmrProfileStatusCodeHelperService();
 
     @Test
     public void testConvertToLong() {
-        final Set<AmrProfileStatusCodeFlag> amrStatusses = new HashSet<>();
+        final Set<AmrProfileStatusCodeFlag> amrStatusCodeFlags = new HashSet<>();
 
-        amrStatusses.add(AmrProfileStatusCodeFlag.DATA_NOT_VALID);
-        amrStatusses.add(AmrProfileStatusCodeFlag.POWER_DOWN);
+        amrStatusCodeFlags.add(AmrProfileStatusCodeFlag.DATA_NOT_VALID);
+        amrStatusCodeFlags.add(AmrProfileStatusCodeFlag.POWER_DOWN);
 
-        assertEquals((short) 132, (short) this.helperService.toValue(amrStatusses));
+        assertEquals((short) 132, (short) this.helperService.toValue(amrStatusCodeFlags));
     }
 
     @Test
-    public void testConvertToAmrProfileStatuss() {
+    public void testConvertToAmrProfileStatusCodeFlags() {
         final short registerValue = Short.parseShort("00100100", 2);
 
-        final Set<AmrProfileStatusCodeFlag> amrStatusses = this.helperService.toAmrProfileStatusCodeFlags(registerValue);
+        final Set<AmrProfileStatusCodeFlag> amrStatusCodeFlags = this.helperService
+                .toAmrProfileStatusCodeFlags(registerValue);
 
-        assertTrue(amrStatusses.contains(AmrProfileStatusCodeFlag.DATA_NOT_VALID));
-        assertTrue(amrStatusses.contains(AmrProfileStatusCodeFlag.CLOCK_ADJUSTED));
+        assertTrue(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlag.DATA_NOT_VALID));
+        assertTrue(amrStatusCodeFlags.contains(AmrProfileStatusCodeFlag.CLOCK_ADJUSTED));
     }
 
     @Test
