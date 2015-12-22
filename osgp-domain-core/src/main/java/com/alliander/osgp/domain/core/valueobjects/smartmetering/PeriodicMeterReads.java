@@ -11,9 +11,8 @@ public class PeriodicMeterReads extends MeterReads {
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
             final Long activeEnergyExportTariffTwo) {
-        super(logTime, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
-                activeEnergyExportTariffTwo);
-        this.amrProfileStatusCode = null;
+        this(logTime, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
+                activeEnergyExportTariffTwo, null);
     }
 
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,

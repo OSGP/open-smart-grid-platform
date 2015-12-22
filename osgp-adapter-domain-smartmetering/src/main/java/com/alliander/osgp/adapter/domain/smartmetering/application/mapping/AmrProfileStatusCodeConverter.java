@@ -13,12 +13,14 @@ import java.util.Set;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 
 public class AmrProfileStatusCodeConverter
-extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode, AmrProfileStatusCode> {
+        extends
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode, AmrProfileStatusCode> {
+
+    public static final String CONVERTER_ID = "amrProfileStatusCodeConverter";
 
     @Override
     public AmrProfileStatusCode convertTo(
@@ -43,8 +45,8 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProf
         final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag> resultStatusCodeFlags = new HashSet<>();
         final Set<AmrProfileStatusCodeFlag> sourceStatusCodeFlags = source.getAmrProfileStatusCodeFlags();
         for (final AmrProfileStatusCodeFlag sourceStatusCodeFlag : sourceStatusCodeFlags) {
-            resultStatusCodeFlags.add(com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag.valueOf(sourceStatusCodeFlag
-                    .value()));
+            resultStatusCodeFlags.add(com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag
+                    .valueOf(sourceStatusCodeFlag.value()));
         }
 
         return new com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode(resultStatusCodeFlags);
