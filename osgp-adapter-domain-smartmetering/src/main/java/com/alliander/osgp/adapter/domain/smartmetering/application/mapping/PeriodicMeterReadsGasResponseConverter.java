@@ -29,8 +29,7 @@ public class PeriodicMeterReadsGasResponseConverter
         for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas pmr : source
                 .getMeterReadsGas()) {
 
-            meterReadsGas.add(this.mapperFacade.convert(pmr, PeriodicMeterReadsGas.class,
-                    PeriodicMeterReadsGasConverter.CONVERTER_ID));
+            meterReadsGas.add(this.mapperFacade.map(pmr, PeriodicMeterReadsGas.class));
         }
 
         return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas(
@@ -44,9 +43,8 @@ public class PeriodicMeterReadsGasResponseConverter
         final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> meterReadsGas = new ArrayList<>(
                 source.getMeterReadsGas().size());
         for (final PeriodicMeterReadsGas pmr : source.getMeterReadsGas()) {
-            meterReadsGas.add(this.mapperFacade.convert(pmr,
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas.class,
-                    PeriodicMeterReadsGasConverter.CONVERTER_ID));
+            meterReadsGas.add(this.mapperFacade.map(pmr,
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas.class));
         }
 
         return new PeriodicMeterReadsContainerGas(

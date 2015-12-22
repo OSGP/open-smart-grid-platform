@@ -21,8 +21,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsConta
 //import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode;
 
 public class PeriodicMeterReadsResponseConverter
-extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+        extends
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
 
     @Override
     public PeriodicMeterReadContainer convertTo(final PeriodicMeterReadsContainer source,
@@ -30,9 +30,8 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Periodi
         final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> periodicMeterReads = new ArrayList<>(
                 source.getMeterReads().size());
         for (final PeriodicMeterReads pmr : source.getMeterReads()) {
-            periodicMeterReads.add(this.mapperFacade.convert(pmr,
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads.class,
-                    PeriodicMeterReadsConverter.CONVERTER_ID));
+            periodicMeterReads.add(this.mapperFacade.map(pmr,
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads.class));
         }
 
         return new PeriodicMeterReadContainer(
@@ -47,8 +46,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Periodi
         for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads pmr : source
                 .getPeriodicMeterReads()) {
 
-            periodicMeterReads.add(this.mapperFacade.convert(pmr, PeriodicMeterReads.class,
-                    PeriodicMeterReadsConverter.CONVERTER_ID));
+            periodicMeterReads.add(this.mapperFacade.map(pmr, PeriodicMeterReads.class));
         }
 
         return new PeriodicMeterReadsContainer(PeriodType.valueOf(source.getPeriodType().name()), periodicMeterReads);

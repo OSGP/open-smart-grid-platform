@@ -14,10 +14,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatu
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
 public class PeriodicMeterReadsGasConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadsGas, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas> {
-
-    public static final String CONVERTER_ID = "periodicMeterReadsGasConverter";
+extends
+BidirectionalConverter<PeriodicMeterReadsGas, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas> {
 
     @Override
     public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas convertTo(
@@ -25,9 +23,8 @@ public class PeriodicMeterReadsGasConverter
             final Type<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas> destinationType) {
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade
-                .convert(source.getAmrProfileStatusCode(),
-                        com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode.class,
-                        AmrProfileStatusCodeConverter.CONVERTER_ID);
+                .map(source.getAmrProfileStatusCode(),
+                        com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode.class);
 
         return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas(source.getLogTime(),
                 source.getConsumption(), source.getCaptureTime(), amrProfileStatusCode);
@@ -38,8 +35,8 @@ public class PeriodicMeterReadsGasConverter
             final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas source,
             final Type<PeriodicMeterReadsGas> destinationType) {
 
-        final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.convert(source.getAmrProfileStatusCode(),
-                AmrProfileStatusCode.class, AmrProfileStatusCodeConverter.CONVERTER_ID);
+        final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(source.getAmrProfileStatusCode(),
+                AmrProfileStatusCode.class);
 
         return new PeriodicMeterReadsGas(source.getLogTime(), source.getConsumption(), source.getCaptureTime(),
                 amrProfileStatusCode);

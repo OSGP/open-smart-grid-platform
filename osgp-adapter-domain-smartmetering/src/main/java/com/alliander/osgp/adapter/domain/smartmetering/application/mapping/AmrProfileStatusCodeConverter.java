@@ -17,10 +17,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatu
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 
 public class AmrProfileStatusCodeConverter
-        extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode, AmrProfileStatusCode> {
-
-    public static final String CONVERTER_ID = "amrProfileStatusCodeConverter";
+extends
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode, AmrProfileStatusCode> {
 
     @Override
     public AmrProfileStatusCode convertTo(
