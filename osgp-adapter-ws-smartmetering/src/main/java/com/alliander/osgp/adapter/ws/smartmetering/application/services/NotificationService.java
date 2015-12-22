@@ -44,7 +44,8 @@ public class NotificationService {
             final String deviceIdentification, final String result, final String correlationUid, final String message,
             final NotificationType notificationType) {
 
-        LOGGER.info("sendNotification called with organisation {}", organisationIdentification);
+        LOGGER.info("sendNotification called with organisation: {}, correlationUid: {}, type: {}",
+                organisationIdentification, correlationUid, notificationType);
 
         final Notification notification = new Notification();
         // TODO message is null, unless an error occurred

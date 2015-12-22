@@ -136,7 +136,7 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
@@ -157,7 +157,8 @@ public class ConfigurationService {
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handleSpecialDaysresponse for MessageType: {}", messageType);
+        LOGGER.info("handleSetAdministrativeStatusResponse for MessageType: {}, with result: {}", messageType,
+                deviceResult.toString());
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
@@ -172,7 +173,7 @@ public class ConfigurationService {
     public void getAdministrationState(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("SetAdministrationState for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
