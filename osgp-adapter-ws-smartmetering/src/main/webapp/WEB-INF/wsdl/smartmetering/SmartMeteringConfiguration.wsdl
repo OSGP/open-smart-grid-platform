@@ -23,7 +23,7 @@
     <wsdl:message name="ActionHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
     </wsdl:message>
     
     <wsdl:message name="SetSpecialDaysRequest">
@@ -43,28 +43,36 @@
         </wsdl:part>
     </wsdl:message>
 
-    <wsdl:message name="SetAlarmNotificationsResponse">
-        <wsdl:part element="smconf:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
-        </wsdl:part>
-    </wsdl:message>
     <wsdl:message name="SetAlarmNotificationsRequest">
         <wsdl:part element="smconf:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
         </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="SetAlarmNotificationsAsyncResponse">
+        <wsdl:part element="smconf:SetAlarmNotificationsAsyncResponse" name="SetAlarmNotificationsAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetAlarmNotificationsAsyncRequest">
+        <wsdl:part element="smconf:SetAlarmNotificationsAsyncRequest" name="SetAlarmNotificationsAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetAlarmNotificationsResponse">
+        <wsdl:part element="smconf:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
+        </wsdl:part>
+    </wsdl:message>
 	
-	<wsdl:message name="ActivityCalendarHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
-	<wsdl:message name="SetActivityCalendarRequest">
-		<wsdl:part element="smconf:SetActivityCalendarRequest" name="setActivityCalendarRequest">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="SetActivityCalendarAsyncResponse">
-		<wsdl:part element="smconf:SetActivityCalendarAsyncResponse" name="setActivityCalendarAsyncResponse">
-		</wsdl:part>
-	</wsdl:message>
+    <wsdl:message name="ActivityCalendarHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="SetActivityCalendarRequest">
+        <wsdl:part element="smconf:SetActivityCalendarRequest" name="setActivityCalendarRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetActivityCalendarAsyncResponse">
+        <wsdl:part element="smconf:SetActivityCalendarAsyncResponse" name="setActivityCalendarAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
     
     <wsdl:message name="SetConfigurationObjectRequest">
         <wsdl:part element="smconf:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
@@ -84,10 +92,10 @@
     </wsdl:message>
     
     <wsdl:message name="RetrieveSetActivityCalendarResultRequest">
-    	<wsdl:part element="smconf:RetrieveSetActivityCalendarResultRequest"  name="RetrieveSetActivityCalendarResultRequest" />
+        <wsdl:part element="smconf:RetrieveSetActivityCalendarResultRequest"  name="RetrieveSetActivityCalendarResultRequest" />
     </wsdl:message>
     <wsdl:message name="RetrieveSetActivityCalendarResultResponse">
-    	<wsdl:part element="smconf:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse" />
+        <wsdl:part element="smconf:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse" />
     </wsdl:message>
 
     <wsdl:portType name="SmartmeterconfigurationPort">
@@ -118,25 +126,31 @@
             </wsdl:output>
         </wsdl:operation>
 
-		<wsdl:operation name="SetAlarmNotifications">
+        <wsdl:operation name="SetAlarmNotifications">
             <wsdl:input message="tns:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetAlarmNotificationsAsyncResponse" name="SetAlarmNotificationsAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSetAlarmNotificationsResponse">
+            <wsdl:input message="tns:SetAlarmNotificationsAsyncRequest" name="SetAlarmNotificationsAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
             </wsdl:output>
-		</wsdl:operation>
+        </wsdl:operation>
 
-		<wsdl:operation name="SetActivityCalendar">
+        <wsdl:operation name="SetActivityCalendar">
             <wsdl:input message="tns:SetActivityCalendarRequest" name="SetActivityCalendarRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetActivityCalendarAsyncResponse" name="SetActivityCalendarAsyncResponse">
             </wsdl:output>
-		</wsdl:operation>
+        </wsdl:operation>
 		
-		 <wsdl:operation name="RetrieveSetActivityCalendarResult">
-        	<wsdl:input message="tns:RetrieveSetActivityCalendarResultRequest" name="RetrieveSetActivityCalendarResultRequest">
-        	</wsdl:input>
-        	<wsdl:output message="tns:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse">
-        	</wsdl:output>
+        <wsdl:operation name="RetrieveSetActivityCalendarResult">
+            <wsdl:input message="tns:RetrieveSetActivityCalendarResultRequest" name="RetrieveSetActivityCalendarResultRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse">
+            </wsdl:output>
         </wsdl:operation>
     </wsdl:portType>
 
@@ -147,7 +161,7 @@
             <wsdl:input name="SetSpecialDaysRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetSpecialDaysAsyncResponse">
@@ -160,7 +174,7 @@
             <wsdl:input name="SetSpecialDaysAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetSpecialDaysResponse">
@@ -173,7 +187,7 @@
             <wsdl:input name="SetConfigurationObjectRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetConfigurationObjectAsyncResponse">
@@ -186,7 +200,7 @@
             <wsdl:input name="SetConfigurationObjectAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetConfigurationObjectResponse">
@@ -194,12 +208,24 @@
             </wsdl:output>
         </wsdl:operation>
 
-		<wsdl:operation name="SetAlarmNotifications">
+        <wsdl:operation name="SetAlarmNotifications">
             <soap:operation soapAction="" />
             <wsdl:input name="SetAlarmNotificationsRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetAlarmNotificationsAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSetAlarmNotificationsResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetAlarmNotificationsAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetAlarmNotificationsResponse">
@@ -207,12 +233,12 @@
             </wsdl:output>
         </wsdl:operation>
 
-		<wsdl:operation name="SetActivityCalendar">
+        <wsdl:operation name="SetActivityCalendar">
             <soap:operation soapAction="" />
             <wsdl:input name="SetActivityCalendarRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetActivityCalendarAsyncResponse">
@@ -221,16 +247,16 @@
         </wsdl:operation>
         
         <wsdl:operation name="RetrieveSetActivityCalendarResult">
-			<soap:operation soapAction="" />
-			<wsdl:input name="RetrieveSetActivityCalendarResultRequest">
-        		<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+            <soap:operation soapAction="" />
+            <wsdl:input name="RetrieveSetActivityCalendarResultRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-			</wsdl:input>
-			<wsdl:output name="RetrieveSetActivityCalendarResultResponse">
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+            </wsdl:input>
+            <wsdl:output name="RetrieveSetActivityCalendarResultResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
 
     </wsdl:binding>
     
