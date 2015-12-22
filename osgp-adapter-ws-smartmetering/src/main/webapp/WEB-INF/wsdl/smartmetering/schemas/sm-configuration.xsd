@@ -107,15 +107,7 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-
-	<xsd:element name="GetAdministrativeStatusRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-
+	
 	<xsd:element name="GetAdministrativeStatusAsyncResponse">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -132,7 +124,6 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-
 	<xsd:element name="SetAdministrativeStatusAsyncResponse">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -274,42 +265,6 @@
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="ALWAYS_ON" />
 			<xsd:enumeration value="TRIGGERED" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
-	<!-- Administrative Status Types -->
-	<xsd:simpleType name="AdministrativeStatusType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="UNDEFINED" />
-			<xsd:enumeration value="OFF" />
-			<xsd:enumeration value="ON" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
-	<!-- DSMR Alarm Codes -->
-	<xsd:simpleType name="AlarmType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="CLOCK_INVALID" />
-			<xsd:enumeration value="REPLACE_BATTERY" />
-			<xsd:enumeration value="POWER_UP" />
-			<xsd:enumeration value="PROGRAM_MEMORY_ERROR" />
-			<xsd:enumeration value="RAM_ERROR" />
-			<xsd:enumeration value="NV_MEMORY_ERROR" />
-			<xsd:enumeration value="MEASUREMENT_SYSTEM_ERROR" />
-			<xsd:enumeration value="WATCHDOG_ERROR" />
-			<xsd:enumeration value="FRAUD_ATTEMPT" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	
