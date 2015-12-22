@@ -94,12 +94,11 @@
         </xsd:complexType>
     </xsd:element>
     <xsd:element name="SetAlarmNotificationsAsyncRequest">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="DeviceIdentification" type="common:DeviceIdentification" minOccurs="1" />
-                <xsd:element name="CorrelationUid" type="common:CorrelationUid" minOccurs="1" />
-            </xsd:sequence>
-        </xsd:complexType>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncRequest"></xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
     </xsd:element>
     <xsd:element name="SetAlarmNotificationsResponse">
         <xsd:complexType>
