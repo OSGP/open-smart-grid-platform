@@ -8,6 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,20 +16,20 @@ public class PeriodicMeterReadsContainerGas implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    private final List<MeterReadsGas> meterReadsGas;
+    private final List<PeriodicMeterReadsGas> meterReadsGas;
     private final PeriodType periodType;
 
-    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<MeterReadsGas> meterReadsGas) {
-        this.meterReadsGas = Collections.unmodifiableList(meterReadsGas);
+    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<PeriodicMeterReadsGas> meterReadsGas) {
+        this.meterReadsGas = new ArrayList<PeriodicMeterReadsGas>(meterReadsGas);
         this.periodType = periodType;
     }
 
-    public List<MeterReadsGas> getMeterReadsGas() {
-        return this.meterReadsGas;
+    public List<PeriodicMeterReadsGas> getMeterReadsGas() {
+        return Collections.unmodifiableList(this.meterReadsGas);
     }
 
     public PeriodType getPeriodType() {
-        return periodType;
+        return this.periodType;
     }
 
 }
