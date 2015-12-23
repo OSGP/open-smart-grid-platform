@@ -63,14 +63,14 @@ public class ByteRegisterConverter<T extends Enum<T>> {
      * @return List of active types.
      */
     public Set<T> toTypes(final Long registerValue) {
-        final Set<T> Types = new HashSet<>();
+        final Set<T> types = new HashSet<>();
 
         final BitSet bitSet = BitSet.valueOf(new long[] { registerValue });
         for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i + 1)) {
-            Types.add(this.typePerRegisterBitIndex.get(i));
+            types.add(this.typePerRegisterBitIndex.get(i));
         }
 
-        return Types;
+        return types;
     }
 
     /**
