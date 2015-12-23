@@ -20,7 +20,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 public class DeviceInstallationMapper extends ConfigurableMapper {
 
     private static class DeviceConverter extends
-            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
+    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device source,
@@ -56,7 +56,8 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
                 destination.setGpsLongitude(source.getGpsLongitude());
 
                 destination.setActivated(source.isActivated());
-                destination.setHasSchedule(source.getHasSchedule());
+                // FIX THIS
+                // destination.setHasSchedule(source.getHasSchedule());
 
                 return destination;
             }

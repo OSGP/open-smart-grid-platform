@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.domain.tariffswitching.application.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +56,8 @@ public class AdHocManagementService extends AbstractService {
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting or TariffSwitching)
+     * Retrieve status of device and provide a mapped response (PublicLighting
+     * or TariffSwitching)
      *
      * @param organisationIdentification
      *            identification of organisation
@@ -74,7 +74,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -93,7 +93,7 @@ public class AdHocManagementService extends AbstractService {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
-        DeviceStatusMapped deviceStatusMapped = null;
+        final DeviceStatusMapped deviceStatusMapped = null;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
@@ -105,17 +105,23 @@ public class AdHocManagementService extends AbstractService {
 
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
-
-            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-            for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getInternalId(), dos);
-            }
-
-            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                    allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
-                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                    status.getEventNotificationsMask());
+            // FIX THIS
+            // final List<DeviceOutputSetting> deviceOutputSettings =
+            // device.getOutputSettings();
+            //
+            // final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+            // for (final DeviceOutputSetting dos : deviceOutputSettings) {
+            // dosMap.put(dos.getInternalId(), dos);
+            // }
+            //
+            // deviceStatusMapped = new
+            // DeviceStatusMapped(filterTariffValues(status.getLightValues(),
+            // dosMap,
+            // allowedDomainType), filterLightValues(status.getLightValues(),
+            // dosMap, allowedDomainType),
+            // status.getPreferredLinkType(), status.getActualLinkType(),
+            // status.getLightType(),
+            // status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
@@ -131,7 +137,8 @@ public class AdHocManagementService extends AbstractService {
     // === CUSTOM STATUS FILTER FUNCTIONS ===
 
     /**
-     * Filter light values based on PublicLighting domain. Only matching values will be returned.
+     * Filter light values based on PublicLighting domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -139,7 +146,8 @@ public class AdHocManagementService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     public static List<LightValue> filterLightValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
@@ -161,7 +169,8 @@ public class AdHocManagementService extends AbstractService {
     }
 
     /**
-     * Filter light values based on TariffSwitching domain. Only matching values will be returned.
+     * Filter light values based on TariffSwitching domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -169,7 +178,8 @@ public class AdHocManagementService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     public static List<TariffValue> filterTariffValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {

@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.domain.publiclighting.application.services;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,6 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
-import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
@@ -40,7 +38,6 @@ import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -67,7 +64,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -105,7 +102,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -126,7 +123,7 @@ public class AdHocManagementService extends AbstractService {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
-        DeviceStatusMapped deviceStatusMapped = null;
+        final DeviceStatusMapped deviceStatusMapped = null;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || osgpException != null) {
@@ -138,17 +135,23 @@ public class AdHocManagementService extends AbstractService {
 
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
-
-            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-            for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getInternalId(), dos);
-            }
-
-            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                    allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
-                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
-                    status.getEventNotificationsMask());
+            // FIX THIS
+            // final List<DeviceOutputSetting> deviceOutputSettings =
+            // device.getOutputSettings();
+            //
+            // final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+            // for (final DeviceOutputSetting dos : deviceOutputSettings) {
+            // dosMap.put(dos.getInternalId(), dos);
+            // }
+            //
+            // deviceStatusMapped = new
+            // DeviceStatusMapped(filterTariffValues(status.getLightValues(),
+            // dosMap,
+            // allowedDomainType), filterLightValues(status.getLightValues(),
+            // dosMap, allowedDomainType),
+            // status.getPreferredLinkType(), status.getActualLinkType(),
+            // status.getLightType(),
+            // status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
@@ -165,15 +168,18 @@ public class AdHocManagementService extends AbstractService {
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
-        if (!device.getHasSchedule()) {
-            throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
-                    ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(String.format(
-                            "Device %1$s does not have a schedule.", deviceIdentification)));
-        }
+        // FIX THIS
+        // if (!device.getHasSchedule()) {
+        // throw new
+        // FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
+        // ComponentType.DOMAIN_PUBLIC_LIGHTING, new
+        // ValidationException(String.format(
+        // "Device %1$s does not have a schedule.", deviceIdentification)));
+        // }
 
         final ResumeScheduleMessageDataContainer resumeScheduleMessageDataContainerDto = new ResumeScheduleMessageDataContainer(
                 index, isImmediate);

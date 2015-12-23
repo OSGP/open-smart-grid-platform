@@ -20,10 +20,6 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
-/**
- * @author OSGP
- *
- */
 @Entity
 public class SmartMeteringDevice extends AbstractEntity implements DeviceInterface, LocationInformationInterface {
 
@@ -77,7 +73,7 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.alliander.osgp.domain.core.entities.DeviceInterface#
      * getDeviceIdentification()
      */
@@ -88,7 +84,7 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.alliander.osgp.domain.core.entities.DeviceInterface#
      * getContainerPostalCode()
      */
@@ -99,9 +95,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getContainerCity
      * ()
      */
@@ -112,9 +108,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getContainerStreet
      * ()
      */
@@ -125,9 +121,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getContainerNumber
      * ()
      */
@@ -138,9 +134,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getGpsLatitude()
      */
     @Override
@@ -150,9 +146,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getGpsLongitude()
      */
     @Override
@@ -162,7 +158,7 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getDeviceType()
      */
@@ -173,9 +169,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getProtocolInfo()
      */
     @Override
@@ -185,9 +181,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getAuthorizations
      * ()
      */
@@ -198,9 +194,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#addAuthorization
      * (com.alliander.osgp.domain.core.entities.Organisation,
      * com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup)
@@ -219,7 +215,7 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.alliander.osgp.domain.core.entities.DeviceInterface#getOwner()
      */
     @Override
@@ -237,9 +233,9 @@ public class SmartMeteringDevice extends AbstractEntity implements DeviceInterfa
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
-     *
+     * 
      * com.alliander.osgp.domain.core.entities.DeviceInterface#getOrganisations
      * ()
      */

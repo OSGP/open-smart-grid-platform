@@ -21,6 +21,7 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ws.EventTypeConverter;
@@ -28,6 +29,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayStatus;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "coreDeviceManagementMapper")
@@ -35,19 +38,22 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementMapper.class);
 
+    @Autowired
+    private static SsldRepository ssldRepository;
+
     @Override
     public void configure(final MapperFactory mapperFactory) {
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                .byDefault().toClassMap());
+                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                        .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
@@ -55,13 +61,13 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     }
 
     private static class DeviceConverter extends
-            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
                 final Type<Device> destinationType) {
 
-            Device destination = null;
+            Ssld destination = null;
 
             if (source != null) {
 
@@ -72,10 +78,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     source.setGpsLongitude("0");
                 }
 
-                destination = new Device(source.getDeviceIdentification(), source.getAlias(),
-                        source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
-                        source.getContainerNumber(), source.getContainerMunicipality(), Float.valueOf(source
-                                .getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
+                destination = new Ssld(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
+                        source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
+                        source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()), Float.valueOf(source
+                                .getGpsLongitude()));
 
                 final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
 
@@ -91,7 +97,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
-
                 destination.updateOutputSettings(deviceOutputSettings);
                 destination.setPublicKeyPresent(source.isPublicKeyPresent());
                 destination.setHasSchedule(source.isHasSchedule());
@@ -110,7 +115,9 @@ public class DeviceManagementMapper extends ConfigurableMapper {
             if (source != null) {
                 final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
 
-                for (final DeviceOutputSetting deviceOutputSetting : source.getOutputSettings()) {
+                final Ssld ssld = ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
+
+                for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                     final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
 
                     newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
@@ -132,7 +139,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setContainerMunicipality(source.getContainerMunicipality());
                 destination.setDeviceIdentification(source.getDeviceIdentification());
                 destination.setDeviceType(source.getDeviceType());
-                destination.setPublicKeyPresent(source.isPublicKeyPresent());
+                destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
 
                 if (source.getGpsLatitude() != null) {
                     destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
@@ -141,14 +148,14 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     destination.setGpsLongitude(Float.toString(source.getGpsLongitude()));
                 }
 
-                destination.setHasSchedule(source.getHasSchedule());
+                destination.setHasSchedule(ssld.getHasSchedule());
                 destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
                         .toString());
                 destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
                 destination.getOrganisations().addAll(source.getOrganisations());
 
                 final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
-                for (final com.alliander.osgp.domain.core.entities.Ean ean : source.getEans()) {
+                for (final com.alliander.osgp.domain.core.entities.Ean ean : ssld.getEans()) {
                     final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
                     newEan.setCode(ean.getCode());
                     newEan.setDescription(ean.getDescription());
@@ -156,9 +163,9 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 }
 
                 destination.getEans().addAll(eans);
-                if (source.getRelayStatusses() != null) {
+                if (ssld.getRelayStatusses() != null) {
                     RelayStatus temp = null;
-                    for (final com.alliander.osgp.domain.core.entities.RelayStatus r : source.getRelayStatusses()) {
+                    for (final com.alliander.osgp.domain.core.entities.RelayStatus r : ssld.getRelayStatusses()) {
                         temp = this.convertRelayStatus(r);
 
                         if (temp != null) {

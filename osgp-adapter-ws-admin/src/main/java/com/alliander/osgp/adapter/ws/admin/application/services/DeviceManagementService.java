@@ -39,6 +39,7 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.EmptyOwnerException;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
@@ -50,6 +51,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
@@ -98,6 +100,9 @@ public class DeviceManagementService {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private SsldRepository ssldRepository;
 
     @Autowired
     private DeviceSpecifications deviceSpecifications;
@@ -496,6 +501,7 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.UPDATE_KEY);
 
+        final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
         Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
         // TODO: refactor device creation with owner authorization and default

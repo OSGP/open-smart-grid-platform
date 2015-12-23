@@ -75,6 +75,7 @@ public class ScheduleManagementService extends AbstractService {
 
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        device.setHasSchedule(hasSchedule);
+        // FIX THIS
+        // device.setHasSchedule(hasSchedule);
     }
 }

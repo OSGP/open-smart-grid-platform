@@ -42,7 +42,12 @@ public class DeviceDomainService {
 
         final Device device = this.searchDevice(deviceIdentification);
 
-        if (!device.isActivated() || !device.isPublicKeyPresent()) {
+        // FIX THIS
+        // if (!device.isActivated() || !device.isPublicKeyPresent()) {
+        // throw new UnregisteredDeviceException(deviceIdentification);
+        // }
+
+        if (!device.isActivated()) {
             throw new UnregisteredDeviceException(deviceIdentification);
         }
         return device;

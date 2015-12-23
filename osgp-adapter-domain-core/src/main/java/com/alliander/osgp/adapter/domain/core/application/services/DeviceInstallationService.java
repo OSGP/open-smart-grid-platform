@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.domain.core.application.services;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +71,7 @@ public class DeviceInstallationService extends AbstractService {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
-        DeviceStatusMapped deviceStatusMapped = null;
+        final DeviceStatusMapped deviceStatusMapped = null;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
@@ -84,17 +83,23 @@ public class DeviceInstallationService extends AbstractService {
 
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
-
-            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-            for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getInternalId(), dos);
-            }
-
-            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
-                    DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
-                    DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
-                    status.getLightType(), status.getEventNotificationsMask());
+            // FIX THIS
+            // final List<DeviceOutputSetting> deviceOutputSettings =
+            // device.getOutputSettings();
+            //
+            // final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+            // for (final DeviceOutputSetting dos : deviceOutputSettings) {
+            // dosMap.put(dos.getInternalId(), dos);
+            // }
+            //
+            // deviceStatusMapped = new
+            // DeviceStatusMapped(filterTariffValues(status.getLightValues(),
+            // dosMap,
+            // DomainType.TARIFF_SWITCHING),
+            // filterLightValues(status.getLightValues(), dosMap,
+            // DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(),
+            // status.getActualLinkType(),
+            // status.getLightType(), status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
