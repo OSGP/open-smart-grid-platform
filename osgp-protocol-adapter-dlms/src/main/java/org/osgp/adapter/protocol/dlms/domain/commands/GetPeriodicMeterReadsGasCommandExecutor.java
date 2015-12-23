@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import org.joda.time.DateTime;
@@ -30,14 +31,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -66,6 +69,9 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
+    @Autowired
+    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
+
     @Override
     public PeriodicMeterReadsContainerGas execute(final LnClientConnection conn,
             final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws IOException, TimeoutException,
@@ -93,7 +99,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
         checkResultList(getResultList);
 
-        final List<MeterReadsGas> periodicMeterReads = new ArrayList<>();
+        final List<PeriodicMeterReadsGas> periodicMeterReads = new ArrayList<>();
 
         final GetResult getResult = getResultList.get(0);
         final AccessResultCode resultCode = getResult.resultCode();
@@ -112,8 +118,8 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final List<MeterReadsGas> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final int channel) {
+            final DateTime endDateTime, final List<PeriodicMeterReadsGas> periodicMeterReads,
+            final List<DataObject> bufferedObjects, final int channel) throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final DateTime bufferedDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -143,11 +149,11 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         }
     }
 
-    private void processNextPeriodicMeterReadsForInterval(final List<MeterReadsGas> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
+    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsGas> periodicMeterReads,
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
+        final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
+                .get(BUFFER_INDEX_AMR_STATUS));
 
         final DataObject gasValue = bufferedObjects.get(BUFFER_INDEX_MBUS_VALUE_INT);
         LOGGER.debug("gasValue: {}", this.dlmsHelperService.getDebugInfo(gasValue));
@@ -155,17 +161,18 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_INT);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
-        final MeterReadsGas nextPeriodicMeterReads = new MeterReadsGas(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
                 (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
-                .toDate());
+                        .toDate(), amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForDaily(final List<MeterReadsGas> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final int channel) {
+    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReadsGas> periodicMeterReads,
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final int channel)
+            throws ProtocolAdapterException {
 
-        final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
+        final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
+                .get(BUFFER_INDEX_AMR_STATUS));
 
         // calculate offset from first entry
         final int offset = (channel - 1) * 2;
@@ -175,18 +182,14 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + offset);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
-        final MeterReadsGas nextPeriodicMeterReads = new MeterReadsGas(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
                 (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
-                .toDate());
+                        .toDate(), amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForMonthly(final List<MeterReadsGas> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final int channel) {
-
-        /*
-         * TODO: look into AMR Profile status for MONTHLY.
-         */
 
         // calculate offset from first entry, -1 because MONTHLY has no AMR
         // entry
@@ -197,9 +200,9 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + offset);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
-        final MeterReadsGas nextPeriodicMeterReads = new MeterReadsGas(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
                 (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
-                .toDate());
+                        .toDate());
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -285,5 +288,30 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
                 toValue, selectedValues));
 
         return new SelectiveAccessDescription(accessSelector, accessParameter);
+    }
+
+    /**
+     * Reads AmrProfileStatusCode from DataObject holding a bitvalue in a
+     * numeric datatype.
+     *
+     * @param amrProfileStatusData
+     *            AMR profile register value.
+     * @return AmrProfileStatusCode object holding status enum values.
+     * @throws ProtocolAdapterException
+     *             on invalid register data.
+     */
+    private AmrProfileStatusCode readAmrProfileStatusCode(final DataObject amrProfileStatusData)
+            throws ProtocolAdapterException {
+        AmrProfileStatusCode amrProfileStatusCode = null;
+
+        if (!amrProfileStatusData.isNumber()) {
+            throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
+        }
+
+        final Set<AmrProfileStatusCodeFlag> flags = this.amrProfileStatusCodeHelperService
+                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.value());
+        amrProfileStatusCode = new AmrProfileStatusCode(flags);
+
+        return amrProfileStatusCode;
     }
 }

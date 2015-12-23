@@ -90,7 +90,8 @@ public class MonitoringService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    periodicMeterReadsQuery);
         } finally {
             if (conn != null) {
                 conn.close();
