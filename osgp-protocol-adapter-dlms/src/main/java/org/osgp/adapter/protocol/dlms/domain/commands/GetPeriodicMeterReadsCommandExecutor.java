@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -210,7 +210,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
     }
 
     /**
-     * Reads AmrProfileStatusCude from DataObject holding a bitvalue in a
+     * Reads AmrProfileStatusCode from DataObject holding a bitvalue in a
      * numeric datatype.
      *
      * @param amrProfileStatusData
