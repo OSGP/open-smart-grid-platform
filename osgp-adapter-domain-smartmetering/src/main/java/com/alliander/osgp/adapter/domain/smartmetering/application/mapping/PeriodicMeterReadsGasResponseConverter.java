@@ -15,7 +15,7 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
 public class PeriodicMeterReadsGasResponseConverter
         extends
@@ -25,10 +25,11 @@ public class PeriodicMeterReadsGasResponseConverter
     public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas convertTo(
             final PeriodicMeterReadsContainerGas source,
             final Type<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> destinationType) {
-        final List<MeterReadsGas> meterReadsGas = new ArrayList<>(source.getMeterReadsGas().size());
-        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas pmr : source
+        final List<PeriodicMeterReadsGas> meterReadsGas = new ArrayList<>(source.getMeterReadsGas().size());
+        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas pmr : source
                 .getMeterReadsGas()) {
-            meterReadsGas.add(new MeterReadsGas(pmr.getLogTime(), pmr.getConsumption(), pmr.getCaptureTime()));
+
+            meterReadsGas.add(this.mapperFacade.map(pmr, PeriodicMeterReadsGas.class));
         }
 
         return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas(
@@ -39,11 +40,11 @@ public class PeriodicMeterReadsGasResponseConverter
     public PeriodicMeterReadsContainerGas convertFrom(
             final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas source,
             final Type<PeriodicMeterReadsContainerGas> destinationType) {
-        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas> meterReadsGas = new ArrayList<>(
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> meterReadsGas = new ArrayList<>(
                 source.getMeterReadsGas().size());
-        for (final MeterReadsGas pmr : source.getMeterReadsGas()) {
-            meterReadsGas.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas(pmr
-                    .getLogTime(), pmr.getConsumption(), pmr.getCaptureTime()));
+        for (final PeriodicMeterReadsGas pmr : source.getMeterReadsGas()) {
+            meterReadsGas.add(this.mapperFacade.map(pmr,
+                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas.class));
         }
 
         return new PeriodicMeterReadsContainerGas(

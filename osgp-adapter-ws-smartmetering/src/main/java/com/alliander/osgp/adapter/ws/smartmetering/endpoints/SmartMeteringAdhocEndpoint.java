@@ -20,7 +20,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeA
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -53,10 +52,8 @@ public class SmartMeteringAdhocEndpoint {
         final String correlationUid = this.adhocService.enqueueSynchronizeTimeRequest(organisationIdentification,
                 synchronizeTimeRequest.getDeviceIdentification(), synchronizeTimeRequest);
 
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
-        response.setAsyncResponse(asyncResponse);
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(request.getDeviceIdentification());
 
         return response;
     }

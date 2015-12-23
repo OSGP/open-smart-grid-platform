@@ -153,10 +153,8 @@ public class SmartMeteringConfigurationEndpoint {
         final String correlationUid = this.configurationService.enqueueSetSpecialDaysRequest(
                 organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest);
 
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
-        response.setAsyncResponse(asyncResponse);
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(request.getDeviceIdentification());
 
         return response;
     }
@@ -202,10 +200,8 @@ public class SmartMeteringConfigurationEndpoint {
         final String correlationUid = this.configurationService.enqueueSetConfigurationObjectRequest(
                 organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest);
 
-        final AsyncResponse asyncResponse = new AsyncResponse();
-        asyncResponse.setCorrelationUid(correlationUid);
-        asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
-        response.setAsyncResponse(asyncResponse);
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(request.getDeviceIdentification());
 
         return response;
     }
@@ -256,10 +252,8 @@ public class SmartMeteringConfigurationEndpoint {
             final String correlationUid = this.configurationService.setActivityCalendar(organisationIdentification,
                     deviceIdentification, activityCalendar);
 
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
 
         } catch (final Exception e) {
 

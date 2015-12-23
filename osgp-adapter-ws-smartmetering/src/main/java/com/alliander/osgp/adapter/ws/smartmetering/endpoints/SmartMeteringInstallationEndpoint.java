@@ -17,7 +17,6 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
@@ -70,10 +69,8 @@ public class SmartMeteringInstallationEndpoint {
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
                     organisationIdentification, device.getDeviceIdentification(), device);
 
-            final AsyncResponse asyncResponse = new AsyncResponse();
-            asyncResponse.setCorrelationUid(correlationUid);
-            asyncResponse.setDeviceIdentification(request.getDevice().getDeviceIdentification());
-            response.setAsyncResponse(asyncResponse);
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDevice().getDeviceIdentification());
 
         } catch (final MethodConstraintViolationException e) {
 

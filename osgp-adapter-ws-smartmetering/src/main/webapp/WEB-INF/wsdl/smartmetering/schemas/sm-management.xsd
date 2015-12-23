@@ -32,17 +32,17 @@
 	
 	<xsd:element name="FindEventsAsyncResponse">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncResponse" type="common:AsyncResponse" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncResponse"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 	
 	<xsd:element name="FindEventsAsyncRequest">
 		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="AsyncRequest" type="common:AsyncRequest" />
-			</xsd:sequence>
+			<xsd:complexContent>
+				<xsd:extension base="common:AsyncRequest"></xsd:extension>
+			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
 	
