@@ -69,8 +69,6 @@ public class ConfigurationService extends DlmsApplicationService {
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
 
-    // === REQUEST Special Days DATA ===
-
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
 
@@ -184,7 +182,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
             final MethodResultCode methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, null);
 
-            if (MethodResultCode.SUCCESS != methodResult) {
+            if (!MethodResultCode.SUCCESS.equals(methodResult)) {
                 throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + methodResult);
             }
 
@@ -223,7 +221,7 @@ public class ConfigurationService extends DlmsApplicationService {
             try {
                 final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
                         alarmNotifications);
-                if (AccessResultCode.SUCCESS != accessResultCode) {
+                if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
                     throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
                             + accessResultCode);
                 }

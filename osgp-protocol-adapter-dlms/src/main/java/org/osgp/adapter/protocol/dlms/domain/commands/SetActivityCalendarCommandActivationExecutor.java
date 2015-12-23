@@ -26,6 +26,9 @@ public class SetActivityCalendarCommandActivationExecutor implements CommandExec
         LOGGER.info("ACTIVATING");
         final MethodRequestParameter method = new MethodRequestParameter(CLASS_ID, OBIS_CODE, 1);
         final List<MethodResult> methodResultCode = conn.action(method);
+        if (methodResultCode == null || methodResultCode.isEmpty() || methodResultCode.get(0) == null) {
+            throw new IOException("action method for ClientConnection should return a list with one MethodResult");
+        }
         return methodResultCode.get(0).resultCode();
     }
 }

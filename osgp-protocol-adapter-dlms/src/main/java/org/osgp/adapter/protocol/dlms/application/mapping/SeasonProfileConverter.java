@@ -15,6 +15,8 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
 
 @Component(value = "seasonProfileConverter")
 public class SeasonProfileConverter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeasonProfileConverter.class);
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -35,8 +39,7 @@ public class SeasonProfileConverter {
             final DataObject seasonsArray = DataObject.newArrayData(this.getSeasonList(source));
             return seasonsArray;
         } catch (IllegalArgumentException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.error("Unexpected exception during SeasonProfile converstion to DataObject", e);
         }
 
         return null;
@@ -55,10 +58,6 @@ public class SeasonProfileConverter {
 
     private List<DataObject> getSeason(final SeasonProfile seasonProfile) throws IOException {
         final List<DataObject> seasonElements = new ArrayList<>();
-
-        seasonProfile.getSeasonProfileName();
-        seasonProfile.getSeasonStart();
-        seasonProfile.getWeekProfile().getWeekProfileName();
 
         final DataObject seasonProfileNameObject = DataObject.newOctetStringData(seasonProfile.getSeasonProfileName()
                 .getBytes(StandardCharsets.UTF_8));

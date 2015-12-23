@@ -9,7 +9,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,11 +55,11 @@ public class DlmsHelperService {
                 hundredthsOfSecond * 10, DateTimeZone.forOffsetMillis(-deviation * MILLISECONDS_PER_MINUTE));
     }
 
-    public DataObject dateAsDataObjectOctetString(final Date dateTime) {
+    public DataObject dateAsDataObjectOctetString(final DateTime dateTime) {
 
-        final Integer h = dateTime.getHours();
-        final Integer m = dateTime.getMinutes();
-        final Integer s = dateTime.getSeconds();
+        final Integer h = dateTime.getHourOfDay();
+        final Integer m = dateTime.getMinuteOfHour();
+        final Integer s = dateTime.getSecondOfMinute();
 
         final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), (byte) 0 };
         return DataObject.newOctetStringData(ba);

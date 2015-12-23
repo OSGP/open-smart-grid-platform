@@ -43,8 +43,10 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     @Autowired
     private SeasonProfileConverter seasonProfileConverter;
+
     @Autowired
     private WeekProfileConverter weekProfileConverter;
+
     @Autowired
     private DayProfileConverter dayProfileConverter;
 
@@ -109,19 +111,20 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     private void throwProtocolAdapterException(final Map<String, AccessResultCode> failureAccessResultMap)
             throws ProtocolAdapterException {
-        String keys = "";
-        String values = "";
 
-        for (final String key : failureAccessResultMap.keySet()) {
-            keys += key + " ";
-        }
-        for (final Object value : failureAccessResultMap.values()) {
-            values += value + " ";
+        String keyValues = "";
+
+        for (final Map.Entry<String, AccessResultCode> entry : failureAccessResultMap.entrySet()) {
+            final String keyValueString = entry.getKey() + ": " + entry.getValue();
+            if ("".equals(keyValues)) {
+                keyValues = keyValueString;
+            } else {
+                keyValues += ", " + keyValueString;
+            }
         }
 
-        LOGGER.error("ActivityCalendar: Requests for {} failed with result code: {}", keys, values);
-        throw new ProtocolAdapterException("AccessResultCode for <" + keys + "> + set Activity Calendar: <" + values
-                + ">");
+        LOGGER.error("ActivityCalendar: Requests failed for: {}", keyValues);
+        throw new ProtocolAdapterException("ActivityCalendar: Requests failed for: " + keyValues);
     }
 
     private SetRequestParameter getCalendarNameRequest(final ActivityCalendar activityCalendar) {
@@ -187,7 +190,6 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         LOGGER.info("getSeasonsRequest: debug output: {}", this.dlmsHelperService.getDebugInfo(seasonsArray));
 
-        final AccessResultCode accesResultCode = AccessResultCode.SUCCESS;
         final SetRequestParameter request = factory.createSetRequestParameter(seasonsArray);
 
         return request;
