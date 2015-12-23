@@ -14,16 +14,23 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.internal.BitString;
 import org.openmuc.jdlms.internal.CosemDate;
 import org.openmuc.jdlms.internal.CosemDateTime;
 import org.openmuc.jdlms.internal.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.internal.CosemTime;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelperService.class);
 
     private static final String YEAR_MILLENIAL_PART = "20";
     private static final String LAST_DAY_OF_MONTH = "FE";
@@ -32,6 +39,47 @@ public class DlmsHelperService {
     private static final String DAYLIGHT_SAVINGS_END = "FD";
     private static final String NOT_SPECIFIED = "FF";
     public static final int MILLISECONDS_PER_MINUTE = 60000;
+
+    private void checkResultCode(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        final AccessResultCode resultCode = getResult.resultCode();
+        LOGGER.debug(description + " - AccessResultCode: {}", resultCode);
+        if (resultCode != AccessResultCode.SUCCESS) {
+            throw new ProtocolAdapterException("No success retrieving " + description + ": AccessResultCode = "
+                    + resultCode);
+        }
+    }
+
+    public Long readLong(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        final DataObject resultData = getResult.resultData();
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isNumber()) {
+            LOGGER.error("Unexpected ResultData for Long value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Number, got: " + resultData.choiceIndex());
+        }
+        return ((Number) resultData.value()).longValue();
+    }
+
+    public DateTime readDateTime(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        final DataObject resultData = getResult.resultData();
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (resultData.isByteArray()) {
+            return this.fromDateTimeValue((byte[]) resultData.value());
+        } else if (resultData.isCosemDateFormat()) {
+            return this.fromDateTimeValue(((CosemDateTime) resultData.value()).ocletString());
+        } else {
+            LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of ByteArray or CosemDateFormat, got: "
+                    + resultData.choiceIndex());
+        }
+    }
 
     public DateTime fromDateTimeValue(final byte[] dateTimeValue) {
 
