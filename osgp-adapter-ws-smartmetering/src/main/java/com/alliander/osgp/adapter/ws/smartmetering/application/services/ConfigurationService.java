@@ -41,18 +41,6 @@ public class ConfigurationService {
     @Autowired
     private MeterResponseDataService meterResponseDataService;
 
-    /**
-     * @param organisationIdentification
-     * @param requestData
-     * @throws FunctionalException
-     */
-    // public String requestGetAdministrationState(final String
-    // organisationIdentification, final AdministrativeState requestData)
-    // throws FunctionalException {
-    // return this.enqueueGetAdministrationState(organisationIdentification,
-    // requestData.getDeviceIdentification(),
-    // requestData);
-    // }
     //
     // public String enqueueGetAdministrationState(@Identification final String
     // organisationIdentification,
@@ -113,6 +101,28 @@ public class ConfigurationService {
     public MeterResponseData dequeueSetAdministrativeStatusResponse(final String correlationUid)
             throws FunctionalException {
         return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public String requestGetAdministrativeStatus(final String organisationIdentification,
+            final String deviceIdentification) {
+        return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification);
+    }
+
+    private String enqueueGetAdministrativeStatus(final String organisationIdentification,
+            final String deviceIdentification) {
+        LOGGER.debug("enqueueGetAdministrativeStatus called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
+                deviceIdentification, AdministrativeStatusType.UNDEFINED);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,

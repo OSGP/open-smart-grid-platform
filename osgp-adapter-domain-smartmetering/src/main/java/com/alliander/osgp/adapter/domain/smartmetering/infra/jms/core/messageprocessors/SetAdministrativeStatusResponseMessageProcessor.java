@@ -37,7 +37,7 @@ public class SetAdministrativeStatusResponseMessageProcessor extends OsgpCoreRes
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering default response message");
+        LOGGER.debug("Processing smart metering handle Set Administrative Status response message");
 
         String correlationUid = null;
         String messageType = null;

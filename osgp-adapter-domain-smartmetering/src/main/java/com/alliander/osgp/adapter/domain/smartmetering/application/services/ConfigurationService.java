@@ -136,7 +136,7 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
@@ -170,18 +170,39 @@ public class ConfigurationService {
                 deviceIdentification, result, exception, null), messageType);
     }
 
-    public void getAdministrationState(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid,
-            final AdministrativeStatusType administrativeStatusType, final String messageType)
-                    throws FunctionalException {
+    public void getAdministrativeStatus(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final AdministrativeStatusType administrativeStatusType,
+            final String messageType) throws FunctionalException {
 
-        LOGGER.info("SetAdministrationState for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
+        LOGGER.info(
+                "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
+                organisationIdentification, deviceIdentification, administrativeStatusType);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, administrativeStatusType), messageType);
+        LOGGER.info("Sending request message to core.");
+        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, this.configurationMapper.map(administrativeStatusType,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class));
+        this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
+
+    }
+
+    public void handleGetAdministrativeStatusResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+
+        LOGGER.info("handleGetAdministrativeStatusResponse for MessageType: {}, with result: {}", messageType,
+                responseMessageResultType.toString());
+
+        ResponseMessageResultType result = responseMessageResultType;
+        if (osgpException != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", osgpException);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, null), messageType);
     }
 
     public void setActivityCalendar(@Identification final String organisationIdentification,
