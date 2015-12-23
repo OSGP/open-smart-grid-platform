@@ -110,6 +110,7 @@ public class SmartMeteringInstallationEndpoint {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
         } catch (final FunctionalException e) {
+            LOGGER.error("Unexpected exception", e);
             if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
                 response.setResult(OsgpResultType.NOT_FOUND);
             } else {
