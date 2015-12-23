@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
-
 /**
  * Class for processing the Get Administrative Status request message
  */
@@ -45,10 +43,7 @@ public class GetAdministrativeStatusRequestMessageProcessor extends DeviceReques
         try {
             messageMetadata.handleMessage(message);
 
-            final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) message.getObject();
-
-            this.configurationService.requestGetAdministration(messageMetadata, administrativeStatusType,
-                    this.responseMessageSender);
+            this.configurationService.requestGetAdministrativeStatus(messageMetadata, this.responseMessageSender);
 
         } catch (final JMSException e) {
             this.logJmsException(LOGGER, e, messageMetadata);

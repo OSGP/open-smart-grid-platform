@@ -47,7 +47,7 @@ public class SetAdministrativeStatusRequestMessageProcessor extends DeviceReques
 
             final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) message.getObject();
 
-            this.configurationService.requestSetAdministration(messageMetadata, administrativeStatusType,
+            this.configurationService.requestSetAdministrativeStatus(messageMetadata, administrativeStatusType,
                     this.responseMessageSender);
 
         } catch (final JMSException e) {

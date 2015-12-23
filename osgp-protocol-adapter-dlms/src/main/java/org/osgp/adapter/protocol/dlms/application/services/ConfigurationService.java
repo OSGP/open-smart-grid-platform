@@ -158,14 +158,14 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
-    public void requestSetAdministration(final DlmsDeviceMessageMetadata messageMetadata,
+    public void requestSetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
             final AdministrativeStatusType administrativeStatusType,
             final DeviceResponseMessageSender responseMessageSender) {
 
         this.logStart(LOGGER, messageMetadata, "requestSetAdministration");
 
         LOGGER.info("******************************************************");
-        LOGGER.info(" SetAdministration      ******************************");
+        LOGGER.info(" SetAdministrativeStatus *****************************");
         LOGGER.info("******************************************************");
         LOGGER.info("DeviceIdentification = {} ", messageMetadata.getDeviceIdentification());
         LOGGER.info("Set status to = {} ", administrativeStatusType.value());
@@ -183,20 +183,22 @@ public class ConfigurationService extends DlmsApplicationService {
 
     }
 
-    public void requestGetAdministration(final DlmsDeviceMessageMetadata messageMetadata,
-            final AdministrativeStatusType administrativeStatusType,
+    public void requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
             final DeviceResponseMessageSender responseMessageSender) {
 
         this.logStart(LOGGER, messageMetadata, "requestGetAdministration");
 
         LOGGER.info("******************************************************");
-        LOGGER.info(" GetAdministration      ******************************");
+        LOGGER.info(" GetAdministrativeStatus *****************************");
         LOGGER.info("******************************************************");
         LOGGER.info(" DeviceIdentification = {} ", messageMetadata.getDeviceIdentification());
         LOGGER.info("******************************************************");
 
         try {
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
+            // dummy response data!
+            final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.OFF;
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    administrativeStatusType);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during get Administration status", e);
 
