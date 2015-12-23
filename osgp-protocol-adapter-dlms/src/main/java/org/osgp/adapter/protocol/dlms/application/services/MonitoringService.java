@@ -7,10 +7,12 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.util.Date;
+import java.io.Serializable;
 import java.util.Random;
 
 import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
@@ -23,17 +25,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import java.io.Serializable;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService extends DlmsApplicationService {
@@ -53,6 +52,9 @@ public class MonitoringService extends DlmsApplicationService {
 
     @Autowired
     private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+
+    @Autowired
+    private GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
 
     @Autowired
     private GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
@@ -90,7 +92,8 @@ public class MonitoringService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    periodicMeterReadsQuery);
         } finally {
             if (conn != null && conn.isConnected()) {
                 conn.close();
@@ -115,16 +118,14 @@ public class MonitoringService extends DlmsApplicationService {
             if (actualMeterReadsRequest.isGas()) {
                 response = this.actualMeterReadsGasCommandExecutor.execute(conn, actualMeterReadsRequest);
             } else {
-                // mock for now
-                response = new MeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
-                        this.getRandomPositive(), this.getRandomPositive());
+                response = this.actualMeterReadsCommandExecutor.execute(conn, actualMeterReadsRequest);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     response);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
+            LOGGER.error("Unexpected exception during requestActualMeterReads", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
@@ -167,16 +168,4 @@ public class MonitoringService extends DlmsApplicationService {
             }
         }
     }
-
-    private long getRandomPositive() {
-        long randomLong = generator.nextLong();
-
-        // if the random long returns Long.MIN_VALUE, the absolute of that is
-        // not a long.
-        if (randomLong == Long.MIN_VALUE) {
-            randomLong += 1;
-        }
-        return Math.abs(randomLong);
-    }
-
 }
