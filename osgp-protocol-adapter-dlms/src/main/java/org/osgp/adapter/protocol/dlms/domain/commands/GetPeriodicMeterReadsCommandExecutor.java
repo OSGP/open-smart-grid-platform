@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -29,8 +30,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
@@ -76,6 +79,9 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
+    @Autowired
+    private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
+
     @Override
     public PeriodicMeterReadsContainer execute(final ClientConnection conn,
             final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws IOException, ProtocolAdapterException {
@@ -109,7 +115,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
         checkResultList(getResultList);
 
-        final List<MeterReads> periodicMeterReads = new ArrayList<>();
+        final List<PeriodicMeterReads> periodicMeterReads = new ArrayList<>();
 
         final GetResult getResult = getResultList.get(0);
         final AccessResultCode resultCode = getResult.resultCode();
@@ -128,8 +134,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final List<MeterReads> periodicMeterReads,
-            final List<DataObject> bufferedObjects) {
+            final DateTime endDateTime, final List<PeriodicMeterReads> periodicMeterReads,
+            final List<DataObject> bufferedObjects) throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final DateTime bufferedDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -159,11 +165,11 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         }
     }
 
-    private void processNextPeriodicMeterReadsForInterval(final List<MeterReads> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
+    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
+        final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
+                .get(BUFFER_INDEX_AMR_STATUS));
 
         final DataObject positiveActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_POS);
         LOGGER.debug("positiveActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(positiveActiveEnergy));
@@ -171,16 +177,17 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         final DataObject negativeActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_NEG);
         LOGGER.debug("negativeActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(negativeActiveEnergy));
 
-        final MeterReads nextMeterReads = new MeterReads(bufferedDateTime.toDate(),
-                (Long) positiveActiveEnergy.value(), null, (Long) negativeActiveEnergy.value(), null);
+        final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
+                (Long) positiveActiveEnergy.value(), null, (Long) negativeActiveEnergy.value(), null,
+                amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForDaily(final List<MeterReads> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
+    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        final DataObject amrStatus = bufferedObjects.get(BUFFER_INDEX_AMR_STATUS);
-        LOGGER.warn("TODO - handle amrStatus ({})", this.dlmsHelperService.getDebugInfo(amrStatus));
+        final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
+                .get(BUFFER_INDEX_AMR_STATUS));
 
         final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1);
         LOGGER.debug("positiveActiveEnergyTariff1: {}",
@@ -195,13 +202,39 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         LOGGER.debug("negativeActiveEnergyTariff2: {}",
                 this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
 
-        final MeterReads nextMeterReads = new MeterReads(bufferedDateTime.toDate(),
+        final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                 (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
-                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value());
+                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value(),
+                amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForMonthly(final List<MeterReads> periodicMeterReads,
+    /**
+     * Reads AmrProfileStatusCode from DataObject holding a bitvalue in a
+     * numeric datatype.
+     *
+     * @param amrProfileStatusData
+     *            AMR profile register value.
+     * @return AmrProfileStatusCode object holding status enum values.
+     * @throws ProtocolAdapterException
+     *             on invalid register data.
+     */
+    private AmrProfileStatusCode readAmrProfileStatusCode(final DataObject amrProfileStatusData)
+            throws ProtocolAdapterException {
+        AmrProfileStatusCode amrProfileStatusCode = null;
+
+        if (!amrProfileStatusData.isNumber()) {
+            throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
+        }
+
+        final Set<AmrProfileStatusCodeFlag> flags = this.amrProfileStatusCodeHelperService
+                .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.value());
+        amrProfileStatusCode = new AmrProfileStatusCode(flags);
+
+        return amrProfileStatusCode;
+    }
+
+    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
 
         /*
@@ -221,7 +254,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         LOGGER.debug("negativeActiveEnergyTariff2: {}",
                 this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
 
-        final MeterReads nextMeterReads = new MeterReads(bufferedDateTime.toDate(),
+        final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                 (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
                 (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value());
         periodicMeterReads.add(nextMeterReads);
