@@ -22,6 +22,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterRes
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -56,6 +57,7 @@ public class GetAdministrativeStatusResponseMessageProcessor extends DomainRespo
         final OsgpException osgpException = null;
 
         String result = null;
+        ResponseMessageResultType resultType = null;
         String message = null;
         NotificationType notificationType = null;
 
@@ -66,6 +68,7 @@ public class GetAdministrativeStatusResponseMessageProcessor extends DomainRespo
             deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
             result = objectMessage.getStringProperty(Constants.RESULT);
+            resultType = ResponseMessageResultType.valueOf(objectMessage.getStringProperty(Constants.RESULT));
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
         } catch (final JMSException e) {
@@ -80,9 +83,9 @@ public class GetAdministrativeStatusResponseMessageProcessor extends DomainRespo
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
-
+            final AdministrativeStatusType data = (AdministrativeStatusType) objectMessage.getObject();
             final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
-                    deviceIdentification, correlationUid, ResponseMessageResultType.valueOf(result), message);
+                    deviceIdentification, correlationUid, resultType, data);
             this.meterResponseDataService.enqueue(meterResponseData);
 
             // Notifying

@@ -41,33 +41,6 @@ public class ConfigurationService {
     @Autowired
     private MeterResponseDataService meterResponseDataService;
 
-    //
-    // public String enqueueGetAdministrationState(@Identification final String
-    // organisationIdentification,
-    // @Identification final String deviceIdentification, @Identification final
-    // AdministrativeState requestData)
-    // throws FunctionalException {
-    //
-    // LOGGER.info("enqueueDaysRequest called with organisation {} and device {}",
-    // organisationIdentification,
-    // deviceIdentification);
-    //
-    // final String correlationUid =
-    // this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-    // deviceIdentification);
-    //
-    // final SmartMeteringRequestMessage message = new
-    // SmartMeteringRequestMessage(
-    // SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS,
-    // correlationUid,
-    // organisationIdentification,
-    // requestData.getDeviceIdentification(), requestData);
-    //
-    // this.smartMeteringRequestMessageSender.send(message);
-    //
-    // return correlationUid;
-    // }
-
     /**
      * @param organisationIdentification
      * @param requestData
@@ -123,6 +96,11 @@ public class ConfigurationService {
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
+    }
+
+    public MeterResponseData dequeueGetAdministrativeStatusResponse(final String correlationUid)
+            throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,

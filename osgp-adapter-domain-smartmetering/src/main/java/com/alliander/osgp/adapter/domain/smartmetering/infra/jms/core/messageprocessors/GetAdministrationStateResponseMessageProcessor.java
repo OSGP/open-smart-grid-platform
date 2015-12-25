@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -72,8 +73,11 @@ public class GetAdministrationStateResponseMessageProcessor extends OsgpCoreResp
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
+            final AdministrativeStatusType administrativeStatusTypeDto = (AdministrativeStatusType) responseMessage
+                    .getDataObject();
             this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
+                    organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException,
+                    administrativeStatusTypeDto);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

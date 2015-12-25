@@ -190,7 +190,8 @@ public class ConfigurationService {
 
     public void handleGetAdministrativeStatusResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException) {
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto) {
 
         LOGGER.info("handleGetAdministrativeStatusResponse for MessageType: {}, with result: {}", messageType,
                 responseMessageResultType.toString());
@@ -201,8 +202,11 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
+        final AdministrativeStatusType administrativeStatusType = this.configurationMapper.map(
+                administrativeStatusTypeDto, AdministrativeStatusType.class);
+
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, null), messageType);
+                deviceIdentification, result, osgpException, administrativeStatusType), messageType);
     }
 
     public void setActivityCalendar(@Identification final String organisationIdentification,

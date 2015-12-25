@@ -18,11 +18,15 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
@@ -74,6 +78,23 @@ public class SmartMeteringConfigurationEndpoint {
     public SmartMeteringConfigurationEndpoint() {
     }
 
+    void handleRetrieveException(final Exception e, final AsyncRequest request, final String organisationIdentification)
+            throws OsgpException {
+        if ((e instanceof FunctionalException)
+                && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
+
+            LOGGER.warn("No response data for correlation UID {} in " + request.getClass().getSimpleName(),
+                    request.getCorrelationUid());
+
+            throw (FunctionalException) e;
+        } else {
+            LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+
+            this.handleException(e);
+        }
+    }
+
     @PayloadRoot(localPart = "SetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
@@ -88,7 +109,7 @@ public class SmartMeteringConfigurationEndpoint {
                 organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
         final SetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createSetAdministrativeStatusAsyncResponse();
+        .createSetAdministrativeStatusAsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
 
@@ -97,28 +118,24 @@ public class SmartMeteringConfigurationEndpoint {
 
     @PayloadRoot(localPart = "SetAdministrativeStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public SetAdministrativeStatusResponse getSetAdministrativeStatusResponse(
+    public SetAdministrativeStatusResponse retrieveSetAdministrativeStatusResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetAdministrativeStatusAsyncRequest request) {
+            @RequestPayload final SetAdministrativeStatusAsyncRequest request) throws OsgpException {
 
-        final SetAdministrativeStatusResponse response = new SetAdministrativeStatusResponse();
         try {
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetAdministrativeStatusResponse(request.getCorrelationUid());
 
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
-        } catch (final FunctionalException e) {
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                response.setResult(OsgpResultType.NOT_FOUND);
-            } else {
-                response.setResult(OsgpResultType.NOT_OK);
-            }
+            final SetAdministrativeStatusResponse response = this.configurationMapper.map(
+                    meterResponseData.getMessageData(), SetAdministrativeStatusResponse.class);
+
+            return response;
+
+        } catch (final Exception e) {
+            this.handleRetrieveException(e, request, organisationIdentification);
         }
 
-        return response;
+        return null;
     }
 
     @PayloadRoot(localPart = "GetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -131,12 +148,36 @@ public class SmartMeteringConfigurationEndpoint {
                 organisationIdentification, request.getDeviceIdentification());
 
         final GetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createGetAdministrativeStatusAsyncResponse();
+        .createGetAdministrativeStatusAsyncResponse();
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
 
         return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "GetAdministrativeStatusAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public GetAdministrativeStatusResponse retrieveGetAdministrativeStatusResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetAdministrativeStatusAsyncRequest request) throws OsgpException {
+
+        try {
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueGetAdministrativeStatusResponse(request.getCorrelationUid());
+
+            final GetAdministrativeStatusResponse response = new GetAdministrativeStatusResponse();
+            final AdministrativeStatusType dataRequest = this.configurationMapper.map(
+                    meterResponseData.getMessageData(), AdministrativeStatusType.class);
+            response.setEnabled(dataRequest);
+
+            return response;
+
+        } catch (final Exception e) {
+            this.handleRetrieveException(e, request, organisationIdentification);
+        }
+
+        return null;
     }
 
     @PayloadRoot(localPart = "SetSpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
