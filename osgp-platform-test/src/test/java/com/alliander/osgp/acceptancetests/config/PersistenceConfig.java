@@ -21,6 +21,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
+import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
@@ -115,6 +116,11 @@ public class PersistenceConfig {
     @Bean
     OslpDeviceRepository oslpDeviceRepositoryMock() {
         return mock(OslpDeviceRepository.class);
+    }
+
+    @Bean
+    GasMeterDeviceRepository gasMeterDeviceRepositoryMock() {
+        return mock(GasMeterDeviceRepository.class);
     }
 
 }
