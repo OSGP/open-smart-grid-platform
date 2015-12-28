@@ -9,6 +9,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -29,6 +31,8 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Endpoint
 public class SmartMeteringAdhocEndpoint {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringAdhocEndpoint.class);
 
     private static final String SMARTMETER_ADHOC_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10";
 
@@ -74,6 +78,7 @@ public class SmartMeteringAdhocEndpoint {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
         } catch (final FunctionalException e) {
+            LOGGER.error("Unexpected exception", e);
             if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
                 response.setResult(OsgpResultType.NOT_FOUND);
             } else {

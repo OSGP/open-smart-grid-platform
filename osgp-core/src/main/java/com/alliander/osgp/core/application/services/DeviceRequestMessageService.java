@@ -57,12 +57,13 @@ public class DeviceRequestMessageService {
                 try {
                     smartMeteringDevice = this.domainHelperService.findSmartMeteringDevice(message
                             .getDeviceIdentification());
-                } catch (FunctionalException functionalException) {
-                    if (functionalException.getExceptionType().equals(FunctionalExceptionType.UNKNOWN_DEVICE)) {
+                } catch (final FunctionalException e) {
+                    LOGGER.error("Unexpected exception", e);
+                    if (e.getExceptionType().equals(FunctionalExceptionType.UNKNOWN_DEVICE)) {
                         // try GAS meter
-                        GasMeterDevice findGASMeterDevice = domainHelperService.findGASMeterDevice(message
+                        final GasMeterDevice findGASMeterDevice = this.domainHelperService.findGASMeterDevice(message
                                 .getDeviceIdentification());
-                        smartMeteringDevice = domainHelperService.findSmartMeteringDevice(findGASMeterDevice
+                        smartMeteringDevice = this.domainHelperService.findSmartMeteringDevice(findGASMeterDevice
                                 .getSmartMeterId());
                     }
                 }
