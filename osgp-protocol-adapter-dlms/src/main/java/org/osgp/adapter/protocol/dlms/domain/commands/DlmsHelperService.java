@@ -40,6 +40,8 @@ public class DlmsHelperService {
     private static final String NOT_SPECIFIED = "FF";
     public static final int MILLISECONDS_PER_MINUTE = 60000;
 
+    public static int LONG_CONNECTION_TIMEOUT = 1000 * 30;
+
     private void checkResultCode(final GetResult getResult, final String description) throws ProtocolAdapterException {
         final AccessResultCode resultCode = getResult.resultCode();
         LOGGER.debug(description + " - AccessResultCode: {}", resultCode);
@@ -99,6 +101,16 @@ public class DlmsHelperService {
 
         return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
                 hundredthsOfSecond * 10, DateTimeZone.forOffsetMillis(-deviation * MILLISECONDS_PER_MINUTE));
+    }
+
+    public DataObject dateAsDataObjectOctetString(final DateTime dateTime) {
+
+        final Integer h = dateTime.getHourOfDay();
+        final Integer m = dateTime.getMinuteOfHour();
+        final Integer s = dateTime.getSecondOfMinute();
+
+        final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), (byte) 0 };
+        return DataObject.newOctetStringData(ba);
     }
 
     public DataObject asDataObject(final DateTime dateTime) {
@@ -300,10 +312,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }
@@ -314,7 +326,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-                .append(", bits=").append(stringValue);
+        .append(", bits=").append(stringValue);
 
         return sb.toString();
     }

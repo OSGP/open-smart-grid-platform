@@ -11,6 +11,9 @@ import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.MethodResultCode;
+import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
@@ -46,6 +49,9 @@ public class ConfigurationService extends DlmsApplicationService {
     private DomainHelperService domainHelperService;
 
     @Autowired
+    private DlmsHelperService dlmsHelperService;
+
+    @Autowired
     private DlmsConnectionFactory dlmsConnectionFactory;
 
     @Autowired
@@ -60,7 +66,8 @@ public class ConfigurationService extends DlmsApplicationService {
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
 
-    // === REQUEST Special Days DATA ===
+    @Autowired
+    private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
@@ -162,19 +169,22 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "setActivityCalendar");
 
+        ClientConnection conn = null;
+        DlmsDevice device = null;
         try {
-            LOGGER.info("**************************************");
-            LOGGER.info("**********In protocol adapter*********");
-            LOGGER.info("**************************************");
-            LOGGER.info("*************0-0:13.0.0.255***********");
-            LOGGER.info("**************************************");
-            LOGGER.info("Activity Calendar to set on the device: {}", activityCalendar.getCalendarName());
-            LOGGER.info("********** activityCalendar " + activityCalendar);
-
             final String deviceIdentification = messageMetadata.getDeviceIdentification();
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
-            LOGGER.info("device for Activity Calendar is: {}", device);
+            LOGGER.info("Device for Activity Calendar is: {}", device);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+            this.setActivityCalendarCommandExecutor.execute(conn, activityCalendar);
+
+            final MethodResultCode methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, null);
+
+            if (!MethodResultCode.SUCCESS.equals(methodResult)) {
+                throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + methodResult);
+            }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
@@ -185,7 +195,13 @@ public class ConfigurationService extends DlmsApplicationService {
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null && conn.isConnected()) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.close();
+            }
         }
+
     }
 
     public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
@@ -205,7 +221,7 @@ public class ConfigurationService extends DlmsApplicationService {
             try {
                 final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
                         alarmNotifications);
-                if (AccessResultCode.SUCCESS != accessResultCode) {
+                if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
                     throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
                             + accessResultCode);
                 }

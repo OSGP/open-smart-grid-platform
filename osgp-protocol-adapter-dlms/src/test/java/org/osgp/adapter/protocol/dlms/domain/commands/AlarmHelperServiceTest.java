@@ -6,7 +6,6 @@
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
