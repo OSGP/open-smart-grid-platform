@@ -31,14 +31,13 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 // MethodConstraintViolationException is deprecated.
 // Will by replaced by equivalent functionality defined
 // by the Bean Validation 1.1 API as of Hibernate Validator 5.
 @SuppressWarnings("deprecation")
 @Endpoint
-public class SmartMeteringInstallationEndpoint {
+public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringInstallationEndpoint.class);
     private static final String SMARTMETER_INSTALLATION_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-installation/2014/10";
@@ -60,9 +59,8 @@ public class SmartMeteringInstallationEndpoint {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
-        final AddDeviceAsyncResponse response = new AddDeviceAsyncResponse();
-
         try {
+            final AddDeviceAsyncResponse response = new AddDeviceAsyncResponse();
             final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
                     SmartMeteringDevice.class);
 
@@ -72,6 +70,7 @@ public class SmartMeteringInstallationEndpoint {
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());
 
+            return response;
         } catch (final MethodConstraintViolationException e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
@@ -85,20 +84,18 @@ public class SmartMeteringInstallationEndpoint {
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
                     request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
-            this.handleException(e);
+            throw this.handleException(e);
         }
-
-        return response;
     }
 
     @PayloadRoot(localPart = "AddDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
     public AddDeviceResponse getSetConfigurationObjectResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceAsyncRequest request) {
+            @RequestPayload final AddDeviceAsyncRequest request) throws OsgpException {
 
-        final AddDeviceResponse response = new AddDeviceResponse();
         try {
+            final AddDeviceResponse response = new AddDeviceResponse();
             final MeterResponseData meterResponseData = this.installationService.dequeueAddSmartMeterResponse(request
                     .getCorrelationUid());
 
@@ -106,27 +103,11 @@ public class SmartMeteringInstallationEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } catch (final FunctionalException e) {
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                response.setResult(OsgpResultType.NOT_FOUND);
-            } else {
-                response.setResult(OsgpResultType.NOT_OK);
-            }
-        }
 
-        return response;
-    }
-
-    private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
-        if (e instanceof OsgpException) {
-            LOGGER.error("Exception occurred: ", e);
-            throw (OsgpException) e;
-        } else {
-            LOGGER.error("Exception occurred: ", e);
-            throw new TechnicalException(ComponentType.WS_SMART_METERING, e);
+            return response;
+        } catch (final Exception e) {
+            throw this.handleException(e);
         }
     }
+
 }
