@@ -8,13 +8,12 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parent-shared</artifactId>
     <groupId>com.alliander.osgp</groupId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>parent-shared</name>
     <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
@@ -58,7 +57,7 @@
 
     <properties>
         <module.baseUri>${project.baseUri}/../</module.baseUri>
-        <osgp.version>0.11.0-SNAPSHOT</osgp.version>
+        <osgp.version>3.1.0-SNAPSHOT</osgp.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring.version>4.2.0.RELEASE</spring.version>
@@ -393,6 +392,27 @@
     <build>
         <pluginManagement>
             <plugins>
+
+	    <plugin>
+		<groupId>external.atlassian.jgitflow</groupId>
+		<artifactId>jgitflow-maven-plugin</artifactId>
+		<version>1.0-m5.1</version>
+		<configuration>
+		    <pushFeatures>true</pushFeatures>
+		    <pushHotfixes>true</pushHotfixes>
+		    <pushReleases>true</pushReleases>
+		    <enableSshAgent>true</enableSshAgent>
+		    <flowInitContext>
+			<masterBranchName>master</masterBranchName>
+			<developBranchName>development</developBranchName>
+			<featureBranchPrefix>feature-</featureBranchPrefix>
+			<releaseBranchPrefix>release-</releaseBranchPrefix>
+			<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+			<versionTagPrefix>${project.artifactId}-</versionTagPrefix>
+		    </flowInitContext>
+		</configuration>
+	    </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

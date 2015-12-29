@@ -54,7 +54,7 @@ public class MeterReads implements Serializable {
 
     @Override
     public String toString() {
-        return "ActualMeterReads [logTime=" + this.logTime + ", activeEnergyImportTariffOne="
+        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImportTariffOne="
                 + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
                 + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
                 + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="

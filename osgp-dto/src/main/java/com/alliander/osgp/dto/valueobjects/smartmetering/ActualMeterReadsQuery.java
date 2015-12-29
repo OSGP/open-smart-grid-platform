@@ -11,11 +11,13 @@ import java.io.Serializable;
 
 /**
  * request actual reads for E or GAS meters
- * 
+ *
  * @author dev
  */
 public class ActualMeterReadsQuery implements Serializable {
     private static final long serialVersionUID = 3751586818507193990L;
+
+    private static final int NOCHANNEL = -1;
 
     private final int channel;
 
@@ -23,18 +25,16 @@ public class ActualMeterReadsQuery implements Serializable {
         this(NOCHANNEL);
     }
 
-    private static final int NOCHANNEL = -1;
-
     public ActualMeterReadsQuery(final int channel) {
         this.channel = channel;
     }
 
     public boolean isGas() {
-        return channel > NOCHANNEL;
+        return this.channel > NOCHANNEL;
     }
 
     public int getChannel() {
-        return channel;
+        return this.channel;
     }
 
 }
