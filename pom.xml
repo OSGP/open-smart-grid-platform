@@ -13,7 +13,7 @@
 
     <groupId>com.alliander.osgp</groupId>
     <artifactId>integration-tests</artifactId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
     <description>Integration tests for OSGP components.</description>
