@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
@@ -161,6 +162,56 @@ public class ConfigurationService extends DlmsApplicationService {
             if (conn != null && conn.isConnected()) {
                 conn.close();
             }
+        }
+    }
+
+    public void requestSetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
+            final AdministrativeStatusType administrativeStatusType,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "requestSetAdministration");
+
+        LOGGER.info("******************************************************");
+        LOGGER.info(" SetAdministrativeStatus *****************************");
+        LOGGER.info("******************************************************");
+        LOGGER.info("DeviceIdentification = {} ", messageMetadata.getDeviceIdentification());
+        LOGGER.info("Set status to = {} ", administrativeStatusType.value());
+        LOGGER.info("******************************************************");
+
+        try {
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during set Administration status", e);
+
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        }
+
+    }
+
+    public void requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "requestGetAdministration");
+
+        LOGGER.info("******************************************************");
+        LOGGER.info(" GetAdministrativeStatus *****************************");
+        LOGGER.info("******************************************************");
+        LOGGER.info(" DeviceIdentification = {} ", messageMetadata.getDeviceIdentification());
+        LOGGER.info("******************************************************");
+
+        try {
+            // dummy response data!
+            final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.OFF;
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    administrativeStatusType);
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during get Administration status", e);
+
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
     }
 
