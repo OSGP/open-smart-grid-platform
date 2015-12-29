@@ -349,13 +349,6 @@
         <version>${apache.commons.lang.version}</version>
       </dependency>
 
-      <!-- Spring JMS -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jms</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-
       <!-- Logging dependencies -->
       <dependency>
         <groupId>org.slf4j</groupId>
