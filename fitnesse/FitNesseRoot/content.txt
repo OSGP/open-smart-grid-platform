@@ -3,6 +3,10 @@
 !define TEST_SYSTEM {slim}
 
 !define CM_SYSTEM {fitnesse.wiki.cmSystems.TfsCmSystem}
+
+!define SHARED_VERSION {3.1.0-SNAPSHOT}
+!define PLATFORM_VERSION {3.1.0-SNAPSHOT}
+!define PROTOCOL_ADAPTER_OSLP_VERSION {3.1.0-SNAPSHOT}
 !define OSGP_VERSION {3.1.0-SNAPSHOT}
 
 !path plugins/junit-4.5.jar
@@ -73,30 +77,28 @@
 !path ${MAVEN_REPO}/ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar
 !path ${MAVEN_REPO}/ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar
 
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-admin/${OSGP_VERSION}/osgp-adapter-domain-admin-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-core/${OSGP_VERSION}/osgp-adapter-domain-core-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-publiclighting/${OSGP_VERSION}/osgp-adapter-domain-publiclighting-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-tariffswitching/${OSGP_VERSION}/osgp-adapter-domain-tariffswitching-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-admin/${OSGP_VERSION}/osgp-adapter-ws-admin-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-core/${OSGP_VERSION}/osgp-adapter-ws-core-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-publiclighting/${OSGP_VERSION}/osgp-adapter-ws-publiclighting-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared/${OSGP_VERSION}/osgp-adapter-ws-shared-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared-db/${OSGP_VERSION}/osgp-adapter-ws-shared-db-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-tariffswitching/${OSGP_VERSION}/osgp-adapter-ws-tariffswitching-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core/${OSGP_VERSION}/osgp-core-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core-db-api/${OSGP_VERSION}/osgp-core-db-api-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-core/${OSGP_VERSION}/osgp-domain-core-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-logging/${OSGP_VERSION}/osgp-domain-logging-${OSGP_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-admin/${PLATFORM_VERSION}/osgp-adapter-domain-admin-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-core/${PLATFORM_VERSION}/osgp-adapter-domain-core-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-publiclighting/${PLATFORM_VERSION}/osgp-adapter-domain-publiclighting-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-tariffswitching/${PLATFORM_VERSION}/osgp-adapter-domain-tariffswitching-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-admin/${PLATFORM_VERSION}/osgp-adapter-ws-admin-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-core/${PLATFORM_VERSION}/osgp-adapter-ws-core-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-publiclighting/${PLATFORM_VERSION}/osgp-adapter-ws-publiclighting-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared/${PLATFORM_VERSION}/osgp-adapter-ws-shared-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared-db/${PLATFORM_VERSION}/osgp-adapter-ws-shared-db-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-tariffswitching/${PLATFORM_VERSION}/osgp-adapter-ws-tariffswitching-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core/${PLATFORM_VERSION}/osgp-core-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-core/${PLATFORM_VERSION}/osgp-domain-core-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-logging/${PLATFORM_VERSION}/osgp-domain-logging-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-dto/${SHARED_VERSION}/osgp-dto-${SHARED_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-logging/${PLATFORM_VERSION}/osgp-logging-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/shared/${SHARED_VERSION}/shared-${SHARED_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-protocol-adapter-oslp/${PROTOCOL_ADAPTER_OSLP_VERSION}/osgp-protocol-adapter-oslp-${PROTOCOL_ADAPTER_OSLP_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/oslp/${PROTOCOL_ADAPTER_OSLP_VERSION}/oslp-${PROTOCOL_ADAPTER_OSLP_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/signing-server/${PROTOCOL_ADAPTER_OSLP_VERSION}/signing-server-${PROTOCOL_ADAPTER_OSLP_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core-db-api/${PROTOCOL_ADAPTER_OSLP_VERSION}/osgp-core-db-api-${PROTOCOL_ADAPTER_OSLP_VERSION}.jar
 !path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-publiclighting/${OSGP_VERSION}/osgp-domain-publiclighting-${OSGP_VERSION}.jar
 !path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-tariffswitching/${OSGP_VERSION}/osgp-domain-tariffswitching-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-dto/${OSGP_VERSION}/osgp-dto-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-logging/${OSGP_VERSION}/osgp-logging-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-protocol-adapter-oslp/${OSGP_VERSION}/osgp-protocol-adapter-oslp-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/signing-server/${OSGP_VERSION}/signing-server-${OSGP_VERSION}-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/oslp/${OSGP_VERSION}/oslp-${OSGP_VERSION}.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/shared/${OSGP_VERSION}/shared-${OSGP_VERSION}.jar
-
-
 
 !path ${MAVEN_REPO}/com/carrotsearch/java-sizeof/0.0.4/java-sizeof-0.0.4.jar
 !path ${MAVEN_REPO}/com/fasterxml/jackson/core/jackson-annotations/2.4.0/jackson-annotations-2.4.0.jar
