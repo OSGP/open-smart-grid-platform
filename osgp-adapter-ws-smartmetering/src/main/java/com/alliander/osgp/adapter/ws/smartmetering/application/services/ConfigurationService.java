@@ -20,9 +20,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
 @Service(value = "wsSmartMeteringConfigurationService")
@@ -39,6 +41,68 @@ public class ConfigurationService {
 
     @Autowired
     private MeterResponseDataService meterResponseDataService;
+
+    /**
+     * @param organisationIdentification
+     * @param requestData
+     * @throws FunctionalException
+     */
+    public String requestSetAdministrativeStatus(final String organisationIdentification,
+            final String deviceIdentification, final AdministrativeStatusType requestData) throws FunctionalException {
+        return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData);
+    }
+
+    public String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            @Identification final AdministrativeStatusType requestData) throws FunctionalException {
+
+        LOGGER.info(
+                "enqueueSetAdministrativeStatus called with organisation {} and device {}, set administrative status to {}",
+                organisationIdentification, deviceIdentification, requestData);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
+                deviceIdentification, requestData);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueSetAdministrativeStatusResponse(final String correlationUid)
+            throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public String requestGetAdministrativeStatus(final String organisationIdentification,
+            final String deviceIdentification) {
+        return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification);
+    }
+
+    private String enqueueGetAdministrativeStatus(final String organisationIdentification,
+            final String deviceIdentification) {
+        LOGGER.debug("enqueueGetAdministrativeStatus called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
+                deviceIdentification, AdministrativeStatusType.UNDEFINED);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueGetAdministrativeStatusResponse(final String correlationUid)
+            throws FunctionalException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SpecialDaysRequest requestData) {
