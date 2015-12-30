@@ -40,13 +40,13 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
     @Override
     public String toString() {
-        return "SeasonProfile [seasonProfileName=" + this.seasonProfileName + ", seasonStart=" + this.seasonStart
-                + ", weekProfile=" + this.weekProfile + "]";
+        return "SeasonProfile [\n\t\t\t\tseasonProfileName=" + this.seasonProfileName + ", \n\t\t\t\tseasonStart="
+                + this.seasonStart + ", \n\t\t\t\tweekProfile=" + this.weekProfile + "\n\t\t\t]";
     }
 
     @Override
     public int compareTo(final SeasonProfile other) {
-        return this.seasonProfileName.compareTo(other.seasonProfileName);
+        return this.seasonStart.compareTo(other.seasonStart);
     }
 
     @Override
