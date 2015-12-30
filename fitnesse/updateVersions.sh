@@ -18,13 +18,38 @@ function getVersionFromPom
     exit 1
   fi
 
-  cat $POM | grep "<version>" | head -1 | sed "s#<[/]*version>##g;s# ##g"
+  #cat $POM | grep "<version>" | head -1 | sed "s#<[/]*version>##g;s# ##g"
+  cat $POM | awk '  
+  BEGIN { layer=0 }
+  {
+    print $0
+    if (layer == 1 && $0 ~ /version/ ) {
+      print $0
+      if ( $0 ~ /[ 	]*<version>.+<\/version>[ ]*$/ ) {
+        #Version found
+        line = $0
+        gsub("<[/]*version>", "", line)
+        gsub(" ", "", line)
+        print line
+      }
+    }
+    if ( $0 ~ /^[ 	]*<[^\/!][^\>]+>[ ]*$/ ) {
+      layer++
+      print "Opening "layer
+    }
+    if ( $0 ~ /^[ 	]*<\/.+>[ ]*$/ ) {
+      layer--
+      print "Closing "layer
+    }
+  }
+  ' 
 }
 
 function AddOrReplaceVal
 {
   VAR=$1
   VAL=$2
+  echo "Var $VAR holds value $VAL"
 
   if [ `grep -c "^${DEFINE_STRING}[ ]*${VAR}[ ]*{" $CONTENT_FILE` -eq 0 ]; then
     echo "$VAR needs to be setup"
@@ -37,13 +62,16 @@ function AddOrReplaceVal
 }
 
 SHARED_VAR="SHARED_VERSION"
+getVersionFromPom ../Shared/pom.xml
 SHARED_VAL=`getVersionFromPom ../Shared/pom.xml`
 AddOrReplaceVal $SHARED_VAR $SHARED_VAL
 
 PLATFORM_VAR="PLATFORM_VERSION"
+getVersionFromPom ../Platform/pom.xml
 PLATFORM_VAL=`getVersionFromPom ../Platform/pom.xml`
 AddOrReplaceVal $PLATFORM_VAR $PLATFORM_VAL
 
 PROTOCOL_ADAPTER_OSLP_VAR="PROTOCOL_ADAPTER_OSLP_VERSION"
+getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml
 PROTOCOL_ADAPTER_OSLP_VAL=`getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml`
 AddOrReplaceVal $PROTOCOL_ADAPTER_OSLP_VAR $PROTOCOL_ADAPTER_OSLP_VAL
