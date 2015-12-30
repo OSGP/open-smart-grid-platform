@@ -27,7 +27,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidMismatchException;
+import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
 @Service(value = "wsSmartMeteringMonitoringService")
 @Validated
@@ -45,8 +46,7 @@ public class MonitoringService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData) {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -65,18 +65,18 @@ public class MonitoringService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeuePeriodicMeterReadsResponse(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeuePeriodicMeterReadsResponse(final String correlationUid)
+            throws UnknownCorrelationUidException, CorrelationUidMismatchException {
         return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadContainer.class);
     }
 
     public MeterResponseData dequeuePeriodicMeterReadsGasResponse(final String correlationUid)
-            throws FunctionalException {
+            throws UnknownCorrelationUidException, CorrelationUidMismatchException {
         return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadsContainerGas.class);
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData) {
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -93,17 +93,18 @@ public class MonitoringService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueActualMeterReadsResponse(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeueActualMeterReadsResponse(final String correlationUid)
+            throws UnknownCorrelationUidException, CorrelationUidMismatchException {
         return this.meterResponseDataService.dequeue(correlationUid, MeterReads.class);
     }
 
-    public MeterResponseData dequeueActualMeterReadsGasResponse(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeueActualMeterReadsGasResponse(final String correlationUid)
+            throws UnknownCorrelationUidException, CorrelationUidMismatchException {
         return this.meterResponseDataService.dequeue(correlationUid, MeterReadsGas.class);
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData) {
 
         LOGGER.debug("enqueueReadAlarmRegisterRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -120,7 +121,8 @@ public class MonitoringService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueReadAlarmRegisterResponse(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeueReadAlarmRegisterResponse(final String correlationUid)
+            throws UnknownCorrelationUidException, CorrelationUidMismatchException {
         return this.meterResponseDataService.dequeue(correlationUid, AlarmRegister.class);
     }
 }

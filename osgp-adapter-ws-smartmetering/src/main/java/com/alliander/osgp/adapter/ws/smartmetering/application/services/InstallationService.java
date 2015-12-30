@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
 /**
  * @author OSGP
@@ -43,8 +43,7 @@ public class InstallationService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SmartMeteringDevice device)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final SmartMeteringDevice device) {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -63,7 +62,8 @@ public class InstallationService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueAddSmartMeterResponse(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeueAddSmartMeterResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 }

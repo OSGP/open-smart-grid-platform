@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -130,6 +131,82 @@ public class ConfigurationService {
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, alarmNotificationsDto), messageType);
+    }
+
+    public void setAdministrativeStatus(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final AdministrativeStatusType administrativeStatusType, final String messageType)
+                    throws FunctionalException {
+
+        LOGGER.info(
+                "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
+                organisationIdentification, deviceIdentification, administrativeStatusType);
+
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto = this.configurationMapper
+                .map(administrativeStatusType,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class);
+
+        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, administrativeStatusTypeDto);
+        this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
+    }
+
+    public void handleSetAdministrativeStatusResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleSetAdministrativeStatusResponse for MessageType: {}, with result: {}", messageType,
+                deviceResult.toString());
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
+    }
+
+    public void getAdministrativeStatus(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final AdministrativeStatusType administrativeStatusType,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info(
+                "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
+                organisationIdentification, deviceIdentification, administrativeStatusType);
+
+        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+        LOGGER.info("Sending request message to core.");
+        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, this.configurationMapper.map(administrativeStatusType,
+                        com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class));
+        this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
+
+    }
+
+    public void handleGetAdministrativeStatusResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto) {
+
+        LOGGER.info("handleGetAdministrativeStatusResponse for MessageType: {}, with result: {}", messageType,
+                responseMessageResultType.toString());
+
+        ResponseMessageResultType result = responseMessageResultType;
+        if (osgpException != null) {
+            LOGGER.error("Device Response not ok. Unexpected Exception", osgpException);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final AdministrativeStatusType administrativeStatusType = this.configurationMapper.map(
+                administrativeStatusTypeDto, AdministrativeStatusType.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, osgpException, administrativeStatusType), messageType);
     }
 
     public void setActivityCalendar(@Identification final String organisationIdentification,

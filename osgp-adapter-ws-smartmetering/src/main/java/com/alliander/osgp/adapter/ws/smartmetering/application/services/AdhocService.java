@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
 @Service(value = "wsSmartMeteringAdhocService")
 @Validated
@@ -38,8 +38,7 @@ public class AdhocService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest) {
 
         LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -56,7 +55,8 @@ public class AdhocService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueSynchronizeTimeResponse(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeueSynchronizeTimeResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 }
