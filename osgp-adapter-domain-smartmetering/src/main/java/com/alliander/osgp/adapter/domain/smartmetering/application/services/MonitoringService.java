@@ -20,8 +20,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -171,7 +171,7 @@ public class MonitoringService {
     public void handleActualMeterReadsResponse(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final MeterReads actualMeterReadsDto) {
+            final ActualMeterReads actualMeterReadsDto) {
 
         LOGGER.info("handleActualMeterReadsResponse for MessageType: {}", messageType);
 
@@ -184,7 +184,7 @@ public class MonitoringService {
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result,
                         exception, this.monitoringMapper.map(actualMeterReadsDto,
-                                com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads.class)),
+                                com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads.class)),
                 messageType);
     }
 
