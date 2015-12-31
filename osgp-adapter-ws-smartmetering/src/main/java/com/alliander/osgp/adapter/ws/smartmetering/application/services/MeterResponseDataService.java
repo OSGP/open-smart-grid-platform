@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidMismatchException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
@@ -52,7 +53,7 @@ public class MeterResponseDataService {
      *             type does not match.
      */
     public MeterResponseData dequeue(final String correlationUid, final Class<?> expectedClassType)
-            throws UnknownCorrelationUidException, CorrelationUidMismatchException {
+            throws CorrelationUidException {
 
         final MeterResponseData meterResponseData = this.meterResponseDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
