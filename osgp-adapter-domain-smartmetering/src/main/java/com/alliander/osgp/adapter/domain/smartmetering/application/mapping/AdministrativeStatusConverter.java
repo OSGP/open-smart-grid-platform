@@ -13,8 +13,8 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 
 public class AdministrativeStatusConverter
-extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType, AdministrativeStatusType> {
+        extends
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType, AdministrativeStatusType> {
 
     @Override
     public AdministrativeStatusType convertTo(
@@ -27,7 +27,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Adminis
 
         if (source == com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.OFF) {
             return AdministrativeStatusType.OFF;
-        } else if (source == com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.OFF) {
+        } else if (source == com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.ON) {
             return AdministrativeStatusType.ON;
         } else {
             return AdministrativeStatusType.UNDEFINED;
@@ -45,7 +45,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Adminis
 
         if (source == AdministrativeStatusType.OFF) {
             return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.OFF;
-        } else if (source == AdministrativeStatusType.OFF) {
+        } else if (source == AdministrativeStatusType.ON) {
             return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.ON;
         } else {
             return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.UNDEFINED;
