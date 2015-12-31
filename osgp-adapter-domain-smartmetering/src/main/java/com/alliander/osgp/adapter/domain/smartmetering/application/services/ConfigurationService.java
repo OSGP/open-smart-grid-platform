@@ -120,9 +120,6 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
@@ -136,7 +133,7 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
@@ -217,9 +214,6 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
