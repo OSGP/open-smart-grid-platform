@@ -18,7 +18,6 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType;
@@ -27,10 +26,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.RetrieveSetActivityCalendarResultResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAdministrativeStatusRequest;
@@ -51,17 +50,12 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpeci
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Endpoint
-public class SmartMeteringConfigurationEndpoint {
+public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringConfigurationEndpoint.class);
     private static final String SMARTMETER_CONFIGURATION_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10";
@@ -72,27 +66,7 @@ public class SmartMeteringConfigurationEndpoint {
     @Autowired
     private ConfigurationMapper configurationMapper;
 
-    @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
-
     public SmartMeteringConfigurationEndpoint() {
-    }
-
-    void handleRetrieveException(final Exception e, final AsyncRequest request, final String organisationIdentification)
-            throws OsgpException {
-        if ((e instanceof FunctionalException)
-                && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-
-            LOGGER.warn("No response data for correlation UID {} in " + request.getClass().getSimpleName(),
-                    request.getCorrelationUid());
-
-            throw (FunctionalException) e;
-        } else {
-            LOGGER.error("Exception: {} while sending PeriodicMeterReads of device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
-
-            this.handleException(e);
-        }
     }
 
     @PayloadRoot(localPart = "SetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -132,7 +106,7 @@ public class SmartMeteringConfigurationEndpoint {
             return response;
 
         } catch (final Exception e) {
-            this.handleRetrieveException(e, request, organisationIdentification);
+            this.handleException(e);
         }
 
         return null;
@@ -174,7 +148,7 @@ public class SmartMeteringConfigurationEndpoint {
             return response;
 
         } catch (final Exception e) {
-            this.handleRetrieveException(e, request, organisationIdentification);
+            this.handleException(e);
         }
 
         return null;
@@ -204,10 +178,10 @@ public class SmartMeteringConfigurationEndpoint {
     @ResponsePayload
     public SetSpecialDaysResponse getSetSpecialDaysResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetSpecialDaysAsyncRequest request) {
+            @RequestPayload final SetSpecialDaysAsyncRequest request) throws OsgpException {
 
-        final SetSpecialDaysResponse response = new SetSpecialDaysResponse();
         try {
+            final SetSpecialDaysResponse response = new SetSpecialDaysResponse();
             final MeterResponseData meterResponseData = this.configurationService.dequeueSetSpecialDaysResponse(request
                     .getCorrelationUid());
 
@@ -215,16 +189,11 @@ public class SmartMeteringConfigurationEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } catch (final FunctionalException e) {
-            LOGGER.error("Unexpected exception", e);
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                response.setResult(OsgpResultType.NOT_FOUND);
-            } else {
-                response.setResult(OsgpResultType.NOT_OK);
-            }
-        }
 
-        return response;
+            return response;
+        } catch (final Exception e) {
+            throw this.handleException(e);
+        }
     }
 
     @PayloadRoot(localPart = "SetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -252,10 +221,10 @@ public class SmartMeteringConfigurationEndpoint {
     @ResponsePayload
     public SetConfigurationObjectResponse getSetConfigurationObjectResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetConfigurationObjectAsyncRequest request) {
+            @RequestPayload final SetConfigurationObjectAsyncRequest request) throws OsgpException {
 
-        final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
         try {
+            final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
 
@@ -263,16 +232,11 @@ public class SmartMeteringConfigurationEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } catch (final FunctionalException e) {
-            LOGGER.error("Unexpected exception", e);
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                response.setResult(OsgpResultType.NOT_FOUND);
-            } else {
-                response.setResult(OsgpResultType.NOT_OK);
-            }
-        }
 
-        return response;
+            return response;
+        } catch (final Exception e) {
+            throw this.handleException(e);
+        }
     }
 
     @PayloadRoot(localPart = "SetActivityCalendarRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -282,80 +246,51 @@ public class SmartMeteringConfigurationEndpoint {
             @RequestPayload final SetActivityCalendarRequest request) throws OsgpException {
 
         LOGGER.info("Incoming SetActivityCalendarRequest for meter: {}.", request.getDeviceIdentification());
-        final SetActivityCalendarAsyncResponse response = new SetActivityCalendarAsyncResponse();
 
         try {
-
+            final SetActivityCalendarAsyncResponse response = new SetActivityCalendarAsyncResponse();
             final String deviceIdentification = request.getDeviceIdentification();
             final ActivityCalendarDataType requestData = request.getActivityCalendarData();
 
             final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getActivityCalendar(),
                     ActivityCalendar.class);
 
-            final String correlationUid = this.configurationService.setActivityCalendar(organisationIdentification,
-                    deviceIdentification, activityCalendar);
+            final String correlationUid = this.configurationService.enqueueSetActivityCalendarRequest(
+                    organisationIdentification, deviceIdentification, activityCalendar);
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
-
+            return response;
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting activity calendar on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
-            this.handleException(e);
+            throw this.handleException(e);
         }
-
-        return response;
-
     }
 
-    @PayloadRoot(localPart = "RetrieveSetActivityCalendarResultRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @PayloadRoot(localPart = "SetActivityCalendarAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
-    public RetrieveSetActivityCalendarResultResponse retrieveSetActivityCalendarResponse(
+    public SetActivityCalendarResponse getSetActivityCalendarResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final RetrieveSetActivityCalendarResultRequest request) throws OsgpException {
+            @RequestPayload final SetActivityCalendarAsyncRequest request) throws OsgpException {
 
         LOGGER.info("Incoming retrieveSetActivityCalendarResponse for meter: {}", request.getDeviceIdentification());
 
-        final RetrieveSetActivityCalendarResultResponse response = new RetrieveSetActivityCalendarResultResponse();
-
         try {
-            final MeterResponseData meterResponseData = this.meterResponseDataRepository
-                    .findSingleResultByCorrelationUid(request.getCorrelationUid());
+            final SetActivityCalendarResponse response = new SetActivityCalendarResponse();
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetActivityCalendarResponse(request.getCorrelationUid());
 
-            if (meterResponseData == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                        ComponentType.WS_SMART_METERING);
-            }
-
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
-                response.setResult((String) meterResponseData.getMessageData());
-                this.meterResponseDataRepository.delete(meterResponseData);
-            } else {
-                LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", meterResponseData.getClass()
-                        .getName(), request.getCorrelationUid());
+                response.setDescription((String) meterResponseData.getMessageData());
             }
-
+            return response;
         } catch (final Exception e) {
-            if ((e instanceof FunctionalException)
-                    && ((FunctionalException) e).getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-
-                LOGGER.warn("No response data for correlation UID {} in RetrieveSetActivityCalendarResultRequest",
-                        request.getCorrelationUid());
-
-                throw e;
-
-            } else {
-                LOGGER.error(
-                        "Exception: {} while sending SetActivityCalendarResult of device: {} for organisation {}.",
-                        new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
-
-                this.handleException(e);
-            }
+            throw this.handleException(e);
         }
-
-        return response;
     }
 
     @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -366,43 +301,40 @@ public class SmartMeteringConfigurationEndpoint {
 
         LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
 
-        final SetAlarmNotificationsAsyncResponse response = new SetAlarmNotificationsAsyncResponse();
-
         try {
-
+            final SetAlarmNotificationsAsyncResponse response = new SetAlarmNotificationsAsyncResponse();
             final String deviceIdentification = request.getDeviceIdentification();
             final SetAlarmNotificationsRequestData requestData = request.getSetAlarmNotificationsRequestData();
 
             final AlarmNotifications alarmNotifications = this.configurationMapper.map(
                     requestData.getAlarmNotifications(), AlarmNotifications.class);
 
-            final String correlationUid = this.configurationService.setAlarmNotifications(organisationIdentification,
-                    deviceIdentification, alarmNotifications);
+            final String correlationUid = this.configurationService.enqueueSetAlarmNotificationsRequest(
+                    organisationIdentification, deviceIdentification, alarmNotifications);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
 
+            return response;
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
-            this.handleException(e);
+            throw this.handleException(e);
         }
-
-        return response;
     }
 
     @PayloadRoot(localPart = "SetAlarmNotificationsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public SetAlarmNotificationsResponse getSetAlarmNotificationsResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetAlarmNotificationsAsyncRequest request) {
+            @RequestPayload final SetAlarmNotificationsAsyncRequest request) throws OsgpException {
 
-        final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
         try {
+            final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
 
@@ -410,28 +342,10 @@ public class SmartMeteringConfigurationEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } catch (final FunctionalException e) {
-            LOGGER.error("Unexpected exception", e);
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                response.setResult(OsgpResultType.NOT_FOUND);
-            } else {
-                response.setResult(OsgpResultType.NOT_OK);
-            }
-        }
-
-        return response;
-    }
-
-    private void handleException(final Exception e) throws OsgpException {
-        // Rethrow exception if it already is a functional or technical
-        // exception,
-        // otherwise throw new technical exception.
-        if (e instanceof OsgpException) {
-            LOGGER.error("Exception occurred: ", e);
-            throw (OsgpException) e;
-        } else {
-            LOGGER.error("Exception occurred: ", e);
-            throw new TechnicalException(ComponentType.WS_SMART_METERING, e);
+            return response;
+        } catch (final Exception e) {
+            throw this.handleException(e);
         }
     }
+
 }

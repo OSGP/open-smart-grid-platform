@@ -25,13 +25,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Adminis
             return null;
         }
 
-        if (source == com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.OFF) {
-            return AdministrativeStatusType.OFF;
-        } else if (source == com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.OFF) {
-            return AdministrativeStatusType.ON;
-        } else {
-            return AdministrativeStatusType.UNDEFINED;
-        }
+        return AdministrativeStatusType.fromValue(source.name());
     }
 
     @Override
@@ -43,13 +37,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Adminis
             return null;
         }
 
-        if (source == AdministrativeStatusType.OFF) {
-            return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.OFF;
-        } else if (source == AdministrativeStatusType.OFF) {
-            return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.ON;
-        } else {
-            return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.UNDEFINED;
-        }
+        return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.valueOf(source.name());
     }
 
 }

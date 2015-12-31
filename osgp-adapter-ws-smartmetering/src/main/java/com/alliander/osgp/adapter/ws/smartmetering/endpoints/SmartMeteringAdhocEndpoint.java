@@ -9,8 +9,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -25,14 +23,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeR
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Endpoint
-public class SmartMeteringAdhocEndpoint {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringAdhocEndpoint.class);
+public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
     private static final String SMARTMETER_ADHOC_NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10";
 
@@ -66,10 +60,10 @@ public class SmartMeteringAdhocEndpoint {
     @ResponsePayload
     public SynchronizeTimeResponse getSynchronizeTimeResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SynchronizeTimeAsyncRequest request) {
+            @RequestPayload final SynchronizeTimeAsyncRequest request) throws OsgpException {
 
-        final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
         try {
+            final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
             final MeterResponseData meterResponseData = this.adhocService.dequeueSynchronizeTimeResponse(request
                     .getCorrelationUid());
 
@@ -77,15 +71,10 @@ public class SmartMeteringAdhocEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-        } catch (final FunctionalException e) {
-            LOGGER.error("Unexpected exception", e);
-            if (e.getExceptionType() == FunctionalExceptionType.UNKNOWN_CORRELATION_UID) {
-                response.setResult(OsgpResultType.NOT_FOUND);
-            } else {
-                response.setResult(OsgpResultType.NOT_OK);
-            }
-        }
 
-        return response;
+            return response;
+        } catch (final Exception e) {
+            throw this.handleException(e);
+        }
     }
 }

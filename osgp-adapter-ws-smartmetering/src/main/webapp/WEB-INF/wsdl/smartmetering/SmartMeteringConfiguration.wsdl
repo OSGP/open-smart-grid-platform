@@ -68,6 +68,12 @@
         <wsdl:part element="smconf:SetActivityCalendarAsyncResponse" name="setActivityCalendarAsyncResponse">
         </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="SetActivityCalendarAsyncRequest">
+        <wsdl:part element="smconf:SetActivityCalendarAsyncRequest"  name="SetActivityCalendarAsyncRequest" />
+    </wsdl:message>
+    <wsdl:message name="SetActivityCalendarResponse">
+        <wsdl:part element="smconf:SetActivityCalendarResponse" name="SetActivityCalendarResponse" />
+    </wsdl:message>
     
     <wsdl:message name="SetConfigurationObjectRequest">
         <wsdl:part element="smconf:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
@@ -84,13 +90,6 @@
     <wsdl:message name="SetConfigurationObjectResponse">
         <wsdl:part element="smconf:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
         </wsdl:part>
-    </wsdl:message>
-    
-    <wsdl:message name="RetrieveSetActivityCalendarResultRequest">
-        <wsdl:part element="smconf:RetrieveSetActivityCalendarResultRequest"  name="RetrieveSetActivityCalendarResultRequest" />
-    </wsdl:message>
-    <wsdl:message name="RetrieveSetActivityCalendarResultResponse">
-        <wsdl:part element="smconf:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse" />
     </wsdl:message>
 
 	<wsdl:message name="SetAdministrativeStatusRequest">
@@ -179,10 +178,10 @@
             </wsdl:output>
         </wsdl:operation>
 		
-        <wsdl:operation name="RetrieveSetActivityCalendarResult">
-            <wsdl:input message="tns:RetrieveSetActivityCalendarResultRequest" name="RetrieveSetActivityCalendarResultRequest">
+        <wsdl:operation name="GetSetActivityCalendarResponse">
+            <wsdl:input message="tns:SetActivityCalendarAsyncRequest" name="SetActivityCalendarAsyncRequest">
             </wsdl:input>
-            <wsdl:output message="tns:RetrieveSetActivityCalendarResultResponse" name="RetrieveSetActivityCalendarResultResponse">
+            <wsdl:output message="tns:SetActivityCalendarResponse" name="SetActivityCalendarResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -307,14 +306,14 @@
             </wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="RetrieveSetActivityCalendarResult">
+        <wsdl:operation name="GetSetActivityCalendarResponse">
             <soap:operation soapAction="" />
-            <wsdl:input name="RetrieveSetActivityCalendarResultRequest">
+            <wsdl:input name="SetActivityCalendarAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
                 <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
             </wsdl:input>
-            <wsdl:output name="RetrieveSetActivityCalendarResultResponse">
+            <wsdl:output name="SetActivityCalendarResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

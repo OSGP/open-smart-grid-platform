@@ -15,8 +15,11 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidMismatchException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service
 public class MeterResponseDataService {
@@ -50,18 +53,17 @@ public class MeterResponseDataService {
      *             type does not match.
      */
     public MeterResponseData dequeue(final String correlationUid, final Class<?> expectedClassType)
-            throws FunctionalException {
+            throws CorrelationUidException {
 
         final MeterResponseData meterResponseData = this.meterResponseDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
         if (meterResponseData == null) {
             LOGGER.warn("No response data for correlation UID {}", correlationUid);
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                    ComponentType.WS_SMART_METERING);
+            throw new UnknownCorrelationUidException(ComponentType.WS_SMART_METERING);
         }
 
-        if (!expectedClassType.isInstance(meterResponseData.getMessageData())) {
+        if (!this.isValidResponseType(meterResponseData, expectedClassType)) {
             /**
              * Return null if data is not of the expected type. The Meter
              * response data will not be removed, so it will be available for
@@ -73,25 +75,40 @@ public class MeterResponseDataService {
             LOGGER.warn("Incorrect type of response data: {} for correlation UID: {}", warningResultClassType,
                     meterResponseData.getCorrelationUid());
 
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING);
+            throw new CorrelationUidMismatchException(ComponentType.WS_SMART_METERING);
         }
 
         this.remove(meterResponseData);
         return meterResponseData;
     }
 
-    public MeterResponseData dequeue(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeue(final String correlationUid) throws UnknownCorrelationUidException {
         final MeterResponseData meterResponseData = this.meterResponseDataRepository
                 .findSingleResultByCorrelationUid(correlationUid);
 
         if (meterResponseData == null) {
             LOGGER.warn("No response data for correlation UID {}", correlationUid);
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_CORRELATION_UID,
-                    ComponentType.WS_SMART_METERING);
+            throw new UnknownCorrelationUidException(ComponentType.WS_SMART_METERING);
         }
 
         this.remove(meterResponseData);
         return meterResponseData;
+    }
+
+    /**
+     * MeterResponseData is valid when MeterResponseData message data type is
+     * equal to the expected type OR The response message result type is NOT_OK,
+     * so the message data will be exception information.
+     *
+     * @param meterResponseData
+     *            meter response data.
+     * @param expectedClassType
+     *            expected class
+     * @return is valid.
+     */
+    private boolean isValidResponseType(final MeterResponseData meterResponseData, final Class<?> expectedClassType) {
+        return expectedClassType.isInstance(meterResponseData.getMessageData())
+                || meterResponseData.getResultType().equals(ResponseMessageResultType.NOT_OK);
     }
 
     private void remove(final MeterResponseData meterResponseData) {

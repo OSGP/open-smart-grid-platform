@@ -25,6 +25,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotificati
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
 @Service(value = "wsSmartMeteringConfigurationService")
 @Validated
@@ -104,8 +105,7 @@ public class ConfigurationService {
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SpecialDaysRequest requestData)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SpecialDaysRequest requestData) {
 
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -122,13 +122,13 @@ public class ConfigurationService {
         return correlationUid;
     }
 
-    public MeterResponseData dequeueSetSpecialDaysResponse(final String correlationUid) throws FunctionalException {
+    public MeterResponseData dequeueSetSpecialDaysResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData) {
 
         LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -146,13 +146,12 @@ public class ConfigurationService {
     }
 
     public MeterResponseData dequeueSetConfigurationObjectResponse(final String correlationUid)
-            throws FunctionalException {
+            throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches) {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -170,8 +169,7 @@ public class ConfigurationService {
     }
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar) {
 
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -188,21 +186,8 @@ public class ConfigurationService {
         return correlationUid;
     }
 
-    /**
-     * @param organisationIdentification
-     * @param deviceIdentification
-     * @param alarmSwitches
-     * @throws FunctionalException
-     */
-    public String setAlarmNotifications(final String organisationIdentification, final String deviceIdentification,
-            final AlarmNotifications alarmSwitches) throws FunctionalException {
-        return this
-                .enqueueSetAlarmNotificationsRequest(organisationIdentification, deviceIdentification, alarmSwitches);
-    }
-
-    public String setActivityCalendar(final String organisationIdentification, final String deviceIdentification,
-            final ActivityCalendar activityCalendar) throws FunctionalException {
-        return this.enqueueSetActivityCalendarRequest(organisationIdentification, deviceIdentification,
-                activityCalendar);
+    public MeterResponseData dequeueSetActivityCalendarResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
     }
 }
