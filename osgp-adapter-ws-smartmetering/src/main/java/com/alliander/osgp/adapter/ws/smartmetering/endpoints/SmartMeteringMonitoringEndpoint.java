@@ -95,7 +95,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
             final AsyncResponse response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
-                    : new PeriodicMeterReadsGasAsyncResponse();
+            : new PeriodicMeterReadsGasAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             return response;
@@ -119,11 +119,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService
                     .dequeuePeriodicMeterReadsResponse(request.getCorrelationUid());
 
-            final PeriodicMeterReadsResponse response = this.monitoringMapper.map(meterResponseData.getMessageData(),
+            return this.monitoringMapper.map(meterResponseData.getMessageData(),
                     com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse.class);
-
-            return response;
-
         } catch (final Exception e) {
             throw this.handleRetrieveException(e, request, organisationIdentification);
         }
@@ -141,11 +138,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService
                     .dequeuePeriodicMeterReadsGasResponse(request.getCorrelationUid());
 
-            final PeriodicMeterReadsGasResponse response = this.monitoringMapper.map(
-                    meterResponseData.getMessageData(),
+            return this.monitoringMapper.map(meterResponseData.getMessageData(),
                     com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse.class);
-
-            return response;
         } catch (final Exception e) {
             throw this.handleRetrieveException(e, request, organisationIdentification);
         }
@@ -199,9 +193,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     organisationIdentification, deviceIdentification, requestValueObject);
 
             final AsyncResponse asyncResponse = gas ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                    .createActualMeterReadsGasAsyncResponse()
-                    : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-                            .createActualMeterReadsAsyncResponse();
+            .createActualMeterReadsGasAsyncResponse()
+            : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
+            .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
             return asyncResponse;
@@ -226,10 +220,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService.dequeueActualMeterReadsResponse(request
                     .getCorrelationUid());
 
-            final ActualMeterReadsResponse response = this.monitoringMapper.map(meterResponseData.getMessageData(),
-                    ActualMeterReadsResponse.class);
-
-            return response;
+            return this.monitoringMapper.map(meterResponseData.getMessageData(), ActualMeterReadsResponse.class);
         } catch (final Exception e) {
             throw this.handleRetrieveException(e, request, organisationIdentification);
         }
@@ -244,13 +235,10 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         LOGGER.debug("Incoming ActualMeterReadsGasAsyncRequest for meter: {}", request.getDeviceIdentification());
 
         try {
-            ActualMeterReadsGasResponse response = new ActualMeterReadsGasResponse();
             final MeterResponseData meterResponseData = this.monitoringService
                     .dequeueActualMeterReadsGasResponse(request.getCorrelationUid());
 
-            response = this.monitoringMapper.map(meterResponseData.getMessageData(), ActualMeterReadsGasResponse.class);
-
-            return response;
+            return this.monitoringMapper.map(meterResponseData.getMessageData(), ActualMeterReadsGasResponse.class);
         } catch (final Exception e) {
             throw this.handleRetrieveException(e, request, organisationIdentification);
         }
