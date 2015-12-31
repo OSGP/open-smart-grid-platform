@@ -5,7 +5,7 @@ package com.alliander.osgp.shared.exceptionhandling;
  * to the expected (type of) data.
  *
  */
-public class CorrelationUidMismatchException extends FunctionalException {
+public class CorrelationUidMismatchException extends CorrelationUidException {
 
     private static final String MESSAGE = "CorrelationUid does not match any data of the requested type.";
     private static final long serialVersionUID = -2029350937138219841L;
