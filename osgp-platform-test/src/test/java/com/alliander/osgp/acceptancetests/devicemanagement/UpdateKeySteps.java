@@ -214,7 +214,7 @@ public class UpdateKeySteps {
         LOGGER.info("THEN: \"the device {} should not be updated with the invalid key {}\".", device, key);
 
         try {
-            verify(this.deviceRepositoryMock, timeout(10000).times(0)).save(any(Device.class));
+            verify(this.oslpDeviceRepositoryMock, timeout(10000).times(0)).save(any(OslpDevice.class));
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             return false;
