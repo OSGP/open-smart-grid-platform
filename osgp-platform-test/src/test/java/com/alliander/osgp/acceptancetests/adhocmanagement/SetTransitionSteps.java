@@ -9,7 +9,7 @@ package com.alliander.osgp.acceptancetests.adhocmanagement;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -207,7 +207,7 @@ public class SetTransitionSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     // === WHEN ===
@@ -217,12 +217,6 @@ public class SetTransitionSteps {
 
         try {
             this.setTransitionAsyncResponse = this.adHocManagementEndpoint.setTransition(ORGANISATION_ID, this.request);
-
-            // Add sleep to enable queue processing
-            for (int i = 0; i < 1000; i++) {
-                Thread.sleep(1);
-            }
-
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -261,7 +255,7 @@ public class SetTransitionSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
@@ -285,7 +279,7 @@ public class SetTransitionSteps {
 
         try {
             final ArgumentCaptor<ResponseMessage> argument = ArgumentCaptor.forClass(ResponseMessage.class);
-            verify(this.webServiceResponseMessageSenderMock, times(1)).send(argument.capture());
+            verify(this.webServiceResponseMessageSenderMock, timeout(10000).times(1)).send(argument.capture());
 
             final String expected = result.equals("NULL") ? null : result;
             final String actual = argument.getValue().getResult().getValue();
@@ -307,7 +301,7 @@ public class SetTransitionSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpRequest = argument.getValue();
@@ -405,7 +399,6 @@ public class SetTransitionSteps {
         LOGGER.info("WHEN: \"the set transition request is received\".");
 
         try {
-
             this.response = this.adHocManagementEndpoint.getSetTransitionResponse(ORGANISATION_ID,
                     this.setTransitionAsyncRequest);
 
@@ -450,8 +443,8 @@ public class SetTransitionSteps {
     // === Private methods ===
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.oslpDeviceRepositoryMock,
-                this.webServiceResponseMessageSenderMock, this.channelMock });
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock,
+                this.oslpDeviceRepositoryMock, this.webServiceResponseMessageSenderMock, this.channelMock });
 
         this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService,
                 new AdHocManagementMapper());

@@ -9,8 +9,7 @@ package com.alliander.osgp.acceptancetests.deviceinstallation;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -167,7 +166,7 @@ public class RegisterDeviceSteps {
     // === GIVEN ===
     @DomainStep("a valid register device OSLP message")
     public void givenAValidRegisterDeviceRequest() throws NoSuchAlgorithmException, InvalidKeySpecException,
-            IOException {
+    IOException {
         LOGGER.info("GIVEN: \"a valid register device OSLP message\".");
 
         this.setup();
@@ -254,8 +253,6 @@ public class RegisterDeviceSteps {
         try {
             this.oslpSecurityHandler.messageReceived(this.channelHandlerContextMock, this.messageEvent);
             this.oslpChannelHandler.messageReceived(this.channelHandlerContextMock, this.messageEvent);
-
-            Thread.sleep(250);
         } catch (final Throwable t) {
             LOGGER.error("Caught exception: {}", t);
         }
@@ -267,8 +264,8 @@ public class RegisterDeviceSteps {
         LOGGER.info("THEN: \"the device should be updated with new deviceUID, IP address and device type\".");
 
         try {
-            verify(this.oslpDeviceRepositoryMock, atLeastOnce()).save(any(OslpDevice.class));
-            verify(this.deviceRepositoryMock, atLeastOnce()).save(any(Device.class));
+            verify(this.oslpDeviceRepositoryMock, timeout(10000).atLeastOnce()).save(any(OslpDevice.class));
+            verify(this.deviceRepositoryMock, timeout(10000).atLeastOnce()).save(any(Device.class));
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;
@@ -284,7 +281,7 @@ public class RegisterDeviceSteps {
                 .ofDeviceType(DeviceType.SSLD.toString()).build();
 
         try {
-            verify(this.deviceRepositoryMock, times(1)).save(eq(expectedDevice));
+            verify(this.deviceRepositoryMock, timeout(10000).times(1)).save(eq(expectedDevice));
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;
@@ -296,7 +293,7 @@ public class RegisterDeviceSteps {
     public boolean thenTheDeviceShouldNotBeCreated() {
         LOGGER.info("THEN: \"the device should not be created for security reasons\".");
         try {
-            verify(this.deviceRepositoryMock, times(0)).save(any(Device.class));
+            verify(this.deviceRepositoryMock, timeout(10000).times(0)).save(any(Device.class));
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;
@@ -309,7 +306,7 @@ public class RegisterDeviceSteps {
         LOGGER.info("THEN: \"the network address for the other device should be cleared\".");
         try {
             Assert.assertNull(this.anotherDevice.getNetworkAddress());
-            verify(this.deviceRepositoryMock, times(1)).save(eq(this.anotherDevice));
+            verify(this.deviceRepositoryMock, timeout(10000).times(1)).save(eq(this.anotherDevice));
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;
@@ -326,7 +323,7 @@ public class RegisterDeviceSteps {
         final ArgumentCaptor<OslpEnvelope> responseCaptor = ArgumentCaptor.forClass(OslpEnvelope.class);
 
         try {
-            verify(this.channelMock, times(1)).write(responseCaptor.capture());
+            verify(this.channelMock, timeout(10000).times(1)).write(responseCaptor.capture());
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;
@@ -346,7 +343,7 @@ public class RegisterDeviceSteps {
         LOGGER.info("THEN: \"the register device request should not return a response\".");
 
         try {
-            verify(this.channelMock, times(0)).write(any(Device.class));
+            verify(this.channelMock, timeout(10000).times(0)).write(any(Device.class));
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;
