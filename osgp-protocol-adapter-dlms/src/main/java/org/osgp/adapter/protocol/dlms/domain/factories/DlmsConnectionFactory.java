@@ -22,6 +22,10 @@ public class DlmsConnectionFactory {
     private final static int RESPONSE_TIMEOUT = 60000;
 
     // TODO REPLACE HARD-CODED IP-ADDRESS!!!
+    // Landis & Gyr
+    // private final static String REMOTE_HOST = "89.200.91.92";
+
+    // Kaifa E9998000014122714
     private final static String REMOTE_HOST = "89.200.96.223";
 
     /**
