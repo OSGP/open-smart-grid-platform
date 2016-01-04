@@ -13,8 +13,8 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 
 public class AdministrativeStatusConverter
-extends
-BidirectionalConverter<AdministrativeStatusType, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType> {
+        extends
+        BidirectionalConverter<AdministrativeStatusType, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType convertTo(
