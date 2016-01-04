@@ -8,10 +8,9 @@
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Random;
 
 import org.openmuc.jdlms.LnClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
@@ -27,7 +26,6 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -40,8 +38,6 @@ public class MonitoringService extends DlmsApplicationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
-    private static final Random generator = new Random();
-
     @Autowired
     private DomainHelperService domainHelperService;
 
@@ -53,6 +49,9 @@ public class MonitoringService extends DlmsApplicationService {
 
     @Autowired
     private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+
+    @Autowired
+    private GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
 
     @Autowired
     private GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
@@ -116,16 +115,14 @@ public class MonitoringService extends DlmsApplicationService {
             if (actualMeterReadsRequest.isGas()) {
                 response = this.actualMeterReadsGasCommandExecutor.execute(conn, actualMeterReadsRequest);
             } else {
-                // mock for now
-                response = new MeterReads(new Date(), this.getRandomPositive(), this.getRandomPositive(),
-                        this.getRandomPositive(), this.getRandomPositive());
+                response = this.actualMeterReadsCommandExecutor.execute(conn, actualMeterReadsRequest);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     response);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
+            LOGGER.error("Unexpected exception during requestActualMeterReads", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
@@ -168,16 +165,4 @@ public class MonitoringService extends DlmsApplicationService {
             }
         }
     }
-
-    private long getRandomPositive() {
-        long randomLong = generator.nextLong();
-
-        // if the random long returns Long.MIN_VALUE, the absolute of that is
-        // not a long.
-        if (randomLong == Long.MIN_VALUE) {
-            randomLong += 1;
-        }
-        return Math.abs(randomLong);
-    }
-
 }

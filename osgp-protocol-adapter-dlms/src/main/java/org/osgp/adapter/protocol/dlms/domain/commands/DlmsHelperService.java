@@ -14,16 +14,23 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelperService.class);
 
     private static final String YEAR_MILLENIAL_PART = "20";
     private static final String LAST_DAY_OF_MONTH = "FE";
@@ -32,6 +39,47 @@ public class DlmsHelperService {
     private static final String DAYLIGHT_SAVINGS_END = "FD";
     private static final String NOT_SPECIFIED = "FF";
     public static final int MILLISECONDS_PER_MINUTE = 60000;
+
+    private void checkResultCode(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        final AccessResultCode resultCode = getResult.resultCode();
+        LOGGER.debug(description + " - AccessResultCode: {}", resultCode);
+        if (resultCode != AccessResultCode.SUCCESS) {
+            throw new ProtocolAdapterException("No success retrieving " + description + ": AccessResultCode = "
+                    + resultCode);
+        }
+    }
+
+    public Long readLong(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        final DataObject resultData = getResult.resultData();
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isNumber()) {
+            LOGGER.error("Unexpected ResultData for Long value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Number, got: " + resultData.choiceIndex());
+        }
+        return ((Number) resultData.value()).longValue();
+    }
+
+    public DateTime readDateTime(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        final DataObject resultData = getResult.resultData();
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (resultData.isByteArray()) {
+            return this.fromDateTimeValue((byte[]) resultData.value());
+        } else if (resultData.isCosemDateFormat()) {
+            return this.fromDateTimeValue(((CosemDateTime) resultData.value()).encode());
+        } else {
+            LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of ByteArray or CosemDateFormat, got: "
+                    + resultData.choiceIndex());
+        }
+    }
 
     public DateTime fromDateTimeValue(final byte[] dateTimeValue) {
 
@@ -51,6 +99,16 @@ public class DlmsHelperService {
 
         return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
                 hundredthsOfSecond * 10, DateTimeZone.forOffsetMillis(-deviation * MILLISECONDS_PER_MINUTE));
+    }
+
+    public DataObject dateAsDataObjectOctetString(final DateTime dateTime) {
+
+        final Integer h = dateTime.getHourOfDay();
+        final Integer m = dateTime.getMinuteOfHour();
+        final Integer s = dateTime.getSecondOfMinute();
+
+        final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), (byte) 0 };
+        return DataObject.newOctetStringData(ba);
     }
 
     public DataObject asDataObject(final DateTime dateTime) {
@@ -225,8 +283,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
