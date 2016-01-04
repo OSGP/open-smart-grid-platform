@@ -312,11 +312,11 @@ public class DeviceManagementEndpoint {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 request.getDeviceIdentification());
 
-        final AsyncResponse AsyncResponse = new AsyncResponse();
-        AsyncResponse.setCorrelationUid(correlationUid);
-        AsyncResponse.setDeviceId(request.getDeviceIdentification());
+        final AsyncResponse asyncResponse = new AsyncResponse();
+        asyncResponse.setCorrelationUid(correlationUid);
+        asyncResponse.setDeviceId(request.getDeviceIdentification());
 
-        updateDeviceResponse.setAsyncResponse(AsyncResponse);
+        updateDeviceResponse.setAsyncResponse(asyncResponse);
 
         return updateDeviceResponse;
     }
