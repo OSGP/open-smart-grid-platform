@@ -263,14 +263,7 @@ public class SetRebootSteps {
         LOGGER.info("WHEN: \"the set reboot request is received\".");
 
         try {
-
             this.setRebootAsyncResponse = this.adHocManagementEndpoint.setReboot(ORGANISATION_ID, this.request);
-
-            // Add sleep to enable queue processing
-            for (int i = 0; i < 1000; i++) {
-                Thread.sleep(1);
-            }
-
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             this.throwable = t;
@@ -367,7 +360,7 @@ public class SetRebootSteps {
 
         try {
             final ArgumentCaptor<OslpEnvelope> argument = ArgumentCaptor.forClass(OslpEnvelope.class);
-            verify(this.channelMock, timeout(1000).times(count)).write(argument.capture());
+            verify(this.channelMock, timeout(10000).times(count)).write(argument.capture());
 
             if (isMessageSent) {
                 this.oslpResponse = argument.getValue();
