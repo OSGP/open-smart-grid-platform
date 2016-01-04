@@ -22,24 +22,25 @@ function getVersionFromPom
   cat $POM | awk '  
   BEGIN { layer=0 }
   {
-    print $0
+#    print $0
     if (layer == 1 && $0 ~ /version/ ) {
-      print $0
-      if ( $0 ~ /[ 	]*<version>.+<\/version>[ ]*$/ ) {
-        #Version found
+#      print $0
+      if ( $0 ~ /^[	 ]*<version>.+<\/version>/ ) {
+#        print "Version found "$0
         line = $0
         gsub("<[/]*version>", "", line)
         gsub(" ", "", line)
+        gsub("	", "", line)
         print line
       }
     }
-    if ( $0 ~ /^[ 	]*<[^\/!][^\>]+>[ ]*$/ ) {
+    if ( $0 ~ /^[ 	]*<[^\/!\?][^\>]+>[ ]*$/ || $0 ~ /^[ 	]*<project/ ) {
       layer++
-      print "Opening "layer
+#      print "Opening "layer
     }
     if ( $0 ~ /^[ 	]*<\/.+>[ ]*$/ ) {
       layer--
-      print "Closing "layer
+#      print "Closing "layer
     }
   }
   ' 
@@ -62,16 +63,21 @@ function AddOrReplaceVal
 }
 
 SHARED_VAR="SHARED_VERSION"
-getVersionFromPom ../Shared/pom.xml
+#getVersionFromPom ../Shared/pom.xml
 SHARED_VAL=`getVersionFromPom ../Shared/pom.xml`
 AddOrReplaceVal $SHARED_VAR $SHARED_VAL
 
 PLATFORM_VAR="PLATFORM_VERSION"
-getVersionFromPom ../Platform/pom.xml
+#getVersionFromPom ../Platform/pom.xml
 PLATFORM_VAL=`getVersionFromPom ../Platform/pom.xml`
 AddOrReplaceVal $PLATFORM_VAR $PLATFORM_VAL
 
 PROTOCOL_ADAPTER_OSLP_VAR="PROTOCOL_ADAPTER_OSLP_VERSION"
-getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml
+#getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml
 PROTOCOL_ADAPTER_OSLP_VAL=`getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml`
 AddOrReplaceVal $PROTOCOL_ADAPTER_OSLP_VAR $PROTOCOL_ADAPTER_OSLP_VAL
+
+echo ""
+echo "Printing current values $CONTENT_FILE"
+grep define $CONTENT_FILE | grep VERSION
+
