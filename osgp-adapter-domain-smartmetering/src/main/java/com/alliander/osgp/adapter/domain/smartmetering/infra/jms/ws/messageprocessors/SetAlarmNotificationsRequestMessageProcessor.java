@@ -22,10 +22,6 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-/**
- * @author OSGP
- *
- */
 @Component("domainSmartmeteringSetAlarmNotificationsRequestMessageProcessor")
 public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
@@ -44,7 +40,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)

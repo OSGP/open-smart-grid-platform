@@ -11,10 +11,6 @@ import java.util.List;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 
-/**
- * @author OSGP
- *
- */
 public interface DeviceInterface {
 
     String getDeviceIdentification();

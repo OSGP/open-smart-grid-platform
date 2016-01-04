@@ -7,10 +7,6 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
-/**
- * @author OSGP
- *
- */
 public interface LocationInformationInterface {
 
     String getContainerPostalCode();

@@ -12,10 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 
-/**
- * @author OSGP
- *
- */
 @Repository
 public interface SmartMeteringDeviceRepository extends JpaRepository<SmartMeteringDevice, Long> {
     SmartMeteringDevice findByDeviceIdentification(String deviceIdentification);

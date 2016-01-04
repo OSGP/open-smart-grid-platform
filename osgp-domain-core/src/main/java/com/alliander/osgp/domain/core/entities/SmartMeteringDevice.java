@@ -20,10 +20,6 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
-/**
- * @author OSGP
- *
- */
 @Entity
 public class SmartMeteringDevice extends AbstractEntity implements DeviceInterface, LocationInformationInterface {
 

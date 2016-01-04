@@ -9,10 +9,6 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.net.InetAddress;
 
-/**
- * @author OSGP
- *
- */
 public interface NetworkAddressInterface {
 
     InetAddress getNetworkAddress();

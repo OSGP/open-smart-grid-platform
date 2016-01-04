@@ -14,8 +14,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
- * 
- * @author OSGP
+ *
  * @deprecated temporary GAS meter administration, to be refactored
  */
 @Entity

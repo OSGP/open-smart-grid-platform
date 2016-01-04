@@ -14,12 +14,11 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
+import com.alliander.osgp.domain.core.validation.Identification;
 
 /**
  *
- * @author osgp
  * @deprecated temporary GAS meter administration, to be refactored
  */
 @Service

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 
 /**
- * @author OSGP
  * @deprecated temporary GAS meter administration, to be refactored
  */
 @Repository

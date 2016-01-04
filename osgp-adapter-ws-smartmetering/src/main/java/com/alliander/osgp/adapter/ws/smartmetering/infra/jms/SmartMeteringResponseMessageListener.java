@@ -22,10 +22,6 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Notifica
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 
-/**
- * @author OSGP
- *
- */
 public class SmartMeteringResponseMessageListener implements MessageListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseMessageListener.class);
