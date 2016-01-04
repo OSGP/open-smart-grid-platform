@@ -25,13 +25,8 @@ BidirectionalConverter<AdministrativeStatusType, com.alliander.osgp.adapter.ws.s
             return null;
         }
 
-        if (source == AdministrativeStatusType.OFF) {
-            return com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF;
-        } else if (source == AdministrativeStatusType.OFF) {
-            return com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON;
-        } else {
-            return com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.UNDEFINED;
-        }
+        return com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType
+                .fromValue(source.name());
     }
 
     @Override
@@ -43,13 +38,7 @@ BidirectionalConverter<AdministrativeStatusType, com.alliander.osgp.adapter.ws.s
             return null;
         }
 
-        if (source == com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF) {
-            return AdministrativeStatusType.OFF;
-        } else if (source == com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF) {
-            return AdministrativeStatusType.ON;
-        } else {
-            return AdministrativeStatusType.UNDEFINED;
-        }
+        return AdministrativeStatusType.fromValue(source.name());
     }
 
 }

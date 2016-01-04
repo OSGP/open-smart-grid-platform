@@ -25,14 +25,14 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("domainSmartMeteringGetAdministrationStateResponseMessageProcessor")
-public class GetAdministrationStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrationStateResponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStateResponseMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public GetAdministrationStateResponseMessageProcessor() {
+    public GetAdministrativeStateResponseMessageProcessor() {
         super(DeviceFunction.GET_ADMINISTRATIVE_STATUS);
     }
 
