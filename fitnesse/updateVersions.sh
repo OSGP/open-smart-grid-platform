@@ -18,7 +18,7 @@ function getVersionFromPom
     exit 1
   fi
 
-  #cat $POM | grep "<version>" | head -1 | sed "s#<[/]*version>##g;s# ##g"
+# Commented AWK code is for debugging only
   cat $POM | awk '  
   BEGIN { layer=0 }
   {
@@ -63,17 +63,14 @@ function AddOrReplaceVal
 }
 
 SHARED_VAR="SHARED_VERSION"
-#getVersionFromPom ../Shared/pom.xml
 SHARED_VAL=`getVersionFromPom ../Shared/pom.xml`
 AddOrReplaceVal $SHARED_VAR $SHARED_VAL
 
 PLATFORM_VAR="PLATFORM_VERSION"
-#getVersionFromPom ../Platform/pom.xml
 PLATFORM_VAL=`getVersionFromPom ../Platform/pom.xml`
 AddOrReplaceVal $PLATFORM_VAR $PLATFORM_VAL
 
 PROTOCOL_ADAPTER_OSLP_VAR="PROTOCOL_ADAPTER_OSLP_VERSION"
-#getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml
 PROTOCOL_ADAPTER_OSLP_VAL=`getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml`
 AddOrReplaceVal $PROTOCOL_ADAPTER_OSLP_VAR $PROTOCOL_ADAPTER_OSLP_VAL
 
