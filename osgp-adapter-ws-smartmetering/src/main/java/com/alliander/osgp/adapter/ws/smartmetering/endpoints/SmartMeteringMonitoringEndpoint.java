@@ -58,6 +58,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     private MonitoringMapper monitoringMapper;
 
     public SmartMeteringMonitoringEndpoint() {
+        // Empty constructor
     }
 
     @PayloadRoot(localPart = "PeriodicMeterReadsRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -95,7 +96,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
             final AsyncResponse response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
-            : new PeriodicMeterReadsGasAsyncResponse();
+                    : new PeriodicMeterReadsGasAsyncResponse();
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
             return response;
@@ -193,9 +194,9 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     organisationIdentification, deviceIdentification, requestValueObject);
 
             final AsyncResponse asyncResponse = gas ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-            .createActualMeterReadsGasAsyncResponse()
-            : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
-            .createActualMeterReadsAsyncResponse();
+                    .createActualMeterReadsGasAsyncResponse()
+                    : new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
+                            .createActualMeterReadsAsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(deviceIdentification);
             return asyncResponse;

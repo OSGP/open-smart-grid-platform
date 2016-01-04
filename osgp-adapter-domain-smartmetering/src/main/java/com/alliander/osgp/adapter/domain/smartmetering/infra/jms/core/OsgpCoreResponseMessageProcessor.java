@@ -144,7 +144,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         }
     }
 
-    abstract protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
+    protected abstract void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException);
 
