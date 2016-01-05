@@ -13,8 +13,10 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
@@ -69,6 +71,12 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
+
+    @Autowired
+    private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
+
+    @Autowired
+    private GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
@@ -171,21 +179,36 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestSetAdministration");
 
-        LOGGER.info("******************************************************");
-        LOGGER.info(" SetAdministrativeStatus *****************************");
-        LOGGER.info("******************************************************");
-        LOGGER.info("DeviceIdentification = {} ", messageMetadata.getDeviceIdentification());
-        LOGGER.info("Set status to = {} ", administrativeStatusType.value());
-        LOGGER.info("******************************************************");
-
+        LnClientConnection conn = null;
+        DlmsDevice device = null;
         try {
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during set Administration status", e);
+            final String deviceIdentification = messageMetadata.getDeviceIdentification();
+            device = this.domainHelperService.findDlmsDevice(deviceIdentification);
 
+            LOGGER.info("Device for Set Administrative Status is: {}", device);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+            this.setAdministrativeStatusCommandExecutor.execute(conn, administrativeStatusType);
+
+            final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn,
+                    administrativeStatusType);
+            if (AccessResultCode.SUCCESS != accessResultCode) {
+                throw new ProtocolAdapterException("AccessResultCode for set administrative status was not SUCCESS: "
+                        + accessResultCode);
+            }
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setAdministrativeStatus", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.close();
+            }
         }
 
     }
@@ -193,25 +216,30 @@ public class ConfigurationService extends DlmsApplicationService {
     public void requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
             final DeviceResponseMessageSender responseMessageSender) {
 
-        this.logStart(LOGGER, messageMetadata, "requestGetAdministration");
+        this.logStart(LOGGER, messageMetadata, "requestGetAdministrativeStatus");
 
-        LOGGER.info("******************************************************");
-        LOGGER.info(" GetAdministrativeStatus *****************************");
-        LOGGER.info("******************************************************");
-        LOGGER.info(" DeviceIdentification = {} ", messageMetadata.getDeviceIdentification());
-        LOGGER.info("******************************************************");
-
+        LnClientConnection conn = null;
         try {
-            // dummy response data!
-            final AdministrativeStatusType administrativeStatusType = AdministrativeStatusType.OFF;
+            final DlmsDevice device = this.domainHelperService
+                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final AdministrativeStatusType administrativeStatusType = this.getAdministrativeStatusCommandExecutor
+                    .execute(conn, null);
+
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     administrativeStatusType);
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during get Administration status", e);
 
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during getAdministrativeStatus", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
