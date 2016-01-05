@@ -37,6 +37,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Transactional(value = "transactionManager")
 public class MonitoringService {
 
+    private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG = "Device Response not ok. Unexpected Exception";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
     @Autowired
@@ -98,7 +100,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -125,7 +127,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -177,7 +179,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -197,7 +199,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -237,7 +239,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 

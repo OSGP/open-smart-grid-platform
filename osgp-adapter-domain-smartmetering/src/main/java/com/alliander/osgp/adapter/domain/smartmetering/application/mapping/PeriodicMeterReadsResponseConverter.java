@@ -18,11 +18,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 
-//import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode;
-
 public class PeriodicMeterReadsResponseConverter
-        extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+extends
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
 
     @Override
     public PeriodicMeterReadContainer convertTo(final PeriodicMeterReadsContainer source,
