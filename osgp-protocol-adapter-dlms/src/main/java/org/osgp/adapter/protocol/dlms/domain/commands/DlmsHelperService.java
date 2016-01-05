@@ -83,6 +83,18 @@ public class DlmsHelperService {
         }
     }
 
+    public DateTime convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
+        if (object.isByteArray()) {
+            return this.fromDateTimeValue((byte[]) object.value());
+        } else if (object.isCosemDateFormat()) {
+            return this.fromDateTimeValue(((CosemDateTime) object.value()).ocletString());
+        } else {
+            LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(object));
+            throw new ProtocolAdapterException("Expected ResultData of ByteArray or CosemDateFormat, got: "
+                    + object.choiceIndex());
+        }
+    }
+
     public DateTime fromDateTimeValue(final byte[] dateTimeValue) {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
