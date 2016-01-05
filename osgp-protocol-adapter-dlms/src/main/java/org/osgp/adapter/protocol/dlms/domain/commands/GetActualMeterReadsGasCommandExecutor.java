@@ -10,13 +10,14 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.GetRequestParameter;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,20 +44,20 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MeterReadsGas execute(final ClientConnection conn, final ActualMeterReadsQuery actualMeterReadsRequest)
-            throws IOException, ProtocolAdapterException {
+    public MeterReadsGas execute(final LnClientConnection conn, final ActualMeterReadsQuery actualMeterReadsRequest)
+            throws IOException, TimeoutException, ProtocolAdapterException {
 
-        final GetRequestParameter mbusValue = new GetRequestParameter(CLASS_ID_MBUS,
+        final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
+
+        LOGGER.debug("Retrieving current MBUS master value for ObisCode: {}", obisCodeMbusMasterValue);
+
+        final AttributeAddress mbusValue = new AttributeAddress(CLASS_ID_MBUS,
                 this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_VALUE);
 
-        LOGGER.debug("Retrieving current MBUS master value for class id: {}, obis code: {}, attribute id: {}",
-                mbusValue.classId(), mbusValue.obisCode(), mbusValue.attributeId());
+        LOGGER.debug("Retrieving current MBUS master capture time for ObisCode: {}", obisCodeMbusMasterValue);
 
-        final GetRequestParameter mbusTime = new GetRequestParameter(CLASS_ID_MBUS,
-                this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_TIME);
-
-        LOGGER.debug("Retrieving current MBUS master capture time for class id: {}, obis code: {}, attribute id: {}",
-                mbusTime.classId(), mbusTime.obisCode(), mbusTime.attributeId());
+        final AttributeAddress mbusTime = new AttributeAddress(CLASS_ID_MBUS, obisCodeMbusMasterValue,
+                ATTRIBUTE_ID_TIME);
 
         final List<GetResult> getResultList = conn.get(mbusValue, mbusTime);
 
@@ -64,13 +65,13 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
 
         GetResult getResult = getResultList.get(0);
         AccessResultCode resultCode = getResult.resultCode();
-        LOGGER.debug("AccessResultCode: {}({})", resultCode.name(), resultCode.value());
+        LOGGER.debug("AccessResultCode: {}", resultCode.name());
         final DataObject value = getResult.resultData();
         LOGGER.debug(this.dlmsHelperService.getDebugInfo(value));
 
         getResult = getResultList.get(1);
         resultCode = getResult.resultCode();
-        LOGGER.debug("AccessResultCode: {}({})", resultCode.name(), resultCode.value());
+        LOGGER.debug("AccessResultCode: {}", resultCode.name());
         final DataObject time = getResult.resultData();
         LOGGER.debug(this.dlmsHelperService.getDebugInfo(time));
 
@@ -84,7 +85,7 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
                     "No GetResult received while retrieving current MBUS master capture time.");
         }
 
-        if (getResultList.size() > 2) {
+        if (getResultList.size() != 2) {
             LOGGER.info("Expected 2 GetResult while retrieving current MBUS master capture time, got "
                     + getResultList.size());
         }

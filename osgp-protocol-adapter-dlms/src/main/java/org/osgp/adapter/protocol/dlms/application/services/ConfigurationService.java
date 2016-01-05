@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
@@ -75,7 +75,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestSpecialDays");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
             // The Special days towards the Smart Meter
             final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
@@ -106,7 +106,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -120,7 +120,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestSetConfiguration");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
             // Configuration Object towards the Smart Meter
             final ConfigurationObject configurationObject = setConfigurationObjectRequest
@@ -159,7 +159,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -220,7 +220,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "setActivityCalendar");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         DlmsDevice device = null;
         try {
             final String deviceIdentification = messageMetadata.getDeviceIdentification();
@@ -247,7 +247,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
                 conn.close();
             }
@@ -260,6 +260,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
 
+        LnClientConnection conn = null;
         try {
 
             LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
@@ -267,19 +268,13 @@ public class ConfigurationService extends DlmsApplicationService {
             final DlmsDevice device = this.domainHelperService
                     .findDlmsDevice(messageMetadata.getDeviceIdentification());
 
-            final ClientConnection conn = this.dlmsConnectionFactory.getConnection(device);
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
-            try {
-                final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
-                        alarmNotifications);
-                if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                    throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
-                            + accessResultCode);
-                }
-            } finally {
-                if (conn != null && conn.isConnected()) {
-                    conn.close();
-                }
+            final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
+                    alarmNotifications);
+            if (AccessResultCode.SUCCESS != accessResultCode) {
+                throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
+                        + accessResultCode);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
@@ -289,6 +284,10 @@ public class ConfigurationService extends DlmsApplicationService {
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
