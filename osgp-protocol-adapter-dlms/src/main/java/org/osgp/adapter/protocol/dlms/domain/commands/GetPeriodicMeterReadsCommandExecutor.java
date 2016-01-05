@@ -178,8 +178,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         LOGGER.debug("negativeActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(negativeActiveEnergy));
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
-                (Long) positiveActiveEnergy.value(), null, (Long) negativeActiveEnergy.value(), null,
-                amrProfileStatusCode);
+                (long) positiveActiveEnergy.value(), (long) negativeActiveEnergy.value(), amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
@@ -255,8 +254,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
-                (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
-                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value());
+                (long) positiveActiveEnergyTariff1.value(), (long) positiveActiveEnergyTariff2.value(),
+                (long) negativeActiveEnergyTariff1.value(), (long) negativeActiveEnergyTariff2.value());
         periodicMeterReads.add(nextMeterReads);
     }
 
