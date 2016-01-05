@@ -17,13 +17,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
-@Component("domainSmartMeteringGetAdministrationStateResponseMessageProcessor")
-public class GetAdministrationStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainSmartMeteringGetAdministrativeStateResponseMessageProcessor")
+public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public GetAdministrationStateResponseMessageProcessor() {
+    public GetAdministrativeStateResponseMessageProcessor() {
         super(DeviceFunction.GET_ADMINISTRATIVE_STATUS);
     }
 
