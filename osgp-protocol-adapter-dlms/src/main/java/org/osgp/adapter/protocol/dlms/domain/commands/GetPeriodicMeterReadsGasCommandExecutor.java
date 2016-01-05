@@ -236,7 +236,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final int channel,
             final DateTime beginDateTime, final DateTime endDateTime) throws ProtocolAdapterException {
 
-        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(beginDateTime,
                 endDateTime);
 
         final AttributeAddress profileBuffer;
