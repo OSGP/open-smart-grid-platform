@@ -7,6 +7,10 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum EventType {
     EVENTLOG_CLEARED(255),
     POWER_FAILURE(1),
@@ -28,9 +32,29 @@ public enum EventType {
     FIRMWARE_READY_FOR_ACTIVATION(17),
     FIRMWARE_ACTIVATED(18),
     PASSIVE_TARIFF_UPDATED(19),
-    SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE(20);
+    SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE(20),
+    TERMINAL_COVER_REMOVED(40),
+    TERMINAL_COVER_CLOSED(41),
+    STRONG_DC_FIELD_DETECTED(42),
+    NO_STRONG_DC_FIELD_ANYMORE(43),
+    METER_COVER_REMOVED(44),
+    METER_COVER_CLOSED(45),
+    FAILED_LOGIN_ATTEMPT(46),
+    CONFIGURATION_CHANGE(47);
 
     private int value;
+
+    private static final Map<Integer, EventType> lookup = new HashMap<Integer, EventType>();
+
+    static {
+        for (final EventType e : EnumSet.allOf(EventType.class)) {
+            lookup.put(e.getValue(), e);
+        }
+    }
+
+    public static EventType getValue(final int intValue) {
+        return lookup.get(intValue);
+    }
 
     private static final EventType[] VALUES = EventType.values();
 

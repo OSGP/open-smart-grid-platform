@@ -138,6 +138,23 @@
 			<xsd:enumeration value="PASSIVE_TARIFF_UPDATED" />
 			<!-- 20 - Successful Selfcheck after Firmware Update -->
 			<xsd:enumeration value="SUCCESSFUL_SELFCHECK_AFTER_FIRMWARE_UPDATE" />
+			<!-- 40 - Indicates that the terminal cover has been removed -->
+			<xsd:enumeration value="TERMINAL_COVER_REMOVED" />
+			<!-- 41 - Indicates that the terminal cover has been closed -->
+			<xsd:enumeration value="TERMINAL_COVER_CLOSED" />
+			<!-- 42 - Indicates that a strong magnetic DC field has been detected. -->
+			<xsd:enumeration value="STRONG_DC_FIELD_DETECTED" />
+			<!-- 43 - Indicates that the strong magnetic DC field has disappeared. -->
+			<xsd:enumeration value="NO_STRONG_DC_FIELD_ANYMORE" />
+			<!-- 44 - Indicates that the meter cover has been removed. -->
+			<xsd:enumeration value="METER_COVER_REMOVED" />
+			<!-- 45 - Indicates that the meter cover has been closed. -->
+			<xsd:enumeration value="METER_COVER_CLOSED" />
+			<!-- 46 - Indicates that a user tried to gain access with wrong authentication credentials (intrusion detection) -->
+			<xsd:enumeration value="FAILED_LOGIN_ATTEMPT" />
+			<!-- 47 - Indicates that configuration is activated or de-activated after the meter was installed. -->
+			<xsd:enumeration value="CONFIGURATION_CHANGE" />
+			
 		</xsd:restriction>
 	</xsd:simpleType>
 		
