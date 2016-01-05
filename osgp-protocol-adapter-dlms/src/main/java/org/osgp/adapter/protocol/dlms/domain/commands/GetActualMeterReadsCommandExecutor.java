@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 
 @Component()
-public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, MeterReads> {
+public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, ActualMeterReads> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -51,6 +51,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
             new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
             new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
             new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE) };
+
     private static final int INDEX_TIME = 0;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT = 1;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT_RATE_1 = 2;
@@ -63,7 +64,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MeterReads execute(final LnClientConnection conn, final ActualMeterReadsQuery actualMeterReadsQuery)
+    public ActualMeterReads execute(final LnClientConnection conn, final ActualMeterReadsQuery actualMeterReadsQuery)
             throws IOException, TimeoutException, ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isGas()) {
@@ -86,13 +87,11 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
         if (activeEnergyImport == null) {
             throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads +A");
         }
-        LOGGER.info("TODO - add active energy import to meter reads object: " + activeEnergyImport);
         final Long activeEnergyExport = this.dlmsHelperService.readLong(getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT),
                 "Actual Energy Reads -A");
         if (activeEnergyExport == null) {
             throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads -A");
         }
-        LOGGER.info("TODO - add active energy export to meter reads object: " + activeEnergyExport);
         final Long activeEnergyImportRate1 = this.dlmsHelperService.readLong(
                 getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_1), "Actual Energy Reads +A rate 1");
         if (activeEnergyImportRate1 == null) {
@@ -114,8 +113,8 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
             throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads -A rate 2");
         }
 
-        return new MeterReads(time.toDate(), activeEnergyImportRate1, activeEnergyImportRate2, activeEnergyExportRate1,
-                activeEnergyExportRate2);
+        return new ActualMeterReads(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
+                activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2);
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
