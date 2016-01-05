@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -42,7 +42,7 @@ public class AdhocService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "synchronizeTime");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService
@@ -60,7 +60,7 @@ public class AdhocService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }

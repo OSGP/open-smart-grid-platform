@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

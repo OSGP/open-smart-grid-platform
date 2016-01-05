@@ -13,17 +13,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.GetRequestParameter;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -83,8 +84,9 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadsContainer execute(final ClientConnection conn,
-            final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws IOException, ProtocolAdapterException {
+    public PeriodicMeterReadsContainer execute(final LnClientConnection conn,
+            final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws IOException, TimeoutException,
+            ProtocolAdapterException {
 
         final PeriodType periodType;
         final DateTime beginDateTime;
@@ -98,18 +100,10 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     "PeriodicMeterReadsRequestData should contain PeriodType, BeginDate and EndDate.");
         }
 
-        final GetRequestParameter profileBuffer = this.getProfileBuffer(periodType);
-        final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(periodType,
-                beginDateTime, endDateTime);
-        profileBuffer.setAccessSelection(selectiveAccessDescription);
+        final AttributeAddress profileBuffer = this.getProfileBuffer(periodType, beginDateTime, endDateTime);
 
-        LOGGER.debug(
-                "Retrieving current billing period and profiles for class id: {}, obis code: {}, attribute id: {}",
-                profileBuffer.classId(), profileBuffer.obisCode(), profileBuffer.attributeId());
-        if (selectiveAccessDescription != null) {
-            LOGGER.debug("Selective access: selector=" + selectiveAccessDescription.accessSelector() + ", parameter="
-                    + this.dlmsHelperService.getDebugInfo(selectiveAccessDescription.accessParameter()));
-        }
+        LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
+                periodType, beginDateTime, endDateTime);
 
         final List<GetResult> getResultList = conn.get(profileBuffer);
 
@@ -119,7 +113,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
         final GetResult getResult = getResultList.get(0);
         final AccessResultCode resultCode = getResult.resultCode();
-        LOGGER.debug("AccessResultCode: {}({})", resultCode.name(), resultCode.value());
+        LOGGER.debug("AccessResultCode: {}", resultCode.name());
         final DataObject resultData = getResult.resultData();
         LOGGER.debug(this.dlmsHelperService.getDebugInfo(resultData));
         final List<DataObject> bufferedObjectsList = resultData.value();
@@ -271,21 +265,25 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         }
     }
 
-    private GetRequestParameter getProfileBuffer(final PeriodType periodType) throws ProtocolAdapterException {
-        GetRequestParameter profileBuffer;
+    private AttributeAddress getProfileBuffer(final PeriodType periodType, final DateTime beginDateTime,
+            final DateTime endDateTime) throws ProtocolAdapterException {
 
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
+                endDateTime);
+
+        final AttributeAddress profileBuffer;
         switch (periodType) {
         case INTERVAL:
-            profileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING,
-                    ATTRIBUTE_ID_BUFFER);
+            profileBuffer = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING,
+                    ATTRIBUTE_ID_BUFFER, access);
             break;
         case DAILY:
-            profileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING,
-                    ATTRIBUTE_ID_BUFFER);
+            profileBuffer = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING,
+                    ATTRIBUTE_ID_BUFFER, access);
             break;
         case MONTHLY:
-            profileBuffer = new GetRequestParameter(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
-                    ATTRIBUTE_ID_BUFFER);
+            profileBuffer = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
+                    ATTRIBUTE_ID_BUFFER, access);
             break;
         default:
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));

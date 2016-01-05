@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.GetRequestParameter;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.RequestParameterFactory;
-import org.openmuc.jdlms.SetRequestParameter;
-import org.openmuc.jdlms.internal.BitString;
+import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.BitString;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,28 +50,27 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final ConfigurationObject configurationObject)
-            throws IOException, ProtocolAdapterException {
+    public AccessResultCode execute(final LnClientConnection conn, final ConfigurationObject configurationObject)
+            throws IOException, TimeoutException, ProtocolAdapterException {
 
         final ConfigurationObject configurationObjectOnDevice = this.retrieveConfigurationObject(conn);
 
-        final SetRequestParameter request = this.buildRequest(configurationObject, configurationObjectOnDevice);
+        final SetParameter setParameter = this.buildSetParameter(configurationObject, configurationObjectOnDevice);
 
-        return conn.set(request).get(0);
+        return conn.set(setParameter).get(0);
     }
 
-    private SetRequestParameter buildRequest(final ConfigurationObject configurationObject,
+    private SetParameter buildSetParameter(final ConfigurationObject configurationObject,
             final ConfigurationObject configurationObjectOnDevice) {
 
-        final DataObject complexData = this.buildRequestObject(configurationObject, configurationObjectOnDevice);
+        final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final DataObject complexData = this.buildSetParameterData(configurationObject, configurationObjectOnDevice);
         LOGGER.info("Configuration object complex data: {}", this.dlmsHelperService.getDebugInfo(complexData));
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-
-        return factory.createSetRequestParameter(complexData);
+        return new SetParameter(configurationObjectValue, complexData);
     }
 
-    private DataObject buildRequestObject(final ConfigurationObject configurationObject,
+    private DataObject buildSetParameterData(final ConfigurationObject configurationObject,
             final ConfigurationObject configurationObjectOnDevice) {
 
         final LinkedList<DataObject> linkedList = new LinkedList<DataObject>();
@@ -144,16 +143,15 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return null;
     }
 
-    private ConfigurationObject retrieveConfigurationObject(final ClientConnection conn) throws IOException,
-    ProtocolAdapterException {
+    private ConfigurationObject retrieveConfigurationObject(final LnClientConnection conn) throws IOException,
+            TimeoutException, ProtocolAdapterException {
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();
+        final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         LOGGER.info(
                 "Retrieving current configuration object by issuing get request for class id: {}, obis code: {}, attribute id: {}",
-                getRequestParameter.classId(), getRequestParameter.obisCode(), getRequestParameter.attributeId());
-        final List<GetResult> getResultList = conn.get(getRequestParameter);
+                CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final List<GetResult> getResultList = conn.get(configurationObjectValue);
 
         if (getResultList == null || getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No result received while retrieving current configuration object.");

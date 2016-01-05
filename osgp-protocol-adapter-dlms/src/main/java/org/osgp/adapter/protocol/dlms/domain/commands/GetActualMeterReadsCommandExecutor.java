@@ -9,11 +9,12 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.joda.time.DateTime;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.GetRequestParameter;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -42,14 +43,15 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private static final ObisCode OBIS_CODE_CLOCK = new ObisCode("0.0.1.0.0.255");
     private static final byte ATTRIBUTE_ID_TIME = 2;
 
-    private static final GetRequestParameter[] GET_REQUEST_PARAMETERS = {
-        new GetRequestParameter(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
-        new GetRequestParameter(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
-        new GetRequestParameter(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-        new GetRequestParameter(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
-        new GetRequestParameter(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
-        new GetRequestParameter(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-        new GetRequestParameter(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE) };
+    private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
+            new AttributeAddress(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE) };
+
     private static final int INDEX_TIME = 0;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT = 1;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT_RATE_1 = 2;
@@ -62,8 +64,8 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReads execute(final ClientConnection conn, final ActualMeterReadsQuery actualMeterReadsQuery)
-            throws IOException, ProtocolAdapterException {
+    public ActualMeterReads execute(final LnClientConnection conn, final ActualMeterReadsQuery actualMeterReadsQuery)
+            throws IOException, TimeoutException, ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isGas()) {
             throw new IllegalArgumentException("ActualMeterReadsQuery object for energy reads should not be about gas.");
@@ -71,7 +73,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
 
         LOGGER.info("Retrieving actual energy reads");
 
-        final List<GetResult> getResultList = conn.get(GET_REQUEST_PARAMETERS);
+        final List<GetResult> getResultList = conn.get(ATTRIBUTE_ADDRESSES);
 
         checkResultList(getResultList);
 
@@ -120,8 +122,8 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
             throw new ProtocolAdapterException("No GetResult received while retrieving actual energy meter reads.");
         }
 
-        if (getResultList.size() != GET_REQUEST_PARAMETERS.length) {
-            LOGGER.info("Expected " + GET_REQUEST_PARAMETERS.length
+        if (getResultList.size() != ATTRIBUTE_ADDRESSES.length) {
+            LOGGER.info("Expected " + ATTRIBUTE_ADDRESSES.length
                     + " GetResults while retrieving actual energy meter reads, got " + getResultList.size());
         }
     }

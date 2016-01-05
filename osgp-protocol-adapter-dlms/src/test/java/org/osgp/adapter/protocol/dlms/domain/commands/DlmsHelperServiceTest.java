@@ -17,8 +17,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
-import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.internal.CosemDateTime;
+import org.openmuc.jdlms.datatypes.CosemDateTime;
+import org.openmuc.jdlms.datatypes.DataObject;
 
 public class DlmsHelperServiceTest {
 
@@ -51,7 +51,7 @@ public class DlmsHelperServiceTest {
 
         final CosemDateTime cosemDateTime = (CosemDateTime) dateInSummerTimeDataObject.value();
 
-        assertArrayEquals(this.byteArraySummerTime(), cosemDateTime.ocletString());
+        assertArrayEquals(this.byteArraySummerTime(), cosemDateTime.encode());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class DlmsHelperServiceTest {
 
         final CosemDateTime cosemDateTime = (CosemDateTime) dateInWinterTimeDataObject.value();
 
-        assertArrayEquals(this.byteArrayWinterTime(), cosemDateTime.ocletString());
+        assertArrayEquals(this.byteArrayWinterTime(), cosemDateTime.encode());
     }
 
     @Test
