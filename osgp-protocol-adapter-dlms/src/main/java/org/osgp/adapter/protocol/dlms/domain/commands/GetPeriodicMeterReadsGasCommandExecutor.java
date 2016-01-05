@@ -259,8 +259,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         return profileBuffer;
     }
 
-    private SelectiveAccessDescription getSelectiveAccessDescription(final PeriodType periodType,
-            final DateTime beginDateTime, final DateTime endDateTime) {
+    private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime, final DateTime endDateTime) {
 
         final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
 
