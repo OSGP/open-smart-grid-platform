@@ -6,9 +6,8 @@ import java.net.InetAddress;
 import javax.naming.OperationNotSupportedException;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.ClientSap;
-import org.openmuc.jdlms.TcpClientSap;
+import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +17,6 @@ public class DlmsConnectionFactory {
     // TODO REPLACE BY CONFIGURATION PROPERTIES
     private final static int W_PORT_SOURCE = 1;
     private final static int W_PORT_DESTINATION = 1;
-    private final static boolean LN_REFERENCING_ENABLED = true;
     private final static int RESPONSE_TIMEOUT = 60000;
 
     // TODO REPLACE HARD-CODED IP-ADDRESS!!!
@@ -37,7 +35,7 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public ClientConnection getConnection(final DlmsDevice device) throws IOException, OperationNotSupportedException {
+    public LnClientConnection getConnection(final DlmsDevice device) throws IOException, OperationNotSupportedException {
 
         if (device.isHLS5Active()) {
             return this.getHls5Connection(device);
@@ -47,17 +45,14 @@ public class DlmsConnectionFactory {
         }
     }
 
-    private ClientConnection getHls5Connection(final DlmsDevice device) throws IOException {
+    private LnClientConnection getHls5Connection(final DlmsDevice device) throws IOException {
 
         final byte[] authenticationKey = Hex.decode(device.getAuthenticationKey());
         final byte[] encryptionKey = Hex.decode(device.getGlobalEncryptionUnicastKey());
 
-        final ClientSap clientSap = new TcpClientSap(InetAddress.getByName(REMOTE_HOST));
-        clientSap.enableGmacAuthentication(authenticationKey, encryptionKey);
-        clientSap.enableEncryption(encryptionKey);
-        clientSap.setResponseTimeout(RESPONSE_TIMEOUT);
-
-        return clientSap.setLogicalDeviceAddress(W_PORT_DESTINATION).setClientAccessPoint(W_PORT_SOURCE)
-                .setLogicalNameReferencingEnabled(LN_REFERENCING_ENABLED).connect();
+        return new TcpConnectionBuilder(InetAddress.getByName(REMOTE_HOST))
+                .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
+                .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
+                .clientAccessPoint(W_PORT_SOURCE).buildLnConnection();
     }
 }

@@ -8,9 +8,8 @@
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
-import java.util.Random;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
@@ -38,8 +37,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class MonitoringService extends DlmsApplicationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
-
-    private static final Random generator = new Random();
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -70,7 +67,7 @@ public class MonitoringService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService
@@ -95,7 +92,7 @@ public class MonitoringService extends DlmsApplicationService {
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
                     periodicMeterReadsQuery);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -106,7 +103,7 @@ public class MonitoringService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestActualMeterReads");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService
@@ -130,7 +127,7 @@ public class MonitoringService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }
@@ -143,7 +140,7 @@ public class MonitoringService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestReadAlarmRegister");
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
             final DlmsDevice device = this.domainHelperService
                     .findDlmsDevice(messageMetadata.getDeviceIdentification());
@@ -163,7 +160,7 @@ public class MonitoringService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
         } finally {
-            if (conn != null && conn.isConnected()) {
+            if (conn != null) {
                 conn.close();
             }
         }
