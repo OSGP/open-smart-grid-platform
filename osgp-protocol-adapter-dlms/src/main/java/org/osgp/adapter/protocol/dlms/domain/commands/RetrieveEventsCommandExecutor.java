@@ -30,13 +30,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.Event;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery;
 
-//0-0:96.11.0.255 Standard event Log
-//0-0:96.11.1.255 Fraud detection Log
-//0-0:96.11.3.255 M-Bus event log
-//0-0:96-11.4.255 Communication Session event log
-//
-//Please the DLMS object in DLMS and DSMR documents
-
 @Component()
 public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEventsQuery, List<Event>> {
 
@@ -53,8 +46,8 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     static{
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.STANDARD_EVENT_LOG,        new ObisCode("0.0.99.98.0.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.FRAUD_DETECTION_LOG,       new ObisCode("0.0.99.98.1.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.96.11.4.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG,           new ObisCode("0.0.96.11.3.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG,           new ObisCode("0.0.99.98.3.255"));
     }
     // @formatter:on
 
@@ -91,9 +84,20 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
         final DataObject resultData = result.resultData();
         eventList = this.dataObjectToEventListConverter.convert(resultData);
 
-        // TODO filter event for datetime
-
-        return eventList;
+        return this.filterEventList(eventList, findEventsQuery);
 
     }
+
+    private List<Event> filterEventList(final List<Event> eventList, final FindEventsQuery findEventsQuery) {
+
+        final List<Event> filtered = new ArrayList<>();
+        for (final Event event : eventList) {
+            if (event.getTimestamp().isAfter(findEventsQuery.getFrom())
+                    && event.getTimestamp().isBefore(findEventsQuery.getUntil())) {
+                filtered.add(event);
+            }
+        }
+        return filtered;
+    }
+
 }

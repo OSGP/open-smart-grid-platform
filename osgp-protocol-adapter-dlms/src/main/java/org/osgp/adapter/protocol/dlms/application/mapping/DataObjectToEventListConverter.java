@@ -32,7 +32,7 @@ public class DataObjectToEventListConverter {
     public List<Event> convert(final DataObject source) throws ProtocolAdapterException {
         final List<Event> eventList = new ArrayList<>();
         if (source == null) {
-            return eventList;
+            throw new ProtocolAdapterException("DataObject should not be null");
         }
 
         final List<DataObject> listOfEvents = source.value();
@@ -48,12 +48,20 @@ public class DataObjectToEventListConverter {
 
         final List<DataObject> eventData = eventDataObject.value();
 
-        LOGGER.info("Event time is {} and event code is {}", eventData.get(0).value(), eventData.get(1).value());
+        if (eventData == null) {
+            throw new ProtocolAdapterException("eventData DataObject should not be null");
+        }
 
-        final DateTime dt = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0));
+        if (eventData.size() != 2) {
+            throw new ProtocolAdapterException("eventData size should be 2");
+        }
+
+        final DateTime dateTime = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0));
         final Short code = eventData.get(1).value();
 
-        final Event event = new Event(dt, code.intValue());
+        LOGGER.info("Event time is {} and event code is {}", dateTime, code);
+
+        final Event event = new Event(dateTime, code.intValue());
         return event;
     }
 }

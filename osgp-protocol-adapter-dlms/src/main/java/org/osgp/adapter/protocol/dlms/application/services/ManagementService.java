@@ -55,16 +55,16 @@ public class ManagementService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "findEvents");
 
-        List<Event> events = new ArrayList<>();
+        final List<Event> events = new ArrayList<>();
 
         ClientConnection conn = null;
         try {
-            // Debug logging which can be removed.
-            LOGGER.info("FindEventsQueryMessageDataContainer number of FindEventsQuery: {}",
-                    findEventsQueryMessageDataContainer.getFindEventsQueryList().size());
 
             final DlmsDevice device = this.domainHelperService
                     .findDlmsDevice(messageMetadata.getDeviceIdentification());
+
+            LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
+
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             for (final FindEventsQuery findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
@@ -73,7 +73,7 @@ public class ManagementService extends DlmsApplicationService {
                         findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                         findEventsQuery.getUntil());
 
-                events = this.retrieveEventsCommandExecutor.execute(conn, findEventsQuery);
+                events.addAll(this.retrieveEventsCommandExecutor.execute(conn, findEventsQuery));
             }
 
             final EventMessageDataContainer eventMessageDataContainer = new EventMessageDataContainer(events);
