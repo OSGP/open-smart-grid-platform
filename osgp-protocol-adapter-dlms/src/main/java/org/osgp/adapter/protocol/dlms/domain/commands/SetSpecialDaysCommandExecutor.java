@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.RequestParameterFactory;
-import org.openmuc.jdlms.SetRequestParameter;
+import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +34,7 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final List<SpecialDay> specialDays)
+    public AccessResultCode execute(final LnClientConnection conn, final List<SpecialDay> specialDays)
             throws IOException, ProtocolAdapterException {
 
         final ArrayList<DataObject> specialDayEntries = new ArrayList<DataObject>();
@@ -51,10 +51,10 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
             i += 1;
         }
 
-        final DataObject arrayData = DataObject.newArrayData(specialDayEntries);
+        final AttributeAddress specialDaysTableEntries = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final DataObject entries = DataObject.newArrayData(specialDayEntries);
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-        final SetRequestParameter request = factory.createSetRequestParameter(arrayData);
+        final SetParameter request = new SetParameter(specialDaysTableEntries, entries);
 
         return conn.set(request).get(0);
     }

@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.DataObject;
+import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.RequestParameterFactory;
-import org.openmuc.jdlms.SetRequestParameter;
+import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DayProfileConverter;
 import org.osgp.adapter.protocol.dlms.application.mapping.SeasonProfileConverter;
 import org.osgp.adapter.protocol.dlms.application.mapping.WeekProfileConverter;
@@ -40,6 +40,10 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     private static final int CLASS_ID = 20;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.13.0.0.255");
+    private static final int ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE = 6;
+    private static final int ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE = 7;
+    private static final int ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE = 8;
+    private static final int ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE = 9;
 
     @Autowired
     private SeasonProfileConverter seasonProfileConverter;
@@ -54,40 +58,34 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final ActivityCalendar activityCalendar)
+    public AccessResultCode execute(final LnClientConnection conn, final ActivityCalendar activityCalendar)
             throws IOException, ProtocolAdapterException {
-        LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called!! :-)", activityCalendar.getCalendarName());
+        LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
-        // Set calendar Name
-        final SetRequestParameter activityCalendarRequest = this.getCalendarNameRequest(activityCalendar);
-
-        // Set seasons
+        final SetParameter calendarNameParameter = this.getCalendarNameParameter(activityCalendar);
         final List<SeasonProfile> seasonProfileList = activityCalendar.getSeasonProfileList();
-        final SetRequestParameter seasonsRequest = this.getSeasonsRequest(conn, seasonProfileList);
-
-        // Set weeks
+        final SetParameter seasonProfileParameter = this.getSeasonProfileParameter(seasonProfileList);
         final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
-        final SetRequestParameter weeksRequest = this.getWeeksRequest(conn, weekProfileSet);
-        // Set days
-        final SetRequestParameter dayRequest = this.getDaysRequest(conn, this.getDayProfileSet(weekProfileSet));
+        final SetParameter weekProfileTableParameter = this.getWeekProfileTableParameter(weekProfileSet);
+        final HashSet<DayProfile> dayProfileSet = this.getDayProfileSet(weekProfileSet);
+        final SetParameter dayProfileTablePassive = this.getDayProfileTablePassive(dayProfileSet);
 
         final Map<String, AccessResultCode> allAccessResultCodeMap = new HashMap<>();
 
-        List<AccessResultCode> resultCode = conn
-                .set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, activityCalendarRequest);
-        allAccessResultCodeMap.put("Activity Calender Request", resultCode.get(0));
+        List<AccessResultCode> resultCode = conn.set(calendarNameParameter);
+        allAccessResultCodeMap.put("Activity Calendar Name Passive", resultCode.get(0));
 
         LOGGER.info("WRITING SEASONS");
-        resultCode = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, seasonsRequest);
-        allAccessResultCodeMap.put("Seasons Request", resultCode.get(0));
+        resultCode = conn.set(seasonProfileParameter);
+        allAccessResultCodeMap.put("Season Profile Passive", resultCode.get(0));
 
         LOGGER.info("WRITING DAYS");
-        resultCode = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, dayRequest);
-        allAccessResultCodeMap.put("Day Request", resultCode.get(0));
+        resultCode = conn.set(dayProfileTablePassive);
+        allAccessResultCodeMap.put("Day Profile Table Passive", resultCode.get(0));
 
         LOGGER.info("WRITING WEEKS");
-        resultCode = conn.set(DlmsHelperService.LONG_CONNECTION_TIMEOUT, weeksRequest);
-        allAccessResultCodeMap.put("Weeks Request", resultCode.get(0));
+        resultCode = conn.set(weekProfileTableParameter);
+        allAccessResultCodeMap.put("Week Profile Table Passive", resultCode.get(0));
 
         final Map<String, AccessResultCode> failureAccessResultMap = new HashMap<>();
 
@@ -112,35 +110,35 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private void throwProtocolAdapterException(final Map<String, AccessResultCode> failureAccessResultMap)
             throws ProtocolAdapterException {
 
-        String keyValues = "";
-
+        final StringBuilder keyValues = new StringBuilder();
         for (final Map.Entry<String, AccessResultCode> entry : failureAccessResultMap.entrySet()) {
             final String keyValueString = entry.getKey() + ": " + entry.getValue();
-            if ("".equals(keyValues)) {
-                keyValues = keyValueString;
-            } else {
-                keyValues += ", " + keyValueString;
-            }
+            keyValues.append(keyValueString).append(", ");
+        }
+        if (keyValues.length() > 1) {
+            // strip the last ", "
+            keyValues.setLength(keyValues.length() - 2);
         }
 
-        LOGGER.error("ActivityCalendar: Requests failed for: {}", keyValues);
-        throw new ProtocolAdapterException("ActivityCalendar: Requests failed for: " + keyValues);
+        LOGGER.error("SetActivityCalendar: Requests failed for: {}", keyValues);
+        throw new ProtocolAdapterException("SetActivityCalendar: Requests failed for: " + keyValues);
     }
 
-    private SetRequestParameter getCalendarNameRequest(final ActivityCalendar activityCalendar) {
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 6);
-        final DataObject obj = DataObject.newOctetStringData(activityCalendar.getCalendarName().getBytes());
-        return factory.createSetRequestParameter(obj);
+    private SetParameter getCalendarNameParameter(final ActivityCalendar activityCalendar) {
+        final AttributeAddress calendarNamePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
+                ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE);
+        final DataObject value = DataObject.newOctetStringData(activityCalendar.getCalendarName().getBytes());
+        return new SetParameter(calendarNamePassive, value);
     }
 
-    private SetRequestParameter getDaysRequest(final ClientConnection conn, final HashSet<DayProfile> dayProfileSet)
-            throws IOException {
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 9);
+    private SetParameter getDayProfileTablePassive(final HashSet<DayProfile> dayProfileSet) {
+        final AttributeAddress dayProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
+                ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
         final DataObject dayArray = this.dayProfileConverter.convert(dayProfileSet);
 
-        LOGGER.info("DayRequest to set is: {}", this.dlmsHelperService.getDebugInfo(dayArray));
+        LOGGER.info("DayProfileTablePassive to set is: {}", this.dlmsHelperService.getDebugInfo(dayArray));
 
-        return factory.createSetRequestParameter(dayArray);
+        return new SetParameter(dayProfileTablePassive, dayArray);
     }
 
     /**
@@ -159,15 +157,15 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return dayProfileHashSet;
     }
 
-    private SetRequestParameter getWeeksRequest(final ClientConnection conn, final HashSet<WeekProfile> weekProfileSet)
-            throws IOException {
+    private SetParameter getWeekProfileTableParameter(final HashSet<WeekProfile> weekProfileSet) {
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 8);
+        final AttributeAddress weekProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
+                ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
         final DataObject weekArray = this.weekProfileConverter.convert(weekProfileSet);
 
-        LOGGER.info("WeekArray to set is: {}", this.dlmsHelperService.getDebugInfo(weekArray));
+        LOGGER.info("WeekProfileTablePassive to set is: {}", this.dlmsHelperService.getDebugInfo(weekArray));
 
-        return factory.createSetRequestParameter(weekArray);
+        return new SetParameter(weekProfileTablePassive, weekArray);
     }
 
     private HashSet<WeekProfile> getWeekProfileSet(final List<SeasonProfile> seasonProfileList) {
@@ -181,18 +179,14 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return weekProfileSet;
     }
 
-    private SetRequestParameter getSeasonsRequest(final ClientConnection conn,
-            final List<SeasonProfile> seasonProfileList) throws IOException {
+    private SetParameter getSeasonProfileParameter(final List<SeasonProfile> seasonProfileList) {
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, 7);
-
+        final AttributeAddress seasonProfilePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
+                ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);
         final DataObject seasonsArray = this.seasonProfileConverter.convert(seasonProfileList);
 
-        LOGGER.info("getSeasonsRequest: debug output: {}", this.dlmsHelperService.getDebugInfo(seasonsArray));
+        LOGGER.info("SeasonProfilePassive to set is: {}", this.dlmsHelperService.getDebugInfo(seasonsArray));
 
-        final SetRequestParameter request = factory.createSetRequestParameter(seasonsArray);
-
-        return request;
+        return new SetParameter(seasonProfilePassive, seasonsArray);
     }
-
 }

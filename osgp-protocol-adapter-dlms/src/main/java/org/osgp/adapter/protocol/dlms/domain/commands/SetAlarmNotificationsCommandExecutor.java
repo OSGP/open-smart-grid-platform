@@ -15,15 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.GetRequestParameter;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.RequestParameterFactory;
-import org.openmuc.jdlms.SetRequestParameter;
+import org.openmuc.jdlms.SetParameter;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +94,8 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     @Override
-    public AccessResultCode execute(final ClientConnection conn, final AlarmNotifications alarmNotifications)
-            throws IOException, ProtocolAdapterException {
+    public AccessResultCode execute(final LnClientConnection conn, final AlarmNotifications alarmNotifications)
+            throws IOException, TimeoutException, ProtocolAdapterException {
 
         final AlarmNotifications alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
 
@@ -109,17 +109,15 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
     }
 
-    public AlarmNotifications retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
-            ProtocolAdapterException {
+    public AlarmNotifications retrieveCurrentAlarmNotifications(final LnClientConnection conn) throws IOException,
+    TimeoutException, ProtocolAdapterException {
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
-
-        final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();
+        final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         LOGGER.info(
                 "Retrieving current alarm filter by issuing get request for class id: {}, obis code: {}, attribute id: {}",
-                getRequestParameter.classId(), getRequestParameter.obisCode(), getRequestParameter.attributeId());
-        final List<GetResult> getResultList = conn.get(getRequestParameter);
+                CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final List<GetResult> getResultList = conn.get(alarmFilterValue);
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving current alarm filter.");
@@ -136,16 +134,15 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         return alarmNotificationsOnDevice;
     }
 
-    public AccessResultCode writeUpdatedAlarmNotifications(final ClientConnection conn, final long alarmFilterLongValue)
-            throws IOException {
+    public AccessResultCode writeUpdatedAlarmNotifications(final LnClientConnection conn,
+            final long alarmFilterLongValue) throws IOException, TimeoutException {
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final DataObject value = DataObject.newUInteger32Data(alarmFilterLongValue);
 
-        final DataObject obj = DataObject.newUInteger32Data(alarmFilterLongValue);
+        final SetParameter setParameter = new SetParameter(alarmFilterValue, value);
 
-        final SetRequestParameter request = factory.createSetRequestParameter(obj);
-
-        return conn.set(request).get(0);
+        return conn.set(setParameter).get(0);
     }
 
     public AlarmNotifications alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
