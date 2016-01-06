@@ -198,7 +198,7 @@
             <wsdl:input message="tns:ReadAlarmRegisterRequest" name="ReadAlarmRegisterRequest" />
             <wsdl:output message="tns:ReadAlarmRegisterAsyncResponse" name="ReadAlarmRegisterAsyncResponse" />
         </wsdl:operation>
-        <wsdl:operation name="GetReadAlarmRegisterReponse">
+        <wsdl:operation name="GetReadAlarmRegisterResponse">
             <wsdl:input message="tns:ReadAlarmRegisterAsyncRequest" name="ReadAlarmRegisterAsyncRequest" />
             <wsdl:output message="tns:ReadAlarmRegisterResponse" name="ReadAlarmRegisterResponse" />
         </wsdl:operation>
@@ -323,7 +323,7 @@
             </wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="GetReadAlarmRegisterReponse">
+        <wsdl:operation name="GetReadAlarmRegisterResponse">
             <soap:operation soapAction="" />
             <wsdl:input name="ReadAlarmRegisterAsyncRequest">
                 <soap:header message="tns:SoapHeaders" part="org" use="literal" />
