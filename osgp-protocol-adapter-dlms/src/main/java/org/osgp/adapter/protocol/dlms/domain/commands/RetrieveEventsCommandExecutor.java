@@ -72,11 +72,12 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
                     + findEventsQuery.getEventLogCategory() + ". Got " + getResultList.size());
         }
 
-        final GetResult result = getResultList.get(0); // A
+        final GetResult result = getResultList.get(0);
         if (!AccessResultCode.SUCCESS.equals(result.resultCode())) {
             LOGGER.info("Result of getting events for {} is {}", findEventsQuery.getEventLogCategory(),
                     result.resultCode());
-            return eventList;
+            throw new ProtocolAdapterException("Getting the events for  " + findEventsQuery.getEventLogCategory()
+                    + " from the meter resulted in" + result.resultCode());
         }
 
         final DataObject resultData = result.resultData();

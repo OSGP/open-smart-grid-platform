@@ -61,7 +61,6 @@ public class DataObjectToEventListConverter {
 
         LOGGER.info("Event time is {} and event code is {}", dateTime, code);
 
-        final Event event = new Event(dateTime, code.intValue());
-        return event;
+        return new Event(dateTime, code.intValue());
     }
 }
