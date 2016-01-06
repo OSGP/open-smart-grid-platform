@@ -8,6 +8,8 @@
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws;
 
 import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +19,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -84,6 +88,43 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
     public void init() {
         this.webServiceRequestMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
                 this.deviceFunction.name(), this);
+    }
+
+    protected abstract void handleMessage(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException;
+
+    @Override
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        String correlationUid = null;
+        String messageType = null;
+        String organisationIdentification = null;
+        String deviceIdentification = null;
+        Object dataObject = null;
+
+        try {
+            correlationUid = message.getJMSCorrelationID();
+            messageType = message.getJMSType();
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            dataObject = message.getObject();
+
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            return;
+        }
+
+        try {
+            LOGGER.info("Calling application service function: {}", messageType);
+            this.handleMessage(organisationIdentification, deviceIdentification, correlationUid, dataObject,
+                    messageType);
+
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+        }
     }
 
     /**

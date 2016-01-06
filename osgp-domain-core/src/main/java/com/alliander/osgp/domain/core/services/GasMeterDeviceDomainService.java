@@ -29,18 +29,18 @@ import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 public class GasMeterDeviceDomainService {
 
     @Autowired
-    private GasMeterDeviceRepository GASMeterDeviceRepository;
+    private GasMeterDeviceRepository gasMeterDeviceRepository;
 
     public GasMeterDevice searchGASMeterDevice(@Identification final String deviceIdentification)
             throws UnknownEntityException {
 
-        final GasMeterDevice GASMeterDevice = this.GASMeterDeviceRepository
+        final GasMeterDevice gasMeterDevice = this.gasMeterDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
 
-        if (GASMeterDevice == null) {
+        if (gasMeterDevice == null) {
             throw new UnknownEntityException(GasMeterDevice.class, deviceIdentification);
         }
 
-        return GASMeterDevice;
+        return gasMeterDevice;
     }
 }

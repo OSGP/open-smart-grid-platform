@@ -13,17 +13,18 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
-@Component("domainSmartMeteringSetAdministrationStateResponseMessageProcessor")
-public class SetAdministrativeStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainSmartMeteringGetAdministrativeStateResponseMessageProcessor")
+public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     private ConfigurationService configurationService;
 
-    public SetAdministrativeStatusResponseMessageProcessor() {
-        super(DeviceFunction.SET_ADMINISTRATIVE_STATUS);
+    public GetAdministrativeStateResponseMessageProcessor() {
+        super(DeviceFunction.GET_ADMINISTRATIVE_STATUS);
     }
 
     @Override
@@ -31,7 +32,10 @@ public class SetAdministrativeStatusResponseMessageProcessor extends OsgpCoreRes
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
 
-        this.configurationService.handleSetAdministrativeStatusResponse(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException);
+        final AdministrativeStatusType administrativeStatusTypeDto = (AdministrativeStatusType) responseMessage
+                .getDataObject();
+        this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
+                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
+                administrativeStatusTypeDto);
     }
 }

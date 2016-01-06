@@ -10,11 +10,9 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class MeterReads implements Serializable {
+public abstract class MeterReads implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
-
-    // TODO add status
 
     private final Date logTime;
     private final long activeEnergyImportTariffOne;
@@ -22,8 +20,9 @@ public class MeterReads implements Serializable {
     private final long activeEnergyExportTariffOne;
     private final Long activeEnergyExportTariffTwo;
 
-    public MeterReads(Date logTime, long activeEnergyImportTariffOne, Long activeEnergyImportTariffTwo,
-            long activeEnergyExportTariffOne, Long activeEnergyExportTariffTwo) {
+    public MeterReads(final Date logTime, final long activeEnergyImportTariffOne,
+            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final Long activeEnergyExportTariffTwo) {
         this.logTime = logTime;
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;

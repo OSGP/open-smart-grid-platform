@@ -20,21 +20,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 
 public class ActualMeterReadsConverter
-        extends
-        BidirectionalConverter<MeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
+extends
+BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse convertTo(
-            final MeterReads source,
+            final ActualMeterReads source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
-                .createActualMeterReadsResponse();
+        .createActualMeterReadsResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -47,6 +47,8 @@ public class ActualMeterReadsConverter
         }
 
         destination.setLogTime(convertedDate);
+        destination.setActiveEnergyImport(source.getActiveEnergyImport());
+        destination.setActiveEnergyExport(source.getActiveEnergyExport());
         destination.setActiveEnergyExportTariffOne(source.getActiveEnergyExportTariffOne());
         destination.setActiveEnergyExportTariffTwo(source.getActiveEnergyExportTariffTwo());
         destination.setActiveEnergyImportTariffOne(source.getActiveEnergyImportTariffOne());
@@ -56,13 +58,13 @@ public class ActualMeterReadsConverter
     }
 
     @Override
-    public MeterReads convertFrom(
+    public ActualMeterReads convertFrom(
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse source,
-            final Type<MeterReads> destinationType) {
+            final Type<ActualMeterReads> destinationType) {
 
-        return new MeterReads(source.getLogTime().toGregorianCalendar().getTime(),
+        return new ActualMeterReads(source.getLogTime().toGregorianCalendar().getTime(),
+                source.getActiveEnergyImport(), source.getActiveEnergyExport(),
                 source.getActiveEnergyImportTariffOne(), source.getActiveEnergyImportTariffTwo(),
                 source.getActiveEnergyExportTariffOne(), source.getActiveEnergyExportTariffTwo());
     }
-
 }
