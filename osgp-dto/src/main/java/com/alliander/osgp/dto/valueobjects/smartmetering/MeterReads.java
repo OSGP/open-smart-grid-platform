@@ -14,29 +14,34 @@ public abstract class MeterReads implements Serializable {
     private static final long serialVersionUID = -297320204916085999L;
 
     private Date logTime;
-    private long activeEnergyImportTariffOne;
+
+    private final Long activeEnergyImport;
+    private final Long activeEnergyExport;
+    private Long activeEnergyImportTariffOne;
     // may be null
     private Long activeEnergyImportTariffTwo;
-    private long activeEnergyExportTariffOne;
+    private Long activeEnergyExportTariffOne;
     // may be null
     private Long activeEnergyExportTariffTwo;
 
-    public MeterReads(final Date logTime, final long activeEnergyImportTariffOne,
-            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
-            final Long activeEnergyExportTariffTwo) {
+    MeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
+            final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
+            final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo) {
         super();
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
+        this.activeEnergyImport = activeEnergyImport;
+        this.activeEnergyExport = activeEnergyExport;
     }
 
     public Date getLogTime() {
         return new Date(this.logTime.getTime());
     }
 
-    public long getActiveEnergyImportTariffOne() {
+    public Long getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
     }
 
@@ -44,12 +49,20 @@ public abstract class MeterReads implements Serializable {
         return this.activeEnergyImportTariffTwo;
     }
 
-    public long getActiveEnergyExportTariffOne() {
+    public Long getActiveEnergyExportTariffOne() {
         return this.activeEnergyExportTariffOne;
     }
 
     public Long getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
+    }
+
+    public Long getActiveEnergyImport() {
+        return this.activeEnergyImport;
+    }
+
+    public Long getActiveEnergyExport() {
+        return this.activeEnergyExport;
     }
 
     @Override

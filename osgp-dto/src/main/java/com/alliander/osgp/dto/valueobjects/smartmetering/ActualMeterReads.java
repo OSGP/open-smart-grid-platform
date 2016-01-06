@@ -13,25 +13,11 @@ public class ActualMeterReads extends MeterReads {
 
     private static final long serialVersionUID = 4052150124072820551L;
 
-    private final long activeEnergyImport;
-    private final long activeEnergyExport;
-
     public ActualMeterReads(final Date logTime, final long activeEnergyImport, final long activeEnergyExport,
-            final long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
-            final long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo) {
-        super(logTime, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
-                activeEnergyExportTariffTwo);
-
-        this.activeEnergyImport = activeEnergyImport;
-        this.activeEnergyExport = activeEnergyExport;
-    }
-
-    public long getActiveEnergyImport() {
-        return this.activeEnergyImport;
-    }
-
-    public long getActiveEnergyExport() {
-        return this.activeEnergyExport;
+            final long activeEnergyImportTariffOne, final long activeEnergyImportTariffTwo,
+            final long activeEnergyExportTariffOne, final long activeEnergyExportTariffTwo) {
+        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
+                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
     }
 
     @Override

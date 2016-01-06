@@ -15,20 +15,74 @@ public class PeriodicMeterReads extends MeterReads {
 
     final AmrProfileStatusCode amrProfileStatusCode;
 
+    /**
+     * Constructor taking all data. Use for conversion purposes, when all fields
+     * need to be copied.
+     *
+     * @param logTime
+     * @param activeEnergyImport
+     * @param activeEnergyExport
+     * @param activeEnergyImportTariffOne
+     * @param activeEnergyImportTariffTwo
+     * @param activeEnergyExportTariffOne
+     * @param activeEnergyExportTariffTwo
+     * @param amrProfileStatusCode
+     */
+    public PeriodicMeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
+            final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
+            final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo,
+            final AmrProfileStatusCode amrProfileStatusCode) {
+        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
+                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+
+        this.amrProfileStatusCode = amrProfileStatusCode;
+    }
+
+    /**
+     * Constructor for monthly reads. Does not hold a AMR profile status.
+     *
+     * @param logTime
+     * @param activeEnergyImportTariffOne
+     * @param activeEnergyImportTariffTwo
+     * @param activeEnergyExportTariffOne
+     * @param activeEnergyExportTariffTwo
+     */
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
             final Long activeEnergyExportTariffTwo) {
-        super(logTime, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
-                activeEnergyExportTariffTwo);
 
-        this.amrProfileStatusCode = null;
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
+                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, null);
     }
 
+    /**
+     * Constructor for daily reads. Holds tariff values and AMR profile status.
+     *
+     * @param logTime
+     * @param activeEnergyImportTariffOne
+     * @param activeEnergyImportTariffTwo
+     * @param activeEnergyExportTariffOne
+     * @param activeEnergyExportTariffTwo
+     * @param amrProfileStatusCode
+     */
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
-            final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
-            final Long activeEnergyExportTariffTwo, final AmrProfileStatusCode amrProfileStatusCode) {
-        super(logTime, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
-                activeEnergyExportTariffTwo);
+            final long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
+            final long activeEnergyExportTariffTwo, final AmrProfileStatusCode amrProfileStatusCode) {
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
+                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, amrProfileStatusCode);
+    }
+
+    /**
+     * Constructor for interval reads.
+     *
+     * @param logTime
+     * @param activeEnergyImport
+     * @param activeEnergyExport
+     * @param amrProfileStatusCode
+     */
+    public PeriodicMeterReads(final Date logTime, final long activeEnergyImport, final long activeEnergyExport,
+            final AmrProfileStatusCode amrProfileStatusCode) {
+        super(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null);
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
