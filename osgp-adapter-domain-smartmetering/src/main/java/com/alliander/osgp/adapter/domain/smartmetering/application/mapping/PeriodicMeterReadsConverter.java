@@ -25,7 +25,8 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Periodi
         final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(source.getAmrProfileStatusCode(),
                 AmrProfileStatusCode.class);
 
-        return new PeriodicMeterReads(source.getLogTime(), source.getActiveEnergyImportTariffOne(),
+        return new PeriodicMeterReads(source.getLogTime(), source.getActiveEnergyImport(),
+                source.getActiveEnergyExport(), source.getActiveEnergyImportTariffOne(),
                 source.getActiveEnergyImportTariffTwo(), source.getActiveEnergyExportTariffOne(),
                 source.getActiveEnergyExportTariffTwo(), amrProfileStatusCode);
     }
@@ -40,6 +41,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Periodi
                         com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode.class);
 
         return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads(source.getLogTime(),
+                source.getActiveEnergyImport(), source.getActiveEnergyExport(),
                 source.getActiveEnergyImportTariffOne(), source.getActiveEnergyImportTariffTwo(),
                 source.getActiveEnergyExportTariffOne(), source.getActiveEnergyExportTariffTwo(), amrProfileStatusCode);
     }
