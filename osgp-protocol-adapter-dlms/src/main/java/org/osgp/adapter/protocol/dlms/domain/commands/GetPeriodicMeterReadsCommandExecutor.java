@@ -165,15 +165,13 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
 
-        final DataObject positiveActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_POS);
-        LOGGER.debug("positiveActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(positiveActiveEnergy));
-
-        final DataObject negativeActiveEnergy = bufferedObjects.get(BUFFER_INDEX_A_NEG);
-        LOGGER.debug("negativeActiveEnergy: {}", this.dlmsHelperService.getDebugInfo(negativeActiveEnergy));
+        final Long positiveActiveEnergy = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_POS), "positiveActiveEnergy");
+        final Long negativeActiveEnergy = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_NEG), "negativeActiveEnergy");
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
-                (Long) positiveActiveEnergy.value(), null, (Long) negativeActiveEnergy.value(), null,
-                amrProfileStatusCode);
+                positiveActiveEnergy, negativeActiveEnergy, amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
@@ -183,23 +181,18 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
 
-        final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1);
-        LOGGER.debug("positiveActiveEnergyTariff1: {}",
-                this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
-        final DataObject positiveActiveEnergyTariff2 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2);
-        LOGGER.debug("positiveActiveEnergyTariff2: {}",
-                this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff2));
-        final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1);
-        LOGGER.debug("negativeActiveEnergyTariff1: {}",
-                this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
-        final DataObject negativeActiveEnergyTariff2 = bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2);
-        LOGGER.debug("negativeActiveEnergyTariff2: {}",
-                this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
+        final Long positiveActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1), "positiveActiveEnergyTariff1");
+        final Long positiveActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2), "positiveActiveEnergyTariff2");
+        final Long negativeActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), "negativeActiveEnergyTariff1");
+        final Long negativeActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), "negativeActiveEnergyTariff2");
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
-                (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
-                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value(),
-                amrProfileStatusCode);
+                positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
+                negativeActiveEnergyTariff2, amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
@@ -229,28 +222,24 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
     }
 
     private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReads> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) {
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
         /*
          * Buffer indexes minus one, since Monthly captured objects don't
          * include the AMR Profile status.
          */
-        final DataObject positiveActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1);
-        LOGGER.debug("positiveActiveEnergyTariff1: {}",
-                this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff1));
-        final DataObject positiveActiveEnergyTariff2 = bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1);
-        LOGGER.debug("positiveActiveEnergyTariff2: {}",
-                this.dlmsHelperService.getDebugInfo(positiveActiveEnergyTariff2));
-        final DataObject negativeActiveEnergyTariff1 = bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1);
-        LOGGER.debug("negativeActiveEnergyTariff1: {}",
-                this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff1));
-        final DataObject negativeActiveEnergyTariff2 = bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1);
-        LOGGER.debug("negativeActiveEnergyTariff2: {}",
-                this.dlmsHelperService.getDebugInfo(negativeActiveEnergyTariff2));
+        final Long positiveActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1), "positiveActiveEnergyTariff1");
+        final Long positiveActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1), "positiveActiveEnergyTariff2");
+        final Long negativeActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), "negativeActiveEnergyTariff1");
+        final Long negativeActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
+                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), "negativeActiveEnergyTariff2");
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
-                (Long) positiveActiveEnergyTariff1.value(), (Long) positiveActiveEnergyTariff2.value(),
-                (Long) negativeActiveEnergyTariff1.value(), (Long) negativeActiveEnergyTariff2.value());
+                positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
+                negativeActiveEnergyTariff2);
         periodicMeterReads.add(nextMeterReads);
     }
 

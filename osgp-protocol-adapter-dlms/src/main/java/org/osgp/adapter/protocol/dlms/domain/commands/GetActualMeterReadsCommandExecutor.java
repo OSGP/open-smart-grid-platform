@@ -44,13 +44,13 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private static final byte ATTRIBUTE_ID_TIME = 2;
 
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-            new AttributeAddress(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE) };
+        new AttributeAddress(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
+        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
+        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_VALUE),
+        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
+        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
+        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
+        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE) };
 
     private static final int INDEX_TIME = 0;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT = 1;
@@ -82,36 +82,18 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
         if (time == null) {
             throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads Time");
         }
-        final Long activeEnergyImport = this.dlmsHelperService.readLong(getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT),
-                "Actual Energy Reads +A");
-        if (activeEnergyImport == null) {
-            throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads +A");
-        }
-        final Long activeEnergyExport = this.dlmsHelperService.readLong(getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT),
-                "Actual Energy Reads -A");
-        if (activeEnergyExport == null) {
-            throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads -A");
-        }
-        final Long activeEnergyImportRate1 = this.dlmsHelperService.readLong(
+        final Long activeEnergyImport = this.dlmsHelperService.readLongNotNull(
+                getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT), "Actual Energy Reads +A");
+        final Long activeEnergyExport = this.dlmsHelperService.readLongNotNull(
+                getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT), "Actual Energy Reads -A");
+        final Long activeEnergyImportRate1 = this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_1), "Actual Energy Reads +A rate 1");
-        if (activeEnergyImportRate1 == null) {
-            throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads +A rate 1");
-        }
-        final Long activeEnergyImportRate2 = this.dlmsHelperService.readLong(
+        final Long activeEnergyImportRate2 = this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT_RATE_2), "Actual Energy Reads +A rate 2");
-        if (activeEnergyImportRate2 == null) {
-            throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads +A rate 2");
-        }
-        final Long activeEnergyExportRate1 = this.dlmsHelperService.readLong(
+        final Long activeEnergyExportRate1 = this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_1), "Actual Energy Reads -A rate 1");
-        if (activeEnergyExportRate1 == null) {
-            throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads -A rate 1");
-        }
-        final Long activeEnergyExportRate2 = this.dlmsHelperService.readLong(
+        final Long activeEnergyExportRate2 = this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2), "Actual Energy Reads -A rate 2");
-        if (activeEnergyExportRate2 == null) {
-            throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads -A rate 2");
-        }
 
         return new ActualMeterReads(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
                 activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2);
