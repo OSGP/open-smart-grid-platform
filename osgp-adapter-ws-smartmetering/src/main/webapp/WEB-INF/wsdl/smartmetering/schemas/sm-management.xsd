@@ -154,7 +154,77 @@
 			<xsd:enumeration value="FAILED_LOGIN_ATTEMPT" />
 			<!-- 47 - Indicates that configuration is activated or de-activated after the meter was installed. -->
 			<xsd:enumeration value="CONFIGURATION_CHANGE" />
+			<!-- 71 - Technical maintenance of the meter (Comlog Code 1) -->
+			<xsd:enumeration value="METROLOGICAL_MAINTENANCE" />
+			<!-- 72 - Technical maintenance of the grid (Comlog Code 2) -->
+			<xsd:enumeration value="TECHNICAL_MAINTENANCE" />
+			<!-- 73 - Retrieving of meter readings E (Comlog Code 3) -->
+			<xsd:enumeration value="RETRIEVE_METER_READINGS_E" />
+			<!-- 74 - Retrieving of meter readings G (Comlog Code 4) -->
+			<xsd:enumeration value="RETRIEVE_METER_READINGS_G" />
+			<!-- 75 - Retrieving of interval data E (Comlog Code 5) -->
+			<xsd:enumeration value="RETRIEVE_INTERVAL_DATA_E" />
+			<!-- 76 - Retrieving of interval data G (Comlog Code 6) -->
+			<xsd:enumeration value="RETRIEVE_INTERVAL_DATA_G" />
 			
+			
+			<!-- 100 - Indicates a communication problem when reading the meter connected to channel 1 of the M_BUS -->
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1" />
+			<!-- 101 - Indicates that the communication with the M_BUS meter connected to channel 1 of the M_BUS is ok again. -->
+			<xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_1" />
+			<!-- 102 - Indicates that the battery must be echanged due to the epected end of life time. -->
+			<xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_1" />
+			<!-- 103 - Indicates that a fraud attempt has been registered. -->
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1" />
+			<!-- 104 - Indicates that the clock has been adjusted. (Only in case of a large time adjustment) -->
+			<xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_1" />
+			<!-- 105 - Indicates that a new M_BUS Device has been detected on channel 1 of the M_BUS -->
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1" />
+			<!-- 106 - Indicates that a Permanent error has been received from the M_BUS device. The Permanent error can be a self-check error, or any other fatal device error that requires a service action -->
+			<xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_1" />
+			<!-- 110 - Indicates a communication problem when reading the meter connected to channel 2 of the M_BUS -->
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2" />
+			<!-- 111 - Indicates that the communication with the M_BUS meter connected to channel 2 of the M_BUS is ok again. -->
+			<xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_2" />
+			<!-- 112 - Indicates that the battery must be echanged due to the epected end of life time. -->
+			<xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_2" />
+			<!-- 113 - Indicates that a fraud attempt has been registered in the M_BUS device. -->
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
+			<!-- 114 - Indicates that the clock has been adjusted. (Only in case of a large time adjustment) -->
+			<xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_2" />
+			<!-- 115 - Indicates that a new M_BUS Device has been detected on channel 2 of the M_BUS -->
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
+			<!-- 116 - Indicates that a Permanent error has been received from the M_BUS device. The Permanent error can be a self-check error, or any other fatal device error that requires a service action -->
+			<xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_2" />
+			<!-- 120 - Indicates a communication problem when reading the meter connected to channel 3 of the M_BUS -->
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3" />
+			<!-- 121 - Indicates that the communication with the M_BUS meter connected to channel 3 of the M_BUS is ok again. -->
+			<xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_3" />
+			<!-- 122 - Indicates that the battery must be echanged due to the epected end of life time. -->
+			<xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_3" />
+			<!-- 123 - Indicates that a fraud attempt has been registered. -->
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
+			<!-- 124 - Indicates that the clock has been adjusted. (Only in case of a large time adjustment) -->
+			<xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_3" />
+			<!-- 125 - Indicates that a new M_BUS Device has been detected on channel 3 of the M_BUS -->
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
+			<!-- 126 - Indicates that a Permanent error has been received from the M_BUS device. The Permanent error can be a self-check error, or any other fatal device error that requires a service action -->
+			<xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_3" />
+			<!-- 130 - Indicates a communication problem when reading the meter connected to channel 4 of the M_BUS -->
+			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4" />
+			<!-- 131 - Indicates that the communication with the M_BUS meter connected to channel 4 of the M_BUS is ok again. -->
+			<xsd:enumeration value="COMMUNICATION_OK_M_BUS_CHANNEL_4" />
+			<!-- 132 - Indicates that the battery must be echanged due to the epected end of life time. -->
+			<xsd:enumeration value="REPLACE_BATTERY_M_BUS_CHANNEL_4" />
+			<!-- 133 - Indicates that a fraud attempt has been registered. -->
+			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
+			<!-- 134 - Indicates that the clock has been adjusted. (Only in case of a large time adjustment) -->
+			<xsd:enumeration value="CLOCK_ADJUSTED_M_BUS_CHANNEL_4" />
+			<!-- 135 - Indicates that a new M_BUS Device has been detected on channel 4 of the M_BUS -->
+			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4" />
+			<!-- 136 - Indicates that a Permanent error has been received from the M_BUS device. The Permanent error can be a self-check error, or any other fatal device error that requires a service action -->
+			<xsd:enumeration value="PERMANENT_ERROR_FROM_M_BUS_DEVICE_CHANNEL_4" />
+
 		</xsd:restriction>
 	</xsd:simpleType>
 		
