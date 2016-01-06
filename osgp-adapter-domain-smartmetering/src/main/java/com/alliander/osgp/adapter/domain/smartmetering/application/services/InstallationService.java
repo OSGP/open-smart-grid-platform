@@ -67,9 +67,6 @@ public class InstallationService {
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
 
         SmartMeteringDevice device = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
@@ -88,10 +85,6 @@ public class InstallationService {
             device.updateProtocol(protocolInfo);
 
             // TODO deviceAuthorization
-            // final DeviceAuthorization deviceAuthorization = new
-            // DeviceAuthorization(dummy, organisation,
-            // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
-            // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
             this.smartMeteringDeviceRepository.save(device);
 
