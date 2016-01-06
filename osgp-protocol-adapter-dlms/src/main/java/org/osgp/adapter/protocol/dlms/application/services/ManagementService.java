@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmuc.jdlms.ClientConnection;
+import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -57,7 +57,7 @@ public class ManagementService extends DlmsApplicationService {
 
         final List<Event> events = new ArrayList<>();
 
-        ClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService

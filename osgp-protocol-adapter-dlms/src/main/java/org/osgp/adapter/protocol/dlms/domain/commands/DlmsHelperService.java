@@ -85,7 +85,7 @@ public class DlmsHelperService {
         if (object.isByteArray()) {
             return this.fromDateTimeValue((byte[]) object.value());
         } else if (object.isCosemDateFormat()) {
-            return this.fromDateTimeValue(((CosemDateTime) object.value()).ocletString());
+            return this.fromDateTimeValue(((CosemDateTime) object.value()).encode());
         } else {
             LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(object));
             throw new ProtocolAdapterException("Expected ResultData of ByteArray or CosemDateFormat, got: "

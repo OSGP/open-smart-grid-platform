@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.openmuc.jdlms.DataObject;
-import org.openmuc.jdlms.GetRequestParameter;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.RequestParameterFactory;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -52,17 +52,15 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     // @formatter:on
 
     @Override
-    public List<Event> execute(final ClientConnection conn, final FindEventsQuery findEventsQuery) throws IOException,
-            ProtocolAdapterException {
+    public List<Event> execute(final LnClientConnection conn, final FindEventsQuery findEventsQuery)
+            throws IOException, ProtocolAdapterException, TimeoutException {
 
         List<Event> eventList = new ArrayList<>();
 
-        final RequestParameterFactory factory = new RequestParameterFactory(CLASS_ID,
+        final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID,
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID);
 
-        final GetRequestParameter getRequestParameter = factory.createGetRequestParameter();
-
-        final List<GetResult> getResultList = conn.get(getRequestParameter);
+        final List<GetResult> getResultList = conn.get(configurationObjectValue);
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving event register "
