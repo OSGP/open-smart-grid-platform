@@ -54,13 +54,16 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     private DlmsHelperService dlmsHelperService;
 
     // @formatter:off
-    private static final EnumMap<EventLogCategory, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(EventLogCategory.class);
-    static{
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.STANDARD_EVENT_LOG,        new ObisCode("0.0.99.98.0.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.FRAUD_DETECTION_LOG,       new ObisCode("0.0.99.98.1.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG,           new ObisCode("0.0.99.98.3.255"));
+    private static final EnumMap<EventLogCategory, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(
+            EventLogCategory.class);
+    static {
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.STANDARD_EVENT_LOG, new ObisCode("0.0.99.98.0.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.FRAUD_DETECTION_LOG, new ObisCode("0.0.99.98.1.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP
+                .put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG, new ObisCode("0.0.99.98.3.255"));
     }
+
     // @formatter:on
 
     @Override
@@ -117,9 +120,8 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
         final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
 
         /*
-         * As long as specifying a subset of captured objects from the buffer
-         * through selectedValues does not work, retrieve all captured objects
-         * by setting selectedValues to an empty array.
+         * Retrieve all captured objects by setting selectedValues to an empty
+         * array.
          */
         final DataObject selectedValues = DataObject.newArrayData(Collections.<DataObject> emptyList());
 
