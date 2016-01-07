@@ -239,7 +239,7 @@
 	</xsd:simpleType>
 	
 	<xsd:complexType name="AmrProfileStatusCode">
-		<xsd:sequence maxOccurs="unbounded">
+		<xsd:sequence maxOccurs="unbounded" minOccurs="0">
 			<xsd:element name="AmrProfileStatusCodeFlag" type="common:AmrProfileStatusCodeFlag" />
 		</xsd:sequence>
 	</xsd:complexType>
