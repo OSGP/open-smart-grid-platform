@@ -9,15 +9,19 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -38,8 +42,17 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     private static final int CLASS_ID = 7;
     private static final int ATTRIBUTE_ID = 2;
 
+    private static final int CLASS_ID_CLOCK = 8;
+    private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
+    private static final byte ATTRIBUTE_ID_TIME = 2;
+
+    private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
+
     @Autowired
     DataObjectToEventListConverter dataObjectToEventListConverter;
+
+    @Autowired
+    private DlmsHelperService dlmsHelperService;
 
     // @formatter:off
     private static final EnumMap<EventLogCategory, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(EventLogCategory.class);
@@ -55,10 +68,14 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     public List<Event> execute(final LnClientConnection conn, final FindEventsQuery findEventsQuery)
             throws IOException, ProtocolAdapterException, TimeoutException {
 
-        List<Event> eventList = new ArrayList<>();
+        final List<Event> eventList = new ArrayList<>();
+
+        final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
+                findEventsQuery.getFrom(), findEventsQuery.getUntil());
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID,
-                EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID);
+                EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID,
+                selectiveAccessDescription);
 
         final List<GetResult> getResultList = conn.get(configurationObjectValue);
 
@@ -81,22 +98,37 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
         }
 
         final DataObject resultData = result.resultData();
-        eventList = this.dataObjectToEventListConverter.convert(resultData);
-
-        return this.filterEventList(eventList, findEventsQuery);
-
+        return this.dataObjectToEventListConverter.convert(resultData);
     }
 
-    private List<Event> filterEventList(final List<Event> eventList, final FindEventsQuery findEventsQuery) {
+    private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,
+            final DateTime endDateTime) {
 
-        final List<Event> filtered = new ArrayList<>();
-        for (final Event event : eventList) {
-            if (event.getTimestamp().isAfter(findEventsQuery.getFrom())
-                    && event.getTimestamp().isBefore(findEventsQuery.getUntil())) {
-                filtered.add(event);
-            }
-        }
-        return filtered;
+        final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
+
+        /*
+         * Define the clock object {8,0-0:1.0.0.255,2,0} to be used as
+         * restricting object in a range descriptor with a from value and to
+         * value to determine which elements from the buffered array should be
+         * retrieved.
+         */
+        final DataObject clockDefinition = DataObject.newStructureData(Arrays.asList(
+                DataObject.newUInteger16Data(CLASS_ID_CLOCK), DataObject.newOctetStringData(OBIS_BYTES_CLOCK),
+                DataObject.newInteger8Data(ATTRIBUTE_ID_TIME), DataObject.newUInteger16Data(0)));
+
+        final DataObject fromValue = this.dlmsHelperService.asDataObject(beginDateTime);
+        final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
+
+        /*
+         * As long as specifying a subset of captured objects from the buffer
+         * through selectedValues does not work, retrieve all captured objects
+         * by setting selectedValues to an empty array.
+         */
+        final DataObject selectedValues = DataObject.newArrayData(Collections.<DataObject> emptyList());
+
+        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
+                toValue, selectedValues));
+
+        return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
-
 }

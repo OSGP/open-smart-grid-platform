@@ -57,6 +57,9 @@ public class DataObjectToEventListConverter {
         }
 
         final DateTime dateTime = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0));
+        if (!eventData.get(1).isNumber()) {
+            throw new ProtocolAdapterException("eventData value is not a number");
+        }
         final Short code = eventData.get(1).value();
 
         LOGGER.info("Event time is {} and event code is {}", dateTime, code);
