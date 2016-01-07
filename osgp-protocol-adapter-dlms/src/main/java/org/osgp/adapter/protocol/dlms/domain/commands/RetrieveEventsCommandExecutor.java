@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -67,8 +66,6 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     @Override
     public List<Event> execute(final LnClientConnection conn, final FindEventsQuery findEventsQuery)
             throws IOException, ProtocolAdapterException, TimeoutException {
-
-        final List<Event> eventList = new ArrayList<>();
 
         final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
                 findEventsQuery.getFrom(), findEventsQuery.getUntil());
