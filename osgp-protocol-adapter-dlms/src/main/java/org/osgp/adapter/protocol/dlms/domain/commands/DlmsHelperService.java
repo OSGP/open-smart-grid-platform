@@ -22,6 +22,7 @@ import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.internal.asn1.cosem.Data.Choices;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,8 +237,21 @@ public class DlmsHelperService {
             objectText = String.valueOf(dataObject.rawValue());
         }
 
-        return "DataObject: Choice=" + dataObject.choiceIndex().name() + "(" + dataObject.choiceIndex().getValue()
-                + "), ResultData is" + dataType + ", value=[" + dataObject.rawValue().getClass().getName() + "]: "
+        final Choices choiceIndex = dataObject.choiceIndex();
+        final String choiceText;
+        if (choiceIndex == null) {
+            choiceText = "null";
+        } else {
+            choiceText = choiceIndex.name() + "(" + choiceIndex.getValue() + ")";
+        }
+        final Object rawValue = dataObject.rawValue();
+        final String rawValueClass;
+        if (rawValue == null) {
+            rawValueClass = "null";
+        } else {
+            rawValueClass = rawValue.getClass().getName();
+        }
+        return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
                 + objectText;
     }
 
