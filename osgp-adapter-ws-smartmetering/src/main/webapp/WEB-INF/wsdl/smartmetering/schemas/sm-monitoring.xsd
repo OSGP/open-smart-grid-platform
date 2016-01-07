@@ -239,7 +239,7 @@
 	</xsd:simpleType>
 	
 	<xsd:complexType name="AmrProfileStatusCode">
-		<xsd:sequence maxOccurs="unbounded">
+		<xsd:sequence maxOccurs="unbounded" minOccurs="0">
 			<xsd:element name="AmrProfileStatusCodeFlag" type="common:AmrProfileStatusCodeFlag" />
 		</xsd:sequence>
 	</xsd:complexType>
@@ -247,12 +247,12 @@
 	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:dateTime" />
-			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
-			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue"
-				minOccurs="0" />
-			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
-			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue"
-				minOccurs="0" />
+			<xsd:element name="ActiveEnergyImport" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyExport" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" minOccurs="0" />
 			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>

@@ -28,8 +28,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsConverter
-extends
-BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+        extends
+        BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsConverter.class);
 
@@ -56,6 +56,8 @@ BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws
                     AmrProfileStatusCode.class);
 
             meterReads.setLogTime(convertedDate);
+            meterReads.setActiveEnergyImport(m.getActiveEnergyImport());
+            meterReads.setActiveEnergyExport(m.getActiveEnergyExport());
             meterReads.setActiveEnergyImportTariffOne(m.getActiveEnergyImportTariffOne());
             meterReads.setActiveEnergyImportTariffTwo(m.getActiveEnergyImportTariffTwo());
             meterReads.setActiveEnergyExportTariffOne(m.getActiveEnergyExportTariffOne());
@@ -78,7 +80,8 @@ BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode.class);
 
             meterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(reads
-                    .getLogTime().toGregorianCalendar().getTime(), reads.getActiveEnergyImportTariffOne(), reads
+                    .getLogTime().toGregorianCalendar().getTime(), reads.getActiveEnergyImport(), reads
+                    .getActiveEnergyExport(), reads.getActiveEnergyImportTariffOne(), reads
                     .getActiveEnergyImportTariffTwo(), reads.getActiveEnergyExportTariffOne(), reads
                     .getActiveEnergyExportTariffTwo(), amrProfileStatusCode));
         }
