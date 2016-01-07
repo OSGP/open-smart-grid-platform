@@ -51,7 +51,23 @@ public class DlmsHelperService {
 
     public Long readLong(final GetResult getResult, final String description) throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        final DataObject resultData = getResult.resultData();
+        return this.readLong(getResult.resultData(), description);
+    }
+
+    public Long readLongNotNull(final GetResult getResult, final String description) throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        return this.readLongNotNull(getResult.resultData(), description);
+    }
+
+    public Long readLongNotNull(final DataObject resultData, final String description) throws ProtocolAdapterException {
+        final Long result = this.readLong(resultData, description);
+        if (result == null) {
+            throw new ProtocolAdapterException(String.format("Unexpected null value for %s,", description));
+        }
+        return result;
+    }
+
+    public Long readLong(final DataObject resultData, final String description) throws ProtocolAdapterException {
         LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
         if (resultData == null || resultData.isNull()) {
             return null;
