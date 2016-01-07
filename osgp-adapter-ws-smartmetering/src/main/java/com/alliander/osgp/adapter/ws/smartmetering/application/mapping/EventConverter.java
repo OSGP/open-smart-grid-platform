@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 
 public class EventConverter extends
-        BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> {
+BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventConverter.class);
 
@@ -35,7 +35,7 @@ public class EventConverter extends
 
         try {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType eventType = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType
-                    .getValues()[source.getEventCode()];
+                    .getValue(source.getEventCode());
             final XMLGregorianCalendar timestamp = DatatypeFactory.newInstance().newXMLGregorianCalendar(
                     source.getTimestamp().toGregorianCalendar());
             final com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event event = new com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event();
