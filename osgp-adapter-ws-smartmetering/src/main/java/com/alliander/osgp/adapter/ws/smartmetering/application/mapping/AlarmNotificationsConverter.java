@@ -14,18 +14,13 @@ import java.util.TreeSet;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
 public class AlarmNotificationsConverter
-        extends
-BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AlarmNotificationsConverter.class);
+extends
+        BidirectionalConverter<AlarmNotifications, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications convertTo(

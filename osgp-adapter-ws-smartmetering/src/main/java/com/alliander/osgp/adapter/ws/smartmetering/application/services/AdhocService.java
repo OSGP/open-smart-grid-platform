@@ -13,13 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
 @Service(value = "wsSmartMeteringAdhocService")
 @Validated
@@ -33,9 +34,11 @@ public class AdhocService {
     @Autowired
     private SmartMeteringRequestMessageSender smartMeteringRequestMessageSender;
 
+    @Autowired
+    private MeterResponseDataService meterResponseDataService;
+
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest) {
 
         LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -52,9 +55,8 @@ public class AdhocService {
         return correlationUid;
     }
 
-    public String synchronizeTime(final String organisationIdentification,
-            final SynchronizeTimeRequest synchronizeTimeRequest) throws FunctionalException {
-        return this.enqueueSynchronizeTimeRequest(organisationIdentification,
-                synchronizeTimeRequest.getDeviceIdentification(), synchronizeTimeRequest);
+    public MeterResponseData dequeueSynchronizeTimeResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
     }
 }

@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.ws.core.application.mapping.ws.EventTypeConver
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayStatus;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
@@ -161,8 +162,8 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     newEan.setDescription(ean.getDescription());
                     eans.add(newEan);
                 }
-
                 destination.getEans().addAll(eans);
+
                 if (ssld.getRelayStatusses() != null) {
                     RelayStatus temp = null;
                     for (final com.alliander.osgp.domain.core.entities.RelayStatus r : ssld.getRelayStatusses()) {
@@ -175,6 +176,17 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 }
 
                 destination.setInMaintenance(source.isInMaintenance());
+
+                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization> deviceAuthorizations = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization>();
+                for (final DeviceAuthorization deviceAuthorisation : source.getAuthorizations()) {
+                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization newDeviceAuthorization = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization();
+
+                    newDeviceAuthorization.setFunctionGroup(deviceAuthorisation.getFunctionGroup().name());
+                    newDeviceAuthorization.setOrganisation(deviceAuthorisation.getOrganisation()
+                            .getOrganisationIdentification());
+                    deviceAuthorizations.add(newDeviceAuthorization);
+                }
+                destination.getDeviceAuthorizations().addAll(deviceAuthorizations);
 
                 return destination;
             }

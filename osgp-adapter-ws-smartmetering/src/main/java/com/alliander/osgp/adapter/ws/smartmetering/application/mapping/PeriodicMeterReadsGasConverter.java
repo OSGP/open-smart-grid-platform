@@ -21,15 +21,15 @@ import ma.glasnost.orika.metadata.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGas;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 
 public class PeriodicMeterReadsGasConverter
-extends
-BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
+        extends
+        BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsGasConverter.class);
 
@@ -39,7 +39,8 @@ BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapte
         final PeriodicMeterReadsGasResponse periodicMeterReadsResponse = new PeriodicMeterReadsGasResponse();
         periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
         final List<PeriodicMeterReadsGas> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReadsGas();
-        for (final MeterReadsGas m : source.getMeterReadsGas()) {
+        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas m : source
+                .getMeterReadsGas()) {
             final PeriodicMeterReadsGas meterReads = new PeriodicMeterReadsGas();
             final GregorianCalendar c = new GregorianCalendar();
             c.setTime(m.getLogTime());
@@ -50,6 +51,9 @@ BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapte
                 LOGGER.error("JAXB mapping: An error occured while converting calendar types.", e);
                 convertedDate = null;
             }
+            final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(m.getAmrProfileStatusCode(),
+                    AmrProfileStatusCode.class);
+
             meterReads.setLogTime(convertedDate);
             meterReads.setConsumption(m.getConsumption());
             c.setTime(m.getCaptureTime());
@@ -60,6 +64,7 @@ BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapte
                 convertedDate = null;
             }
             meterReads.setCaptureTime(convertedDate);
+            meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
             periodicMeterReads.add(meterReads);
         }
         return periodicMeterReadsResponse;
@@ -68,10 +73,16 @@ BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapte
     @Override
     public PeriodicMeterReadsContainerGas convertFrom(final PeriodicMeterReadsGasResponse source,
             final Type<PeriodicMeterReadsContainerGas> destinationType) {
-        final List<MeterReadsGas> meterReads = new ArrayList<MeterReadsGas>(source.getPeriodicMeterReadsGas().size());
+        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> meterReads = new ArrayList<>(
+                source.getPeriodicMeterReadsGas().size());
         for (final PeriodicMeterReadsGas reads : source.getPeriodicMeterReadsGas()) {
-            meterReads.add(new MeterReadsGas(reads.getLogTime().toGregorianCalendar().getTime(),
-                    reads.getConsumption(), reads.getCaptureTime().toGregorianCalendar().getTime()));
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade
+                    .map(reads.getAmrProfileStatusCode(),
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode.class);
+
+            meterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas(reads
+                    .getLogTime().toGregorianCalendar().getTime(), reads.getConsumption(), reads.getCaptureTime()
+                    .toGregorianCalendar().getTime(), amrProfileStatusCode));
         }
         return new PeriodicMeterReadsContainerGas(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()

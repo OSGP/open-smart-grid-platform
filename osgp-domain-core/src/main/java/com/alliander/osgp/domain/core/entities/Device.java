@@ -53,7 +53,7 @@ public class Device {
     public static final String SSLD_TYPE = "SSLD";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     protected Long id;
 
@@ -147,9 +147,6 @@ public class Device {
 
     // private boolean hasSchedule;
 
-    @Transient
-    private final List<String> organisations = new ArrayList<String>();
-
     @ManyToOne()
     @JoinColumn(name = "protocol_info_id")
     private ProtocolInfo protocolInfo;
@@ -164,6 +161,9 @@ public class Device {
 
     @Column
     private boolean inMaintenance;
+
+    @Transient
+    private final List<String> organisations = new ArrayList<String>();
 
     public Device() {
         // Default constructor

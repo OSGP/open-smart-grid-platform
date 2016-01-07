@@ -32,20 +32,29 @@
         <wsdl:part element="smadhoc:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
         </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="SynchronizeTimeAsyncResponse">
+        <wsdl:part element="smadhoc:SynchronizeTimeAsyncResponse" name="SynchronizeTimeAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SynchronizeTimeAsyncRequest">
+        <wsdl:part element="smadhoc:SynchronizeTimeAsyncRequest" name="SynchronizeTimeAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:message name="SynchronizeTimeResponse">
         <wsdl:part element="smadhoc:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
         </wsdl:part>
     </wsdl:message>
 
     <wsdl:portType name="SmartmeteradhocPort">
-   
         <wsdl:operation name="SynchronizeTime">
-            <wsdl:input message="tns:SynchronizeTimeRequest" name="SynchronizeTimeRequest">
-            </wsdl:input>
-            <wsdl:output message="tns:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
-            </wsdl:output>
+            <wsdl:input message="tns:SynchronizeTimeRequest" name="SynchronizeTimeRequest" />
+            <wsdl:output message="tns:SynchronizeTimeAsyncResponse" name="SynchronizeTimeAsyncResponse" />
         </wsdl:operation>
-
+        
+        <wsdl:operation name="GetSynchronizeTimeResponse">
+            <wsdl:input message="tns:SynchronizeTimeAsyncRequest" name="SynchronizeTimeAsyncRequest" />
+            <wsdl:output message="tns:SynchronizeTimeResponse" name="SynchronizeTimeResponse" />
+        </wsdl:operation>
     </wsdl:portType>
     
     <wsdl:binding name="SmartmeteradhocPortSoap11" type="tns:SmartmeteradhocPort">
@@ -54,6 +63,19 @@
         <wsdl:operation name="SynchronizeTime">
             <soap:operation soapAction="" />
             <wsdl:input name="SynchronizeTimeRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SynchronizeTimeAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSynchronizeTimeResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SynchronizeTimeAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
 				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />

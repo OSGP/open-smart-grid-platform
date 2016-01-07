@@ -8,13 +8,12 @@
         http://www.apache.org/licenses/LICENSE-2.0
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>parent-platform</artifactId>
     <groupId>com.alliander.osgp</groupId>
-    <version>0.11.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>parent-platform</name>
     <!-- Description, Organization, Licences, URL and Distribution Management 
@@ -33,6 +32,20 @@
     <!-- URL is passed in as a maven argument: -Dmaven.site.url=http://my/url/for/the/site -->
     <url>${maven.site.url}</url>
     <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>smartsociety-releases</id>
+      <name>Smart Society Release Repo</name>
+      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-releases/</url>
+      <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>smartsociety-snapshots</id>
+      <name>Smart Society Development Repo</name>
+      <url>http://buildserver01.cloudapp.net:8081/nexus/content/repositories/smartsociety-snapshots/</url>
+	<layout>default</layout>
+    </snapshotRepository>
         <site>
             <id>platform</id>
             <name>platform</name>
@@ -43,7 +56,8 @@
 
     <properties>
         <module.baseUri>${project.baseUri}/../</module.baseUri>
-        <osgp.version>0.11.0-SNAPSHOT</osgp.version>
+        <osgp.version>${pom.version}</osgp.version>
+        <shared.version>3.1.0-SNAPSHOT</shared.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>    
         <spring.version>4.2.0.RELEASE</spring.version>
@@ -96,12 +110,12 @@
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>osgp-dto</artifactId>
-                <version>${osgp.version}</version>
+                <version>${shared.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
                 <artifactId>shared</artifactId>
-                <version>${osgp.version}</version>
+                <version>${shared.version}</version>
             </dependency>
 
             <dependency>
@@ -481,6 +495,26 @@
     <build>
         <pluginManagement>
             <plugins>
+
+	    <plugin>
+		<groupId>external.atlassian.jgitflow</groupId>
+		<artifactId>jgitflow-maven-plugin</artifactId>
+		<version>1.0-m5.1</version>
+		<configuration>
+		    <pushFeatures>true</pushFeatures>
+		    <pushHotfixes>true</pushHotfixes>
+		    <pushReleases>true</pushReleases>
+		    <enableSshAgent>true</enableSshAgent>
+		    <flowInitContext>
+			<masterBranchName>master</masterBranchName>
+			<developBranchName>development</developBranchName>
+			<featureBranchPrefix>feature-</featureBranchPrefix>
+			<releaseBranchPrefix>release-</releaseBranchPrefix>
+			<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+			<versionTagPrefix>${project.artifactId}-</versionTagPrefix>
+		    </flowInitContext>
+		</configuration>
+	    </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

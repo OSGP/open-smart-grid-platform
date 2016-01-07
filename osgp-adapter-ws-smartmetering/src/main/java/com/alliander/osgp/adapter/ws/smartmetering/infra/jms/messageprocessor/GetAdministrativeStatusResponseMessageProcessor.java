@@ -16,39 +16,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
-import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.repositories.MeterResponseDataRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-@Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
-public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMessageProcessor {
+@Component("domainSmartMeteringGetAdministrativeStatusResponseMessageProcessor")
+public class GetAdministrativeStatusResponseMessageProcessor extends DomainResponseMessageProcessor {
+
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsresponseMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusResponseMessageProcessor.class);
 
     @Autowired
     private NotificationService notificationService;
 
     @Autowired
-    private MeterResponseDataRepository meterResponseDataRepository;
+    private MeterResponseDataService meterResponseDataService;
 
-    @Autowired
-    private MonitoringMapper monitoringMapper;
-
-    protected PeriodicMeterReadsresponseMessageProcessor() {
-        super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
+    protected GetAdministrativeStatusResponseMessageProcessor() {
+        super(DeviceFunction.GET_ADMINISTRATIVE_STATUS);
     }
 
     @Override
     public void processMessage(final ObjectMessage objectMessage) throws JMSException {
-        LOGGER.debug("Processing smart metering periodic meter data response message");
+        LOGGER.debug("Processing smart metering get administrative status response message");
 
         String correlationUid = null;
         String messageType = null;
@@ -58,6 +55,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         final OsgpException osgpException = null;
 
         String result = null;
+        ResponseMessageResultType resultType = null;
         String message = null;
         NotificationType notificationType = null;
 
@@ -68,9 +66,9 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
             deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
 
             result = objectMessage.getStringProperty(Constants.RESULT);
+            resultType = ResponseMessageResultType.valueOf(objectMessage.getStringProperty(Constants.RESULT));
             message = objectMessage.getStringProperty(Constants.DESCRIPTION);
             notificationType = NotificationType.valueOf(messageType);
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -83,22 +81,10 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
 
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            if (objectMessage.getObject() instanceof PeriodicMeterReadContainer) {
-                final PeriodicMeterReadContainer data = (PeriodicMeterReadContainer) objectMessage.getObject();
-
-                // Convert the events to entity and save the periodicMeterReads
-                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
-                        messageType, deviceIdentification, correlationUid, data);
-                this.meterResponseDataRepository.save(meterResponseData);
-            } else {
-                final PeriodicMeterReadsContainerGas data = (PeriodicMeterReadsContainerGas) objectMessage.getObject();
-
-                // Convert the events to entity and save the periodicMeterReads
-                final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification,
-                        messageType, deviceIdentification, correlationUid, data);
-                this.meterResponseDataRepository.save(meterResponseData);
-            }
+            final AdministrativeStatusType data = (AdministrativeStatusType) objectMessage.getObject();
+            final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                    deviceIdentification, correlationUid, resultType, data);
+            this.meterResponseDataService.enqueue(meterResponseData);
 
             // Notifying
             this.notificationService.sendNotification(organisationIdentification, deviceIdentification, result,
@@ -107,5 +93,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends DomainResponseMe
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
         }
+
     }
+
 }

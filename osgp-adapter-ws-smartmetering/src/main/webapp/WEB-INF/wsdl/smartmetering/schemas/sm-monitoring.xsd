@@ -89,9 +89,9 @@
 	<!-- smart meter actual -->
 	<xsd:element name="ActualMeterReadsRequest">
 		<xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="common:DeviceIdentification"></xsd:extension>
-			</xsd:simpleContent>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
@@ -126,9 +126,9 @@
 	<!-- gas meter actual -->
 	<xsd:element name="ActualMeterReadsGasRequest">
 		<xsd:complexType>
-			<xsd:simpleContent>
-				<xsd:extension base="common:DeviceIdentification"></xsd:extension>
-			</xsd:simpleContent>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 
@@ -235,6 +235,12 @@
 			<xsd:enumeration value="INTERVAL" />
 		</xsd:restriction>
 	</xsd:simpleType>
+	
+	<xsd:complexType name="AmrProfileStatusCode">
+		<xsd:sequence maxOccurs="unbounded">
+			<xsd:element name="AmrProfileStatusCodeFlag" type="common:AmrProfileStatusCodeFlag" />
+		</xsd:sequence>
+	</xsd:complexType>
 
 	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
@@ -245,6 +251,7 @@
 			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
 			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue"
 				minOccurs="0" />
+			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -253,6 +260,7 @@
 			<xsd:element name="LogTime" type="xsd:dateTime" />
 			<xsd:element name="Consumption" type="tns:MeterValue" />
 			<xsd:element name="CaptureTime" type="xsd:dateTime" />
+			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
 

@@ -228,6 +228,9 @@
 			<xsd:sequence>
 				<xsd:element name="RelayStatuses" type="tns:RelayStatus" minOccurs="0" maxOccurs="unbounded" />
 			</xsd:sequence>
+			<xsd:sequence>
+				<xsd:element name="DeviceAuthorizations" type="tns:DeviceAuthorization" minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
 			<xsd:element name="InMaintenance" type="xsd:boolean" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
@@ -396,6 +399,13 @@
 					</xsd:simpleType>
 			</xsd:element>
 			<xsd:element name="description" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="DeviceAuthorization">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" name="functionGroup" type="xsd:string" />
+			<xsd:element minOccurs="0" name="organisation" type="xsd:string" />
 		</xsd:sequence>
 	</xsd:complexType>
 </xsd:schema>
