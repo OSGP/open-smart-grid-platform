@@ -15,7 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.domain.core.valueobjects.LightValue;
+import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -52,7 +56,7 @@ public class ScheduleManagementService extends AbstractService {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
-        if (Device.PSLD_TYPE.equals(device.getDeviceType())) {
+        if (Ssld.PSLD_TYPE.equals(device.getDeviceType())) {
             throw new FunctionalException(FunctionalExceptionType.TARIFF_SCHEDULE_NOT_ALLOWED_FOR_PSLD,
                     ComponentType.DOMAIN_TARIFF_SWITCHING, new ValidationException(
                             "Set tariff schedule is not allowed for PSLD."));
@@ -60,15 +64,15 @@ public class ScheduleManagementService extends AbstractService {
 
         // Reverse schedule switching for TARIFF_REVERSED relays.
         // FIX THIS
-        // for (final DeviceOutputSetting dos : device.getOutputSettings()) {
-        // if (dos.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
-        // for (final Schedule schedule : schedules) {
-        // for (final LightValue lightValue : schedule.getLightValue()) {
-        // lightValue.invertIsOn();
-        // }
-        // }
-        // }
-        // }
+        for (final DeviceOutputSetting dos : this.getSsldForDevice(device).getOutputSettings()) {
+            if (dos.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
+                for (final Schedule schedule : schedules) {
+                    for (final LightValue lightValue : schedule.getLightValue()) {
+                        lightValue.invertIsOn();
+                    }
+                }
+            }
+        }
 
         LOGGER.info("Mapping to schedule DTO");
 

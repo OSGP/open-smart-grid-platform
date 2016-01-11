@@ -29,58 +29,20 @@ import com.alliander.osgp.domain.core.valueobjects.RelayType;
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class Ssld extends Device {
+    /**
+     * Serial Version UID.
+     */
+    private static final long serialVersionUID = 1492794916633445439L;
 
-    // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @Column(name = "id")
-    // protected Long id;
+    /**
+     * Device type indicator for PSLD
+     */
+    public static final String PSLD_TYPE = "PSLD";
 
-    //
-    // @Column(nullable = false)
-    // private Date creationTime = new Date();
-    //
-    // @Column(nullable = false)
-    // private Date modificationTime = new Date();
-    //
-    // @Version
-    // private Long version = -1L;
-    //
-    // public final Long getId() {
-    // return this.id;
-    // }
-    //
-    // public final Date getCreationTime() {
-    // return (Date) this.creationTime.clone();
-    // }
-    //
-    // public final Date getModificationTime() {
-    // return (Date) this.modificationTime.clone();
-    // }
-    //
-    // public final Long getVersion() {
-    // return this.version;
-    // }
-    //
-    // public void setVersion(final Long newVersion) {
-    // this.version = newVersion;
-    // }
-    //
-    // /**
-    // * Method for actions to be taken before inserting.
-    // */
-    // @PrePersist
-    // private void prePersist() {
-    // final Date now = new Date();
-    // this.creationTime = now;
-    // this.modificationTime = now;
-    // }
-    //
-    // /**
-    // * Method for actions to be taken before updating.
-    // */
-    // @PreUpdate
-    // private void preUpdate() {
-    // this.modificationTime = new Date();
-    // }
+    /**
+     * Device type indicator for SSLD
+     */
+    public static final String SSLD_TYPE = "SSLD";
 
     @Column()
     private boolean hasPublicKey;
@@ -99,6 +61,10 @@ public class Ssld extends Device {
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<RelayStatus> relayStatusses;
+
+    public Ssld() {
+        // Default constructor.
+    }
 
     public Ssld(final String deviceIdentification, final String deviceType, final InetAddress networkAddress,
             final boolean activated, final boolean hasSchedule) {

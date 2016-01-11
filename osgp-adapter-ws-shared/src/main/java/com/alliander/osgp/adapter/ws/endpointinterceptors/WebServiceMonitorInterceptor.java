@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -168,6 +169,9 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
             soapMessage.writeTo(outputStream);
             final int dataSize = outputStream.size();
 
+            // final String message = new String(outputStream.toByteArray());
+            // LOGGER.info("soap message: {}", message);
+
             // Try to find the desired XML elements in the document.
             final Document document = soapMessage.getDocument();
             final String correlationUid = this.evaluateXPathExpression(document, XML_ELEMENT_CORRELATION_UID);
@@ -254,6 +258,16 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         // Read ApplicationName from header from request.
         final String appName = this.getHeaderValue(soapHeader, this.applicationName);
 
+        try {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            request.writeTo(outputStream);
+            final String message = new String(outputStream.toByteArray());
+            LOGGER.info("soap message: {}", message);
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         // Read correlationUid and deviceId from request.
         final Map<String, Object> requestData = this.parseSoapMessage(request);
 
@@ -264,6 +278,16 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         // Get the response.
         Assert.isInstanceOf(SoapMessage.class, messageContext.getResponse());
         final SoapMessage response = (SoapMessage) messageContext.getResponse();
+
+        try {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            response.writeTo(outputStream);
+            final String message = new String(outputStream.toByteArray());
+            LOGGER.info("soap message: {}", message);
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         // Read correlationUid and deviceId and result and data size from
         // response.

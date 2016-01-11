@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -40,34 +41,47 @@ public class DeviceManagementMapper extends ConfigurableMapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementMapper.class);
 
     @Autowired
-    private static SsldRepository ssldRepository;
+    private SsldRepository ssldRepository;
+
+    public DeviceManagementMapper() {
+        super(false);
+    }
+
+    @PostConstruct
+    private void initialize() {
+        this.init();
+    }
 
     @Override
     public void configure(final MapperFactory mapperFactory) {
-
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                        .byDefault().toClassMap());
+                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
-        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
+        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter(this.ssldRepository));
     }
 
     private static class DeviceConverter extends
-    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+
+        private SsldRepository ssldRepository;
+
+        public DeviceConverter(final SsldRepository ssldRepository) {
+            this.ssldRepository = ssldRepository;
+        }
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
                 final Type<Device> destinationType) {
-
             Ssld destination = null;
 
             if (source != null) {
@@ -116,7 +130,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
             if (source != null) {
                 final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
 
-                final Ssld ssld = ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
+                final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
 
                 for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
                     final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
