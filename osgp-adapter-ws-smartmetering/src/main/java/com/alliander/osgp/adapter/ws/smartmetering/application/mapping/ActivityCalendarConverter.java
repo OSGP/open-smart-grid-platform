@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
@@ -26,8 +27,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter
-        extends
-        BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType> {
+extends
+BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType> {
 
     @Override
     public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType convertTo(
@@ -73,8 +74,8 @@ public class ActivityCalendarConverter
     }
 
     private DayProfile processDayProfile(final DayType day) {
-        return new DayProfile((day.getDayId() != null ? day.getDayId().intValue() : null),
-                this.processDayProfileAction(day.getDaySchedule()));
+        final Integer dayId = day.getDayId() != null ? day.getDayId().intValue() : null;
+        return new DayProfile(dayId, this.processDayProfileAction(day.getDaySchedule()));
     }
 
     private List<DayProfileAction> processDayProfileAction(final DayProfileActionsType dayScheduleActionsType) {
@@ -88,8 +89,8 @@ public class ActivityCalendarConverter
     }
 
     private DayProfileAction processDayProfileActionType(final DayProfileActionType dpat) {
-        return new DayProfileAction((dpat.getScriptSelector() != null ? dpat.getScriptSelector().intValue() : null),
-                (dpat.getStartTime() != null ? dpat.getStartTime().toGregorianCalendar().getTime() : null));
-
+        final Integer scriptSelector = dpat.getScriptSelector() != null ? dpat.getScriptSelector().intValue() : null;
+        final Date startTime = dpat.getStartTime() != null ? dpat.getStartTime().toGregorianCalendar().getTime() : null;
+        return new DayProfileAction(scriptSelector, startTime);
     }
 }

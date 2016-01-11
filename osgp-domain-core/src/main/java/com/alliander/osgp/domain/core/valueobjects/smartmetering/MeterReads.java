@@ -10,28 +10,39 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class MeterReads implements Serializable {
+public abstract class MeterReads implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    // TODO add status
-
     private final Date logTime;
-    private final long activeEnergyImportTariffOne;
+    private final Long activeEnergyImport;
+    private final Long activeEnergyExport;
+    private final Long activeEnergyImportTariffOne;
     private final Long activeEnergyImportTariffTwo;
-    private final long activeEnergyExportTariffOne;
+    private final Long activeEnergyExportTariffOne;
     private final Long activeEnergyExportTariffTwo;
 
-    public MeterReads(Date logTime, long activeEnergyImportTariffOne, Long activeEnergyImportTariffTwo,
-            long activeEnergyExportTariffOne, Long activeEnergyExportTariffTwo) {
+    public MeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
+            final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
+            final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo) {
         this.logTime = logTime;
+        this.activeEnergyImport = activeEnergyImport;
+        this.activeEnergyExport = activeEnergyExport;
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
     }
 
-    public long getActiveEnergyImportTariffOne() {
+    public Long getActiveEnergyImport() {
+        return this.activeEnergyImport;
+    }
+
+    public Long getActiveEnergyExport() {
+        return this.activeEnergyExport;
+    }
+
+    public Long getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
     }
 
@@ -39,7 +50,7 @@ public class MeterReads implements Serializable {
         return this.activeEnergyImportTariffTwo;
     }
 
-    public long getActiveEnergyExportTariffOne() {
+    public Long getActiveEnergyExportTariffOne() {
         return this.activeEnergyExportTariffOne;
     }
 
