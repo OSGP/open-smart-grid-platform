@@ -97,19 +97,19 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final SetAdministrativeStatusAsyncRequest request) throws OsgpException {
 
         try {
+            final SetAdministrativeStatusResponse response = new SetAdministrativeStatusResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetAdministrativeStatusResponse(request.getCorrelationUid());
 
-            final SetAdministrativeStatusResponse response = this.configurationMapper.map(
-                    meterResponseData.getMessageData(), SetAdministrativeStatusResponse.class);
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
 
             return response;
-
         } catch (final Exception e) {
-            this.handleException(e);
+            throw this.handleException(e);
         }
-
-        return null;
     }
 
     @PayloadRoot(localPart = "GetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)

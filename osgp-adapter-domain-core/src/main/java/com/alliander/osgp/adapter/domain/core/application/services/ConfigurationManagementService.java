@@ -101,7 +101,7 @@ public class ConfigurationManagementService extends AbstractService {
         final List<DeviceOutputSetting> outputSettings = new ArrayList<>();
         for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
             outputSettings
-            .add(new DeviceOutputSetting(rm.getIndex(), rm.getAddress(), rm.getRelayType(), rm.getAlias()));
+                    .add(new DeviceOutputSetting(rm.getIndex(), rm.getAddress(), rm.getRelayType(), rm.getAlias()));
         }
 
         final Ssld ssld = this.findSsldForDevice(device);
@@ -166,10 +166,8 @@ public class ConfigurationManagementService extends AbstractService {
             for (final DeviceOutputSetting dos : outputSettings) {
                 if (dos.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
                     for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
-                        if (rm.getIndex() == dos.getInternalId()) {
-                            if (rm.getRelayType().equals(RelayType.TARIFF)) {
-                                rm.changeRelayType(RelayType.TARIFF_REVERSED);
-                            }
+                        if (rm.getIndex() == dos.getInternalId() && rm.getRelayType().equals(RelayType.TARIFF)) {
+                            rm.changeRelayType(RelayType.TARIFF_REVERSED);
                         }
                     }
                 }

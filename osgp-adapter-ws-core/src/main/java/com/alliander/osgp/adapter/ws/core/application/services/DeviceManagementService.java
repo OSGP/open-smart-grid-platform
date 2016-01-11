@@ -155,7 +155,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -244,10 +244,8 @@ public class DeviceManagementService {
         Sort.Direction sortDir = Sort.Direction.DESC;
         String sortedBy = "creationTime";
         if (deviceFilter != null) {
-            if (!StringUtils.isEmpty(deviceFilter.getSortDir())) {
-                if (deviceFilter.getSortDir().contains("asc")) {
-                    sortDir = Sort.Direction.ASC;
-                }
+            if (!StringUtils.isEmpty(deviceFilter.getSortDir()) && deviceFilter.getSortDir().contains("asc")) {
+                sortDir = Sort.Direction.ASC;
             }
             if (!StringUtils.isEmpty(deviceFilter.getSortedBy())) {
                 sortedBy = deviceFilter.getSortedBy();
@@ -359,7 +357,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

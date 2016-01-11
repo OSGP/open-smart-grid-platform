@@ -138,7 +138,7 @@
             </wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="GetSetSpecialDaysReponse">
+        <wsdl:operation name="GetSetSpecialDaysResponse">
             <wsdl:input message="tns:SetSpecialDaysAsyncRequest" name="SetSpecialDaysAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetSpecialDaysResponse" name="SetSpecialDaysResponse">
@@ -192,7 +192,7 @@
 			</wsdl:output> 
 		</wsdl:operation>
         
-        <wsdl:operation name="GetSetAdministrativeStatusReponse">
+        <wsdl:operation name="GetSetAdministrativeStatusResponse">
             <wsdl:input message="tns:SetAdministrativeStatusAsyncRequest" name="SetAdministrativeStatusAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetAdministrativeStatusResponse" name="SetAdministrativeStatusResponse">
@@ -206,7 +206,7 @@
 			</wsdl:output> 
 		</wsdl:operation>
         
-        <wsdl:operation name="GetGetAdministrativeStatusReponse">
+        <wsdl:operation name="GetGetAdministrativeStatusResponse">
             <wsdl:input message="tns:GetAdministrativeStatusAsyncRequest" name="GetAdministrativeStatusAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:GetAdministrativeStatusResponse" name="GetAdministrativeStatusResponse">
@@ -229,7 +229,7 @@
             </wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="GetSetSpecialDaysReponse">
+        <wsdl:operation name="GetSetSpecialDaysResponse">
             <soap:operation soapAction="" />
             <wsdl:input name="SetSpecialDaysAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
@@ -331,7 +331,7 @@
         	</wsdl:output>
         </wsdl:operation>
         
-        <wsdl:operation name="GetSetAdministrativeStatusReponse">
+        <wsdl:operation name="GetSetAdministrativeStatusResponse">
             <soap:operation soapAction="" />
             <wsdl:input name="SetAdministrativeStatusAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
@@ -357,7 +357,7 @@
             </wsdl:output>			
 		</wsdl:operation>
         
-        <wsdl:operation name="GetGetAdministrativeStatusReponse">
+        <wsdl:operation name="GetGetAdministrativeStatusResponse">
             <soap:operation soapAction="" />
             <wsdl:input name="GetAdministrativeStatusAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />

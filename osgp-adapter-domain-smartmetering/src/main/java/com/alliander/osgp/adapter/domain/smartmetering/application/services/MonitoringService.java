@@ -20,8 +20,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -36,6 +36,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Service(value = "domainSmartMeteringMonitoringService")
 @Transactional(value = "transactionManager")
 public class MonitoringService {
+
+    private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG = "Device Response not ok. Unexpected Exception";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
@@ -98,7 +100,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -125,7 +127,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -171,20 +173,20 @@ public class MonitoringService {
     public void handleActualMeterReadsResponse(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final MeterReads actualMeterReadsDto) {
+            final ActualMeterReads actualMeterReadsDto) {
 
         LOGGER.info("handleActualMeterReadsResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result,
                         exception, this.monitoringMapper.map(actualMeterReadsDto,
-                                com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads.class)),
+                                com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads.class)),
                 messageType);
     }
 
@@ -197,7 +199,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -237,7 +239,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 

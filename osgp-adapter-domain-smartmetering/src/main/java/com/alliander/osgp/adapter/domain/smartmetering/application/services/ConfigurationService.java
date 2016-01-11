@@ -35,6 +35,9 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Transactional(value = "transactionManager")
 public class ConfigurationService {
 
+    private static final String SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG = "Sending request message to core.";
+    private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG = "Device Response not ok. Unexpected Exception";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
     @Autowired
@@ -66,7 +69,7 @@ public class ConfigurationService {
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        LOGGER.info("Sending request message to core.");
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
         final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
                 SpecialDaysRequest.class);
@@ -87,7 +90,7 @@ public class ConfigurationService {
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        LOGGER.info("Sending request message to core.");
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
         final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
                 setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
@@ -104,7 +107,7 @@ public class ConfigurationService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -120,9 +123,6 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
@@ -162,7 +162,7 @@ public class ConfigurationService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -180,7 +180,7 @@ public class ConfigurationService {
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
-        LOGGER.info("Sending request message to core.");
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, this.configurationMapper.map(administrativeStatusType,
                         com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class));
@@ -198,7 +198,7 @@ public class ConfigurationService {
 
         ResponseMessageResultType result = responseMessageResultType;
         if (osgpException != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", osgpException);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, osgpException);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -217,9 +217,6 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
 
@@ -254,7 +251,7 @@ public class ConfigurationService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 

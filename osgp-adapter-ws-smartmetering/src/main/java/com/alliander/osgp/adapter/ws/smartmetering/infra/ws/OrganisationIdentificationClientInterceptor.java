@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.ws;
 
 import javax.xml.namespace.QName;
 
-import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapHeader;
@@ -39,40 +38,39 @@ public class OrganisationIdentificationClientInterceptor implements ClientInterc
     }
 
     @Override
-    public boolean handleRequest(final MessageContext messageContext) throws WebServiceClientException {
+    public boolean handleRequest(final MessageContext messageContext) {
         final SoapMessage soapMessage = (SoapMessage) messageContext.getRequest();
         final SoapHeader soapHeader = soapMessage.getSoapHeader();
 
-        final QName organisationIdentificationHeaderName = QNameUtils.createQName(this.namespace,
+        final QName organisationIdentificationHeaderQName = QNameUtils.createQName(this.namespace,
                 this.organisationIdentificationHeaderName, "");
-        final SoapHeaderElement organisationElement = soapHeader.addHeaderElement(organisationIdentificationHeaderName);
+        final SoapHeaderElement organisationElement = soapHeader.addHeaderElement(organisationIdentificationHeaderQName);
         organisationElement.setText(this.organisationIdentification);
 
-        final QName applicationNameHeaderName = QNameUtils.createQName(this.namespace, this.applicationNameHeaderName,
+        final QName applicationNameHeaderQName = QNameUtils.createQName(this.namespace, this.applicationNameHeaderName,
                 "");
-        final SoapHeaderElement applicationElement = soapHeader.addHeaderElement(applicationNameHeaderName);
+        final SoapHeaderElement applicationElement = soapHeader.addHeaderElement(applicationNameHeaderQName);
         applicationElement.setText(this.applicationName);
 
-        final QName userNameHeaderName = QNameUtils.createQName(this.namespace, this.userNameHeaderName, "");
-        final SoapHeaderElement userElement = soapHeader.addHeaderElement(userNameHeaderName);
+        final QName userNameHeaderQName = QNameUtils.createQName(this.namespace, this.userNameHeaderName, "");
+        final SoapHeaderElement userElement = soapHeader.addHeaderElement(userNameHeaderQName);
         userElement.setText(this.userName);
 
         return true;
     }
 
     @Override
-    public boolean handleResponse(final MessageContext messageContext) throws WebServiceClientException {
+    public boolean handleResponse(final MessageContext messageContext) {
         return true;
     }
 
     @Override
-    public boolean handleFault(final MessageContext messageContext) throws WebServiceClientException {
+    public boolean handleFault(final MessageContext messageContext) {
         return true;
     }
 
     @Override
-    public void afterCompletion(final MessageContext messageContext, final Exception ex)
-            throws WebServiceClientException {
+    public void afterCompletion(final MessageContext messageContext, final Exception ex) {
         // Nothing needed here.
     }
 }
