@@ -72,6 +72,10 @@ public class InstallationService {
                 .findByDeviceIdentification(deviceIdentification);
         if (device == null) {
 
+            /*
+             * TODO see what needs to be done to have the IP address added to
+             * smartMeteringDeviceValueObject (and mapped)
+             */
             device = this.installationMapper.map(smartMeteringDeviceValueObject, SmartMeteringDevice.class);
 
             final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DSMR",
@@ -97,7 +101,7 @@ public class InstallationService {
                         com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevicDto), messageType);
+                deviceIdentification, device.getIpAddress(), smartMeteringDevicDto), messageType);
     }
 
     public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,
