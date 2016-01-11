@@ -13,7 +13,7 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 
 public class ActualMeterReadsConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads, MeterReads> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads, MeterReads> {
 
     @Override
     public MeterReads convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads source,
@@ -28,12 +28,8 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterRe
     public com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads convertFrom(final MeterReads source,
             final Type<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads> destinationType) {
 
-        // return new
-        // com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads(source.getLogTime(),
-        // source.getActiveEnergyImportTariffOne(),
-        // source.getActiveEnergyImportTariffTwo(),
-        // source.getActiveEnergyExportTariffOne(),
-        // source.getActiveEnergyExportTariffTwo());
-        return null;
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads(source.getLogTime(),
+                source.getActiveEnergyImportTariffOne(), source.getActiveEnergyImportTariffTwo(),
+                source.getActiveEnergyExportTariffOne(), source.getActiveEnergyExportTariffTwo());
     }
 }

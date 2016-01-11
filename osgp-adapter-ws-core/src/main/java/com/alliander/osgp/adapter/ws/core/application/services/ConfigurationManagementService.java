@@ -23,9 +23,6 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
-import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
@@ -57,16 +54,6 @@ public class ConfigurationManagementService {
         // Parameterless constructor required for transactions
     }
 
-    /**
-     * @param organisationIdentification
-     * @param deviceIdentification
-     * @param configuration
-     * @return correlationUid
-     * @throws UnknownEntityException
-     * @throws UnregisteredDeviceException
-     * @throws NotAuthorizedException
-     * @throws FunctionalException
-     */
     public String enqueueSetConfigurationRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Valid final Configuration configuration,
             final DateTime scheduledTime) throws FunctionalException {

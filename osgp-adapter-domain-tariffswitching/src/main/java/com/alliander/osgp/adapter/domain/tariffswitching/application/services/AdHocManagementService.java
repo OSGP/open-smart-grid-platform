@@ -7,8 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.tariffswitching.application.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
@@ -65,12 +64,10 @@ public class AdHocManagementService extends AbstractService {
      *            identification of device
      * @param allowedDomainType
      *            domain type performing requesting the status
+     *
      * @return status of device
+     *
      * @throws FunctionalException
-     * @throws UnknownEntityException
-     * @throws UnregisteredDeviceException
-     * @throws NotAuthorizedException
-     * @throws IOException
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
@@ -93,7 +90,7 @@ public class AdHocManagementService extends AbstractService {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = exception;
-        final DeviceStatusMapped deviceStatusMapped = null;
+        DeviceStatusMapped deviceStatusMapped = null;
 
         try {
             if (deviceResult == ResponseMessageResultType.NOT_OK || exception != null) {
@@ -103,25 +100,19 @@ public class AdHocManagementService extends AbstractService {
 
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
 
-            // FIX THIS
-            // final List<DeviceOutputSetting> deviceOutputSettings =
-            // device.getOutputSettings();
-            //
-            // final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
-            // for (final DeviceOutputSetting dos : deviceOutputSettings) {
-            // dosMap.put(dos.getInternalId(), dos);
-            // }
-            //
-            // deviceStatusMapped = new
-            // DeviceStatusMapped(filterTariffValues(status.getLightValues(),
-            // dosMap,
-            // allowedDomainType), filterLightValues(status.getLightValues(),
-            // dosMap, allowedDomainType),
-            // status.getPreferredLinkType(), status.getActualLinkType(),
-            // status.getLightType(),
-            // status.getEventNotificationsMask());
+            final List<DeviceOutputSetting> deviceOutputSettings = ssld.getOutputSettings();
+
+            final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
+            for (final DeviceOutputSetting dos : deviceOutputSettings) {
+                dosMap.put(dos.getInternalId(), dos);
+            }
+
+            deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
+                    allowedDomainType), filterLightValues(status.getLightValues(), dosMap, allowedDomainType),
+                    status.getPreferredLinkType(), status.getActualLinkType(), status.getLightType(),
+                    status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);

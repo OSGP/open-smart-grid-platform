@@ -63,7 +63,6 @@ public class ScheduleManagementService extends AbstractService {
         }
 
         // Reverse schedule switching for TARIFF_REVERSED relays.
-        // FIX THIS
         for (final DeviceOutputSetting dos : this.getSsldForDevice(device).getOutputSettings()) {
             if (dos.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
                 for (final Schedule schedule : schedules) {

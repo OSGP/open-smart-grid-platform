@@ -36,11 +36,13 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
@@ -117,6 +119,9 @@ public class DeviceManagementService {
     private WritableDeviceRepository writableDeviceRepository;
 
     @Autowired
+    private WritableSsldRepository writableSsldRepository;
+
+    @Autowired
     @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
     private String netManagementOrganisation;
 
@@ -147,7 +152,6 @@ public class DeviceManagementService {
         }
     }
 
-    // TODO remove
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
@@ -446,10 +450,10 @@ public class DeviceManagementService {
                 updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
-        // FIX THIS
-        // existingDevice.updateOutputSettings(updateDevice.receiveOutputSettings());
+        final Ssld ssld = this.writableSsldRepository.findOne(existingDevice.getId());
+        ssld.updateOutputSettings(this.writableSsldRepository.findOne(updateDevice.getId()).receiveOutputSettings());
 
-        this.writableDeviceRepository.save(existingDevice);
+        this.writableDeviceRepository.save(ssld);
     }
 
     @Transactional(value = "writableTransactionManager")
