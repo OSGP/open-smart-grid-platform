@@ -97,8 +97,7 @@ public class ConfigurationService extends DlmsApplicationService {
             }
             LOGGER.info("******************************************************");
 
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
@@ -149,8 +148,7 @@ public class ConfigurationService extends DlmsApplicationService {
             }
             LOGGER.info("******************************************************");
 
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
@@ -182,8 +180,7 @@ public class ConfigurationService extends DlmsApplicationService {
         LnClientConnection conn = null;
         DlmsDevice device = null;
         try {
-            final String deviceIdentification = messageMetadata.getDeviceIdentification();
-            device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             LOGGER.info("Device for Set Administrative Status is: {}", device);
 
@@ -220,8 +217,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         LnClientConnection conn = null;
         try {
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
@@ -252,7 +248,7 @@ public class ConfigurationService extends DlmsApplicationService {
         DlmsDevice device = null;
         try {
             final String deviceIdentification = messageMetadata.getDeviceIdentification();
-            device = this.domainHelperService.findDlmsDevice(deviceIdentification);
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             LOGGER.info("Device for Activity Calendar is: {}", device);
 
@@ -293,8 +289,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
             LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
