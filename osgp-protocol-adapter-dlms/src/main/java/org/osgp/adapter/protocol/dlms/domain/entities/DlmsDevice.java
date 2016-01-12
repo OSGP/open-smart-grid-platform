@@ -7,8 +7,13 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -40,6 +45,9 @@ public class DlmsDevice extends AbstractEntity {
 
     @Column
     private boolean HLS5Active;
+
+    @OneToMany(mappedBy = "dlmsDevice", cascade = CascadeType.PERSIST)
+    private List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
     private String masterKey;
@@ -161,5 +169,16 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
+    }
+
+    public List<SecurityKey> getSecurityKeys() {
+        return this.securityKeys;
+    }
+
+    public void addSecurityKey(final SecurityKey securityKey) {
+        this.securityKeys.add(securityKey);
+        if (securityKey.getDlmsDevice() == null) {
+            securityKey.setDlmsDevice(this);
+        }
     }
 }

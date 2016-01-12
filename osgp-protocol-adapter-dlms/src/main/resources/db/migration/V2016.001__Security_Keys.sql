@@ -1,0 +1,29 @@
+CREATE TABLE security_key (
+    id bigint NOT NULL,
+    creation_time timestamp without time zone NOT NULL,
+    modification_time timestamp without time zone NOT NULL,
+    version bigint,
+    dlms_device_id bigint references dlms_device(id),,
+    security_key_type character varying(255) NOT NULL
+    valid_from timestamp without time zone NOT NULL,
+    valid_to timestamp without time zone,
+    security_key character varying(255) NOT NULL
+);
+
+ALTER TABLE public.security_key OWNER TO osp_admin;
+
+CREATE SEQUENCE security_key_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE public.security_key_id_seq OWNER TO osp_admin;
+
+ALTER SEQUENCE security_key_id_seq OWNED BY security_key.id;
+
+ALTER TABLE ONLY security_key ALTER COLUMN id SET DEFAULT nextval('security_key_id_seq'::regclass);
+    
+ALTER TABLE ONLY security_key
+    ADD CONSTRAINT security_key_pkey PRIMARY KEY (id);
