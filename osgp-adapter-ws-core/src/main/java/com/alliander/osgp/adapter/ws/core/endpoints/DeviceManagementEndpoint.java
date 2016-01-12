@@ -292,8 +292,8 @@ public class DeviceManagementEndpoint {
                 .getUpdatedDevice().getDeviceIdentification());
 
         try {
-            final com.alliander.osgp.domain.core.entities.Device device = this.deviceManagementMapper.map(
-                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Device.class);
+            final com.alliander.osgp.domain.core.entities.Ssld device = this.deviceManagementMapper.map(
+                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Ssld.class);
 
             this.deviceManagementService.updateDevice(organisationIdentification, device);
 

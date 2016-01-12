@@ -155,7 +155,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -357,7 +357,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -412,7 +412,7 @@ public class DeviceManagementService {
     }
 
     @Transactional(value = "writableTransactionManager")
-    public void updateDevice(@Identification final String organisationIdentification, @Valid final Device updateDevice)
+    public void updateDevice(@Identification final String organisationIdentification, @Valid final Ssld updateDevice)
             throws FunctionalException {
 
         final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(updateDevice
@@ -424,7 +424,6 @@ public class DeviceManagementService {
                     new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
         }
 
-        // TODO add support for changes to device identification
         final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
                 existingDevice, DeviceFunctionGroup.OWNER);
 
@@ -449,9 +448,9 @@ public class DeviceManagementService {
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
         final Ssld ssld = this.writableSsldRepository.findOne(existingDevice.getId());
-        ssld.updateOutputSettings(this.writableSsldRepository.findOne(updateDevice.getId()).receiveOutputSettings());
+        ssld.updateOutputSettings(updateDevice.receiveOutputSettings());
 
-        this.writableDeviceRepository.save(ssld);
+        this.writableSsldRepository.save(ssld);
     }
 
     @Transactional(value = "writableTransactionManager")

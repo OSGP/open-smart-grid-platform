@@ -68,6 +68,74 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
         mapperFactory.getConverterFactory().registerConverter(new DeviceConverter(this.ssldRepository));
+        mapperFactory.getConverterFactory().registerConverter(new SsldConverter());
+    }
+
+    private static class SsldConverter extends
+    BidirectionalConverter<Ssld, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * ma.glasnost.orika.converter.BidirectionalConverter#convertTo(java
+         * .lang.Object, ma.glasnost.orika.metadata.Type)
+         */
+        @Override
+        public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(final Ssld source,
+                final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
+            return DeviceConverter.convertToStatic(source, destinationType);
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * ma.glasnost.orika.converter.BidirectionalConverter#convertFrom(java
+         * .lang.Object, ma.glasnost.orika.metadata.Type)
+         */
+        @Override
+        public Ssld convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
+                final Type<Ssld> destinationType) {
+            Ssld destination = null;
+
+            if (source != null) {
+
+                if (source.getGpsLatitude() == null) {
+                    source.setGpsLatitude("0");
+                }
+                if (source.getGpsLongitude() == null) {
+                    source.setGpsLongitude("0");
+                }
+
+                destination = new Ssld(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
+                        source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
+                        source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()), Float.valueOf(source
+                                .getGpsLongitude()));
+
+                final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
+
+                for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
+                        .getOutputSettings()) {
+                    com.alliander.osgp.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting();
+
+                    newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
+                            deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
+                            deviceOutputSetting.getRelayType() == null ? null
+                                    : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
+                                            .getRelayType().name()), deviceOutputSetting.getAlias());
+
+                    deviceOutputSettings.add(newDeviceOutputSetting);
+                }
+                destination.updateOutputSettings(deviceOutputSettings);
+                destination.setPublicKeyPresent(source.isPublicKeyPresent());
+                destination.setHasSchedule(source.isHasSchedule());
+
+                return destination;
+            }
+            return null;
+        }
+
     }
 
     private static class DeviceConverter extends
@@ -75,8 +143,23 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
         private SsldRepository ssldRepository;
 
+        private static DeviceConverter instance;
+
         public DeviceConverter(final SsldRepository ssldRepository) {
             this.ssldRepository = ssldRepository;
+            instance = this;
+        }
+
+        public static Device convertFromStatic(
+                final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
+                final Type<Device> destinationType) {
+            return instance.convertFrom(source, destinationType);
+        }
+
+        public static com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertToStatic(
+                final Device source,
+                final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
+            return instance.convertTo(source, destinationType);
         }
 
         @Override
@@ -132,15 +215,40 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                 final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
 
-                for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
-                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
+                if (ssld != null) {
+                    for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+                        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
 
-                    newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
-                    newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
-                    newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
-                            .valueOf(deviceOutputSetting.getOutputType().name()));
-                    newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
-                    deviceOutputSettings.add(newDeviceOutputSetting);
+                        newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
+                        newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
+                        newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null
+                                : RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
+                        newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
+                        deviceOutputSettings.add(newDeviceOutputSetting);
+                    }
+
+                    destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
+                    destination.setHasSchedule(ssld.getHasSchedule());
+
+                    final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
+                    for (final com.alliander.osgp.domain.core.entities.Ean ean : ssld.getEans()) {
+                        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
+                        newEan.setCode(ean.getCode());
+                        newEan.setDescription(ean.getDescription());
+                        eans.add(newEan);
+                    }
+                    destination.getEans().addAll(eans);
+
+                    if (ssld.getRelayStatusses() != null) {
+                        RelayStatus temp = null;
+                        for (final com.alliander.osgp.domain.core.entities.RelayStatus r : ssld.getRelayStatusses()) {
+                            temp = this.convertRelayStatus(r);
+
+                            if (temp != null) {
+                                destination.getRelayStatuses().add(temp);
+                            }
+                        }
+                    }
                 }
 
                 destination.getOutputSettings().addAll(deviceOutputSettings);
@@ -154,7 +262,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setContainerMunicipality(source.getContainerMunicipality());
                 destination.setDeviceIdentification(source.getDeviceIdentification());
                 destination.setDeviceType(source.getDeviceType());
-                destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
 
                 if (source.getGpsLatitude() != null) {
                     destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
@@ -163,31 +270,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     destination.setGpsLongitude(Float.toString(source.getGpsLongitude()));
                 }
 
-                destination.setHasSchedule(ssld.getHasSchedule());
                 destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
                         .toString());
                 destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
                 destination.getOrganisations().addAll(source.getOrganisations());
-
-                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
-                for (final com.alliander.osgp.domain.core.entities.Ean ean : ssld.getEans()) {
-                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
-                    newEan.setCode(ean.getCode());
-                    newEan.setDescription(ean.getDescription());
-                    eans.add(newEan);
-                }
-                destination.getEans().addAll(eans);
-
-                if (ssld.getRelayStatusses() != null) {
-                    RelayStatus temp = null;
-                    for (final com.alliander.osgp.domain.core.entities.RelayStatus r : ssld.getRelayStatusses()) {
-                        temp = this.convertRelayStatus(r);
-
-                        if (temp != null) {
-                            destination.getRelayStatuses().add(temp);
-                        }
-                    }
-                }
 
                 destination.setInMaintenance(source.isInMaintenance());
 
