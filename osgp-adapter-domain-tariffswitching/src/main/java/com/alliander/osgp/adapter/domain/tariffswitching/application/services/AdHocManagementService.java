@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.tariffswitching.application.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
@@ -57,7 +55,8 @@ public class AdHocManagementService extends AbstractService {
     // === GET STATUS ===
 
     /**
-     * Retrieve status of device and provide a mapped response (PublicLighting or TariffSwitching)
+     * Retrieve status of device and provide a mapped response (PublicLighting
+     * or TariffSwitching)
      *
      * @param organisationIdentification
      *            identification of organisation
@@ -65,16 +64,14 @@ public class AdHocManagementService extends AbstractService {
      *            identification of device
      * @param allowedDomainType
      *            domain type performing requesting the status
+     *
      * @return status of device
+     *
      * @throws FunctionalException
-     * @throws UnknownEntityException
-     * @throws UnregisteredDeviceException
-     * @throws NotAuthorizedException
-     * @throws IOException
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -103,9 +100,9 @@ public class AdHocManagementService extends AbstractService {
 
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
 
-            final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
+            final List<DeviceOutputSetting> deviceOutputSettings = ssld.getOutputSettings();
 
             final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
             for (final DeviceOutputSetting dos : deviceOutputSettings) {
@@ -131,7 +128,8 @@ public class AdHocManagementService extends AbstractService {
     // === CUSTOM STATUS FILTER FUNCTIONS ===
 
     /**
-     * Filter light values based on PublicLighting domain. Only matching values will be returned.
+     * Filter light values based on PublicLighting domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -139,7 +137,8 @@ public class AdHocManagementService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     public static List<LightValue> filterLightValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {
@@ -161,7 +160,8 @@ public class AdHocManagementService extends AbstractService {
     }
 
     /**
-     * Filter light values based on TariffSwitching domain. Only matching values will be returned.
+     * Filter light values based on TariffSwitching domain. Only matching values
+     * will be returned.
      *
      * @param source
      *            list to filter
@@ -169,7 +169,8 @@ public class AdHocManagementService extends AbstractService {
      *            mapping of output settings
      * @param allowedDomainType
      *            type of domain allowed
-     * @return list with filtered values or empty list when domain is not allowed.
+     * @return list with filtered values or empty list when domain is not
+     *         allowed.
      */
     public static List<TariffValue> filterTariffValues(final List<LightValue> source,
             final Map<Integer, DeviceOutputSetting> dosMap, final DomainType allowedDomainType) {

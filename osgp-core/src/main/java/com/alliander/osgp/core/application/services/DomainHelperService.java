@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.core.services.SecurityService;
@@ -40,7 +40,7 @@ public class DomainHelperService {
     private OrganisationDomainService organisationDomainService;
 
     @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+    private SmartMeterRepository smartMeteringDeviceRepository;
 
     @Autowired
     private GasMeterDeviceRepository gASMeterDeviceRepository;
@@ -70,12 +70,12 @@ public class DomainHelperService {
         return device;
     }
 
-    public SmartMeteringDevice findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
-        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
+    public SmartMeter findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
+        final SmartMeter device = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
         if (device == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-                    new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification));
+                    new UnknownEntityException(SmartMeter.class, deviceIdentification));
         }
         return device;
     }
@@ -84,7 +84,7 @@ public class DomainHelperService {
         final GasMeterDevice device = this.gASMeterDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-                    new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification));
+                    new UnknownEntityException(SmartMeter.class, deviceIdentification));
         }
         return device;
     }

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
@@ -82,7 +83,7 @@ public class DeviceInstallationService extends AbstractService {
 
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
 
             final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
 
@@ -93,8 +94,8 @@ public class DeviceInstallationService extends AbstractService {
 
             deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
                     DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
-                    DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
-                    status.getLightType(), status.getEventNotificationsMask());
+                            DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
+                            status.getLightType(), status.getEventNotificationsMask());
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);

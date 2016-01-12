@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
@@ -67,7 +68,8 @@ public class ConfigurationService {
         LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeteringDevice(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -75,7 +77,7 @@ public class ConfigurationService {
                 SpecialDaysRequest.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, specialDaysRequestDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), specialDaysRequestDto), messageType);
     }
 
     public void setConfigurationObject(
@@ -88,7 +90,8 @@ public class ConfigurationService {
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeteringDevice(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -96,7 +99,8 @@ public class ConfigurationService {
                 setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, setConfigurationObjectRequestDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
+                messageType);
     }
 
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,
@@ -124,13 +128,14 @@ public class ConfigurationService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeteringDevice(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications alarmNotificationsDto = this.configurationMapper
                 .map(alarmNotifications, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, alarmNotificationsDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), alarmNotificationsDto), messageType);
     }
 
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
@@ -142,14 +147,15 @@ public class ConfigurationService {
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeteringDevice(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto = this.configurationMapper
                 .map(administrativeStatusType,
                         com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class);
 
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, administrativeStatusTypeDto);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), administrativeStatusTypeDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
     }
 
@@ -178,11 +184,13 @@ public class ConfigurationService {
                 "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeteringDevice(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, this.configurationMapper.map(administrativeStatusType,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), this.configurationMapper.map(
+                        administrativeStatusType,
                         com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
 
@@ -218,13 +226,14 @@ public class ConfigurationService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService
+                .findSmartMeteringDevice(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendarDto = this.configurationMapper
                 .map(activityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, activityCalendarDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), activityCalendarDto), messageType);
     }
 
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,

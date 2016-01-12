@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 
@@ -25,19 +25,19 @@ import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 public class SmartMeteringDeviceDomainService {
 
     @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+    private SmartMeterRepository smartMeteringDeviceRepository;
 
     @Autowired
     private GasMeterDeviceRepository gasMeterDeviceRepository;
 
-    public SmartMeteringDevice searchSmartMeteringDevice(@Identification final String deviceIdentification)
+    public SmartMeter searchSmartMeteringDevice(@Identification final String deviceIdentification)
             throws UnknownEntityException {
 
-        final SmartMeteringDevice smartMeteringDevice = this.smartMeteringDeviceRepository
+        final SmartMeter smartMeteringDevice = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
 
         if (smartMeteringDevice == null) {
-            throw new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification);
+            throw new UnknownEntityException(SmartMeter.class, deviceIdentification);
         }
 
         return smartMeteringDevice;
@@ -50,7 +50,7 @@ public class SmartMeteringDeviceDomainService {
                 .findByDeviceIdentification(deviceIdentification);
 
         if (gASMeteringDevice == null) {
-            throw new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification);
+            throw new UnknownEntityException(SmartMeter.class, deviceIdentification);
         }
 
         return gASMeteringDevice;
