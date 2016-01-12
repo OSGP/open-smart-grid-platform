@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -57,7 +57,7 @@ public class AdhocService {
         LOGGER.info("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeteringDevice smartMeteringDevice = this.domainHelperService
+        final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeteringDevice(deviceIdentification);
 
         LOGGER.info("Sending request message to core.");

@@ -37,7 +37,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 /**
  * Entity class which is the base for all smart devices. Other smart device
  * entities should inherit from this class. See {@link Ssld} /
- * {@link SmartMeteringDevice} as examples.
+ * {@link SmartMeter} as examples.
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

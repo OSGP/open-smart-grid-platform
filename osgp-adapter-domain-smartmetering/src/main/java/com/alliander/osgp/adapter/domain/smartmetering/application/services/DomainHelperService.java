@@ -11,7 +11,7 @@ import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.services.SmartMeteringDeviceDomainService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -33,8 +33,8 @@ public class DomainHelperService {
      * @throws FunctionalException
      *             when there is no device
      */
-    public SmartMeteringDevice findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
-        final SmartMeteringDevice smartMeteringDevice;
+    public SmartMeter findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
+        final SmartMeter smartMeteringDevice;
         try {
             smartMeteringDevice = this.smartMeteringDeviceDomainService.searchSmartMeteringDevice(deviceIdentification);
         } catch (final UnknownEntityException e) {

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
@@ -63,7 +63,7 @@ public class ManagementService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final SmartMeteringDevice smartMeteringDevice = this.domainHelperService
+        final SmartMeter smartMeteringDevice = this.domainHelperService
                 .findSmartMeteringDevice(deviceIdentification);
 
         LOGGER.info("Sending request message to core.");

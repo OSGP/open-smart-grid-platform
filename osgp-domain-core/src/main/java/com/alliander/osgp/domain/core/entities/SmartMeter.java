@@ -13,7 +13,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
-public class SmartMeteringDevice extends Device {
+public class SmartMeter extends Device {
 
     /**
      * Serial Version UID
@@ -23,7 +23,7 @@ public class SmartMeteringDevice extends Device {
     @Column
     private String supplier;
 
-    public SmartMeteringDevice() {
+    public SmartMeter() {
         // Default constructor for hibernate
     }
 

@@ -247,6 +247,8 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         // Get the request.
         Assert.isInstanceOf(SoapMessage.class, messageContext.getRequest());
         final SoapMessage request = (SoapMessage) messageContext.getRequest();
+        this.printSoapMessage(request);
+
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Read OrganisationIdentification from header from request.
@@ -258,16 +260,6 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         // Read ApplicationName from header from request.
         final String appName = this.getHeaderValue(soapHeader, this.applicationName);
 
-        try {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            request.writeTo(outputStream);
-            final String message = new String(outputStream.toByteArray());
-            LOGGER.info("soap message: {}", message);
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
         // Read correlationUid and deviceId from request.
         final Map<String, Object> requestData = this.parseSoapMessage(request);
 
@@ -278,16 +270,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         // Get the response.
         Assert.isInstanceOf(SoapMessage.class, messageContext.getResponse());
         final SoapMessage response = (SoapMessage) messageContext.getResponse();
-
-        try {
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            response.writeTo(outputStream);
-            final String message = new String(outputStream.toByteArray());
-            LOGGER.info("soap message: {}", message);
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        this.printSoapMessage(response);
 
         // Read correlationUid and deviceId and result and data size from
         // response.
@@ -308,5 +291,22 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         return new LoggingRequestMessage(now, orgIdentification, usrName, appName, classAndMethod.get(CLASS_NAME),
                 classAndMethod.get(METHOD_NAME), (String) requestData.get(DEVICE_ID), correlationId,
                 (String) responseData.get(RESPONSE_RESULT), (int) responseData.get(RESPONSE_DATA_SIZE));
+    }
+
+    /**
+     * Print a soap message.
+     * 
+     * @param soapMessage
+     *            The message to print.
+     */
+    private void printSoapMessage(final SoapMessage soapMessage) {
+        try {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            soapMessage.writeTo(outputStream);
+            final String message = new String(outputStream.toByteArray());
+            LOGGER.info("soap message: {}", message);
+        } catch (final IOException e) {
+            LOGGER.error("Unexpected error while writing soap message", e);
+        }
     }
 }
