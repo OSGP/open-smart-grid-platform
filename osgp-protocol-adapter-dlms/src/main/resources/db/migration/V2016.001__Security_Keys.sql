@@ -27,3 +27,6 @@ ALTER TABLE ONLY security_key ALTER COLUMN id SET DEFAULT nextval('security_key_
     
 ALTER TABLE ONLY security_key
     ADD CONSTRAINT security_key_pkey PRIMARY KEY (id);
+    
+CREATE UNIQUE INDEX security_key_valid_idx ON security_key (dlms_device_id, security_key_type)
+WHERE valid_to IS NULL;
