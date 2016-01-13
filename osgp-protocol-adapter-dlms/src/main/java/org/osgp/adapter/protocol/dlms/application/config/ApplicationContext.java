@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan(basePackages = { "org.osgp.adapter.protocol.dlms" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, DlmsPersistenceConfig.class })
+@Import({ MessagingConfig.class, DlmsPersistenceConfig.class, JasperWirelessConfig.class })
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class ApplicationContext {
 
