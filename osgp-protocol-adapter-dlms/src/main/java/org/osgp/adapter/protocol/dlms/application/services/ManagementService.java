@@ -60,8 +60,7 @@ public class ManagementService extends DlmsApplicationService {
         LnClientConnection conn = null;
         try {
 
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 

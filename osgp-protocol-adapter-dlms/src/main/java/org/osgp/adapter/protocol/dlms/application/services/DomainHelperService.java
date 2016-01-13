@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,32 @@ public class DomainHelperService {
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
+    /**
+     * Use {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this
+     * will also set the IP address.
+     * <p>
+     * If this method turns out to be called from a location where
+     * {@link DlmsDeviceMessageMetadata} is not available, check if the IP
+     * address needs to be provided in another way.
+     */
+    @Deprecated
     public DlmsDevice findDlmsDevice(final String deviceIdentification) throws FunctionalException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
                     new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification));
         }
+        return dlmsDevice;
+    }
+
+    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException {
+        final String deviceIdentification = messageMetadata.getDeviceIdentification();
+        final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
+        if (dlmsDevice == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
+                    new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification));
+        }
+        dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
         return dlmsDevice;
     }
 }
