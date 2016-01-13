@@ -70,8 +70,7 @@ public class MonitoringService extends DlmsApplicationService {
         LnClientConnection conn = null;
         try {
 
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
@@ -106,8 +105,7 @@ public class MonitoringService extends DlmsApplicationService {
         LnClientConnection conn = null;
         try {
 
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
@@ -142,8 +140,7 @@ public class MonitoringService extends DlmsApplicationService {
 
         LnClientConnection conn = null;
         try {
-            final DlmsDevice device = this.domainHelperService
-                    .findDlmsDevice(messageMetadata.getDeviceIdentification());
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 

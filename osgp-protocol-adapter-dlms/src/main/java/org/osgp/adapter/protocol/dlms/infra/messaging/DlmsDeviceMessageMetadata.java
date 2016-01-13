@@ -18,10 +18,19 @@ public class DlmsDeviceMessageMetadata {
     private String messageType;
     private String organisationIdentification;
     private String deviceIdentification;
+    private String ipAddress;
+
+    @Override
+    public String toString() {
+        return String
+                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s]",
+                        this.correlationUid, this.domain, this.domainVersion, this.messageType,
+                        this.organisationIdentification, this.deviceIdentification, this.ipAddress);
+    }
 
     /**
      * By using the ObjectMessage, the attributes of the data container are set
-     * 
+     *
      * @param message
      * @throws JMSException
      */
@@ -32,6 +41,7 @@ public class DlmsDeviceMessageMetadata {
         this.messageType = message.getJMSType();
         this.organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+        this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
     }
 
     public String getCorrelationUid() {
@@ -82,4 +92,11 @@ public class DlmsDeviceMessageMetadata {
         this.deviceIdentification = deviceIdentification;
     }
 
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
+    public void setIpAddress(final String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 }
