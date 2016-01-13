@@ -14,8 +14,12 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Moni
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("domainSmartMeteringReadAlarmRegisterResponseMessageProcessor")
 public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -32,10 +36,28 @@ public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseM
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
 
-        final AlarmRegister alarmRegisterDto = (AlarmRegister) responseMessage.getDataObject();
+        if (responseMessage.getDataObject() instanceof AlarmRegister) {
+            final AlarmRegister alarmRegisterDto = (AlarmRegister) responseMessage.getDataObject();
 
-        this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException, alarmRegisterDto);
+            this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessage.getResult(), osgpException, alarmRegisterDto);
+        } else if (responseMessage.getDataObject() instanceof ReadAlarmRegisterRequest) {
+            final OsgpException e;
+            if (osgpException == null) {
+                e = new TechnicalException(ComponentType.DOMAIN_SMART_METERING, "Error reading alarm register.", null);
+            } else {
+                e = osgpException;
+            }
+            this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, ResponseMessageResultType.NOT_OK, e, (AlarmRegister) null);
+        } else if (osgpException == null) {
+            this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, ResponseMessageResultType.NOT_OK, new TechnicalException(
+                            ComponentType.DOMAIN_SMART_METERING, "Error retrieving alarm register.", null),
+                            (AlarmRegister) null);
+        } else {
+            this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, ResponseMessageResultType.NOT_OK, osgpException, (AlarmRegister) null);
+        }
     }
-
 }

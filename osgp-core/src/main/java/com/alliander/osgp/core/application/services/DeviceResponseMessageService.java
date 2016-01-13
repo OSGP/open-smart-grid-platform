@@ -56,7 +56,8 @@ public class DeviceResponseMessageService {
 
             // The array of exceptions which have to be retried.
             final String[] retryExceptions = { "Unable to connect", "ConnectException",
-                    "Failed to receive response within timelimit" };
+                    "Failed to receive response within timelimit", "Timeout waiting for",
+            "Connection closed by remote host while waiting for association response" };
             Boolean retryMessage = false;
 
             // Validate the actual exception with the list of exception to be

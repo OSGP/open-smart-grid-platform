@@ -78,12 +78,10 @@ public class DomainResponseMessageSender implements DomainResponseService {
     }
 
     private ResponseMessage createResponseMessage(final ProtocolResponseMessage protocolResponseMessage) {
-        final OsgpException osgpException = protocolResponseMessage.getOsgpException() == null ? null
-                : protocolResponseMessage.getOsgpException();
         return new ResponseMessage(protocolResponseMessage.getCorrelationUid(),
                 protocolResponseMessage.getOrganisationIdentification(),
-                protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(), osgpException,
-                protocolResponseMessage.getDataObject());
+                protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(),
+                protocolResponseMessage.getOsgpException(), protocolResponseMessage.getDataObject());
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {

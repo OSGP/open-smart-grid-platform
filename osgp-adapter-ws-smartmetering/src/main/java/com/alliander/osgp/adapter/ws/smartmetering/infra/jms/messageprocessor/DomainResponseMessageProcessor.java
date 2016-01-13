@@ -82,7 +82,7 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering actual meter reads response message");
+        LOGGER.debug("Processing smart metering response message");
 
         String correlationUid = null;
         String messageType = null;

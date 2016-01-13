@@ -20,17 +20,17 @@ abstract class SmartMeteringEndpoint {
      *            cause
      * @throws OsgpException
      */
-    protected OsgpException handleException(final Exception e) {
+    protected void handleException(final Exception e) throws OsgpException {
         if (e instanceof OsgpException) {
             if (e instanceof UnknownCorrelationUidException) {
                 LOGGER.warn(e.getMessage());
             } else {
                 LOGGER.error("Exception occurred: ", e);
             }
-            return (OsgpException) e;
+            throw (OsgpException) e;
         } else {
             LOGGER.error("Exception occurred: ", e);
-            return new TechnicalException(ComponentType.WS_SMART_METERING, e);
+            throw new TechnicalException(ComponentType.WS_SMART_METERING, e);
         }
     }
 }
