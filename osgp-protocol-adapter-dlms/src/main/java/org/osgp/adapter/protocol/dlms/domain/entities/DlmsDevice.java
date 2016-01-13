@@ -34,13 +34,13 @@ public class DlmsDevice extends AbstractEntity {
     private String iccId;
 
     @Column
-    private boolean HLS3Active;
+    private boolean hls3Active;
 
     @Column
-    private boolean HLS4Active;
+    private boolean hls4Active;
 
     @Column
-    private boolean HLS5Active;
+    private boolean hls5Active;
 
     @Column
     private String masterKey;
@@ -64,6 +64,12 @@ public class DlmsDevice extends AbstractEntity {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DlmsDevice[deviceId=%s, hls3=%b, hls4=%b, hls5=%b, ipAddress=%s]",
+                this.deviceIdentification, this.hls3Active, this.hls4Active, this.hls5Active, this.ipAddress);
     }
 
     @Override
@@ -107,36 +113,36 @@ public class DlmsDevice extends AbstractEntity {
         this.communicationProvider = communicationProvider;
     }
 
-    public void setICCId(final String value) {
+    public void setIccId(final String value) {
         this.iccId = value;
     }
 
-    public String getICCId() {
+    public String getIccId() {
         return this.iccId;
     }
 
-    public boolean isHLS3Active() {
-        return this.HLS3Active;
+    public boolean isHls3Active() {
+        return this.hls3Active;
     }
 
-    public void setHLS3Active(final boolean hLS3Active) {
-        this.HLS3Active = hLS3Active;
+    public void setHls3Active(final boolean hls3Active) {
+        this.hls3Active = hls3Active;
     }
 
-    public boolean isHLS4Active() {
-        return this.HLS4Active;
+    public boolean isHls4Active() {
+        return this.hls4Active;
     }
 
-    public void setHLS4Active(final boolean hLS4Active) {
-        this.HLS4Active = hLS4Active;
+    public void setHls4Active(final boolean hls4Active) {
+        this.hls4Active = hls4Active;
     }
 
-    public boolean isHLS5Active() {
-        return this.HLS5Active;
+    public boolean isHls5Active() {
+        return this.hls5Active;
     }
 
-    public void setHLS5Active(final boolean hLS5Active) {
-        this.HLS5Active = hLS5Active;
+    public void setHls5Active(final boolean hls5Active) {
+        this.hls5Active = hls5Active;
     }
 
     public String getMasterKey() {

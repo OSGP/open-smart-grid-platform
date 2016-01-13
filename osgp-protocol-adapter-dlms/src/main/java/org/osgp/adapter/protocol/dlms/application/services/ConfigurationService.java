@@ -111,7 +111,8 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during set special days", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    specialDaysRequest);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -163,7 +164,8 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during set Configuration Object", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    setConfigurationObjectRequest);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -200,7 +202,8 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during setAdministrativeStatus", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    administrativeStatusType);
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -269,7 +272,8 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during setActivityCalendar", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    activityCalendar);
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -306,7 +310,8 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during setAlarmNotifications", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    alarmNotifications);
         } finally {
             if (conn != null) {
                 conn.close();

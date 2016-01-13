@@ -36,7 +36,8 @@ public class DlmsApplicationService {
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(messageMetadata.getDomain(),
                 messageMetadata.getDomainVersion(), messageMetadata.getMessageType(),
                 messageMetadata.getCorrelationUid(), messageMetadata.getOrganisationIdentification(),
-                messageMetadata.getDeviceIdentification(), result, osgpException, responseObject);
+                messageMetadata.getDeviceIdentification(), result, osgpException, responseObject,
+                messageMetadata.getRetryCount());
 
         responseMessageSender.send(responseMessage);
     }
