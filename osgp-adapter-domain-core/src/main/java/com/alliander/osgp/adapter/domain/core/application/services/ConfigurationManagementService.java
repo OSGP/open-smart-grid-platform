@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
@@ -102,8 +103,10 @@ public class ConfigurationManagementService extends AbstractService {
             outputSettings
                     .add(new DeviceOutputSetting(rm.getIndex(), rm.getAddress(), rm.getRelayType(), rm.getAlias()));
         }
-        device.updateOutputSettings(outputSettings);
-        this.deviceRepository.save(device);
+
+        final Ssld ssld = this.findSsldForDevice(device);
+        ssld.updateOutputSettings(outputSettings);
+        this.ssldRepository.save(ssld);
     }
 
     // === GET CONFIGURATION ===
@@ -137,7 +140,7 @@ public class ConfigurationManagementService extends AbstractService {
             }
 
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            final List<DeviceOutputSetting> outputSettings = device.getOutputSettings();
+            final List<DeviceOutputSetting> outputSettings = this.findSsldForDevice(device).getOutputSettings();
 
             final List<com.alliander.osgp.dto.valueobjects.RelayMap> newRelayMap = new ArrayList<com.alliander.osgp.dto.valueobjects.RelayMap>();
             final List<com.alliander.osgp.dto.valueobjects.RelayMap> relayMapDto = configurationDto

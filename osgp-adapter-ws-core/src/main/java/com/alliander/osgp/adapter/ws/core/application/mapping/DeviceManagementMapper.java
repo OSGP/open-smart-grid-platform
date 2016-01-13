@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
@@ -21,6 +22,7 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ws.EventTypeConverter;
@@ -29,6 +31,8 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ssld;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "coreDeviceManagementMapper")
@@ -36,33 +40,64 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceManagementMapper.class);
 
+    @Autowired
+    private SsldRepository ssldRepository;
+
+    public DeviceManagementMapper() {
+        super(false);
+    }
+
+    @PostConstruct
+    private void initialize() {
+        this.init();
+    }
+
     @Override
     public void configure(final MapperFactory mapperFactory) {
-
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Device.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device.class)
-                        .field("ipAddress", "networkAddress").byDefault().toClassMap());
+                .field("ipAddress", "networkAddress").byDefault().toClassMap());
 
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                        .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                        .byDefault().toClassMap());
+                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());
-        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
+        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter(this.ssldRepository));
+        mapperFactory.getConverterFactory().registerConverter(new SsldConverter());
     }
 
-    private static class DeviceConverter extends
-    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+    private static class SsldConverter extends
+    BidirectionalConverter<Ssld, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
 
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * ma.glasnost.orika.converter.BidirectionalConverter#convertTo(java
+         * .lang.Object, ma.glasnost.orika.metadata.Type)
+         */
         @Override
-        public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
-                final Type<Device> destinationType) {
+        public com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertTo(final Ssld source,
+                final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
+            return DeviceConverter.convertToStatic(source, destinationType);
+        }
 
-            Device destination = null;
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * ma.glasnost.orika.converter.BidirectionalConverter#convertFrom(java
+         * .lang.Object, ma.glasnost.orika.metadata.Type)
+         */
+        @Override
+        public Ssld convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
+                final Type<Ssld> destinationType) {
+            Ssld destination = null;
 
             if (source != null) {
 
@@ -73,10 +108,10 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     source.setGpsLongitude("0");
                 }
 
-                destination = new Device(source.getDeviceIdentification(), source.getAlias(),
-                        source.getContainerCity(), source.getContainerPostalCode(), source.getContainerStreet(),
-                        source.getContainerNumber(), source.getContainerMunicipality(), Float.valueOf(source
-                                .getGpsLatitude()), Float.valueOf(source.getGpsLongitude()));
+                destination = new Ssld(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
+                        source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
+                        source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()), Float.valueOf(source
+                                .getGpsLongitude()));
 
                 final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
 
@@ -92,7 +127,74 @@ public class DeviceManagementMapper extends ConfigurableMapper {
 
                     deviceOutputSettings.add(newDeviceOutputSetting);
                 }
+                destination.updateOutputSettings(deviceOutputSettings);
+                destination.setPublicKeyPresent(source.isPublicKeyPresent());
+                destination.setHasSchedule(source.isHasSchedule());
 
+                return destination;
+            }
+            return null;
+        }
+
+    }
+
+    private static class DeviceConverter extends
+            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> {
+
+        private SsldRepository ssldRepository;
+
+        private static DeviceConverter instance;
+
+        public DeviceConverter(final SsldRepository ssldRepository) {
+            this.ssldRepository = ssldRepository;
+            instance = this;
+        }
+
+        public static Device convertFromStatic(
+                final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
+                final Type<Device> destinationType) {
+            return instance.convertFrom(source, destinationType);
+        }
+
+        public static com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device convertToStatic(
+                final Device source,
+                final Type<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device> destinationType) {
+            return instance.convertTo(source, destinationType);
+        }
+
+        @Override
+        public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Device source,
+                final Type<Device> destinationType) {
+            Ssld destination = null;
+
+            if (source != null) {
+
+                if (source.getGpsLatitude() == null) {
+                    source.setGpsLatitude("0");
+                }
+                if (source.getGpsLongitude() == null) {
+                    source.setGpsLongitude("0");
+                }
+
+                destination = new Ssld(source.getDeviceIdentification(), source.getAlias(), source.getContainerCity(),
+                        source.getContainerPostalCode(), source.getContainerStreet(), source.getContainerNumber(),
+                        source.getContainerMunicipality(), Float.valueOf(source.getGpsLatitude()), Float.valueOf(source
+                                .getGpsLongitude()));
+
+                final List<com.alliander.osgp.domain.core.entities.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.domain.core.entities.DeviceOutputSetting>();
+
+                for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting deviceOutputSetting : source
+                        .getOutputSettings()) {
+                    com.alliander.osgp.domain.core.entities.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting();
+
+                    newDeviceOutputSetting = new com.alliander.osgp.domain.core.entities.DeviceOutputSetting(
+                            deviceOutputSetting.getInternalId(), deviceOutputSetting.getExternalId(),
+                            deviceOutputSetting.getRelayType() == null ? null
+                                    : com.alliander.osgp.domain.core.valueobjects.RelayType.valueOf(deviceOutputSetting
+                                            .getRelayType().name()), deviceOutputSetting.getAlias());
+
+                    deviceOutputSettings.add(newDeviceOutputSetting);
+                }
                 destination.updateOutputSettings(deviceOutputSettings);
                 destination.setPublicKeyPresent(source.isPublicKeyPresent());
                 destination.setHasSchedule(source.isHasSchedule());
@@ -111,15 +213,42 @@ public class DeviceManagementMapper extends ConfigurableMapper {
             if (source != null) {
                 final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting> deviceOutputSettings = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting>();
 
-                for (final DeviceOutputSetting deviceOutputSetting : source.getOutputSettings()) {
-                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
+                final Ssld ssld = this.ssldRepository.findByDeviceIdentification(source.getDeviceIdentification());
 
-                    newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
-                    newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
-                    newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null : RelayType
-                            .valueOf(deviceOutputSetting.getOutputType().name()));
-                    newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
-                    deviceOutputSettings.add(newDeviceOutputSetting);
+                if (ssld != null) {
+                    for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+                        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting newDeviceOutputSetting = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceOutputSetting();
+
+                        newDeviceOutputSetting.setExternalId(deviceOutputSetting.getExternalId());
+                        newDeviceOutputSetting.setInternalId(deviceOutputSetting.getInternalId());
+                        newDeviceOutputSetting.setRelayType(deviceOutputSetting.getOutputType() == null ? null
+                                : RelayType.valueOf(deviceOutputSetting.getOutputType().name()));
+                        newDeviceOutputSetting.setAlias(deviceOutputSetting.getAlias());
+                        deviceOutputSettings.add(newDeviceOutputSetting);
+                    }
+
+                    destination.setPublicKeyPresent(ssld.isPublicKeyPresent());
+                    destination.setHasSchedule(ssld.getHasSchedule());
+
+                    final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
+                    for (final com.alliander.osgp.domain.core.entities.Ean ean : ssld.getEans()) {
+                        final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
+                        newEan.setCode(ean.getCode());
+                        newEan.setDescription(ean.getDescription());
+                        eans.add(newEan);
+                    }
+                    destination.getEans().addAll(eans);
+
+                    if (ssld.getRelayStatusses() != null) {
+                        RelayStatus temp = null;
+                        for (final com.alliander.osgp.domain.core.entities.RelayStatus r : ssld.getRelayStatusses()) {
+                            temp = this.convertRelayStatus(r);
+
+                            if (temp != null) {
+                                destination.getRelayStatuses().add(temp);
+                            }
+                        }
+                    }
                 }
 
                 destination.getOutputSettings().addAll(deviceOutputSettings);
@@ -133,7 +262,6 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.setContainerMunicipality(source.getContainerMunicipality());
                 destination.setDeviceIdentification(source.getDeviceIdentification());
                 destination.setDeviceType(source.getDeviceType());
-                destination.setPublicKeyPresent(source.isPublicKeyPresent());
 
                 if (source.getGpsLatitude() != null) {
                     destination.setGpsLatitude(Float.toString(source.getGpsLatitude()));
@@ -142,42 +270,20 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                     destination.setGpsLongitude(Float.toString(source.getGpsLongitude()));
                 }
 
-                destination.setHasSchedule(source.getHasSchedule());
                 destination.setNetworkAddress(source.getNetworkAddress() == null ? null : source.getNetworkAddress()
                         .toString());
                 destination.setOwner(source.getOwner() == null ? "" : source.getOwner().getName());
                 destination.getOrganisations().addAll(source.getOrganisations());
 
-                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean> eans = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean>();
-                for (final com.alliander.osgp.domain.core.entities.Ean ean : source.getEans()) {
-                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean newEan = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean();
-                    newEan.setCode(ean.getCode());
-                    newEan.setDescription(ean.getDescription());
-                    eans.add(newEan);
-                }
-                destination.getEans().addAll(eans);
-
-                if (source.getRelayStatusses() != null) {
-                    RelayStatus temp = null;
-                    for (final com.alliander.osgp.domain.core.entities.RelayStatus r : source.getRelayStatusses()) {
-                        temp = this.convertRelayStatus(r);
-
-                        if (temp != null) {
-                            destination.getRelayStatuses().add(temp);
-                        }
-                    }
-                }
-
                 destination.setInMaintenance(source.isInMaintenance());
 
-                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization> deviceAuthorizations =
-                        new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization>();
+                final List<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization> deviceAuthorizations = new ArrayList<com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization>();
                 for (final DeviceAuthorization deviceAuthorisation : source.getAuthorizations()) {
-                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization newDeviceAuthorization = new
-                            com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization();
+                    final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization newDeviceAuthorization = new com.alliander.osgp.adapter.ws.schema.core.devicemanagement.DeviceAuthorization();
 
                     newDeviceAuthorization.setFunctionGroup(deviceAuthorisation.getFunctionGroup().name());
-                    newDeviceAuthorization.setOrganisation(deviceAuthorisation.getOrganisation().getOrganisationIdentification());
+                    newDeviceAuthorization.setOrganisation(deviceAuthorisation.getOrganisation()
+                            .getOrganisationIdentification());
                     deviceAuthorizations.add(newDeviceAuthorization);
                 }
                 destination.getDeviceAuthorizations().addAll(deviceAuthorizations);

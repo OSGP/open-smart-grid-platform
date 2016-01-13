@@ -43,6 +43,7 @@ public class OsgpCoreRequestMessageSender {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
+                objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setObject(requestMessage.getRequest());
 
                 return objectMessage;

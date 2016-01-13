@@ -7,20 +7,46 @@
  */
 package com.alliander.osgp.adapter.ws.core.application.mapping;
 
+import javax.annotation.PostConstruct;
+
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import ma.glasnost.orika.metadata.Type;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 
 @Component(value = "coreDeviceInstallationMapper")
 public class DeviceInstallationMapper extends ConfigurableMapper {
+    @Autowired
+    private SsldRepository ssldRepository;
+
+    public DeviceInstallationMapper() {
+        super(false);
+    }
+
+    @PostConstruct
+    private void initialize() {
+        this.init();
+    }
+
+    @Override
+    public void configure(final MapperFactory mapperFactory) {
+        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter(this.ssldRepository));
+    }
 
     private static class DeviceConverter extends
             BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
+
+        private SsldRepository ssldRepository;
+
+        public DeviceConverter(final SsldRepository ssldRepository) {
+            this.ssldRepository = ssldRepository;
+        }
 
         @Override
         public Device convertFrom(final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device source,
@@ -56,16 +82,11 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
                 destination.setGpsLongitude(source.getGpsLongitude());
 
                 destination.setActivated(source.isActivated());
-                destination.setHasSchedule(source.getHasSchedule());
+                destination.setHasSchedule(this.ssldRepository.findOne(source.getId()).getHasSchedule());
 
                 return destination;
             }
             return null;
         }
-    }
-
-    @Override
-    public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
     }
 }

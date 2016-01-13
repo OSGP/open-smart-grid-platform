@@ -19,8 +19,8 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -43,7 +43,7 @@ public class DeviceRequestMessageService {
     private ProtocolRequestService protocolRequestService;
 
     @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+    private SmartMeterRepository smartMeteringDeviceRepository;
 
     public void processMessage(final ProtocolRequestMessage message) throws FunctionalException {
 
@@ -53,7 +53,7 @@ public class DeviceRequestMessageService {
             // TODO workaround for SSLD specific authorization
             if (message.getDomain().equals("SMART_METERING")) {
 
-                SmartMeteringDevice smartMeteringDevice = null;
+                SmartMeter smartMeteringDevice = null;
                 try {
                     smartMeteringDevice = this.domainHelperService.findSmartMeteringDevice(message
                             .getDeviceIdentification());

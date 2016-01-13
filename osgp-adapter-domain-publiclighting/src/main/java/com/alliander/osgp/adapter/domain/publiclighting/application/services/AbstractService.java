@@ -15,8 +15,10 @@ import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.core.OsgpCoreR
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -30,6 +32,9 @@ public class AbstractService {
 
     @Autowired
     protected OrganisationDomainService organisationDomainService;
+
+    @Autowired
+    protected SsldRepository ssldRepository;
 
     @Autowired
     @Qualifier(value = "domainPublicLightingOutgoingOsgpCoreRequestMessageSender")
@@ -47,9 +52,11 @@ public class AbstractService {
         try {
             device = this.deviceDomainService.searchActiveDevice(deviceIdentification);
         } catch (final UnregisteredDeviceException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
+            throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE,
+                    ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
         } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.DOMAIN_PUBLIC_LIGHTING,
+                    e);
         }
         return device;
     }
@@ -59,8 +66,13 @@ public class AbstractService {
         try {
             organisation = this.organisationDomainService.searchOrganisation(organisationIdentification);
         } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION, ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_ORGANISATION,
+                    ComponentType.DOMAIN_PUBLIC_LIGHTING, e);
         }
         return organisation;
+    }
+
+    protected Ssld findSsldForDevice(final Device device) {
+        return this.ssldRepository.findOne(device.getId());
     }
 }

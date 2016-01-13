@@ -19,7 +19,13 @@ public class SmartMeteringRequestMessage extends RequestMessage {
 
     public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final Serializable request) {
-        super(correlationUid, organisationIdentification, deviceIdentification, request);
+        this(messageType, correlationUid, organisationIdentification, deviceIdentification, null, request);
+    }
+
+    public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
+            final String organisationIdentification, final String deviceIdentification, final String ipAddress,
+            final Serializable request) {
+        super(correlationUid, organisationIdentification, deviceIdentification, ipAddress, request);
         this.messageType = messageType;
     }
 

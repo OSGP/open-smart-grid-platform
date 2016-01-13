@@ -7,125 +7,179 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.domain.core.valueobjects.RelayType;
-import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
-// TODO: Refactor: Create Container and Gps classes
-
+/**
+ * Entity class which is the base for all smart devices. Other smart device
+ * entities should inherit from this class. See {@link Ssld} /
+ * {@link SmartMeter} as examples.
+ */
 @Entity
-public class Device extends AbstractEntity implements DeviceInterface, LocationInformationInterface,
-NetworkAddressInterface {
-
-    /**
-     * Device type indicator for PSLD
-     */
-    public static final String PSLD_TYPE = "PSLD";
-
-    /**
-     * Device type indicator for SSLD
-     */
-    public static final String SSLD_TYPE = "SSLD";
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Device implements Serializable {
 
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = -1067112091560627041L;
+    private static final long serialVersionUID = -4119222373415540822L;
+
+    /**
+     * Primary key.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected Long id;
+
+    /**
+     * Creation time of this entity. This field is set by { @see
+     * this.prePersist() }.
+     */
+    @Column(nullable = false)
+    protected Date creationTime = new Date();
+
+    /**
+     * Modification time of this entity. This field is set by { @see
+     * this.preUpdate() }.
+     */
+    @Column(nullable = false)
+    protected Date modificationTime = new Date();
+
+    /**
+     * Version of this entity.
+     */
+    @Version
+    private Long version = -1L;
+
+    /**
+     * Device identification of a device. This is the main value used to find a
+     * device.
+     */
     @Identification
     @Column(unique = true, nullable = false, length = 40)
-    private String deviceIdentification;
+    protected String deviceIdentification;
 
+    /**
+     * Alias of a device. Can be any String assigned to this device and can be
+     * used as alternate identification.
+     */
     @Column
-    private String alias;
+    protected String alias;
 
+    /**
+     * Location information of a device. City.
+     */
     @Column(length = 255)
-    private String containerCity;
+    protected String containerCity;
+
+    /**
+     * Location information of a device. Street name.
+     */
     @Column(length = 255)
-    private String containerStreet;
+    protected String containerStreet;
+
+    /**
+     * Location information of a device. Postal Code.
+     */
     @Column(length = 10)
-    private String containerPostalCode;
+    protected String containerPostalCode;
+
+    /**
+     * Location information of a device. Street number.
+     */
     @Column(length = 255)
-    private String containerNumber;
+    protected String containerNumber;
 
+    /**
+     * Location information of a device. Municipality / City.
+     */
     @Column(length = 255)
-    private String containerMunicipality;
+    protected String containerMunicipality;
 
+    /**
+     * Location information of a device. Latitude.
+     */
     @Column
-    private Float gpsLatitude;
+    protected Float gpsLatitude;
+
+    /**
+     * Location information of a device. Longitude.
+     */
     @Column
-    private Float gpsLongitude;
+    protected Float gpsLongitude;
 
-    private String deviceType;
+    /**
+     * Indicates the type of the device. Example { @see Ssld.SSLD_TYPE }
+     */
+    protected String deviceType;
 
+    /**
+     * IP address of a device.
+     */
     @Column(length = 50)
     @Type(type = "com.alliander.osgp.shared.hibernate.InetAddressUserType")
-    private InetAddress networkAddress;
+    protected InetAddress networkAddress;
 
-    private boolean isActivated;
+    /**
+     * Indicates if a device has been activated for the first time. This value
+     * is never updated after the first time a device becomes active.
+     */
+    protected boolean isActivated;
 
+    /**
+     * List of { @see DeviceAuthorization.class } containing authorizations for
+     * this device. More that one organisation can be authorized to use one ore
+     * more { @see DeviceFunctionGroup.class }.
+     */
     @OneToMany(mappedBy = "device", targetEntity = DeviceAuthorization.class, fetch = FetchType.EAGER)
-    private final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
+    protected final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
 
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @ElementCollection()
-    @CollectionTable(name = "device_output_setting", joinColumns = @JoinColumn(name = "device_id"))
-    private List<DeviceOutputSetting> outputSettings = new ArrayList<>();
-
-    private boolean hasSchedule;
-
-    @Column()
-    private boolean hasPublicKey;
-
+    /**
+     * Protocol information indicates which protocol this device is using.
+     */
     @ManyToOne()
     @JoinColumn(name = "protocol_info_id")
-    private ProtocolInfo protocolInfo;
+    protected ProtocolInfo protocolInfo;
 
-    @OneToMany(mappedBy = "device", targetEntity = Ean.class)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private final List<Ean> eans = new ArrayList<Ean>();
-
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<RelayStatus> relayStatusses;
-
+    /**
+     * Indicates if a device is in maintenance status.
+     */
     @Column
-    private boolean inMaintenance;
+    protected boolean inMaintenance;
 
+    /**
+     * List of organisations which are authorized to use this device.
+     */
     @Transient
-    private final List<String> organisations = new ArrayList<String>();
+    protected final List<String> organisations = new ArrayList<String>();
 
     public Device() {
         // Default constructor
-    }
-
-    public Device(final String deviceIdentification, final String deviceType, final InetAddress networkAddress,
-            final boolean activated, final boolean hasSchedule) {
-        this.deviceIdentification = deviceIdentification;
-        this.deviceType = deviceType;
-        this.networkAddress = networkAddress;
-        this.isActivated = activated;
-        this.hasSchedule = hasSchedule;
     }
 
     public Device(final String deviceIdentification) {
@@ -146,213 +200,18 @@ NetworkAddressInterface {
         this.gpsLongitude = gpsLongitude;
     }
 
-    @Override
-    public String getDeviceIdentification() {
-        return this.deviceIdentification;
+    public DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
+        final DeviceAuthorization authorization = new DeviceAuthorization(this, organisation, functionGroup);
+        this.authorizations.add(authorization);
+        return authorization;
     }
 
-    public String getAlias() {
-        return this.alias;
-    }
-
-    @Override
-    public String getContainerPostalCode() {
-        return this.containerPostalCode;
-    }
-
-    @Override
-    public String getContainerCity() {
-        return this.containerCity;
-    }
-
-    @Override
-    public String getContainerStreet() {
-        return this.containerStreet;
-    }
-
-    @Override
-    public String getContainerNumber() {
-        return this.containerNumber;
-    }
-
-    public String getContainerMunicipality() {
-        return this.containerMunicipality;
-    }
-
-    @Override
-    public Float getGpsLatitude() {
-        return this.gpsLatitude;
-    }
-
-    @Override
-    public Float getGpsLongitude() {
-        return this.gpsLongitude;
-    }
-
-    @Override
-    public String getDeviceType() {
-        return this.deviceType;
-    }
-
-    @Override
-    public InetAddress getNetworkAddress() {
-        return this.networkAddress;
-    }
-
-    @Override
-    public String getIpAddress() {
-        return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
-    }
-
-    public boolean isActivated() {
-        return this.isActivated;
-    }
-
-    public boolean getHasSchedule() {
-        return this.hasSchedule;
-    }
-
-    public boolean isPublicKeyPresent() {
-        return this.hasPublicKey;
-    }
-
-    public void setPublicKeyPresent(final boolean isPublicKeyPresent) {
-        this.hasPublicKey = isPublicKeyPresent;
-    }
-
-    @Override
-    public ProtocolInfo getProtocolInfo() {
-        return this.protocolInfo;
-    }
-
-    public boolean isInMaintenance() {
-        return this.inMaintenance;
-    }
-
-    public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
-            final String containerStreet, final String containerNumber, final String containerMunicipality,
-            final Float gpsLatitude, final Float gpsLongitude) {
-        this.alias = alias;
-        this.containerCity = containerCity;
-        this.containerPostalCode = containerPostalCode;
-        this.containerStreet = containerStreet;
-        this.containerNumber = containerNumber;
-        this.containerMunicipality = containerMunicipality;
-        this.gpsLatitude = gpsLatitude;
-        this.gpsLongitude = gpsLongitude;
-
-    }
-
-    public void updateRegistrationData(final InetAddress networkAddress, final String deviceType) {
-        // Set the incoming values.
-        this.networkAddress = networkAddress;
-        this.deviceType = deviceType;
-        this.isActivated = true;
-    }
-
-    public void updateOutputSettings(final List<DeviceOutputSetting> outputSettings) {
-        this.outputSettings = outputSettings;
-    }
-
-    public void updateProtocol(final ProtocolInfo protocolInfo) {
-        this.protocolInfo = protocolInfo;
-    }
-
-    public void updateInMaintenance(final boolean inMaintenance) {
-        this.inMaintenance = inMaintenance;
+    public void addOrganisation(final String organisationIdentification) {
+        this.organisations.add(organisationIdentification);
     }
 
     public void clearNetworkAddress() {
         this.networkAddress = null;
-    }
-
-    @Override
-    public List<DeviceAuthorization> getAuthorizations() {
-        return this.authorizations;
-    }
-
-    public List<DeviceOutputSetting> getOutputSettings() {
-        if (this.outputSettings == null || this.outputSettings.isEmpty()) {
-            return Collections.unmodifiableList(this.createDefaultConfiguration());
-        }
-
-        return Collections.unmodifiableList(this.outputSettings);
-    }
-
-    public List<DeviceOutputSetting> receiveOutputSettings() {
-        return this.outputSettings;
-    }
-
-    /**
-     * Get the owner organisation of the device.
-     *
-     * @return The organisation when an owner was set, null otherwise.
-     */
-    @Override
-    public Organisation getOwner() {
-        if (this.authorizations != null) {
-            for (final DeviceAuthorization authorization : this.authorizations) {
-                if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
-                    return authorization.getOrganisation();
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public List<RelayStatus> getRelayStatusses() {
-        return this.relayStatusses;
-    }
-
-    /**
-     * Returns the {@link RelayStatus} for the given index, or null if it
-     * doesn't exist.
-     *
-     * @param index
-     * @return
-     */
-    public RelayStatus getRelayStatusByIndex(final int index) {
-        if (this.relayStatusses != null) {
-            for (final RelayStatus r : this.relayStatusses) {
-                if (r.getIndex() == index) {
-                    return r;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Updates the {@link RelayStatus} for the given index if it exists.
-     *
-     * @param index
-     * @return
-     */
-    public void updateRelayStatusByIndex(final int index, final RelayStatus relayStatus) {
-
-        boolean found = false;
-        if (this.relayStatusses != null) {
-            for (final RelayStatus r : this.relayStatusses) {
-                if (r.getIndex() == index) {
-                    r.updateStatus(relayStatus.isLastKnownState(), relayStatus.getLastKnowSwitchingTime());
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                this.relayStatusses.add(relayStatus);
-            }
-        }
-    }
-
-    @Override
-    public DeviceAuthorization addAuthorization(final Organisation organisation, final DeviceFunctionGroup functionGroup) {
-        // TODO: Make sure that there is only one owner authorization.
-        final DeviceAuthorization authorization = new DeviceAuthorization(this, organisation, functionGroup);
-        this.authorizations.add(authorization);
-        return authorization;
     }
 
     @Override
@@ -365,9 +224,6 @@ NetworkAddressInterface {
         }
         final Device device = (Device) o;
         if (this.isActivated != device.isActivated) {
-            return false;
-        }
-        if (this.hasSchedule != device.hasSchedule) {
             return false;
         }
         if (this.authorizations != null ? !this.authorizations.equals(device.authorizations)
@@ -385,26 +241,71 @@ NetworkAddressInterface {
                 : device.networkAddress != null) {
             return false;
         }
-        if (this.eans != null ? !this.eans.equals(device.eans) : device.eans != null) {
-            return false;
-        }
         return true;
     }
 
-    @Override
-    public int hashCode() {
-        int result = this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0;
-        result = 31 * result + (this.deviceType != null ? this.deviceType.hashCode() : 0);
-        result = 31 * result + (this.networkAddress != null ? this.networkAddress.hashCode() : 0);
-        result = 31 * result + (this.isActivated ? 1 : 0);
-        result = 31 * result + (this.hasSchedule ? 1 : 0);
-        result = 31 * result + (this.authorizations != null ? this.authorizations.hashCode() : 0);
-        result = 31 * result + (this.eans != null ? this.eans.hashCode() : 0);
-        return result;
+    public String getAlias() {
+        return this.alias;
     }
 
-    public void setHasSchedule(final boolean hasSchedule) {
-        this.hasSchedule = hasSchedule;
+    public List<DeviceAuthorization> getAuthorizations() {
+        return this.authorizations;
+    }
+
+    public String getContainerCity() {
+        return this.containerCity;
+    }
+
+    public String getContainerMunicipality() {
+        return this.containerMunicipality;
+    }
+
+    public String getContainerNumber() {
+        return this.containerNumber;
+    }
+
+    public String getContainerPostalCode() {
+        return this.containerPostalCode;
+    }
+
+    public String getContainerStreet() {
+        return this.containerStreet;
+    }
+
+    public final Date getCreationTime() {
+        return (Date) this.creationTime.clone();
+    }
+
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
+    }
+
+    public String getDeviceType() {
+        return this.deviceType;
+    }
+
+    public Float getGpsLatitude() {
+        return this.gpsLatitude;
+    }
+
+    public Float getGpsLongitude() {
+        return this.gpsLongitude;
+    }
+
+    public final Long getId() {
+        return this.id;
+    }
+
+    public String getIpAddress() {
+        return this.networkAddress == null ? null : this.networkAddress.getHostAddress();
+    }
+
+    public final Date getModificationTime() {
+        return (Date) this.modificationTime.clone();
+    }
+
+    public InetAddress getNetworkAddress() {
+        return this.networkAddress;
     }
 
     /**
@@ -413,50 +314,100 @@ NetworkAddressInterface {
      * @return List of OrganisationIdentification of organisations that are
      *         authorized for this device.
      */
-    @Override
     @Transient
     public List<String> getOrganisations() {
         return this.organisations;
     }
 
     /**
-     * Get the Ean codes for this device.
+     * Get the owner organisation of the device.
      *
-     * @return List of Ean codes for this device.
+     * @return The organisation when an owner was set, null otherwise.
      */
-    public List<Ean> getEans() {
-        return this.eans;
+    public Organisation getOwner() {
+        if (this.authorizations != null) {
+            for (final DeviceAuthorization authorization : this.authorizations) {
+                if (authorization.getFunctionGroup().equals(DeviceFunctionGroup.OWNER)) {
+                    return authorization.getOrganisation();
+                }
+            }
+        }
+
+        return null;
     }
 
-    public void addOrganisation(final String organisationIdentification) {
-        this.organisations.add(organisationIdentification);
+    public ProtocolInfo getProtocolInfo() {
+        return this.protocolInfo;
+    }
+
+    public final Long getVersion() {
+        return this.version;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0;
+        result = 31 * result + (this.deviceType != null ? this.deviceType.hashCode() : 0);
+        result = 31 * result + (this.networkAddress != null ? this.networkAddress.hashCode() : 0);
+        result = 31 * result + (this.isActivated ? 1 : 0);
+        result = 31 * result + (this.authorizations != null ? this.authorizations.hashCode() : 0);
+        return result;
+    }
+
+    public boolean isActivated() {
+        return this.isActivated;
+    }
+
+    public boolean isInMaintenance() {
+        return this.inMaintenance;
     }
 
     /**
-     * Create default configuration for a device (based on type).
-     *
-     * @return default configuration
+     * Method for actions to be taken before inserting.
      */
-    private List<DeviceOutputSetting> createDefaultConfiguration() {
-        final List<DeviceOutputSetting> defaultConfiguration = new ArrayList<>();
+    @PrePersist
+    private void prePersist() {
+        final Date now = new Date();
+        this.creationTime = now;
+        this.modificationTime = now;
+    }
 
-        if (this.deviceType == null) {
-            return defaultConfiguration;
-        }
+    /**
+     * Method for actions to be taken before updating.
+     */
+    @PreUpdate
+    private void preUpdate() {
+        this.modificationTime = new Date();
+    }
 
-        if (this.deviceType.equalsIgnoreCase(SSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
-            defaultConfiguration.add(new DeviceOutputSetting(2, 2, RelayType.LIGHT, ""));
-            defaultConfiguration.add(new DeviceOutputSetting(3, 3, RelayType.TARIFF, ""));
+    public void setVersion(final Long newVersion) {
+        this.version = newVersion;
+    }
 
-            return defaultConfiguration;
-        }
+    public void updateInMaintenance(final boolean inMaintenance) {
+        this.inMaintenance = inMaintenance;
+    }
 
-        if (this.deviceType.equalsIgnoreCase(PSLD_TYPE)) {
-            defaultConfiguration.add(new DeviceOutputSetting(1, 1, RelayType.LIGHT, ""));
-            return defaultConfiguration;
-        }
+    public void updateMetaData(final String alias, final String containerCity, final String containerPostalCode,
+            final String containerStreet, final String containerNumber, final String containerMunicipality,
+            final Float gpsLatitude, final Float gpsLongitude) {
+        this.alias = alias;
+        this.containerCity = containerCity;
+        this.containerPostalCode = containerPostalCode;
+        this.containerStreet = containerStreet;
+        this.containerNumber = containerNumber;
+        this.containerMunicipality = containerMunicipality;
+        this.gpsLatitude = gpsLatitude;
+        this.gpsLongitude = gpsLongitude;
+    }
 
-        return defaultConfiguration;
+    public void updateProtocol(final ProtocolInfo protocolInfo) {
+        this.protocolInfo = protocolInfo;
+    }
+
+    public void updateRegistrationData(final InetAddress networkAddress, final String deviceType) {
+        this.networkAddress = networkAddress;
+        this.deviceType = deviceType;
+        this.isActivated = true;
     }
 }
