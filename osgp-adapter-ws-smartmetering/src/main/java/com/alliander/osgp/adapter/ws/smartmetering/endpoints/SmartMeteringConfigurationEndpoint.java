@@ -52,9 +52,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.Configur
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Endpoint
 public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
@@ -85,7 +83,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
         final SetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-        .createSetAdministrativeStatusAsyncResponse();
+                .createSetAdministrativeStatusAsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
 
@@ -124,7 +122,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification());
 
         final GetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-        .createGetAdministrativeStatusAsyncResponse();
+                .createGetAdministrativeStatusAsyncResponse();
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -143,15 +141,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueGetAdministrativeStatusResponse(request.getCorrelationUid());
 
-            if (OsgpResultType.NOT_OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-                if (meterResponseData.getMessageData() instanceof String) {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            (String) meterResponseData.getMessageData(), null);
-                } else {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            "An exception occurred retrieving the administrative status.", null);
-                }
-            }
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the administrative status");
 
             response = new GetAdministrativeStatusResponse();
             final AdministrativeStatusType dataRequest = this.configurationMapper.map(

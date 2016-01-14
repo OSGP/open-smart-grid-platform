@@ -18,7 +18,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasAsyncRequest;
@@ -43,10 +42,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRe
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Endpoint
 public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
@@ -125,15 +122,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService
                     .dequeuePeriodicMeterReadsResponse(request.getCorrelationUid());
 
-            if (OsgpResultType.NOT_OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-                if (meterResponseData.getMessageData() instanceof String) {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            (String) meterResponseData.getMessageData(), null);
-                } else {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            "An exception occurred retrieving the periodic meter reads.", null);
-                }
-            }
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads");
 
             response = this.monitoringMapper.map(meterResponseData.getMessageData(),
                     com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse.class);
@@ -156,15 +145,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService
                     .dequeuePeriodicMeterReadsGasResponse(request.getCorrelationUid());
 
-            if (OsgpResultType.NOT_OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-                if (meterResponseData.getMessageData() instanceof String) {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            (String) meterResponseData.getMessageData(), null);
-                } else {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            "An exception occurred retrieving the periodic meter reads for gas.", null);
-                }
-            }
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the periodic meter reads for gas");
 
             response = this.monitoringMapper.map(meterResponseData.getMessageData(),
                     com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse.class);
@@ -251,15 +232,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService.dequeueActualMeterReadsResponse(request
                     .getCorrelationUid());
 
-            if (OsgpResultType.NOT_OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-                if (meterResponseData.getMessageData() instanceof String) {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            (String) meterResponseData.getMessageData(), null);
-                } else {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            "An exception occurred retrieving the actual meter reads.", null);
-                }
-            }
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads");
 
             response = this.monitoringMapper.map(meterResponseData.getMessageData(), ActualMeterReadsResponse.class);
         } catch (final Exception e) {
@@ -281,15 +254,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService
                     .dequeueActualMeterReadsGasResponse(request.getCorrelationUid());
 
-            if (OsgpResultType.NOT_OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-                if (meterResponseData.getMessageData() instanceof String) {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            (String) meterResponseData.getMessageData(), null);
-                } else {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            "An exception occurred retrieving the actual meter reads for gas.", null);
-                }
-            }
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the actual meter reads for gas");
 
             response = this.monitoringMapper.map(meterResponseData.getMessageData(), ActualMeterReadsGasResponse.class);
         } catch (final Exception e) {
@@ -344,15 +309,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             final MeterResponseData meterResponseData = this.monitoringService.dequeueReadAlarmRegisterResponse(request
                     .getCorrelationUid());
 
-            if (OsgpResultType.NOT_OK == OsgpResultType.fromValue(meterResponseData.getResultType().getValue())) {
-                if (meterResponseData.getMessageData() instanceof String) {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            (String) meterResponseData.getMessageData(), null);
-                } else {
-                    throw new TechnicalException(ComponentType.WS_SMART_METERING,
-                            "An exception occurred retrieving the alarm register.", null);
-                }
-            }
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the alarm register");
 
             response.setAlarmRegister(this.monitoringMapper.map(meterResponseData.getMessageData(),
                     com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class));
