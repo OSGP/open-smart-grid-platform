@@ -13,11 +13,8 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing smart metering set Activity Calendar response messages
@@ -33,25 +30,18 @@ public class SetActivityCalendarResponseMessageProcessor extends OsgpCoreRespons
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        return responseMessage.getDataObject() instanceof String;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
 
-        if (responseMessage.getDataObject() instanceof String) {
-            final String resultString = (String) responseMessage.getDataObject();
+        final String resultString = (String) responseMessage.getDataObject();
 
-            this.configurationService.handleSetActivityCalendarResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessage.getResult(),
-                    osgpException, resultString);
-        } else if (osgpException == null) {
-            this.configurationService.handleSetActivityCalendarResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, ResponseMessageResultType.NOT_OK,
-                    new TechnicalException(ComponentType.DOMAIN_SMART_METERING, "Error setting activity calendar.",
-                            null), (String) null);
-        } else {
-            this.configurationService.handleSetActivityCalendarResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, ResponseMessageResultType.NOT_OK,
-                    osgpException, (String) null);
-        }
+        this.configurationService.handleSetActivityCalendarResponse(deviceIdentification, organisationIdentification,
+                correlationUid, messageType, responseMessage.getResult(), osgpException, resultString);
     }
 }

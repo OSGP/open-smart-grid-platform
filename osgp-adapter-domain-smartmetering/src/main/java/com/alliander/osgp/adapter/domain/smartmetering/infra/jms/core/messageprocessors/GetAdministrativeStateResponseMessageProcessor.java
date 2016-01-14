@@ -14,11 +14,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Conf
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("domainSmartMeteringGetAdministrativeStateResponseMessageProcessor")
 public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
@@ -31,25 +28,19 @@ public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResp
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        return responseMessage.getDataObject() instanceof AdministrativeStatusType;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
 
-        if (responseMessage.getDataObject() instanceof AdministrativeStatusType) {
-            final AdministrativeStatusType administrativeStatusTypeDto = (AdministrativeStatusType) responseMessage
-                    .getDataObject();
-            this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, responseMessage.getResult(),
-                    osgpException, administrativeStatusTypeDto);
-        } else if (osgpException == null) {
-            this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, ResponseMessageResultType.NOT_OK,
-                    new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
-                            "Error retrieving administrative status.", null), (AdministrativeStatusType) null);
-        } else {
-            this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
-                    organisationIdentification, correlationUid, messageType, ResponseMessageResultType.NOT_OK,
-                    osgpException, (AdministrativeStatusType) null);
-        }
+        final AdministrativeStatusType administrativeStatusTypeDto = (AdministrativeStatusType) responseMessage
+                .getDataObject();
+        this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
+                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
+                administrativeStatusTypeDto);
     }
 }
