@@ -53,7 +53,6 @@ public class InstallationService extends DlmsApplicationService {
     private DlmsConnectionFactory dlmsConnectionFactory;
 
     // === ADD METER ===
-
     public void addMeter(final DlmsDeviceMessageMetadata messageMetadata, final SmartMeteringDevice smartMeteringDevice,
             final DeviceResponseMessageSender responseMessageSender) {
 
@@ -76,10 +75,9 @@ public class InstallationService extends DlmsApplicationService {
     }
 
     /**
-     * Function to set or update scaler and unit for a E-meter, so that these
-     * values can be used to convert values to standardized units required by
-     * the platform.
-     * 
+     * Function get scaler and unit for a E-meter, so that these values can be
+     * used to convert values to standardized units required by the platform.
+     *
      * @param messageMetadata
      *            the device we want to query
      * @throws FunctionalException
@@ -88,10 +86,10 @@ public class InstallationService extends DlmsApplicationService {
      * @throws TimeoutException
      * @throws ProtocolAdapterException
      */
-    public void getAndStoreScalerUnitForEmeter(final DlmsDeviceMessageMetadata messageMetadata)
+    public ScalerUnit getScalerUnitForEmeter(final DlmsDeviceMessageMetadata messageMetadata)
             throws FunctionalException, IOException, OperationNotSupportedException, TimeoutException,
             ProtocolAdapterException {
-        this.logStart(LOGGER, messageMetadata, "getAndStoreScalerUnitForEmeter");
+        this.logStart(LOGGER, messageMetadata, "getScalerUnitForEmeter");
 
         LnClientConnection conn = null;
         try {
@@ -101,23 +99,25 @@ public class InstallationService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final ScalerUnit response = getScalerUnitCommandExecutor.execute(conn, new ScalerUnitQuery());
-
-            device.setScaler(response.getScaler());
-            device.setDlmsUnit(response.getDlmsUnit());
-
-            dlmsDeviceRepository.save(device);
+            return getScalerUnitCommandExecutor.execute(conn, new ScalerUnitQuery());
 
             /*
              * TODO call this function for example from addMeter or on demand or
              * both in order to set or update scaler and unit mbus device
              * administration not yet present in protocol layer
              */
-
         } finally {
             if (conn != null) {
                 conn.close();
             }
         }
+    }
+
+    public void storeScalerUnitForEmeter(final DlmsDevice dlmsDevice, final ScalerUnit scalerUnit) {
+        dlmsDevice.setScaler(scalerUnit.getScaler());
+        dlmsDevice.setDlmsUnit(scalerUnit.getDlmsUnit());
+
+        dlmsDeviceRepository.save(dlmsDevice);
+
     }
 }
