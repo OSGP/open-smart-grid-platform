@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgp.adapter.protocol.dlms.application.services;
+package org.osgp.adapter.protocol.dlms.integrationtests.application.services;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
@@ -14,7 +14,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.osgp.adapter.protocol.dlms.application.config.ApplicationContext;
+import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
+import org.osgp.adapter.protocol.dlms.integrationtests.Integration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -22,7 +24,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * This integration test requires a running up to date postgres db that can be
- * accessed using user and password from test.properties.
+ * accessed using user and password from test.properties and an up and running
+ * E-meter with device id E0004001515495114 and the ip address in this test.
  * 
  * @author dev
  */
@@ -39,6 +42,7 @@ public class ScalerUnitTest {
     public void testGetScalerUnit() throws Exception {
         DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata = new DlmsDeviceMessageMetadata();
         dlmsDeviceMessageMetadata.setDeviceIdentification("E0004001515495114");
+        dlmsDeviceMessageMetadata.setIpAddress("89.200.96.223");
 
         ScalerUnit scalerUnitForEmeter = installationService.getScalerUnitForEmeter(dlmsDeviceMessageMetadata);
 

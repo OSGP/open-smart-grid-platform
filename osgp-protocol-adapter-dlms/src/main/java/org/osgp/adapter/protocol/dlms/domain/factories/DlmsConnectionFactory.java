@@ -19,13 +19,6 @@ public class DlmsConnectionFactory {
     private final static int W_PORT_DESTINATION = 1;
     private final static int RESPONSE_TIMEOUT = 60000;
 
-    // TODO REPLACE HARD-CODED IP-ADDRESS!!!
-    // Landis & Gyr
-    // private final static String REMOTE_HOST = "89.200.91.92";
-
-    // Kaifa E9998000014122714
-    private final static String REMOTE_HOST = "89.200.96.223";
-
     /**
      * Returns an open connection using the appropriate security settings for
      * the device
@@ -50,7 +43,12 @@ public class DlmsConnectionFactory {
         final byte[] authenticationKey = Hex.decode(device.getAuthenticationKey());
         final byte[] encryptionKey = Hex.decode(device.getGlobalEncryptionUnicastKey());
 
-        return new TcpConnectionBuilder(InetAddress.getByName(REMOTE_HOST))
+        final String ipAddress = device.getIpAddress();
+        if (ipAddress == null) {
+            throw new IOException("Unable to get HLS5 connection for device " + device.getDeviceIdentification()
+                    + ", because the IP address is not set.");
+        }
+        return new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
                 .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
                 .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
                 .clientAccessPoint(W_PORT_SOURCE).buildLnConnection();

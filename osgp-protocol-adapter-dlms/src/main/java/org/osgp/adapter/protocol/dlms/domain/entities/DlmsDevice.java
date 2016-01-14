@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.entities;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 import javax.persistence.EnumType;
@@ -58,6 +59,9 @@ public class DlmsDevice extends AbstractEntity {
 
     @Column
     private Integer scaler;
+
+    @Transient
+    private String ipAddress;
 
     public DlmsDevice() {
         // Default constructor
@@ -200,5 +204,21 @@ public class DlmsDevice extends AbstractEntity {
      */
     public void setScaler(Integer scaler) {
         this.scaler = scaler;
+    }
+
+    /**
+     * The IP address is not part of the data in the protocol adapter database.
+     * The value needs to have been set based on information from the core
+     * database before it can be used.
+     *
+     * @return the device's network address, if it has been explicitly set;
+     *         otherwise {@code null}.
+     */
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
+    public void setIpAddress(final String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 }

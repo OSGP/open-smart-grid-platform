@@ -5,7 +5,7 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgp.adapter.protocol.dlms.application.services;
+package org.osgp.adapter.protocol.dlms.integrationtests;
 
 /**
  *
