@@ -57,7 +57,7 @@ public class DlmsDevice extends AbstractEntity {
     private DlmsUnit dlmsUnit;
 
     @Column
-    private int scaler;
+    private Integer scaler;
 
     public DlmsDevice() {
         // Default constructor
@@ -187,7 +187,7 @@ public class DlmsDevice extends AbstractEntity {
      * 
      * @return
      */
-    public int getScaler() {
+    public Integer getScaler() {
         return this.scaler;
     }
 
@@ -198,7 +198,7 @@ public class DlmsDevice extends AbstractEntity {
      * 
      * @return
      */
-    public void setScaler(int scaler) {
+    public void setScaler(Integer scaler) {
         this.scaler = scaler;
     }
 }
