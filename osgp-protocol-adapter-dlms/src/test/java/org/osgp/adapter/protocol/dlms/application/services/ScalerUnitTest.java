@@ -21,7 +21,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- *
+ * This integration test requires a running up to date postgres db that can be
+ * accessed using user and password from test.properties.
+ * 
  * @author dev
  */
 @RunWith(SpringJUnit4ClassRunner.class)
