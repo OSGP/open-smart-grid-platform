@@ -30,7 +30,7 @@ public class DlmsConnectionFactory {
      */
     public LnClientConnection getConnection(final DlmsDevice device) throws IOException, OperationNotSupportedException {
 
-        if (device.isHLS5Active()) {
+        if (device.isHls5Active()) {
             return this.getHls5Connection(device);
         } else {
             // TODO ADD IMPLEMENTATIONS FOR OTHER SECURITY MODES

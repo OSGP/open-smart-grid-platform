@@ -123,7 +123,8 @@ public class MonitoringService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during requestActualMeterReads", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    actualMeterReadsRequest);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -155,7 +156,8 @@ public class MonitoringService extends DlmsApplicationService {
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception while retrieving response message", e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, null);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    readAlarmRegisterRequest);
         } finally {
             if (conn != null) {
                 conn.close();
