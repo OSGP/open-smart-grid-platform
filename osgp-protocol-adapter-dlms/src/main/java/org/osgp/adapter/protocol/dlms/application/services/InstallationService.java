@@ -51,7 +51,8 @@ public class InstallationService extends DlmsApplicationService {
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
                     "Unexpected exception while retrieving response message", e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    smartMeteringDevice);
         }
     }
 

@@ -73,7 +73,7 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
     <netty.version>3.9.4.Final</netty.version>
-    <openmuc.jdlms.version>0.11.3</openmuc.jdlms.version>
+    <openmuc.jdlms.version>0.11.4-SNAPSHOT</openmuc.jdlms.version>
   </properties>
 
   <repositories>
@@ -88,6 +88,14 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+	<repository>
+		<id>oss-sonatype</id>
+		<name>oss-sonatype</name>
+		<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		<snapshots>
+			<enabled>true</enabled>
+		</snapshots>
+	</repository>
   </repositories>
 
   <dependencyManagement>
