@@ -5,15 +5,17 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package org.osgp.adapter.protocol.dlms.integrationtests.application.services;
+package org.osgp.adapter.protocol.dlms.integrationtests.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitQuery;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.application.config.ApplicationContext;
-import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -35,7 +37,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class ScalerUnitTest {
 
     @Autowired
-    private InstallationService installationService;
+    private TestScalerUnitCommandExecutor commandExecutor;
+
+    @Autowired
+    private DlmsConnectionFactory dlmsConnectionFactory;
+
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     @Test
     public void testGetScalerUnit() throws Exception {
@@ -43,9 +51,12 @@ public class ScalerUnitTest {
         dlmsDeviceMessageMetadata.setDeviceIdentification("E0004001515495114");
         dlmsDeviceMessageMetadata.setIpAddress("89.200.96.223");
 
-        ScalerUnit scalerUnitForEmeter = installationService.getScalerUnitForEmeter(dlmsDeviceMessageMetadata);
+        LnClientConnection connection = dlmsConnectionFactory
+                .getConnection(domainHelperService.findDlmsDevice(dlmsDeviceMessageMetadata));
 
-        Assert.assertEquals(scalerUnitForEmeter.getDlmsUnit(), DlmsUnit.wh);
+        ScalerUnitTestResponse execute = commandExecutor.execute(connection, new ScalerUnitQuery());
+
+        Assert.assertEquals(execute.getScalerUnit().getDlmsUnit(), DlmsUnit.wh);
 
     }
 
