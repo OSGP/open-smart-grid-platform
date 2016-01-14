@@ -9,26 +9,20 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
-
-import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
-@Component()
-public class GetScalerUnitCommandExecutor implements CommandExecutor<ScalerUnitQuery, ScalerUnit> {
+public abstract class GetScalerUnitCommandExecutor<R extends ScalerUnitResponse>
+        implements ScalerUnitAwareCommandExecutor<ScalerUnitQuery, R> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetScalerUnitCommandExecutor.class);
 
@@ -44,52 +38,6 @@ public class GetScalerUnitCommandExecutor implements CommandExecutor<ScalerUnitQ
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    @Override
-    public ScalerUnit execute(final LnClientConnection conn, final ScalerUnitQuery scalerUnitQuery)
-            throws IOException, TimeoutException, ProtocolAdapterException {
-
-        final ObisCode obisCodeRegister = scalerUnitQuery.getChannel() > 0
-                ? this.registerForScalerUnit(scalerUnitQuery.getChannel()) : REGISTER_FOR_SCALER_UNIT;
-
-        LOGGER.debug("Retrieving register for ObisCode: {}", obisCodeRegister);
-
-        final AttributeAddress attrScalerUnit = scalerUnitQuery.getChannel() > 0
-                ? new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT)
-                : new AttributeAddress(CLASS_ID, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT);
-
-        final List<GetResult> getResultList = conn.get(attrScalerUnit);
-
-        checkResultList(getResultList);
-
-        GetResult getResult = getResultList.get(0);
-        AccessResultCode resultCode = getResult.resultCode();
-        LOGGER.debug("AccessResultCode: {}", resultCode.name());
-        final DataObject scaler_unit = getResult.resultData();
-        LOGGER.debug(this.dlmsHelperService.getDebugInfo(scaler_unit));
-        if (!scaler_unit.isComplex()) {
-            throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit.");
-        }
-        List<DataObject> value = scaler_unit.value();
-        if (value.size() != 2) {
-            throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit.");
-        }
-        final DataObject scaler = value.get(0);
-        final DataObject unit = value.get(1);
-
-        return new ScalerUnit(DlmsUnit.fromDlmsEnum(dlmsHelperService.readLongNotNull(unit, "unit value").intValue()),
-                dlmsHelperService.readLongNotNull(scaler, "scaler value").intValue());
-    }
-
-    private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
-        if (getResultList.isEmpty()) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving scaler and unit.");
-        }
-
-        if (getResultList.size() != 1) {
-            LOGGER.info("Expected 1 GetResult while retrieving scaler and unit, got " + getResultList.size());
-        }
-    }
-
     private ObisCode registerForScalerUnit(final int channel) throws ProtocolAdapterException {
         switch (channel) {
         case 1:
@@ -103,6 +51,34 @@ public class GetScalerUnitCommandExecutor implements CommandExecutor<ScalerUnitQ
         default:
             throw new ProtocolAdapterException(String.format("channel %s not supported", channel));
         }
+    }
+
+    @Override
+    public ScalerUnit convert(final DataObject dataObject) throws ProtocolAdapterException {
+        LOGGER.debug(this.dlmsHelperService.getDebugInfo(dataObject));
+        if (!dataObject.isComplex()) {
+            throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit.");
+        }
+        List<DataObject> value = dataObject.value();
+        if (value.size() != 2) {
+            throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit.");
+        }
+        final DataObject scaler = value.get(0);
+        final DataObject unit = value.get(1);
+
+        return new ScalerUnit(DlmsUnit.fromDlmsEnum(dlmsHelperService.readLongNotNull(unit, "unit value").intValue()),
+                dlmsHelperService.readLongNotNull(scaler, "scaler value").intValue());
+    }
+
+    @Override
+    public AttributeAddress getScalerUnitAttributeAddress(final ScalerUnitQuery scalerUnitQuery)
+            throws ProtocolAdapterException {
+        final ObisCode obisCodeRegister = scalerUnitQuery.getChannel() > 0
+                ? this.registerForScalerUnit(scalerUnitQuery.getChannel()) : REGISTER_FOR_SCALER_UNIT;
+
+        return scalerUnitQuery.getChannel() > 0
+                ? new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT)
+                : new AttributeAddress(CLASS_ID, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT);
     }
 
 }
