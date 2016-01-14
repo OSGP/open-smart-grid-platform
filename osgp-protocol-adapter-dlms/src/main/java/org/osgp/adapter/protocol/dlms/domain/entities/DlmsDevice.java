@@ -7,14 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.entities;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 
 @Entity
 public class DlmsDevice extends AbstractEntity {
@@ -53,12 +50,6 @@ public class DlmsDevice extends AbstractEntity {
 
     @Column
     private String authenticationKey;
-
-    @Enumerated(EnumType.STRING)
-    private DlmsUnit dlmsUnit;
-
-    @Column
-    private Integer scaler;
 
     @Transient
     private String ipAddress;
@@ -174,36 +165,6 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
-    }
-
-    public DlmsUnit getDlmsUnit() {
-        return this.dlmsUnit;
-    }
-
-    public void setDlmsUnit(DlmsUnit dlmsUnit) {
-        this.dlmsUnit = dlmsUnit;
-    }
-
-    /**
-     * A power of 10. Meter values should be multiplied according to this value.
-     * For example when scaler is 2 values should be multiplied by 100, when
-     * scaler = -2 with 0.01.
-     * 
-     * @return
-     */
-    public Integer getScaler() {
-        return this.scaler;
-    }
-
-    /**
-     * A power of 10. Meter values should be multiplied according to this value.
-     * For example when scaler is 2 values should be multiplied by 100, when
-     * scaler = -2 with 0.01.
-     * 
-     * @return
-     */
-    public void setScaler(Integer scaler) {
-        this.scaler = scaler;
     }
 
     /**
