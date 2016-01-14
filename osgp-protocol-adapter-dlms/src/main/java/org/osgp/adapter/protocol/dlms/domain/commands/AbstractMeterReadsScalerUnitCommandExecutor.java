@@ -21,10 +21,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
-public abstract class GetScalerUnitCommandExecutor<R extends ScalerUnitResponse>
+/**
+ * baseclass meant to simplify implementing the retrieval of scaler and unit
+ * together with values. Take a look at the junit integration test for an
+ * example how to use this.
+ * 
+ * @author dev
+ * @param <R>
+ */
+public abstract class AbstractMeterReadsScalerUnitCommandExecutor<R extends ScalerUnitResponse>
         implements ScalerUnitAwareCommandExecutor<ScalerUnitQuery, R> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetScalerUnitCommandExecutor.class);
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     private static final ObisCode REGISTER_FOR_SCALER_UNIT = new ObisCode("1.0.1.8.0.255");
     private static final int CLASS_ID = 3;
