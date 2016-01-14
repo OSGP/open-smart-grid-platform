@@ -134,15 +134,50 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         }
 
         try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            this.handleMessage(deviceIdentification, organisationIdentification, correlationUid, messageType,
-                    responseMessage, osgpException);
+            if (osgpException != null) {
+                this.handleError(osgpException, correlationUid, organisationIdentification, deviceIdentification,
+                        messageType);
+            } else if (this.hasRegularResponseObject(responseMessage)) {
+                LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+                this.handleMessage(deviceIdentification, organisationIdentification, correlationUid, messageType,
+                        responseMessage, osgpException);
+            } else {
+                LOGGER.error(
+                        "No osgpException, yet dataObject ({}) is not of the regular type for handling response: {}",
+                        responseMessage.getDataObject() == null ? null : responseMessage.getDataObject().getClass()
+                                .getName(), messageType);
+
+                this.handleError(new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
+                        "Unexpected response data handling request.", null), correlationUid,
+                        organisationIdentification, deviceIdentification, messageType);
+            }
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
         }
     }
+
+    /**
+     * The {@code dataObject} in the {@code responseMessage} can either have a
+     * value that would normally be returned as an answer, or it can contain an
+     * object that was used in the request message (or other unexpected value).
+     * <p>
+     * The object from the request message is sometimes returned as object in
+     * the response message to allow retries of requests without other knowledge
+     * of what was sent earlier.
+     * <p>
+     * To filter out these, or other unexpected situations that may occur in the
+     * future, each message processor is supposed to check the response message
+     * for expected types of data objects.
+     *
+     * @param responseMessage
+     * @return {@code true} if {@code responseMessage} contains a
+     *         {@code dataObject} that can be processed normally; {@code false}
+     *         otherwise.
+     */
+    protected abstract boolean hasRegularResponseObject(final ResponseMessage responseMessage);
 
     protected abstract void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,

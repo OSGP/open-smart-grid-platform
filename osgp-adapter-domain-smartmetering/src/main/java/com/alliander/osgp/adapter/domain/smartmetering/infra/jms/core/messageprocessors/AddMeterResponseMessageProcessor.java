@@ -30,6 +30,12 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        // Only the result is used, no need to check the dataObject.
+        return true;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {

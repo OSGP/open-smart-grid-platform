@@ -30,6 +30,11 @@ public class SetActivityCalendarResponseMessageProcessor extends OsgpCoreRespons
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        return responseMessage.getDataObject() instanceof String;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {

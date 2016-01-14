@@ -28,6 +28,11 @@ public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseM
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        return responseMessage.getDataObject() instanceof AlarmRegister;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
@@ -37,5 +42,4 @@ public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseM
         this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
                 correlationUid, messageType, responseMessage.getResult(), osgpException, alarmRegisterDto);
     }
-
 }
