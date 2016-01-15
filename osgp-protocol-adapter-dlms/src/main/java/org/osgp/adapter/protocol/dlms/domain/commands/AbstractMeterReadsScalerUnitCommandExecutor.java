@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.Channel;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
@@ -30,7 +31,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
  * @param <R>
  */
 public abstract class AbstractMeterReadsScalerUnitCommandExecutor<T extends ChannelQuery, R extends ScalerUnitResponse>
-        implements ScalerUnitAwareCommandExecutor<T, R> {
+implements ScalerUnitAwareCommandExecutor<T, R> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMeterReadsScalerUnitCommandExecutor.class);
 
@@ -81,11 +82,12 @@ public abstract class AbstractMeterReadsScalerUnitCommandExecutor<T extends Chan
     @Override
     public AttributeAddress getScalerUnitAttributeAddress(final ChannelQuery channelQuery)
             throws ProtocolAdapterException {
-        final ObisCode obisCodeRegister = channelQuery.getChannel() > 0 ? this.registerForScalerUnit(channelQuery
-                .getChannel()) : REGISTER_FOR_SCALER_UNIT;
+        final ObisCode obisCodeRegister = channelQuery.getChannel().equals(Channel.NONE) ? REGISTER_FOR_SCALER_UNIT
+                : this.registerForScalerUnit(channelQuery.getChannel().getChannelNumber());
 
-        return channelQuery.getChannel() > 0 ? new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister,
-                ATTRIBUTE_ID_SCALER_UNIT) : new AttributeAddress(CLASS_ID, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT);
+        return channelQuery.getChannel().equals(Channel.NONE) ? new AttributeAddress(CLASS_ID, obisCodeRegister,
+                ATTRIBUTE_ID_SCALER_UNIT) : new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister,
+                        ATTRIBUTE_ID_SCALER_UNIT);
     }
 
 }
