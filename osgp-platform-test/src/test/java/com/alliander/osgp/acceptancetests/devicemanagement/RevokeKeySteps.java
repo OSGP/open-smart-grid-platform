@@ -36,14 +36,14 @@ import com.alliander.osgp.adapter.ws.admin.endpoints.DeviceManagementEndpoint;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RevokeKeyRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RevokeKeyResponse;
 import com.alliander.osgp.core.application.services.DeviceResponseMessageService;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorizationBuilder;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
-import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 
@@ -62,34 +62,42 @@ public class RevokeKeySteps {
 
     // Domain fields
     private DeviceManagementEndpoint deviceManagementEndpoint;
+
     @Autowired
     private DeviceManagementService deviceManagementService;
 
     private RevokeKeyRequest request;
+
     private RevokeKeyResponse response;
 
     // OSGP fields
     @Autowired
     private DeviceResponseMessageService deviceResponseMessageService;
+
     @Autowired
-    private DeviceRepository deviceRepositoryMock;
+    private SsldRepository ssldRepositoryMock;
+
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
+
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
-    private Device device;
+
+    private Ssld device;
+
     private Organisation organisation;
 
     // Protocol fields
     @Autowired
     private OslpDeviceRepository oslpDeviceRepositoryMock;
+
     private OslpDevice oslpDevice;
 
     // Test fields
     private Throwable throwable;
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+        Mockito.reset(new Object[] { this.ssldRepositoryMock, this.organisationRepositoryMock,
                 this.oslpDeviceRepositoryMock });
 
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
@@ -98,7 +106,6 @@ public class RevokeKeySteps {
         this.throwable = null;
         this.request = null;
         this.response = null;
-
     }
 
     // === GIVEN ===
@@ -117,14 +124,15 @@ public class RevokeKeySteps {
     public void givenTheRevokeKeyRequestRefersToAnExistingDevice(final String device) {
         LOGGER.info("GIVEN: \"the revoke key request refers to an existing device [{}].", device);
 
-        this.device = new DeviceBuilder().withDeviceIdentification(device).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
+        this.device = (Ssld) new DeviceBuilder().withDeviceIdentification(device)
+                .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
                 .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).build();
 
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(device).build();
 
-        when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
         when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.oslpDevice);
-        when(this.deviceRepositoryMock.save(any(Device.class))).thenReturn(this.device);
+        when(this.ssldRepositoryMock.save(any(Ssld.class))).thenReturn(this.device);
         when(this.oslpDeviceRepositoryMock.save(any(OslpDevice.class))).thenReturn(this.oslpDevice);
     }
 
@@ -132,7 +140,7 @@ public class RevokeKeySteps {
     public void givenTheRevokeKeyRequestRefersToANonExistingDevice(final String device) {
         LOGGER.info("GIVEN: \"the revoke key request refers to a non-existing device [{}].", device);
 
-        when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(null);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(null);
     }
 
     @DomainStep("the revoke key request refers to an existing organisation that is authorized")
@@ -148,7 +156,7 @@ public class RevokeKeySteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
 
     }
 
@@ -181,8 +189,8 @@ public class RevokeKeySteps {
                     .getValue().getDeviceIdentification());
             Assert.assertFalse("Oslp Device key should be cleared", oslpDeviceArgument.getValue().isPublicKeyPresent());
 
-            final ArgumentCaptor<Device> deviceArgument = ArgumentCaptor.forClass(Device.class);
-            verify(this.deviceRepositoryMock, timeout(10000).times(1)).save(deviceArgument.capture());
+            final ArgumentCaptor<Ssld> deviceArgument = ArgumentCaptor.forClass(Ssld.class);
+            verify(this.ssldRepositoryMock, timeout(10000).times(1)).save(deviceArgument.capture());
 
             Assert.assertEquals("Devices should match", this.device.getDeviceIdentification(), deviceArgument
                     .getValue().getDeviceIdentification());
@@ -201,7 +209,7 @@ public class RevokeKeySteps {
         LOGGER.info("THEN: \"no device should be created\".");
 
         try {
-            verify(this.deviceRepositoryMock, times(0)).save(any(Device.class));
+            verify(this.ssldRepositoryMock, times(0)).save(any(Ssld.class));
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             return false;

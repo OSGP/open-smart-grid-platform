@@ -10,6 +10,7 @@ package com.alliander.osgp.domain.core.entities;
 import java.net.InetAddress;
 
 public class DeviceBuilder {
+    private Long deviceId;
     private String deviceIdentification;
     private String deviceType;
     private InetAddress networkAddress;
@@ -21,6 +22,7 @@ public class DeviceBuilder {
     private ProtocolInfo protocolInfo;
 
     public DeviceBuilder() {
+        this.deviceId = 1L;
         this.deviceType = "PSLD";
         this.hasSchedule = false;
         this.activated = false;
@@ -28,6 +30,11 @@ public class DeviceBuilder {
         this.gpsLongitude = null;
         this.publicKeyPresent = false;
         this.protocolInfo = null;
+    }
+
+    public DeviceBuilder withId(final Long id) {
+        this.deviceId = id;
+        return this;
     }
 
     public DeviceBuilder withDeviceIdentification(final String deviceIdentification) {
@@ -58,7 +65,6 @@ public class DeviceBuilder {
     public DeviceBuilder withGps(final Float latitude, final Float longitude) {
         this.gpsLatitude = latitude;
         this.gpsLongitude = longitude;
-
         return this;
     }
 
@@ -73,11 +79,12 @@ public class DeviceBuilder {
     }
 
     public Device build() {
-        final Device device = new Device(this.deviceIdentification, this.deviceType, this.networkAddress,
-                this.activated, this.hasSchedule);
-        device.updateMetaData(null, null, null, null, null, null, this.gpsLatitude, this.gpsLongitude);
-        device.updateProtocol(this.protocolInfo);
-        device.setPublicKeyPresent(this.publicKeyPresent);
-        return device;
+        final Ssld ssld = new Ssld(this.deviceIdentification, this.deviceType, this.networkAddress, this.activated,
+                this.hasSchedule);
+        ssld.setId(this.deviceId);
+        ssld.updateMetaData(null, null, null, null, null, null, this.gpsLatitude, this.gpsLongitude);
+        ssld.updateProtocol(this.protocolInfo);
+        ssld.setPublicKeyPresent(this.publicKeyPresent);
+        return ssld;
     }
 }

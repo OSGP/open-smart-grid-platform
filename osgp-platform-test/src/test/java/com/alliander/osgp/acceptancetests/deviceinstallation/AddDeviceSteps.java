@@ -32,11 +32,13 @@ import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceReq
 import com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.AddDeviceResponse;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorizationBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.OrganisationBuilder;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
@@ -44,6 +46,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 
 @Configurable
@@ -69,7 +72,7 @@ public class AddDeviceSteps {
     private AddDeviceResponse response;
     private Throwable throwable;
 
-    private Device device;
+    private Ssld device;
     private Organisation owner;
     private DeviceAuthorization authOwner;
 
@@ -79,7 +82,11 @@ public class AddDeviceSteps {
     @Autowired
     private DeviceRepository deviceRepositoryMock;
     @Autowired
+    private SsldRepository ssldRepositoryMock;
+    @Autowired
     private WritableDeviceRepository writableDeviceRepositoryMock;
+    @Autowired
+    private WritableSsldRepository writableSsldRepositoryMock;
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
@@ -99,19 +106,25 @@ public class AddDeviceSteps {
     private DeviceInstallationService deviceInstallationService;
 
     public void setUp() {
-        Mockito.reset(new Object[] { this.authorizationRepositoryMock, this.deviceRepositoryMock, this.writableAuthorizationRepositoryMock,
-                this.writableDeviceRepositoryMock, this.organisationRepositoryMock });
+        Mockito.reset(new Object[] { this.authorizationRepositoryMock, this.deviceRepositoryMock,
+                this.ssldRepositoryMock, this.writableAuthorizationRepositoryMock, this.writableDeviceRepositoryMock,
+                this.writableSsldRepositoryMock, this.organisationRepositoryMock });
 
-        this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService, new DeviceInstallationMapper());
+        final DeviceInstallationMapper deviceInstallationMapper = new DeviceInstallationMapper();
+        deviceInstallationMapper.initialize();
 
-        this.device = new Device(DEVICE_ID);
+        this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService,
+                deviceInstallationMapper);
+
+        this.device = new Ssld(DEVICE_ID, "alias", "city", "postal-code", "street", "street-number", "municipality",
+                12.1234F, 14.1234F);
 
         this.owner = new OrganisationBuilder().withOrganisationIdentification(ORGANISATION_ID_OWNER).build();
 
         this.device.addAuthorization(this.owner, DeviceFunctionGroup.OWNER);
 
-        this.authOwner = new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.owner).withFunctionGroup(DeviceFunctionGroup.OWNER)
-                .build();
+        this.authOwner = new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.owner)
+                .withFunctionGroup(DeviceFunctionGroup.OWNER).build();
 
         this.request = null;
         this.response = null;
@@ -128,17 +141,28 @@ public class AddDeviceSteps {
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(null);
         when(this.deviceRepositoryMock.save(any(Device.class))).thenReturn(this.device);
+
+        when(this.ssldRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(null);
+        when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.save(any(Ssld.class))).thenReturn(this.device);
+
         when(this.writableDeviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(null);
         when(this.writableDeviceRepositoryMock.save(any(Device.class))).thenReturn(this.device);
 
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(this.owner);
+        when(this.writableSsldRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(null);
+        when(this.writableSsldRepositoryMock.findOne(1L)).thenReturn(this.device);
+        when(this.writableSsldRepositoryMock.save(any(Ssld.class))).thenReturn(this.device);
 
-        when(this.authorizationRepositoryMock.findByOrganisationAndDevice(this.owner, this.device)).thenReturn(Arrays.asList(this.authOwner));
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(
+                this.owner);
+
+        when(this.authorizationRepositoryMock.findByOrganisationAndDevice(this.owner, this.device)).thenReturn(
+                Arrays.asList(this.authOwner));
         when(this.authorizationRepositoryMock.save(eq(this.authOwner))).thenReturn(this.authOwner);
         when(this.writableAuthorizationRepositoryMock.save(eq(this.authOwner))).thenReturn(this.authOwner);
 
-        when(this.protocolInfoRepositoryMock.findByProtocolAndProtocolVersion(any(String.class), any(String.class))).thenReturn(
-                ProtocolInfoTestUtils.getProtocolInfo(OSLP_1_0_PROTOCOL, OSLP_1_0_PROTOCOL_VERSION));
+        when(this.protocolInfoRepositoryMock.findByProtocolAndProtocolVersion(any(String.class), any(String.class)))
+        .thenReturn(ProtocolInfoTestUtils.getProtocolInfo(OSLP_1_0_PROTOCOL, OSLP_1_0_PROTOCOL_VERSION));
 
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
@@ -153,7 +177,8 @@ public class AddDeviceSteps {
 
         this.setUp();
 
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(this.owner);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(
+                this.owner);
 
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
@@ -195,11 +220,16 @@ public class AddDeviceSteps {
         this.setUp();
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(DEVICE_ID_EXISTING)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(DEVICE_ID_EXISTING)).thenReturn(this.device);
         when(this.writableDeviceRepositoryMock.findByDeviceIdentification(DEVICE_ID_EXISTING)).thenReturn(this.device);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(this.owner);
-        when(this.authorizationRepositoryMock.findByDeviceAndFunctionGroup(this.device, DeviceFunctionGroup.OWNER)).thenReturn(Arrays.asList(this.authOwner));
-        when(this.writableAuthorizationRepositoryMock.findByDeviceAndFunctionGroup(this.device, DeviceFunctionGroup.OWNER)).thenReturn(
-                Arrays.asList(this.authOwner));
+        when(this.writableSsldRepositoryMock.findByDeviceIdentification(DEVICE_ID_EXISTING)).thenReturn(this.device);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(
+                this.owner);
+        when(this.authorizationRepositoryMock.findByDeviceAndFunctionGroup(this.device, DeviceFunctionGroup.OWNER))
+        .thenReturn(Arrays.asList(this.authOwner));
+        when(
+                this.writableAuthorizationRepositoryMock.findByDeviceAndFunctionGroup(this.device,
+                        DeviceFunctionGroup.OWNER)).thenReturn(Arrays.asList(this.authOwner));
 
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
@@ -215,9 +245,15 @@ public class AddDeviceSteps {
         this.setUp();
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
-        when(this.writableDeviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
 
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_UNKNOWN)).thenReturn(null);
+        when(this.writableDeviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.writableSsldRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.writableSsldRepositoryMock.findOne(1L)).thenReturn(this.device);
+
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_UNKNOWN))
+        .thenReturn(null);
 
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
@@ -233,7 +269,12 @@ public class AddDeviceSteps {
         this.setUp();
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
+
         when(this.writableDeviceRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.writableSsldRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
+        when(this.writableSsldRepositoryMock.findOne(1L)).thenReturn(this.device);
 
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
@@ -268,7 +309,7 @@ public class AddDeviceSteps {
         LOGGER.info("THEN: \"the device should be created\".");
 
         try {
-            verify(this.writableDeviceRepositoryMock, times(1)).save(eq(this.device));
+            verify(this.writableAuthorizationRepositoryMock, times(1)).save(any(DeviceAuthorization.class));
         } catch (final Throwable t) {
             return false;
         }

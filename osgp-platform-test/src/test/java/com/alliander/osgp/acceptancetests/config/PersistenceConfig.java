@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.ws.infra.specifications.JpaDeviceSpecification
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
@@ -25,7 +26,8 @@ import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -67,8 +69,18 @@ public class PersistenceConfig {
     }
 
     @Bean
-    public SmartMeteringDeviceRepository smartMeteringDeviceRepositoryMock() {
-        return mock(SmartMeteringDeviceRepository.class);
+    public SmartMeterRepository smartMeteringDeviceRepositoryMock() {
+        return mock(SmartMeterRepository.class);
+    }
+
+    @Bean
+    public SsldRepository ssldRepository() {
+        return mock(SsldRepository.class);
+    }
+
+    @Bean
+    public WritableSsldRepository writableSsldRepository() {
+        return mock(WritableSsldRepository.class);
     }
 
     @Bean

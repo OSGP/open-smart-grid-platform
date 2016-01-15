@@ -36,11 +36,13 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.OrganisationBuilder;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 
 @Configurable
 @DomainSteps
@@ -60,13 +62,15 @@ public class FindRecentDevicesSteps {
 
     private DeviceInstallationEndpoint deviceInstallationEndpoint;
 
-    private Device device;
+    private Ssld device;
 
     private Organisation owner;
 
     // Repository Mocks
     @Autowired
     private DeviceRepository deviceRepositoryMock;
+    @Autowired
+    private SsldRepository ssldRepositoryMock;
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
@@ -78,9 +82,13 @@ public class FindRecentDevicesSteps {
     private DeviceInstallationService deviceInstallationService;
 
     public void Setup() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.authorizationRepositoryMock, this.organisationRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.authorizationRepositoryMock,
+                this.organisationRepositoryMock });
 
-        this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService, new DeviceInstallationMapper());
+        final DeviceInstallationMapper deviceInstallationMapper = new DeviceInstallationMapper();
+        deviceInstallationMapper.initialize();
+        this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService,
+                deviceInstallationMapper);
 
         // Create the owner
         this.owner = new OrganisationBuilder().withOrganisationIdentification(OWNER_ID).build();
@@ -106,8 +114,10 @@ public class FindRecentDevicesSteps {
     public void andAValidDevice() {
         LOGGER.info("GIVEN: \"a valid device\".");
 
-        this.device = new Device(DEVICE_ID);
-        when(this.deviceRepositoryMock.findRecentDevices(eq(this.owner), any(Date.class))).thenReturn(Arrays.asList(this.device));
+        this.device = new Ssld(DEVICE_ID, "alias", "city", "postal-code", "street", "street-number", "municipality",
+                12.34F, 14.23F);
+        when(this.deviceRepositoryMock.findRecentDevices(eq(this.owner), any(Date.class))).thenReturn(
+                Arrays.asList((Device) this.device));
     }
 
     @DomainStep("a device (.*) with (.*)")
@@ -115,14 +125,15 @@ public class FindRecentDevicesSteps {
         LOGGER.info("GIVEN: \"a device {} with {}\".", deviceIdentification, hasSchedule);
 
         // Create the device
-        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification).build();
+        this.device = (Ssld) new DeviceBuilder().withDeviceIdentification(deviceIdentification).build();
 
         if (hasSchedule != "EMPTY") {
             this.device.setHasSchedule(hasSchedule == "true");
         }
 
         // Make sure that this device is returned.
-        when(this.deviceRepositoryMock.findRecentDevices(eq(this.owner), any(Date.class))).thenReturn(Arrays.asList(this.device));
+        when(this.deviceRepositoryMock.findRecentDevices(eq(this.owner), any(Date.class))).thenReturn(
+                Arrays.asList((Device) this.device));
     }
 
     @DomainStep("a find recent devices request with unknown owner organisation")
@@ -131,7 +142,8 @@ public class FindRecentDevicesSteps {
 
         this.Setup();
 
-        this.device = new Device(DEVICE_ID);
+        this.device = new Ssld(DEVICE_ID, "alias", "city", "postal-code", "street", "street-number", "municipality",
+                12.34F, 14.23F);
 
         when(this.organisationRepositoryMock.findByOrganisationIdentification(OWNER_UNKNOWN)).thenReturn(null);
 
@@ -145,7 +157,8 @@ public class FindRecentDevicesSteps {
 
         this.Setup();
 
-        this.device = new Device(DEVICE_ID);
+        this.device = new Ssld(DEVICE_ID, "alias", "city", "postal-code", "street", "street-number", "municipality",
+                12.34F, 14.23F);
 
         this.request = new FindRecentDevicesRequest();
         this.organisation = OWNER_EMPTY;
@@ -172,7 +185,15 @@ public class FindRecentDevicesSteps {
     // === THEN ===
     @DomainStep("the find recent devices response should contain (.*) device")
     public void thenTheFindRecentDevicesResponseShouldContainNumberDevices(final String number) {
-        LOGGER.info("THEN: \"the find recent devices response should contain {} device\".", number);
+        LOGGER.info("THEN: \"the find recent devices response should contain {} device(s)\".", number);
+
+        if (this.response == null) {
+            LOGGER.error("FindRecentDevicesResponse is null");
+        } else if (this.response.getDevices() == null) {
+            LOGGER.error("device list is null");
+        } else {
+            LOGGER.info("device list size: {}", this.response.getDevices().size());
+        }
 
         Assert.assertTrue(this.response.getDevices().size() == Integer.parseInt(number));
     }
@@ -233,8 +254,10 @@ public class FindRecentDevicesSteps {
     }
 
     @DomainStep("the device in the response matches device (.*) with hasschedule (.*)")
-    public void andTheDeviceInTheResponseMatchesDeviceWithHasSchedule(final String deviceIdentification, final String hasSchedule) {
-        LOGGER.info("THEN: \"the device in the response matches device {} with hasschedule {}\".", deviceIdentification, hasSchedule);
+    public void andTheDeviceInTheResponseMatchesDeviceWithHasSchedule(final String deviceIdentification,
+            final String hasSchedule) {
+        LOGGER.info("THEN: \"the device in the response matches device {} with hasschedule {}\".",
+                deviceIdentification, hasSchedule);
 
         Assert.assertTrue(this.response.getDevices().get(0).getDeviceIdentification().equals(deviceIdentification));
         Assert.assertTrue(this.response.getDevices().get(0).isHasSchedule() == (hasSchedule == "true"));

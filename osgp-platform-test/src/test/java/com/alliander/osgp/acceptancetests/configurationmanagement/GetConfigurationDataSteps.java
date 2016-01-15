@@ -61,15 +61,16 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.IndexAd
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.LightType;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayConfiguration;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.RelayMap;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorizationBuilder;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.LinkType;
 import com.alliander.osgp.domain.core.valueobjects.LongTermIntervalType;
@@ -129,11 +130,13 @@ public class GetConfigurationDataSteps {
     @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSenderMock;
 
-    private Device device;
+    private Ssld device;
     private Organisation organisation;
 
     @Autowired
     private DeviceRepository deviceRepositoryMock;
+    @Autowired
+    private SsldRepository ssldRespositoryMock;
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
@@ -182,15 +185,21 @@ public class GetConfigurationDataSteps {
         case "ACTIVE":
             this.createDevice(device, true);
             when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+            when(this.ssldRespositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+            when(this.ssldRespositoryMock.findOne(1L)).thenReturn(this.device);
             when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.oslpDevice);
             when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
             break;
         case "UNKNOWN":
             when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(null);
+            when(this.ssldRespositoryMock.findByDeviceIdentification(device)).thenReturn(null);
+            when(this.ssldRespositoryMock.findOne(1L)).thenReturn(null);
             break;
         case "UNREGISTERED":
             this.createDevice(device, false);
             when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+            when(this.ssldRespositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+            when(this.ssldRespositoryMock.findOne(1L)).thenReturn(this.device);
             break;
         default:
             throw new Exception("Unknown device status");
@@ -739,9 +748,10 @@ public class GetConfigurationDataSteps {
     // === Private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock,
-                this.oslpDeviceRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRespositoryMock,
+                this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
+                this.deviceLogItemRepositoryMock, this.oslpDeviceRepositoryMock, this.channelMock,
+                this.webServiceResponseMessageSenderMock });
 
         this.configurationManagementEndpoint = new ConfigurationManagementEndpoint(this.configurationManagementService,
                 new ConfigurationManagementMapper());
@@ -760,7 +770,7 @@ public class GetConfigurationDataSteps {
     private void createDevice(final String deviceIdentification, final boolean activated) {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
-        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
+        this.device = (Ssld) new DeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
                 .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
                 .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))

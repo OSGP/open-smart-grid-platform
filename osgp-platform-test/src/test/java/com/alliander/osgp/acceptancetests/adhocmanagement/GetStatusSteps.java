@@ -55,15 +55,16 @@ import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetSt
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.GetStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.LightValue;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.AsyncRequest;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorizationBuilder;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
@@ -130,12 +131,14 @@ public class GetStatusSteps {
     @Qualifier("domainPublicLightingOutgoingWebServiceResponseMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSenderMock;
 
-    private Device device;
+    private Ssld device;
     private RelayType deviceRelayType;
     private Organisation organisation;
 
     @Autowired
     private DeviceRepository deviceRepositoryMock;
+    @Autowired
+    private SsldRepository ssldRepositoryMock;
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
@@ -203,16 +206,18 @@ public class GetStatusSteps {
         case "ACTIVE":
             this.createDevice(device, true);
             when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
             when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.oslpDevice);
             when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
             break;
         case "UNKNOWN":
             when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(null);
-            // when(this.deviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(null);
             break;
         case "UNREGISTERED":
             this.createDevice(device, false);
             when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
             break;
         default:
             throw new Exception("Unknown device status");
@@ -729,9 +734,10 @@ public class GetStatusSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
-                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
+                this.deviceLogItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock,
+                this.oslpDeviceRepositoryMock });
 
         this.adHocManagementEndpoint = new PublicLightingAdHocManagementEndpoint(this.adHocManagementService,
                 new AdHocManagementMapper());
@@ -748,7 +754,7 @@ public class GetStatusSteps {
     private void createDevice(final String deviceIdentification, final boolean activated) {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
-        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
+        this.device = (Ssld) new DeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
                 .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
                 .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
