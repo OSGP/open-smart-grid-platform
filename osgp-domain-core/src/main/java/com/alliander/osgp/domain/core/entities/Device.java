@@ -384,6 +384,17 @@ public class Device implements Serializable {
         this.version = newVersion;
     }
 
+    /**
+     * This setter is only needed for testing. Don't use this in production
+     * code.
+     * 
+     * @param id
+     *            The id.
+     */
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
     public void updateInMaintenance(final boolean inMaintenance) {
         this.inMaintenance = inMaintenance;
     }
