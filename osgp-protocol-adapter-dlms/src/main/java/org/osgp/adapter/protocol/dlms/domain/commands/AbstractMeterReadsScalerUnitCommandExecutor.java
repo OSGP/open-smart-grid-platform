@@ -29,8 +29,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
  * @author dev
  * @param <R>
  */
-public abstract class AbstractMeterReadsScalerUnitCommandExecutor<R extends ScalerUnitResponse>
-        implements ScalerUnitAwareCommandExecutor<ChannelQuery, R> {
+public abstract class AbstractMeterReadsScalerUnitCommandExecutor<T extends ChannelQuery, R extends ScalerUnitResponse>
+        implements ScalerUnitAwareCommandExecutor<T, R> {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
