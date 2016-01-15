@@ -7,12 +7,22 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-/**
- * interface for queries that should provide channel info
- *
- */
-public interface ChannelQuery {
+public enum Channel {
 
-    Channel getChannel();
+    ONE(1),
+    TWO(2),
+    THREE(3),
+    FOUR(4),
+    NONE(-1);
+
+    private final int channelNumber;
+
+    private Channel(final int channelNumber) {
+        this.channelNumber = channelNumber;
+    }
+
+    public int getChannelNumber() {
+        return this.channelNumber;
+    }
 
 }

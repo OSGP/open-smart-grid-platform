@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 /**
  * supported units of measurement values on dlms devices
- * 
+ *
  */
 public enum DlmsUnit {
 
@@ -76,11 +76,15 @@ public enum DlmsUnit {
     /**
      * ohm
      */
-    O(38);
+    O(38),
+    /**
+     * Joule
+     */
+    J(25);
 
     private final int dlmsEnum;
 
-    private DlmsUnit(int dlmsEnum) {
+    private DlmsUnit(final int dlmsEnum) {
         this.dlmsEnum = dlmsEnum;
     }
 
@@ -88,8 +92,8 @@ public enum DlmsUnit {
         return this.dlmsEnum;
     }
 
-    public static DlmsUnit fromDlmsEnum(int dlmsEnum) {
-        for (DlmsUnit dlmsUnit : values()) {
+    public static DlmsUnit fromDlmsEnum(final int dlmsEnum) {
+        for (final DlmsUnit dlmsUnit : values()) {
             if (dlmsUnit.getDlmsEnum() == dlmsEnum) {
                 return dlmsUnit;
             }
