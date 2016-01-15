@@ -7,8 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.integrationtests.domain.commands;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitQuery;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +54,12 @@ public class ScalerUnitTest {
         LnClientConnection connection = dlmsConnectionFactory
                 .getConnection(domainHelperService.findDlmsDevice(dlmsDeviceMessageMetadata));
 
-        ScalerUnitTestResponse execute = commandExecutor.execute(connection, new ScalerUnitQuery());
+        ScalerUnitTestResponse execute = commandExecutor.execute(connection, new ChannelQuery() {
+            @Override
+            public int getChannel() {
+                return NOCHANNEL;
+            }
+        });
 
         Assert.assertEquals(execute.getScalerUnit().getDlmsUnit(), DlmsUnit.wh);
 

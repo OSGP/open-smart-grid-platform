@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
 import java.util.List;
@@ -18,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
 /**
@@ -30,7 +30,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
  * @param <R>
  */
 public abstract class AbstractMeterReadsScalerUnitCommandExecutor<R extends ScalerUnitResponse>
-        implements ScalerUnitAwareCommandExecutor<ScalerUnitQuery, R> {
+        implements ScalerUnitAwareCommandExecutor<ChannelQuery, R> {
 
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -79,12 +79,12 @@ public abstract class AbstractMeterReadsScalerUnitCommandExecutor<R extends Scal
     }
 
     @Override
-    public AttributeAddress getScalerUnitAttributeAddress(final ScalerUnitQuery scalerUnitQuery)
+    public AttributeAddress getScalerUnitAttributeAddress(final ChannelQuery channelQuery)
             throws ProtocolAdapterException {
-        final ObisCode obisCodeRegister = scalerUnitQuery.getChannel() > 0
-                ? this.registerForScalerUnit(scalerUnitQuery.getChannel()) : REGISTER_FOR_SCALER_UNIT;
+        final ObisCode obisCodeRegister = channelQuery.getChannel() > 0
+                ? this.registerForScalerUnit(channelQuery.getChannel()) : REGISTER_FOR_SCALER_UNIT;
 
-        return scalerUnitQuery.getChannel() > 0
+        return channelQuery.getChannel() > 0
                 ? new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT)
                 : new AttributeAddress(CLASS_ID, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT);
     }

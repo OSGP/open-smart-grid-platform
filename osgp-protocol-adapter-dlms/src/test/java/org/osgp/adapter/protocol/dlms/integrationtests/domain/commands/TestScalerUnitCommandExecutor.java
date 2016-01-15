@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.integrationtests.domain.commands;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelQuery;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class TestScalerUnitCommandExecutor extends AbstractMeterReadsScalerUnitCommandExecutor<ScalerUnitTestResponse> {
 
     @Override
-    public ScalerUnitTestResponse execute(LnClientConnection conn, ScalerUnitQuery object)
+    public ScalerUnitTestResponse execute(LnClientConnection conn, ChannelQuery object)
             throws IOException, TimeoutException, ProtocolAdapterException {
         final List<GetResult> getResultList = conn.get(getScalerUnitAttributeAddress(object));
 
