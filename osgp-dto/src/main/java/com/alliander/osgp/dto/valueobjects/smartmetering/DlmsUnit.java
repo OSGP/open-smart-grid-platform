@@ -10,74 +10,73 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 /**
  * supported units of measurement values on dlms devices
  * 
- * @author dev
  */
 public enum DlmsUnit {
 
     /**
      * year
      */
-    a(1),
+    A(1),
     /**
      * month
      */
-    mo(2),
+    MO(2),
     /**
      * week
      */
-    wk(3),
+    WK(3),
     /**
      * day
      */
-    d(4),
+    D(4),
     /**
      * hour
      */
-    h(5),
+    H(5),
     /**
      * minute
      */
-    min(6),
+    MIN(6),
     /**
      * second
      */
-    s(7),
+    S(7),
     /**
      * meter
      */
-    m(11),
+    M(11),
     /**
      * cubic meter
      */
-    m3(13),
+    M3(13),
     /**
      * corrected cubic meter
      */
-    m3cor(14),
+    M3COR(14),
     /**
      * liter
      */
-    l(19),
+    L(19),
     /**
      * watt
      */
-    w(27),
+    W(27),
     /**
      * watt hour
      */
-    wh(30),
+    WH(30),
     /**
      * ampere
      */
-    amp(33),
+    AMP(33),
     /**
      * voltage
      */
-    v(35),
+    V(35),
     /**
      * ohm
      */
-    o(38);
+    O(38);
 
     private final int dlmsEnum;
 

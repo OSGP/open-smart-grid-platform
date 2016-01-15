@@ -10,7 +10,6 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 /**
  * interface for queries that should provide channel info
  * 
- * @author dev
  */
 public interface ChannelQuery {
 

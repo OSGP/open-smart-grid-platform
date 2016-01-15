@@ -13,7 +13,6 @@ import java.io.Serializable;
  * response to {@link ScalerUnitQuery scaler and unit query} for E or GAS
  * meters.
  *
- * @author dev
  */
 public class ScalerUnit implements Serializable {
     private static final long serialVersionUID = 3751586818507193990L;

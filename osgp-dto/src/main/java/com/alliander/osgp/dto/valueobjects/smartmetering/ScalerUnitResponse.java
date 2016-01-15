@@ -11,7 +11,6 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
  * interface for responses from devices that should provide ScalerUnit
  * information
  * 
- * @author dev
  */
 public interface ScalerUnitResponse {
 
