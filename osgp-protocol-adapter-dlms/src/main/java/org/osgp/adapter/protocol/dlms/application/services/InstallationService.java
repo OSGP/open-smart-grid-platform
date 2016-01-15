@@ -34,7 +34,6 @@ public class InstallationService extends DlmsApplicationService {
     private InstallationMapper installationMapper;
 
     // === ADD METER ===
-
     public void addMeter(final DlmsDeviceMessageMetadata messageMetadata,
             final SmartMeteringDevice smartMeteringDevice, final DeviceResponseMessageSender responseMessageSender) {
 
@@ -56,4 +55,5 @@ public class InstallationService extends DlmsApplicationService {
                     smartMeteringDevice);
         }
     }
+
 }
