@@ -58,7 +58,7 @@ public class AdhocService {
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+                .findSmartMeter(deviceIdentification);
 
         LOGGER.info("Sending request message to core.");
 
