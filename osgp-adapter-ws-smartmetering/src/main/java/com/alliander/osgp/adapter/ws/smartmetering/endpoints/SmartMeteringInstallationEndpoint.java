@@ -59,8 +59,9 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
+        AddDeviceAsyncResponse response = null;
         try {
-            final AddDeviceAsyncResponse response = new AddDeviceAsyncResponse();
+            response = new AddDeviceAsyncResponse();
             final SmartMeteringDevice device = this.installationMapper.map(request.getDevice(),
                     SmartMeteringDevice.class);
 
@@ -70,7 +71,6 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());
 
-            return response;
         } catch (final MethodConstraintViolationException e) {
 
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
@@ -84,8 +84,9 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
                     request.getDevice().getDeviceIdentification(), organisationIdentification }, e);
 
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "AddDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
@@ -94,8 +95,9 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceAsyncRequest request) throws OsgpException {
 
+        AddDeviceResponse response = null;
         try {
-            final AddDeviceResponse response = new AddDeviceResponse();
+            response = new AddDeviceResponse();
             final MeterResponseData meterResponseData = this.installationService.dequeueAddSmartMeterResponse(request
                     .getCorrelationUid());
 
@@ -104,10 +106,10 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
 
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
 }

@@ -30,6 +30,11 @@ public class FindEventsResponseMessageProcessor extends OsgpCoreResponseMessageP
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        return responseMessage.getDataObject() instanceof EventMessageDataContainer;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {

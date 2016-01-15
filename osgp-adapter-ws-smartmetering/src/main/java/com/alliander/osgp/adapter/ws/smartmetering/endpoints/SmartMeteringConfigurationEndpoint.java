@@ -83,7 +83,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
         final SetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-        .createSetAdministrativeStatusAsyncResponse();
+                .createSetAdministrativeStatusAsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
 
@@ -96,8 +96,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetAdministrativeStatusAsyncRequest request) throws OsgpException {
 
+        SetAdministrativeStatusResponse response = null;
         try {
-            final SetAdministrativeStatusResponse response = new SetAdministrativeStatusResponse();
+            response = new SetAdministrativeStatusResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetAdministrativeStatusResponse(request.getCorrelationUid());
 
@@ -105,11 +106,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "GetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -122,7 +122,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification());
 
         final GetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-        .createGetAdministrativeStatusAsyncResponse();
+                .createGetAdministrativeStatusAsyncResponse();
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -136,22 +136,22 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetAdministrativeStatusAsyncRequest request) throws OsgpException {
 
+        GetAdministrativeStatusResponse response = null;
         try {
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueGetAdministrativeStatusResponse(request.getCorrelationUid());
 
-            final GetAdministrativeStatusResponse response = new GetAdministrativeStatusResponse();
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the administrative status");
+
+            response = new GetAdministrativeStatusResponse();
             final AdministrativeStatusType dataRequest = this.configurationMapper.map(
                     meterResponseData.getMessageData(), AdministrativeStatusType.class);
             response.setEnabled(dataRequest);
 
-            return response;
-
         } catch (final Exception e) {
             this.handleException(e);
         }
-
-        return null;
+        return response;
     }
 
     @PayloadRoot(localPart = "SetSpecialDaysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -180,8 +180,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetSpecialDaysAsyncRequest request) throws OsgpException {
 
+        SetSpecialDaysResponse response = null;
         try {
-            final SetSpecialDaysResponse response = new SetSpecialDaysResponse();
+            response = new SetSpecialDaysResponse();
             final MeterResponseData meterResponseData = this.configurationService.dequeueSetSpecialDaysResponse(request
                     .getCorrelationUid());
 
@@ -189,11 +190,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "SetConfigurationObjectRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -223,8 +223,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetConfigurationObjectAsyncRequest request) throws OsgpException {
 
+        SetConfigurationObjectResponse response = null;
         try {
-            final SetConfigurationObjectResponse response = new SetConfigurationObjectResponse();
+            response = new SetConfigurationObjectResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
 
@@ -232,11 +233,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "SetActivityCalendarRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -247,8 +247,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         LOGGER.info("Incoming SetActivityCalendarRequest for meter: {}.", request.getDeviceIdentification());
 
+        SetActivityCalendarAsyncResponse response = null;
         try {
-            final SetActivityCalendarAsyncResponse response = new SetActivityCalendarAsyncResponse();
+            response = new SetActivityCalendarAsyncResponse();
             final String deviceIdentification = request.getDeviceIdentification();
             final ActivityCalendarDataType requestData = request.getActivityCalendarData();
 
@@ -260,14 +261,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
-            return response;
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting activity calendar on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "SetActivityCalendarAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -278,8 +279,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         LOGGER.info("Incoming retrieveSetActivityCalendarResponse for meter: {}", request.getDeviceIdentification());
 
+        SetActivityCalendarResponse response = null;
         try {
-            final SetActivityCalendarResponse response = new SetActivityCalendarResponse();
+            response = new SetActivityCalendarResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetActivityCalendarResponse(request.getCorrelationUid());
 
@@ -287,10 +289,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "SetAlarmNotificationsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -301,8 +303,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
 
+        SetAlarmNotificationsAsyncResponse response = null;
         try {
-            final SetAlarmNotificationsAsyncResponse response = new SetAlarmNotificationsAsyncResponse();
+            response = new SetAlarmNotificationsAsyncResponse();
             final String deviceIdentification = request.getDeviceIdentification();
             final SetAlarmNotificationsRequestData requestData = request.getSetAlarmNotificationsRequestData();
 
@@ -316,15 +319,14 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
             response.setAsyncResponse(asyncResponse);
-
-            return response;
         } catch (final Exception e) {
 
             LOGGER.error("Exception: {} while setting alarm notifications on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "SetAlarmNotificationsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
@@ -333,8 +335,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetAlarmNotificationsAsyncRequest request) throws OsgpException {
 
+        SetAlarmNotificationsResponse response = null;
         try {
-            final SetAlarmNotificationsResponse response = new SetAlarmNotificationsResponse();
+            response = new SetAlarmNotificationsResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
 
@@ -342,10 +345,10 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
 }
