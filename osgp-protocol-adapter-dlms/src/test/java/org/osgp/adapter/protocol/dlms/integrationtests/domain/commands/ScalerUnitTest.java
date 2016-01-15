@@ -7,7 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.integrationtests.domain.commands;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,14 +20,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
+
 /**
- * This integration test requires a running up to date postgres db that can be
+ * This integration test requires A running up to date postgres db that can be
  * accessed using user and password from test.properties and an up and running
  * E-meter with device id E0004001515495114 and the ip address in this test.
  * Tests under the integrationtests package will only be run with
  * "-DskipITs=false"
- * 
- * @author dev
+ *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource("classpath:/test.properties")
@@ -46,16 +46,16 @@ public class ScalerUnitTest {
 
     @Test
     public void testGetScalerUnit() throws Exception {
-        DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata = new DlmsDeviceMessageMetadata();
+        final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata = new DlmsDeviceMessageMetadata();
         dlmsDeviceMessageMetadata.setDeviceIdentification("E0004001515495114");
         dlmsDeviceMessageMetadata.setIpAddress("89.200.96.223");
 
-        LnClientConnection connection = dlmsConnectionFactory
-                .getConnection(domainHelperService.findDlmsDevice(dlmsDeviceMessageMetadata));
+        final LnClientConnection connection = this.dlmsConnectionFactory.getConnection(this.domainHelperService
+                .findDlmsDevice(dlmsDeviceMessageMetadata));
 
-        ScalerUnitTestResponse execute = commandExecutor.execute(connection, new TestChannelQuery());
+        final ScalerUnitTestResponse execute = this.commandExecutor.execute(connection, new TestChannelQuery());
 
-        Assert.assertEquals(execute.getScalerUnit().getDlmsUnit(), DlmsUnit.wh);
+        Assert.assertEquals(DlmsUnit.WH, execute.getScalerUnit().getDlmsUnit());
 
     }
 

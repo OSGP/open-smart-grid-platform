@@ -10,30 +10,31 @@ package org.osgp.adapter.protocol.dlms.integrationtests.domain.commands;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
+
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.AbstractMeterReadsScalerUnitCommandExecutor;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-/**
- *
- * @author dev
- */
 @Component
-public class TestScalerUnitCommandExecutor
-        extends AbstractMeterReadsScalerUnitCommandExecutor<TestChannelQuery, ScalerUnitTestResponse> {
+public class TestScalerUnitCommandExecutor extends
+AbstractMeterReadsScalerUnitCommandExecutor<TestChannelQuery, ScalerUnitTestResponse> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestScalerUnitCommandExecutor.class);
 
     @Override
-    public ScalerUnitTestResponse execute(LnClientConnection conn, TestChannelQuery object)
+    public ScalerUnitTestResponse execute(final LnClientConnection conn, final TestChannelQuery object)
             throws IOException, TimeoutException, ProtocolAdapterException {
-        final List<GetResult> getResultList = conn.get(getScalerUnitAttributeAddress(object));
+        final List<GetResult> getResultList = conn.get(this.getScalerUnitAttributeAddress(object));
 
-        GetResult getResult = getResultList.get(0);
-        AccessResultCode resultCode = getResult.resultCode();
+        final GetResult getResult = getResultList.get(0);
+        final AccessResultCode resultCode = getResult.resultCode();
         LOGGER.debug("AccessResultCode: {}", resultCode.name());
-        return new ScalerUnitTestResponse(convert(getResult.resultData()));
+        return new ScalerUnitTestResponse(this.convert(getResult.resultData()));
     }
 
 }

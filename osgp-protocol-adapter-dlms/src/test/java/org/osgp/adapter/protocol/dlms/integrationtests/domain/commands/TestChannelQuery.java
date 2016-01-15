@@ -9,10 +9,6 @@ package org.osgp.adapter.protocol.dlms.integrationtests.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelQuery;
 
-/**
- *
- * @author dev
- */
 public class TestChannelQuery implements ChannelQuery {
 
     @Override
