@@ -173,6 +173,13 @@ public class Device implements Serializable {
     protected boolean inMaintenance;
 
     /**
+     * Gateway device through which communication with this device is handled.
+     */
+    @ManyToOne()
+    @JoinColumn(name = "gateway_device_id")
+    protected Device gatewayDevice;
+
+    /**
      * List of organisations which are authorized to use this device.
      */
     @Transient
@@ -340,6 +347,10 @@ public class Device implements Serializable {
         return this.protocolInfo;
     }
 
+    public Device getGatewayDevice() {
+        return this.gatewayDevice;
+    }
+
     public final Long getVersion() {
         return this.version;
     }
@@ -420,5 +431,9 @@ public class Device implements Serializable {
         this.networkAddress = networkAddress;
         this.deviceType = deviceType;
         this.isActivated = true;
+    }
+
+    public void updateGatewayDevice(final Device gatewayDevice) {
+        this.gatewayDevice = gatewayDevice;
     }
 }
