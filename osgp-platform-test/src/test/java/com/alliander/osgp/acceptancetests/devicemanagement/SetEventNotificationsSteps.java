@@ -58,16 +58,17 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotifi
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetEventNotificationsResponse;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorizationBuilder;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.OrganisationBuilder;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -119,12 +120,14 @@ public class SetEventNotificationsSteps {
     @Qualifier("domainCoreOutgoingWebServiceResponsesMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSenderMock;
 
-    private Device device;
+    private Ssld device;
     private Organisation organisation;
     private DeviceAuthorization authorization;
 
     @Autowired
     private DeviceRepository deviceRepositoryMock;
+    @Autowired
+    private SsldRepository ssldRepositoryMock;
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
@@ -178,6 +181,8 @@ public class SetEventNotificationsSteps {
         this.oslpDevice = this.createOslpDevice(device);
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
         when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
 
@@ -450,15 +455,17 @@ public class SetEventNotificationsSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.logItemRepositoryMock, this.authorizationRepositoryMock, this.channelMock,
-                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.organisationRepositoryMock, this.logItemRepositoryMock, this.authorizationRepositoryMock,
+                this.channelMock, this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.oslpDeviceService.setMapper(new OslpMapper());
         OslpTestUtils.configureDeviceServiceForOslp(this.oslpDeviceService);
 
+        final DeviceManagementMapper deviceManagementMapper = new DeviceManagementMapper();
+        deviceManagementMapper.initialize();
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
-                new DeviceManagementMapper());
+                deviceManagementMapper);
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
@@ -470,8 +477,8 @@ public class SetEventNotificationsSteps {
         this.throwable = null;
     }
 
-    private Device createDevice(final String deviceIdentification) {
-        return new DeviceBuilder().withDeviceIdentification(deviceIdentification)
+    private Ssld createDevice(final String deviceIdentification) {
+        return (Ssld) new DeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withNetworkAddress(InetAddress.getLoopbackAddress()).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
                 .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(true)
                 .build();

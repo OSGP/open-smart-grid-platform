@@ -40,11 +40,12 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDeviceBuilder;
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerServer;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.EventBuilder;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Event;
@@ -71,7 +72,11 @@ public class ReceiveEventNotificationsSteps {
 
     @Autowired
     private DeviceRepository deviceRepositoryMock;
-    private Device device;
+
+    @Autowired
+    private SsldRepository ssldRepositoryMock;
+
+    private Ssld device;
 
     @Autowired
     private EventRepository eventRepositoryMock;
@@ -114,13 +119,13 @@ public class ReceiveEventNotificationsSteps {
 
     @DomainStep("a registered device (.*)")
     public void givenARegisteredDevice(final String deviceIdentification) throws NoSuchAlgorithmException,
-    InvalidKeySpecException, IOException {
+            InvalidKeySpecException, IOException {
 
         LOGGER.info("GIVEN: \"a registered device\".");
 
         this.setup();
 
-        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
+        this.device = (Ssld) new DeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withNetworkAddress(InetAddress.getLoopbackAddress()).withPublicKeyPresent(PUBLIC_KEY_PRESENT)
                 .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION)).isActivated(true)
                 .build();
@@ -133,11 +138,13 @@ public class ReceiveEventNotificationsSteps {
         when(this.oslpDeviceRepositoryMock.save(this.oslpDevice)).thenReturn(this.oslpDevice);
         when(this.deviceRepositoryMock.findByDeviceIdentification(any(String.class))).thenReturn(this.device);
         when(this.deviceRepositoryMock.save(this.device)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(any(String.class))).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findOne(any(Long.class))).thenReturn(this.device);
     }
 
     @DomainStep("a unregistered device (.*)")
     public void givenAUnregisteredDevice(final String device) throws NoSuchAlgorithmException, InvalidKeySpecException,
-    IOException {
+            IOException {
 
         LOGGER.info("GIVEN: \"a unregistered device\".");
 
@@ -253,8 +260,9 @@ public class ReceiveEventNotificationsSteps {
 
     private void setup() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
 
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
-                this.oslpDeviceRepositoryMock, this.eventRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.deviceLogItemRepositoryMock, this.channelMock, this.oslpDeviceRepositoryMock,
+                this.eventRepositoryMock });
 
         OslpTestUtils.configureOslpChannelHandler(this.oslpChannelHandler);
         this.oslpChannelHandler.setDeviceManagementService(this.deviceManagementService);
@@ -290,8 +298,8 @@ public class ReceiveEventNotificationsSteps {
         for (int i = 0; i < this.request.getNotificationsList().size(); i++) {
             final EventNotification event = this.request.getNotifications(i);
             final com.alliander.osgp.domain.core.entities.EventBuilder expectedEvent = new EventBuilder()
-            .withDevice(this.device).withEventType(EventType.valueOf(event.getEvent().name()))
-            .withDescription(event.getDescription()).withIndex(expectedIndexes[i]);
+                    .withDevice(this.device).withEventType(EventType.valueOf(event.getEvent().name()))
+                    .withDescription(event.getDescription()).withIndex(expectedIndexes[i]);
             expectedEvents.add(expectedEvent.build());
         }
 

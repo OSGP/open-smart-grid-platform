@@ -21,6 +21,7 @@ import org.givwenzen.annotations.DomainStep;
 import org.givwenzen.annotations.DomainSteps;
 import org.junit.Assert;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,8 +83,8 @@ public class FindRecentDevicesSteps {
     private DeviceInstallationService deviceInstallationService;
 
     public void Setup() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.authorizationRepositoryMock,
-                this.organisationRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.authorizationRepositoryMock, this.organisationRepositoryMock });
 
         final DeviceInstallationMapper deviceInstallationMapper = new DeviceInstallationMapper();
         deviceInstallationMapper.initialize();
@@ -118,6 +119,8 @@ public class FindRecentDevicesSteps {
                 12.34F, 14.23F);
         when(this.deviceRepositoryMock.findRecentDevices(eq(this.owner), any(Date.class))).thenReturn(
                 Arrays.asList((Device) this.device));
+        when(this.ssldRepositoryMock.findOne(any(Long.class))).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(DEVICE_ID)).thenReturn(this.device);
     }
 
     @DomainStep("a device (.*) with (.*)")
@@ -134,6 +137,8 @@ public class FindRecentDevicesSteps {
         // Make sure that this device is returned.
         when(this.deviceRepositoryMock.findRecentDevices(eq(this.owner), any(Date.class))).thenReturn(
                 Arrays.asList((Device) this.device));
+        when(this.ssldRepositoryMock.findOne(any(Long.class))).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
     }
 
     @DomainStep("a find recent devices request with unknown owner organisation")
@@ -169,6 +174,8 @@ public class FindRecentDevicesSteps {
     @DomainStep("the find recent devices request is received")
     public void whenTheFindRecentDevicesRequestIsReceived() {
         LOGGER.info("WHEN: \"the find recent devices request is received\".");
+
+        MockitoAnnotations.initMocks(this);
 
         try {
             this.response = this.deviceInstallationEndpoint.findRecentDevices(this.organisation, this.request);

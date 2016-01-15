@@ -42,6 +42,7 @@ import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
@@ -75,6 +76,9 @@ public class RevokeKeySteps {
     private DeviceResponseMessageService deviceResponseMessageService;
 
     @Autowired
+    private DeviceRepository deviceRepositoryMock;
+
+    @Autowired
     private SsldRepository ssldRepositoryMock;
 
     @Autowired
@@ -97,8 +101,8 @@ public class RevokeKeySteps {
     private Throwable throwable;
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.ssldRepositoryMock, this.organisationRepositoryMock,
-                this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.organisationRepositoryMock, this.oslpDeviceRepositoryMock });
 
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
                 new DeviceManagementMapper());
@@ -130,9 +134,13 @@ public class RevokeKeySteps {
 
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(device).build();
 
+        when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
+        when(this.deviceRepositoryMock.save(any(Ssld.class))).thenReturn(this.device);
+
         when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.device);
-        when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.oslpDevice);
         when(this.ssldRepositoryMock.save(any(Ssld.class))).thenReturn(this.device);
+
+        when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.save(any(OslpDevice.class))).thenReturn(this.oslpDevice);
     }
 
@@ -140,6 +148,7 @@ public class RevokeKeySteps {
     public void givenTheRevokeKeyRequestRefersToANonExistingDevice(final String device) {
         LOGGER.info("GIVEN: \"the revoke key request refers to a non-existing device [{}].", device);
 
+        when(this.deviceRepositoryMock.findByDeviceIdentification(device)).thenReturn(null);
         when(this.ssldRepositoryMock.findByDeviceIdentification(device)).thenReturn(null);
     }
 
@@ -156,8 +165,7 @@ public class RevokeKeySteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
-
+        .thenReturn(authorizations);
     }
 
     // === WHEN ===

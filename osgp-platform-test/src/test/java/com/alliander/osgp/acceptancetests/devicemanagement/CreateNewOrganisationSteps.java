@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jpa.JpaSystemException;
 
 import com.alliander.osgp.adapter.ws.admin.endpoints.DeviceManagementEndpoint;
+import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.CreateOrganisationRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformDomain;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.FindAllOrganisationsRequest;
@@ -80,9 +81,11 @@ public class CreateNewOrganisationSteps {
 
         this.adminDeviceManagementEndpoint = new DeviceManagementEndpoint(this.adminDeviceManagementService,
                 new com.alliander.osgp.adapter.ws.admin.application.mapping.DeviceManagementMapper());
+
+        final DeviceManagementMapper deviceManagementMapper = new DeviceManagementMapper();
+        deviceManagementMapper.initialize();
         this.coreDeviceManagementEndpoint = new com.alliander.osgp.adapter.ws.core.endpoints.DeviceManagementEndpoint(
-                this.coreDeviceManagementService,
-                new com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper());
+                this.coreDeviceManagementService, deviceManagementMapper);
 
         this.newOrganisation = new OrganisationBuilder().withOrganisationIdentification(ORGANISATION_IDENTIFICATION)
                 .withName(ORGANISATION_NAME).withPrefix(ORGANISATION_PREFIX)
@@ -106,8 +109,8 @@ public class CreateNewOrganisationSteps {
         this.organisationToBeAdded.setName(name);
         this.organisationToBeAdded.setPrefix(ORGANISATION_PREFIX);
         this.organisationToBeAdded
-                .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup
-                        .valueOf(functionGroup));
+        .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup
+                .valueOf(functionGroup));
         this.organisationToBeAdded.getDomains().add(PlatformDomain.COMMON);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.PUBLIC_LIGHTING);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.TARIFF_SWITCHING);
@@ -128,8 +131,8 @@ public class CreateNewOrganisationSteps {
         this.organisationToBeAdded.setName(name);
         this.organisationToBeAdded.setPrefix(ORGANISATION_PREFIX);
         this.organisationToBeAdded
-                .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup
-                        .valueOf(functionGroup));
+        .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup
+                .valueOf(functionGroup));
         this.organisationToBeAdded.getDomains().add(PlatformDomain.COMMON);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.PUBLIC_LIGHTING);
         this.organisationToBeAdded.getDomains().add(PlatformDomain.TARIFF_SWITCHING);
@@ -173,9 +176,9 @@ public class CreateNewOrganisationSteps {
         when(this.organisationRepositoryMock.save(any(Organisation.class))).thenReturn(this.newOrganisation);
 
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
-                .thenReturn(
-                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
-                                PlatformFunctionGroup.ADMIN));
+        .thenReturn(
+                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                        PlatformFunctionGroup.ADMIN));
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_IDENTIFICATION)).thenReturn(
                 null);
 
@@ -195,9 +198,9 @@ public class CreateNewOrganisationSteps {
         MockitoAnnotations.initMocks(this);
         // Make sure that the adding organisation is authorized.
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
-                .thenReturn(
-                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
-                                PlatformFunctionGroup.ADMIN));
+        .thenReturn(
+                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                        PlatformFunctionGroup.ADMIN));
 
         // And that when saving the organisation an exception is thrown.
         when(this.organisationRepositoryMock.save(any(Organisation.class))).thenThrow(
@@ -223,9 +226,9 @@ public class CreateNewOrganisationSteps {
         MockitoAnnotations.initMocks(this);
         // Make sure that the adding organisation is authorized.
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
-                .thenReturn(
-                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
-                                PlatformFunctionGroup.ADMIN));
+        .thenReturn(
+                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                        PlatformFunctionGroup.ADMIN));
 
         try {
             this.adminDeviceManagementEndpoint.createOrganisation(ORGANISATION_ROOT, request);
@@ -264,9 +267,9 @@ public class CreateNewOrganisationSteps {
         MockitoAnnotations.initMocks(this);
         // Make sure that the adding organisation is authorized.
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT))
-                .thenReturn(
-                        new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
-                                PlatformFunctionGroup.ADMIN));
+        .thenReturn(
+                new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT, ORGANISATION_PREFIX,
+                        PlatformFunctionGroup.ADMIN));
 
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
                 this.organisations.get(0));
@@ -332,7 +335,7 @@ public class CreateNewOrganisationSteps {
                     organisationFoundInResultList = true;
                     if (organisation.getName().equals(resultOrganisation.getName())
                             && organisation.getFunctionGroup().ordinal() == resultOrganisation.getFunctionGroup()
-                            .ordinal()) {
+                                    .ordinal()) {
                         // Do nothing, oke
                     } else {
                         return false;

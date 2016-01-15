@@ -48,11 +48,13 @@ import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.EventBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
@@ -78,7 +80,7 @@ public class RetrieveReceivedEventNotificationsSteps {
     private DeviceManagementService deviceManagementService;
 
     private Organisation organisation;
-    private Device device;
+    private Ssld device;
     private final EventSpecifications eventSpecifications = new JpaEventSpecifications();
     @SuppressWarnings("unused")
     private Specifications<Event> specifications;
@@ -100,6 +102,8 @@ public class RetrieveReceivedEventNotificationsSteps {
     @Autowired
     private DeviceRepository deviceRepositoryMock;
     @Autowired
+    private SsldRepository ssldRepositoryMock;
+    @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
 
     // === SET UP ===
@@ -108,11 +112,13 @@ public class RetrieveReceivedEventNotificationsSteps {
         // init mocks to set ArgumentCaptors
         MockitoAnnotations.initMocks(this);
         // reset the mocks
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.eventRepositoryMock, this.deviceAuthorizationRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.organisationRepositoryMock, this.eventRepositoryMock, this.deviceAuthorizationRepositoryMock });
 
+        final DeviceManagementMapper deviceManagementMapper = new DeviceManagementMapper();
+        deviceManagementMapper.initialize();
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
-                new DeviceManagementMapper());
+                deviceManagementMapper);
 
         this.request = null;
         this.response = null;
@@ -139,16 +145,18 @@ public class RetrieveReceivedEventNotificationsSteps {
         LOGGER.info("GIVEN: an authorized device: {}", deviceIdentification);
 
         // Create the device
-        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
+        this.device = (Ssld) new DeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withNetworkAddress(InetAddress.getLoopbackAddress()).isActivated(true).build();
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+        when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorization(this.device, this.organisation, DeviceFunctionGroup.MANAGEMENT));
 
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
 
     @DomainStep("a received event notification (.*), (.*) and (.*) from (.*)")
@@ -166,7 +174,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         this.eventsPage = new PageImpl<Event>(eventList, this.pageRequest, eventList.size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-        .thenReturn(this.eventsPage);
+                .thenReturn(this.eventsPage);
     }
 
     @DomainStep("a retrieve event notification request")
@@ -218,7 +226,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         LOGGER.info("events: {}", this.eventsPage.getContent().size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-        .thenReturn(this.eventsPage);
+                .thenReturn(this.eventsPage);
     }
 
     @DomainStep("(.*) received event notifications")
@@ -238,7 +246,7 @@ public class RetrieveReceivedEventNotificationsSteps {
                 this.request.getPageSize(), PAGESIZELIMIT)), totalPages);
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-        .thenReturn(this.eventsPage);
+                .thenReturn(this.eventsPage);
     }
 
     @DomainStep("the event notification must be filtered on (.*), (.*), and (.*)")
@@ -252,6 +260,8 @@ public class RetrieveReceivedEventNotificationsSteps {
         if (deviceIdentification != null && !deviceIdentification.equals("EMPTY")) {
             this.request.setDeviceIdentification(deviceIdentification);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
             final List<DeviceAuthorization> authorizations = new ArrayList<DeviceAuthorization>();
             authorizations.add(new DeviceAuthorizationBuilder().withOrganisation(this.organisation)
                     .withDevice(new DeviceBuilder().withDeviceIdentification(deviceIdentification).build())

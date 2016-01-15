@@ -56,15 +56,16 @@ import com.alliander.osgp.adapter.ws.tariffswitching.application.mapping.Schedul
 import com.alliander.osgp.adapter.ws.tariffswitching.application.services.ScheduleManagementService;
 import com.alliander.osgp.adapter.ws.tariffswitching.endpoints.TariffSwitchingScheduleManagementEndpoint;
 import com.alliander.osgp.adapter.ws.tariffswitching.infra.jms.TariffSwitchingResponseMessageFinder;
-import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorizationBuilder;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
@@ -119,12 +120,14 @@ public class SetTariffScheduleSteps {
     @Qualifier("domainTariffSwitchingOutgoingWebServiceResponseMessageSender")
     private WebServiceResponseMessageSender webServiceResponseMessageSenderMock;
 
-    private Device device;
+    private Ssld device;
     private RelayType deviceRelayType;
     private Organisation organisation;
 
     @Autowired
     private DeviceRepository deviceRepositoryMock;
+    @Autowired
+    private SsldRepository ssldRepositoryMock;
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
@@ -221,6 +224,8 @@ public class SetTariffScheduleSteps {
         case "ACTIVE":
             this.createDevice(deviceIdentification, true);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
             when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(
                     this.oslpDevice);
             when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
@@ -240,10 +245,14 @@ public class SetTariffScheduleSteps {
             break;
         case "UNKNOWN":
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(null);
+            when(this.ssldRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(null);
+            when(this.ssldRepositoryMock.findOne(1L)).thenReturn(null);
             break;
         case "UNREGISTERED":
             this.createDevice(deviceIdentification, false);
             when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
+            when(this.ssldRepositoryMock.findOne(1L)).thenReturn(this.device);
             break;
         default:
             throw new Exception("Unknown device status");
@@ -263,7 +272,7 @@ public class SetTariffScheduleSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.TARIFF_SCHEDULING).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
 
     @DomainStep("a get set tariff schedule response request with correlationId (.*) and deviceId (.*)")
@@ -469,9 +478,9 @@ public class SetTariffScheduleSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
-                this.logItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock,
-                this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.organisationRepositoryMock, this.logItemRepositoryMock, this.channelMock,
+                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.scheduleManagementEndpoint = new TariffSwitchingScheduleManagementEndpoint(this.scheduleManagementService,
                 new ScheduleManagementMapper());
@@ -489,7 +498,7 @@ public class SetTariffScheduleSteps {
     private void createDevice(final String deviceIdentification, final Boolean activated) {
         LOGGER.info("Creating device [{}] with active [{}]", deviceIdentification, activated);
 
-        this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification).ofDeviceType("SSLD")
+        this.device = (Ssld) new DeviceBuilder().withDeviceIdentification(deviceIdentification).ofDeviceType("SSLD")
                 .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null)
                 .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
                 .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
