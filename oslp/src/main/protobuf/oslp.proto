@@ -118,7 +118,7 @@ message GetStatusResponse {
 }
 
 message ResumeScheduleRequest {
-    optional bytes index = 1; // [(nanopb).max_size = 1]; // index number of connected light (DALI), none means all connected ligts.
+    optional bytes index = 1; // [(nanopb).max_size = 1]; // index number of connected light (DALI), none means all connected lights.
     required bool immediate = 2; // [default = false]; // Resume at next schedule item or direct
 }
 
