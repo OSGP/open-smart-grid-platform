@@ -54,8 +54,6 @@ public class UpdateKeySteps {
     private static final String ORGANISATION_ID = "ORGANISATION-01";
     private static final String ORGANISATION_PREFIX = "ORG";
 
-    // TODO - Add as parameters to tests
-    private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
 
@@ -147,7 +145,7 @@ public class UpdateKeySteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
 
     }
 

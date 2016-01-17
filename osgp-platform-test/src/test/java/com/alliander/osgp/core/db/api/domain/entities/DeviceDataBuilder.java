@@ -39,9 +39,6 @@ public class DeviceDataBuilder {
     }
 
     public Device build() {
-        final Device device = new Device(this.deviceIdentification, this.organisation, this.gpsLatitude,
-                this.gpsLongitude);
-
-        return device;
+        return new Device(this.deviceIdentification, this.organisation, this.gpsLatitude, this.gpsLongitude);
     }
 }

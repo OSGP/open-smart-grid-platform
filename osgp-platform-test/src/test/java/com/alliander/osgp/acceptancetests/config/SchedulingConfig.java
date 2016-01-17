@@ -16,7 +16,6 @@ import org.springframework.scheduling.support.CronTrigger;
 
 import com.alliander.osgp.core.application.tasks.ScheduledTaskScheduler;
 
-//@Configuration
 @EnableScheduling
 public class SchedulingConfig {
 

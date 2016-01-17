@@ -17,7 +17,6 @@ import org.springframework.jms.core.JmsTemplate;
 import com.alliander.osgp.adapter.ws.tariffswitching.infra.jms.TariffSwitchingRequestMessageSender;
 import com.alliander.osgp.adapter.ws.tariffswitching.infra.jms.TariffSwitchingResponseMessageFinder;
 
-//@Configuration
 public class WsTariffSwitchingMessagingConfig {
 
     // === JMS SETTINGS: TARIFF SWITCHING REQUESTS ===

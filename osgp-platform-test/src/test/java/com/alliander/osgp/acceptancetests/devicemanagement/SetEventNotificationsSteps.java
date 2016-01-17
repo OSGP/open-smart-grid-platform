@@ -90,7 +90,6 @@ public class SetEventNotificationsSteps {
     private static final String ORGANISATION_ID_OWNER = "ORGANISATION-01";
     private static final String DEVICE_UID = "AAAAAAAAAAYAAAAA";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -240,7 +239,6 @@ public class SetEventNotificationsSteps {
                 "THEN: \"the set event notifications request should return a set event notifications response with a correlationId and deviceId {}\".",
                 deviceId);
 
-        // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Event Notifications Async Response should not be null",
                     this.setEventNotificationsAsyncResponse);
@@ -311,7 +309,6 @@ public class SetEventNotificationsSteps {
 
         try {
             verify(this.channelMock, timeout(1000).times(1)).write(any(OslpEnvelope.class));
-            // TODO: Verify content of the OslpEnvelope message
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
             return false;
@@ -445,8 +442,6 @@ public class SetEventNotificationsSteps {
 
                 Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
                         (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
-
-                // TODO: check description
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());

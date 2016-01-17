@@ -36,5 +36,4 @@ public class DeviceAuthorizationBuilder {
     public DeviceAuthorization build() {
         return new DeviceAuthorization(this.device, this.organisation, this.functionGroup);
     }
-
 }

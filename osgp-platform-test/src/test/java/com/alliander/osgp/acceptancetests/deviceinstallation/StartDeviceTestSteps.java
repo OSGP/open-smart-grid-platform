@@ -80,13 +80,9 @@ public class StartDeviceTestSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartDeviceTestSteps.class);
 
-    // private static final String DEVICE_ID = "DEVICE-01";
     private static final String DEVICE_UID = "AAAAAAAAAAYAAAAA";
 
     private static final String ORGANISATION_PREFIX = "ORG";
-    // private static final String DEVICE_ID_EMPTY = "";
-    // private static final String DEVICE_ID_SPACES = "   ";
-    // private static final String DEVICE_ID_UNKNOWN = "DEVICE-02";
 
     private static final String ORGANISATION_ID_UNKNOWN = "UNKNOWN";
     private static final String ORGANISATION_ID_EMPTY = "";
@@ -206,7 +202,7 @@ public class StartDeviceTestSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.INSTALLATION).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
 
     @DomainStep("the start device test oslp message from the device")
@@ -480,5 +476,4 @@ public class StartDeviceTestSteps {
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withDeviceUid(DEVICE_UID).build();
     }
-
 }

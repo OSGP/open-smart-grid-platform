@@ -14,8 +14,6 @@ import javax.jms.MessageListener;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -34,8 +32,6 @@ import com.alliander.osgp.signing.server.infra.messaging.SigningServerResponseMe
 
 //@Configuration
 public class ProtocolOslpMessagingConfig {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolOslpMessagingConfig.class);
 
     // === JMS SETTINGS OSLP REQUESTS ===
 

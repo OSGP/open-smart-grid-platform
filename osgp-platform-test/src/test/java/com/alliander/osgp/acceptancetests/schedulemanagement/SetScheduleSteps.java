@@ -93,7 +93,6 @@ public class SetScheduleSteps {
     private static final String ORGANISATION_ID = "ORGANISATION-01";
     private static final String ORGANISATION_PREFIX = "ORG";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -245,7 +244,7 @@ public class SetScheduleSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.SCHEDULING).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
 
     }
 
@@ -339,7 +338,6 @@ public class SetScheduleSteps {
                 "THEN: \"the set schedule request should return a async response with a correlationId and deviceId {}\".",
                 deviceId);
 
-        // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Schedule Async Response should not be null", this.setScheduleAsyncResponse);
             Assert.assertNotNull("Async Response should not be null", this.setScheduleAsyncResponse.getAsyncResponse());
@@ -440,8 +438,6 @@ public class SetScheduleSteps {
 
                 Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
                         (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
-
-                // TODO: check description
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -453,9 +449,9 @@ public class SetScheduleSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock, this.organisationRepositoryMock,
-                this.logItemRepositoryMock, this.channelMock, this.webServiceResponseMessageSenderMock,
-                this.oslpDeviceRepositoryMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
+                this.organisationRepositoryMock, this.logItemRepositoryMock, this.channelMock,
+                this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
         this.scheduleManagementEndpoint = new PublicLightingScheduleManagementEndpoint(this.scheduleManagementService,
                 new ScheduleManagementMapper());

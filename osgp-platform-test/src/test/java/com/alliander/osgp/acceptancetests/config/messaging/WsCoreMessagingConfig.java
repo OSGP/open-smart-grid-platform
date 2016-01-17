@@ -17,7 +17,6 @@ import org.springframework.jms.core.JmsTemplate;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageSender;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 
-//@Configuration
 public class WsCoreMessagingConfig {
     // === JMS SETTINGS: COMMON REQUESTS ===
 

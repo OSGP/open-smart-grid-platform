@@ -26,8 +26,6 @@ import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.core.OsgpCoreR
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceRequestMessageListener;
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.ws.WebServiceResponseMessageSender;
 
-//import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.WebServiceRequestMessageProcessor;
-
 public class DomainPublicLightingMessagingConfig {
 
     // JMS SETTINGS: INCOMING WEB SERVICE REQUESTS ===
@@ -49,29 +47,9 @@ public class DomainPublicLightingMessagingConfig {
         return messageListenerContainer;
     }
 
-    // @Bean(name =
-    // "domainPublicLightingIncomingWebServiceRequestMessageListener")
-    // public WebServiceRequestMessageListener
-    // incomingWebServiceRequestMessageListener() {
-    // // return new
-    // WebServiceRequestMessageListener(this.incomingWebServiceRequestMessageProcessor());
-    // return new WebServiceRequestMessageListener();
-    // }
-
     @Autowired
     @Qualifier("domainPublicLightingIncomingWebServiceRequestMessageListener")
     private WebServiceRequestMessageListener incomingWebServiceRequestMessageListener;
-
-    // @Bean(name =
-    // "domainPublicLightingIncomingWebServiceRequestMessageProcessor")
-    // public WebServiceRequestMessageProcessor
-    // incomingWebServiceRequestMessageProcessor() {
-    // return new WebServiceRequestMessageProcessor();
-    // }
-
-    // @Autowired
-    // private WebServiceRequestMessageProcessor
-    // incomingWebServiceRequestMessageProcessor;
 
     // JMS SETTINGS: OUTGOING WEB SERVICE RESPONSES
 
@@ -115,12 +93,6 @@ public class DomainPublicLightingMessagingConfig {
         return new ActiveMQQueue(MessagingConfig.OSGP_CORE_1_0__DOMAIN_PUBLICLIGHTING_1_0__REQUESTS_QUEUE);
     }
 
-    // @Bean
-    // public OsgpCoreRequestMessageSender
-    // outgoingOsgpCoreRequestMessageSender() {
-    // return new OsgpCoreRequestMessageSender();
-    // }
-
     // JMS SETTINGS: INCOMING OSGP CORE RESPONSES (receiving responses from osgp
     // core)
 
@@ -141,22 +113,9 @@ public class DomainPublicLightingMessagingConfig {
         return messageListenerContainer;
     }
 
-    // @Bean(name =
-    // "domainPublicLightingIncomingOsgpCoreResponseMessageListener")
-    // public OsgpCoreResponseMessageListener
-    // incomingOsgpCoreResponseMessageListener() {
-    // return new OsgpCoreResponseMessageListener();
-    // }
-
     @Autowired
     @Qualifier("domainPublicLightingIncomingOsgpCoreResponseMessageListener")
     private OsgpCoreResponseMessageListener incomingOsgpCoreResponseMessageListener;
-
-    // @Bean
-    // public OsgpCoreResponseMessageProcessor
-    // incomingOsgpCoreResponseMessageProcessor() {
-    // return new OsgpCoreResponseMessageProcessor();
-    // }
 
     // JMS SETTINGS: INCOMING OSGP CORE REQUESTS (receiving requests from osgp
     // core)
@@ -178,22 +137,9 @@ public class DomainPublicLightingMessagingConfig {
         return messageListenerContainer;
     }
 
-    // @Bean(name =
-    // "domainPublicLightingIncomingOsgpCoreRequestMessageListener")
-    // public OsgpCoreRequestMessageListener
-    // incomingOsgpCoreRequestMessageListener() {
-    // return new OsgpCoreRequestMessageListener();
-    // }
-
     @Autowired
     @Qualifier("domainPublicLightingIncomingOsgpCoreRequestMessageListener")
     private OsgpCoreRequestMessageListener incomingOsgpCoreRequestMessageListener;
-
-    // @Bean
-    // public OsgpCoreRequestMessageProcessor
-    // incomingOsgpCoreRequestMessageProcessor() {
-    // return new OsgpCoreRequestMessageProcessor();
-    // }
 
     // JMS SETTINGS: OUTGOING OSGP CORE RESPONSES (sending responses to osgp
     // core)
@@ -214,12 +160,6 @@ public class DomainPublicLightingMessagingConfig {
     public ActiveMQDestination outgoingOsgpCoreResponsesQueue() {
         return new ActiveMQQueue(MessagingConfig.OSGP_CORE_1_0__DOMAIN_PUBLICLIGHTING_1_0__RESPONSES_QUEUE);
     }
-
-    // @Bean
-    // public OsgpCoreResponseMessageSender
-    // outgoingOsgpCoreResponseMessageSender() {
-    // return new OsgpCoreResponseMessageSender();
-    // }
 
     @Bean
     public Long getPowerUsageHistoryResponseTimeToLive() {

@@ -37,8 +37,6 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp" }, excludeFilters = { @Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
-// @Import({ OslpConfig.class, PersistenceConfig.class, SchedulingConfig.class,
-// MessagingConfig.class })
 @Import({ OslpConfig.class, PersistenceConfig.class, MessagingConfig.class })
 public class TestApplicationContext {
 

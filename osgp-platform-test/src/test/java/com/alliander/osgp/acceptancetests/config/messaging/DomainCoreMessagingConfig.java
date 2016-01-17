@@ -51,7 +51,7 @@ public class DomainCoreMessagingConfig {
 
     @Bean(name = "domainCoreOutgoingWebServiceResponsesJmsTemplate")
     public JmsTemplate commonWsResponsesJmsTemplate() {
-        //        return mock(JmsTemplate.class);
+        // return mock(JmsTemplate.class);
         final JmsTemplate jmsTemplate = new JmsTemplate();
         jmsTemplate.setDefaultDestination(this.commonWsResponsesQueue());
         // Enable the use of deliveryMode, priority, and timeToLive
@@ -91,11 +91,6 @@ public class DomainCoreMessagingConfig {
     public ActiveMQDestination osgpCoreRequestsQueue() {
         return new ActiveMQQueue(MessagingConfig.OSGP_CORE_1_0__DOMAIN_CORE_1_0__REQUESTS_QUEUE);
     }
-
-    //    @Bean
-    //    public OsgpCoreRequestMessageSender osgpCoreRequestMessageSender() {
-    //        return new OsgpCoreRequestMessageSender();
-    //    }
 
     // === JMS SETTINGS: OSGP DOMAIN CORE RESPONSES ===
 
@@ -160,9 +155,4 @@ public class DomainCoreMessagingConfig {
     public ActiveMQDestination osgpCoreResponsesIncomingQueue() {
         return new ActiveMQQueue(MessagingConfig.OSGP_CORE_1_0__DOMAIN_CORE_1_0__RESPONSES_QUEUE);
     }
-
-    //    @Bean
-    //    public OsgpCoreResponseMessageSender osgpCoreResponseMessageSender() {
-    //        return new OsgpCoreResponseMessageSender();
-    //    }
 }

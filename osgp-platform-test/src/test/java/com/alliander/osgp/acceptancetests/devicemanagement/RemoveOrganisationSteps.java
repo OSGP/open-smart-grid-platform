@@ -63,7 +63,8 @@ public class RemoveOrganisationSteps {
     private void setUp() {
         Mockito.reset(new Object[] { this.organisationRepositoryMock });
 
-        this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService, new DeviceManagementMapper());
+        this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
+                new DeviceManagementMapper());
 
         this.throwable = null;
     }
@@ -71,9 +72,10 @@ public class RemoveOrganisationSteps {
     // === GIVEN ===
 
     @DomainStep("a remove organisation request for an isExisting (.*) organisation (.*) with name (.*) in platformFunctionGroup (.*)")
-    public void givenARemoveOrganisationRequest(final Boolean isExisting, final String organisationIdentification, final String name,
-            final String platformFunctionGroup) {
-        LOGGER.info("GIVEN: \"a remove organisation request for an isExisting {} organisation {}\"", isExisting, organisationIdentification);
+    public void givenARemoveOrganisationRequest(final Boolean isExisting, final String organisationIdentification,
+            final String name, final String platformFunctionGroup) {
+        LOGGER.info("GIVEN: \"a remove organisation request for an isExisting {} organisation {}\"", isExisting,
+                organisationIdentification);
 
         this.setUp();
 
@@ -85,22 +87,28 @@ public class RemoveOrganisationSteps {
         this.isExisting = isExisting;
 
         if (isExisting) {
-            this.removedOrganisation = new OrganisationBuilder().withOrganisationIdentification(organisationIdentification).withName(name)
+            this.removedOrganisation = new OrganisationBuilder()
+                    .withOrganisationIdentification(organisationIdentification).withName(name)
                     .withFunctionGroup(PlatformFunctionGroup.valueOf(platformFunctionGroup)).build();
 
-            when(this.organisationRepositoryMock.findByOrganisationIdentification(organisationIdentification)).thenReturn(this.removedOrganisation);
+            when(this.organisationRepositoryMock.findByOrganisationIdentification(organisationIdentification))
+                    .thenReturn(this.removedOrganisation);
         } else {
-            when(this.organisationRepositoryMock.findByOrganisationIdentification(organisationIdentification)).thenReturn(null);
+            when(this.organisationRepositoryMock.findByOrganisationIdentification(organisationIdentification))
+                    .thenReturn(null);
         }
 
     }
 
     @DomainStep("the remove organisation request refers to an organisation that is authorised")
     public void givenTheRemoveOrganisationRequestRefersToAnOrganisationThatIsAuthorised() {
-        LOGGER.info("GIVEN: \"the remove organisation request refers to an organisation that is authorised: {}\".", ORGANISATION_ROOT);
+        LOGGER.info("GIVEN: \"the remove organisation request refers to an organisation that is authorised: {}\".",
+                ORGANISATION_ROOT);
 
-        this.adminOrganisation = new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT_NAME, ORGANISATION_PREFIX, PlatformFunctionGroup.ADMIN);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(this.adminOrganisation);
+        this.adminOrganisation = new Organisation(ORGANISATION_ROOT, ORGANISATION_ROOT_NAME, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.ADMIN);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ROOT)).thenReturn(
+                this.adminOrganisation);
 
     }
 
@@ -149,7 +157,8 @@ public class RemoveOrganisationSteps {
         } else {
             try {
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName().toUpperCase());
+                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName()
+                        .toUpperCase());
             } catch (final AssertionError e) {
                 LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
                 return false;
@@ -158,5 +167,4 @@ public class RemoveOrganisationSteps {
 
         return true;
     }
-
 }

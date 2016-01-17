@@ -63,7 +63,6 @@ public class ReceiveEventNotificationsSteps {
     private static final String EMPTY_INDEX = "EMPTY";
     private static final String DESCRIPTION = "dummy";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -119,7 +118,7 @@ public class ReceiveEventNotificationsSteps {
 
     @DomainStep("a registered device (.*)")
     public void givenARegisteredDevice(final String deviceIdentification) throws NoSuchAlgorithmException,
-            InvalidKeySpecException, IOException {
+    InvalidKeySpecException, IOException {
 
         LOGGER.info("GIVEN: \"a registered device\".");
 
@@ -144,7 +143,7 @@ public class ReceiveEventNotificationsSteps {
 
     @DomainStep("a unregistered device (.*)")
     public void givenAUnregisteredDevice(final String device) throws NoSuchAlgorithmException, InvalidKeySpecException,
-            IOException {
+    IOException {
 
         LOGGER.info("GIVEN: \"a unregistered device\".");
 
@@ -298,8 +297,8 @@ public class ReceiveEventNotificationsSteps {
         for (int i = 0; i < this.request.getNotificationsList().size(); i++) {
             final EventNotification event = this.request.getNotifications(i);
             final com.alliander.osgp.domain.core.entities.EventBuilder expectedEvent = new EventBuilder()
-                    .withDevice(this.device).withEventType(EventType.valueOf(event.getEvent().name()))
-                    .withDescription(event.getDescription()).withIndex(expectedIndexes[i]);
+            .withDevice(this.device).withEventType(EventType.valueOf(event.getEvent().name()))
+            .withDescription(event.getDescription()).withIndex(expectedIndexes[i]);
             expectedEvents.add(expectedEvent.build());
         }
 
@@ -309,8 +308,6 @@ public class ReceiveEventNotificationsSteps {
             for (final com.alliander.osgp.domain.core.entities.Event event : expectedEvents) {
                 verify(this.eventRepositoryMock, timeout(10000).times(1)).save(eq(event));
             }
-
-            // verify(this.deviceRepositoryMock, times(1)).save(this.device);
         } catch (final Throwable t) {
             LOGGER.error("Failure: {}", t);
             return false;

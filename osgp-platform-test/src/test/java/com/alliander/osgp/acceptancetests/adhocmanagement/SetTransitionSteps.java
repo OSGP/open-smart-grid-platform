@@ -207,7 +207,7 @@ public class SetTransitionSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
 
     // === WHEN ===
@@ -231,7 +231,6 @@ public class SetTransitionSteps {
                 "THEN: \"the set transition request should return a set transition response with a correlationId and deviceId {}\".",
                 deviceId);
 
-        // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Transition Async Response should not be null", this.setTransitionAsyncResponse);
             Assert.assertNotNull("Async Response should not be null",
@@ -383,8 +382,7 @@ public class SetTransitionSteps {
                         exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error("JMSException", e);
             }
 
             when(this.publicLightingResponsesJmsTemplate.receiveSelected(any(String.class))).thenReturn(messageMock);
@@ -430,8 +428,6 @@ public class SetTransitionSteps {
 
                 Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
                         (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
-
-                // TODO: check description
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());

@@ -90,7 +90,6 @@ public class SetTariffScheduleSteps {
     private static final String ORGANISATION_ID = "ORGANISATION-01";
     private static final String ORGANISATION_PREFIX = "ORG";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -272,7 +271,7 @@ public class SetTariffScheduleSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.TARIFF_SCHEDULING).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("a get set tariff schedule response request with correlationId (.*) and deviceId (.*)")
@@ -319,7 +318,7 @@ public class SetTariffScheduleSteps {
                         ResponseMessageResultType.valueOf(qresult), exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
-                e.printStackTrace();
+                LOGGER.error("JMSException", e);
             }
 
             when(this.tariffSwitchingResponsesJmsTemplate.receiveSelected(any(String.class))).thenReturn(messageMock);
@@ -364,7 +363,6 @@ public class SetTariffScheduleSteps {
                 "THEN: \"the set tariff schedule request should return a async response with a correlationId and deviceId {}\".",
                 deviceId);
 
-        // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Tariff Schedule Async Response should not be null", this.setScheduleAsyncResponse);
             Assert.assertNotNull("Async Response should not be null", this.setScheduleAsyncResponse.getAsyncResponse());
@@ -465,8 +463,6 @@ public class SetTariffScheduleSteps {
 
                 Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
                         (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
-
-                // TODO: check description
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
@@ -507,5 +503,4 @@ public class SetTariffScheduleSteps {
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withDeviceUid(DEVICE_UID).build();
     }
-
 }

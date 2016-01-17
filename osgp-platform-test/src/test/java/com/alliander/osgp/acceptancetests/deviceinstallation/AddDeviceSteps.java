@@ -96,10 +96,6 @@ public class AddDeviceSteps {
     @Autowired
     private ProtocolInfoRepository protocolInfoRepositoryMock;
 
-    // //Channel Mock
-    //
-    // @Autowired private OslpDeviceService oslpDeviceService;
-
     // Application Services
     @Autowired
     @Qualifier(value = "wsCoreDeviceInstallationService")
@@ -162,7 +158,7 @@ public class AddDeviceSteps {
         when(this.writableAuthorizationRepositoryMock.save(eq(this.authOwner))).thenReturn(this.authOwner);
 
         when(this.protocolInfoRepositoryMock.findByProtocolAndProtocolVersion(any(String.class), any(String.class)))
-        .thenReturn(ProtocolInfoTestUtils.getProtocolInfo(OSLP_1_0_PROTOCOL, OSLP_1_0_PROTOCOL_VERSION));
+                .thenReturn(ProtocolInfoTestUtils.getProtocolInfo(OSLP_1_0_PROTOCOL, OSLP_1_0_PROTOCOL_VERSION));
 
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();
@@ -226,7 +222,7 @@ public class AddDeviceSteps {
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_OWNER)).thenReturn(
                 this.owner);
         when(this.authorizationRepositoryMock.findByDeviceAndFunctionGroup(this.device, DeviceFunctionGroup.OWNER))
-        .thenReturn(Arrays.asList(this.authOwner));
+                .thenReturn(Arrays.asList(this.authOwner));
         when(
                 this.writableAuthorizationRepositoryMock.findByDeviceAndFunctionGroup(this.device,
                         DeviceFunctionGroup.OWNER)).thenReturn(Arrays.asList(this.authOwner));
@@ -253,7 +249,7 @@ public class AddDeviceSteps {
         when(this.writableSsldRepositoryMock.findOne(1L)).thenReturn(this.device);
 
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID_UNKNOWN))
-        .thenReturn(null);
+                .thenReturn(null);
 
         this.request = new AddDeviceRequest();
         final com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device device = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();

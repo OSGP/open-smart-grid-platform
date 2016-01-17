@@ -231,7 +231,7 @@ public class ResumeScheduleSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("a resume schedule response request with correlationId (.*) and deviceId (.*)")
@@ -339,8 +339,6 @@ public class ResumeScheduleSteps {
     @DomainStep("the resume schedule request should return a validation error")
     public boolean thenTheResumeScheduleRequestShouldReturnAValidationError() {
         try {
-            // Assert.assertNull("Resume Schedule Async Response should be null",
-            // this.resumeScheduleAsyncResponse);
             Assert.assertNotNull("Throwable should not be null", this.throwable);
         } catch (final Exception e) {
             LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());

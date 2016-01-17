@@ -241,10 +241,10 @@ public class VerifyAuthorizeDeviceFunctionSteps {
         LOGGER.info("Device Functiongroup: {}",
                 com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.valueOf(group.toUpperCase()));
         this.deviceAuthorization = new DeviceAuthorizationBuilder()
-                .withDevice(this.device)
-                .withOrganisation(this.organisation)
-                .withFunctionGroup(
-                        com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.valueOf(group.toUpperCase()))
+        .withDevice(this.device)
+        .withOrganisation(this.organisation)
+        .withFunctionGroup(
+                com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.valueOf(group.toUpperCase()))
                 .build();
 
         when(
@@ -355,7 +355,6 @@ public class VerifyAuthorizeDeviceFunctionSteps {
     @DomainStep("the device function is (.*)")
     public boolean thenTheDeviceFunctionIsAllowed(final boolean allowed) {
         LOGGER.info("Allowed: {}", allowed);
-        // LOGGER.info("Exception: {}", this.throwable);
         LOGGER.info("Exception: {}", this.throwable != null ? this.throwable.getClass().getSimpleName() : "null");
         LOGGER.info("Response {}", this.response != null);
 
@@ -461,7 +460,7 @@ public class VerifyAuthorizeDeviceFunctionSteps {
 
     private void setDeviceAuthorization(
             final com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.DeviceFunctionGroup group)
-            throws OsgpException {
+                    throws OsgpException {
         final UpdateDeviceAuthorisationsRequest request = new UpdateDeviceAuthorisationsRequest();
         final DeviceAuthorisation deviceAuthorisation = new DeviceAuthorisation();
         deviceAuthorisation.setDeviceIdentification(this.device.getDeviceIdentification());
@@ -653,8 +652,8 @@ public class VerifyAuthorizeDeviceFunctionSteps {
                 .newBuilder()
                 .setPowerUsageData(
                         PowerUsageData.newBuilder().setMeterType(MeterType.P1).setRecordTime("20130101120000")
-                                .setActualConsumedPower(2).setTotalConsumedEnergy(2).build()).setStatus(Status.OK)
-                .build();
+                        .setActualConsumedPower(2).setTotalConsumedEnergy(2).build()).setStatus(Status.OK)
+                        .build();
 
         this.oslpEnvelope = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetActualPowerUsageResponse(oslpResponse).build()).build();
@@ -687,8 +686,8 @@ public class VerifyAuthorizeDeviceFunctionSteps {
                 .newBuilder()
                 .addPowerUsageData(
                         PowerUsageData.newBuilder().setMeterType(MeterType.P1).setRecordTime("20130101120000")
-                                .setActualConsumedPower(2).setTotalConsumedEnergy(2).build()).setStatus(Status.OK)
-                .build();
+                        .setActualConsumedPower(2).setTotalConsumedEnergy(2).build()).setStatus(Status.OK)
+                        .build();
 
         this.oslpEnvelope = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetPowerUsageHistoryResponse(oslpResponse).build()).build();

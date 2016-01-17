@@ -33,7 +33,6 @@ public class DeviceTest {
         assertThat(subject.getDeviceIdentification(), equalTo("DEV001"));
     }
 
-    //@Test
     public void updateRegistrationData() throws UnknownHostException, ValidationException, ArgumentNullOrEmptyException {
         final String deviceIdentification = "DEV002";
         final InetAddress address = InetAddress.getByName("127.0.0.1");
@@ -50,7 +49,6 @@ public class DeviceTest {
         assertThat(subject, equalTo(device));
     }
 
-    //@Test
     public void confirmRegistrationTest() throws UnknownHostException, PlatformException {
         // Set up the device and perform the registration step.
         final String deviceIdentification = "DEV002";

@@ -61,7 +61,6 @@ public class VerifyAuthorizePlatformFunctionSteps {
     // WS Adapter fields
     private com.alliander.osgp.adapter.ws.admin.endpoints.DeviceManagementEndpoint adminDeviceManagementEndpoint;
 
-    private com.alliander.osgp.adapter.ws.core.endpoints.DeviceInstallationEndpoint coreDeviceInstallationEndpoint;
     private com.alliander.osgp.adapter.ws.core.endpoints.DeviceManagementEndpoint coreDeviceManagementEndpoint;
 
     @Autowired
@@ -106,9 +105,6 @@ public class VerifyAuthorizePlatformFunctionSteps {
         this.adminDeviceManagementEndpoint = new com.alliander.osgp.adapter.ws.admin.endpoints.DeviceManagementEndpoint(
                 this.adminDeviceManagementService,
                 new com.alliander.osgp.adapter.ws.admin.application.mapping.DeviceManagementMapper());
-        this.coreDeviceInstallationEndpoint = new com.alliander.osgp.adapter.ws.core.endpoints.DeviceInstallationEndpoint(
-                this.coreDeviceInstallationService,
-                new com.alliander.osgp.adapter.ws.core.application.mapping.DeviceInstallationMapper());
         this.coreDeviceManagementEndpoint = new com.alliander.osgp.adapter.ws.core.endpoints.DeviceManagementEndpoint(
                 this.coreDeviceManagementService, this.deviceManagementMapper);
 
@@ -121,9 +117,9 @@ public class VerifyAuthorizePlatformFunctionSteps {
         this.setUp();
 
         this.organisation = new OrganisationBuilder()
-        .withOrganisationIdentification(ORGANISATION)
-        .withFunctionGroup(
-                com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.valueOf(group.toUpperCase()))
+                .withOrganisationIdentification(ORGANISATION)
+                .withFunctionGroup(
+                        com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup.valueOf(group.toUpperCase()))
                 .build();
         when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION)).thenReturn(
                 this.organisation);
@@ -184,7 +180,7 @@ public class VerifyAuthorizePlatformFunctionSteps {
         final CreateOrganisationRequest request = new CreateOrganisationRequest();
         final com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Organisation newOrganisation = new com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Organisation();
         newOrganisation
-        .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.ADMIN);
+                .setFunctionGroup(com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.PlatformFunctionGroup.ADMIN);
         newOrganisation.setName("dummy");
         newOrganisation.setPrefix("org");
         newOrganisation.setOrganisationIdentification("dummy");

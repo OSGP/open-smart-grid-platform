@@ -98,7 +98,6 @@ public class SetConfigurationDataSteps {
     private static final String ORGANISATION_ID = "ORGANISATION-01";
     private static final String ORGANISATION_PREFIX = "ORG";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -233,8 +232,6 @@ public class SetConfigurationDataSteps {
         if (StringUtils.isNotBlank(rcType) || StringUtils.isNotBlank(rcMap)) {
             final RelayConfiguration relayConfiguration = new RelayConfiguration();
 
-            // TODO add relay per configuration mapping to the tests, now they
-            // all get the same
             if (StringUtils.isNotBlank(rcMap)) {
                 for (final String rc : rcMap.split(";")) {
                     final String[] rcArray = rc.split(",");
@@ -321,7 +318,7 @@ public class SetConfigurationDataSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.CONFIGURATION).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
 
     @DomainStep("the set configuration data request is received")
@@ -345,7 +342,6 @@ public class SetConfigurationDataSteps {
                 "THEN: \"the set configuration request should return a set configuration response with a correlationId and deviceId {}\".",
                 deviceId);
 
-        // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Configuration Async Response should not be null",
                     this.setConfigurationAsyncResponse);
@@ -516,8 +512,7 @@ public class SetConfigurationDataSteps {
                         exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error("JMSException", e);
             }
 
             when(this.commonResponsesJmsTemplate.receiveSelected(any(String.class))).thenReturn(messageMock);
@@ -564,8 +559,6 @@ public class SetConfigurationDataSteps {
 
                 Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
                         (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
-
-                // TODO: check description
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());

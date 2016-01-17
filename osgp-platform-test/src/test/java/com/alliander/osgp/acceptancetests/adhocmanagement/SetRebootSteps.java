@@ -201,7 +201,7 @@ public class SetRebootSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("a get set reboot response request with correlationId (.*) and deviceId (.*)")
@@ -292,7 +292,6 @@ public class SetRebootSteps {
                 "THEN: \"the set reboot request should return a set reboot response with a correlationId and deviceId {}\".",
                 deviceId);
 
-        // TODO Add check on device id
         try {
             Assert.assertNotNull("Set Reboot Async Response should not be null", this.setRebootAsyncResponse);
             Assert.assertNotNull("Async Response should not be null", this.setRebootAsyncResponse.getAsyncResponse());
@@ -422,8 +421,6 @@ public class SetRebootSteps {
 
                 Assert.assertTrue("Invalid result, found: " + actualResult + " , expected: " + expectedResult,
                         (actualResult == null && expectedResult == null) || actualResult.equals(expectedResult));
-
-                // TODO: check description
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());

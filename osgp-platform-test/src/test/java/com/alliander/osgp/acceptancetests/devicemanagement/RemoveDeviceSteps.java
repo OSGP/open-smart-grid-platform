@@ -58,8 +58,6 @@ public class RemoveDeviceSteps {
 
     private static final String ORGANISATION_PREFIX = "ORG";
 
-    private static final String DEVICE_UID = "AAAAAAAAAAYAAA==";
-
     private DeviceManagementEndpoint deviceManagementEndpoint;
     private RemoveDeviceRequest request;
     private RemoveDeviceResponse response;
@@ -69,10 +67,6 @@ public class RemoveDeviceSteps {
     private Organisation organisation;
     private List<DeviceAuthorization> authorizations;
     private List<Event> events;
-
-    // private OslpChannelHandlerClient oslpChannelHandler;
-    // private OslpEnvelope oslpRequest;
-    // private OslpEnvelope oslpResponse;
 
     // Repository mocks
     @Autowired
@@ -111,7 +105,8 @@ public class RemoveDeviceSteps {
     }
 
     @DomainStep("the remove device request refers to a device (.*) with status (.*), (.*) authorisations and (.*) events")
-    public void givenADevice(final String device, final String status, final Integer numberOfAuthorizations, final Integer numberOfEvents) throws Exception {
+    public void givenADevice(final String device, final String status, final Integer numberOfAuthorizations,
+            final Integer numberOfEvents) throws Exception {
         LOGGER.info("GIVEN: the remove device request refers to a device {} with status {}.", device, status);
 
         switch (status.toUpperCase()) {
@@ -145,17 +140,20 @@ public class RemoveDeviceSteps {
     public void givenAnOrganisation(final Boolean isAuthorized) {
         LOGGER.info("GIVEN: the remove device request refers to an organisation that is authorised: {}.", isAuthorized);
 
-        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX, PlatformFunctionGroup.USER);
-        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(this.organisation);
+        this.organisation = new Organisation(ORGANISATION_ID, ORGANISATION_ID, ORGANISATION_PREFIX,
+                PlatformFunctionGroup.USER);
+        when(this.organisationRepositoryMock.findByOrganisationIdentification(ORGANISATION_ID)).thenReturn(
+                this.organisation);
 
         List<DeviceAuthorization> authorizations = null;
 
         authorizations = new ArrayList<>();
         if (isAuthorized) {
-            authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
-                    .withFunctionGroup(DeviceFunctionGroup.MANAGEMENT).build());
+            authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device)
+                    .withOrganisation(this.organisation).withFunctionGroup(DeviceFunctionGroup.MANAGEMENT).build());
         }
-        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(authorizations);
+        when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
+                .thenReturn(authorizations);
     }
 
     // === WHEN ===
@@ -203,8 +201,10 @@ public class RemoveDeviceSteps {
     }
 
     @DomainStep("(.*) authorisations for device (.*) should be removed (.*)")
-    public boolean thenTheAuthorizationsForTheDeviceShouldBeRemoved(final Integer numberOfAuthorizations, final String device, final Boolean removed) {
-        LOGGER.info("THEN: {} authorizations for device {} should be removed: {}.", new Object[] { numberOfAuthorizations, device, removed });
+    public boolean thenTheAuthorizationsForTheDeviceShouldBeRemoved(final Integer numberOfAuthorizations,
+            final String device, final Boolean removed) {
+        LOGGER.info("THEN: {} authorizations for device {} should be removed: {}.", new Object[] {
+                numberOfAuthorizations, device, removed });
 
         try {
             final int count = removed ? numberOfAuthorizations : 0;
@@ -218,8 +218,10 @@ public class RemoveDeviceSteps {
     }
 
     @DomainStep("(.*) events for device (.*) should be removed (.*)")
-    public boolean thenTheEventsForTheDeviceShouldBeRemoved(final Integer numberOfEvents, final String device, final Boolean removed) {
-        LOGGER.info("THEN: {} events for device {} should be removed: {}.", new Object[] { numberOfEvents, device, removed });
+    public boolean thenTheEventsForTheDeviceShouldBeRemoved(final Integer numberOfEvents, final String device,
+            final Boolean removed) {
+        LOGGER.info("THEN: {} events for device {} should be removed: {}.", new Object[] { numberOfEvents, device,
+                removed });
 
         try {
             final int count = removed ? numberOfEvents : 0;
@@ -247,7 +249,8 @@ public class RemoveDeviceSteps {
         } else {
             try {
                 Assert.assertNotNull("Throwable should not be null", this.throwable);
-                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName().toUpperCase());
+                Assert.assertEquals(result.toUpperCase(), this.throwable.getCause().getClass().getSimpleName()
+                        .toUpperCase());
             } catch (final AssertionError e) {
                 LOGGER.error("Exception [{}]: {}", e.getClass().getSimpleName(), e.getMessage());
                 return false;
@@ -260,10 +263,12 @@ public class RemoveDeviceSteps {
     // === private methods ===
 
     private void setUp() {
-        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock,
-                this.deviceLogItemRepositoryMock, this.eventRepositoryMock, this.channelMock });
+        Mockito.reset(new Object[] { this.deviceRepositoryMock, this.organisationRepositoryMock,
+                this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.eventRepositoryMock,
+                this.channelMock });
 
-        this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService, new DeviceManagementMapper());
+        this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
+                new DeviceManagementMapper());
 
         this.request = null;
         this.response = null;
@@ -272,7 +277,6 @@ public class RemoveDeviceSteps {
 
     private void createDevice(final String deviceIdentification, final boolean activated) {
         this.device = new DeviceBuilder().withDeviceIdentification(deviceIdentification)
-        // .withDeviceUid(activated ? DEVICE_UID : null)
                 .withNetworkAddress(activated ? InetAddress.getLoopbackAddress() : null).isActivated(activated).build();
     }
 
@@ -280,8 +284,8 @@ public class RemoveDeviceSteps {
         this.authorizations = new ArrayList<>();
         for (int i = 1; i <= numberOfAuthorizations; i++) {
             final String organisation = "org" + i;
-            this.authorizations.add(new DeviceAuthorization(this.device, new Organisation(organisation, organisation, ORGANISATION_PREFIX,
-                    PlatformFunctionGroup.USER), DeviceFunctionGroup.AD_HOC));
+            this.authorizations.add(new DeviceAuthorization(this.device, new Organisation(organisation, organisation,
+                    ORGANISATION_PREFIX, PlatformFunctionGroup.USER), DeviceFunctionGroup.AD_HOC));
         }
     }
 

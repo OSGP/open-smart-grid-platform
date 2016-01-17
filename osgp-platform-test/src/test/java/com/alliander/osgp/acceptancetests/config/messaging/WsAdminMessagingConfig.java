@@ -17,7 +17,6 @@ import org.springframework.jms.core.JmsTemplate;
 import com.alliander.osgp.adapter.ws.admin.infra.jms.AdminRequestMessageSender;
 import com.alliander.osgp.adapter.ws.admin.infra.jms.AdminResponseMessageFinder;
 
-//@Configuration
 public class WsAdminMessagingConfig {
 
     // === JMS SETTINGS: ADMIN REQUESTS ===

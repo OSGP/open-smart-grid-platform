@@ -88,7 +88,6 @@ public class UpdateFirmwareSteps {
     private static final String ORGANISATION_PREFIX = "ORG";
     private static final String DEVICE_UID = "AAAAAAAAAAYAAAAA";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -182,7 +181,6 @@ public class UpdateFirmwareSteps {
             final FirmwareLocation firmwareLocation = new FirmwareLocation(firmwareDomainConfig, firmwarePathConfig,
                     firmwareExtensionConfig);
             this.messageProcessor.setFirmwareLocation(firmwareLocation);
-            // this.oslpFirmwareManagementService.setFirmwareLocation(firmwareLocation);
         } catch (final IllegalArgumentException e) {
             // this.firmwareLocation = null;
             // Silencing the IllegalArgumentException thrown by the
@@ -221,24 +219,15 @@ public class UpdateFirmwareSteps {
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
         when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification))
-        .thenReturn(this.oslpDevice);
+                .thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.FIRMWARE).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
-
-    // @DomainStep("a received firmware update request for device (.*) with (.*)")
-    // public void givenAReceivedFirmwareUpdateRequestWith(final String
-    // deviceIdentification, final String firmwareName) {
-    // LOGGER.info("[Given a received firmware update request for device {} with [{}]",
-    // firmwareName);
-    // this.request.setDeviceIdentification(deviceIdentification);
-    // this.request.setFirmwareIdentification(firmwareName);
-    // }
 
     @DomainStep("the update firmware request is received")
     public void whenTheUpdateFirmwareRequestIsReceived() throws Exception {
@@ -258,7 +247,7 @@ public class UpdateFirmwareSteps {
         LOGGER.info(
                 "THEN: the update firmware request should return an async response with a correlationId and deviceId {}",
                 device);
-        // TODO Add check on device id
+
         try {
             Assert.assertNotNull("asyncResponse should not be null", this.updateFirmwareAsyncResponse);
             Assert.assertNotNull("CorrelationId should not be null", this.updateFirmwareAsyncResponse
@@ -376,8 +365,7 @@ public class UpdateFirmwareSteps {
                         exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error("JMSException", e);
             }
 
             when(this.commonResponsesJmsTemplate.receiveSelected(any(String.class))).thenReturn(messageMock);
@@ -461,5 +449,4 @@ public class UpdateFirmwareSteps {
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withDeviceUid(DEVICE_UID).build();
     }
-
 }

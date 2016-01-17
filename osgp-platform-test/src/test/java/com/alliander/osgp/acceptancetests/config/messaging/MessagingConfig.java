@@ -14,14 +14,10 @@ import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-//@Configuration
 @Import({ WsAdminMessagingConfig.class, WsCoreMessagingConfig.class, WsPublicLightingMessagingConfig.class,
-    WsTariffSwitchingMessagingConfig.class, DomainAdminMessagingConfig.class, DomainCoreMessagingConfig.class,
-    DomainPublicLightingMessagingConfig.class, DomainTariffSwitchingMessagingConfig.class,
-    OsgpCoreMessagingConfig.class, ProtocolOslpMessagingConfig.class })
-// @Import({ WsPublicLightingMessagingConfig.class,
-// DomainPublicLightingMessagingConfig.class,
-// OsgpCoreMessagingConfig.class, ProtocolOslpMessagingConfig.class })
+        WsTariffSwitchingMessagingConfig.class, DomainAdminMessagingConfig.class, DomainCoreMessagingConfig.class,
+        DomainPublicLightingMessagingConfig.class, DomainTariffSwitchingMessagingConfig.class,
+        OsgpCoreMessagingConfig.class, ProtocolOslpMessagingConfig.class })
 public class MessagingConfig {
 
     // ========================================================================

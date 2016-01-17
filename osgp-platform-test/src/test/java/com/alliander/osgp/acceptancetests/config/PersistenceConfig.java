@@ -32,7 +32,6 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.logging.domain.repositories.WebServiceMonitorLogRepository;
 
-//@Configuration
 public class PersistenceConfig {
 
     // // WS LOGGING

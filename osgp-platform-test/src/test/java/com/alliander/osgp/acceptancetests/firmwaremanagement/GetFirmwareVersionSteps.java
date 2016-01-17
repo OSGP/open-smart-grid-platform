@@ -82,7 +82,6 @@ public class GetFirmwareVersionSteps {
     private static final String ORGANISATION_PREFIX = "ORG";
     private static final String DEVICE_UID = "AAAAAAAAAAYAAAAA";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -190,7 +189,7 @@ public class GetFirmwareVersionSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.FIRMWARE).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the get firmware version oslp message from the device contains (.*)")
@@ -261,7 +260,7 @@ public class GetFirmwareVersionSteps {
                         exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
-                e.printStackTrace();
+                LOGGER.error("JMSException", e);
             }
 
             when(this.commonResponsesJmsTemplate.receiveSelected(any(String.class))).thenReturn(messageMock);
@@ -305,7 +304,6 @@ public class GetFirmwareVersionSteps {
                 "THEN: \"the get firmware version request should return an async response with a correlationId and deviceId {}\".",
                 deviceId);
 
-        // TODO Add check on device id
         try {
             Assert.assertNotNull("asyncResponse should not be null", this.asyncResponse);
             Assert.assertNotNull("CorrelationId should not be null", this.asyncResponse.getAsyncResponse()
@@ -461,7 +459,6 @@ public class GetFirmwareVersionSteps {
                 .withPublicKeyPresent(PUBLIC_KEY_PRESENT)
                 .withProtocolInfo(ProtocolInfoTestUtils.getProtocolInfo(PROTOCOL, PROTOCOL_VERSION))
                 .isActivated(activated).build();
-
     }
 
     private void createOslpDevice(final String deviceIdentification) {
@@ -470,5 +467,4 @@ public class GetFirmwareVersionSteps {
         this.oslpDevice = new OslpDeviceBuilder().withDeviceIdentification(deviceIdentification)
                 .withDeviceUid(DEVICE_UID).build();
     }
-
 }

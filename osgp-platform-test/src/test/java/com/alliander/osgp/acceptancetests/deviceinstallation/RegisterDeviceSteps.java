@@ -83,8 +83,6 @@ public class RegisterDeviceSteps {
     private static final double GPS_MULTIPLY_FACTOR = 1000000.0;
     private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmmss");
 
-    // TODO - Add as parameters to tests
-    private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
 
@@ -166,7 +164,7 @@ public class RegisterDeviceSteps {
     // === GIVEN ===
     @DomainStep("a valid register device OSLP message")
     public void givenAValidRegisterDeviceRequest() throws NoSuchAlgorithmException, InvalidKeySpecException,
-    IOException {
+            IOException {
         LOGGER.info("GIVEN: \"a valid register device OSLP message\".");
 
         this.setup();

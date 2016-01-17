@@ -17,7 +17,6 @@ import org.springframework.jms.core.JmsTemplate;
 import com.alliander.osgp.adapter.ws.publiclighting.infra.jms.PublicLightingRequestMessageSender;
 import com.alliander.osgp.adapter.ws.publiclighting.infra.jms.PublicLightingResponseMessageFinder;
 
-//@Configuration
 public class WsPublicLightingMessagingConfig {
 
     // === JMS SETTINGS: PUBLIC LIGHTING REQUESTS ===

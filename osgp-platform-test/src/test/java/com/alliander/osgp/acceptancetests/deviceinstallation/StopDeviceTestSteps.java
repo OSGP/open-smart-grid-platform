@@ -81,7 +81,6 @@ public class StopDeviceTestSteps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StopDeviceTestSteps.class);
 
-    // private static final String DEVICE_ID = "DEVICE-01";
     private static final String DEVICE_UID = "AAAAAAAAAAYAAAAA";
 
     private static final String ORGANISATION_PREFIX = "ORG";
@@ -90,7 +89,6 @@ public class StopDeviceTestSteps {
     private static final String ORGANISATION_ID_EMPTY = "";
     private static final String ORGANISATION_ID_SPACES = "   ";
 
-    // TODO - Add as parameters to tests
     private static final Boolean PUBLIC_KEY_PRESENT = true;
     private static final String PROTOCOL = "OSLP";
     private static final String PROTOCOL_VERSION = "1.0";
@@ -204,7 +202,7 @@ public class StopDeviceTestSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.INSTALLATION).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
     }
 
     @DomainStep("the stop device test oslp message from the device")
@@ -272,8 +270,7 @@ public class StopDeviceTestSteps {
                         this.organisation.getOrganisationIdentification(), deviceId, result, exception, dataObject);
                 when(messageMock.getObject()).thenReturn(message);
             } catch (final JMSException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error("JMSException", e);
             }
 
             when(this.commonResponsesJmsTemplate.receiveSelected(any(String.class))).thenReturn(messageMock);
