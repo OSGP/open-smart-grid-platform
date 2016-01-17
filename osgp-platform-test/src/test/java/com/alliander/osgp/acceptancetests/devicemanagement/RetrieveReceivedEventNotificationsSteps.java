@@ -78,6 +78,9 @@ public class RetrieveReceivedEventNotificationsSteps {
     @Autowired
     @Qualifier("wsCoreDeviceManagementService")
     private DeviceManagementService deviceManagementService;
+    @Autowired
+    @Qualifier("coreDeviceManagementMapper")
+    private DeviceManagementMapper deviceManagementMapper;
 
     private Organisation organisation;
     private Ssld device;
@@ -115,10 +118,8 @@ public class RetrieveReceivedEventNotificationsSteps {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
                 this.organisationRepositoryMock, this.eventRepositoryMock, this.deviceAuthorizationRepositoryMock });
 
-        final DeviceManagementMapper deviceManagementMapper = new DeviceManagementMapper();
-        deviceManagementMapper.initialize();
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
-                deviceManagementMapper);
+                this.deviceManagementMapper);
 
         this.request = null;
         this.response = null;
@@ -156,7 +157,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         authorizations.add(new DeviceAuthorization(this.device, this.organisation, DeviceFunctionGroup.MANAGEMENT));
 
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("a received event notification (.*), (.*) and (.*) from (.*)")
@@ -174,7 +175,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         this.eventsPage = new PageImpl<Event>(eventList, this.pageRequest, eventList.size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-                .thenReturn(this.eventsPage);
+        .thenReturn(this.eventsPage);
     }
 
     @DomainStep("a retrieve event notification request")
@@ -226,7 +227,7 @@ public class RetrieveReceivedEventNotificationsSteps {
         LOGGER.info("events: {}", this.eventsPage.getContent().size());
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-                .thenReturn(this.eventsPage);
+        .thenReturn(this.eventsPage);
     }
 
     @DomainStep("(.*) received event notifications")
@@ -246,7 +247,7 @@ public class RetrieveReceivedEventNotificationsSteps {
                 this.request.getPageSize(), PAGESIZELIMIT)), totalPages);
 
         when(this.eventRepositoryMock.findAll(Matchers.<Specifications<Event>> any(), any(PageRequest.class)))
-                .thenReturn(this.eventsPage);
+        .thenReturn(this.eventsPage);
     }
 
     @DomainStep("the event notification must be filtered on (.*), (.*), and (.*)")

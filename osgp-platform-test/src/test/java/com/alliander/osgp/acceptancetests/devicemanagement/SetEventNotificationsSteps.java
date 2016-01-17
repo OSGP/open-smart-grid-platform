@@ -106,6 +106,9 @@ public class SetEventNotificationsSteps {
     @Autowired
     @Qualifier("wsCoreDeviceManagementService")
     private DeviceManagementService deviceManagementService;
+    @Autowired
+    @Qualifier("coreDeviceManagementMapper")
+    private DeviceManagementMapper deviceManagementMapper;
 
     @Autowired
     @Qualifier("wsCoreIncomingResponsesMessageFinder")
@@ -462,10 +465,8 @@ public class SetEventNotificationsSteps {
         this.oslpDeviceService.setMapper(new OslpMapper());
         OslpTestUtils.configureDeviceServiceForOslp(this.oslpDeviceService);
 
-        final DeviceManagementMapper deviceManagementMapper = new DeviceManagementMapper();
-        deviceManagementMapper.initialize();
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
-                deviceManagementMapper);
+                this.deviceManagementMapper);
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 

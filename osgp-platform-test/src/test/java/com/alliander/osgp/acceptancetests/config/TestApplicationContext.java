@@ -27,6 +27,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import com.alliander.osgp.acceptancetests.config.messaging.MessagingConfig;
+import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceInstallationMapper;
+import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
@@ -148,5 +150,17 @@ public class TestApplicationContext {
     @Qualifier("wsCoreDeviceManagementNetManagementOrganisation")
     public String netManagementOrganisation() {
         return NET_MANAGEMENT_ORGANISATION;
+    }
+
+    @Bean
+    @Qualifier("coreDeviceInstallationMapper")
+    public DeviceInstallationMapper deviceInstallationMapper() {
+        return new DeviceInstallationMapper();
+    }
+
+    @Bean
+    @Qualifier("coreDeviceManagementMapper")
+    public DeviceManagementMapper deviceManagementMapper() {
+        return new DeviceManagementMapper();
     }
 }

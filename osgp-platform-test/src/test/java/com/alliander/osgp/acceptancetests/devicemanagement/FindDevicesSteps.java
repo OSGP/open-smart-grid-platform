@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -80,16 +81,18 @@ public class FindDevicesSteps {
     // Application Services
     @Autowired
     private DeviceManagementService deviceManagementService;
+    @Autowired
+    @Qualifier("coreDeviceManagementMapper")
+    private DeviceManagementMapper deviceManagementMapper;
+
     private Organisation ownerOrganisation;
 
     private void setUp() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
                 this.organisationRepositoryMock, this.deviceAuthorizationRepositoryMock });
 
-        final DeviceManagementMapper deviceManagementMapper = new DeviceManagementMapper();
-        deviceManagementMapper.initialize();
         this.deviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
-                deviceManagementMapper);
+                this.deviceManagementMapper);
 
         this.request = null;
         this.response = null;
@@ -135,14 +138,14 @@ public class FindDevicesSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.OWNER).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     // === WHEN ===
 
     @DomainStep("the find devices request is received")
     public void whenTheFindDevicesRequestIsReceived() throws UnknownEntityException, ValidationException,
-            NotAuthorizedException {
+    NotAuthorizedException {
         LOGGER.info("WHEN: \"the the find devices request is received\".");
 
         try {

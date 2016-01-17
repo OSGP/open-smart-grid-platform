@@ -82,14 +82,16 @@ public class FindRecentDevicesSteps {
     @Qualifier(value = "wsCoreDeviceInstallationService")
     private DeviceInstallationService deviceInstallationService;
 
+    @Autowired
+    @Qualifier("coreDeviceInstallationMapper")
+    private DeviceInstallationMapper deviceInstallationMapper;
+
     public void Setup() {
         Mockito.reset(new Object[] { this.deviceRepositoryMock, this.ssldRepositoryMock,
                 this.authorizationRepositoryMock, this.organisationRepositoryMock });
 
-        final DeviceInstallationMapper deviceInstallationMapper = new DeviceInstallationMapper();
-        deviceInstallationMapper.initialize();
         this.deviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService,
-                deviceInstallationMapper);
+                this.deviceInstallationMapper);
 
         // Create the owner
         this.owner = new OrganisationBuilder().withOrganisationIdentification(OWNER_ID).build();

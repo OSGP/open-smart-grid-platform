@@ -159,6 +159,9 @@ public class VerifyAuthorizeDeviceFunctionSteps {
     @Qualifier(value = "wsCoreDeviceManagementService")
     private com.alliander.osgp.adapter.ws.core.application.services.DeviceManagementService deviceManagementService;
     @Autowired
+    @Qualifier("coreDeviceManagementMapper")
+    private DeviceManagementMapper deviceManagementMapper;
+    @Autowired
     @Qualifier(value = "wsCoreFirmwareManagementService")
     private com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagementService firmwareManagementService;
 
@@ -773,7 +776,7 @@ public class VerifyAuthorizeDeviceFunctionSteps {
         this.coreDeviceInstallationEndpoint = new DeviceInstallationEndpoint(this.deviceInstallationService,
                 new DeviceInstallationMapper());
         this.coreDeviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
-                new DeviceManagementMapper());
+                this.deviceManagementMapper);
         this.coreFirmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService);
         this.lightDeviceMonitoringEndpoint = new DeviceMonitoringEndpoint(this.deviceMonitoringService,
                 new DeviceMonitoringMapper());
