@@ -231,15 +231,12 @@ public class DeviceManagementEndpoint {
                             this.deviceManagementMapper.map(request.getDeviceFilter(),
                                     com.alliander.osgp.domain.core.valueobjects.DeviceFilter.class));
 
-            if (result != null) {
-                if (response.getDevices() != null) {
-                    response.getDevices().addAll(
-                            this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
-                    response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
-                    response.getPage().setPageSize(result.getSize());
-                    response.getPage().setTotalPages(result.getTotalPages());
-                    response.getPage().setCurrentPage(result.getNumber());
-                }
+            if (result != null && response.getDevices() != null) {
+                response.getDevices().addAll(this.deviceManagementMapper.mapAsList(result.getContent(), Device.class));
+                response.setPage(new com.alliander.osgp.adapter.ws.schema.core.common.Page());
+                response.getPage().setPageSize(result.getSize());
+                response.getPage().setTotalPages(result.getTotalPages());
+                response.getPage().setCurrentPage(result.getNumber());
             }
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error(EXCEPTION, e.getMessage(), e.getStackTrace(), e);
@@ -295,8 +292,8 @@ public class DeviceManagementEndpoint {
                 .getUpdatedDevice().getDeviceIdentification());
 
         try {
-            final com.alliander.osgp.domain.core.entities.Device device = this.deviceManagementMapper.map(
-                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Device.class);
+            final com.alliander.osgp.domain.core.entities.Ssld device = this.deviceManagementMapper.map(
+                    request.getUpdatedDevice(), com.alliander.osgp.domain.core.entities.Ssld.class);
 
             this.deviceManagementService.updateDevice(organisationIdentification, device);
 
@@ -315,11 +312,11 @@ public class DeviceManagementEndpoint {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 request.getDeviceIdentification());
 
-        final AsyncResponse AsyncResponse = new AsyncResponse();
-        AsyncResponse.setCorrelationUid(correlationUid);
-        AsyncResponse.setDeviceId(request.getDeviceIdentification());
+        final AsyncResponse asyncResponse = new AsyncResponse();
+        asyncResponse.setCorrelationUid(correlationUid);
+        asyncResponse.setDeviceId(request.getDeviceIdentification());
 
-        updateDeviceResponse.setAsyncResponse(AsyncResponse);
+        updateDeviceResponse.setAsyncResponse(asyncResponse);
 
         return updateDeviceResponse;
     }

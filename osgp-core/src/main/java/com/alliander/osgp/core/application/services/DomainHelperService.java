@@ -11,13 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.entities.Organisation;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
 import com.alliander.osgp.domain.core.services.DeviceDomainService;
 import com.alliander.osgp.domain.core.services.OrganisationDomainService;
 import com.alliander.osgp.domain.core.services.SecurityService;
@@ -26,7 +23,6 @@ import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 
 @Service(value = "osgpCoreDomainHelperService")
 public class DomainHelperService {
@@ -38,12 +34,6 @@ public class DomainHelperService {
 
     @Autowired
     private OrganisationDomainService organisationDomainService;
-
-    @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
-
-    @Autowired
-    private GasMeterDeviceRepository gASMeterDeviceRepository;
 
     @Autowired
     private SecurityService securityService;
@@ -66,25 +56,6 @@ public class DomainHelperService {
             throw new FunctionalException(FunctionalExceptionType.UNREGISTERED_DEVICE, COMPONENT_TYPE, e);
         } catch (final UnknownEntityException e) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
-        }
-        return device;
-    }
-
-    public SmartMeteringDevice findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
-        final SmartMeteringDevice device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
-        if (device == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-                    new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification));
-        }
-        return device;
-    }
-
-    public GasMeterDevice findGASMeterDevice(final String deviceIdentification) throws FunctionalException {
-        final GasMeterDevice device = this.gASMeterDeviceRepository.findByDeviceIdentification(deviceIdentification);
-        if (device == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
-                    new UnknownEntityException(SmartMeteringDevice.class, deviceIdentification));
         }
         return device;
     }

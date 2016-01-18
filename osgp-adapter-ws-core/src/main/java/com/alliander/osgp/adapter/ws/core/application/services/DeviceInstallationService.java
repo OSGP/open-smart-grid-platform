@@ -26,10 +26,12 @@ import com.alliander.osgp.adapter.ws.core.infra.jms.CommonRequestMessageType;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
@@ -69,6 +71,9 @@ public class DeviceInstallationService {
     private WritableDeviceRepository writableDeviceRepository;
 
     @Autowired
+    private WritableSsldRepository writableSsldRepository;
+
+    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
@@ -104,16 +109,21 @@ public class DeviceInstallationService {
                 this.defaultProtocol, this.defaultProtocolVersion);
 
         if (existingDevice == null) {
+            final Ssld ssld = new Ssld(newDevice.getDeviceIdentification(), newDevice.getAlias(),
+                    newDevice.getContainerCity(), newDevice.getContainerPostalCode(), newDevice.getContainerStreet(),
+                    newDevice.getContainerNumber(), newDevice.getContainerMunicipality(), newDevice.getGpsLatitude(),
+                    newDevice.getGpsLongitude());
+            ssld.setHasSchedule(false);
             // device not created yet, add new device
-            final DeviceAuthorization authorization = newDevice.addAuthorization(organisation,
-                    DeviceFunctionGroup.OWNER);
+            final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
             // add default protocol if not set yet
             if (newDevice.getProtocolInfo() == null) {
-                newDevice.updateProtocol(protocolInfo);
+                ssld.updateProtocol(protocolInfo);
             }
 
-            this.writableDeviceRepository.save(newDevice);
+            // Since the column device in device authorizations is cascaded,
+            // this will also save the SSLD and device entities.
             this.writableAuthorizationRepository.save(authorization);
 
             LOGGER.info("Created new device {} with owner {}", newDevice.getDeviceIdentification(),
@@ -122,28 +132,28 @@ public class DeviceInstallationService {
             final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
                     existingDevice, DeviceFunctionGroup.OWNER);
             if (!owners.isEmpty()) {
-
                 // device is already registered to a different owner
                 throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.WS_CORE,
                         new ExistingEntityException(Device.class, newDevice.getDeviceIdentification()));
             }
 
-            // device is orphan, register for current owner
-            final DeviceAuthorization authorization = existingDevice.addAuthorization(organisation,
-                    DeviceFunctionGroup.OWNER);
+            final Ssld ssld = this.writableSsldRepository.findByDeviceIdentification(existingDevice
+                    .getDeviceIdentification());
 
+            // device is orphan, register for current owner
+            final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
             // add metadata to the device
-            existingDevice.updateMetaData(null, newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
+            ssld.updateMetaData(null, newDevice.getContainerCity(), newDevice.getContainerPostalCode(),
                     newDevice.getContainerStreet(), newDevice.getContainerNumber(), null, newDevice.getGpsLatitude(),
                     newDevice.getGpsLongitude());
 
             // add default protocol if not set yet
             if (existingDevice.getProtocolInfo() == null) {
-                existingDevice.updateProtocol(protocolInfo);
+                ssld.updateProtocol(protocolInfo);
             }
 
-            // save device
-            this.writableDeviceRepository.save(existingDevice);
+            // Since the column device in device authorizations is cascaded,
+            // this will also save the SSLD and device entities.
             this.writableAuthorizationRepository.save(authorization);
 
             LOGGER.info("Registered orphan device {} to owner {}", newDevice.getDeviceIdentification(),
@@ -155,7 +165,7 @@ public class DeviceInstallationService {
     public void updateDevice(@Identification final String organisationIdentification, @Valid final Device updateDevice)
             throws FunctionalException {
 
-        final Device existingDevice = this.writableDeviceRepository.findByDeviceIdentification(updateDevice
+        final Ssld existingDevice = this.writableSsldRepository.findByDeviceIdentification(updateDevice
                 .getDeviceIdentification());
         if (existingDevice == null) {
             // device does not exist
@@ -164,7 +174,6 @@ public class DeviceInstallationService {
                     new UnknownEntityException(Device.class, updateDevice.getDeviceIdentification()));
         }
 
-        // TODO add support for changes to device identification
         final List<DeviceAuthorization> owners = this.writableAuthorizationRepository.findByDeviceAndFunctionGroup(
                 existingDevice, DeviceFunctionGroup.OWNER);
 
@@ -187,7 +196,7 @@ public class DeviceInstallationService {
                 updateDevice.getContainerPostalCode(), updateDevice.getContainerStreet(),
                 updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
-        this.writableDeviceRepository.save(existingDevice);
+        this.writableSsldRepository.save(existingDevice);
     }
 
     @Transactional(value = "transactionManager")

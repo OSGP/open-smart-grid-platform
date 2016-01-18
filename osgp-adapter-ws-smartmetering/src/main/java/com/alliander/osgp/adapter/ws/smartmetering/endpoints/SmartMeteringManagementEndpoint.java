@@ -71,9 +71,10 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("Find events request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
+        FindEventsAsyncResponse response = null;
         try {
             // Create response.
-            final FindEventsAsyncResponse response = new FindEventsAsyncResponse();
+            response = new FindEventsAsyncResponse();
 
             // Get the request parameters, make sure that date time are in UTC.
             final String deviceIdentification = request.getDeviceIdentification();
@@ -86,10 +87,10 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
 
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "FindEventsAsyncRequest", namespace = NAMESPACE)
@@ -101,9 +102,10 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("Get find events response for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
+        FindEventsResponse response = null;
         try {
             // Create response.
-            final FindEventsResponse response = new FindEventsResponse();
+            response = new FindEventsResponse();
 
             // Get the request parameters, make sure that date time are in UTC.
             final String deviceIdentification = request.getDeviceIdentification();
@@ -121,14 +123,14 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                     this.managementMapper.mapAsList(events,
                             com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
             LOGGER.info("mapping done, sending response...");
-            return response;
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("FindEventsRequest Exception", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
     @PayloadRoot(localPart = "GetDevicesRequest", namespace = NAMESPACE)
@@ -138,8 +140,9 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
         LOGGER.info("Get Devices Request received from organisation: {}.", organisationIdentification);
 
+        GetDevicesResponse response = null;
         try {
-            final GetDevicesResponse response = new GetDevicesResponse();
+            response = new GetDevicesResponse();
             final Page<Device> page = this.managementService.findAllDevices(organisationIdentification,
                     request.getPage());
 
@@ -149,14 +152,14 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
                     this.managementMapper.mapAsList(page.getContent(),
                             com.alliander.osgp.adapter.ws.schema.smartmetering.management.Device.class));
             response.setDevicePage(devicePage);
-            return response;
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_WS_SMART_METERING,
                     new ValidationException(e.getConstraintViolations()));
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 
 }

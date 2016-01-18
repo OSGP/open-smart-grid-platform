@@ -12,6 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
@@ -25,6 +28,7 @@ public class DeviceAuthorization extends AbstractEntity {
 
     @ManyToOne()
     @JoinColumn()
+    @Cascade(value = { CascadeType.ALL })
     private Device device;
 
     @ManyToOne()

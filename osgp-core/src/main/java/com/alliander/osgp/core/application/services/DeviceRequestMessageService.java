@@ -16,11 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.core.domain.model.domain.DomainResponseService;
 import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -43,51 +41,37 @@ public class DeviceRequestMessageService {
     private ProtocolRequestService protocolRequestService;
 
     @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+    private SmartMeterRepository smartMeteringDeviceRepository;
 
     public void processMessage(final ProtocolRequestMessage message) throws FunctionalException {
 
         try {
-            ProtocolInfo protocolInfo = null;
+
+            final Device device = this.domainHelperService.findDevice(message.getDeviceIdentification());
+            final ProtocolInfo protocolInfo;
+            if (device.getGatewayDevice() == null) {
+                protocolInfo = device.getProtocolInfo();
+            } else {
+                protocolInfo = device.getGatewayDevice().getProtocolInfo();
+            }
+            if (protocolInfo == null) {
+                final String msg = "Protocol unknown for device [" + device.getDeviceIdentification() + "]";
+                LOGGER.error(msg);
+                throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
+                        ComponentType.OSGP_CORE);
+            } else {
+                LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
+                        protocolInfo.getProtocolVersion());
+            }
 
             // TODO workaround for SSLD specific authorization
-            if (message.getDomain().equals("SMART_METERING")) {
-
-                SmartMeteringDevice smartMeteringDevice = null;
-                try {
-                    smartMeteringDevice = this.domainHelperService.findSmartMeteringDevice(message
-                            .getDeviceIdentification());
-                } catch (final FunctionalException e) {
-                    LOGGER.error("Unexpected exception", e);
-                    if (e.getExceptionType().equals(FunctionalExceptionType.UNKNOWN_DEVICE)) {
-                        // try GAS meter
-                        final GasMeterDevice findGASMeterDevice = this.domainHelperService.findGASMeterDevice(message
-                                .getDeviceIdentification());
-                        smartMeteringDevice = this.domainHelperService.findSmartMeteringDevice(findGASMeterDevice
-                                .getSmartMeterId());
-                    }
-                }
-                protocolInfo = smartMeteringDevice.getProtocolInfo();
-            } else {
+            if (!message.getDomain().equals("SMART_METERING")) {
 
                 final Organisation organisation = this.domainHelperService.findOrganisation(message
                         .getOrganisationIdentification());
 
-                final Device device = this.domainHelperService.findDevice(message.getDeviceIdentification());
                 this.domainHelperService.isAllowed(organisation, device,
                         Enum.valueOf(DeviceFunction.class, message.getMessageType()));
-
-                protocolInfo = device.getProtocolInfo();
-
-                if (protocolInfo == null) {
-                    final String msg = "Protocol unknown for device [" + device.getDeviceIdentification() + "]";
-                    LOGGER.error(msg);
-                    throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
-                            ComponentType.OSGP_CORE);
-                } else {
-                    LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
-                            protocolInfo.getProtocolVersion());
-                }
             }
 
             this.protocolRequestService.send(message, protocolInfo);

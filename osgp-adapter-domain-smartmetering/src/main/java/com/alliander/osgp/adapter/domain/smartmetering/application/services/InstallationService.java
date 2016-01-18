@@ -18,9 +18,9 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Insta
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
-import com.alliander.osgp.domain.core.repositories.SmartMeteringDeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -41,7 +41,7 @@ public class InstallationService {
     private OsgpCoreRequestMessageSender osgpCoreRequestMessageSender;
 
     @Autowired
-    private SmartMeteringDeviceRepository smartMeteringDeviceRepository;
+    private SmartMeterRepository smartMeteringDeviceRepository;
 
     @Autowired
     private ProtocolInfoRepository protocolInfoRepository;
@@ -67,15 +67,16 @@ public class InstallationService {
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
-        // Organisation organisation =
-        // this.findOrganisation(organisationIdentification);
-        // final Device device = this.findActiveDevice(deviceIdentification);
 
-        SmartMeteringDevice device = this.smartMeteringDeviceRepository
+        SmartMeter device = this.smartMeteringDeviceRepository
                 .findByDeviceIdentification(deviceIdentification);
         if (device == null) {
 
-            device = this.installationMapper.map(smartMeteringDeviceValueObject, SmartMeteringDevice.class);
+            /*
+             * TODO see what needs to be done to have the IP address added to
+             * smartMeteringDeviceValueObject (and mapped)
+             */
+            device = this.installationMapper.map(smartMeteringDeviceValueObject, SmartMeter.class);
 
             final ProtocolInfo protocolInfo = this.protocolInfoRepository.findByProtocolAndProtocolVersion("DSMR",
                     smartMeteringDeviceValueObject.getDSMRVersion());
@@ -88,10 +89,6 @@ public class InstallationService {
             device.updateProtocol(protocolInfo);
 
             // TODO deviceAuthorization
-            // final DeviceAuthorization deviceAuthorization = new
-            // DeviceAuthorization(dummy, organisation,
-            // com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.OWNER);
-            // this.deviceAuthorizationRepository.save(deviceAuthorization);
 
             this.smartMeteringDeviceRepository.save(device);
 
@@ -104,7 +101,7 @@ public class InstallationService {
                         com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevicDto), messageType);
+                deviceIdentification, device.getIpAddress(), smartMeteringDevicDto), messageType);
     }
 
     public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,

@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.Notification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.SendNotificationServiceClient;
-import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 
 @Service(value = "wsSmartMeteringNotificationService")
@@ -29,9 +28,6 @@ public class NotificationService {
 
     @Autowired
     private SendNotificationServiceClient sendNotificationServiceClient;
-
-    @Autowired
-    private OrganisationRepository organisationRepository;
 
     @Autowired
     private String notificationURL;

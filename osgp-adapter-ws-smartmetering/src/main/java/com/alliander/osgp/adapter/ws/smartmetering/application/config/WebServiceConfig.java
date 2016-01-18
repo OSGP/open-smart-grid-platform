@@ -77,9 +77,7 @@ public class WebServiceConfig {
 
     @Bean
     public SaajSoapMessageFactory messageFactory() {
-        final SaajSoapMessageFactory messageFactory = new SaajSoapMessageFactory();
-
-        return messageFactory;
+        return new SaajSoapMessageFactory();
     }
 
     @Bean

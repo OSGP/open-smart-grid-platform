@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.PlatformException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
+import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.validation.PublicKey;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -36,6 +38,9 @@ public class DeviceManagementService extends AbstractService {
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private SsldRepository ssldRepository;
 
     /**
      * Constructor
@@ -86,8 +91,10 @@ public class DeviceManagementService extends AbstractService {
                 device = new Device(deviceIdentification);
             }
 
-            device.setPublicKeyPresent(true);
-            this.deviceRepository.save(device);
+            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+
+            ssld.setPublicKeyPresent(true);
+            this.ssldRepository.save(ssld);
 
             LOGGER.info("publicKey has been set for device: {} for organisation: {}", deviceIdentification,
                     organisationIdentification);
@@ -143,8 +150,10 @@ public class DeviceManagementService extends AbstractService {
                 throw new PlatformException(String.format("Device not found: %s", deviceIdentification));
             }
 
-            device.setPublicKeyPresent(false);
-            this.deviceRepository.save(device);
+            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
+
+            ssld.setPublicKeyPresent(false);
+            this.ssldRepository.save(ssld);
 
             LOGGER.info("publicKey has been revoked for device: {} for organisation: {}", deviceIdentification,
                     organisationIdentification);

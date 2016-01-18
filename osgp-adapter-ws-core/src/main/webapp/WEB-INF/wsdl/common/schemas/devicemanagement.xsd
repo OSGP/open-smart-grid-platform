@@ -77,8 +77,7 @@
 	<xsd:element name="FindEventsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element minOccurs="0" name="DeviceIdentification"
-					type="common:Identification" />
+				<xsd:element minOccurs="0" name="DeviceIdentification" type="common:Identification" />
 				<xsd:element minOccurs="0" name="From" type="xsd:dateTime" />
 				<xsd:element minOccurs="0" name="Until" type="xsd:dateTime" />
 				<xsd:element minOccurs="0" name="PageSize" type="xsd:int" />
@@ -90,8 +89,7 @@
 	<xsd:element name="FindEventsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element maxOccurs="unbounded" name="Events"
-					type="tns:Event" />
+				<xsd:element maxOccurs="unbounded" name="Events" type="tns:Event" />
 				<xsd:element name="Page" type="common:Page" />
 			</xsd:sequence>
 		</xsd:complexType>
@@ -110,15 +108,14 @@
 	<xsd:element name="FindDevicesResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element maxOccurs="unbounded" name="Devices"
-					type="tns:Device" />
+				<xsd:element maxOccurs="unbounded" name="Devices" type="tns:Device" />
 				<xsd:element name="Page" type="common:Page" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 	
 	<xsd:element name="FindScheduledTasksRequest">
-	<xsd:complexType>
+	    <xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:Identification" minOccurs="0" maxOccurs="1"/>
 			</xsd:sequence>
@@ -126,7 +123,7 @@
 	</xsd:element>
 	
 	<xsd:element name="FindScheduledTasksResponse">
-	<xsd:complexType>
+	    <xsd:complexType>
 			<xsd:sequence>
 				<xsd:element maxOccurs="unbounded" name="ScheduledTask" type="tns:ScheduledTask" />
 			</xsd:sequence>

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.RelayMap;
@@ -99,10 +100,13 @@ public class ConfigurationManagementService extends AbstractService {
 
         final List<DeviceOutputSetting> outputSettings = new ArrayList<>();
         for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
-            outputSettings.add(new DeviceOutputSetting(rm.getIndex(), rm.getAddress(), rm.getRelayType(), rm.getAlias()));
+            outputSettings
+                    .add(new DeviceOutputSetting(rm.getIndex(), rm.getAddress(), rm.getRelayType(), rm.getAlias()));
         }
-        device.updateOutputSettings(outputSettings);
-        this.deviceRepository.save(device);
+
+        final Ssld ssld = this.findSsldForDevice(device);
+        ssld.updateOutputSettings(outputSettings);
+        this.ssldRepository.save(ssld);
     }
 
     // === GET CONFIGURATION ===
@@ -136,19 +140,18 @@ public class ConfigurationManagementService extends AbstractService {
             }
 
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-            final List<DeviceOutputSetting> outputSettings = device.getOutputSettings();
+            final List<DeviceOutputSetting> outputSettings = this.findSsldForDevice(device).getOutputSettings();
 
             final List<com.alliander.osgp.dto.valueobjects.RelayMap> newRelayMap = new ArrayList<com.alliander.osgp.dto.valueobjects.RelayMap>();
-            final List<com.alliander.osgp.dto.valueobjects.RelayMap> relayMapDto = configurationDto.getRelayConfiguration().getRelayMap();
+            final List<com.alliander.osgp.dto.valueobjects.RelayMap> relayMapDto = configurationDto
+                    .getRelayConfiguration().getRelayMap();
             for (final DeviceOutputSetting ouputSetting : outputSettings) {
                 for (final com.alliander.osgp.dto.valueobjects.RelayMap relaySettingDto : relayMapDto) {
                     if (relaySettingDto.getIndex() == ouputSetting.getExternalId()) {
-                        final com.alliander.osgp.dto.valueobjects.RelayMap newRelayMapDto =
-                                new com.alliander.osgp.dto.valueobjects.RelayMap(
-                                        ouputSetting.getInternalId(),
-                                        ouputSetting.getExternalId(),
-                                        com.alliander.osgp.dto.valueobjects.RelayType.valueOf(ouputSetting.getOutputType().name()),
-                                        ouputSetting.getAlias());
+                        final com.alliander.osgp.dto.valueobjects.RelayMap newRelayMapDto = new com.alliander.osgp.dto.valueobjects.RelayMap(
+                                ouputSetting.getInternalId(), ouputSetting.getExternalId(),
+                                com.alliander.osgp.dto.valueobjects.RelayType.valueOf(ouputSetting.getOutputType()
+                                        .name()), ouputSetting.getAlias());
                         newRelayMap.add(newRelayMapDto);
                     }
                 }
@@ -163,10 +166,8 @@ public class ConfigurationManagementService extends AbstractService {
             for (final DeviceOutputSetting dos : outputSettings) {
                 if (dos.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
                     for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
-                        if (rm.getIndex() == dos.getInternalId()) {
-                            if (rm.getRelayType().equals(RelayType.TARIFF)) {
-                                rm.changeRelayType(RelayType.TARIFF_REVERSED);
-                            }
+                        if (rm.getIndex() == dos.getInternalId() && rm.getRelayType().equals(RelayType.TARIFF)) {
+                            rm.changeRelayType(RelayType.TARIFF_REVERSED);
                         }
                     }
                 }

@@ -7,11 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -22,16 +17,10 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
 public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsresponseMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainSmartMeteringMonitoringService")
@@ -42,60 +31,31 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering default response message");
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        final Object dataObject = responseMessage.getDataObject();
+        return dataObject instanceof PeriodicMeterReadsContainer
+                || dataObject instanceof PeriodicMeterReadsContainerGas;
+    }
 
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+    @Override
+    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
+            final OsgpException osgpException) {
 
-        ResponseMessage responseMessage = null;
-        ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException = null;
+        if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainer) {
+            final PeriodicMeterReadsContainer periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage
+                    .getDataObject();
 
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessage.getResult(), osgpException,
+                    periodicMeterReadsContainer);
+        } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainerGas) {
+            final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = (PeriodicMeterReadsContainerGas) responseMessage
+                    .getDataObject();
 
-            responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
-            osgpException = responseMessage.getOsgpException();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException: {}", osgpException);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainer) {
-                PeriodicMeterReadsContainer periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage
-                        .getDataObject();
-
-                this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification,
-                        organisationIdentification, correlationUid, messageType, responseMessageResultType,
-                        osgpException, periodicMeterReadsContainer);
-            } else {
-                PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = (PeriodicMeterReadsContainerGas) responseMessage
-                        .getDataObject();
-
-                this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification,
-                        organisationIdentification, correlationUid, messageType, responseMessageResultType,
-                        osgpException, periodicMeterReadsContainerGas);
-            }
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
+                    correlationUid, messageType, responseMessage.getResult(), osgpException,
+                    periodicMeterReadsContainerGas);
         }
     }
 }

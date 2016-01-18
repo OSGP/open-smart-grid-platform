@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -168,6 +169,9 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
             soapMessage.writeTo(outputStream);
             final int dataSize = outputStream.size();
 
+            // final String message = new String(outputStream.toByteArray());
+            // LOGGER.info("soap message: {}", message);
+
             // Try to find the desired XML elements in the document.
             final Document document = soapMessage.getDocument();
             final String correlationUid = this.evaluateXPathExpression(document, XML_ELEMENT_CORRELATION_UID);
@@ -243,6 +247,8 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         // Get the request.
         Assert.isInstanceOf(SoapMessage.class, messageContext.getRequest());
         final SoapMessage request = (SoapMessage) messageContext.getRequest();
+        this.printSoapMessage(request);
+
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Read OrganisationIdentification from header from request.
@@ -264,6 +270,7 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         // Get the response.
         Assert.isInstanceOf(SoapMessage.class, messageContext.getResponse());
         final SoapMessage response = (SoapMessage) messageContext.getResponse();
+        this.printSoapMessage(response);
 
         // Read correlationUid and deviceId and result and data size from
         // response.
@@ -284,5 +291,22 @@ public class WebServiceMonitorInterceptor implements EndpointInterceptor {
         return new LoggingRequestMessage(now, orgIdentification, usrName, appName, classAndMethod.get(CLASS_NAME),
                 classAndMethod.get(METHOD_NAME), (String) requestData.get(DEVICE_ID), correlationId,
                 (String) responseData.get(RESPONSE_RESULT), (int) responseData.get(RESPONSE_DATA_SIZE));
+    }
+
+    /**
+     * Print a soap message.
+     * 
+     * @param soapMessage
+     *            The message to print.
+     */
+    private void printSoapMessage(final SoapMessage soapMessage) {
+        try {
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            soapMessage.writeTo(outputStream);
+            final String message = new String(outputStream.toByteArray());
+            LOGGER.info("soap message: {}", message);
+        } catch (final IOException e) {
+            LOGGER.error("Unexpected error while writing soap message", e);
+        }
     }
 }

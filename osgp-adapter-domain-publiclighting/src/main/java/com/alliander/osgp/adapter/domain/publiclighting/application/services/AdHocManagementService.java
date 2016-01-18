@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.publiclighting.application.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
-import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.exceptions.UnregisteredDeviceException;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
@@ -67,7 +65,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -96,16 +94,14 @@ public class AdHocManagementService extends AbstractService {
      *            identification of device
      * @param allowedDomainType
      *            domain type performing requesting the status
+     *
      * @return status of device
+     *
      * @throws FunctionalException
-     * @throws UnknownEntityException
-     * @throws UnregisteredDeviceException
-     * @throws NotAuthorizedException
-     * @throws IOException
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -136,7 +132,7 @@ public class AdHocManagementService extends AbstractService {
 
             final DeviceStatus status = this.domainCoreMapper.map(deviceStatusDto, DeviceStatus.class);
 
-            final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            final Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
 
             final List<DeviceOutputSetting> deviceOutputSettings = device.getOutputSettings();
 
@@ -165,11 +161,13 @@ public class AdHocManagementService extends AbstractService {
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
-        if (!device.getHasSchedule()) {
+        final Ssld ssld = this.findSsldForDevice(device);
+
+        if (!ssld.getHasSchedule()) {
             throw new FunctionalException(FunctionalExceptionType.UNSCHEDULED_DEVICE,
                     ComponentType.DOMAIN_PUBLIC_LIGHTING, new ValidationException(String.format(
                             "Device %1$s does not have a schedule.", deviceIdentification)));

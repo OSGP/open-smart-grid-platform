@@ -7,11 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,19 +14,13 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Inst
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Class for processing smart metering default response messages
  */
 @Component("domainSmartMeteringDefaultResponseMessageProcessor")
 public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterResponseMessageProcessor.class);
 
     @Autowired
     private InstallationService installationService;
@@ -41,47 +30,17 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing smart metering default response message");
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        // Only the result is used, no need to check the dataObject.
+        return true;
+    }
 
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
+    @Override
+    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
+            final OsgpException osgpException) {
 
-        ResponseMessage responseMessage = null;
-        ResponseMessageResultType responseMessageResultType = null;
-        OsgpException osgpException = null;
-
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
-            responseMessage = (ResponseMessage) message.getObject();
-            responseMessageResultType = responseMessage.getResult();
-            osgpException = responseMessage.getOsgpException();
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            LOGGER.debug("osgpException: {}", osgpException);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function to handle response: {}", messageType);
-
-            this.installationService.handleAddMeterResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessageResultType, osgpException);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
-        }
+        this.installationService.handleAddMeterResponse(deviceIdentification, organisationIdentification,
+                correlationUid, messageType, responseMessage.getResult(), osgpException);
     }
 }

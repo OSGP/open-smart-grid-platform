@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -95,6 +98,90 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
                     deviceFunction.name(), this);
         }
     }
+
+    @Override
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing smart metering response message");
+
+        String correlationUid = null;
+        String messageType = null;
+        String organisationIdentification = null;
+        String deviceIdentification = null;
+
+        ResponseMessage responseMessage = null;
+        ResponseMessageResultType responseMessageResultType = null;
+        OsgpException osgpException = null;
+
+        try {
+            correlationUid = message.getJMSCorrelationID();
+            messageType = message.getJMSType();
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+
+            responseMessage = (ResponseMessage) message.getObject();
+            responseMessageResultType = responseMessage.getResult();
+            osgpException = responseMessage.getOsgpException();
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("osgpException: {}", osgpException);
+            return;
+        }
+
+        try {
+
+            if (osgpException != null) {
+                this.handleError(osgpException, correlationUid, organisationIdentification, deviceIdentification,
+                        messageType);
+            } else if (this.hasRegularResponseObject(responseMessage)) {
+                LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+                this.handleMessage(deviceIdentification, organisationIdentification, correlationUid, messageType,
+                        responseMessage, osgpException);
+            } else {
+                LOGGER.error(
+                        "No osgpException, yet dataObject ({}) is not of the regular type for handling response: {}",
+                        responseMessage.getDataObject() == null ? null : responseMessage.getDataObject().getClass()
+                                .getName(), messageType);
+
+                this.handleError(new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
+                        "Unexpected response data handling request.", null), correlationUid,
+                        organisationIdentification, deviceIdentification, messageType);
+            }
+
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+        }
+    }
+
+    /**
+     * The {@code dataObject} in the {@code responseMessage} can either have a
+     * value that would normally be returned as an answer, or it can contain an
+     * object that was used in the request message (or other unexpected value).
+     * <p>
+     * The object from the request message is sometimes returned as object in
+     * the response message to allow retries of requests without other knowledge
+     * of what was sent earlier.
+     * <p>
+     * To filter out these, or other unexpected situations that may occur in the
+     * future, each message processor is supposed to check the response message
+     * for expected types of data objects.
+     *
+     * @param responseMessage
+     * @return {@code true} if {@code responseMessage} contains a
+     *         {@code dataObject} that can be processed normally; {@code false}
+     *         otherwise.
+     */
+    protected abstract boolean hasRegularResponseObject(final ResponseMessage responseMessage);
+
+    protected abstract void handleMessage(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
+            final OsgpException osgpException);
 
     /**
      * In case of an error, this function can be used to send a response

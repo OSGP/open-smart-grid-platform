@@ -17,17 +17,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.domain.core.entities.GasMeterDevice;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -36,6 +39,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Service(value = "domainSmartMeteringMonitoringService")
 @Transactional(value = "transactionManager")
 public class MonitoringService {
+
+    private static final String DEVICE_RESPONSE_NOT_OK_LOG_MSG = "Device Response not ok. Unexpected Exception";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
 
@@ -68,24 +73,46 @@ public class MonitoringService {
 
         // TODO: bypassing authorization, this should be fixed.
 
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceIdentification);
+
         if (periodicMeterReadsValueQuery.isGas()) {
-            final GasMeterDevice findGASMeteringDevice = this.domainHelperService
-                    .findGASMeteringDevice(deviceIdentification);
-            // NOTICE no mapping for GAS because channel comes from
-            // administration, not from value object
+
+            if (smartMeter.getChannel() == null) {
+                /*
+                 * For now, throw a FunctionalException. As soon as we can
+                 * communicate with some types of gas meters directly, and not
+                 * through an M-Bus port of an energy meter, this will have to
+                 * be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have a channel configured."));
+            }
             final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery periodicMeterReadsQuery = new PeriodicMeterReadsQuery(
                     PeriodType.valueOf(periodicMeterReadsValueQuery.getPeriodType().name()),
                     periodicMeterReadsValueQuery.getBeginDate(), periodicMeterReadsValueQuery.getEndDate(),
-                    findGASMeteringDevice.getChannel());
+                    smartMeter.getChannel());
+            final Device gatewayDevice = smartMeter.getGatewayDevice();
+            if (gatewayDevice == null) {
+                /*
+                 * For now throw a FunctionalException, based on the same
+                 * reasoning as with the channel a couple of lines up. As soon
+                 * as we have scenario's with direct communication with gas
+                 * meters this will have to be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have an energy meter as gateway device."));
+            }
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                    findGASMeteringDevice.getSmartMeterId(), periodicMeterReadsQuery), messageType);
-        } else {
-            // call triggers functionalexception when no device found
-            this.domainHelperService.findSmartMeteringDevice(deviceIdentification);
-            this.osgpCoreRequestMessageSender.send(
-                    new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                            this.monitoringMapper.map(periodicMeterReadsValueQuery, PeriodicMeterReadsQuery.class)),
+                    gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(), periodicMeterReadsQuery),
                     messageType);
+        } else {
+
+            this.osgpCoreRequestMessageSender.send(
+                    new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, smartMeter
+                            .getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
+                            PeriodicMeterReadsQuery.class)), messageType);
         }
     }
 
@@ -98,7 +125,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -125,7 +152,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -153,38 +180,59 @@ public class MonitoringService {
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceIdentification);
+
         if (actualMeterReadsQuery.isGas()) {
-            final GasMeterDevice findGASMeteringDevice = this.domainHelperService
-                    .findGASMeteringDevice(deviceIdentification);
-            this.osgpCoreRequestMessageSender.send(
-                    new RequestMessage(correlationUid, organisationIdentification, findGASMeteringDevice
-                            .getSmartMeterId(), new ActualMeterReadsQuery(findGASMeteringDevice.getChannel())),
-                    messageType);
-        } else {
-            // call triggers functionalexception when no device found
-            this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+
+            if (smartMeter.getChannel() == null) {
+                /*
+                 * For now, throw a FunctionalException. As soon as we can
+                 * communicate with some types of gas meters directly, and not
+                 * through an M-Bus port of an energy meter, this will have to
+                 * be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have a channel configured."));
+            }
+            final Device gatewayDevice = smartMeter.getGatewayDevice();
+            if (gatewayDevice == null) {
+                /*
+                 * For now throw a FunctionalException, based on the same
+                 * reasoning as with the channel a couple of lines up. As soon
+                 * as we have scenario's with direct communication with gas
+                 * meters this will have to be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have an energy meter as gateway device."));
+            }
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                    deviceIdentification, new ActualMeterReadsQuery()), messageType);
+                    gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(), new ActualMeterReadsQuery(
+                            smartMeter.getChannel())), messageType);
+        } else {
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, smartMeter.getIpAddress(), new ActualMeterReadsQuery()), messageType);
         }
     }
 
     public void handleActualMeterReadsResponse(@Identification final String deviceIdentification,
             @Identification final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final MeterReads actualMeterReadsDto) {
+            final ActualMeterReads actualMeterReadsDto) {
 
         LOGGER.info("handleActualMeterReadsResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
         this.webServiceResponseMessageSender.send(
                 new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification, result,
                         exception, this.monitoringMapper.map(actualMeterReadsDto,
-                                com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads.class)),
+                                com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads.class)),
                 messageType);
     }
 
@@ -197,7 +245,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -218,14 +266,14 @@ public class MonitoringService {
         LOGGER.info("requestReadAlarmRegister for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        this.domainHelperService.ensureFunctionalExceptionForUnknownDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest readAlarmRegisterRequestDto = this.monitoringMapper
                 .map(readAlarmRegisterRequestValueObject,
                         com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, readAlarmRegisterRequestDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), readAlarmRegisterRequestDto), messageType);
     }
 
     public void handleReadAlarmRegisterResponse(@Identification final String deviceIdentification,
@@ -237,7 +285,7 @@ public class MonitoringService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 

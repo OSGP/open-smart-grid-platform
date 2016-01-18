@@ -7,16 +7,24 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.infra.jms.messageprocessor;
 
+import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.MeterResponseDataService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.NotificationService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -41,6 +49,9 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
 
     @Autowired
     private NotificationService notificationService;
+
+    @Autowired
+    private MeterResponseDataService meterResponseDataService;
 
     /**
      * The message type that a message processor implementation can handle.
@@ -67,6 +78,73 @@ public abstract class DomainResponseMessageProcessor implements MessageProcessor
     public void init() {
         this.domainResponseMessageProcessorMap.addMessageProcessor(this.deviceFunction.ordinal(),
                 this.deviceFunction.name(), this);
+    }
+
+    @Override
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing smart metering response message");
+
+        String correlationUid = null;
+        String messageType = null;
+        String organisationIdentification = null;
+        String deviceIdentification = null;
+
+        String notificationMessage = null;
+        NotificationType notificationType = null;
+        ResponseMessageResultType resultType = null;
+        String resultDescription = null;
+        Serializable dataObject = null;
+
+        try {
+            correlationUid = message.getJMSCorrelationID();
+            messageType = message.getJMSType();
+            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+            resultType = ResponseMessageResultType.valueOf(message.getStringProperty(Constants.RESULT));
+            resultDescription = message.getStringProperty(Constants.DESCRIPTION);
+
+            notificationMessage = message.getStringProperty(Constants.DESCRIPTION);
+            notificationType = NotificationType.valueOf(messageType);
+
+            dataObject = message.getObject();
+        } catch (final JMSException e) {
+            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
+            LOGGER.debug("correlationUid: {}", correlationUid);
+            LOGGER.debug("messageType: {}", messageType);
+            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
+            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            return;
+        }
+
+        try {
+            LOGGER.info("Calling application service function to handle response: {}", messageType);
+
+            this.handleMessage(organisationIdentification, messageType, deviceIdentification, correlationUid,
+                    resultType, resultDescription, dataObject);
+
+            // Send notification indicating data is available.
+            this.notificationService.sendNotification(organisationIdentification, deviceIdentification,
+                    resultType.name(), correlationUid, notificationMessage, notificationType);
+
+        } catch (final Exception e) {
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, notificationType);
+        }
+    }
+
+    protected void handleMessage(final String organisationIdentification, final String messageType,
+            final String deviceIdentification, final String correlationUid, final ResponseMessageResultType resultType,
+            final String resultDescription, final Serializable dataObject) {
+
+        Serializable meterResponseObject;
+        if (dataObject == null) {
+            meterResponseObject = resultDescription;
+        } else {
+            meterResponseObject = dataObject;
+        }
+
+        final MeterResponseData meterResponseData = new MeterResponseData(organisationIdentification, messageType,
+                deviceIdentification, correlationUid, resultType, meterResponseObject);
+        this.meterResponseDataService.enqueue(meterResponseData);
     }
 
     /**

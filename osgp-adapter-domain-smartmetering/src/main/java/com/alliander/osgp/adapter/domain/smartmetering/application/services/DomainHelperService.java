@@ -7,13 +7,12 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
-import com.alliander.osgp.domain.core.entities.GasMeterDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
-import com.alliander.osgp.domain.core.services.SmartMeteringDeviceDomainService;
+import com.alliander.osgp.domain.core.services.SmartMeterDomainService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -24,40 +23,23 @@ public class DomainHelperService {
     private static final ComponentType COMPONENT_TYPE = ComponentType.DOMAIN_SMART_METERING;
 
     @Autowired
-    private SmartMeteringDeviceDomainService smartMeteringDeviceDomainService;
+    private SmartMeterDomainService smartMeteringDeviceDomainService;
 
     /**
-     * 
+     *
      * @param deviceIdentification
      * @return
      * @throws FunctionalException
      *             when there is no device
      */
-    public SmartMeteringDevice findSmartMeteringDevice(final String deviceIdentification) throws FunctionalException {
-        final SmartMeteringDevice smartMeteringDevice;
+    public SmartMeter findSmartMeter(final String deviceIdentification) throws FunctionalException {
+        final SmartMeter smartMeter;
         try {
-            smartMeteringDevice = this.smartMeteringDeviceDomainService.searchSmartMeteringDevice(deviceIdentification);
+            smartMeter = this.smartMeteringDeviceDomainService.searchSmartMeter(deviceIdentification);
         } catch (final UnknownEntityException e) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
         }
-        return smartMeteringDevice;
-    }
-
-    /**
-     * 
-     * @param deviceIdentification
-     * @return
-     * @throws FunctionalException
-     *             when there is no device
-     */
-    public GasMeterDevice findGASMeteringDevice(final String deviceIdentification) throws FunctionalException {
-        final GasMeterDevice gasMeteringDevice;
-        try {
-            gasMeteringDevice = this.smartMeteringDeviceDomainService.searchGasMeteringDevice(deviceIdentification);
-        } catch (final UnknownEntityException e) {
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE, e);
-        }
-        return gasMeteringDevice;
+        return smartMeter;
     }
 
     public void ensureFunctionalExceptionForUnknownDevice(final String deviceIdentification) throws FunctionalException {
@@ -67,6 +49,6 @@ public class DomainHelperService {
          * information about the device identification for which no smart
          * metering device could be found.
          */
-        this.findSmartMeteringDevice(deviceIdentification);
+        this.findSmartMeter(deviceIdentification);
     }
 }

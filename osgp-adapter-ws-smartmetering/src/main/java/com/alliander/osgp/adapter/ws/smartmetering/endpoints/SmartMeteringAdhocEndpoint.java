@@ -62,8 +62,9 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SynchronizeTimeAsyncRequest request) throws OsgpException {
 
+        SynchronizeTimeResponse response = null;
         try {
-            final SynchronizeTimeResponse response = new SynchronizeTimeResponse();
+            response = new SynchronizeTimeResponse();
             final MeterResponseData meterResponseData = this.adhocService.dequeueSynchronizeTimeResponse(request
                     .getCorrelationUid());
 
@@ -72,9 +73,9 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
 
-            return response;
         } catch (final Exception e) {
-            throw this.handleException(e);
+            this.handleException(e);
         }
+        return response;
     }
 }

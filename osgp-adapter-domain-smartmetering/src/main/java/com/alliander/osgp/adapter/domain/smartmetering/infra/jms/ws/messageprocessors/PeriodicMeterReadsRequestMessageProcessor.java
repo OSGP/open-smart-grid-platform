@@ -7,11 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.messageprocessors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -20,12 +15,10 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Moni
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component("domainSmartmeteringPeriodicMeterReadsRequestMessageProcessor")
 public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainSmartMeteringMonitoringService")
@@ -38,48 +31,13 @@ public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequest
         super(DeviceFunction.REQUEST_PERIODIC_METER_DATA);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
-     * .jms.ObjectMessage)
-     */
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
+    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
 
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
-        Object dataObject = null;
+        final PeriodicMeterReadsQuery periodicMeterReadsRequest = (PeriodicMeterReadsQuery) dataObject;
 
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            dataObject = message.getObject();
-
-        } catch (final JMSException e) {
-            LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
-            return;
-        }
-
-        try {
-            LOGGER.info("Calling application service function: {}", messageType);
-
-            final PeriodicMeterReadsQuery periodicMeterReadsRequest = (PeriodicMeterReadsQuery) dataObject;
-
-            this.monitoringService.requestPeriodicMeterReads(organisationIdentification, deviceIdentification,
-                    correlationUid, periodicMeterReadsRequest, messageType);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
-        }
+        this.monitoringService.requestPeriodicMeterReads(organisationIdentification, deviceIdentification,
+                correlationUid, periodicMeterReadsRequest, messageType);
     }
 }

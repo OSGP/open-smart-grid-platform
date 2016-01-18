@@ -12,7 +12,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 
 @Component(value = "installationMapper")
 public class InstallationMapper extends ConfigurableMapper {
@@ -21,7 +21,7 @@ public class InstallationMapper extends ConfigurableMapper {
 
         // domain value object -> SmartMeteringDevice entity class
         mapperFactory
-                .classMap(SmartMeteringDevice.class,
+                .classMap(SmartMeter.class,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class)
                 .byDefault().register();
 

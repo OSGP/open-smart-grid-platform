@@ -10,9 +10,9 @@ package com.alliander.osgp.domain.core.repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.alliander.osgp.domain.core.entities.SmartMeteringDevice;
+import com.alliander.osgp.domain.core.entities.Ssld;
 
 @Repository
-public interface SmartMeteringDeviceRepository extends JpaRepository<SmartMeteringDevice, Long> {
-    SmartMeteringDevice findByDeviceIdentification(String deviceIdentification);
+public interface SsldRepository extends JpaRepository<Ssld, Long> {
+    Ssld findByDeviceIdentification(String deviceIdentification);
 }

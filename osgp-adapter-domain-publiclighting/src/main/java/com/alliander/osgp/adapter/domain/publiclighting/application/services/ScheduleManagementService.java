@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
 import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
@@ -74,7 +75,8 @@ public class ScheduleManagementService extends AbstractService {
         LOGGER.info("setHasSchedule called for device {} with hasSchedule: {}.", deviceIdentification, hasSchedule);
 
         final Device device = this.findActiveDevice(deviceIdentification);
-
-        device.setHasSchedule(hasSchedule);
+        final Ssld ssld = this.findSsldForDevice(device);
+        ssld.setHasSchedule(hasSchedule);
+        this.ssldRepository.save(ssld);
     }
 }
