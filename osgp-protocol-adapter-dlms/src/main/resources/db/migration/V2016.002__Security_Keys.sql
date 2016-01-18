@@ -3,8 +3,8 @@ CREATE TABLE security_key (
     creation_time timestamp without time zone NOT NULL,
     modification_time timestamp without time zone NOT NULL,
     version bigint,
-    dlms_device_id bigint references dlms_device(id),,
-    security_key_type character varying(255) NOT NULL
+    dlms_device_id bigint references dlms_device(id),
+    security_key_type character varying(255) NOT NULL,
     valid_from timestamp without time zone NOT NULL,
     valid_to timestamp without time zone,
     security_key character varying(255) NOT NULL
