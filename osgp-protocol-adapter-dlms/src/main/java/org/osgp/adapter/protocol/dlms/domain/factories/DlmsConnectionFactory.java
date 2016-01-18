@@ -48,9 +48,16 @@ public class DlmsConnectionFactory {
             throw new IOException("Unable to get HLS5 connection for device " + device.getDeviceIdentification()
                     + ", because the IP address is not set.");
         }
-        return new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
                 .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
                 .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
-                .clientAccessPoint(W_PORT_SOURCE).buildLnConnection();
+                .clientAccessPoint(W_PORT_SOURCE);
+
+        final Integer challengeLength = device.getChallengeLength();
+        if (challengeLength != null) {
+            tcpConnectionBuilder.challengeLength(challengeLength);
+        }
+
+        return tcpConnectionBuilder.buildLnConnection();
     }
 }
