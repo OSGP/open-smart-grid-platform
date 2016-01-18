@@ -1,13 +1,24 @@
 package org.osgp.adapter.protocol.dlms.infra.ws;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import static org.springframework.ws.test.client.RequestMatchers.payload;
+import static org.springframework.ws.test.client.ResponseCreators.withPayload;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.util.JAXBSource;
+import java.util.GregorianCalendar;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.Source;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.osgp.adapter.protocol.dlms.application.config.JwccWSConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -16,16 +27,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.test.client.MockWebServiceServer;
+import org.springframework.xml.transform.StringSource;
 
-import com.jasperwireless.api.ws.service.sms.SendSMSRequest;
 import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-// @ContextConfiguration({ "classpath*:applicationContext.xml" })
 @ContextConfiguration(classes = JasperWirelessConfig.class, initializers = JasperWirelessSMSClientTest.PropertyMockingApplicationContextInitializer.class)
 public class JasperWirelessSMSClientTest {
 
-    private static final String ICC_ID = "8931086214024039846";
+    private static final String WKAEWUPSMS_CORRID = "wkaewupsms123";
+    private static final String LICENSEKEY = "7f206979-4fdf-4cbe-8d65-0e984dac6a9e";
+    private static final String ICC_ID = "8931086113127163687";
+    private static final String SMS_MSG_ID = "4302867004";
 
     public static class PropertyMockingApplicationContextInitializer implements
             ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -33,11 +46,11 @@ public class JasperWirelessSMSClientTest {
         @Override
         public void initialize(final ConfigurableApplicationContext applicationContext) {
             final MockEnvironment mockEnvironment = new MockEnvironment();
-            mockEnvironment.setProperty("jwcc.uri.sms", "https://api.jasperwireless.com/ws/service/Sms");
-            mockEnvironment.setProperty("jwcc.licensekey", "39994af2-ff93-4400-a683-37eb26754122");
+            mockEnvironment.setProperty("jwcc.uri.sms", "https://kpnapi.jasperwireless.com/ws/service/Sms");
+            mockEnvironment.setProperty("jwcc.licensekey", LICENSEKEY);
             mockEnvironment.setProperty("jwcc.api_version", "5.90");
-            mockEnvironment.setProperty("jwcc.username", "jwcc-account-name");
-            mockEnvironment.setProperty("jwcc.password", "jwcc-account-password");
+            mockEnvironment.setProperty("jwcc.username", "MaartenvanHaasteren");
+            mockEnvironment.setProperty("jwcc.password", "Jwcc@KPN123");
 
             applicationContext.setEnvironment(mockEnvironment);
         }
@@ -47,53 +60,55 @@ public class JasperWirelessSMSClientTest {
     WebServiceTemplate webServiceTemplate;
 
     @Autowired
-    private JasperWirelessSMSClientImpl wsClientService;
+    JwccWSConfig jwccWSConfig;
+
+    @Mock
+    CorrelationIdProviderService correlationIdProviderService;
 
     private MockWebServiceServer mockServer;
 
+    @InjectMocks
+    @Autowired
+    private JasperWirelessSMSClientImpl wsClientService;
+
     @Before
     public void createServer() throws Exception {
+        MockitoAnnotations.initMocks(this);
         this.mockServer = MockWebServiceServer.createServer(this.webServiceTemplate);
     }
 
     @Test
     public void testSendWakeUpSMS() throws Exception {
+        // given
+        final Source requestPayload = new StringSource("<ns2:SendSMSRequest "
+                + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"
+                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>5.90</ns2:version>" + "<ns2:licenseKey>"
+                + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:sentToIccid>" + ICC_ID + "</ns2:sentToIccid>"
+                + "<ns2:messageText/>" + "</ns2:SendSMSRequest>");
 
-        final SendSMSRequest sendSMSRequest = new SendSMSRequest();
-        sendSMSRequest.setLicenseKey("39994af2-ff93-4400-a683-37eb26754122");
-        sendSMSRequest.setMessageId("");
-        sendSMSRequest.setMessageText("");
-        sendSMSRequest.setMessageTextEncoding("");
-        sendSMSRequest.setSentToIccid(ICC_ID);
-        sendSMSRequest.setVersion("5.90");
-        final JAXBContext jc = JAXBContext.newInstance(SendSMSRequest.class);
-        final JAXBSource requestPayload = new JAXBSource(jc, sendSMSRequest);
+        final Source responsePayload = new StringSource("<ns2:SendSMSResponse "
+                + "ns2:requestId=\"IfBlIDGkzgTkWqa3\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
+                + "<ns2:correlationId>" + WKAEWUPSMS_CORRID + "</ns2:correlationId>"
+                + "<ns2:version>5.90</ns2:version>" + "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
+                + "<ns2:timestamp>2016-01-18T12:22:05.082Z</ns2:timestamp>" + "<ns2:smsMsgId>" + SMS_MSG_ID
+                + "</ns2:smsMsgId>" + "</ns2:SendSMSResponse>");
 
-        // final Source requestPayload = new StringSource(
-        // "<SendSMSRequest messageTextEncoding=\"\" xmlns=\"http://api.jasperwireless.com/ws/schema\">"
-        // + "<messageId></messageId>" + "<version>5.90</version>"
-        // + "<licenseKey>39994af2-ff93-4400-a683-37eb26754122</licenseKey>"
-        // + "<sentToIccid>8931086214024039846</sentToIccid>" +
-        // "<messageText></messageText>"
-        // + "</SendSMSRequest>");
+        // when
+        when(this.correlationIdProviderService.getCorrelationId("wakeupsms", ICC_ID)).thenReturn(WKAEWUPSMS_CORRID);
 
-        // final Source responsePayload = new StringSource(
-        // "<Fault xmlns=\"http://api.jasperwireless.com/ws/schema\">"
-        // + "<faultcode>SOAP-ENV:Client</faultcode>"
-        // + "<faultstring>400200</faultstring>"
-        // + "<detail>"
-        // +
-        // "<jws:error xmlns:jws=\"http://api.jasperwireless.com/ws/schema\">Security validation error. Your username or password is incorrect.</jws:error>"
-        // +
-        // "<jws:exception xmlns:jws=\"http://api.jasperwireless.com/ws/schema\">com.jasperwireless.ws.ApiSecurityValidationException</jws:exception>"
-        // +
-        // "<jws:message xmlns:jws=\"http://api.jasperwireless.com/ws/schema\">org.springframework.ws.soap.security.xwss.XwsSecurityValidationException: com.sun.xml.wss.XWSSecurityException: Message does not conform to configured policy [ AuthenticationTokenPolicy(S) ]:  No Security Header found; nested exception is com.sun.xml.wss.XWSSecurityException: com.sun.xml.wss.XWSSecurityException: Message does not conform to configured policy [ AuthenticationTokenPolicy(S) ]:  No Security Header found Cause: com.sun.xml.wss.XWSSecurityException: Message does not conform to configured policy [ AuthenticationTokenPolicy(S) ]:  No Security Header found; nested exception is com.sun.xml.wss.XWSSecurityException: com.sun.xml.wss.XWSSecurityException: Message does not conform to configured policy [ AuthenticationTokenPolicy(S) ]:  No Security Header found</jws:message>"
-        // + "</detail>" + "</Fault>");
-
-        this.mockServer.expect(payload(requestPayload)); // .andRespond(withPayload(responsePayload));
+        // then
+        this.mockServer.expect(payload(requestPayload)).andRespond(withPayload(responsePayload));
 
         final SendSMSResponse response = this.wsClientService.sendWakeUpSMS(ICC_ID);
 
         this.mockServer.verify();
+        assertEquals(SMS_MSG_ID, String.valueOf(response.getSmsMsgId()));
+    }
+
+    public XMLGregorianCalendar getXMLGregorianCalendarNow() throws DatatypeConfigurationException {
+        final GregorianCalendar gregorianCalendar = new GregorianCalendar();
+        final DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+        final XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
+        return now;
     }
 }

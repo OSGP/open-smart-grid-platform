@@ -14,7 +14,12 @@ import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
 @Service
 public class JasperWirelessSMSClientImpl implements JasperWirelessSMSClient {
 
+    private static final String WAKEUPSMS_TYPE = "wakeupsms";
+
     private static final ObjectFactory WS_CLIENT_FACTORY = new ObjectFactory();
+
+    @Autowired
+    CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
     JwccWSConfig jwccWSConfig;
@@ -27,7 +32,7 @@ public class JasperWirelessSMSClientImpl implements JasperWirelessSMSClient {
 
         final SendSMSRequest sendSMSRequest = WS_CLIENT_FACTORY.createSendSMSRequest();
         sendSMSRequest.setLicenseKey(this.jwccWSConfig.getLicenseKey());
-        sendSMSRequest.setMessageId("");
+        sendSMSRequest.setMessageId(this.correlationIdProviderService.getCorrelationId(WAKEUPSMS_TYPE, iccid));
         sendSMSRequest.setMessageText("");
         sendSMSRequest.setMessageTextEncoding("");
         sendSMSRequest.setSentToIccid(iccid);

@@ -11,13 +11,18 @@ import javax.annotation.Resource;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.osgp.adapter.protocol.dlms.infra.ws.CorrelationIdProviderService;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSMSClient;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSMSClientImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
+import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 /**
  * An application context Java configuration class for Jasper Wireless settings.
@@ -25,7 +30,6 @@ import org.springframework.core.env.Environment;
  */
 @Configuration
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
-@ImportResource("classpath:applicationContext.xml")
 public class JasperWirelessConfig {
 
     // JMS Settings
@@ -43,6 +47,37 @@ public class JasperWirelessConfig {
     }
 
     @Bean
+    public Jaxb2Marshaller jasperWirelessMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setContextPath("com.jasperwireless.api.ws.service.sms");
+        return marshaller;
+    }
+
+    @Bean
+    public HttpComponentsMessageSender xwsSecurityMessageSender() {
+        return new HttpComponentsMessageSender();
+    }
+
+    @Bean
+    public Wss4jSecurityInterceptor xwsSecurityInterceptor() {
+        final Wss4jSecurityInterceptor interceptor = new Wss4jSecurityInterceptor();
+        interceptor.setSecurementActions("UsernameToken");
+        return interceptor;
+    }
+
+    @Bean
+    public WebServiceTemplate webServiceTemplate() {
+        final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+        webServiceTemplate.setMarshaller(this.jasperWirelessMarshaller());
+        webServiceTemplate.setUnmarshaller(this.jasperWirelessMarshaller());
+        webServiceTemplate.setDefaultUri("https://api.jasperwireless.com/ws/service/Sms");
+        webServiceTemplate.setMessageSender(this.xwsSecurityMessageSender());
+        final ClientInterceptor[] clientInterceptors = new ClientInterceptor[] { this.xwsSecurityInterceptor() };
+        webServiceTemplate.setInterceptors(clientInterceptors);
+        return webServiceTemplate;
+    }
+
+    @Bean
     public JwccWSConfig jwccWSConfig() {
         return new JwccWSConfig(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
@@ -54,5 +89,10 @@ public class JasperWirelessConfig {
     @Bean
     public JasperWirelessSMSClient jasperWirelessSMSClient() {
         return new JasperWirelessSMSClientImpl();
+    }
+
+    @Bean
+    public CorrelationIdProviderService correlationIdProviderService() {
+        return new CorrelationIdProviderService();
     }
 }
