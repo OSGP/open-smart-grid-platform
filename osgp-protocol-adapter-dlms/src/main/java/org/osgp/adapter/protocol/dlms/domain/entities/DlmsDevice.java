@@ -50,6 +50,9 @@ public class DlmsDevice extends AbstractEntity {
     @OneToMany(mappedBy = "dlmsDevice", cascade = CascadeType.PERSIST)
     private List<SecurityKey> securityKeys = new ArrayList<>();
 
+    @Column
+    private Integer challengeLength;
+
     @Transient
     private String ipAddress;
 
@@ -142,6 +145,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setHls5Active(final boolean hls5Active) {
         this.hls5Active = hls5Active;
+    }
+    
+    public Integer getChallengeLength() {
+        return this.challengeLength;
+    }
+
+    public void setChallengeLength(final Integer challengeLength) {
+        this.challengeLength = challengeLength;
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {

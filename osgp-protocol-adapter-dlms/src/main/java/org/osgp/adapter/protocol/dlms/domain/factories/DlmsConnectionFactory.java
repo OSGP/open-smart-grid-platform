@@ -59,10 +59,17 @@ public class DlmsConnectionFactory {
         }
 
         try {
-            return new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
-                    .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
-                    .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
-                    .clientAccessPoint(W_PORT_SOURCE).buildLnConnection();
+            final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
+                .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
+                .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
+                .clientAccessPoint(W_PORT_SOURCE);
+
+        final Integer challengeLength = device.getChallengeLength();
+        if (challengeLength != null) {
+            tcpConnectionBuilder.challengeLength(challengeLength);
+        }
+
+        return tcpConnectionBuilder.buildLnConnection();
         } catch (final IOException e) {
             throw new DlmsConnectionException("Error while creating TCP connection.", e);
         }
