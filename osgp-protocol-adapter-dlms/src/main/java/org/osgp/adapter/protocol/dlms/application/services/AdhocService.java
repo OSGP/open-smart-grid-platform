@@ -57,7 +57,8 @@ public class AdhocService extends DlmsApplicationService {
             LOGGER.error("Unexpected exception during synchronizeTime", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    synchronizeTimeRequest);
         } finally {
             if (conn != null) {
                 conn.close();
