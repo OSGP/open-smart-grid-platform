@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.domain.core.entities.GasMeterDevice;
+import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
@@ -28,7 +28,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -71,28 +73,46 @@ public class MonitoringService {
 
         // TODO: bypassing authorization, this should be fixed.
 
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceIdentification);
+
         if (periodicMeterReadsValueQuery.isGas()) {
-            final GasMeterDevice findGASMeteringDevice = this.domainHelperService
-                    .findGASMeteringDevice(deviceIdentification);
-            // NOTICE no mapping for GAS because channel comes from
-            // administration, not from value object
+
+            if (smartMeter.getChannel() == null) {
+                /*
+                 * For now, throw a FunctionalException. As soon as we can
+                 * communicate with some types of gas meters directly, and not
+                 * through an M-Bus port of an energy meter, this will have to
+                 * be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have a channel configured."));
+            }
             final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery periodicMeterReadsQuery = new PeriodicMeterReadsQuery(
                     PeriodType.valueOf(periodicMeterReadsValueQuery.getPeriodType().name()),
                     periodicMeterReadsValueQuery.getBeginDate(), periodicMeterReadsValueQuery.getEndDate(),
-                    findGASMeteringDevice.getChannel());
-            final SmartMeter smartMeteringDevice = this.domainHelperService
-                    .findSmartMeteringDevice(findGASMeteringDevice.getSmartMeterId());
+                    smartMeter.getChannel());
+            final Device gatewayDevice = smartMeter.getGatewayDevice();
+            if (gatewayDevice == null) {
+                /*
+                 * For now throw a FunctionalException, based on the same
+                 * reasoning as with the channel a couple of lines up. As soon
+                 * as we have scenario's with direct communication with gas
+                 * meters this will have to be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have an energy meter as gateway device."));
+            }
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                    findGASMeteringDevice.getSmartMeterId(), smartMeteringDevice.getIpAddress(),
-                    periodicMeterReadsQuery), messageType);
+                    gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(), periodicMeterReadsQuery),
+                    messageType);
         } else {
-            // call triggers functionalexception when no device found
-            final SmartMeter smartMeteringDevice = this.domainHelperService
-                    .findSmartMeteringDevice(deviceIdentification);
+
             this.osgpCoreRequestMessageSender.send(
-                    new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                            smartMeteringDevice.getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
-                                    PeriodicMeterReadsQuery.class)), messageType);
+                    new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, smartMeter
+                            .getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
+                            PeriodicMeterReadsQuery.class)), messageType);
         }
     }
 
@@ -160,21 +180,39 @@ public class MonitoringService {
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceIdentification);
+
         if (actualMeterReadsQuery.isGas()) {
-            final GasMeterDevice findGASMeteringDevice = this.domainHelperService
-                    .findGASMeteringDevice(deviceIdentification);
-            final SmartMeter smartMeteringDevice = this.domainHelperService
-                    .findSmartMeteringDevice(findGASMeteringDevice.getSmartMeterId());
+
+            if (smartMeter.getChannel() == null) {
+                /*
+                 * For now, throw a FunctionalException. As soon as we can
+                 * communicate with some types of gas meters directly, and not
+                 * through an M-Bus port of an energy meter, this will have to
+                 * be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have a channel configured."));
+            }
+            final Device gatewayDevice = smartMeter.getGatewayDevice();
+            if (gatewayDevice == null) {
+                /*
+                 * For now throw a FunctionalException, based on the same
+                 * reasoning as with the channel a couple of lines up. As soon
+                 * as we have scenario's with direct communication with gas
+                 * meters this will have to be changed.
+                 */
+                throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                        ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                                "Meter for gas reads should have an energy meter as gateway device."));
+            }
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                    findGASMeteringDevice.getSmartMeterId(), smartMeteringDevice.getIpAddress(),
-                    new ActualMeterReadsQuery(findGASMeteringDevice.getChannel())), messageType);
+                    gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(), new ActualMeterReadsQuery(
+                            smartMeter.getChannel())), messageType);
         } else {
-            // call triggers functionalexception when no device found
-            final SmartMeter smartMeteringDevice = this.domainHelperService
-                    .findSmartMeteringDevice(deviceIdentification);
-            this.osgpCoreRequestMessageSender
-            .send(new RequestMessage(correlationUid, organisationIdentification, deviceIdentification,
-                    smartMeteringDevice.getIpAddress(), new ActualMeterReadsQuery()), messageType);
+            this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                    deviceIdentification, smartMeter.getIpAddress(), new ActualMeterReadsQuery()), messageType);
         }
     }
 
@@ -228,8 +266,7 @@ public class MonitoringService {
         LOGGER.info("requestReadAlarmRegister for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest readAlarmRegisterRequestDto = this.monitoringMapper
                 .map(readAlarmRegisterRequestValueObject,
