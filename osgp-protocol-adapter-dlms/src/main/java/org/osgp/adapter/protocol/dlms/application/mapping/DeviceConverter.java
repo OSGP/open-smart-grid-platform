@@ -22,10 +22,6 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDevice,
         dlmsDevice.setHls4Active(source.isHLS4Active());
         dlmsDevice.setHls5Active(source.isHLS5Active());
 
-        dlmsDevice.setMasterKey(source.getMasterKey());
-        dlmsDevice.setAuthenticationKey(source.getAuthenticationKey());
-        dlmsDevice.setGlobalEncryptionUnicastKey(source.getGlobalEncryptionUnicastKey());
-
         if (source.getMasterKey() != null) {
             final SecurityKey masterKey = new SecurityKey();
             masterKey.setSecurityKeyType(SecurityKeyType.E_METER_MASTER);

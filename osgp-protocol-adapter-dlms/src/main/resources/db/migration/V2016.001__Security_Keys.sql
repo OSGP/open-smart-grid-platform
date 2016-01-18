@@ -30,3 +30,19 @@ ALTER TABLE ONLY security_key
     
 CREATE UNIQUE INDEX security_key_valid_idx ON security_key (dlms_device_id, security_key_type)
 WHERE valid_to IS NULL;
+
+INSERT INTO security_key (creation_time, modification_time, version, dlms_device_id, valid_from, valid_to, security_key_type, security_key)  (
+	SELECT creation_time, modification_time, 1, id, modification_time, null, 'E_METER_MASTER', master_key FROM dlms_device
+);
+
+INSERT INTO security_key (creation_time, modification_time, version, dlms_device_id, valid_from, valid_to, security_key_type, security_key)  (
+	SELECT creation_time, modification_time, 1, id, modification_time, null, 'E_METER_ENCRYPTION', global_encryption_unicast_key FROM dlms_device
+);
+
+INSERT INTO security_key (creation_time, modification_time, version, dlms_device_id, valid_from, valid_to, security_key_type, security_key)  (
+	SELECT creation_time, modification_time, 1, id, modification_time, null, 'E_METER_AUTHENTICATION', authentication_key FROM dlms_device
+);
+
+ALTER TABLE dlms_device DROP COLUMN master_key;
+ALTER TABLE dlms_device DROP COLUMN globalEncryptionUnicastKey;
+ALTER TABLE dlms_device DROP COLUMN authenticationKey;

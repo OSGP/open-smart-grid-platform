@@ -50,15 +50,6 @@ public class DlmsDevice extends AbstractEntity {
     @OneToMany(mappedBy = "dlmsDevice", cascade = CascadeType.PERSIST)
     private List<SecurityKey> securityKeys = new ArrayList<>();
 
-    @Column
-    private String masterKey;
-
-    @Column
-    private String globalEncryptionUnicastKey;
-
-    @Column
-    private String authenticationKey;
-
     @Transient
     private String ipAddress;
 
@@ -153,30 +144,6 @@ public class DlmsDevice extends AbstractEntity {
         this.hls5Active = hls5Active;
     }
 
-    public String getMasterKey() {
-        return this.masterKey;
-    }
-
-    public void setMasterKey(final String masterKey) {
-        this.masterKey = masterKey;
-    }
-
-    public String getGlobalEncryptionUnicastKey() {
-        return this.globalEncryptionUnicastKey;
-    }
-
-    public void setGlobalEncryptionUnicastKey(final String globalEncryptionUnicastKey) {
-        this.globalEncryptionUnicastKey = globalEncryptionUnicastKey;
-    }
-
-    public String getAuthenticationKey() {
-        return this.authenticationKey;
-    }
-
-    public void setAuthenticationKey(final String authenticationKey) {
-        this.authenticationKey = authenticationKey;
-    }
-
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
     }
@@ -191,7 +158,7 @@ public class DlmsDevice extends AbstractEntity {
             securityKey.setDlmsDevice(this);
         }
     }
-    
+
     /**
      * The IP address is not part of the data in the protocol adapter database.
      * The value needs to have been set based on information from the core

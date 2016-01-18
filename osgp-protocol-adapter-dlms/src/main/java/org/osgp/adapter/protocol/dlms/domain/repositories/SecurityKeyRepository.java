@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SecurityKeyRepository extends JpaRepository<SecurityKey, Long> {
 
-    @Query("SELECT sk from SecurityKey sk WHERE sk.dlmsDevice = ?1 AND sk.securityKeyType = ?2 AND sk.validFrom <= current_date() AND ( sk.validTo IS NULL OR sk.validTo > current_date() )")
+    @Query("SELECT sk from SecurityKey sk WHERE sk.dlmsDevice = ?1 AND sk.securityKeyType = ?2 AND sk.validFrom <= current_date AND ( sk.validTo IS NULL OR sk.validTo > current_date )")
     SecurityKey findValidSecurityKey(DlmsDevice dlmsDevice, SecurityKeyType securityKeyType);
 }
