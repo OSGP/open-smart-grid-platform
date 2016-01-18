@@ -51,6 +51,9 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private String authenticationKey;
 
+    @Column
+    private Integer challengeLength;
+
     @Transient
     private String ipAddress;
 
@@ -167,6 +170,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setAuthenticationKey(final String authenticationKey) {
         this.authenticationKey = authenticationKey;
+    }
+
+    public Integer getChallengeLength() {
+        return this.challengeLength;
+    }
+
+    public void setChallengeLength(final Integer challengeLength) {
+        this.challengeLength = challengeLength;
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {
