@@ -37,7 +37,7 @@ public class DlmsConnectionFactory {
      * @throws OperationNotSupportedException
      */
     public LnClientConnection getConnection(final DlmsDevice device) throws DlmsConnectionException,
-    OperationNotSupportedException {
+            OperationNotSupportedException {
 
         if (device.isHls5Active()) {
             return this.getHls5Connection(device);
@@ -60,16 +60,16 @@ public class DlmsConnectionFactory {
 
         try {
             final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
-                .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
-                .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
-                .clientAccessPoint(W_PORT_SOURCE);
+                    .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
+                    .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
+                    .clientAccessPoint(W_PORT_SOURCE);
 
-        final Integer challengeLength = device.getChallengeLength();
-        if (challengeLength != null) {
-            tcpConnectionBuilder.challengeLength(challengeLength);
-        }
+            final Integer challengeLength = device.getChallengeLength();
+            if (challengeLength != null) {
+                tcpConnectionBuilder.challengeLength(challengeLength);
+            }
 
-        return tcpConnectionBuilder.buildLnConnection();
+            return tcpConnectionBuilder.buildLnConnection();
         } catch (final IOException e) {
             throw new DlmsConnectionException("Error while creating TCP connection.", e);
         }
