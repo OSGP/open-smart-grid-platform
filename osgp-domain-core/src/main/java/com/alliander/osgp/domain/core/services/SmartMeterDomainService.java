@@ -25,11 +25,9 @@ public class SmartMeterDomainService {
     @Autowired
     private SmartMeterRepository smartMeterRepository;
 
-    public SmartMeter searchSmartMeter(@Identification final String deviceIdentification)
-            throws UnknownEntityException {
+    public SmartMeter searchSmartMeter(@Identification final String deviceIdentification) throws UnknownEntityException {
 
-        final SmartMeter smartMeter = this.smartMeterRepository
-                .findByDeviceIdentification(deviceIdentification);
+        final SmartMeter smartMeter = this.smartMeterRepository.findByDeviceIdentification(deviceIdentification);
 
         if (smartMeter == null) {
             throw new UnknownEntityException(SmartMeter.class, deviceIdentification);
