@@ -58,11 +58,11 @@ public class SecurityKey extends AbstractEntity {
             return false;
         }
 
-        final SecurityKey key = (SecurityKey) o;
+        final SecurityKey compareKey = (SecurityKey) o;
 
-        return Objects.equals(this.getDlmsDevice(), key.getDlmsDevice())
-                && Objects.equals(this.getSecurityKeyType(), key.getSecurityKeyType())
-                && Objects.equals(this.getValidFrom(), key.getValidFrom());
+        return Objects.equals(this.getDlmsDevice(), compareKey.getDlmsDevice())
+                && Objects.equals(this.getSecurityKeyType(), compareKey.getSecurityKeyType())
+                && Objects.equals(this.getValidFrom(), compareKey.getValidFrom());
     }
 
     @Override

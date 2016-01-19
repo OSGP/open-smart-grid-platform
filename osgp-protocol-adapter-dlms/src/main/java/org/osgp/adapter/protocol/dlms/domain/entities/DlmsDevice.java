@@ -222,6 +222,6 @@ public class DlmsDevice extends AbstractEntity {
     private boolean securityKeyExpired(final SecurityKey securityKey) {
         final Date now = new Date();
         final Date validTo = securityKey.getValidTo();
-        return (validTo != null && validTo.before(now));
+        return validTo != null && validTo.before(now);
     }
 }
