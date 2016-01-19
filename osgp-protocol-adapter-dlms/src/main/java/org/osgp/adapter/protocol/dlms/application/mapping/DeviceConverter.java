@@ -23,27 +23,18 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDevice,
         dlmsDevice.setHls5Active(source.isHLS5Active());
 
         if (source.getMasterKey() != null) {
-            final SecurityKey masterKey = new SecurityKey();
-            masterKey.setSecurityKeyType(SecurityKeyType.E_METER_MASTER);
-            masterKey.setSecurityKey(source.getMasterKey());
-            masterKey.setValidFrom(source.getDeliveryDate());
-            dlmsDevice.addSecurityKey(masterKey);
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_MASTER,
+                    source.getMasterKey(), source.getDeliveryDate(), null));
         }
 
         if (source.getAuthenticationKey() != null) {
-            final SecurityKey authenticationKey = new SecurityKey();
-            authenticationKey.setSecurityKeyType(SecurityKeyType.E_METER_AUTHENTICATION);
-            authenticationKey.setSecurityKey(source.getAuthenticationKey());
-            authenticationKey.setValidFrom(source.getDeliveryDate());
-            dlmsDevice.addSecurityKey(authenticationKey);
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_AUTHENTICATION, source
+                    .getAuthenticationKey(), source.getDeliveryDate(), null));
         }
 
         if (source.getGlobalEncryptionUnicastKey() != null) {
-            final SecurityKey encryptionKey = new SecurityKey();
-            encryptionKey.setSecurityKeyType(SecurityKeyType.E_METER_ENCRYPTION);
-            encryptionKey.setSecurityKey(source.getGlobalEncryptionUnicastKey());
-            encryptionKey.setValidFrom(source.getDeliveryDate());
-            dlmsDevice.addSecurityKey(encryptionKey);
+            dlmsDevice.addSecurityKey(new SecurityKey(dlmsDevice, SecurityKeyType.E_METER_ENCRYPTION, source
+                    .getGlobalEncryptionUnicastKey(), source.getDeliveryDate(), null));
         }
 
         return dlmsDevice;

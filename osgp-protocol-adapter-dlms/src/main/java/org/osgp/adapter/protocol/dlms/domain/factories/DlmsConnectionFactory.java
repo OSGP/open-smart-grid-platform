@@ -11,21 +11,16 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.osgp.adapter.protocol.dlms.domain.repositories.SecurityKeyRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.DlmsConnectionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DlmsConnectionFactory {
 
     // TODO REPLACE BY CONFIGURATION PROPERTIES
-    private final static int W_PORT_SOURCE = 1;
-    private final static int W_PORT_DESTINATION = 1;
-    private final static int RESPONSE_TIMEOUT = 60000;
-
-    @Autowired
-    private SecurityKeyRepository securityKeyRepository;
+    private static final int W_PORT_SOURCE = 1;
+    private static final int W_PORT_DESTINATION = 1;
+    private static final int RESPONSE_TIMEOUT = 60000;
 
     /**
      * Returns an open connection using the appropriate security settings for
@@ -36,14 +31,13 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public LnClientConnection getConnection(final DlmsDevice device) throws DlmsConnectionException,
-            OperationNotSupportedException {
+    public LnClientConnection getConnection(final DlmsDevice device) throws DlmsConnectionException {
 
         if (device.isHls5Active()) {
             return this.getHls5Connection(device);
         } else {
             // TODO ADD IMPLEMENTATIONS FOR OTHER SECURITY MODES
-            throw new OperationNotSupportedException("Only HLS 5 connections are currently supported");
+            throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
         }
     }
 
@@ -86,12 +80,12 @@ public class DlmsConnectionFactory {
      */
     private byte[] getSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
             throws DlmsConnectionException {
-        final SecurityKey securityKey = this.securityKeyRepository.findValidSecurityKey(dlmsDevice, securityKeyType);
+        final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
             throw new DlmsConnectionException(String.format("There is no valid key for device '%s' of type '%s'.",
                     dlmsDevice.getDeviceIdentification(), securityKeyType.name()));
         }
 
-        return Hex.decode(securityKey.getSecurityKey());
+        return Hex.decode(securityKey.getKey());
     }
 }

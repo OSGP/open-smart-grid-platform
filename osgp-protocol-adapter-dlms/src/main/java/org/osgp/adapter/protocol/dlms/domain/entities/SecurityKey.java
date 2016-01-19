@@ -31,8 +31,23 @@ public class SecurityKey extends AbstractEntity {
     @Column(nullable = true)
     private Date validTo;
 
-    @Column
-    private String securityKey;
+    @Column(name = "security_key")
+    private String key;
+
+    public SecurityKey() {
+        // Default constructor
+    }
+
+    public SecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType, final String key,
+            final Date validFrom, final Date validTo) {
+        this.dlmsDevice = dlmsDevice;
+        this.securityKeyType = securityKeyType;
+        this.validFrom = new Date(validFrom.getTime());
+        if (validTo != null) {
+            this.validTo = new Date(validTo.getTime());
+        }
+        this.key = key;
+    }
 
     @Override
     public boolean equals(final Object o) {
@@ -59,27 +74,12 @@ public class SecurityKey extends AbstractEntity {
         return this.dlmsDevice;
     }
 
-    public void setDlmsDevice(final DlmsDevice dlmsDevice) {
-        this.dlmsDevice = dlmsDevice;
-        if (!dlmsDevice.getSecurityKeys().contains(this)) {
-            dlmsDevice.getSecurityKeys().add(this);
-        }
-    }
-
     public SecurityKeyType getSecurityKeyType() {
         return this.securityKeyType;
     }
 
-    public void setSecurityKeyType(final SecurityKeyType securityKeyType) {
-        this.securityKeyType = securityKeyType;
-    }
-
     public Date getValidFrom() {
         return this.validFrom;
-    }
-
-    public void setValidFrom(final Date validFrom) {
-        this.validFrom = validFrom;
     }
 
     public Date getValidTo() {
@@ -90,11 +90,7 @@ public class SecurityKey extends AbstractEntity {
         this.validTo = validTo;
     }
 
-    public void setSecurityKey(final String key) {
-        this.securityKey = key;
-    }
-
-    public String getSecurityKey() {
-        return this.securityKey;
+    public String getKey() {
+        return this.key;
     }
 }
