@@ -1,11 +1,13 @@
 package org.osgp.adapter.protocol.dlms.infra.ws;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.ws.test.client.RequestMatchers.payload;
 import static org.springframework.ws.test.client.ResponseCreators.withPayload;
 
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -29,7 +31,9 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.test.client.MockWebServiceServer;
 import org.springframework.xml.transform.StringSource;
 
+import com.jasperwireless.api.ws.service.sms.GetSMSDetailsResponse;
 import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
+import com.jasperwireless.api.ws.service.sms.SmsMessageType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = JasperWirelessConfig.class, initializers = JasperWirelessSMSClientTest.PropertyMockingApplicationContextInitializer.class)
@@ -39,9 +43,11 @@ public class JasperWirelessSMSClientTest {
     private static final String LICENSEKEY = "7f206979-4fdf-4cbe-8d65-0e984dac6a9e";
     private static final String ICC_ID = "8931086113127163687";
     private static final String SMS_MSG_ID = "4302867004";
+    private static final String JWCC_STATUS = "Delivered";
+    private static final String MODEM_STATUS = "DeliverAckReceivedStatusSuccessful";
 
     public static class PropertyMockingApplicationContextInitializer implements
-            ApplicationContextInitializer<ConfigurableApplicationContext> {
+    ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
         public void initialize(final ConfigurableApplicationContext applicationContext) {
@@ -103,6 +109,72 @@ public class JasperWirelessSMSClientTest {
 
         this.mockServer.verify();
         assertEquals(SMS_MSG_ID, String.valueOf(response.getSmsMsgId()));
+    }
+
+    @Test
+    public void testSendWakeUpSMSResult() throws Exception {
+        // given
+        final Source requestPayload = new StringSource("<ns2:GetSMSDetailsRequest "
+                + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"
+                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>5.90</ns2:version>" + "<ns2:licenseKey>"
+                + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:smsMsgIds>" + "<ns2:smsMsgId>" + SMS_MSG_ID
+                + "</ns2:smsMsgId>" + "</ns2:smsMsgIds>" + "</ns2:GetSMSDetailsRequest>");
+
+        /*
+         * <ns2:GetSMSDetailsRequest
+         * xmlns:ns2="http://api.jasperwireless.com/ws/schema"
+         * messageTextEncoding=""> <ns2:messageId>wkaewupsms123</ns2:messageId>
+         * <ns2:version>5.90</ns2:version>
+         * <ns2:licenseKey>7f206979-4fdf-4cbe-8d65-0e984dac6a9e</ns2:licenseKey>
+         * <
+         * ns2:smsMsgIds><ns2:smsMsgId>4302867004</ns2:smsMsgId></ns2:smsMsgIds>
+         * </ns2:GetSMSDetailsRequest>
+         */
+
+        final Source responsePayload = new StringSource("<ns2:GetSMSDetailsResponse "
+                + "ns2:requestId=\"c16KNt8BksvZDLex\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
+                + "<ns2:correlationId>"
+                + WKAEWUPSMS_CORRID
+                + "</ns2:correlationId>"
+                + "<ns2:version>5.90</ns2:version>"
+                + "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
+                + "<ns2:timestamp>2016-01-18T12:31:51.760Z</ns2:timestamp>"
+                + "<ns2:smsMessages>"
+                + "<ns2:smsMessage>"
+                + "<ns2:smsMsgId>"
+                + SMS_MSG_ID
+                + "</ns2:smsMsgId>"
+                + "<ns2:status>"
+                + JWCC_STATUS
+                + "</ns2:status>"
+                + "<ns2:senderLogin>MaartenvanHaasteren</ns2:senderLogin>"
+                + "<ns2:sentToIccid>3197002475559</ns2:sentToIccid>"
+                + "<ns2:sentFrom>Server</ns2:sentFrom>"
+                + "<ns2:smsMsgAttemptStatus>"
+                + MODEM_STATUS
+                + "</ns2:smsMsgAttemptStatus>"
+                + "<ns2:msgType>MT</ns2:msgType>"
+                + "<ns2:dateSent>2016-01-18T12:22:04.853Z</ns2:dateSent>"
+                + "<ns2:dateReceived>2016-01-18T12:22:09.878Z</ns2:dateReceived>"
+                + "<ns2:dateAdded>2016-01-18T12:22:04.854Z</ns2:dateAdded>"
+                + "<ns2:dateModified>2016-01-18T12:22:09.889Z</ns2:dateModified>"
+                + "</ns2:smsMessage>"
+                + "</ns2:smsMessages>" + "</ns2:GetSMSDetailsResponse>");
+
+        // when
+        when(this.correlationIdProviderService.getCorrelationId("wakeupsms", ICC_ID)).thenReturn(WKAEWUPSMS_CORRID);
+
+        // then
+        this.mockServer.expect(payload(requestPayload)).andRespond(withPayload(responsePayload));
+
+        final GetSMSDetailsResponse response = this.wsClientService.getSMSDetails(SMS_MSG_ID, ICC_ID);
+
+        this.mockServer.verify();
+        final List<SmsMessageType> smsMessageTypes = response.getSmsMessages().getSmsMessage();
+        assertNotNull(smsMessageTypes);
+        final SmsMessageType smsMessageType = smsMessageTypes.get(0);
+        assertEquals(JWCC_STATUS, smsMessageType.getStatus());
+        assertEquals(MODEM_STATUS, smsMessageType.getSmsMsgAttemptStatus());
     }
 
     public XMLGregorianCalendar getXMLGregorianCalendarNow() throws DatatypeConfigurationException {
