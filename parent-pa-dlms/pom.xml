@@ -82,7 +82,7 @@
     <apache.commons.schema>2.0.3</apache.commons.schema>
     <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
     <netty.version>3.9.4.Final</netty.version>
-    <openmuc.jdlms.version>0.11.3</openmuc.jdlms.version>
+    <openmuc.jdlms.version>0.11.4-SNAPSHOT</openmuc.jdlms.version>
   </properties>
 
   <repositories>
@@ -97,6 +97,14 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+	<repository>
+		<id>oss-sonatype</id>
+		<name>oss-sonatype</name>
+		<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		<snapshots>
+			<enabled>true</enabled>
+		</snapshots>
+	</repository>
   </repositories>
 
   <dependencyManagement>
@@ -212,28 +220,7 @@
 		<artifactId>spring-ws</artifactId>
 		<version>${spring.ws.version}</version>
         <classifier>all</classifier>
-	  </dependency>
-      
-      <!-- Spring Test -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-		<artifactId>spring-test</artifactId>
-		<version>${spring.test.version}</version>
-		<scope>test</scope>
-      </dependency>
-      <dependency>
-	    <groupId>xmlunit</groupId>
-	    <artifactId>xmlunit</artifactId>
-	    <version>${xmlunit.version}</version>
-		<scope>test</scope>
-      </dependency>
-	  <dependency>
-        <groupId>org.mockito</groupId>
-		<artifactId>mockito-all</artifactId>
-		<version>${mockito.version}</version>
-		<scope>test</scope>
-      </dependency>
-      
+	  </dependency>      
       
       <!--  ws support -->
       <dependency>
@@ -375,13 +362,26 @@
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
-
+      
+      <!-- Spring Test -->
       <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockito.version}</version>
+        <groupId>org.springframework</groupId>
+		<artifactId>spring-test</artifactId>
+		<version>${spring.test.version}</version>
+		<scope>test</scope>
       </dependency>
-
+      <dependency>
+	    <groupId>xmlunit</groupId>
+	    <artifactId>xmlunit</artifactId>
+	    <version>${xmlunit.version}</version>
+		<scope>test</scope>
+      </dependency>
+	  <dependency>
+        <groupId>org.mockito</groupId>
+		<artifactId>mockito-all</artifactId>
+		<version>${mockito.version}</version>
+		<scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>

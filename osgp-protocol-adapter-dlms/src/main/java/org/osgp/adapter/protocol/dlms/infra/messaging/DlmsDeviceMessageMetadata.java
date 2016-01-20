@@ -19,13 +19,14 @@ public class DlmsDeviceMessageMetadata {
     private String organisationIdentification;
     private String deviceIdentification;
     private String ipAddress;
+    private int retryCount;
 
     @Override
     public String toString() {
         return String
-                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s]",
+                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d]",
                         this.correlationUid, this.domain, this.domainVersion, this.messageType,
-                        this.organisationIdentification, this.deviceIdentification, this.ipAddress);
+                        this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.retryCount);
     }
 
     /**
@@ -42,6 +43,7 @@ public class DlmsDeviceMessageMetadata {
         this.organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
+        this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
     }
 
     public String getCorrelationUid() {
@@ -98,5 +100,13 @@ public class DlmsDeviceMessageMetadata {
 
     public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public int getRetryCount() {
+        return this.retryCount;
+    }
+
+    public void setRetryCount(final int retryCount) {
+        this.retryCount = retryCount;
     }
 }
