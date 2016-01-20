@@ -19,6 +19,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommand
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -68,6 +69,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
+
+    @Autowired
+    private SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
@@ -240,6 +244,42 @@ public class ConfigurationService extends DlmsApplicationService {
                 conn.close();
             }
         }
+    }
+
+    public void setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "setEncryptionKeyExchangeOnGMeter");
+
+        final LnClientConnection conn = null;
+        DlmsDevice device = null;
+        try {
+            final String deviceIdentification = messageMetadata.getDeviceIdentification();
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
+
+            // conn = this.dlmsConnectionFactory.getConnection(device);
+
+            // TODO get real GMeterKey. Dummy value is used for now.
+            // this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn,
+            // "596f7556576f6e5468654a61636b506f7421");
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setEncryptionKeyExchangeOnGMeter", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.close();
+            }
+        }
+
     }
 
     public void setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
