@@ -22,10 +22,6 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
-/**
- * @author OSGP
- *
- */
 @Service(value = "wsSmartMeteringInstallationService")
 @Validated
 // @Transactional(value = "coreTransactionManager")

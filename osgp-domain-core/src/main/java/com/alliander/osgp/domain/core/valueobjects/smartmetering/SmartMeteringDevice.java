@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class SmartMeteringDevice implements Serializable {
 
@@ -38,6 +39,8 @@ public class SmartMeteringDevice implements Serializable {
     private boolean HLS4Active;
 
     private boolean HLS5Active;
+
+    private Date deliveryDate;
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
@@ -141,5 +144,13 @@ public class SmartMeteringDevice implements Serializable {
 
     public void setHLS5Active(final boolean hLS5Active) {
         this.HLS5Active = hLS5Active;
+    }
+
+    public Date getDeliveryDate() {
+        return this.deliveryDate;
+    }
+
+    public void setDeliveryDate(final Date deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 }

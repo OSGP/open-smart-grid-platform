@@ -17,10 +17,6 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-/**
- * @author OSGP
- *
- */
 @Component("domainSmartmeteringAddMeterRequestMessageProcessor")
 public class AddMeterRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 

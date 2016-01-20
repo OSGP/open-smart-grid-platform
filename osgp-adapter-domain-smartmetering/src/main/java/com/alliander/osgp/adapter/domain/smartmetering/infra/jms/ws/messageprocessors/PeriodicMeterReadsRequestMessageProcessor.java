@@ -17,10 +17,6 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-/**
- * @author OSGP
- *
- */
 @Component("domainSmartmeteringPeriodicMeterReadsRequestMessageProcessor")
 public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
