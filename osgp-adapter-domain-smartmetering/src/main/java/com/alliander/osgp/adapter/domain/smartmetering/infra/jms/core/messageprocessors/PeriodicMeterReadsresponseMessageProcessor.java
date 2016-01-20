@@ -31,6 +31,13 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        final Object dataObject = responseMessage.getDataObject();
+        return dataObject instanceof PeriodicMeterReadsContainer
+                || dataObject instanceof PeriodicMeterReadsContainerGas;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
@@ -42,7 +49,7 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException,
                     periodicMeterReadsContainer);
-        } else {
+        } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainerGas) {
             final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = (PeriodicMeterReadsContainerGas) responseMessage
                     .getDataObject();
 

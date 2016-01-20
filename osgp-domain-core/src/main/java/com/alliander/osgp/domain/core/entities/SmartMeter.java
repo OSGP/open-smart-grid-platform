@@ -23,6 +23,9 @@ public class SmartMeter extends Device {
     @Column
     private String supplier;
 
+    @Column
+    private Short channel;
+
     public SmartMeter() {
         // Default constructor for hibernate
     }
@@ -33,5 +36,31 @@ public class SmartMeter extends Device {
 
     public void setSupplier(final String supplier) {
         this.supplier = supplier;
+    }
+
+    /**
+     * If this meter has another smart meter as gateway device, it can be
+     * connected through one of the gateways M-Bus channels. In such case the
+     * channel provides information on how to retrieve data for this meter.
+     * <p>
+     * An example of where the channel is used, is with a gas meter that is
+     * connected on an M-Bus of an energy meter.
+     * <p>
+     * For meters that are not attached to another smart meters M-Bus channel,
+     * the channel is {@code null}.
+     *
+     * @return the M-Bus channel this smart meter is connected on, on its
+     *         gateway device, or {@code null}.
+     */
+    public Short getChannel() {
+        return this.channel;
+    }
+
+    public void setChannel(final Short channel) {
+        this.channel = channel;
+    }
+
+    public void setDeviceIdentification(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
     }
 }

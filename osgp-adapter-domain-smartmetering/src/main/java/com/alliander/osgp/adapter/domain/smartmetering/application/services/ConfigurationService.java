@@ -69,7 +69,7 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+                .findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -91,7 +91,7 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+                .findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -129,7 +129,7 @@ public class ConfigurationService {
         // TODO: bypassing authorization, this should be fixed.
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+                .findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications alarmNotificationsDto = this.configurationMapper
                 .map(alarmNotifications, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class);
@@ -148,7 +148,7 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+                .findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto = this.configurationMapper
                 .map(administrativeStatusType,
@@ -185,7 +185,7 @@ public class ConfigurationService {
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+                .findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
@@ -227,7 +227,7 @@ public class ConfigurationService {
         // TODO: bypassing authorization, this should be fixed.
 
         final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeteringDevice(deviceIdentification);
+                .findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendarDto = this.configurationMapper
                 .map(activityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar.class);

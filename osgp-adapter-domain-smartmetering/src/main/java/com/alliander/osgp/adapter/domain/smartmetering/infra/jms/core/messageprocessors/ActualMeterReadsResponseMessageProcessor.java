@@ -29,6 +29,12 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
     }
 
     @Override
+    protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
+        final Object dataObject = responseMessage.getDataObject();
+        return dataObject instanceof ActualMeterReads || dataObject instanceof MeterReadsGas;
+    }
+
+    @Override
     protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
@@ -38,11 +44,10 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
 
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException, actualMeterReadsDto);
-        } else {
+        } else if (responseMessage.getDataObject() instanceof MeterReadsGas) {
             final MeterReadsGas meterReadsGas = (MeterReadsGas) responseMessage.getDataObject();
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException, meterReadsGas);
         }
     }
-
 }

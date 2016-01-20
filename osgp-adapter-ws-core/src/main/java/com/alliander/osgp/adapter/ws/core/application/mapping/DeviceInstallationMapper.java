@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.repositories.SsldRepository;
 
 @Component(value = "coreDeviceInstallationMapper")
 public class DeviceInstallationMapper extends ConfigurableMapper {
+
     @Autowired
     private SsldRepository ssldRepository;
 
@@ -30,7 +31,7 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
     }
 
     @PostConstruct
-    private void initialize() {
+    public void initialize() {
         this.init();
     }
 
@@ -40,7 +41,7 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
     }
 
     private static class DeviceConverter extends
-            BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
+    BidirectionalConverter<Device, com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> {
 
         private SsldRepository ssldRepository;
 
@@ -68,6 +69,7 @@ public class DeviceInstallationMapper extends ConfigurableMapper {
         @Override
         public com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device convertTo(final Device source,
                 final Type<com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device> destinationType) {
+
             com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device destination = null;
             if (source != null) {
                 destination = new com.alliander.osgp.adapter.ws.schema.core.deviceinstallation.Device();

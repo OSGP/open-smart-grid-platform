@@ -12,35 +12,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.domain.core.entities.GasMeterDevice;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
+import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.repositories.GasMeterDeviceRepository;
 
-/**
- *
- * @author osgp
- * @deprecated temporary GAS meter administration, to be refactored
- */
 @Service
 @Validated
 @Transactional(value = "transactionManager")
-@Deprecated
-public class GasMeterDeviceDomainService {
+public class SmartMeterDomainService {
 
     @Autowired
-    private GasMeterDeviceRepository gasMeterDeviceRepository;
+    private SmartMeterRepository smartMeterRepository;
 
-    public GasMeterDevice searchGASMeterDevice(@Identification final String deviceIdentification)
-            throws UnknownEntityException {
+    public SmartMeter searchSmartMeter(@Identification final String deviceIdentification) throws UnknownEntityException {
 
-        final GasMeterDevice gasMeterDevice = this.gasMeterDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
+        final SmartMeter smartMeter = this.smartMeterRepository.findByDeviceIdentification(deviceIdentification);
 
-        if (gasMeterDevice == null) {
-            throw new UnknownEntityException(GasMeterDevice.class, deviceIdentification);
+        if (smartMeter == null) {
+            throw new UnknownEntityException(SmartMeter.class, deviceIdentification);
         }
 
-        return gasMeterDevice;
+        return smartMeter;
     }
 }
