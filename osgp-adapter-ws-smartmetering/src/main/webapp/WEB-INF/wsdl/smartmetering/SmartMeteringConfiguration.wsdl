@@ -59,7 +59,25 @@
         <wsdl:part element="smconf:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
         </wsdl:part>
     </wsdl:message>
-	
+
+	<wsdl:message name="SetEncryptionKeyExchangeOnGMeterRequest">
+        <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterRequest" name="setEncryptionKeyExchangeOnGMeterRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
+        <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterAsyncResponse" name="setEncryptionKeyExchangeOnGMeterAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+        <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterAsyncRequest" name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetEncryptionKeyExchangeOnGMeterResponse">
+        <wsdl:part element="smconf:SetEncryptionKeyExchangeOnGMeterResponse" name="SetEncryptionKeyExchangeOnGMeterResponse">
+        </wsdl:part>
+    </wsdl:message>
+
     <wsdl:message name="SetActivityCalendarRequest">
         <wsdl:part element="smconf:SetActivityCalendarRequest" name="setActivityCalendarRequest">
         </wsdl:part>
@@ -168,6 +186,20 @@
             <wsdl:input message="tns:SetAlarmNotificationsAsyncRequest" name="SetAlarmNotificationsAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetEncryptionKeyExchangeOnGMeter">
+            <wsdl:input message="tns:SetEncryptionKeyExchangeOnGMeterRequest" name="SetEncryptionKeyExchangeOnGMeterRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetEncryptionKeyExchangeOnGMeterAsyncResponse" name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetEncryptionKeyExchangeOnGMeterResponse">
+            <wsdl:input message="tns:SetEncryptionKeyExchangeOnGMeterAsyncRequest" name="SetEncryptionKeyExchangeOnGMeterAsyncRequest"> 
+            </wsdl:input>
+            <wsdl:output message="tns:SetEncryptionKeyExchangeOnGMeterResponse" name="SetEncryptionKeyExchangeOnGMeterResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -289,6 +321,31 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetAlarmNotificationsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetEncryptionKeyExchangeOnGMeter">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetEncryptionKeyExchangeOnGMeterRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetEncryptionKeyExchangeOnGMeterAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetEncryptionKeyExchangeOnGMeterResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetEncryptionKeyExchangeOnGMeterAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetEncryptionKeyExchangeOnGMeterResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

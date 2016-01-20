@@ -168,6 +168,26 @@ public class ConfigurationService {
         return correlationUid;
     }
 
+    public String enqueueSetEncryptionKeyExchangeOnGMeterRequest(
+            @Identification final String organisationIdentification, @Identification final String deviceIdentification) {
+
+        LOGGER.debug("enqueueSetEncryptionKeyExchangeOnGMeterRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        // TODO: make a new overloaded SmartMeteringRequestMessage that has not
+        // argument? So that null as paramter is not necessary
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, correlationUid,
+                organisationIdentification, deviceIdentification, null);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar) {
 

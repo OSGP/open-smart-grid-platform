@@ -68,8 +68,7 @@ public class ConfigurationService {
         LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -90,8 +89,7 @@ public class ConfigurationService {
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -128,8 +126,7 @@ public class ConfigurationService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications alarmNotificationsDto = this.configurationMapper
                 .map(alarmNotifications, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class);
@@ -141,14 +138,13 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto = this.configurationMapper
                 .map(administrativeStatusType,
@@ -184,8 +180,7 @@ public class ConfigurationService {
                 "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
@@ -226,8 +221,7 @@ public class ConfigurationService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendarDto = this.configurationMapper
                 .map(activityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar.class);
@@ -284,4 +278,36 @@ public class ConfigurationService {
                 deviceIdentification, result, exception, resultString), messageType);
 
     }
+
+    public void setEncryptionKeyExchangeOnGMeter(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType)
+            throws FunctionalException {
+
+        LOGGER.info(
+                "set Encryption Key Exchange On G-Meter for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress()), messageType);
+    }
+
+    public void handleSetEncryptionKeyExchangeOnGMeterResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException exception) {
+        LOGGER.info("handleSetEncryptionKeyExchangeOnGMeterResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = responseMessageResultType;
+        if (exception != null) {
+            LOGGER.error("Set Encryption Key Exchange On G-Meter Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        // TODO: overload the method so that null doesnt have to be returned?
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
+
+    }
+
 }
