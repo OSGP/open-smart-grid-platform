@@ -44,6 +44,25 @@
         <wsdl:part element="smadhoc:SynchronizeTimeResponse" name="SynchronizeTimeResponse">
         </wsdl:part>
     </wsdl:message>
+    
+    <!-- SEND WAKEUP SMS -->
+    
+    <wsdl:message name="SendWakeupSMSRequest">
+        <wsdl:part element="smadhoc:SendWakeupSMSRequest" name="SendWakeupSMSRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SendWakeupSMSAsyncResponse">
+        <wsdl:part element="smadhoc:SendWakeupSMSAsyncResponse" name="SendWakeupSMSAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SendWakeupSMSAsyncRequest">
+        <wsdl:part element="smadhoc:SendWakeupSMSAsyncRequest" name="SendWakeupSMSAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SendWakeupSMSResponse">
+        <wsdl:part element="smadhoc:SendWakeupSMSResponse" name="SendWakeupSMSResponse">
+        </wsdl:part>
+    </wsdl:message>
 
     <wsdl:portType name="SmartmeteradhocPort">
         <wsdl:operation name="SynchronizeTime">
@@ -54,12 +73,21 @@
         <wsdl:operation name="GetSynchronizeTimeResponse">
             <wsdl:input message="tns:SynchronizeTimeAsyncRequest" name="SynchronizeTimeAsyncRequest" />
             <wsdl:output message="tns:SynchronizeTimeResponse" name="SynchronizeTimeResponse" />
+        </wsdl:operation>        
+
+        <wsdl:operation name="SendWakeupSMS">
+            <wsdl:input message="tns:SendWakeupSMSRequest" name="SendWakeupSMSRequest" />
+            <wsdl:output message="tns:SendWakeupSMSAsyncResponse" name="SendWakeupSMSAsyncResponse" />
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSendWakeupSMSResponse">
+            <wsdl:input message="tns:SendWakeupSMSAsyncRequest" name="SendWakeupSMSAsyncRequest" />
+            <wsdl:output message="tns:SendWakeupSMSResponse" name="SendWakeupSMSResponse" />
         </wsdl:operation>
     </wsdl:portType>
     
     <wsdl:binding name="SmartmeteradhocPortSoap11" type="tns:SmartmeteradhocPort">
         <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-
         <wsdl:operation name="SynchronizeTime">
             <soap:operation soapAction="" />
             <wsdl:input name="SynchronizeTimeRequest">
@@ -86,7 +114,33 @@
             </wsdl:output>
         </wsdl:operation>
 
+        <wsdl:operation name="SendWakeupSMS">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SendWakeupSMSRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SendWakeupSMSAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSendWakeupSMSResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SendWakeupSMSAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SendWakeupSMSResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
     </wsdl:binding>
+    
     <wsdl:service name="SmartmeteradhocPortService">
         <wsdl:port binding="tns:SmartmeteradhocPortSoap11" name="SmartmeteradhocPortSoap11">
             <soap:address
