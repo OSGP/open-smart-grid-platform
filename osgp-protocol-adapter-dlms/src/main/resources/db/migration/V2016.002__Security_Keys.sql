@@ -44,5 +44,4 @@ INSERT INTO security_key (creation_time, modification_time, version, dlms_device
 );
 
 ALTER TABLE dlms_device DROP COLUMN master_key;
-ALTER TABLE dlms_device DROP COLUMN globalEncryptionUnicastKey;
-ALTER TABLE dlms_device DROP COLUMN authenticationKey;
+ALTER TABLE dlms_device DROP COLUMN authentication_key;

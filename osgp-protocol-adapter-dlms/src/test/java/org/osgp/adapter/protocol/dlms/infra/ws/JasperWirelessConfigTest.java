@@ -26,7 +26,7 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
  * The usage of Java configuration requires Spring Framework 3.0
  */
 @Configuration
-public class JasperWirelessConfig {
+public class JasperWirelessConfigTest {
 
     // JMS Settings
     private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";
@@ -38,7 +38,7 @@ public class JasperWirelessConfig {
     @Resource
     private Environment environment;
 
-    public JasperWirelessConfig() {
+    public JasperWirelessConfigTest() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
@@ -84,7 +84,7 @@ public class JasperWirelessConfig {
 
     @Bean
     public JasperWirelessSMSClient jasperWirelessSMSClient() {
-        return new JasperWirelessSMSClientImpl();
+        return new JasperWirelessSMSClient();
     }
 
     @Bean

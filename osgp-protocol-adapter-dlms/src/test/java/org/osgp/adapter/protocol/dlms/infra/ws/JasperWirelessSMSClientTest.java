@@ -36,7 +36,7 @@ import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
 import com.jasperwireless.api.ws.service.sms.SmsMessageType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = JasperWirelessConfig.class, initializers = JasperWirelessSMSClientTest.PropertyMockingApplicationContextInitializer.class)
+@ContextConfiguration(classes = JasperWirelessConfigTest.class, initializers = JasperWirelessSMSClientTest.PropertyMockingApplicationContextInitializer.class)
 public class JasperWirelessSMSClientTest {
 
     private static final String WKAEWUPSMS_CORRID = "wkaewupsms123";
@@ -47,7 +47,7 @@ public class JasperWirelessSMSClientTest {
     private static final String MODEM_STATUS = "DeliverAckReceivedStatusSuccessful";
 
     public static class PropertyMockingApplicationContextInitializer implements
-    ApplicationContextInitializer<ConfigurableApplicationContext> {
+            ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
         public void initialize(final ConfigurableApplicationContext applicationContext) {
@@ -75,7 +75,7 @@ public class JasperWirelessSMSClientTest {
 
     @InjectMocks
     @Autowired
-    private JasperWirelessSMSClientImpl wsClientService;
+    private JasperWirelessSMSClient wsClientService;
 
     @Before
     public void createServer() throws Exception {
@@ -120,17 +120,6 @@ public class JasperWirelessSMSClientTest {
                 + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:smsMsgIds>" + "<ns2:smsMsgId>" + SMS_MSG_ID
                 + "</ns2:smsMsgId>" + "</ns2:smsMsgIds>" + "</ns2:GetSMSDetailsRequest>");
 
-        /*
-         * <ns2:GetSMSDetailsRequest
-         * xmlns:ns2="http://api.jasperwireless.com/ws/schema"
-         * messageTextEncoding=""> <ns2:messageId>wkaewupsms123</ns2:messageId>
-         * <ns2:version>5.90</ns2:version>
-         * <ns2:licenseKey>7f206979-4fdf-4cbe-8d65-0e984dac6a9e</ns2:licenseKey>
-         * <
-         * ns2:smsMsgIds><ns2:smsMsgId>4302867004</ns2:smsMsgId></ns2:smsMsgIds>
-         * </ns2:GetSMSDetailsRequest>
-         */
-
         final Source responsePayload = new StringSource("<ns2:GetSMSDetailsResponse "
                 + "ns2:requestId=\"c16KNt8BksvZDLex\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
                 + "<ns2:correlationId>"
@@ -167,7 +156,7 @@ public class JasperWirelessSMSClientTest {
         // then
         this.mockServer.expect(payload(requestPayload)).andRespond(withPayload(responsePayload));
 
-        final GetSMSDetailsResponse response = this.wsClientService.getSMSDetails(SMS_MSG_ID, ICC_ID);
+        final GetSMSDetailsResponse response = this.wsClientService.getSMSDetails(new Long(SMS_MSG_ID), ICC_ID);
 
         this.mockServer.verify();
         final List<SmsMessageType> smsMessageTypes = response.getSmsMessages().getSmsMessage();

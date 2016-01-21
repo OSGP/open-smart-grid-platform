@@ -13,7 +13,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.osgp.adapter.protocol.dlms.infra.ws.CorrelationIdProviderService;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSMSClient;
-import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSMSClientImpl;
+import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSMSClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -88,7 +88,7 @@ public class JasperWirelessConfig {
 
     @Bean
     public JasperWirelessSMSClient jasperWirelessSMSClient() {
-        return new JasperWirelessSMSClientImpl();
+        return new JasperWirelessSMSClient();
     }
 
     @Bean
