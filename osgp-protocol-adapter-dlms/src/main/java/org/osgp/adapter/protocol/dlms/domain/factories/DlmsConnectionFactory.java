@@ -9,15 +9,18 @@ import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.osgp.adapter.protocol.dlms.exceptions.DlmsConnectionException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DlmsConnectionFactory {
 
     // TODO REPLACE BY CONFIGURATION PROPERTIES
-    private final static int W_PORT_SOURCE = 1;
-    private final static int W_PORT_DESTINATION = 1;
-    private final static int RESPONSE_TIMEOUT = 60000;
+    private static final int W_PORT_SOURCE = 1;
+    private static final int W_PORT_DESTINATION = 1;
+    private static final int RESPONSE_TIMEOUT = 60000;
 
     /**
      * Returns an open connection using the appropriate security settings for
@@ -28,29 +31,61 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public LnClientConnection getConnection(final DlmsDevice device) throws IOException, OperationNotSupportedException {
+    public LnClientConnection getConnection(final DlmsDevice device) throws DlmsConnectionException {
 
         if (device.isHls5Active()) {
             return this.getHls5Connection(device);
         } else {
             // TODO ADD IMPLEMENTATIONS FOR OTHER SECURITY MODES
-            throw new OperationNotSupportedException("Only HLS 5 connections are currently supported");
+            throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
         }
     }
 
-    private LnClientConnection getHls5Connection(final DlmsDevice device) throws IOException {
+    private LnClientConnection getHls5Connection(final DlmsDevice device) throws DlmsConnectionException {
 
-        final byte[] authenticationKey = Hex.decode(device.getAuthenticationKey());
-        final byte[] encryptionKey = Hex.decode(device.getGlobalEncryptionUnicastKey());
+        final byte[] authenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
+        final byte[] encryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);
 
         final String ipAddress = device.getIpAddress();
         if (ipAddress == null) {
-            throw new IOException("Unable to get HLS5 connection for device " + device.getDeviceIdentification()
-                    + ", because the IP address is not set.");
+            throw new DlmsConnectionException("Unable to get HLS5 connection for device "
+                    + device.getDeviceIdentification() + ", because the IP address is not set.");
         }
-        return new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
-                .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
-                .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
-                .clientAccessPoint(W_PORT_SOURCE).buildLnConnection();
+
+        try {
+            final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
+                    .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
+                    .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
+                    .clientAccessPoint(W_PORT_SOURCE);
+
+            final Integer challengeLength = device.getChallengeLength();
+            if (challengeLength != null) {
+                tcpConnectionBuilder.challengeLength(challengeLength);
+            }
+
+            return tcpConnectionBuilder.buildLnConnection();
+        } catch (final IOException e) {
+            throw new DlmsConnectionException("Error while creating TCP connection.", e);
+        }
+    }
+
+    /**
+     * Get the valid security of a given type for the device.
+     *
+     * @param dlmsDevice
+     * @param securityKeyType
+     * @return Byte array containing the security key.
+     * @throws DlmsConnectionException
+     *             when there is no valid key.
+     */
+    private byte[] getSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
+            throws DlmsConnectionException {
+        final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(securityKeyType);
+        if (securityKey == null) {
+            throw new DlmsConnectionException(String.format("There is no valid key for device '%s' of type '%s'.",
+                    dlmsDevice.getDeviceIdentification(), securityKeyType.name()));
+        }
+
+        return Hex.decode(securityKey.getKey());
     }
 }

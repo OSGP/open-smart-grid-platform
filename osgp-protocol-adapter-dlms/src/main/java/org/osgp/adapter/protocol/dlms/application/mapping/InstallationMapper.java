@@ -10,17 +10,13 @@ package org.osgp.adapter.protocol.dlms.application.mapping;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.stereotype.Component;
-
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
 
 @Component(value = "installationMapper")
 public class InstallationMapper extends ConfigurableMapper {
+
     @Override
     public void configure(final MapperFactory mapperFactory) {
-
-        // dto value object -> DLSM device
-        mapperFactory.classMap(SmartMeteringDevice.class, DlmsDevice.class).byDefault().register();
+        mapperFactory.getConverterFactory().registerConverter(new DeviceConverter());
     }
 }

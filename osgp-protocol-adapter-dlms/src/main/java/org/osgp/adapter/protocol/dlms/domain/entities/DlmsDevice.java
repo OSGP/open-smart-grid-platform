@@ -7,8 +7,15 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.entities;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
@@ -42,14 +49,11 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @Column
-    private String masterKey;
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
-    private String globalEncryptionUnicastKey;
-
-    @Column
-    private String authenticationKey;
+    private Integer challengeLength;
 
     @Transient
     private String ipAddress;
@@ -145,32 +149,24 @@ public class DlmsDevice extends AbstractEntity {
         this.hls5Active = hls5Active;
     }
 
-    public String getMasterKey() {
-        return this.masterKey;
+    public Integer getChallengeLength() {
+        return this.challengeLength;
     }
 
-    public void setMasterKey(final String masterKey) {
-        this.masterKey = masterKey;
-    }
-
-    public String getGlobalEncryptionUnicastKey() {
-        return this.globalEncryptionUnicastKey;
-    }
-
-    public void setGlobalEncryptionUnicastKey(final String globalEncryptionUnicastKey) {
-        this.globalEncryptionUnicastKey = globalEncryptionUnicastKey;
-    }
-
-    public String getAuthenticationKey() {
-        return this.authenticationKey;
-    }
-
-    public void setAuthenticationKey(final String authenticationKey) {
-        this.authenticationKey = authenticationKey;
+    public void setChallengeLength(final Integer challengeLength) {
+        this.challengeLength = challengeLength;
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
+    }
+
+    public List<SecurityKey> getSecurityKeys() {
+        return this.securityKeys;
+    }
+
+    public void addSecurityKey(final SecurityKey securityKey) {
+        this.securityKeys.add(securityKey);
     }
 
     /**
@@ -187,5 +183,46 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setIpAddress(final String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    /**
+     * Get the valid security key of the given type. This can be only one or
+     * none. If none is found, null is returned.
+     *
+     * @param securityKeyType
+     * @return Security key, or null if no valid key is found.
+     */
+    public SecurityKey getValidSecurityKey(final SecurityKeyType securityKeyType) {
+        for (final SecurityKey securityKey : this.securityKeys) {
+            if (securityKey.getSecurityKeyType().equals(securityKeyType) && this.securityKeyActivated(securityKey)
+                    && !this.securityKeyExpired(securityKey)) {
+                return securityKey;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if the security key has become active before now.
+     *
+     * @param securityKey
+     * @return activated
+     */
+    private boolean securityKeyActivated(final SecurityKey securityKey) {
+        final Date now = new Date();
+        return securityKey.getValidFrom().before(now) || securityKey.getValidFrom().equals(now);
+    }
+
+    /**
+     * Check if security key is expired, the valid to date is before now.
+     *
+     * @param securityKey
+     * @return expired.
+     */
+    private boolean securityKeyExpired(final SecurityKey securityKey) {
+        final Date now = new Date();
+        final Date validTo = securityKey.getValidTo();
+        return validTo != null && validTo.before(now);
     }
 }
