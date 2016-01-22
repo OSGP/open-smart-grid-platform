@@ -14,6 +14,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
@@ -48,7 +49,7 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @OneToMany(mappedBy = "dlmsDevice", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
