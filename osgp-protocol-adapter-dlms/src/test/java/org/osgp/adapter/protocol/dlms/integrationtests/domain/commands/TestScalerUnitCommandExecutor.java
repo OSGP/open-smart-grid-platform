@@ -15,6 +15,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.AbstractMeterReadsScalerUnitCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +28,8 @@ AbstractMeterReadsScalerUnitCommandExecutor<TestChannelQuery, ScalerUnitTestResp
     private static final Logger LOGGER = LoggerFactory.getLogger(TestScalerUnitCommandExecutor.class);
 
     @Override
-    public ScalerUnitTestResponse execute(final LnClientConnection conn, final TestChannelQuery object)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+    public ScalerUnitTestResponse execute(final LnClientConnection conn, final DlmsDevice device,
+            final TestChannelQuery object) throws IOException, TimeoutException, ProtocolAdapterException {
         final List<GetResult> getResultList = conn.get(this.getScalerUnitAttributeAddress(object));
 
         final GetResult getResult = getResultList.get(0);

@@ -16,6 +16,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +65,9 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReads execute(final LnClientConnection conn, final ActualMeterReadsQuery actualMeterReadsQuery)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+    public ActualMeterReads execute(final LnClientConnection conn, final DlmsDevice device,
+            final ActualMeterReadsQuery actualMeterReadsQuery) throws IOException, TimeoutException,
+            ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isGas()) {
             throw new IllegalArgumentException("ActualMeterReadsQuery object for energy reads should not be about gas.");
@@ -73,7 +75,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
 
         LOGGER.info("Retrieving actual energy reads");
 
-        final List<GetResult> getResultList = conn.get(ATTRIBUTE_ADDRESSES);
+        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
 
         checkResultList(getResultList);
 

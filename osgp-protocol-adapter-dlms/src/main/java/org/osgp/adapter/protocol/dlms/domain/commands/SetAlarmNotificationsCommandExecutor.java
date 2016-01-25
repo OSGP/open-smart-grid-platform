@@ -24,6 +24,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,8 +95,8 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     @Override
-    public AccessResultCode execute(final LnClientConnection conn, final AlarmNotifications alarmNotifications)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+    public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+            final AlarmNotifications alarmNotifications) throws IOException, TimeoutException, ProtocolAdapterException {
 
         final AlarmNotifications alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
 

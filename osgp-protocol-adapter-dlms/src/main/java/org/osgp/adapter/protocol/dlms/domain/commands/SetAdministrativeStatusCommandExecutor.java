@@ -17,6 +17,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 
 @Component()
 public class SetAdministrativeStatusCommandExecutor implements
-        CommandExecutor<AdministrativeStatusType, AccessResultCode> {
+CommandExecutor<AdministrativeStatusType, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusCommandExecutor.class);
 
@@ -39,7 +40,7 @@ public class SetAdministrativeStatusCommandExecutor implements
     private ConfigurationMapper configurationMapper;
 
     @Override
-    public AccessResultCode execute(final LnClientConnection conn,
+    public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
             final AdministrativeStatusType administrativeStatusType) throws IOException, TimeoutException,
             ProtocolAdapterException {
 

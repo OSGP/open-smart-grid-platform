@@ -55,6 +55,9 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private Integer challengeLength;
 
+    @Column
+    private boolean withListSupported;
+
     @Transient
     private String ipAddress;
 
@@ -155,6 +158,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setChallengeLength(final Integer challengeLength) {
         this.challengeLength = challengeLength;
+    }
+
+    public boolean isWithListSupported() {
+        return this.withListSupported;
+    }
+
+    public void setWithListSupported(final boolean withListSupported) {
+        this.withListSupported = withListSupported;
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {

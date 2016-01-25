@@ -8,6 +8,7 @@ import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,8 @@ public class SetActivityCalendarCommandActivationExecutor implements CommandExec
     private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
     @Override
-    public MethodResultCode execute(final LnClientConnection conn, final Void v) throws IOException {
+    public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device, final Void v)
+            throws IOException {
 
         LOGGER.info("ACTIVATING PASSIVE CALENDAR");
         final MethodParameter method = new MethodParameter(CLASS_ID, OBIS_CODE, METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);

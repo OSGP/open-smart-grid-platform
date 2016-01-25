@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.LnClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 /**
@@ -24,6 +25,7 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
  */
 public interface CommandExecutor<T, R> {
 
-    R execute(LnClientConnection conn, T object) throws IOException, TimeoutException, ProtocolAdapterException;
+    R execute(LnClientConnection conn, DlmsDevice device, T object) throws IOException, TimeoutException,
+            ProtocolAdapterException;
 
 }

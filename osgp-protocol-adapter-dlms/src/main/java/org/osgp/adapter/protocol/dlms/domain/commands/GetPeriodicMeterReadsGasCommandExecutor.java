@@ -25,6 +25,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +74,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadsContainerGas execute(final LnClientConnection conn,
+    public PeriodicMeterReadsContainerGas execute(final LnClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws IOException, TimeoutException,
             ProtocolAdapterException {
 
@@ -189,7 +190,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     }
 
     private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsGas> periodicMeterReads,
-            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final int channel) {
+            final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final int channel)
+            throws ProtocolAdapterException {
 
         // calculate offset from first entry, -1 because MONTHLY has no AMR
         // entry
