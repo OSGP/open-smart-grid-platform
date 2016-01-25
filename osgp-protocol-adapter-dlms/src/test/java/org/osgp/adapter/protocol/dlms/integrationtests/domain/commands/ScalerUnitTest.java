@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.application.config.ApplicationContext;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +51,10 @@ public class ScalerUnitTest {
         dlmsDeviceMessageMetadata.setDeviceIdentification("E0004001515495114");
         dlmsDeviceMessageMetadata.setIpAddress("89.200.96.223");
 
-        final LnClientConnection connection = this.dlmsConnectionFactory.getConnection(this.domainHelperService
-                .findDlmsDevice(dlmsDeviceMessageMetadata));
+        final DlmsDevice device = this.domainHelperService.findDlmsDevice(dlmsDeviceMessageMetadata);
+        final LnClientConnection connection = this.dlmsConnectionFactory.getConnection(device);
 
-        final ScalerUnitTestResponse execute = this.commandExecutor.execute(connection, new TestChannelQuery());
+        final ScalerUnitTestResponse execute = this.commandExecutor.execute(connection, device, new TestChannelQuery());
 
         Assert.assertEquals(DlmsUnit.WH, execute.getScalerUnit().getDlmsUnit());
 

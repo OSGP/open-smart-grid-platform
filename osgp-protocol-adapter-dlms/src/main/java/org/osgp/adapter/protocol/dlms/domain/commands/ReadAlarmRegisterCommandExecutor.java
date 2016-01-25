@@ -17,6 +17,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,8 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     private AlarmHelperService alarmHelperService;
 
     @Override
-    public AlarmRegister execute(final LnClientConnection conn, final ReadAlarmRegisterRequest object)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+    public AlarmRegister execute(final LnClientConnection conn, final DlmsDevice device,
+            final ReadAlarmRegisterRequest object) throws IOException, TimeoutException, ProtocolAdapterException {
 
         return new AlarmRegister(this.retrieveAlarmRegister(conn));
     }
