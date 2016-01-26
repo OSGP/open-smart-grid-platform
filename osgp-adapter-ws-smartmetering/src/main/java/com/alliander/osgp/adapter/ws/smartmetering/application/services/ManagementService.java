@@ -38,6 +38,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -92,7 +93,8 @@ public class ManagementService {
     }
 
     public List<Event> findEventsByCorrelationUid(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid) throws FunctionalException {
+            final String deviceIdentification, final String correlationUid) throws FunctionalException,
+            TechnicalException {
 
         LOGGER.info("findEventsByCorrelationUid called with organisation {}}", organisationIdentification);
 
@@ -105,10 +107,14 @@ public class ManagementService {
 
         for (final MeterResponseData meterResponseData : meterResponseDataList) {
             final Serializable messageData = meterResponseData.getMessageData();
+
             if (messageData instanceof EventMessageDataContainer) {
                 events.addAll(((EventMessageDataContainer) messageData).getEvents());
                 meterResponseDataToDeleteList.add(meterResponseData);
             } else {
+                if (messageData instanceof String) {
+                    throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
+                }
                 LOGGER.info(
                         "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
                         messageData.getClass().getName(), correlationUid);
