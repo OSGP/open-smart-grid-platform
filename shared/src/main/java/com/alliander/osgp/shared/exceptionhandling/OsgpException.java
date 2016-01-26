@@ -16,6 +16,11 @@ public class OsgpException extends Exception {
 
     protected final ComponentType componentType;
 
+    public OsgpException(final ComponentType componentType, final String message) {
+        super(message);
+        this.componentType = componentType;
+    }
+
     public OsgpException(final ComponentType componentType, final String message, final Throwable cause) {
         super(message, cause);
         this.componentType = componentType;
