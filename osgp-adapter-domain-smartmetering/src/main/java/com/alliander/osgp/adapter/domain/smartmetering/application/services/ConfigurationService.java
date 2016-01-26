@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
@@ -26,7 +27,9 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -289,8 +292,21 @@ public class ConfigurationService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
+        final Device gatewayDevice = smartMeteringDevice.getGatewayDevice();
+        if (gatewayDevice == null) {
+            /*
+             * For now throw a FunctionalException, based on the same reasoning
+             * as with the channel a couple of lines up. As soon as we have
+             * scenario's with direct communication with gas meters this will
+             * have to be changed.
+             */
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                            "Meter for gas reads should have an energy meter as gateway device."));
+        }
+
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevice.getIpAddress()), messageType);
+                gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress()), messageType);
     }
 
     public void handleSetEncryptionKeyExchangeOnGMeterResponse(final String deviceIdentification,
