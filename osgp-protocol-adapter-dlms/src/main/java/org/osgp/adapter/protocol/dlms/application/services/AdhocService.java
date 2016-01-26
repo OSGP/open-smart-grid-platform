@@ -83,7 +83,6 @@ public class AdhocService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "sendWakeUpSMS");
 
-        final LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -94,14 +93,10 @@ public class AdhocService extends DlmsApplicationService {
                     "{smsMsgId:" + response.getSmsMsgId() + "}");
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during synchronizeTime", e);
+            LOGGER.error("Unexpected exception during Send Wakeup SMS", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, "");
-        } finally {
-            if (conn != null) {
-                conn.close();
-            }
         }
     }
 
@@ -112,7 +107,6 @@ public class AdhocService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "synchronizeTime");
 
-        final LnClientConnection conn = null;
         try {
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -134,14 +128,10 @@ public class AdhocService extends DlmsApplicationService {
                     smsDetailsResponse);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during synchronizeTime", e);
+            LOGGER.error("Unexpected exception during Get SMS Details", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
-        } finally {
-            if (conn != null) {
-                conn.close();
-            }
         }
     }
 }

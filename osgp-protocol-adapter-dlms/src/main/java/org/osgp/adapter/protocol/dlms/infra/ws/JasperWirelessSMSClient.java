@@ -2,6 +2,7 @@ package org.osgp.adapter.protocol.dlms.infra.ws;
 
 import java.util.List;
 
+import org.apache.ws.security.WSConstants;
 import org.osgp.adapter.protocol.dlms.application.config.JwccWSConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -85,5 +86,6 @@ public class JasperWirelessSMSClient {
             final String pass) {
         interceptor.setSecurementUsername(user);
         interceptor.setSecurementPassword(pass);
+        interceptor.setSecurementPasswordType(WSConstants.PW_TEXT);
     }
 }
