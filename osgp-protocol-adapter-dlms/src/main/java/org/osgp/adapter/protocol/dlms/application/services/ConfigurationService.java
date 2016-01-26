@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
@@ -22,6 +23,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectComm
 import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
@@ -251,7 +253,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "setEncryptionKeyExchangeOnGMeter");
 
-        final LnClientConnection conn = null;
+        LnClientConnection conn = null;
         DlmsDevice device = null;
         try {
             final String deviceIdentification = messageMetadata.getDeviceIdentification();
@@ -259,11 +261,13 @@ public class ConfigurationService extends DlmsApplicationService {
 
             LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
 
-            // conn = this.dlmsConnectionFactory.getConnection(device);
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
             // TODO get real GMeterKey. Dummy value is used for now.
-            // this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn,
-            // "596f7556576f6e5468654a61636b506f7421");
+            final HashMap<String, String> keyMap = new HashMap<String, String>();
+            keyMap.put("masterKey", device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER).getKey());
+            keyMap.put("newKey", "newKey");
+            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, keyMap);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification);
