@@ -62,15 +62,17 @@ public class AdhocService {
     }
 
     public String enqueueSendWakeUpSMSRequest(final String organisationIdentification, final String deviceIdentification) {
+
         LOGGER.debug("enqueueSendWakeUpSMSRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
+        final SMSDetails smsDetails = new SMSDetails(deviceIdentification, 0L, "", "", "");
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.SEND_WAKEUP_SMS, correlationUid, organisationIdentification,
-                deviceIdentification, "SendWakeUpSMSRequest");
+                deviceIdentification, smsDetails);
 
         this.smartMeteringRequestMessageSender.send(message);
 
