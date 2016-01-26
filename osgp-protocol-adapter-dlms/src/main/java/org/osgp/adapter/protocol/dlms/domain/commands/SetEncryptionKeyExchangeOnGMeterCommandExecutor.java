@@ -59,6 +59,9 @@ CommandExecutor<HashMap<String, String>, MethodResultCode> {
             throw new IOException("Error while executing TRANSFER_KEY_ATTRIBUTE_ID");
         }
 
+        LOGGER.info("Succes!: Finished calling Transfer Key class_id {} obis_code {} attribute{}", CLASS_ID, OBIS_CODE,
+                TRANSFER_KEY_ATTRIBUTE_ID);
+
         // Set Encryption Key
         final MethodParameter setEncryptionKeyMethod = new MethodParameter(CLASS_ID, OBIS_CODE,
                 SET_ENCRYPTION_KEY_ATTRIBUTE_ID, keyToSetvalueDataObject);
@@ -69,7 +72,8 @@ CommandExecutor<HashMap<String, String>, MethodResultCode> {
             throw new IOException("Error while executing SET_ENCRYPTION_KEY_ATTRIBUTE_ID");
         }
 
-        LOGGER.info("Finished calling conn.set");
+        LOGGER.info("Succes!: Finished calling Set Encryption Key class_id {} obis_code {} attribute{}", CLASS_ID,
+                OBIS_CODE, SET_ENCRYPTION_KEY_ATTRIBUTE_ID);
 
         return MethodResultCode.SUCCESS;
     }
