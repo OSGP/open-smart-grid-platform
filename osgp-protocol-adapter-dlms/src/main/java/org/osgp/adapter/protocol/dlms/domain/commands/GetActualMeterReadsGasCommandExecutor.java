@@ -18,6 +18,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,9 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MeterReadsGas execute(final LnClientConnection conn, final ActualMeterReadsQuery actualMeterReadsRequest)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+    public MeterReadsGas execute(final LnClientConnection conn, final DlmsDevice device,
+            final ActualMeterReadsQuery actualMeterReadsRequest) throws IOException, TimeoutException,
+            ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
 
@@ -59,12 +61,13 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
         final AttributeAddress mbusTime = new AttributeAddress(CLASS_ID_MBUS, obisCodeMbusMasterValue,
                 ATTRIBUTE_ID_TIME);
 
-        final List<GetResult> getResultList = conn.get(mbusValue, mbusTime);
+        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, mbusValue, mbusTime);
 
         checkResultList(getResultList);
 
         GetResult getResult = getResultList.get(0);
         AccessResultCode resultCode = getResult.resultCode();
+        this.dlmsHelperService.getWithList(conn, device, mbusValue, mbusTime);
         LOGGER.debug("AccessResultCode: {}", resultCode.name());
         final DataObject value = getResult.resultData();
         LOGGER.debug(this.dlmsHelperService.getDebugInfo(value));

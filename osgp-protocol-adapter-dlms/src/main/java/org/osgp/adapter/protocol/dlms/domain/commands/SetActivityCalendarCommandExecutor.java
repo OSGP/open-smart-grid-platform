@@ -22,6 +22,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DayProfileConverter;
 import org.osgp.adapter.protocol.dlms.application.mapping.SeasonProfileConverter;
 import org.osgp.adapter.protocol.dlms.application.mapping.WeekProfileConverter;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,8 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final LnClientConnection conn, final ActivityCalendar activityCalendar)
-            throws IOException, ProtocolAdapterException {
+    public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+            final ActivityCalendar activityCalendar) throws IOException, ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
         final SetParameter calendarNameParameter = this.getCalendarNameParameter(activityCalendar);

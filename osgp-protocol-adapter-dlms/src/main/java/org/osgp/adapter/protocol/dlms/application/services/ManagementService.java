@@ -72,7 +72,7 @@ public class ManagementService extends DlmsApplicationService {
                         findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                         findEventsQuery.getUntil());
 
-                events.addAll(this.retrieveEventsCommandExecutor.execute(conn, findEventsQuery));
+                events.addAll(this.retrieveEventsCommandExecutor.execute(conn, device, findEventsQuery));
             }
 
             final EventMessageDataContainer eventMessageDataContainer = new EventMessageDataContainer(events);

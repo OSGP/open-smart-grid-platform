@@ -76,9 +76,9 @@ public class MonitoringService extends DlmsApplicationService {
 
             Serializable response = null;
             if (periodicMeterReadsQuery.isGas()) {
-                response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, periodicMeterReadsQuery);
+                response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
             } else {
-                response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, periodicMeterReadsQuery);
+                response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
@@ -111,9 +111,9 @@ public class MonitoringService extends DlmsApplicationService {
 
             Serializable response = null;
             if (actualMeterReadsRequest.isGas()) {
-                response = this.actualMeterReadsGasCommandExecutor.execute(conn, actualMeterReadsRequest);
+                response = this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
             } else {
-                response = this.actualMeterReadsCommandExecutor.execute(conn, actualMeterReadsRequest);
+                response = this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
@@ -145,7 +145,7 @@ public class MonitoringService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AlarmRegister alarmRegister = this.readAlarmRegisterCommandExecutor.execute(conn,
+            final AlarmRegister alarmRegister = this.readAlarmRegisterCommandExecutor.execute(conn, device,
                     readAlarmRegisterRequest);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,

@@ -23,6 +23,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,17 +68,17 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     // @formatter:on
 
     @Override
-    public List<Event> execute(final LnClientConnection conn, final FindEventsQuery findEventsQuery)
-            throws IOException, ProtocolAdapterException, TimeoutException {
+    public List<Event> execute(final LnClientConnection conn, final DlmsDevice device,
+            final FindEventsQuery findEventsQuery) throws IOException, ProtocolAdapterException, TimeoutException {
 
         final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
                 findEventsQuery.getFrom(), findEventsQuery.getUntil());
 
-        final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID,
+        final AttributeAddress eventLogBuffer = new AttributeAddress(CLASS_ID,
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID,
                 selectiveAccessDescription);
 
-        final List<GetResult> getResultList = conn.get(configurationObjectValue);
+        final List<GetResult> getResultList = conn.get(eventLogBuffer);
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving event register "

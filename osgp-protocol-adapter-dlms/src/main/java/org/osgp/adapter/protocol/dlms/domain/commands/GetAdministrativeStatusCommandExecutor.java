@@ -17,6 +17,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +39,8 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
     private ConfigurationMapper configurationMapper;
 
     @Override
-    public AdministrativeStatusType execute(final LnClientConnection conn, final Void useless) throws IOException,
-    TimeoutException, ProtocolAdapterException {
+    public AdministrativeStatusType execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
+            throws IOException, TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 

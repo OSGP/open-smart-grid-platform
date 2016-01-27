@@ -49,7 +49,7 @@ public class AdhocService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            this.synchronizeTimeCommandExecutor.execute(conn, null);
+            this.synchronizeTimeCommandExecutor.execute(conn, device, null);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
