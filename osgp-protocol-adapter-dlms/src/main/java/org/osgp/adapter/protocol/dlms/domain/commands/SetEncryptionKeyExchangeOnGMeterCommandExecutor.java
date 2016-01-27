@@ -20,6 +20,8 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -65,12 +67,13 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MethodResultCode execute(final LnClientConnection conn, final ProtocolMeterInfo protocolMeterInfo)
-            throws IOException, ProtocolAdapterException {
+    public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+            final ProtocolMeterInfo protocolMeterInfo) throws IOException, ProtocolAdapterException {
         LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-        final byte[] encryptedKey = SecurityUtils.aesRFC3394KeyWrap(protocolMeterInfo.getMasterKey().getBytes(),
-                protocolMeterInfo.getEncryptionKey().getBytes());
+        final byte[] encryptedKey = SecurityUtils.aesRFC3394KeyWrap(
+                device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER).getKey().getBytes(), protocolMeterInfo
+                .getEncryptionKey().getBytes());
         final DataObject keyToSetDataObject = DataObject.newOctetStringData(encryptedKey);
 
         final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());

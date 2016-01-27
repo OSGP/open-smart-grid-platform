@@ -269,10 +269,10 @@ public class ConfigurationService extends DlmsApplicationService {
             final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo
                     .getDeviceIdentification());
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
-                    gMeterInfo.getDeviceIdentification(), device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER)
-                            .getKey(), gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey());
+                    gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
+                            SecurityKeyType.G_METER_ENCRYPTION).getKey());
 
-            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, protocolMeterInfo);
+            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification);
