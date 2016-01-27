@@ -7,15 +7,13 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.networking;
 
-import java.util.Set;
-
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
+import com.alliander.osgp.dlms.DlmsPushNotificationAlarm;
 
 public abstract class DlmsChannelHandler extends SimpleChannelHandler {
 
@@ -56,7 +54,7 @@ public abstract class DlmsChannelHandler extends SimpleChannelHandler {
         e.getChannel().close();
     }
 
-    protected void logMessage(final String deviceIdentification, final Set<AlarmType> alarmTypes) {
-        this.logger.info("logMessage(" + deviceIdentification + ", " + alarmTypes + ")");
+    protected void logMessage(final DlmsPushNotificationAlarm dlmsPushNotificationAlarm) {
+        this.logger.info("logMessage(" + dlmsPushNotificationAlarm + ")");
     }
 }

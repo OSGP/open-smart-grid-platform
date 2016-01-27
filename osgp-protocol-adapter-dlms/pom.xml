@@ -84,6 +84,11 @@
             <artifactId>shared</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.osgp</groupId>
+            <artifactId>osgp-dlms</artifactId>
+        </dependency>
+
         <!-- Spring Framework -->
         <dependency>
             <groupId>org.springframework</groupId>
