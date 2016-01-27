@@ -12,21 +12,41 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
-public class DlmsApplicationService {
+public abstract class DlmsApplicationService {
     protected void logStart(final Logger logger, final DlmsDeviceMessageMetadata messageMetadata,
             final String methodName) {
         logger.info("{} called for device: {} for organisation: {}", methodName,
                 messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
     }
 
+    /**
+     * The service may only throw OsgpExceptions and the cause of the exception
+     * can also only be a OsgpException. This is because other layers need to
+     * deserialize the exception (and the cause within it) and the Exception
+     * class must be known to this layer.
+     *
+     * If the Exception is not an OsgpException, only the exception message will
+     * be wrapped in an OsgpException and returned. This also applies to the
+     * cause when it is an OsgpException.
+     *
+     * @param e
+     * @return OsgpException
+     */
     protected OsgpException ensureOsgpException(final Exception e) {
 
         if (e instanceof OsgpException) {
+            final Throwable cause = e.getCause();
+            if (cause != null && !(cause instanceof OsgpException)) {
+                return new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage(), new OsgpException(
+                        ComponentType.PROTOCOL_DLMS, cause.getMessage()));
+            }
+
             return (OsgpException) e;
         }
 
         return new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                "Unexpected exception while handling protocol request/response message", e);
+                "Unexpected exception while handling protocol request/response message", new OsgpException(
+                        ComponentType.PROTOCOL_DLMS, e.getMessage()));
     }
 
     protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
