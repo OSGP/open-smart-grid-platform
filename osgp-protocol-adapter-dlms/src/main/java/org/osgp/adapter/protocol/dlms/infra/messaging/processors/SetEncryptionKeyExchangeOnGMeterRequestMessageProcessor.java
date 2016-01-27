@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
+
 /**
  * Class for processing set Activity Calendar request messages
  */
@@ -45,7 +47,9 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends Dev
         try {
             messageMetadata.handleMessage(message);
 
-            this.configurationService.setEncryptionKeyExchangeOnGMeter(messageMetadata, this.responseMessageSender);
+            final GMeterInfo gMeterInfo = (GMeterInfo) message.getObject();
+            this.configurationService.setEncryptionKeyExchangeOnGMeter(messageMetadata, gMeterInfo,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);

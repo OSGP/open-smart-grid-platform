@@ -7,12 +7,12 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
+import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
@@ -39,6 +39,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
@@ -249,7 +250,7 @@ public class ConfigurationService extends DlmsApplicationService {
     }
 
     public void setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
-            final DeviceResponseMessageSender responseMessageSender) {
+            final GMeterInfo gMeterInfo, final DeviceResponseMessageSender responseMessageSender) {
 
         this.logStart(LOGGER, messageMetadata, "setEncryptionKeyExchangeOnGMeter");
 
@@ -263,11 +264,14 @@ public class ConfigurationService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            // TODO get real GMeterKey. Dummy value is used for now.
-            final HashMap<String, String> keyMap = new HashMap<String, String>();
-            keyMap.put("masterKey", device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER).getKey());
-            keyMap.put("newKey", "newKey");
-            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, keyMap);
+            // Get G-Meter
+            final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo
+                    .getDeviceIdentification());
+            final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
+                    gMeterInfo.getDeviceIdentification(), device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER)
+                            .getKey(), gMeterDevice.getValidSecurityKey(SecurityKeyType.G_METER_ENCRYPTION).getKey());
+
+            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, protocolMeterInfo);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification);

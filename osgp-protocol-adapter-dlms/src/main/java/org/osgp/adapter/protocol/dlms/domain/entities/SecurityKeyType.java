@@ -4,5 +4,6 @@ public enum SecurityKeyType {
     E_METER_MASTER,
     E_METER_AUTHENTICATION,
     E_METER_ENCRYPTION,
-    M_BUS_USER
+    M_BUS_USER,
+    G_METER_ENCRYPTION
 }
