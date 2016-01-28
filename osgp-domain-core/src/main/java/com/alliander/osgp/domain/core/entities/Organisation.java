@@ -120,7 +120,6 @@ public class Organisation extends AbstractEntity {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.authorizations == null) ? 0 : this.authorizations.hashCode());
         result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
         result = prime * result
                 + ((this.organisationIdentification == null) ? 0 : this.organisationIdentification.hashCode());
@@ -128,24 +127,17 @@ public class Organisation extends AbstractEntity {
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null) {
             return false;
         }
-        if (this.getClass() != obj.getClass()) {
+        if (!(o instanceof Organisation)) {
             return false;
         }
-        final Organisation other = (Organisation) obj;
-        if (this.authorizations == null) {
-            if (other.authorizations != null) {
-                return false;
-            }
-        } else if (!this.authorizations.equals(other.authorizations)) {
-            return false;
-        }
+        final Organisation other = (Organisation) o;
         if (this.name == null) {
             if (other.name != null) {
                 return false;
@@ -153,30 +145,11 @@ public class Organisation extends AbstractEntity {
         } else if (!this.name.equals(other.name)) {
             return false;
         }
-        if (this.prefix == null) {
-            if (other.prefix != null) {
-                return false;
-            }
-        } else if (!this.prefix.equals(other.prefix)) {
-            return false;
-        }
         if (this.organisationIdentification == null) {
             if (other.organisationIdentification != null) {
                 return false;
             }
         } else if (!this.organisationIdentification.equals(other.organisationIdentification)) {
-            return false;
-        }
-        if (this.functionGroup == null) {
-            return false;
-        } else if (!this.functionGroup.equals(other.functionGroup)) {
-            return false;
-        }
-        if (this.domains == null) {
-            if (other.domains != null) {
-                return false;
-            }
-        } else if (!this.domains.equals(other.domains)) {
             return false;
         }
         return true;

@@ -40,14 +40,6 @@ public class Event extends AbstractEntity {
         // Default constructor
     }
 
-    /**
-     * Constructor.
-     *
-     * @param device
-     * @param eventType
-     * @param description
-     * @param index
-     */
     public Event(final Device device, final EventType eventType, final String description, final Integer index) {
         this.device = device;
         this.eventType = eventType;

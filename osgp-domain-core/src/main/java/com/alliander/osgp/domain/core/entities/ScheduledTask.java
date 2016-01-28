@@ -129,4 +129,24 @@ public class ScheduledTask extends AbstractEntity {
     public void setComplete() {
         this.status = ScheduledTaskStatusType.COMPLETE;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ScheduledTask)) {
+            return false;
+        }
+        final ScheduledTask scheduledTask = (ScheduledTask) o;
+        if (!scheduledTask.getCorrelationId().equals(this.correlationUid)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getCorrelationId().hashCode();
+    }
 }

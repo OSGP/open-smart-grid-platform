@@ -86,4 +86,29 @@ public class RelayStatus extends AbstractEntity {
     public void setIndex(final int index) {
         this.index = index;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RelayStatus)) {
+            return false;
+        }
+        final RelayStatus relayStatus = (RelayStatus) o;
+        if (!relayStatus.getDevice().getDeviceIdentification().equals(this.getDevice().getDeviceIdentification())) {
+            return false;
+        }
+        if (relayStatus.getIndex() != this.index) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.getDevice().getDeviceIdentification().hashCode();
+        result = 31 * result + this.index;
+        return result;
+    }
 }

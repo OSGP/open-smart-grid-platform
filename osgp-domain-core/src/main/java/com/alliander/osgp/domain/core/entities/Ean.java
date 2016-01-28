@@ -33,14 +33,8 @@ public class Ean extends AbstractEntity {
         // Default constructor
     }
 
-    /**
-     * Constructor.
-     *
-     * @param device
-     * @param code
-     * @param description
-     */
     public Ean(final Device device, final String code, final String description) {
+        this.device = device;
         this.code = code;
         this.description = description;
     }
@@ -62,7 +56,7 @@ public class Ean extends AbstractEntity {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Event)) {
+        if (!(o instanceof Ean)) {
             return false;
         }
         final Ean other = (Ean) o;

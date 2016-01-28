@@ -132,4 +132,24 @@ public class DomainInfo extends AbstractEntity {
         return this.incomingDomainResponsesQueue;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DomainInfo)) {
+            return false;
+        }
+        final DomainInfo domainInfo = (DomainInfo) o;
+        if (!domainInfo.getKey().equals(this.getKey())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getKey() != null ? this.getKey().hashCode() : 0;
+    }
+
 }

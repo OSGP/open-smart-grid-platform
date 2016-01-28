@@ -70,7 +70,7 @@ public class ProtocolInfo extends AbstractEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || this.getClass() != o.getClass()) {
+        if (!(o instanceof ProtocolInfo)) {
             return false;
         }
         final ProtocolInfo protocolInfo = (ProtocolInfo) o;
@@ -80,18 +80,6 @@ public class ProtocolInfo extends AbstractEntity {
         if (!protocolInfo.getProtocolVersion().equals(this.protocolVersion)) {
             return false;
         }
-        if (!protocolInfo.getOutgoingProtocolRequestsQueue().equals(this.outgoingProtocolRequestsQueue)) {
-            return false;
-        }
-        if (!protocolInfo.getIncomingProtocolResponsesQueue().equals(this.incomingProtocolResponsesQueue)) {
-            return false;
-        }
-        if (!protocolInfo.getIncomingProtocolRequestsQueue().equals(this.incomingProtocolRequestsQueue)) {
-            return false;
-        }
-        if (!protocolInfo.getOutgoingProtocolResponsesQueue().equals(this.outgoingProtocolResponsesQueue)) {
-            return false;
-        }
         return true;
     }
 
@@ -99,14 +87,6 @@ public class ProtocolInfo extends AbstractEntity {
     public int hashCode() {
         int result = this.protocol != null ? this.protocol.hashCode() : 0;
         result = 31 * result + (this.protocolVersion != null ? this.protocolVersion.hashCode() : 0);
-        result = 31 * result
-                + (this.outgoingProtocolRequestsQueue != null ? this.outgoingProtocolRequestsQueue.hashCode() : 0);
-        result = 31 * result
-                + (this.incomingProtocolResponsesQueue != null ? this.incomingProtocolResponsesQueue.hashCode() : 0);
-        result = 31 * result
-                + (this.incomingProtocolRequestsQueue != null ? this.incomingProtocolRequestsQueue.hashCode() : 0);
-        result = 31 * result
-                + (this.outgoingProtocolResponsesQueue != null ? this.outgoingProtocolResponsesQueue.hashCode() : 0);
         return result;
     }
 
@@ -133,5 +113,4 @@ public class ProtocolInfo extends AbstractEntity {
     public String getOutgoingProtocolResponsesQueue() {
         return this.outgoingProtocolResponsesQueue;
     }
-
 }
