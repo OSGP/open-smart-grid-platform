@@ -13,8 +13,6 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.slf4j.Logger;
 
-import com.alliander.osgp.dlms.DlmsPushNotificationAlarm;
-
 public abstract class DlmsChannelHandler extends SimpleChannelHandler {
 
     private final Logger logger;
@@ -52,9 +50,5 @@ public abstract class DlmsChannelHandler extends SimpleChannelHandler {
         final int channelId = e.getChannel().getId();
         this.logger.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
         e.getChannel().close();
-    }
-
-    protected void logMessage(final DlmsPushNotificationAlarm dlmsPushNotificationAlarm) {
-        this.logger.info("logMessage(" + dlmsPushNotificationAlarm + ")");
     }
 }
