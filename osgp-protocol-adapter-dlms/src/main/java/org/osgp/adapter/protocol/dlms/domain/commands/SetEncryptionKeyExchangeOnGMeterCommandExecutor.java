@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -73,7 +73,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
 
         final byte[] encryptedKey = SecurityUtils.aesRFC3394KeyWrap(
                 device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER).getKey().getBytes(), protocolMeterInfo
-                .getEncryptionKey().getBytes());
+                        .getEncryptionKey().getBytes());
         final DataObject keyToSetDataObject = DataObject.newOctetStringData(encryptedKey);
 
         final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
@@ -90,12 +90,12 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
                 attribute.getAttrValue(), keyToSetDataObject);
         final List<MethodResult> methodResultCode = conn.action(setEncryptionKeyMethod);
 
-        if (methodResultCode == null || methodResultCode.isEmpty() || methodResultCode.get(0) == null
-                || !MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
-            throw new IOException("Error while executing for attribute " + attribute);
+        if (!MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
+            throw new IOException("Error while executing for attribute " + attribute + " Reason = "
+                    + methodResultCode.get(0).resultCode());
         }
 
-        LOGGER.info("Succes!: Finished calling performKeyAction class_id {} obis_code {} attribute{}", CLASS_ID,
+        LOGGER.info("Success!: Finished calling performKeyAction class_id {} obis_code {} attribute{}", CLASS_ID,
                 obisCode, attribute);
     }
 
