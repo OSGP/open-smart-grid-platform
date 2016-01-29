@@ -40,7 +40,7 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
     private static final ObisCode OBIS_CODE_INTERVAL_MBUS_3 = new ObisCode("0.3.24.1.0.255");
     private static final ObisCode OBIS_CODE_INTERVAL_MBUS_4 = new ObisCode("0.4.24.1.0.255");
 
-    private static final Map<Integer, ObisCode> OBIS_HASHMAP = new HashMap();;
+    private static final Map<Integer, ObisCode> OBIS_HASHMAP = new HashMap<>();
     static {
         OBIS_HASHMAP.put(1, OBIS_CODE_INTERVAL_MBUS_1);
         OBIS_HASHMAP.put(2, OBIS_CODE_INTERVAL_MBUS_2);
