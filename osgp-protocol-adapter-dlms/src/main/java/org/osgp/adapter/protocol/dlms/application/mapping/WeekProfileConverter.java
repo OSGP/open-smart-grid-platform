@@ -13,17 +13,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile;
 
 @Component(value = "weekProfileConverter")
 public class WeekProfileConverter {
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     public DataObject convert(final Set<WeekProfile> source) {
         if (source == null) {
