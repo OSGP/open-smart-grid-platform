@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class AlarmHelperService {
          * the object are not used according to the DSMR documentation, the
          * practical meaningful most significant bit is bit 27.
          */
-        final EnumMap<AlarmType, Integer> map = new EnumMap<>(AlarmType.class);
+        final Map<AlarmType, Integer> map = new EnumMap<>(AlarmType.class);
 
         // Bits for group: Other Alarms
         map.put(AlarmType.CLOCK_INVALID, 0);

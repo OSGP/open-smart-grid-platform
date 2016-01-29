@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class AmrProfileStatusCodeHelperService {
     private static final ByteRegisterConverter<AmrProfileStatusCodeFlag> BYTE_REGISTER_CONVERTER;
 
     static {
-        final EnumMap<AmrProfileStatusCodeFlag, Integer> map = new EnumMap<>(AmrProfileStatusCodeFlag.class);
+        final Map<AmrProfileStatusCodeFlag, Integer> map = new EnumMap<>(AmrProfileStatusCodeFlag.class);
 
         map.put(AmrProfileStatusCodeFlag.CRITICAL_ERROR, 0);
         map.put(AmrProfileStatusCodeFlag.CLOCK_INVALID, 1);

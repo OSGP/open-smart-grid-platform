@@ -9,8 +9,8 @@ package org.osgp.adapter.protocol.dlms.application.mapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -27,7 +27,7 @@ public class DayProfileConverter {
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    public DataObject convert(final HashSet<DayProfile> source) {
+    public DataObject convert(final Set<DayProfile> source) {
         if (source == null) {
             return null;
         }
@@ -38,7 +38,7 @@ public class DayProfileConverter {
 
     }
 
-    private List<DataObject> getDayObjectList(final HashSet<DayProfile> dayProfileSet) {
+    private List<DataObject> getDayObjectList(final Set<DayProfile> dayProfileSet) {
         final List<DataObject> dayObjectList = new ArrayList<>();
 
         for (final DayProfile dayProfile : dayProfileSet) {
