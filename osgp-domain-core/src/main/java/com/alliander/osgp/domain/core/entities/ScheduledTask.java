@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -139,14 +140,11 @@ public class ScheduledTask extends AbstractEntity {
             return false;
         }
         final ScheduledTask scheduledTask = (ScheduledTask) o;
-        if (!scheduledTask.getCorrelationId().equals(this.correlationUid)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.correlationUid, scheduledTask.correlationUid);
     }
 
     @Override
     public int hashCode() {
-        return this.getCorrelationId().hashCode();
+        return Objects.hashCode(this.correlationUid);
     }
 }

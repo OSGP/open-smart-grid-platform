@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -71,30 +73,18 @@ public class DeviceAuthorization extends AbstractEntity {
         }
         final DeviceAuthorization authorization = (DeviceAuthorization) o;
         // Only comparing the device and organisation identifications (and not
-        // the complete objects) to prevent stack
-        // overflow errors when comparing devices (which contain device
-        // authorizations).
-        if (this.device != null ? !this.device.getDeviceIdentification().equals(
-                authorization.device.getDeviceIdentification()) : authorization.device != null) {
-            return false;
-        }
-        if (this.organisation != null ? !this.organisation.getOrganisationIdentification().equals(
-                authorization.organisation.getOrganisationIdentification()) : authorization.organisation != null) {
-            return false;
-        }
-        if (this.functionGroup != null ? !this.functionGroup.equals(authorization.functionGroup)
-                : authorization.functionGroup != null) {
-            return false;
-        }
-        return true;
+        // the complete objects) to prevent stack overflow errors when comparing
+        // devices (which contain device authorizations).
+        final boolean isDeviceEqual = Objects.equals(this.device, authorization.device);
+        final boolean isOrganisationEqual = Objects.equals(this.organisation, authorization.organisation);
+        final boolean isDeviceFunctionGroupEqual = Objects.equals(this.functionGroup.name(),
+                authorization.functionGroup.name());
+
+        return isDeviceEqual && isOrganisationEqual && isDeviceFunctionGroupEqual;
     }
 
     @Override
     public int hashCode() {
-        int result = this.device != null ? this.device.getDeviceIdentification().hashCode() : 0;
-        result = 31 * result
-                + (this.organisation != null ? this.organisation.getOrganisationIdentification().hashCode() : 0);
-        result = 31 * result + (this.functionGroup != null ? this.functionGroup.hashCode() : 0);
-        return result;
+        return Objects.hashCode(this.device.getDeviceIdentification());
     }
 }

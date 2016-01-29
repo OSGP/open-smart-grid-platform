@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -118,12 +119,7 @@ public class Organisation extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-        result = prime * result
-                + ((this.organisationIdentification == null) ? 0 : this.organisationIdentification.hashCode());
-        return result;
+        return Objects.hashCode(this.organisationIdentification);
     }
 
     @Override
@@ -138,21 +134,8 @@ public class Organisation extends AbstractEntity {
             return false;
         }
         final Organisation other = (Organisation) o;
-        if (this.name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!this.name.equals(other.name)) {
-            return false;
-        }
-        if (this.organisationIdentification == null) {
-            if (other.organisationIdentification != null) {
-                return false;
-            }
-        } else if (!this.organisationIdentification.equals(other.organisationIdentification)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.organisationIdentification, other.organisationIdentification);
+
     }
 
     public PlatformFunctionGroup getFunctionGroup() {

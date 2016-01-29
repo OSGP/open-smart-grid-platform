@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -230,11 +231,7 @@ public class Device implements Serializable {
             return false;
         }
         final Device device = (Device) o;
-        if (this.deviceIdentification != null ? !this.deviceIdentification.equals(device.deviceIdentification)
-                : device.deviceIdentification != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
     }
 
     public String getAlias() {
@@ -343,7 +340,7 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        return this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0;
+        return Objects.hashCode(this.deviceIdentification);
     }
 
     public boolean isActivated() {

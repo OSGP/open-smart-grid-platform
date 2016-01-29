@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -74,20 +76,15 @@ public class ProtocolInfo extends AbstractEntity {
             return false;
         }
         final ProtocolInfo protocolInfo = (ProtocolInfo) o;
-        if (!protocolInfo.getProtocol().equals(this.protocol)) {
-            return false;
-        }
-        if (!protocolInfo.getProtocolVersion().equals(this.protocolVersion)) {
-            return false;
-        }
-        return true;
+        final boolean isProtocolEqual = Objects.equals(this.protocol, protocolInfo.protocol);
+        final boolean isProtocolVersionEqual = Objects.equals(this.protocolVersion, protocolInfo.protocolVersion);
+
+        return isProtocolEqual && isProtocolVersionEqual;
     }
 
     @Override
     public int hashCode() {
-        int result = this.protocol != null ? this.protocol.hashCode() : 0;
-        result = 31 * result + (this.protocolVersion != null ? this.protocolVersion.hashCode() : 0);
-        return result;
+        return Objects.hash(this.protocol, this.protocolVersion);
     }
 
     public String getProtocol() {
