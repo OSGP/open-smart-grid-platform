@@ -35,7 +35,7 @@ public class ConfigurationObjectHelperService {
     private static final int NUMBER_OF_FLAG_BITS = 16;
 
     static {
-        final EnumMap<ConfigurationFlagType, Integer> map = new EnumMap<>(ConfigurationFlagType.class);
+        final Map<ConfigurationFlagType, Integer> map = new EnumMap<>(ConfigurationFlagType.class);
 
         map.put(ConfigurationFlagType.DISCOVER_ON_OPEN_COVER, 15);
         map.put(ConfigurationFlagType.DISCOVER_ON_POWER_ON, 14);
@@ -52,7 +52,7 @@ public class ConfigurationObjectHelperService {
         BIT_INDEX_PER_CONFIGURATION_FLAG_TYPE = Collections.unmodifiableMap(map);
 
         // Create a flipped version of the map.
-        final HashMap<Integer, ConfigurationFlagType> tempReversed = new HashMap<>();
+        final Map<Integer, ConfigurationFlagType> tempReversed = new HashMap<>();
         for (final Entry<ConfigurationFlagType, Integer> val : BIT_INDEX_PER_CONFIGURATION_FLAG_TYPE.entrySet()) {
             tempReversed.put(val.getValue(), val.getKey());
         }

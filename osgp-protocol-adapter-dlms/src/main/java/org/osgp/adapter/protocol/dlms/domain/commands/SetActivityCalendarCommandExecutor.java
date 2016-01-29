@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -66,9 +67,9 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         final SetParameter calendarNameParameter = this.getCalendarNameParameter(activityCalendar);
         final List<SeasonProfile> seasonProfileList = activityCalendar.getSeasonProfileList();
         final SetParameter seasonProfileParameter = this.getSeasonProfileParameter(seasonProfileList);
-        final HashSet<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
+        final Set<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
         final SetParameter weekProfileTableParameter = this.getWeekProfileTableParameter(weekProfileSet);
-        final HashSet<DayProfile> dayProfileSet = this.getDayProfileSet(weekProfileSet);
+        final Set<DayProfile> dayProfileSet = this.getDayProfileSet(weekProfileSet);
         final SetParameter dayProfileTablePassive = this.getDayProfileTablePassive(dayProfileSet);
 
         final Map<String, AccessResultCode> allAccessResultCodeMap = new HashMap<>();
@@ -132,7 +133,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return new SetParameter(calendarNamePassive, value);
     }
 
-    private SetParameter getDayProfileTablePassive(final HashSet<DayProfile> dayProfileSet) {
+    private SetParameter getDayProfileTablePassive(final Set<DayProfile> dayProfileSet) {
         final AttributeAddress dayProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
         final DataObject dayArray = this.dayProfileConverter.convert(dayProfileSet);
@@ -148,8 +149,8 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
      * @param weekProfileSet
      * @return
      */
-    private HashSet<DayProfile> getDayProfileSet(final HashSet<WeekProfile> weekProfileSet) {
-        final HashSet<DayProfile> dayProfileHashSet = new HashSet<>();
+    private Set<DayProfile> getDayProfileSet(final Set<WeekProfile> weekProfileSet) {
+        final Set<DayProfile> dayProfileHashSet = new HashSet<>();
 
         for (final WeekProfile weekProfile : weekProfileSet) {
             dayProfileHashSet.addAll(weekProfile.getAllDaysAsList());
@@ -158,7 +159,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return dayProfileHashSet;
     }
 
-    private SetParameter getWeekProfileTableParameter(final HashSet<WeekProfile> weekProfileSet) {
+    private SetParameter getWeekProfileTableParameter(final Set<WeekProfile> weekProfileSet) {
 
         final AttributeAddress weekProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
@@ -169,10 +170,10 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return new SetParameter(weekProfileTablePassive, weekArray);
     }
 
-    private HashSet<WeekProfile> getWeekProfileSet(final List<SeasonProfile> seasonProfileList) {
+    private Set<WeekProfile> getWeekProfileSet(final List<SeasonProfile> seasonProfileList) {
         // Use HashSet to ensure that unique WeekProfiles are returned. For
         // there can be duplicates.
-        final HashSet<WeekProfile> weekProfileSet = new HashSet<>();
+        final Set<WeekProfile> weekProfileSet = new HashSet<>();
 
         for (final SeasonProfile seasonProfile : seasonProfileList) {
             weekProfileSet.add(seasonProfile.getWeekProfile());

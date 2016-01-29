@@ -75,7 +75,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private DataObject buildSetParameterData(final ConfigurationObject configurationObject,
             final ConfigurationObject configurationObjectOnDevice) {
 
-        final LinkedList<DataObject> linkedList = new LinkedList<DataObject>();
+        final List<DataObject> linkedList = new LinkedList<DataObject>();
         if (GprsOperationModeType.ALWAYS_ON.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(1));
         } else if (GprsOperationModeType.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
@@ -146,7 +146,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObject retrieveConfigurationObject(final LnClientConnection conn) throws IOException,
-            TimeoutException, ProtocolAdapterException {
+    TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -179,7 +179,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         final DataObject resultData = resultList.get(0).resultData();
         LOGGER.info("Configuration object current complex data: {}", this.dlmsHelperService.getDebugInfo(resultData));
 
-        final LinkedList<DataObject> linkedList = resultData.value();
+        final List<DataObject> linkedList = resultData.value();
 
         if (linkedList == null || linkedList.isEmpty()) {
             throw new ProtocolAdapterException(

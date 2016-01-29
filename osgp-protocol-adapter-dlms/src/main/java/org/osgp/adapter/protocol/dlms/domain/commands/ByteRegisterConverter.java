@@ -34,7 +34,7 @@ public class ByteRegisterConverter<T extends Enum<T>> {
      * @return Flipped map.
      */
     private Map<Integer, T> createFlippedMap(final Map<T, Integer> map) {
-        final HashMap<Integer, T> tempReversed = new HashMap<>();
+        final Map<Integer, T> tempReversed = new HashMap<>();
         for (final Entry<T, Integer> val : map.entrySet()) {
             tempReversed.put(val.getValue(), val.getKey());
         }

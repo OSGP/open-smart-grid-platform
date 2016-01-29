@@ -12,7 +12,6 @@ import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
-import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -50,9 +49,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     @Autowired
     private DlmsConnectionFactory dlmsConnectionFactory;
