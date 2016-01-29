@@ -19,10 +19,12 @@ public class Event implements Serializable {
     private static final long serialVersionUID = 4482313912422705642L;
     private DateTime timestamp;
     private Integer eventCode;
+    private Integer eventCounter;
 
-    public Event(final DateTime timestamp, final Integer eventCode) {
+    public Event(final DateTime timestamp, final Integer eventCode, final Integer eventCounter) {
         this.timestamp = timestamp;
         this.eventCode = eventCode;
+        this.eventCounter = eventCounter;
     }
 
     public DateTime getTimestamp() {
@@ -33,4 +35,7 @@ public class Event implements Serializable {
         return this.eventCode;
     }
 
+    public Integer getEventCounter() {
+        return this.eventCounter;
+    }
 }
