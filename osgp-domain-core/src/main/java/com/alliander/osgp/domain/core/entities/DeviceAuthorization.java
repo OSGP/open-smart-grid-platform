@@ -85,6 +85,6 @@ public class DeviceAuthorization extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.device.getDeviceIdentification());
+        return Objects.hash(this.device, this.organisation, this.functionGroup.name());
     }
 }
