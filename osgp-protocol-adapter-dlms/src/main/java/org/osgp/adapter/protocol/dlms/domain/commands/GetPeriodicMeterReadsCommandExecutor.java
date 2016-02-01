@@ -25,6 +25,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -84,7 +85,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadsContainer execute(final LnClientConnection conn,
+    public PeriodicMeterReadsContainer execute(final LnClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws IOException, TimeoutException,
             ProtocolAdapterException {
 

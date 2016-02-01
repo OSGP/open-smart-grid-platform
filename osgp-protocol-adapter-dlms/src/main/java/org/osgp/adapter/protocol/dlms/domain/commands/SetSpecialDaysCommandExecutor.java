@@ -17,6 +17,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,14 +35,14 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final LnClientConnection conn, final List<SpecialDay> specialDays)
-            throws IOException, ProtocolAdapterException {
+    public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+            final List<SpecialDay> specialDays) throws IOException, ProtocolAdapterException {
 
-        final ArrayList<DataObject> specialDayEntries = new ArrayList<DataObject>();
+        final List<DataObject> specialDayEntries = new ArrayList<DataObject>();
         int i = 0;
         for (final SpecialDay specialDay : specialDays) {
 
-            final ArrayList<DataObject> specDayEntry = new ArrayList<DataObject>();
+            final List<DataObject> specDayEntry = new ArrayList<DataObject>();
             specDayEntry.add(DataObject.newUInteger16Data(i));
             specDayEntry.add(this.dlmsHelperService.dateStringToOctetString(specialDay.getSpecialDayDate()));
             specDayEntry.add(DataObject.newUInteger8Data((short) specialDay.getDayId()));

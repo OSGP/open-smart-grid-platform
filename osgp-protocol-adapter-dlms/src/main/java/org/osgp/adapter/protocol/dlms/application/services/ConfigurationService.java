@@ -12,7 +12,6 @@ import java.util.List;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
-import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -50,9 +49,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     @Autowired
     private DlmsConnectionFactory dlmsConnectionFactory;
@@ -100,7 +96,8 @@ public class ConfigurationService extends DlmsApplicationService {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, specialDays);
+            final AccessResultCode accessResultCode = this.setSpecialDaysCommandExecutor.execute(conn, device,
+                    specialDays);
             if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
                 throw new ProtocolAdapterException("Set special days reported result is: " + accessResultCode);
             }
@@ -152,7 +149,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn,
+            final AccessResultCode accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn, device,
                     configurationObject);
             if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
                 throw new ProtocolAdapterException("Set configuration object reported result is: " + accessResultCode);
@@ -187,9 +184,9 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.info("Device for Set Administrative Status is: {}", device);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
-            this.setAdministrativeStatusCommandExecutor.execute(conn, administrativeStatusType);
+            this.setAdministrativeStatusCommandExecutor.execute(conn, device, administrativeStatusType);
 
-            final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn,
+            final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
                     administrativeStatusType);
             if (AccessResultCode.SUCCESS != accessResultCode) {
                 throw new ProtocolAdapterException("AccessResultCode for set administrative status was not SUCCESS: "
@@ -225,7 +222,7 @@ public class ConfigurationService extends DlmsApplicationService {
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             final AdministrativeStatusType administrativeStatusType = this.getAdministrativeStatusCommandExecutor
-                    .execute(conn, null);
+                    .execute(conn, device, null);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                     administrativeStatusType);
@@ -256,9 +253,10 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.info("Device for Activity Calendar is: {}", device);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
-            this.setActivityCalendarCommandExecutor.execute(conn, activityCalendar);
+            this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar);
 
-            final MethodResultCode methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, null);
+            final MethodResultCode methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn,
+                    device, null);
 
             if (!MethodResultCode.SUCCESS.equals(methodResult)) {
                 throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + methodResult);
@@ -297,7 +295,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn,
+            final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
                     alarmNotifications);
             if (AccessResultCode.SUCCESS != accessResultCode) {
                 throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "

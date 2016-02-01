@@ -68,7 +68,7 @@ public class DlmsHelperServiceTest {
     }
 
     @Test
-    public void testFromByteArraySummerTime() {
+    public void testFromByteArraySummerTime() throws Exception {
 
         final DateTime dateInSummerTime = this.dlmsHelperService.fromDateTimeValue(this.byteArraySummerTime());
 
@@ -76,7 +76,7 @@ public class DlmsHelperServiceTest {
     }
 
     @Test
-    public void testFromByteArrayWinterTime() {
+    public void testFromByteArrayWinterTime() throws Exception {
 
         final DateTime dateInWinterTime = this.dlmsHelperService.fromDateTimeValue(this.byteArrayWinterTime());
 

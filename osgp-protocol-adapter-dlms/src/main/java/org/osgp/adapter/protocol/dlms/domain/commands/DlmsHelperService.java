@@ -7,15 +7,20 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
+import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
@@ -23,6 +28,7 @@ import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.internal.asn1.cosem.Data.Choices;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +46,42 @@ public class DlmsHelperService {
     private static final String DAYLIGHT_SAVINGS_END = "FD";
     private static final String NOT_SPECIFIED = "FF";
     public static final int MILLISECONDS_PER_MINUTE = 60000;
+
+    public List<GetResult> getWithList(final LnClientConnection conn, final DlmsDevice device,
+            final AttributeAddress... params) throws ProtocolAdapterException {
+        try {
+            if (device.isWithListSupported()) {
+                return conn.get(params);
+            } else {
+                return this.getWithListWorkaround(conn, params);
+            }
+        } catch (final Exception e) {
+            throw new ProtocolAdapterException("Error retrieving values with-list.", e);
+        }
+    }
+
+    /**
+     * Workaround method mimicking a Get-Request with-list for devices that do
+     * not support the actual functionality from DLMS.
+     *
+     * @throws IOException
+     * @throws TimeoutException
+     *
+     * @see #getWithList(LnClientConnection, DlmsDevice, AttributeAddress...)
+     */
+    private List<GetResult> getWithListWorkaround(final LnClientConnection conn, final AttributeAddress... params)
+            throws IOException, TimeoutException {
+        final List<GetResult> getResultList = new ArrayList<>();
+        for (final AttributeAddress param : params) {
+            final List<GetResult> getResultListForParam = conn.get(param);
+            if (getResultListForParam.size() != 1) {
+                throw new AssertionError("GetResult list contains " + getResultListForParam.size()
+                        + " elements instead of 1");
+            }
+            getResultList.add(getResultListForParam.get(0));
+        }
+        return getResultList;
+    }
 
     private void checkResultCode(final GetResult getResult, final String description) throws ProtocolAdapterException {
         final AccessResultCode resultCode = getResult.resultCode();
@@ -110,19 +152,55 @@ public class DlmsHelperService {
         }
     }
 
-    public DateTime fromDateTimeValue(final byte[] dateTimeValue) {
+    public DateTime fromDateTimeValue(final byte[] dateTimeValue) throws ProtocolAdapterException {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
-        final int year = bb.getShort();
-        final int monthOfYear = bb.get();
-        final int dayOfMonth = bb.get();
+        int year = bb.getShort();
+        final boolean yearUnspecified = year == (short) 0xFFFF;
+        int monthOfYear = bb.get();
+        final boolean monthUnspecified = monthOfYear == (byte) 0xFF;
+        int dayOfMonth = bb.get();
+        final boolean dayUnspecified = dayOfMonth == (byte) 0xFF;
+
+        if (yearUnspecified && monthUnspecified && dayUnspecified) {
+            // use dummy values, standing out as not realistic
+            year = 1;
+            monthOfYear = 1;
+            dayOfMonth = 1;
+        } else if (yearUnspecified) {
+            throw new ProtocolAdapterException("Handling unspecified year in date-time value is not supported.");
+        } else if (monthUnspecified) {
+            throw new ProtocolAdapterException("Handling unspecified month in date-time value is not supported.");
+        } else if (dayUnspecified) {
+            throw new ProtocolAdapterException("Handling unspecified day of month in date-time value is not supported.");
+        }
         // final int dayOfWeek =
         bb.get();
-        final int hourOfDay = bb.get();
-        final int minuteOfHour = bb.get();
-        final int secondOfMinute = bb.get();
-        final int hundredthsOfSecond = bb.get();
-        final int deviation = bb.getShort();
+        int hourOfDay = bb.get();
+        if (hourOfDay == (byte) 0xFF) {
+            // treat time part as start of day if not specified
+            hourOfDay = 0;
+        }
+        int minuteOfHour = bb.get();
+        if (minuteOfHour == (byte) 0xFF) {
+            // treat time part as start of day if not specified
+            minuteOfHour = 0;
+        }
+        int secondOfMinute = bb.get();
+        if (secondOfMinute == (byte) 0xFF) {
+            // treat time part as start of day if not specified
+            secondOfMinute = 0;
+        }
+        int hundredthsOfSecond = bb.get();
+        if (hundredthsOfSecond == (byte) 0xFF) {
+            // treat time part as start of day if not specified
+            hundredthsOfSecond = 0;
+        }
+        int deviation = bb.getShort();
+        if (deviation == (short) 0x8000) {
+            // treat unspecified deviation as no deviation
+            deviation = 0;
+        }
         // final int clockStatus =
         bb.get();
 

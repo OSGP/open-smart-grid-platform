@@ -11,8 +11,10 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
-import org.osgp.adapter.protocol.dlms.exceptions.DlmsConnectionException;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component
 public class DlmsConnectionFactory {
@@ -31,7 +33,7 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public LnClientConnection getConnection(final DlmsDevice device) throws DlmsConnectionException {
+    public LnClientConnection getConnection(final DlmsDevice device) throws TechnicalException {
 
         if (device.isHls5Active()) {
             return this.getHls5Connection(device);
@@ -41,14 +43,14 @@ public class DlmsConnectionFactory {
         }
     }
 
-    private LnClientConnection getHls5Connection(final DlmsDevice device) throws DlmsConnectionException {
+    private LnClientConnection getHls5Connection(final DlmsDevice device) throws TechnicalException {
 
         final byte[] authenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
         final byte[] encryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);
 
         final String ipAddress = device.getIpAddress();
         if (ipAddress == null) {
-            throw new DlmsConnectionException("Unable to get HLS5 connection for device "
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Unable to get HLS5 connection for device "
                     + device.getDeviceIdentification() + ", because the IP address is not set.");
         }
 
@@ -65,7 +67,7 @@ public class DlmsConnectionFactory {
 
             return tcpConnectionBuilder.buildLnConnection();
         } catch (final IOException e) {
-            throw new DlmsConnectionException("Error while creating TCP connection.", e);
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while creating TCP connection.", e);
         }
     }
 
@@ -79,11 +81,12 @@ public class DlmsConnectionFactory {
      *             when there is no valid key.
      */
     private byte[] getSecurityKey(final DlmsDevice dlmsDevice, final SecurityKeyType securityKeyType)
-            throws DlmsConnectionException {
+            throws TechnicalException {
         final SecurityKey securityKey = dlmsDevice.getValidSecurityKey(securityKeyType);
         if (securityKey == null) {
-            throw new DlmsConnectionException(String.format("There is no valid key for device '%s' of type '%s'.",
-                    dlmsDevice.getDeviceIdentification(), securityKeyType.name()));
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, String.format(
+                    "There is no valid key for device '%s' of type '%s'.", dlmsDevice.getDeviceIdentification(),
+                    securityKeyType.name()));
         }
 
         return Hex.decode(securityKey.getKey());

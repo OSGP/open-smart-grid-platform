@@ -22,6 +22,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +51,9 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final LnClientConnection conn, final ConfigurationObject configurationObject)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+    public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+            final ConfigurationObject configurationObject) throws IOException, TimeoutException,
+            ProtocolAdapterException {
 
         final ConfigurationObject configurationObjectOnDevice = this.retrieveConfigurationObject(conn);
 
@@ -73,7 +75,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private DataObject buildSetParameterData(final ConfigurationObject configurationObject,
             final ConfigurationObject configurationObjectOnDevice) {
 
-        final LinkedList<DataObject> linkedList = new LinkedList<DataObject>();
+        final List<DataObject> linkedList = new LinkedList<DataObject>();
         if (GprsOperationModeType.ALWAYS_ON.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(1));
         } else if (GprsOperationModeType.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
@@ -144,7 +146,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObject retrieveConfigurationObject(final LnClientConnection conn) throws IOException,
-            TimeoutException, ProtocolAdapterException {
+    TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -177,7 +179,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         final DataObject resultData = resultList.get(0).resultData();
         LOGGER.info("Configuration object current complex data: {}", this.dlmsHelperService.getDebugInfo(resultData));
 
-        final LinkedList<DataObject> linkedList = resultData.value();
+        final List<DataObject> linkedList = resultData.value();
 
         if (linkedList == null || linkedList.isEmpty()) {
             throw new ProtocolAdapterException(
