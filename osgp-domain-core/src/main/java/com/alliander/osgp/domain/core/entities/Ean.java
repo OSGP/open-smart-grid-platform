@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -33,14 +35,8 @@ public class Ean extends AbstractEntity {
         // Default constructor
     }
 
-    /**
-     * Constructor.
-     *
-     * @param device
-     * @param code
-     * @param description
-     */
     public Ean(final Device device, final String code, final String description) {
+        this.device = device;
         this.code = code;
         this.description = description;
     }
@@ -62,28 +58,19 @@ public class Ean extends AbstractEntity {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Event)) {
+        if (!(o instanceof Ean)) {
             return false;
         }
         final Ean other = (Ean) o;
-        if (this.device != null ? !this.device.getDeviceIdentification().equals(other.device.getDeviceIdentification())
-                : other.device != null) {
-            return false;
-        }
-        if (this.code != null ? !this.code.equals(other.code) : other.code != null) {
-            return false;
-        }
-        if (this.description != null ? !this.description.equals(other.description) : other.description != null) {
-            return false;
-        }
-        return true;
+        final boolean isDeviceEqual = Objects.equals(this.device, other.device);
+        final boolean isCodeEqual = Objects.equals(this.code, other.code);
+        final boolean isDescriptionEqual = Objects.equals(this.description, other.description);
+
+        return isDeviceEqual && isCodeEqual && isDescriptionEqual;
     }
 
     @Override
     public int hashCode() {
-        int result = this.code != null ? this.code.hashCode() : 0;
-        result = 31 * result + (this.description != null ? this.description.hashCode() : 0);
-        result = 31 * result + (this.device != null ? this.device.hashCode() : 0);
-        return result;
+        return Objects.hash(this.device, this.code, this.description);
     }
 }
