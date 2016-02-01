@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.jasperwireless.api.ws.service.sms.GetSMSDetailsResponse;
@@ -31,6 +32,8 @@ import com.jasperwireless.api.ws.service.sms.SmsMessageType;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService extends DlmsApplicationService {
+    private static final String COMMUNICATION_METHOD_GPRS = "GPRS";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
@@ -87,13 +90,19 @@ public class AdhocService extends DlmsApplicationService {
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-            final SendSMSResponse response = this.jwSMSClient.sendWakeUpSMS(device.getIccId());
+            if (COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
+                final SendSMSResponse response = this.jwSMSClient.sendWakeUpSMS(device.getIccId());
+                final SMSDetails smsDetails = new SMSDetails(device.getDeviceIdentification(), response.getSmsMsgId(),
+                        null, null, null);
+                this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                        smsDetails);
+            } else {
+                final OsgpException oex = new OsgpException(ComponentType.PROTOCOL_DLMS,
+                        "Device communication method is not GPRS");
 
-            final SMSDetails smsDetails = new SMSDetails(device.getDeviceIdentification(), response.getSmsMsgId(),
-                    null, null, null);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    smsDetails);
+                this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, oex, responseMessageSender,
+                        "");
+            }
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Send Wakeup SMS", e);
