@@ -128,9 +128,9 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                     .createSendWakeupSMSResponse();
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
+            final SMSDetailsType dataRequest = this.adhocMapper.map(meterResponseData.getMessageData(),
+                    SMSDetailsType.class);
+            response.setSmsMsgId(dataRequest.getSmsMsgId());
 
         } catch (final Exception e) {
             this.handleException(e);
@@ -147,11 +147,11 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails smsDetails = this.adhocMapper.map(
                 request.getSMSDetails(), com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails.class);
 
-        final String correlationUid = this.adhocService.enqueueGetSMSDetailsRequest(organisationIdentification,
-                smsDetails.getDeviceIdentification(), smsDetails);
-
         final GetSMSDetailsAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
         .createGetSMSDetailsAsyncResponse();
+
+        final String correlationUid = this.adhocService.enqueueGetSMSDetailsRequest(organisationIdentification,
+                smsDetails.getDeviceIdentification(), smsDetails);
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(smsDetails.getDeviceIdentification());

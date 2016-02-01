@@ -53,7 +53,7 @@
 	<xsd:element name="SendWakeupSMSAsyncResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
-				<xsd:extension base="common:AsyncResponse"></xsd:extension>
+				<xsd:extension base="common:AsyncResponse" />
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
@@ -68,8 +68,9 @@
 	<xsd:element name="SendWakeupSMSResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
-				<xsd:element name="Description" type="xsd:string" />
+				<xsd:element name="Result" type="common:OsgpResultType" />
+				<xsd:element name="Description" type="xsd:string" minOccurs="0" />
+    			<xsd:element name="smsMsgId" type="xsd:long" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -77,7 +78,7 @@
 	<xsd:element name="GetSMSDetailsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="SMSDetails" type="tns:SMSDetailsType" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="SMSDetails" type="tns:SMSDetailsType"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -99,7 +100,7 @@
 	<xsd:element name="GetSMSDetailsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="SMSDetails" type="tns:SMSDetailsType" minOccurs="1" maxOccurs="1" />
+				<xsd:element name="SMSDetails" type="tns:SMSDetailsType" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -107,10 +108,10 @@
 	<xsd:complexType name="SMSDetailsType">
 		<xsd:sequence>
 		    <xsd:element name="deviceIdentification" type="common:DeviceIdentification"/>
-    		<xsd:element name="smsMsgId" type="xsd:long" minOccurs="1" maxOccurs="1"/>
-     		<xsd:element name="status" type="xsd:string"/>
-    		<xsd:element name="smsMsgAttemptStatus" type="xsd:string"/>
-     		<xsd:element name="msgType" type="xsd:string"/>
+    		<xsd:element name="smsMsgId" type="xsd:long"/>
+     		<xsd:element name="status" type="xsd:string" minOccurs="0"/>
+    		<xsd:element name="smsMsgAttemptStatus" type="xsd:string" minOccurs="0"/>
+     		<xsd:element name="msgType" type="xsd:string" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 

@@ -86,6 +86,7 @@ public class AdhocService {
 
     public String enqueueGetSMSDetailsRequest(final String organisationIdentification,
             final String deviceIdentification, final SMSDetails smsDetails) {
+
         LOGGER.debug("enqueueGetSMSDetailsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
