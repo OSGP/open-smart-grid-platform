@@ -14,7 +14,6 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
@@ -34,9 +33,6 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class ManagementService extends DlmsApplicationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
-
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
 
     @Autowired
     private RetrieveEventsCommandExecutor retrieveEventsCommandExecutor;

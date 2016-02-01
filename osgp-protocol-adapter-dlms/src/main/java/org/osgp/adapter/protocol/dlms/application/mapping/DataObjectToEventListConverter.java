@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.Event;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory;
 
 @Component(value = "dataObjectToEventListConverter")
 public class DataObjectToEventListConverter {
@@ -29,7 +30,8 @@ public class DataObjectToEventListConverter {
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    public List<Event> convert(final DataObject source) throws ProtocolAdapterException {
+    public List<Event> convert(final DataObject source, final EventLogCategory eventLogCategory)
+            throws ProtocolAdapterException {
         final List<Event> eventList = new ArrayList<>();
         if (source == null) {
             throw new ProtocolAdapterException("DataObject should not be null");
@@ -37,14 +39,15 @@ public class DataObjectToEventListConverter {
 
         final List<DataObject> listOfEvents = source.value();
         for (final DataObject eventDataObject : listOfEvents) {
-            eventList.add(this.getEvent(eventDataObject));
+            eventList.add(this.getEvent(eventDataObject, eventLogCategory));
         }
 
         return eventList;
 
     }
 
-    private Event getEvent(final DataObject eventDataObject) throws ProtocolAdapterException {
+    private Event getEvent(final DataObject eventDataObject, final EventLogCategory eventLogCategory)
+            throws ProtocolAdapterException {
 
         final List<DataObject> eventData = eventDataObject.value();
 
@@ -52,8 +55,9 @@ public class DataObjectToEventListConverter {
             throw new ProtocolAdapterException("eventData DataObject should not be null");
         }
 
-        if (eventData.size() != 2) {
-            throw new ProtocolAdapterException("eventData size should be 2");
+        if (eventData.size() != eventLogCategory.getNumberOfEventElements()) {
+            throw new ProtocolAdapterException("eventData size should be "
+                    + eventLogCategory.getNumberOfEventElements());
         }
 
         final DateTime dateTime = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0));
@@ -62,8 +66,17 @@ public class DataObjectToEventListConverter {
         }
         final Short code = eventData.get(1).value();
 
-        LOGGER.info("Event time is {} and event code is {}", dateTime, code);
+        Integer eventCounter = null;
 
-        return new Event(dateTime, code.intValue());
+        if (eventLogCategory.getNumberOfEventElements() == 3) {
+            if (!eventData.get(2).isNumber()) {
+                throw new ProtocolAdapterException("eventData value is not a number");
+            }
+            eventCounter = eventData.get(2).value();
+        }
+
+        LOGGER.info("Event time is {}, event code is {} and event counter is {}", dateTime, code, eventCounter);
+
+        return new Event(dateTime, code.intValue(), eventCounter);
     }
 }

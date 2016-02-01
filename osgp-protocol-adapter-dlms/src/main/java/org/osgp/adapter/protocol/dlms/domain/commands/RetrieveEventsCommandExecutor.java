@@ -61,7 +61,7 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.STANDARD_EVENT_LOG, new ObisCode("0.0.99.98.0.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.FRAUD_DETECTION_LOG, new ObisCode("0.0.99.98.1.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP
-                .put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
+        .put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG, new ObisCode("0.0.99.98.3.255"));
     }
 
@@ -95,11 +95,11 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
             LOGGER.info("Result of getting events for {} is {}", findEventsQuery.getEventLogCategory(),
                     result.resultCode());
             throw new ProtocolAdapterException("Getting the events for  " + findEventsQuery.getEventLogCategory()
-                    + " from the meter resulted in" + result.resultCode());
+                    + " from the meter resulted in: " + result.resultCode());
         }
 
         final DataObject resultData = result.resultData();
-        return this.dataObjectToEventListConverter.convert(resultData);
+        return this.dataObjectToEventListConverter.convert(resultData, findEventsQuery.getEventLogCategory());
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final DateTime beginDateTime,

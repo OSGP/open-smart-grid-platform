@@ -13,7 +13,6 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
-import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -54,9 +53,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private DomainHelperService domainHelperService;
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     @Autowired
     private DlmsConnectionFactory dlmsConnectionFactory;
@@ -271,7 +267,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                            SecurityKeyType.G_METER_MASTER).getKey());
+                                    SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 

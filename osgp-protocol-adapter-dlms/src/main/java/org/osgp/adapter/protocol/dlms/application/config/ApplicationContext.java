@@ -7,8 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.application.config;
 
-import javax.annotation.Resource;
-
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.joda.time.DateTime;
@@ -19,7 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -37,9 +34,6 @@ public class ApplicationContext {
     private static final DateTimeZone LOCAL_TIME_ZONE = DateTimeZone.forID(LOCAL_TIME_ZONE_IDENTIFIER);
     private static final int TIME_ZONE_OFFSET_MINUTES = LOCAL_TIME_ZONE.getStandardOffset(new DateTime().getMillis())
             / DateTimeConstants.MILLIS_PER_MINUTE;
-
-    @Resource
-    private Environment environment;
 
     public ApplicationContext() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
