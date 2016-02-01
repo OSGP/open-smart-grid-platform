@@ -40,8 +40,17 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         final String deviceIdentification = message.getEquipmentIdentifier();
         final PushNotificationAlarm pushNotificationAlarm = new PushNotificationAlarm(deviceIdentification,
                 message.getAlarms());
-        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
-                deviceIdentification, pushNotificationAlarm);
+        /*
+         * For now use test-org as organisation name. An organisation name has
+         * to be used that is linked to a certificate to be configured when a
+         * notification is sent to an external web service in WS-Adapter
+         * SmartMetering.
+         * 
+         * com.alliander.osgp.adapter.ws.smartmetering.infra.ws.
+         * SendNotificationServiceClient#sendNotification
+         */
+        final RequestMessage requestMessage = new RequestMessage(correlationId, "test-org", deviceIdentification,
+                pushNotificationAlarm);
         LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_ALARM.name());
     }

@@ -38,6 +38,7 @@ public class OsgpRequestMessageSender {
             @Override
             public Message createMessage(final Session session) throws JMSException {
                 final ObjectMessage objectMessage = session.createObjectMessage(requestMessage);
+                objectMessage.setJMSCorrelationID(requestMessage.getCorrelationUid());
                 objectMessage.setJMSType(messageType);
                 objectMessage.setStringProperty(Constants.ORGANISATION_IDENTIFICATION,
                         requestMessage.getOrganisationIdentification());
