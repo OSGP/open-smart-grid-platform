@@ -4,8 +4,10 @@ public class ProtocolMeterInfo {
     private int channel;
     private String deviceIdentification;
     private String encryptionKey;
+    private String masterKey;
 
-    public ProtocolMeterInfo(final int channel, final String deviceIdentification, final String encryptionKey) {
+    public ProtocolMeterInfo(final int channel, final String deviceIdentification, final String encryptionKey,
+            final String masterKey) {
         this.channel = channel;
         this.deviceIdentification = deviceIdentification;
         this.encryptionKey = encryptionKey;
@@ -21,6 +23,10 @@ public class ProtocolMeterInfo {
 
     public String getEncryptionKey() {
         return this.encryptionKey;
+    }
+
+    public String getMasterKey() {
+        return this.masterKey;
     }
 
 }

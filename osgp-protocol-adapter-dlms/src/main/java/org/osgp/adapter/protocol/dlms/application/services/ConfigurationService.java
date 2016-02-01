@@ -270,7 +270,8 @@ public class ConfigurationService extends DlmsApplicationService {
                     .getDeviceIdentification());
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
-                            SecurityKeyType.G_METER_ENCRYPTION).getKey());
+                            SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
+                            SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 

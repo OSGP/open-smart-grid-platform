@@ -21,7 +21,6 @@ import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,15 +70,18 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             final ProtocolMeterInfo protocolMeterInfo) throws IOException, ProtocolAdapterException {
         LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-        final byte[] encryptedKey = SecurityUtils.aesRFC3394KeyWrap(
-                device.getValidSecurityKey(SecurityKeyType.E_METER_MASTER).getKey().getBytes(), protocolMeterInfo
-                        .getEncryptionKey().getBytes());
-        final DataObject keyToSetDataObject = DataObject.newOctetStringData(encryptedKey);
+        final byte[] unencryptedEncryptionKey = protocolMeterInfo.getEncryptionKey().getBytes();
+        final byte[] encryptedEncryptionKey = SecurityUtils.aesRFC3394KeyWrap(protocolMeterInfo.getMasterKey()
+                .getBytes(), protocolMeterInfo.getEncryptionKey().getBytes());
+
+        final DataObject encryptedEncryptionKeyDataObject = DataObject.newOctetStringData(encryptedEncryptionKey);
+        final DataObject unencryptedEncryptionKeyDataObject = DataObject.newOctetStringData(unencryptedEncryptionKey);
 
         final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
-        this.performKeyAction(conn, keyToSetDataObject, obisCode, AttributeEnum.TRANSFER_KEY_ATTRIBUTE_ID);
-        this.performKeyAction(conn, keyToSetDataObject, obisCode, AttributeEnum.SET_ENCRYPTION_KEY_ATTRIBUTE_ID);
+        this.performKeyAction(conn, encryptedEncryptionKeyDataObject, obisCode, AttributeEnum.TRANSFER_KEY_ATTRIBUTE_ID);
+        this.performKeyAction(conn, unencryptedEncryptionKeyDataObject, obisCode,
+                AttributeEnum.SET_ENCRYPTION_KEY_ATTRIBUTE_ID);
 
         return MethodResultCode.SUCCESS;
     }
