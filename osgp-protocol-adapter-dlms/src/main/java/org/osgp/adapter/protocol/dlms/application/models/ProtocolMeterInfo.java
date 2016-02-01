@@ -11,6 +11,7 @@ public class ProtocolMeterInfo {
         this.channel = channel;
         this.deviceIdentification = deviceIdentification;
         this.encryptionKey = encryptionKey;
+        this.masterKey = masterKey;
     }
 
     public int getChannel() {
