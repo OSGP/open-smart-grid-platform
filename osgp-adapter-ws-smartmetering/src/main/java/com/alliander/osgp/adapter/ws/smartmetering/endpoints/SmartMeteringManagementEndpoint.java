@@ -108,15 +108,15 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             response = new FindEventsResponse();
 
             // Get the request parameters, make sure that date time are in UTC.
-            final String deviceIdentification = request.getDeviceIdentification();
             final String correlationUid = request.getCorrelationUid();
 
             final List<Event> events = this.managementService.findEventsByCorrelationUid(organisationIdentification,
-                    deviceIdentification, correlationUid);
+                    correlationUid);
 
             LOGGER.info("getFindEventsResponse() number of events: {}", events.size());
             for (final Event event : events) {
-                LOGGER.info("event.eventCode: {} event.timestamp: {}", event.getEventCode(), event.getTimestamp());
+                LOGGER.info("event.eventCode: {} event.timestamp: {} event.eventCounter: {}", event.getEventCode(),
+                        event.getTimestamp(), event.getEventCounter());
             }
             LOGGER.info("mapping events to schema type...");
             response.getEvents().addAll(

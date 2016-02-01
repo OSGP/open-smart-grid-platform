@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.EventType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 
 public class EventConverter extends
-BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> {
+        BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventConverter.class);
 
@@ -41,6 +41,7 @@ BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering
             final com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event event = new com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event();
             event.setEventType(EventType.fromValue(eventType.toString()));
             event.setTimestamp(timestamp);
+            event.setEventCounter(source.getEventCounter());
             return event;
         } catch (final DatatypeConfigurationException e) {
             LOGGER.error("DatatypeConfigurationException", e);
@@ -59,6 +60,6 @@ BidirectionalConverter<Event, com.alliander.osgp.adapter.ws.schema.smartmetering
         final DateTime timestamp = new DateTime(source.getTimestamp().toGregorianCalendar().getTime());
         final Integer eventCode = com.alliander.osgp.domain.core.valueobjects.smartmetering.EventType.valueOf(
                 source.getEventType().toString()).ordinal();
-        return new Event(timestamp, eventCode);
+        return new Event(timestamp, eventCode, source.getEventCounter());
     }
 }
