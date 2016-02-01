@@ -148,6 +148,6 @@ public class DomainInfo extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getKey());
+        return Objects.hashCode(this.getKey());
     }
 }

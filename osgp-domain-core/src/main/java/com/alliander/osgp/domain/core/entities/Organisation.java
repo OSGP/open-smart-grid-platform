@@ -127,9 +127,6 @@ public class Organisation extends AbstractEntity {
         if (this == o) {
             return true;
         }
-        if (o == null) {
-            return false;
-        }
         if (!(o instanceof Organisation)) {
             return false;
         }

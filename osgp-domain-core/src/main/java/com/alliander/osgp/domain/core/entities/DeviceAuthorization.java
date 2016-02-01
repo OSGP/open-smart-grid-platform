@@ -77,8 +77,7 @@ public class DeviceAuthorization extends AbstractEntity {
         // devices (which contain device authorizations).
         final boolean isDeviceEqual = Objects.equals(this.device, authorization.device);
         final boolean isOrganisationEqual = Objects.equals(this.organisation, authorization.organisation);
-        final boolean isDeviceFunctionGroupEqual = Objects.equals(this.functionGroup.name(),
-                authorization.functionGroup.name());
+        final boolean isDeviceFunctionGroupEqual = Objects.equals(this.functionGroup, authorization.functionGroup);
 
         return isDeviceEqual && isOrganisationEqual && isDeviceFunctionGroupEqual;
     }
