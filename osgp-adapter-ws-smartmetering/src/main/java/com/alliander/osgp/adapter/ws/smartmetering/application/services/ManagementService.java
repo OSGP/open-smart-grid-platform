@@ -38,6 +38,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -91,8 +93,8 @@ public class ManagementService {
         return correlationUid;
     }
 
-    public List<Event> findEventsByCorrelationUid(final String organisationIdentification,
-            final String deviceIdentification, final String correlationUid) throws FunctionalException {
+    public List<Event> findEventsByCorrelationUid(final String organisationIdentification, final String correlationUid)
+            throws OsgpException {
 
         LOGGER.info("findEventsByCorrelationUid called with organisation {}}", organisationIdentification);
 
@@ -105,10 +107,24 @@ public class ManagementService {
 
         for (final MeterResponseData meterResponseData : meterResponseDataList) {
             final Serializable messageData = meterResponseData.getMessageData();
+
             if (messageData instanceof EventMessageDataContainer) {
                 events.addAll(((EventMessageDataContainer) messageData).getEvents());
                 meterResponseDataToDeleteList.add(meterResponseData);
             } else {
+                /**
+                 * If the returned data is not an EventMessageContainer but a
+                 * String, there has been an exception. The exception message
+                 * has been put in the messageData.
+                 *
+                 * As there is no way of knowing what the type of the exception
+                 * was (because it is passed as a String) it is thrown as a
+                 * TechnicalException because the user is most probably not to
+                 * blame for the exception.
+                 */
+                if (messageData instanceof String) {
+                    throw new TechnicalException(ComponentType.UNKNOWN, (String) messageData);
+                }
                 LOGGER.info(
                         "findEventsByCorrelationUid also found other type of meter response data: {} for correlation UID: {}",
                         messageData.getClass().getName(), correlationUid);
