@@ -7,9 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.application.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.xml.soap.MessageFactory;
 
@@ -24,22 +21,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
-import org.springframework.ws.config.annotation.EnableWs;
-import org.springframework.ws.server.endpoint.adapter.DefaultMethodEndpointAdapter;
-import org.springframework.ws.server.endpoint.adapter.method.MarshallingPayloadMethodProcessor;
-import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResolver;
-import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
-
-//import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 /**
  * An application context Java configuration class for Jasper Wireless settings.
  * The usage of Java configuration requires Spring Framework 3.0
  */
-@EnableWs
 @Configuration
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class JasperWirelessConfig {
@@ -59,7 +48,7 @@ public class JasperWirelessConfig {
     }
 
     @Bean
-    public Jaxb2Marshaller jasperWirelessMarshaller() {
+    public Jaxb2Marshaller marshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setContextPath("com.jasperwireless.api.ws.service.sms");
         return marshaller;
@@ -72,65 +61,27 @@ public class JasperWirelessConfig {
         return saajSoapMessageFactory;
     }
 
-    // @Bean
-    // public HttpComponentsMessageSender xwsSecurityMessageSender() {
-    // return new HttpComponentsMessageSender();
-    // }
-
     @Bean
     public Wss4jSecurityInterceptor wss4jSecurityInterceptorClient() {
-        /*
-         * Please note If ValidationActions needs to be mentioned then
-         * Validdation CallBack Handler must be there
-         */
         final Wss4jSecurityInterceptor wss4jSecurityInterceptor = new Wss4jSecurityInterceptor();
-        // wss4jSecurityInterceptor.setValidationActions("UsernameToken");
         wss4jSecurityInterceptor.setSecurementActions("UsernameToken");
-        wss4jSecurityInterceptor.setSecurementUsername("dummyUser");
-        wss4jSecurityInterceptor.setSecurementPassword("dummyPw");
-        wss4jSecurityInterceptor.setSecurementPasswordType("PasswordText");
-        // wss4jSecurityInterceptor.setValidationCallbackHandler(callbackHandler());
         return wss4jSecurityInterceptor;
     }
 
     @Bean
     public WebServiceTemplate webServiceTemplate() throws Exception {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
-        webServiceTemplate.setMarshaller(this.jasperWirelessMarshaller());
-        webServiceTemplate.setUnmarshaller(this.jasperWirelessMarshaller());
-        webServiceTemplate.setDefaultUri("https://api.jasperwireless.com/ws/service/Sms");
-        // webServiceTemplate.setMessageSender(this.xwsSecurityMessageSender());
-        // final ClientInterceptor[] clientInterceptors = new
-        // ClientInterceptor[] { this.xwsSecurityInterceptor() };
-        // webServiceTemplate.setInterceptors(clientInterceptors);
-
-        //
+        webServiceTemplate.setMarshaller(this.marshaller());
+        webServiceTemplate.setUnmarshaller(this.marshaller());
+        webServiceTemplate.setDefaultUri("https://kpnapi.jasperwireless.com/ws/service/Sms");
         webServiceTemplate.setInterceptors(new ClientInterceptor[] { this.wss4jSecurityInterceptorClient() });
         webServiceTemplate.setMessageFactory(this.messageFactory());
-
         return webServiceTemplate;
     }
 
     @Bean
-    public MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor() {
-        final MarshallingPayloadMethodProcessor marshallingPayloadMethodProcessor = new MarshallingPayloadMethodProcessor(
-                this.jasperWirelessMarshaller());
-        return marshallingPayloadMethodProcessor;
-    }
-
-    @Bean
-    public DefaultMethodEndpointAdapter defaultMethodEndpointAdapter() {
-        final DefaultMethodEndpointAdapter defaultMethodEndpointAdapter = new DefaultMethodEndpointAdapter();
-
-        final List<MethodArgumentResolver> methodArgumentResolvers = new ArrayList<MethodArgumentResolver>();
-        methodArgumentResolvers.add(this.marshallingPayloadMethodProcessor());
-        defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
-
-        final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();
-        methodReturnValueHandlers.add(this.marshallingPayloadMethodProcessor());
-        defaultMethodEndpointAdapter.setMethodReturnValueHandlers(methodReturnValueHandlers);
-
-        return defaultMethodEndpointAdapter;
+    public JasperWirelessSMSClient jasperWirelessSMSClient(final Jaxb2Marshaller marshaller) {
+        return new JasperWirelessSMSClient();
     }
 
     @Bean
@@ -140,11 +91,6 @@ public class JasperWirelessConfig {
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
-    }
-
-    @Bean
-    public JasperWirelessSMSClient jasperWirelessSMSClient() {
-        return new JasperWirelessSMSClient();
     }
 
     @Bean

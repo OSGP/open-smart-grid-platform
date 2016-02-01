@@ -89,8 +89,11 @@ public class AdhocService extends DlmsApplicationService {
 
             final SendSMSResponse response = this.jwSMSClient.sendWakeUpSMS(device.getIccId());
 
+            final SMSDetails smsDetails = new SMSDetails(device.getDeviceIdentification(), response.getSmsMsgId(),
+                    null, null, null);
+
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    "{smsMsgId:" + response.getSmsMsgId() + "}");
+                    smsDetails);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during Send Wakeup SMS", e);

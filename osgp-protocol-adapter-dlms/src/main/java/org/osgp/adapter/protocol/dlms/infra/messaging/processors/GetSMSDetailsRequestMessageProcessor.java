@@ -45,9 +45,9 @@ public class GetSMSDetailsRequestMessageProcessor extends DeviceRequestMessagePr
         try {
             messageMetadata.handleMessage(message);
 
-            final SMSDetails getSMSDetailsResponse = (SMSDetails) message.getObject();
+            final SMSDetails smsDetails = (SMSDetails) message.getObject();
 
-            this.adhocService.getSMSDetails(messageMetadata, getSMSDetailsResponse, this.responseMessageSender);
+            this.adhocService.getSMSDetails(messageMetadata, smsDetails, this.responseMessageSender);
 
         } catch (final JMSException e) {
             this.logJmsException(LOGGER, e, messageMetadata);
