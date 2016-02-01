@@ -36,6 +36,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -310,6 +311,44 @@ public class ConfigurationService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
                     alarmNotifications);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
+
+    public void replaceKeys(final DlmsDeviceMessageMetadata messageMetadata, final KeySet keySet,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
+
+        final LnClientConnection conn = null;
+        try {
+
+            LOGGER.info("Keys to set on the device: {}", keySet);
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            // conn = this.dlmsConnectionFactory.getConnection(device);
+            //
+            // final AccessResultCode accessResultCode =
+            // this.setAlarmNotificationsCommandExecutor.execute(conn, device,
+            // alarmNotifications);
+            // if (AccessResultCode.SUCCESS != accessResultCode) {
+            // throw new
+            // ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
+            // + accessResultCode);
+            // }
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during replace keys", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    keySet);
         } finally {
             if (conn != null) {
                 conn.close();
