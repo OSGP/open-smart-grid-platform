@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -118,68 +119,20 @@ public class Organisation extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.authorizations == null) ? 0 : this.authorizations.hashCode());
-        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-        result = prime * result
-                + ((this.organisationIdentification == null) ? 0 : this.organisationIdentification.hashCode());
-        return result;
+        return Objects.hashCode(this.organisationIdentification);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (!(o instanceof Organisation)) {
             return false;
         }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final Organisation other = (Organisation) obj;
-        if (this.authorizations == null) {
-            if (other.authorizations != null) {
-                return false;
-            }
-        } else if (!this.authorizations.equals(other.authorizations)) {
-            return false;
-        }
-        if (this.name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!this.name.equals(other.name)) {
-            return false;
-        }
-        if (this.prefix == null) {
-            if (other.prefix != null) {
-                return false;
-            }
-        } else if (!this.prefix.equals(other.prefix)) {
-            return false;
-        }
-        if (this.organisationIdentification == null) {
-            if (other.organisationIdentification != null) {
-                return false;
-            }
-        } else if (!this.organisationIdentification.equals(other.organisationIdentification)) {
-            return false;
-        }
-        if (this.functionGroup == null) {
-            return false;
-        } else if (!this.functionGroup.equals(other.functionGroup)) {
-            return false;
-        }
-        if (this.domains == null) {
-            if (other.domains != null) {
-                return false;
-            }
-        } else if (!this.domains.equals(other.domains)) {
-            return false;
-        }
-        return true;
+        final Organisation other = (Organisation) o;
+        return Objects.equals(this.organisationIdentification, other.organisationIdentification);
+
     }
 
     public PlatformFunctionGroup getFunctionGroup() {

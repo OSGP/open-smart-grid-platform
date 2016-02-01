@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -230,25 +231,7 @@ public class Device implements Serializable {
             return false;
         }
         final Device device = (Device) o;
-        if (this.isActivated != device.isActivated) {
-            return false;
-        }
-        if (this.authorizations != null ? !this.authorizations.equals(device.authorizations)
-                : device.authorizations != null) {
-            return false;
-        }
-        if (this.deviceIdentification != null ? !this.deviceIdentification.equals(device.deviceIdentification)
-                : device.deviceIdentification != null) {
-            return false;
-        }
-        if (this.deviceType != null ? !this.deviceType.equals(device.deviceType) : device.deviceType != null) {
-            return false;
-        }
-        if (this.networkAddress != null ? !this.networkAddress.equals(device.networkAddress)
-                : device.networkAddress != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
     }
 
     public String getAlias() {
@@ -357,12 +340,7 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0;
-        result = 31 * result + (this.deviceType != null ? this.deviceType.hashCode() : 0);
-        result = 31 * result + (this.networkAddress != null ? this.networkAddress.hashCode() : 0);
-        result = 31 * result + (this.isActivated ? 1 : 0);
-        result = 31 * result + (this.authorizations != null ? this.authorizations.hashCode() : 0);
-        return result;
+        return Objects.hashCode(this.deviceIdentification);
     }
 
     public boolean isActivated() {
@@ -398,7 +376,7 @@ public class Device implements Serializable {
     /**
      * This setter is only needed for testing. Don't use this in production
      * code.
-     * 
+     *
      * @param id
      *            The id.
      */

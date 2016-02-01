@@ -115,7 +115,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             LOGGER.info("getFindEventsResponse() number of events: {}", events.size());
             for (final Event event : events) {
-                LOGGER.info("event.eventCode: {} event.timestamp: {}", event.getEventCode(), event.getTimestamp());
+                LOGGER.info("event.eventCode: {} event.timestamp: {} event.eventCounter: {}", event.getEventCode(),
+                        event.getTimestamp(), event.getEventCounter());
             }
             LOGGER.info("mapping events to schema type...");
             response.getEvents().addAll(
