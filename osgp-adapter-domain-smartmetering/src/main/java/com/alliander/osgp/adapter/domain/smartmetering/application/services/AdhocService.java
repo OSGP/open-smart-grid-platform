@@ -33,6 +33,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Transactional(value = "transactionManager")
 public class AdhocService {
 
+    private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION = "Device Response not ok. Unexpected Exception";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
@@ -79,7 +81,7 @@ public class AdhocService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -113,7 +115,7 @@ public class AdhocService {
 
         ResponseMessageResultType result = responseMessageResultType;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
@@ -149,7 +151,7 @@ public class AdhocService {
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
