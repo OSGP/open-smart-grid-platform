@@ -24,7 +24,7 @@ public class JasperWirelessAccess {
         this.apiVersion = apiVersion;
     }
 
-    public String getSms_uri() {
+    public String getSmsUri() {
         return this.smsUri;
     }
 
@@ -40,7 +40,7 @@ public class JasperWirelessAccess {
         return this.password;
     }
 
-    public String getApi_version() {
+    public String getApiVersion() {
         return this.apiVersion;
     }
 }
