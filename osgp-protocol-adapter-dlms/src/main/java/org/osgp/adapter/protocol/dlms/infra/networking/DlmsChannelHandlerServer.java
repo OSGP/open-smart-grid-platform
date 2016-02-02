@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.networking;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -40,17 +41,18 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         final String deviceIdentification = message.getEquipmentIdentifier();
         final PushNotificationAlarm pushNotificationAlarm = new PushNotificationAlarm(deviceIdentification,
                 message.getAlarms());
-        /*
-         * For now use test-org as organisation name. An organisation name has
-         * to be used that is linked to a certificate to be configured when a
-         * notification is sent to an external web service in WS-Adapter
-         * SmartMetering.
-         * 
-         * com.alliander.osgp.adapter.ws.smartmetering.infra.ws.
-         * SendNotificationServiceClient#sendNotification
-         */
-        final RequestMessage requestMessage = new RequestMessage(correlationId, "test-org", deviceIdentification,
-                pushNotificationAlarm);
+
+        String ipAddress = null;
+        try {
+            ipAddress = ((InetSocketAddress) ctx.getChannel().getRemoteAddress()).getHostString();
+            LOGGER.info("Push notification alarm for device {} received from IP address {}", deviceIdentification,
+                    ipAddress);
+        } catch (final Exception ex) {
+            LOGGER.info("Unable to determine IP address of the meter sending an alarm notification: ", ex);
+        }
+
+        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
+                deviceIdentification, ipAddress, pushNotificationAlarm);
         LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
         this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_ALARM.name());
     }
