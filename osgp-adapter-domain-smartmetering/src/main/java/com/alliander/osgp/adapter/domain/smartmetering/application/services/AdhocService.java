@@ -16,10 +16,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -30,6 +32,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 @Service(value = "domainSmartMeteringAdhocService")
 @Transactional(value = "transactionManager")
 public class AdhocService {
+
+    private static final String DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION = "Device Response not ok. Unexpected Exception";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
@@ -43,6 +47,9 @@ public class AdhocService {
     @Autowired
     private DomainHelperService domainHelperService;
 
+    @Autowired
+    private AdhocMapper adhocMapper;
+
     public AdhocService() {
         // Parameterless constructor required for transactions...
     }
@@ -54,13 +61,10 @@ public class AdhocService {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject,
             final String messageType) throws FunctionalException {
 
-        LOGGER.info("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
-
-        LOGGER.info("Sending request message to core.");
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final SynchronizeTimeRequest synchronizeTimeRequestDto = new SynchronizeTimeRequest(
                 synchronizeTimeRequestValueObject.getDeviceIdentification());
@@ -73,15 +77,87 @@ public class AdhocService {
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handleSynchronizeTimeResponse for MessageType: {}", messageType);
+        LOGGER.debug("handleSynchronizeTimeResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
-            LOGGER.error("Device Response not ok. Unexpected Exception", exception);
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, null), messageType);
+    }
+
+    public void sendWakeupSms(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
+                    throws FunctionalException {
+
+        LOGGER.debug("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto = this.adhocMapper.map(
+                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
+
+    }
+
+    public void handleSendWakeupSmsResponse(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
+
+        LOGGER.debug("handleSendWakeupSmsResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = responseMessageResultType;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, smsDetails), messageType);
+    }
+
+    public void getSmsDetails(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
+            throws FunctionalException {
+
+        LOGGER.debug("retrieve sms details request for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto = this.adhocMapper.map(
+                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
+
+    }
+
+    public void handleGetSmsDetailsResponse(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
+            final OsgpException exception,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
+
+        LOGGER.debug("handleGetSmsDetailsResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, smsDetails), messageType);
     }
 }
