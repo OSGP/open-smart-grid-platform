@@ -16,17 +16,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
+import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
+import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Component("dlmsPushNotificationAlarmMessageProcessor")
+@Transactional(value = "transactionManager")
 public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PushNotificationAlarmMessageProcessor.class);
@@ -36,6 +48,12 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
 
     @Autowired
     private DomainInfoRepository domainInfoRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
+
+    @Autowired
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
     protected PushNotificationAlarmMessageProcessor() {
         super(DeviceFunction.PUSH_NOTIFICATION_ALARM);
@@ -55,6 +73,13 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
 
         try {
             final PushNotificationAlarm pushNotificationAlarm = (PushNotificationAlarm) dataObject;
+
+            final String organizationIdentification = this.getOrganizationIdentificationOfOwner(deviceIdentification);
+            LOGGER.info("Matching owner {} with device {} handling {}", organisationIdentification,
+                    deviceIdentification, messageType);
+            final RequestMessage requestWithUpdatedOrganization = new RequestMessage(
+                    requestMessage.getCorrelationUid(), organizationIdentification,
+                    requestMessage.getDeviceIdentification(), requestMessage.getIpAddress(), pushNotificationAlarm);
 
             /*
              * This message processor handles messages that came in on the
@@ -79,13 +104,36 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
                         "No DomainInfo found for SMART_METERING 1.0, unable to send message of message type: {} to domain adapter. RequestMessage for {} dropped.",
                         messageType, pushNotificationAlarm);
             } else {
-                this.domainRequestService.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_ALARM.name(),
-                        smartMeteringDomain);
+                this.domainRequestService.send(requestWithUpdatedOrganization,
+                        DeviceFunction.PUSH_NOTIFICATION_ALARM.name(), smartMeteringDomain);
             }
 
         } catch (final Exception e) {
             LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
         }
+    }
+
+    private String getOrganizationIdentificationOfOwner(final String deviceIdentification) throws OsgpException {
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        if (device == null) {
+            LOGGER.error("No known device for deviceIdentification {} with alarm notification", deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.OSGP_CORE,
+                    new UnknownEntityException(Device.class, deviceIdentification));
+        }
+
+        final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
+                .findByDeviceAndFunctionGroup(device, DeviceFunctionGroup.OWNER);
+
+        if (deviceAuthorizations == null || deviceAuthorizations.isEmpty()) {
+            LOGGER.error("No owner authorization for deviceIdentification {} with alarm notification",
+                    deviceIdentification);
+            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.OSGP_CORE,
+                    new UnknownEntityException(DeviceAuthorization.class, deviceIdentification));
+        }
+
+        return deviceAuthorizations.get(0).getOrganisation().getOrganisationIdentification();
     }
 }
