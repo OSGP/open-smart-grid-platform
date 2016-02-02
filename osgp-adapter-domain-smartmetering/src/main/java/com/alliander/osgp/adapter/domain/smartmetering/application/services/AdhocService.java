@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -59,12 +59,10 @@ public class AdhocService {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject,
             final String messageType) throws FunctionalException {
 
-        LOGGER.info("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
-
-        LOGGER.info("Sending request message to core.");
 
         final SynchronizeTimeRequest synchronizeTimeRequestDto = new SynchronizeTimeRequest(
                 synchronizeTimeRequestValueObject.getDeviceIdentification());
@@ -77,7 +75,7 @@ public class AdhocService {
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handleSynchronizeTimeResponse for MessageType: {}", messageType);
+        LOGGER.debug("handleSynchronizeTimeResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
@@ -89,31 +87,29 @@ public class AdhocService {
                 deviceIdentification, result, exception, null), messageType);
     }
 
-    public void sendWakeupSMS(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SMSDetails smsDetailsValueObject, final String messageType)
+    public void sendWakeupSms(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
                     throws FunctionalException {
 
-        LOGGER.info("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.debug("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        LOGGER.info("Sending request message to core.");
-
-        final com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails smsDetailsDto = this.adhocMapper.map(
-                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto = this.adhocMapper.map(
+                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
 
     }
 
-    public void handleSendWakeupSMSResponse(final String deviceIdentification, final String organisationIdentification,
+    public void handleSendWakeupSmsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
 
-        LOGGER.info("handleSendWakeupSMSResponse for MessageType: {}", messageType);
+        LOGGER.debug("handleSendWakeupSmsResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = responseMessageResultType;
         if (exception != null) {
@@ -121,37 +117,35 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final SMSDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SMSDetails.class);
+        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, smsDetails), messageType);
     }
 
-    public void getSMSDetails(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SMSDetails smsDetailsValueObject, final String messageType)
+    public void getSmsDetails(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
             throws FunctionalException {
 
-        LOGGER.info("retrieve sms details request for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.debug("retrieve sms details request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        LOGGER.info("Sending request message to core.");
-
-        final com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails smsDetailsDto = this.adhocMapper.map(
-                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails.class);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto = this.adhocMapper.map(
+                smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
 
     }
 
-    public void handleGetSMSDetailsResponse(final String deviceIdentification, final String organisationIdentification,
+    public void handleGetSmsDetailsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
 
-        LOGGER.info("handleGetSMSDetailsResponse for MessageType: {}", messageType);
+        LOGGER.debug("handleGetSmsDetailsResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
@@ -159,7 +153,7 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final SMSDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SMSDetails.class);
+        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, smsDetails), messageType);

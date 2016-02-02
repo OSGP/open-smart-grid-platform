@@ -49,14 +49,14 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="SendWakeupSMSRequest">
+	<xsd:element name="SendWakeupSmsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="SendWakeupSMSAsyncResponse">
+	<xsd:element name="SendWakeupSmsAsyncResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="common:AsyncResponse" />
@@ -64,14 +64,14 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="SendWakeupSMSAsyncRequest">
+	<xsd:element name="SendWakeupSmsAsyncRequest">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="common:AsyncRequest"></xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="SendWakeupSMSResponse">
+	<xsd:element name="SendWakeupSmsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="Result" type="common:OsgpResultType" />
@@ -81,14 +81,14 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="GetSMSDetailsRequest">
+	<xsd:element name="GetSmsDetailsRequest">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="SMSDetails" type="tns:SMSDetailsType"/>
+				<xsd:element name="SmsDetails" type="tns:SmsDetailsType"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="GetSMSDetailsAsyncResponse">
+	<xsd:element name="GetSmsDetailsAsyncResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="common:AsyncResponse"></xsd:extension>
@@ -96,22 +96,22 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="GetSMSDetailsAsyncRequest">
+	<xsd:element name="GetSmsDetailsAsyncRequest">
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="common:AsyncRequest"></xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
-	<xsd:element name="GetSMSDetailsResponse">
+	<xsd:element name="GetSmsDetailsResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="SMSDetails" type="tns:SMSDetailsType" />
+				<xsd:element name="SmsDetails" type="tns:SmsDetailsType" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:complexType name="SMSDetailsType">
+	<xsd:complexType name="SmsDetailsType">
 		<xsd:sequence>
 		    <xsd:element name="deviceIdentification" type="common:DeviceIdentification"/>
     		<xsd:element name="smsMsgId" type="xsd:long"/>

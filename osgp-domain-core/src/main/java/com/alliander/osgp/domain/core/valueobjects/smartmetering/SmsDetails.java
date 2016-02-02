@@ -11,7 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class SMSDetails implements Serializable {
+public class SmsDetails implements Serializable {
 
     private static final long serialVersionUID = -95100923844792133L;
 
@@ -21,7 +21,7 @@ public class SMSDetails implements Serializable {
     private String smsMsgAttemptStatus;
     private String msgType;
 
-    public SMSDetails(final String deviceIdentification, final Long smsMsgId, final String status,
+    public SmsDetails(final String deviceIdentification, final Long smsMsgId, final String status,
             final String smsMsgAttemptStatus, final String msgType) {
         this.deviceIdentification = deviceIdentification;
         this.smsMsgId = smsMsgId;

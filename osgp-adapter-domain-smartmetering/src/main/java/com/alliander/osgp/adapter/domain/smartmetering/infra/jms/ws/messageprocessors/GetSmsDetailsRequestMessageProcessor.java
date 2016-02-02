@@ -16,17 +16,17 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component("domainSmartmeteringGetSMSDetailsRequestMessageProcessor")
-public class GetSMSDetailsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+public class GetSmsDetailsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    protected GetSMSDetailsRequestMessageProcessor() {
+    protected GetSmsDetailsRequestMessageProcessor() {
         super(DeviceFunction.GET_SMS_DETAILS);
     }
 
@@ -34,9 +34,9 @@ public class GetSMSDetailsRequestMessageProcessor extends WebServiceRequestMessa
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
 
-        final SMSDetails smsDetails = (SMSDetails) dataObject;
+        final SmsDetails smsDetails = (SmsDetails) dataObject;
 
-        this.adhocService.getSMSDetails(organisationIdentification, deviceIdentification, correlationUid, smsDetails,
+        this.adhocService.getSmsDetails(organisationIdentification, deviceIdentification, correlationUid, smsDetails,
                 messageType);
     }
 

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringSendWakeupSMSResponseMessageProcessor")
-public class SendWakeupSMSResponseMessageProcessor extends DomainResponseMessageProcessor {
+@Component("domainSmartMeteringGetSMSDetailsResponseMessageProcessor")
+public class GetSmsDetailsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
-    protected SendWakeupSMSResponseMessageProcessor() {
-        super(DeviceFunction.SEND_WAKEUP_SMS);
+    protected GetSmsDetailsResponseMessageProcessor() {
+        super(DeviceFunction.GET_SMS_DETAILS);
     }
 }

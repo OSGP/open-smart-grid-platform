@@ -11,19 +11,19 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SMSDetailsType;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 
-public class SMSDetailsConverter extends BidirectionalConverter<SMSDetails, SMSDetailsType> {
+public class SmsDetailsConverter extends BidirectionalConverter<SmsDetails, SmsDetailsType> {
 
     @Override
-    public SMSDetailsType convertTo(final SMSDetails source, final Type<SMSDetailsType> destinationType) {
+    public SmsDetailsType convertTo(final SmsDetails source, final Type<SmsDetailsType> destinationType) {
 
         if (source == null) {
             return null;
         }
 
-        final SMSDetailsType smsDetailsType = new ObjectFactory().createSMSDetailsType();
+        final SmsDetailsType smsDetailsType = new ObjectFactory().createSmsDetailsType();
         smsDetailsType.setDeviceIdentification(source.getDeviceIdentification());
         smsDetailsType.setMsgType(source.getMsgType());
         smsDetailsType.setSmsMsgAttemptStatus(source.getSmsMsgAttemptStatus());
@@ -34,13 +34,13 @@ public class SMSDetailsConverter extends BidirectionalConverter<SMSDetails, SMSD
     }
 
     @Override
-    public SMSDetails convertFrom(final SMSDetailsType source, final Type<SMSDetails> destinationType) {
+    public SmsDetails convertFrom(final SmsDetailsType source, final Type<SmsDetails> destinationType) {
 
         if (source == null) {
             return null;
         }
 
-        return new SMSDetails(source.getDeviceIdentification(), source.getSmsMsgId(), source.getStatus(),
+        return new SmsDetails(source.getDeviceIdentification(), source.getSmsMsgId(), source.getStatus(),
                 source.getSmsMsgAttemptStatus(), source.getMsgType());
     }
 

@@ -16,19 +16,19 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
-@Component("domainSmartMeteringGetSMSDetailsResponseMessageProcessor")
-public class GetSMSDetailsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
+@Component("domainSmartMeteringSendWakeupSMSResponseMessageProcessor")
+public class SendWakeupSmsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
     @Qualifier("domainSmartMeteringAdhocService")
     private AdhocService adhocService;
 
-    protected GetSMSDetailsResponseMessageProcessor() {
-        super(DeviceFunction.GET_SMS_DETAILS);
+    protected SendWakeupSmsResponseMessageProcessor() {
+        super(DeviceFunction.SEND_WAKEUP_SMS);
     }
 
     @Override
@@ -42,9 +42,9 @@ public class GetSMSDetailsResponseMessageProcessor extends OsgpCoreResponseMessa
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
 
-        final SMSDetails smsDetails = (SMSDetails) responseMessage.getDataObject();
+        final SmsDetails smsDetails = (SmsDetails) responseMessage.getDataObject();
 
-        this.adhocService.handleGetSMSDetailsResponse(deviceIdentification, organisationIdentification, correlationUid,
+        this.adhocService.handleSendWakeupSmsResponse(deviceIdentification, organisationIdentification, correlationUid,
                 messageType, responseMessage.getResult(), osgpException, smsDetails);
     }
 

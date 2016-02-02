@@ -10,30 +10,30 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 
-public class SMSDetailsConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails, SMSDetails> {
+public class SmsDetailsConverter extends
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails, SmsDetails> {
 
     @Override
-    public SMSDetails convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails source,
-            final Type<SMSDetails> destinationType) {
+    public SmsDetails convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails source,
+            final Type<SmsDetails> destinationType) {
 
         if (source == null) {
             return null;
         }
-        return new SMSDetails(source.getDeviceIdentification(), source.getSmsMsgId(), source.getStatus(),
+        return new SmsDetails(source.getDeviceIdentification(), source.getSmsMsgId(), source.getStatus(),
                 source.getSmsMsgAttemptStatus(), source.getMsgType());
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails convertFrom(final SMSDetails source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails convertFrom(final SmsDetails source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails> destinationType) {
 
         if (source == null) {
             return null;
         }
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails(source.getDeviceIdentification(),
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails(source.getDeviceIdentification(),
                 source.getSmsMsgId(), source.getStatus(), source.getSmsMsgAttemptStatus(), source.getMsgType());
     }
 

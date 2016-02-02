@@ -16,15 +16,15 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSMSDetailsAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSMSDetailsAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSMSDetailsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSMSDetailsResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SMSDetailsType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSMSAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSMSAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSMSRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSMSResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSmsDetailsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSmsDetailsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSmsDetailsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSmsDetailsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSmsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSmsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSmsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SendWakeupSmsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
@@ -45,9 +45,6 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
     @Autowired
     private AdhocMapper adhocMapper;
-
-    public SmartMeteringAdhocEndpoint() {
-    }
 
     @PayloadRoot(localPart = "SynchronizeTimeRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
@@ -92,16 +89,16 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "SendWakeupSMSRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "SendWakeupSmsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SendWakeupSMSAsyncResponse sendWakeupSMS(
+    public SendWakeupSmsAsyncResponse sendWakeupSms(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SendWakeupSMSRequest request) throws OsgpException {
+            @RequestPayload final SendWakeupSmsRequest request) throws OsgpException {
 
-        final SendWakeupSMSAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
-        .createSendWakeupSMSAsyncResponse();
+        final SendWakeupSmsAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
+                .createSendWakeupSmsAsyncResponse();
 
-        final String correlationUid = this.adhocService.enqueueSendWakeUpSMSRequest(organisationIdentification,
+        final String correlationUid = this.adhocService.enqueueSendWakeUpSmsRequest(organisationIdentification,
                 request.getDeviceIdentification());
 
         asyncResponse.setCorrelationUid(correlationUid);
@@ -111,25 +108,25 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
     }
 
-    @PayloadRoot(localPart = "SendWakeupSMSAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "SendWakeupSmsAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public SendWakeupSMSResponse getSendWakeupSMSResponse(
+    public SendWakeupSmsResponse getSendWakeupSmsResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SendWakeupSMSAsyncRequest request) throws OsgpException {
+            @RequestPayload final SendWakeupSmsAsyncRequest request) throws OsgpException {
 
-        SendWakeupSMSResponse response = null;
+        SendWakeupSmsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.adhocService.dequeueSendWakeUpSMSResponse(request
+            final MeterResponseData meterResponseData = this.adhocService.dequeueSendWakeUpSmsResponse(request
                     .getCorrelationUid());
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the send wakeup sms response data");
 
             response = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
-                    .createSendWakeupSMSResponse();
+            .createSendWakeupSmsResponse();
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            final SMSDetailsType dataRequest = this.adhocMapper.map(meterResponseData.getMessageData(),
-                    SMSDetailsType.class);
+            final SmsDetailsType dataRequest = this.adhocMapper.map(meterResponseData.getMessageData(),
+                    SmsDetailsType.class);
             response.setSmsMsgId(dataRequest.getSmsMsgId());
 
         } catch (final Exception e) {
@@ -138,19 +135,19 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "GetSMSDetailsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "GetSmsDetailsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public GetSMSDetailsAsyncResponse getSMSDetails(
+    public GetSmsDetailsAsyncResponse getSmsDetails(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetSMSDetailsRequest request) throws OsgpException {
+            @RequestPayload final GetSmsDetailsRequest request) throws OsgpException {
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails smsDetails = this.adhocMapper.map(
-                request.getSMSDetails(), com.alliander.osgp.domain.core.valueobjects.smartmetering.SMSDetails.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails smsDetails = this.adhocMapper.map(
+                request.getSmsDetails(), com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails.class);
 
-        final GetSMSDetailsAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
-        .createGetSMSDetailsAsyncResponse();
+        final GetSmsDetailsAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
+                .createGetSmsDetailsAsyncResponse();
 
-        final String correlationUid = this.adhocService.enqueueGetSMSDetailsRequest(organisationIdentification,
+        final String correlationUid = this.adhocService.enqueueGetSmsDetailsRequest(organisationIdentification,
                 smsDetails.getDeviceIdentification(), smsDetails);
 
         asyncResponse.setCorrelationUid(correlationUid);
@@ -160,25 +157,25 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
     }
 
-    @PayloadRoot(localPart = "GetSMSDetailsAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @PayloadRoot(localPart = "GetSmsDetailsAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public GetSMSDetailsResponse getSMSDetailsResponse(
+    public GetSmsDetailsResponse getSmsDetailsResponse(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetSMSDetailsAsyncRequest request) throws OsgpException {
+            @RequestPayload final GetSmsDetailsAsyncRequest request) throws OsgpException {
 
-        GetSMSDetailsResponse response = null;
+        GetSmsDetailsResponse response = null;
         try {
-            final MeterResponseData meterResponseData = this.adhocService.dequeueGetSMSDetailsResponse(request
+            final MeterResponseData meterResponseData = this.adhocService.dequeueGetSmsDetailsResponse(request
                     .getCorrelationUid());
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the get sms details response data");
 
             response = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
-                    .createGetSMSDetailsResponse();
+            .createGetSmsDetailsResponse();
 
-            final SMSDetailsType smsDetailsType = this.adhocMapper.map(meterResponseData.getMessageData(),
-                    SMSDetailsType.class);
-            response.setSMSDetails(smsDetailsType);
+            final SmsDetailsType smsDetailsType = this.adhocMapper.map(meterResponseData.getMessageData(),
+                    SmsDetailsType.class);
+            response.setSmsDetails(smsDetailsType);
 
         } catch (final Exception e) {
             this.handleException(e);
