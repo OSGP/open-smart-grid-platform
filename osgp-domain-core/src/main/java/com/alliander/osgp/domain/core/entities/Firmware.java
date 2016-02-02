@@ -44,7 +44,6 @@ public class Firmware extends AbstractEntity {
     byte[] installationFile;
 
     public Firmware(final DeviceModel deviceModel, final int firmwareVersion, final String description) {
-        super();
         this.deviceModel = deviceModel;
         this.firmwareVersion = firmwareVersion;
         this.description = description;
@@ -54,24 +53,8 @@ public class Firmware extends AbstractEntity {
         return this.deviceModel;
     }
 
-    /**
-     * used by jpa
-     */
-    @SuppressWarnings("unused")
-    private void setDeviceModel(final DeviceModel deviceModel) {
-        this.deviceModel = deviceModel;
-    }
-
     public int getFirmwareVersion() {
         return this.firmwareVersion;
-    }
-
-    /**
-     * used by jpa
-     */
-    @SuppressWarnings("unused")
-    private void setFirmwareVersion(final int firmwareVersion) {
-        this.firmwareVersion = firmwareVersion;
     }
 
     public String getDescription() {

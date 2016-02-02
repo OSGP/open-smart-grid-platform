@@ -30,7 +30,6 @@ public class Manufacturer implements Serializable {
     private String name;
 
     public Manufacturer(final String code, final String name) {
-        super();
         this.code = code;
         this.name = name;
     }
@@ -39,24 +38,7 @@ public class Manufacturer implements Serializable {
         return this.code;
     }
 
-    /**
-     * used by jpa
-     */
-    @SuppressWarnings("unused")
-    private void setCode(final String code) {
-        this.code = code;
-    }
-
     public String getName() {
         return this.name;
     }
-
-    /**
-     * used by jpa
-     */
-    @SuppressWarnings("unused")
-    private void setName(final String name) {
-        this.name = name;
-    }
-
 }

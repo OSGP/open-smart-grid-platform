@@ -452,4 +452,20 @@ public class Device implements Serializable {
     public void updateGatewayDevice(final Device gatewayDevice) {
         this.gatewayDevice = gatewayDevice;
     }
+
+    public Firmware getFirmware() {
+        return this.firmware;
+    }
+
+    public void setFirmware(final Firmware firmware) {
+        this.firmware = firmware;
+    }
+
+    public List<Firmware> getFirmwareHistory() {
+        return this.firmwareHistory;
+    }
+
+    public void addFirmwareHistory(final Firmware firmware) {
+        this.firmwareHistory.add(firmware);
+    }
 }

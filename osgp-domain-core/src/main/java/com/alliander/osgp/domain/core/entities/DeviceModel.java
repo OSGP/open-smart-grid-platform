@@ -34,7 +34,6 @@ public class DeviceModel extends AbstractEntity {
     private String name;
 
     public DeviceModel(final Manufacturer manufacturer, final String code, final String name) {
-        super();
         this.manufacturer = manufacturer;
         this.code = code;
         this.name = name;
@@ -44,36 +43,12 @@ public class DeviceModel extends AbstractEntity {
         return this.manufacturer;
     }
 
-    /**
-     * used by jpa
-     */
-    @SuppressWarnings("unused")
-    private void setManufacturer(final Manufacturer manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
     public String getCode() {
         return this.code;
     }
 
-    /**
-     * used by jpa
-     */
-    @SuppressWarnings("unused")
-    private void setCode(final String code) {
-        this.code = code;
-    }
-
     public String getName() {
         return this.name;
-    }
-
-    /**
-     * used by jpa
-     */
-    @SuppressWarnings("unused")
-    private void setName(final String name) {
-        this.name = name;
     }
 
 }
