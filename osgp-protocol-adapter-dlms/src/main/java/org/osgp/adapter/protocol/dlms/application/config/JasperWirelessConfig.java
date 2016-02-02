@@ -80,7 +80,7 @@ public class JasperWirelessConfig {
     }
 
     @Bean
-    public JasperWirelessSmsClient jasperWirelessSMSClient(final Jaxb2Marshaller marshaller) {
+    public JasperWirelessSmsClient jasperWirelessSmsClient() {
         return new JasperWirelessSmsClient();
     }
 
