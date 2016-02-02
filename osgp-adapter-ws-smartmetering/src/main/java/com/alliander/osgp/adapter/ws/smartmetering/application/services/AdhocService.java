@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringReques
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
@@ -56,6 +57,52 @@ public class AdhocService {
     }
 
     public MeterResponseData dequeueSynchronizeTimeResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public String enqueueSendWakeUpSmsRequest(final String organisationIdentification, final String deviceIdentification) {
+
+        LOGGER.debug("enqueueSendWakeUpSmsRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+        final SmsDetails smsDetails = new SmsDetails(deviceIdentification, 0L, "", "", "");
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SEND_WAKEUP_SMS, correlationUid, organisationIdentification,
+                deviceIdentification, smsDetails);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueSendWakeUpSmsResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public String enqueueGetSmsDetailsRequest(final String organisationIdentification,
+            final String deviceIdentification, final SmsDetails smsDetails) {
+
+        LOGGER.debug("enqueueGetSmsDetailsRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.GET_SMS_DETAILS, correlationUid, organisationIdentification,
+                deviceIdentification, smsDetails);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueGetSmsDetailsResponse(final String correlationUid)
             throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
