@@ -55,7 +55,7 @@ public class JasperWirelessSmsClientTest {
     private static final String API_VERSION = "1234";
 
     public static class PropertyMockingApplicationContextInitializer implements
-    ApplicationContextInitializer<ConfigurableApplicationContext> {
+            ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
         public void initialize(final ConfigurableApplicationContext applicationContext) {
@@ -92,7 +92,7 @@ public class JasperWirelessSmsClientTest {
     }
 
     @Test
-    public void testSendWakeUpSMS() throws Exception {
+    public void testSendWakeUpSms() throws Exception {
         // given
         final Source requestPayload = new StringSource("<ns2:SendSMSRequest "
                 + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"
@@ -120,7 +120,7 @@ public class JasperWirelessSmsClientTest {
     }
 
     @Test
-    public void testSendWakeUpSMSResult() throws Exception {
+    public void testSendWakeUpSmsResult() throws Exception {
         // given
         final Source requestPayload = new StringSource("<ns2:GetSMSDetailsRequest "
                 + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"

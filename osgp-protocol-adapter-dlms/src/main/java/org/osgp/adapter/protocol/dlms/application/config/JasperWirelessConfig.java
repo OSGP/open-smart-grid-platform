@@ -9,11 +9,15 @@ package org.osgp.adapter.protocol.dlms.application.config;
 
 import javax.annotation.Resource;
 import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPException;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.ws.CorrelationIdProviderService;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -40,6 +44,8 @@ public class JasperWirelessConfig {
     private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
     private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
+
     @Resource
     private Environment environment;
 
@@ -55,9 +61,16 @@ public class JasperWirelessConfig {
     }
 
     @Bean
-    public SaajSoapMessageFactory messageFactory() throws Exception {
-        final SaajSoapMessageFactory saajSoapMessageFactory = new SaajSoapMessageFactory(MessageFactory.newInstance());
-        saajSoapMessageFactory.setSoapVersion(SoapVersion.SOAP_11);
+    public SaajSoapMessageFactory messageFactory() throws ProtocolAdapterException {
+        SaajSoapMessageFactory saajSoapMessageFactory = null;
+        try {
+            saajSoapMessageFactory = new SaajSoapMessageFactory(MessageFactory.newInstance());
+            saajSoapMessageFactory.setSoapVersion(SoapVersion.SOAP_11);
+        } catch (final SOAPException e) {
+            final String msg = "Error in creating a webservice message wrapper";
+            LOGGER.error(msg, e);
+            throw new ProtocolAdapterException(msg, e);
+        }
         return saajSoapMessageFactory;
     }
 
@@ -69,7 +82,7 @@ public class JasperWirelessConfig {
     }
 
     @Bean
-    public WebServiceTemplate webServiceTemplate() throws Exception {
+    public WebServiceTemplate webServiceTemplate() throws ProtocolAdapterException {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
         webServiceTemplate.setMarshaller(this.marshaller());
         webServiceTemplate.setUnmarshaller(this.marshaller());
