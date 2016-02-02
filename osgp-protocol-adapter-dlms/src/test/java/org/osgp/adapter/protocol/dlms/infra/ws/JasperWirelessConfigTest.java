@@ -24,6 +24,11 @@ import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 /**
  * An application context Java configuration class for Jasper Wireless settings.
  * The usage of Java configuration requires Spring Framework 3.0
+ *
+ * This configuration class supports setting up the context for junit testing.
+ * The difference with the original "life" configuration class is the retrieval
+ * of environment properties (like urlendpoint or account values). These are in
+ * the junit test class mocked.
  */
 @Configuration
 public class JasperWirelessConfigTest {
