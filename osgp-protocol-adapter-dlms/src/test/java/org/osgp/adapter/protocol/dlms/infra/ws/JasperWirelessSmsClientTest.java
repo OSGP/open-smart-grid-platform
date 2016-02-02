@@ -176,10 +176,9 @@ public class JasperWirelessSmsClientTest {
         assertEquals(MODEM_STATUS, smsMessageType.getSmsMsgAttemptStatus());
     }
 
-    public XMLGregorianCalendar getXMLGregorianCalendarNow() throws DatatypeConfigurationException {
+    public XMLGregorianCalendar getXmlGregorianCalendarNow() throws DatatypeConfigurationException {
         final GregorianCalendar gregorianCalendar = new GregorianCalendar();
         final DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-        final XMLGregorianCalendar now = datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
-        return now;
+        return datatypeFactory.newXMLGregorianCalendar(gregorianCalendar);
     }
 }
