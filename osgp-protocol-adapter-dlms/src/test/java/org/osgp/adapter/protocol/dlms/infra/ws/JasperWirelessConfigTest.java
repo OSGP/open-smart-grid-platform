@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.osgp.adapter.protocol.dlms.application.config.JwccWSConfig;
+import org.osgp.adapter.protocol.dlms.application.config.JasperWirelessAccess;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -74,8 +74,8 @@ public class JasperWirelessConfigTest {
     }
 
     @Bean
-    public JwccWSConfig jwccWSConfig() {
-        return new JwccWSConfig(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
+    public JasperWirelessAccess jwccWSConfig() {
+        return new JasperWirelessAccess(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),

@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.osgp.adapter.protocol.dlms.application.config.JwccWSConfig;
+import org.osgp.adapter.protocol.dlms.application.config.JasperWirelessAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -55,7 +55,7 @@ public class JasperWirelessSmsClientTest {
     private static final String API_VERSION = "1234";
 
     public static class PropertyMockingApplicationContextInitializer implements
-            ApplicationContextInitializer<ConfigurableApplicationContext> {
+    ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
         public void initialize(final ConfigurableApplicationContext applicationContext) {
@@ -74,7 +74,7 @@ public class JasperWirelessSmsClientTest {
     WebServiceTemplate webServiceTemplate;
 
     @Autowired
-    JwccWSConfig jwccWSConfig;
+    JasperWirelessAccess jasperWirelessAccess;
 
     @Mock
     CorrelationIdProviderService correlationIdProviderService;

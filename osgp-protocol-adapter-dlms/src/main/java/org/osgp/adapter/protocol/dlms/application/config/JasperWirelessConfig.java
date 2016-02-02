@@ -85,8 +85,8 @@ public class JasperWirelessConfig {
     }
 
     @Bean
-    public JwccWSConfig jwccWSConfig() {
-        return new JwccWSConfig(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
+    public JasperWirelessAccess jasperWirelessAccess() {
+        return new JasperWirelessAccess(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),

@@ -7,7 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.config;
 
-public class JwccWSConfig {
+public class JasperWirelessAccess {
 
     private String sms_uri;
     private String licenseKey;
@@ -15,7 +15,7 @@ public class JwccWSConfig {
     private String password;
     private String api_version;
 
-    public JwccWSConfig(final String sms_uri, final String licenseKey, final String username, final String password,
+    public JasperWirelessAccess(final String sms_uri, final String licenseKey, final String username, final String password,
             final String api_version) {
         this.sms_uri = sms_uri;
         this.licenseKey = licenseKey;

@@ -46,7 +46,7 @@ public class AdhocService extends DlmsApplicationService {
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     @Autowired
-    private JasperWirelessSmsClient jwSMSClient;
+    private JasperWirelessSmsClient smsClient;
 
     // === REQUEST Synchronize Time DATA ===
 
@@ -91,7 +91,7 @@ public class AdhocService extends DlmsApplicationService {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             if (COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
-                final SendSMSResponse response = this.jwSMSClient.sendWakeUpSMS(device.getIccId());
+                final SendSMSResponse response = this.smsClient.sendWakeUpSMS(device.getIccId());
                 final SmsDetails smsDetails = new SmsDetails(device.getDeviceIdentification(), response.getSmsMsgId(),
                         null, null, null);
                 this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
@@ -123,7 +123,7 @@ public class AdhocService extends DlmsApplicationService {
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-            final GetSMSDetailsResponse response = this.jwSMSClient.getSMSDetails(smsDetailsRequest.getSmsMsgId(),
+            final GetSMSDetailsResponse response = this.smsClient.getSMSDetails(smsDetailsRequest.getSmsMsgId(),
                     device.getIccId());
 
             SmsDetails smsDetailsResponse = null;
