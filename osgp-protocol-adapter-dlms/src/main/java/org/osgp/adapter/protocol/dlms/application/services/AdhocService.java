@@ -15,13 +15,13 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSMSClient;
+import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -46,7 +46,7 @@ public class AdhocService extends DlmsApplicationService {
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     @Autowired
-    private JasperWirelessSMSClient jwSMSClient;
+    private JasperWirelessSmsClient jwSMSClient;
 
     // === REQUEST Synchronize Time DATA ===
 
@@ -81,10 +81,10 @@ public class AdhocService extends DlmsApplicationService {
 
     // === REQUEST Send Wakeup SMS ===
 
-    public void sendWakeUpSMS(final DlmsDeviceMessageMetadata messageMetadata,
+    public void sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata,
             final DeviceResponseMessageSender responseMessageSender) {
 
-        this.logStart(LOGGER, messageMetadata, "sendWakeUpSMS");
+        this.logStart(LOGGER, messageMetadata, "sendWakeUpSms");
 
         try {
 
@@ -92,7 +92,7 @@ public class AdhocService extends DlmsApplicationService {
 
             if (COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
                 final SendSMSResponse response = this.jwSMSClient.sendWakeUpSMS(device.getIccId());
-                final SMSDetails smsDetails = new SMSDetails(device.getDeviceIdentification(), response.getSmsMsgId(),
+                final SmsDetails smsDetails = new SmsDetails(device.getDeviceIdentification(), response.getSmsMsgId(),
                         null, null, null);
                 this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
                         smsDetails);
@@ -114,7 +114,7 @@ public class AdhocService extends DlmsApplicationService {
 
     // === REQUEST Get SMS Details ===
 
-    public void getSMSDetails(final DlmsDeviceMessageMetadata messageMetadata, final SMSDetails smsDetailsRequest,
+    public void getSmsDetails(final DlmsDeviceMessageMetadata messageMetadata, final SmsDetails smsDetailsRequest,
             final DeviceResponseMessageSender responseMessageSender) {
 
         this.logStart(LOGGER, messageMetadata, "synchronizeTime");
@@ -126,11 +126,11 @@ public class AdhocService extends DlmsApplicationService {
             final GetSMSDetailsResponse response = this.jwSMSClient.getSMSDetails(smsDetailsRequest.getSmsMsgId(),
                     device.getIccId());
 
-            SMSDetails smsDetailsResponse = null;
+            SmsDetails smsDetailsResponse = null;
             final List<SmsMessageType> smsMessagesTypes = response.getSmsMessages().getSmsMessage();
             for (final SmsMessageType smsMessageType : smsMessagesTypes) {
                 if (smsMessageType.getSmsMsgId() == smsDetailsRequest.getSmsMsgId().longValue()) {
-                    smsDetailsResponse = new SMSDetails(device.getDeviceIdentification(), smsMessageType.getSmsMsgId(),
+                    smsDetailsResponse = new SmsDetails(device.getDeviceIdentification(), smsMessageType.getSmsMsgId(),
                             smsMessageType.getStatus(), smsMessageType.getSmsMsgAttemptStatus(),
                             smsMessageType.getMsgType());
                 }

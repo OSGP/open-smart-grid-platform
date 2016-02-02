@@ -43,15 +43,16 @@ import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
 import com.jasperwireless.api.ws.service.sms.SmsMessageType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = JasperWirelessConfigTest.class, initializers = JasperWirelessSMSClientTest.PropertyMockingApplicationContextInitializer.class)
-public class JasperWirelessSMSClientTest {
+@ContextConfiguration(classes = JasperWirelessConfigTest.class, initializers = JasperWirelessSmsClientTest.PropertyMockingApplicationContextInitializer.class)
+public class JasperWirelessSmsClientTest {
 
     private static final String WKAEWUPSMS_CORRID = "wkaewupsms123";
-    private static final String LICENSEKEY = "7f206979-4fdf-4cbe-8d65-0e984dac6a9e";
+    private static final String LICENSEKEY = "a-combination-of-characters";
     private static final String ICC_ID = "8931086113127163687";
     private static final String SMS_MSG_ID = "4302867004";
     private static final String JWCC_STATUS = "Delivered";
     private static final String MODEM_STATUS = "DeliverAckReceivedStatusSuccessful";
+    private static final String API_VERSION = "1234";
 
     public static class PropertyMockingApplicationContextInitializer implements
             ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -59,11 +60,11 @@ public class JasperWirelessSMSClientTest {
         @Override
         public void initialize(final ConfigurableApplicationContext applicationContext) {
             final MockEnvironment mockEnvironment = new MockEnvironment();
-            mockEnvironment.setProperty("jwcc.uri.sms", "https://kpnapi.jasperwireless.com/ws/service/Sms");
+            mockEnvironment.setProperty("jwcc.uri.sms", "https://acme.com/ws/service/Sms");
             mockEnvironment.setProperty("jwcc.licensekey", LICENSEKEY);
-            mockEnvironment.setProperty("jwcc.api_version", "5.90");
-            mockEnvironment.setProperty("jwcc.username", "MaartenvanHaasteren");
-            mockEnvironment.setProperty("jwcc.password", "Jwcc@KPN123");
+            mockEnvironment.setProperty("jwcc.api_version", API_VERSION);
+            mockEnvironment.setProperty("jwcc.username", "JohnDoe");
+            mockEnvironment.setProperty("jwcc.password", "Whatever");
 
             applicationContext.setEnvironment(mockEnvironment);
         }
@@ -82,7 +83,7 @@ public class JasperWirelessSMSClientTest {
 
     @InjectMocks
     @Autowired
-    private JasperWirelessSMSClient wsClientService;
+    private JasperWirelessSmsClient wsClientService;
 
     @Before
     public void createServer() throws Exception {
@@ -95,14 +96,14 @@ public class JasperWirelessSMSClientTest {
         // given
         final Source requestPayload = new StringSource("<ns2:SendSMSRequest "
                 + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"
-                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>5.90</ns2:version>" + "<ns2:licenseKey>"
-                + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:sentToIccid>" + ICC_ID + "</ns2:sentToIccid>"
-                + "<ns2:messageText/>" + "</ns2:SendSMSRequest>");
+                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>" + API_VERSION + "</ns2:version>"
+                + "<ns2:licenseKey>" + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:sentToIccid>" + ICC_ID
+                + "</ns2:sentToIccid>" + "<ns2:messageText/>" + "</ns2:SendSMSRequest>");
 
         final Source responsePayload = new StringSource("<ns2:SendSMSResponse "
                 + "ns2:requestId=\"IfBlIDGkzgTkWqa3\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
-                + "<ns2:correlationId>" + WKAEWUPSMS_CORRID + "</ns2:correlationId>"
-                + "<ns2:version>5.90</ns2:version>" + "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
+                + "<ns2:correlationId>" + WKAEWUPSMS_CORRID + "</ns2:correlationId>" + "<ns2:version>" + API_VERSION
+                + "</ns2:version>" + "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
                 + "<ns2:timestamp>2016-01-18T12:22:05.082Z</ns2:timestamp>" + "<ns2:smsMsgId>" + SMS_MSG_ID
                 + "</ns2:smsMsgId>" + "</ns2:SendSMSResponse>");
 
@@ -123,16 +124,18 @@ public class JasperWirelessSMSClientTest {
         // given
         final Source requestPayload = new StringSource("<ns2:GetSMSDetailsRequest "
                 + "xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\" messageTextEncoding=\"\">" + "<ns2:messageId>"
-                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>5.90</ns2:version>" + "<ns2:licenseKey>"
-                + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:smsMsgIds>" + "<ns2:smsMsgId>" + SMS_MSG_ID
-                + "</ns2:smsMsgId>" + "</ns2:smsMsgIds>" + "</ns2:GetSMSDetailsRequest>");
+                + WKAEWUPSMS_CORRID + "</ns2:messageId>" + "<ns2:version>" + API_VERSION + "</ns2:version>"
+                + "<ns2:licenseKey>" + LICENSEKEY + "</ns2:licenseKey>" + "<ns2:smsMsgIds>" + "<ns2:smsMsgId>"
+                + SMS_MSG_ID + "</ns2:smsMsgId>" + "</ns2:smsMsgIds>" + "</ns2:GetSMSDetailsRequest>");
 
         final Source responsePayload = new StringSource("<ns2:GetSMSDetailsResponse "
                 + "ns2:requestId=\"c16KNt8BksvZDLex\" xmlns:ns2=\"http://api.jasperwireless.com/ws/schema\">"
                 + "<ns2:correlationId>"
                 + WKAEWUPSMS_CORRID
                 + "</ns2:correlationId>"
-                + "<ns2:version>5.90</ns2:version>"
+                + "<ns2:version>"
+                + API_VERSION
+                + "</ns2:version>"
                 + "<ns2:build>jasper_release_6.29-160108-154179</ns2:build>"
                 + "<ns2:timestamp>2016-01-18T12:31:51.760Z</ns2:timestamp>"
                 + "<ns2:smsMessages>"

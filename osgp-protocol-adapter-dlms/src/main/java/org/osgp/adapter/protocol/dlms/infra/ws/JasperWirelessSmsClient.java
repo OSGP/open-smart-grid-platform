@@ -23,7 +23,7 @@ import com.jasperwireless.api.ws.service.sms.ObjectFactory;
 import com.jasperwireless.api.ws.service.sms.SendSMSRequest;
 import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
 
-public class JasperWirelessSMSClient {
+public class JasperWirelessSmsClient {
 
     private static final String WAKEUPSMS_TYPE = "wakeupsms";
 
@@ -58,11 +58,8 @@ public class JasperWirelessSMSClient {
         // override default uri
         this.webServiceTemplate.setDefaultUri(this.jwccWSConfig.getSms_uri());
 
-        final SendSMSResponse sendSMSResponse = (SendSMSResponse) this.webServiceTemplate.marshalSendAndReceive(
-                sendSMSRequest, new SoapActionCallback("http://api.jasperwireless.com/ws/service/sms/SendSMS"));
-
-        return sendSMSResponse;
-
+        return (SendSMSResponse) this.webServiceTemplate.marshalSendAndReceive(sendSMSRequest, new SoapActionCallback(
+                "http://api.jasperwireless.com/ws/service/sms/SendSMS"));
     }
 
     public GetSMSDetailsResponse getSMSDetails(final Long smsMessageId, final String iccid) {
@@ -88,11 +85,8 @@ public class JasperWirelessSMSClient {
         // override default uri
         this.webServiceTemplate.setDefaultUri(this.jwccWSConfig.getSms_uri());
 
-        final GetSMSDetailsResponse getSMSDetailsResponse = (GetSMSDetailsResponse) this.webServiceTemplate
-                .marshalSendAndReceive(getSMSDetailsRequest, new SoapActionCallback(
-                        "http://api.jasperwireless.com/ws/service/sms/GetSMSDetails"));
-
-        return getSMSDetailsResponse;
+        return (GetSMSDetailsResponse) this.webServiceTemplate.marshalSendAndReceive(getSMSDetailsRequest,
+                new SoapActionCallback("http://api.jasperwireless.com/ws/service/sms/GetSMSDetails"));
     }
 
     private static void setUsernameToken(final Wss4jSecurityInterceptor interceptor, final String user,

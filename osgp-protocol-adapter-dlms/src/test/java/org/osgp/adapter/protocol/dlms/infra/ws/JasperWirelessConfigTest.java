@@ -83,8 +83,8 @@ public class JasperWirelessConfigTest {
     }
 
     @Bean
-    public JasperWirelessSMSClient jasperWirelessSMSClient() {
-        return new JasperWirelessSMSClient();
+    public JasperWirelessSmsClient jasperWirelessSMSClient() {
+        return new JasperWirelessSmsClient();
     }
 
     @Bean

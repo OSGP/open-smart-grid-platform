@@ -19,20 +19,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SMSDetails;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
 
 /**
  * Class for processing Get SMS Details Request messages
  */
 @Component("dlmsGetSMSDetailsRequestMessageProcessor")
-public class GetSMSDetailsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetSmsDetailsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSMSDetailsRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetSmsDetailsRequestMessageProcessor.class);
 
     @Autowired
     private AdhocService adhocService;
 
-    public GetSMSDetailsRequestMessageProcessor() {
+    public GetSmsDetailsRequestMessageProcessor() {
         super(DeviceRequestMessageType.GET_SMS_DETAILS);
     }
 
@@ -45,9 +45,9 @@ public class GetSMSDetailsRequestMessageProcessor extends DeviceRequestMessagePr
         try {
             messageMetadata.handleMessage(message);
 
-            final SMSDetails smsDetails = (SMSDetails) message.getObject();
+            final SmsDetails smsDetails = (SmsDetails) message.getObject();
 
-            this.adhocService.getSMSDetails(messageMetadata, smsDetails, this.responseMessageSender);
+            this.adhocService.getSmsDetails(messageMetadata, smsDetails, this.responseMessageSender);
 
         } catch (final JMSException e) {
             this.logJmsException(LOGGER, e, messageMetadata);

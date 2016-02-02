@@ -23,14 +23,14 @@ import org.springframework.stereotype.Component;
  * Class for processing Send Wakeup SMS Request messages
  */
 @Component("dlmsSendWakeupSMSRequestMessageProcessor")
-public class SendWakeupSMSRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class SendWakeupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SendWakeupSMSRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendWakeupSmsRequestMessageProcessor.class);
 
     @Autowired
     private AdhocService adhocService;
 
-    public SendWakeupSMSRequestMessageProcessor() {
+    public SendWakeupSmsRequestMessageProcessor() {
         super(DeviceRequestMessageType.SEND_WAKEUP_SMS);
     }
 
@@ -43,7 +43,7 @@ public class SendWakeupSMSRequestMessageProcessor extends DeviceRequestMessagePr
         try {
             messageMetadata.handleMessage(message);
 
-            this.adhocService.sendWakeUpSMS(messageMetadata, this.responseMessageSender);
+            this.adhocService.sendWakeUpSms(messageMetadata, this.responseMessageSender);
 
         } catch (final JMSException e) {
             this.logJmsException(LOGGER, e, messageMetadata);
