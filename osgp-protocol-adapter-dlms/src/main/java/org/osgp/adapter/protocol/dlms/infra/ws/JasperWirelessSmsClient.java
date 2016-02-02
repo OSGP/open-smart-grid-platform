@@ -46,7 +46,7 @@ public class JasperWirelessSmsClient {
         sendSMSRequest.setMessageText("");
         sendSMSRequest.setMessageTextEncoding("");
         sendSMSRequest.setSentToIccid(iccid);
-        sendSMSRequest.setVersion(this.jasperWirelessAccess.getApi_version());
+        sendSMSRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
 
         for (final ClientInterceptor interceptor : this.webServiceTemplate.getInterceptors()) {
             if (interceptor instanceof Wss4jSecurityInterceptor) {
@@ -56,7 +56,7 @@ public class JasperWirelessSmsClient {
         }
 
         // override default uri
-        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getSms_uri());
+        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getSmsUri());
 
         return (SendSMSResponse) this.webServiceTemplate.marshalSendAndReceive(sendSMSRequest, new SoapActionCallback(
                 "http://api.jasperwireless.com/ws/service/sms/SendSMS"));
@@ -73,7 +73,7 @@ public class JasperWirelessSmsClient {
         smsMsgId.add(smsMessageId);
         getSMSDetailsRequest.setSmsMsgIds(smsMsgIds);
         getSMSDetailsRequest.setMessageTextEncoding("");
-        getSMSDetailsRequest.setVersion(this.jasperWirelessAccess.getApi_version());
+        getSMSDetailsRequest.setVersion(this.jasperWirelessAccess.getApiVersion());
 
         for (final ClientInterceptor interceptor : this.webServiceTemplate.getInterceptors()) {
             if (interceptor instanceof Wss4jSecurityInterceptor) {
@@ -83,7 +83,7 @@ public class JasperWirelessSmsClient {
         }
 
         // override default uri
-        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getSms_uri());
+        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getSmsUri());
 
         return (GetSMSDetailsResponse) this.webServiceTemplate.marshalSendAndReceive(getSMSDetailsRequest,
                 new SoapActionCallback("http://api.jasperwireless.com/ws/service/sms/GetSMSDetails"));
