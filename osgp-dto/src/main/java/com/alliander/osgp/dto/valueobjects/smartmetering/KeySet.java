@@ -19,12 +19,9 @@ public class KeySet implements Serializable {
 
     private byte[] encryptionKey;
 
-    private byte[] masterKey;
-
-    public KeySet(final byte[] authenticationKey, final byte[] encryptionKey, final byte[] masterKey) {
+    public KeySet(final byte[] authenticationKey, final byte[] encryptionKey) {
         this.authenticationKey = authenticationKey;
         this.encryptionKey = encryptionKey;
-        this.masterKey = masterKey;
     }
 
     public byte[] getAuthenticationKey() {
@@ -35,14 +32,9 @@ public class KeySet implements Serializable {
         return this.encryptionKey;
     }
 
-    public byte[] getMasterKey() {
-        return this.masterKey;
-    }
-
     @Override
     public String toString() {
         return "KeySet [authenticationKey=" + Hex.encodeHexString(this.authenticationKey) + ", encryptionKey="
-                + Hex.encodeHexString(this.encryptionKey) + ", masterKey=" + Hex.encodeHexString(this.masterKey) + "]";
+                + Hex.encodeHexString(this.encryptionKey) + "]";
     }
-
 }
