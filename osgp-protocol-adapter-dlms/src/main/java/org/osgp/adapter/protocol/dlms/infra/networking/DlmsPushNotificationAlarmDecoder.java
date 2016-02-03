@@ -58,22 +58,22 @@ public class DlmsPushNotificationAlarmDecoder extends ReplayingDecoder<DlmsPushN
             final DecodingState state) throws UnknownAlarmDecodingStateException {
         LOGGER.debug("Decoding state: {}", state.toString());
 
-        /*
-         * Fall-through in the following switch statement allows parsing of the
-         * bytes received to continue through the different stages if more bytes
-         * are available, beyond those already interpreted.
-         */
         switch (state) {
         case EQUIPMENT_IDENTIFIER:
             this.decodeEquipmentIdentifier(buffer);
-            this.checkpoint(DecodingState.ALARM_OBJECT);
-            // fall-through intended
+            return this.setCheckpointAndContinueDecode(ctx, channel, buffer, DecodingState.ALARM_OBJECT);
         case ALARM_OBJECT:
             this.decodeAlarmObject(buffer);
             return this.buildPushNotificationAlarm();
         default:
             throw new UnknownAlarmDecodingStateException(state.name());
         }
+    }
+
+    private Object setCheckpointAndContinueDecode(final ChannelHandlerContext ctx, final Channel channel,
+            final ChannelBuffer buffer, final DecodingState nextState) throws UnknownAlarmDecodingStateException {
+        this.checkpoint(nextState);
+        return this.decode(ctx, channel, buffer, nextState);
     }
 
     private DlmsPushNotificationAlarm buildPushNotificationAlarm() {
