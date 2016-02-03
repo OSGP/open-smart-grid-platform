@@ -370,11 +370,9 @@ public class ConfigurationService extends DlmsApplicationService {
         final Date keyDate = new Date();
         this.expireKey(device, SecurityKeyType.E_METER_AUTHENTICATION, keyDate);
         this.expireKey(device, SecurityKeyType.E_METER_ENCRYPTION, keyDate);
-        this.expireKey(device, SecurityKeyType.E_METER_MASTER, keyDate);
 
         this.newKey(device, SecurityKeyType.E_METER_AUTHENTICATION, keyDate, newKeySet.getAuthenticationKey());
         this.newKey(device, SecurityKeyType.E_METER_ENCRYPTION, keyDate, newKeySet.getEncryptionKey());
-        this.newKey(device, SecurityKeyType.E_METER_MASTER, keyDate, newKeySet.getMasterKey());
     }
 
     private void expireKey(final DlmsDevice device, final SecurityKeyType securityKeyType, final Date expiryDate) {
