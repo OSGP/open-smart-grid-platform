@@ -26,5 +26,7 @@ public enum SmartMeteringRequestMessageType {
     SET_ACTIVITY_CALENDAR,
     REQUEST_ACTUAL_METER_DATA,
     READ_ALARM_REGISTER,
-    REPLACE_KEYS,
+    SEND_WAKEUP_SMS,
+    GET_SMS_DETAILS,
+    REPLACE_KEYS
 }

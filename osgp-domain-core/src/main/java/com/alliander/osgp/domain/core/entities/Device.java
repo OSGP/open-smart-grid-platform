@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,6 +23,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
@@ -185,6 +188,20 @@ public class Device implements Serializable {
     @Transient
     protected final List<String> organisations = new ArrayList<String>();
 
+    /**
+     * Firmware information indicates which firmware this device is using.
+     */
+    @ManyToOne()
+    @JoinColumn(name = "firmware")
+    protected Firmware firmware;
+
+    /**
+     * Firmware history information
+     */
+    @ManyToMany()
+    @JoinTable(name = "firmware_history", joinColumns = { @JoinColumn(name = "device") }, inverseJoinColumns = { @JoinColumn(name = "firmware") })
+    protected List<Firmware> firmwareHistory;
+
     public Device() {
         // Default constructor
     }
@@ -230,25 +247,7 @@ public class Device implements Serializable {
             return false;
         }
         final Device device = (Device) o;
-        if (this.isActivated != device.isActivated) {
-            return false;
-        }
-        if (this.authorizations != null ? !this.authorizations.equals(device.authorizations)
-                : device.authorizations != null) {
-            return false;
-        }
-        if (this.deviceIdentification != null ? !this.deviceIdentification.equals(device.deviceIdentification)
-                : device.deviceIdentification != null) {
-            return false;
-        }
-        if (this.deviceType != null ? !this.deviceType.equals(device.deviceType) : device.deviceType != null) {
-            return false;
-        }
-        if (this.networkAddress != null ? !this.networkAddress.equals(device.networkAddress)
-                : device.networkAddress != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
     }
 
     public String getAlias() {
@@ -357,12 +356,7 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0;
-        result = 31 * result + (this.deviceType != null ? this.deviceType.hashCode() : 0);
-        result = 31 * result + (this.networkAddress != null ? this.networkAddress.hashCode() : 0);
-        result = 31 * result + (this.isActivated ? 1 : 0);
-        result = 31 * result + (this.authorizations != null ? this.authorizations.hashCode() : 0);
-        return result;
+        return Objects.hashCode(this.deviceIdentification);
     }
 
     public boolean isActivated() {
@@ -398,7 +392,7 @@ public class Device implements Serializable {
     /**
      * This setter is only needed for testing. Don't use this in production
      * code.
-     * 
+     *
      * @param id
      *            The id.
      */
@@ -435,5 +429,21 @@ public class Device implements Serializable {
 
     public void updateGatewayDevice(final Device gatewayDevice) {
         this.gatewayDevice = gatewayDevice;
+    }
+
+    public Firmware getFirmware() {
+        return this.firmware;
+    }
+
+    public void setFirmware(final Firmware firmware) {
+        this.firmware = firmware;
+    }
+
+    public List<Firmware> getFirmwareHistory() {
+        return this.firmwareHistory;
+    }
+
+    public void addFirmwareHistory(final Firmware firmware) {
+        this.firmwareHistory.add(firmware);
     }
 }

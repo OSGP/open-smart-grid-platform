@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.core.entities;
 
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -85,5 +86,25 @@ public class RelayStatus extends AbstractEntity {
 
     public void setIndex(final int index) {
         this.index = index;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RelayStatus)) {
+            return false;
+        }
+        final RelayStatus relayStatus = (RelayStatus) o;
+        final boolean isDeviceEqual = Objects.equals(this.device, relayStatus.device);
+        final boolean isIndexEqual = Objects.equals(this.index, relayStatus.index);
+
+        return isDeviceEqual && isIndexEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.device, this.index);
     }
 }

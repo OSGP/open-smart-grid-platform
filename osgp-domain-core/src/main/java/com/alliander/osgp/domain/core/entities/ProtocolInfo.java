@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -70,44 +72,19 @@ public class ProtocolInfo extends AbstractEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || this.getClass() != o.getClass()) {
+        if (!(o instanceof ProtocolInfo)) {
             return false;
         }
         final ProtocolInfo protocolInfo = (ProtocolInfo) o;
-        if (!protocolInfo.getProtocol().equals(this.protocol)) {
-            return false;
-        }
-        if (!protocolInfo.getProtocolVersion().equals(this.protocolVersion)) {
-            return false;
-        }
-        if (!protocolInfo.getOutgoingProtocolRequestsQueue().equals(this.outgoingProtocolRequestsQueue)) {
-            return false;
-        }
-        if (!protocolInfo.getIncomingProtocolResponsesQueue().equals(this.incomingProtocolResponsesQueue)) {
-            return false;
-        }
-        if (!protocolInfo.getIncomingProtocolRequestsQueue().equals(this.incomingProtocolRequestsQueue)) {
-            return false;
-        }
-        if (!protocolInfo.getOutgoingProtocolResponsesQueue().equals(this.outgoingProtocolResponsesQueue)) {
-            return false;
-        }
-        return true;
+        final boolean isProtocolEqual = Objects.equals(this.protocol, protocolInfo.protocol);
+        final boolean isProtocolVersionEqual = Objects.equals(this.protocolVersion, protocolInfo.protocolVersion);
+
+        return isProtocolEqual && isProtocolVersionEqual;
     }
 
     @Override
     public int hashCode() {
-        int result = this.protocol != null ? this.protocol.hashCode() : 0;
-        result = 31 * result + (this.protocolVersion != null ? this.protocolVersion.hashCode() : 0);
-        result = 31 * result
-                + (this.outgoingProtocolRequestsQueue != null ? this.outgoingProtocolRequestsQueue.hashCode() : 0);
-        result = 31 * result
-                + (this.incomingProtocolResponsesQueue != null ? this.incomingProtocolResponsesQueue.hashCode() : 0);
-        result = 31 * result
-                + (this.incomingProtocolRequestsQueue != null ? this.incomingProtocolRequestsQueue.hashCode() : 0);
-        result = 31 * result
-                + (this.outgoingProtocolResponsesQueue != null ? this.outgoingProtocolResponsesQueue.hashCode() : 0);
-        return result;
+        return Objects.hash(this.protocol, this.protocolVersion);
     }
 
     public String getProtocol() {
@@ -133,5 +110,4 @@ public class ProtocolInfo extends AbstractEntity {
     public String getOutgoingProtocolResponsesQueue() {
         return this.outgoingProtocolResponsesQueue;
     }
-
 }

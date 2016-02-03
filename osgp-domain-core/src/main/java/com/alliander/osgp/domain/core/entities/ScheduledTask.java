@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -128,5 +129,22 @@ public class ScheduledTask extends AbstractEntity {
 
     public void setComplete() {
         this.status = ScheduledTaskStatusType.COMPLETE;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ScheduledTask)) {
+            return false;
+        }
+        final ScheduledTask scheduledTask = (ScheduledTask) o;
+        return Objects.equals(this.correlationUid, scheduledTask.correlationUid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.correlationUid);
     }
 }

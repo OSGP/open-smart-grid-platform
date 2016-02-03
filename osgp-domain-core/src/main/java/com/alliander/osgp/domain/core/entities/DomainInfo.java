@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
@@ -132,4 +134,20 @@ public class DomainInfo extends AbstractEntity {
         return this.incomingDomainResponsesQueue;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DomainInfo)) {
+            return false;
+        }
+        final DomainInfo domainInfo = (DomainInfo) o;
+        return Objects.equals(this.getKey(), domainInfo.getKey());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.getKey());
+    }
 }
