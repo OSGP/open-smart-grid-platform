@@ -333,7 +333,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
         final LnClientConnection conn = null;
         try {
-
             LOGGER.info("Keys to set on the device: {}", keySet);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
