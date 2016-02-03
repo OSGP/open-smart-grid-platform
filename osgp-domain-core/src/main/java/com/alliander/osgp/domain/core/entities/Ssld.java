@@ -66,6 +66,10 @@ public class Ssld extends Device {
         // Default constructor.
     }
 
+    public Ssld(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+    }
+
     public Ssld(final String deviceIdentification, final String deviceType, final InetAddress networkAddress,
             final boolean activated, final boolean hasSchedule) {
         this.deviceIdentification = deviceIdentification;

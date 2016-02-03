@@ -192,9 +192,25 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
-	
-	
+
+	<xsd:element name="RetrievePushNotificationAlarmRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="CorrelationUid" type="common:CorrelationUid" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="RetrievePushNotificationAlarmResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				<xsd:element name="AlarmRegister" type="tns:AlarmRegister" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+
 	<!-- DATATYPES -->
 	
 	<xsd:complexType name="AlarmRegister">

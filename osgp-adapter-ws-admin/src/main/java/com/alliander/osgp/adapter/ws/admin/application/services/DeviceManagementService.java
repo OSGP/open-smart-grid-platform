@@ -39,6 +39,7 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
+import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.EmptyOwnerException;
 import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
@@ -344,7 +345,7 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -463,7 +464,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-            throws FunctionalException {
+                    throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -496,22 +497,27 @@ public class DeviceManagementService {
         final Organisation organisation = this.findOrganisation(organisationIdentification);
         this.isAllowed(organisation, PlatformFunction.UPDATE_KEY);
 
-        Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
         // TODO: refactor device creation with owner authorization and default
         // protocol and move to domain adapter project!
         if (device == null) {
             // Device not found, create new device
             LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
-            device = new Device(deviceIdentification);
+            final Ssld ssld = new Ssld(deviceIdentification);
 
-            final DeviceAuthorization authorization = device.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+            final DeviceAuthorization authorization = ssld.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
 
             final ProtocolInfo protocolInfo = this.protocolRepository.findByProtocolAndProtocolVersion(
                     this.defaultProtocol, this.defaultProtocolVersion);
-            device.updateProtocol(protocolInfo);
+            ssld.updateProtocol(protocolInfo);
 
             this.authorizationRepository.save(authorization);
+        } else {
+            if (!(device.getDeviceType().equals(Ssld.SSLD_TYPE) || device.getDeviceType().equals(Ssld.PSLD_TYPE))) {
+                LOGGER.error("updateKey() function is only supported for SSLD and PSLD device types");
+                throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_ADMIN);
+            }
         }
 
         this.enqueueUpdateKeyRequest(organisationIdentification, deviceIdentification, publicKey);

@@ -39,9 +39,12 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRe
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
@@ -320,6 +323,37 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
             LOGGER.error(
                     "Exception: {} while sending RetrieveReadAlarmRegisterRequest of device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification });
+
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "RetrievePushNotificationAlarmRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
+    @ResponsePayload
+    public RetrievePushNotificationAlarmResponse getRetrievePushNotificationAlarmResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RetrievePushNotificationAlarmRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming RetrievePushNotificationAlarmRequest for correlation UID: {}",
+                request.getCorrelationUid());
+
+        RetrievePushNotificationAlarmResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.monitoringService
+                    .dequeueRetrievePushNotificationAlarmResponse(request.getCorrelationUid());
+
+            this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the push notification alarm");
+
+            response = this.monitoringMapper.map((PushNotificationAlarm) meterResponseData.getMessageData(),
+                    RetrievePushNotificationAlarmResponse.class);
+
+        } catch (final FunctionalException e) {
+            throw e;
+        } catch (final Exception e) {
+            LOGGER.error(
+                    "Exception: {} while sending RetrievePushNotificationAlarmRequest for correlation UID: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getCorrelationUid(), organisationIdentification });
 
             this.handleException(e);
         }
