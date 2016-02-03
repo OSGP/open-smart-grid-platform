@@ -49,7 +49,7 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     private List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column

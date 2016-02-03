@@ -7,8 +7,10 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
@@ -20,7 +22,10 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsComma
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
+import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
@@ -74,6 +79,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
+
+    @Autowired
+    private DlmsDeviceRepository dlmsDeviceRepository;
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
@@ -329,17 +337,11 @@ public class ConfigurationService extends DlmsApplicationService {
             LOGGER.info("Keys to set on the device: {}", keySet);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            // TODO: Send new keys to device.
 
-            // conn = this.dlmsConnectionFactory.getConnection(device);
-            //
-            // final AccessResultCode accessResultCode =
-            // this.setAlarmNotificationsCommandExecutor.execute(conn, device,
-            // alarmNotifications);
-            // if (AccessResultCode.SUCCESS != accessResultCode) {
-            // throw new
-            // ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
-            // + accessResultCode);
-            // }
+            // When successful store keys.
+            this.setNewKeys(device, keySet);
+            this.dlmsDeviceRepository.save(device);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
@@ -356,4 +358,35 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
+    /**
+     * When new keys are stored, the currently valid keys expire. ValidFrom and
+     * ValidTo dates are the current time.
+     *
+     * @param device
+     *            Device of which the keys are changed.
+     * @param newKeySet
+     *            The new set of keys.
+     */
+    private void setNewKeys(final DlmsDevice device, final KeySet newKeySet) {
+        final Date keyDate = new Date();
+        this.expireKey(device, SecurityKeyType.E_METER_AUTHENTICATION, keyDate);
+        this.expireKey(device, SecurityKeyType.E_METER_ENCRYPTION, keyDate);
+        this.expireKey(device, SecurityKeyType.E_METER_MASTER, keyDate);
+
+        this.newKey(device, SecurityKeyType.E_METER_AUTHENTICATION, keyDate, newKeySet.getAuthenticationKey());
+        this.newKey(device, SecurityKeyType.E_METER_ENCRYPTION, keyDate, newKeySet.getEncryptionKey());
+        this.newKey(device, SecurityKeyType.E_METER_MASTER, keyDate, newKeySet.getMasterKey());
+    }
+
+    private void expireKey(final DlmsDevice device, final SecurityKeyType securityKeyType, final Date expiryDate) {
+        final SecurityKey key = device.getValidSecurityKey(securityKeyType);
+        key.setValidTo(expiryDate);
+    }
+
+    private void newKey(final DlmsDevice device, final SecurityKeyType securityKeyType, final Date validFrom,
+            final byte[] key) {
+        final SecurityKey securityKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), validFrom,
+                null);
+        device.addSecurityKey(securityKey);
+    }
 }
