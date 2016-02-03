@@ -70,13 +70,17 @@ public class DlmsPushNotificationAlarmDecoder extends ReplayingDecoder<DlmsPushN
             // fall-through intended
         case ALARM_OBJECT:
             this.decodeAlarmObject(buffer);
-            try {
-                return this.builder.build();
-            } finally {
-                this.reset();
-            }
+            return this.buildPushNotificationAlarm();
         default:
             throw new UnknownAlarmDecodingStateException(state.name());
+        }
+    }
+
+    private DlmsPushNotificationAlarm buildPushNotificationAlarm() {
+        try {
+            return this.builder.build();
+        } finally {
+            this.reset();
         }
     }
 
