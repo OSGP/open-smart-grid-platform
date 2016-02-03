@@ -23,6 +23,8 @@ import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagemen
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
@@ -31,6 +33,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -182,6 +185,35 @@ public class FirmwareManagementEndpoint {
         }
 
         return response;
+    }
+
+    // === MANUFACTURERS LOGIC ===
+
+    @PayloadRoot(localPart = "AddManufacturerRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public AddManufacturerResponse adddManufacturer(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddManufacturerRequest request) throws OsgpException {
+
+        LOGGER.info("Adding manufacturer:{}.", request.getManufacturer().getName());
+
+        try {
+            this.firmwareManagementService.addManufacturer(new Manufacturer(request.getManufacturer().getCode(),
+                    request.getManufacturer().getName()));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getManufacturer().getCode(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final AddManufacturerResponse addManufacturerResponse = new AddManufacturerResponse();
+        addManufacturerResponse.setResult(OsgpResultType.OK);
+
+        return addManufacturerResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {
