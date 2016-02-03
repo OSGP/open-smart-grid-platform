@@ -422,7 +422,6 @@
         <xsd:sequence>
             <xsd:element name="AuthenticationKey" type="xsd:hexBinary"></xsd:element>
             <xsd:element name="EncryptionKey" type="xsd:hexBinary"></xsd:element>
-            <xsd:element name="MasterKey" type="xsd:hexBinary"></xsd:element>
         </xsd:sequence>
     </xsd:complexType>
 </xsd:schema>
