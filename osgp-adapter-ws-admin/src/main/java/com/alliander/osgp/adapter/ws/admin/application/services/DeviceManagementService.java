@@ -345,7 +345,7 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -464,7 +464,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-                    throws FunctionalException {
+            throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -513,11 +513,6 @@ public class DeviceManagementService {
             ssld.updateProtocol(protocolInfo);
 
             this.authorizationRepository.save(authorization);
-        } else {
-            if (!(device.getDeviceType().equals(Ssld.SSLD_TYPE) || device.getDeviceType().equals(Ssld.PSLD_TYPE))) {
-                LOGGER.error("updateKey() function is only supported for SSLD and PSLD device types");
-                throw new FunctionalException(FunctionalExceptionType.ARGUMENT_NULL, ComponentType.WS_ADMIN);
-            }
         }
 
         this.enqueueUpdateKeyRequest(organisationIdentification, deviceIdentification, publicKey);
