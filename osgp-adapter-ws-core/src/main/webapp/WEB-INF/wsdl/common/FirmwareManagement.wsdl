@@ -75,7 +75,63 @@
 		<wsdl:part element="fman:GetFirmwareVersionResponse" name="GetFirmwareVersionResponse">
 		</wsdl:part>
 	</wsdl:message>
-	
+
+	<wsdl:message name="FindAllManufacturersResponse">
+		<wsdl:part element="fman:FindAllManufacturersResponse" name="FindAllManufacturersResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="FindAllManufacturersHeader">
+		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+		<wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+	</wsdl:message>
+	<wsdl:message name="FindAllManufacturersRequest">
+		<wsdl:part element="fman:FindAllManufacturersRequest" name="FindAllManufacturersRequest">
+		</wsdl:part>
+	</wsdl:message>
+
+    <wsdl:message name="AddManufacturerHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="AddManufacturerResponse">
+        <wsdl:part element="fman:AddManufacturerResponse" name="AddManufacturerResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddManufacturerRequest">
+        <wsdl:part element="fman:AddManufacturerRequest" name="AddManufacturerRequest">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="RemoveManufacturerHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="RemoveManufacturerResponse">
+        <wsdl:part element="fman:RemoveManufacturerResponse" name="RemoveManufacturerResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="RemoveManufacturerRequest">
+        <wsdl:part element="fman:RemoveManufacturerRequest" name="RemoveManufacturerRequest">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="ChangeManufacturerHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="ChangeManufacturerResponse">
+        <wsdl:part element="fman:ChangeManufacturerResponse" name="ChangeManufacturerResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="ChangeManufacturerRequest">
+        <wsdl:part element="fman:ChangeManufacturerRequest" name="ChangeManufacturerRequest">
+        </wsdl:part>
+    </wsdl:message>
+
 	<wsdl:portType name="FirmwareManagementPort">
 		<wsdl:operation name="UpdateFirmware">
 			<wsdl:input message="tns:UpdateFirmwareRequest" name="UpdateFirmwareRequest">
@@ -101,8 +157,34 @@
 			<wsdl:output message="tns:GetFirmwareVersionResponse" name="GetFirmwareVersionResponse">
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="FindAllManufacturers">
+			<wsdl:input message="tns:FindAllManufacturersRequest"
+				name="FindAllManufacturersRequest">
+			</wsdl:input>
+			<wsdl:output message="tns:FindAllManufacturersResponse"
+				name="FindAllManufacturersResponse">
+			</wsdl:output>
+		</wsdl:operation>
+        <wsdl:operation name="AddManufacturer">
+            <wsdl:input message="tns:AddManufacturerRequest" name="AddManufacturerRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:AddManufacturerResponse" name="AddManufacturerResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="ChangeManufacturer">
+            <wsdl:input message="tns:ChangeManufacturerRequest" name="ChangeManufacturerRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:ChangeManufacturerResponse" name="ChangeManufacturerResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="RemoveManufacturer">
+            <wsdl:input message="tns:RemoveManufacturerRequest" name="RemoveManufacturerRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:RemoveManufacturerResponse" name="RemoveManufacturerResponse">
+            </wsdl:output>
+        </wsdl:operation>
 	</wsdl:portType>
-	
+
 	<wsdl:binding name="FirmwareManagementPortSoap11" type="tns:FirmwareManagementPort">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 		<wsdl:operation name="UpdateFirmware">
@@ -156,6 +238,58 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
+
+		<wsdl:operation name="FindAllManufacturers">
+			<soap:operation soapAction="" />
+			<wsdl:input name="FindAllManufacturersRequest">
+				<soap:header message="tns:FindAllManufacturersHeader" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:FindAllManufacturersHeader" part="UserName" use="literal" />
+				<soap:header message="tns:FindAllManufacturersHeader" part="ApplicationName" use="literal" />
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="FindAllManufacturersResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+
+        <wsdl:operation name="AddManufacturer">
+            <soap:operation soapAction="" />
+            <wsdl:input name="AddManufacturerRequest">
+                <soap:header message="tns:AddManufacturerHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:AddManufacturerHeader" part="UserName" use="literal" />
+				<soap:header message="tns:AddManufacturerHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="AddManufacturerResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="ChangeManufacturer">
+            <soap:operation soapAction="" />
+            <wsdl:input name="ChangeManufacturerRequest">
+                <soap:header message="tns:ChangeManufacturerHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ChangeManufacturerHeader" part="UserName" use="literal" />
+				<soap:header message="tns:ChangeManufacturerHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="ChangeManufacturerResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="RemoveManufacturer">
+            <soap:operation soapAction="" />
+            <wsdl:input name="RemoveManufacturerRequest">
+                <soap:header message="tns:RemoveManufacturerHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:RemoveManufacturerHeader" part="UserName" use="literal" />
+				<soap:header message="tns:RemoveManufacturerHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="RemoveManufacturerResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
 	</wsdl:binding>
 	
 	<wsdl:service name="FirmwareManagementPortService">

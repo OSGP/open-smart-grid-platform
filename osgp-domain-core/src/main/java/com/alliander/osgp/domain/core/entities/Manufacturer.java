@@ -23,11 +23,15 @@ public class Manufacturer implements Serializable {
     private static final long serialVersionUID = 4267096558283350606L;
 
     @Id
-    @Column(length = 3)
+    @Column(nullable = false, length = 4)
     private String code;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 50)
     private String name;
+
+    public Manufacturer() {
+        // Default constructor
+    }
 
     public Manufacturer(final String code, final String name) {
         this.code = code;
@@ -40,5 +44,13 @@ public class Manufacturer implements Serializable {
 
     public String getName() {
         return this.name;
+    }
+
+    public void setCode(final String code) {
+        this.code = code;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 }
