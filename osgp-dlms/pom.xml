@@ -21,6 +21,15 @@
 
 	<dependencies>
 
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>shared</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alliander.osgp</groupId>
+            <artifactId>osgp-dto</artifactId>
+        </dependency>
+
 		<!-- Joda Time (Date/Time util) -->
 		<dependency>
 			<groupId>joda-time</groupId>
