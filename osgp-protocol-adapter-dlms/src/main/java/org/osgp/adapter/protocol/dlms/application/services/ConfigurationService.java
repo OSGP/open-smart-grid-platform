@@ -15,6 +15,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
@@ -79,6 +80,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
+
+    @Autowired
+    private ReplaceKeysCommandExecutor replaceKeysCommandExecutor;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -297,7 +301,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
         LnClientConnection conn = null;
         try {
-
             LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -329,21 +332,27 @@ public class ConfigurationService extends DlmsApplicationService {
     public void replaceKeys(final DlmsDeviceMessageMetadata messageMetadata, final KeySet keySet,
             final DeviceResponseMessageSender responseMessageSender) {
 
-        this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
+        this.logStart(LOGGER, messageMetadata, "replaceKeys");
 
-        final LnClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
-            LOGGER.info("Keys to set on the device: {}", keySet);
-
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            // TODO: Send new keys to device.
+            conn = this.dlmsConnectionFactory.getConnection(device);
 
-            // When successful store keys.
+            LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
+
+            // Send new keys to device.
+            final MethodResultCode methodResultCode = this.replaceKeysCommandExecutor.execute(conn, device, keySet);
+            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+                throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
+                        + methodResultCode);
+            }
+
+            // When successful, store keys.
             this.setNewKeys(device, keySet);
             this.dlmsDeviceRepository.save(device);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during replace keys", e);
             final OsgpException ex = this.ensureOsgpException(e);
