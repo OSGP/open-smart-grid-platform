@@ -64,7 +64,13 @@ public class DeviceResponseMessageService {
             // retried.
             if (message.getOsgpException() != null) {
                 for (final String retryException : retryExceptions) {
-                    if (message.getOsgpException().getCause().toString().contains(retryException)) {
+
+                    final String exceptionMsg = message.getOsgpException().toString();
+                    if (message.getOsgpException().getCause() != null) {
+                        exceptionMsg.concat(message.getOsgpException().getCause().toString());
+                    }
+
+                    if (exceptionMsg.contains(retryException)) {
                         retryMessage = true;
                         break;
                     }

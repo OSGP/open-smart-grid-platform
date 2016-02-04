@@ -139,7 +139,7 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
