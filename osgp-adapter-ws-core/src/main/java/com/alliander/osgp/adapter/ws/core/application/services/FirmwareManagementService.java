@@ -1,11 +1,13 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.adapter.ws.core.application.services;
+
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -30,6 +32,7 @@ import com.alliander.osgp.domain.core.exceptions.ExistingEntityException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -107,11 +110,27 @@ public class FirmwareManagementService {
     }
 
     /**
+     * Returns a list of all Manufacturers in the Platform
+     */
+    @Transactional(value = "writableTransactionManager")
+    public List<Manufacturer> findAllManufacturers(final String organisationIdentification) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.GET_MANUFACTURERS);
+
+        return this.manufacturerRepository.findAll();
+    }
+
+    /**
      * Adds new Manufacturer to the platform. Throws exception if
      * {@link Manufacturer} already exists
      */
     @Transactional(value = "writableTransactionManager")
-    public void addManufacturer(@Valid final Manufacturer manufacturer) throws FunctionalException {
+    public void addManufacturer(@Identification final String organisationIdentification,
+            @Valid final Manufacturer manufacturer) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CREATE_MANUFACTURER);
 
         final Manufacturer dataseManufacturer = this.manufacturerRepository.findByCode(manufacturer.getCode());
 
@@ -121,6 +140,53 @@ public class FirmwareManagementService {
                     new ExistingEntityException(Manufacturer.class, manufacturer.getCode()));
         } else {
             this.manufacturerRepository.save(manufacturer);
+        }
+    }
+
+    /**
+     * Updates a Manufacturer to the platform. Throws exception if
+     * {@link Manufacturer} doesn't exists.
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void changeManufacturer(@Identification final String organisationIdentification,
+            @Valid final Manufacturer manufacturer) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.CHANGE_MANUFACTURER);
+
+        final Manufacturer databaseManufacturer = this.manufacturerRepository.findByCode(manufacturer.getCode());
+
+        if (databaseManufacturer == null) {
+            LOGGER.info("Manufacturer not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_MANUFACTURER, ComponentType.WS_CORE,
+                    new ExistingEntityException(Manufacturer.class, manufacturer.getCode()));
+        } else {
+            databaseManufacturer.setCode(manufacturer.getCode());
+            databaseManufacturer.setName(manufacturer.getName());
+
+            this.manufacturerRepository.save(databaseManufacturer);
+        }
+    }
+
+    /**
+     * Removes a Manufacturer from the platform. Throws exception if
+     * {@link Manufacturer} doesn't exists
+     */
+    @Transactional(value = "writableTransactionManager")
+    public void removeManufacturer(@Identification final String organisationIdentification, @Valid final String code)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        this.domainHelperService.isAllowed(organisation, PlatformFunction.REMOVE_MANUFACTURER);
+
+        final Manufacturer dataseManufacturer = this.manufacturerRepository.findByCode(code);
+
+        if (dataseManufacturer == null) {
+            LOGGER.info("Manufacturer not found.");
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_MANUFACTURER, ComponentType.WS_CORE,
+                    new ExistingEntityException(Manufacturer.class, code));
+        } else {
+            this.manufacturerRepository.delete(dataseManufacturer);
         }
     }
 

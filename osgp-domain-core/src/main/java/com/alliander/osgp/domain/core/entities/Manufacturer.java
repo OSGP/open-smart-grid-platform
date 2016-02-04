@@ -45,4 +45,12 @@ public class Manufacturer implements Serializable {
     public String getName() {
         return this.name;
     }
+
+    public void setCode(final String code) {
+        this.code = code;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 }

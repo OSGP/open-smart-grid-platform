@@ -89,6 +89,22 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="FindAllManufacturersRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="FindAllManufacturersResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element maxOccurs="unbounded" name="Manufacturers"
+					type="tns:Manufacturer" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
 	<xsd:element name="AddManufacturerRequest">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -105,10 +121,46 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="RemoveManufacturerRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Code" minOccurs="1" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:maxLength value="4" />
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="RemoveManufacturerResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ChangeManufacturerRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Manufacturer" type="tns:Manufacturer" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ChangeManufacturerResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
 	<xsd:complexType name="Manufacturer">
 		<xsd:sequence>
-
-			<xsd:element name="Identification" type="xsd:long" minOccurs="1" maxOccurs="1" />
 
 			<xsd:element name="Name" minOccurs="1" maxOccurs="1">
 				<xsd:simpleType>
