@@ -25,7 +25,7 @@ public class SecurityKey extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private SecurityKeyType securityKeyType;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Date validFrom;
 
     @Column(nullable = true)
@@ -42,7 +42,9 @@ public class SecurityKey extends AbstractEntity {
             final Date validFrom, final Date validTo) {
         this.dlmsDevice = dlmsDevice;
         this.securityKeyType = securityKeyType;
-        this.validFrom = new Date(validFrom.getTime());
+        if (validFrom != null) {
+            this.validFrom = new Date(validFrom.getTime());
+        }
         if (validTo != null) {
             this.validTo = new Date(validTo.getTime());
         }
@@ -62,12 +64,12 @@ public class SecurityKey extends AbstractEntity {
 
         return Objects.equals(this.getDlmsDevice(), compareKey.getDlmsDevice())
                 && Objects.equals(this.getSecurityKeyType(), compareKey.getSecurityKeyType())
-                && Objects.equals(this.getValidFrom(), compareKey.getValidFrom());
+                && Objects.equals(this.getId(), compareKey.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getDlmsDevice(), this.getSecurityKeyType(), this.getValidFrom());
+        return Objects.hash(this.getDlmsDevice(), this.getSecurityKeyType(), this.getId());
     }
 
     public DlmsDevice getDlmsDevice() {
@@ -80,6 +82,10 @@ public class SecurityKey extends AbstractEntity {
 
     public Date getValidFrom() {
         return this.validFrom;
+    }
+
+    public void setValidFrom(final Date validFrom) {
+        this.validFrom = new Date(validFrom.getTime());
     }
 
     public Date getValidTo() {

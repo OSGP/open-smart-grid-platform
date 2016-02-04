@@ -7,15 +7,18 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
+import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeysCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
@@ -82,7 +85,7 @@ public class ConfigurationService extends DlmsApplicationService {
     private GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
 
     @Autowired
-    private ReplaceKeysCommandExecutor replaceKeysCommandExecutor;
+    private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -341,16 +344,10 @@ public class ConfigurationService extends DlmsApplicationService {
 
             LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
 
-            // Send new keys to device.
-            final MethodResultCode methodResultCode = this.replaceKeysCommandExecutor.execute(conn, device, keySet);
-            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
-                throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
-                        + methodResultCode);
-            }
-
-            // When successful, store keys.
-            this.setNewKeys(device, keySet);
-            this.dlmsDeviceRepository.save(device);
+            this.executeReplaceKey(device, conn, keySet.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION,
+                    KeyId.AUTHENTICATION_KEY);
+            this.executeReplaceKey(device, conn, keySet.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION,
+                    KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
         } catch (final Exception e) {
@@ -366,33 +363,34 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
-    /**
-     * When new keys are stored, the currently valid keys expire. ValidFrom and
-     * ValidTo dates are the current time.
-     *
-     * @param device
-     *            Device of which the keys are changed.
-     * @param newKeySet
-     *            The new set of keys.
-     */
-    private void setNewKeys(final DlmsDevice device, final KeySet newKeySet) {
-        final Date keyDate = new Date();
-        this.expireKey(device, SecurityKeyType.E_METER_AUTHENTICATION, keyDate);
-        this.expireKey(device, SecurityKeyType.E_METER_ENCRYPTION, keyDate);
+    private void executeReplaceKey(final DlmsDevice device, final LnClientConnection conn, final byte[] key,
+            final SecurityKeyType securityKeyType, final KeyId keyId) throws ProtocolAdapterException {
 
-        this.newKey(device, SecurityKeyType.E_METER_AUTHENTICATION, keyDate, newKeySet.getAuthenticationKey());
-        this.newKey(device, SecurityKeyType.E_METER_ENCRYPTION, keyDate, newKeySet.getEncryptionKey());
-    }
+        // Add the new key and store in the repo
+        final SecurityKey newKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null);
+        device.addSecurityKey(newKey);
+        this.dlmsDeviceRepository.save(device);
 
-    private void expireKey(final DlmsDevice device, final SecurityKeyType securityKeyType, final Date expiryDate) {
-        final SecurityKey key = device.getValidSecurityKey(securityKeyType);
-        key.setValidTo(expiryDate);
-    }
+        try {
+            // Send the key to the device.
+            final MethodResultCode methodResultCode = this.replaceKeyCommandExecutor.execute(conn, device,
+                    ReplaceKeyCommandExecutor.wrap(key, keyId));
+            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+                throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
+                        + methodResultCode);
+            }
 
-    private void newKey(final DlmsDevice device, final SecurityKeyType securityKeyType, final Date validFrom,
-            final byte[] key) {
-        final SecurityKey securityKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), validFrom,
-                null);
-        device.addSecurityKey(securityKey);
+        } catch (IOException | TimeoutException e) {
+            throw new ProtocolAdapterException(e.getMessage());
+        }
+
+        // When succesful, expire the oldkey and set new key as valid from
+        // now.
+        final Date now = new Date();
+        final SecurityKey oldKey = device.getValidSecurityKey(securityKeyType);
+        oldKey.setValidTo(now);
+        newKey.setValidFrom(now);
+        this.dlmsDeviceRepository.save(device);
+
     }
 }
