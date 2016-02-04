@@ -258,7 +258,7 @@ public class FirmwareManagementEndpoint {
 
     @PayloadRoot(localPart = "ChangeManufacturerRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public ChangeManufacturerResponse ChangedManufacturer(
+    public ChangeManufacturerResponse changeManufacturer(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final ChangeManufacturerRequest request) throws OsgpException {
 
@@ -277,15 +277,15 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         }
 
-        final ChangeManufacturerResponse ChangeManufacturerResponse = new ChangeManufacturerResponse();
-        ChangeManufacturerResponse.setResult(OsgpResultType.OK);
+        final ChangeManufacturerResponse changeManufacturerResponse = new ChangeManufacturerResponse();
+        changeManufacturerResponse.setResult(OsgpResultType.OK);
 
-        return ChangeManufacturerResponse;
+        return changeManufacturerResponse;
     }
 
     @PayloadRoot(localPart = "RemoveManufacturerRequest", namespace = NAMESPACE)
     @ResponsePayload
-    public RemoveManufacturerResponse RemovedManufacturer(
+    public RemoveManufacturerResponse removedManufacturer(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RemoveManufacturerRequest request) throws OsgpException {
 
