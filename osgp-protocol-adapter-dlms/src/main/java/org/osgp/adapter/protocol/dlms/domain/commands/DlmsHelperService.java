@@ -10,6 +10,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -23,6 +24,7 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
+import org.openmuc.jdlms.datatypes.CosemDateFormat;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
@@ -33,6 +35,13 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MessageType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod;
+import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
@@ -122,9 +131,29 @@ public class DlmsHelperService {
         return ((Number) resultData.value()).longValue();
     }
 
+    public String readString(final DataObject resultData, final String description) throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isByteArray()) {
+            LOGGER.error("Unexpected ResultData for String value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of String, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof byte[])) {
+            LOGGER.error("Unexpected ResultData for String value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type byte[], got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        return new String((byte[]) resultData.value(), StandardCharsets.UTF_8);
+    }
+
     public DateTime readDateTime(final GetResult getResult, final String description) throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
-        final DataObject resultData = getResult.resultData();
+        return this.readDateTime(getResult.resultData(), description);
+    }
+
+    public DateTime readDateTime(final DataObject resultData, final String description) throws ProtocolAdapterException {
         LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
         if (resultData == null || resultData.isNull()) {
             return null;
@@ -138,6 +167,42 @@ public class DlmsHelperService {
             throw new ProtocolAdapterException("Expected ResultData of ByteArray or CosemDateFormat, got: "
                     + resultData.choiceIndex());
         }
+    }
+
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime readCosemDateTime(
+            final DataObject resultData, final String description) throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        final CosemDateTime jdlmsCosemDateTime;
+        if (resultData.isByteArray()) {
+            jdlmsCosemDateTime = CosemDateTime.decode((byte[]) resultData.value());
+        } else if (resultData.isCosemDateFormat()) {
+            jdlmsCosemDateTime = (CosemDateTime) resultData.value();
+        } else {
+            LOGGER.error("Unexpected ResultData for DateTime value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of ByteArray or CosemDateFormat, got: "
+                    + resultData.choiceIndex());
+        }
+
+        final int year = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.YEAR);
+        final int month = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MONTH);
+        final int dayOfMonth = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_MONTH);
+        final int dayOfWeek = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_WEEK);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate(
+                year, month, dayOfMonth, dayOfWeek);
+        final int hour = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HOUR);
+        final int minute = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MINUTE);
+        final int second = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.SECOND);
+        final int hundredths = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HUNDREDTHS);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime(
+                hour, minute, second, hundredths);
+        final int deviation = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DEVIATION);
+        final int clockStatusValue = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.CLOCK_STATUS);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus(
+                clockStatusValue);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(date, time, deviation, clockStatus);
     }
 
     public DateTime convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
@@ -283,6 +348,269 @@ public class DlmsHelperService {
         bb.put((byte) 0xFF);
 
         return DataObject.newOctetStringData(bb.array());
+    }
+
+    public List<CosemObjectDefinition> readListOfObjectDefinition(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        return this.readListOfObjectDefinition(getResult.resultData(), description);
+    }
+
+    public List<CosemObjectDefinition> readListOfObjectDefinition(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isComplex()) {
+            LOGGER.error("Unexpected ResultData for Array value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Array, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof List)) {
+            LOGGER.error("Unexpected ResultData for Array value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type List, got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        @SuppressWarnings("unchecked")
+        final List<DataObject> listOfObjectDefinition = (List<DataObject>) resultData.value();
+        final List<CosemObjectDefinition> objectDefinitionList = new ArrayList<>();
+        for (final DataObject objectDefinitionObject : listOfObjectDefinition) {
+            objectDefinitionList.add(this.readObjectDefinition(objectDefinitionObject, "Object Definition from "
+                    + description));
+        }
+        return objectDefinitionList;
+    }
+
+    public CosemObjectDefinition readObjectDefinition(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isComplex()) {
+            LOGGER.error("Unexpected ResultData for Structure value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Structure, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof List)) {
+            LOGGER.error("Unexpected ResultData for Structure value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type List, got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        @SuppressWarnings("unchecked")
+        final List<DataObject> objectDefinitionElements = (List<DataObject>) resultData.value();
+        if (objectDefinitionElements.size() != 4) {
+            LOGGER.error("Unexpected ResultData for Object Definition value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected list for Object Definition to contain 4 elements, got: "
+                    + objectDefinitionElements.size());
+        }
+        final Long classId = this.readLongNotNull(objectDefinitionElements.get(0), "Class ID from " + description);
+        final CosemObisCode logicalName = this.readLogicalName(objectDefinitionElements.get(1), "Logical Name from "
+                + description);
+        final Long attributeIndex = this.readLongNotNull(objectDefinitionElements.get(2), "Attribute Index from "
+                + description);
+        final Long dataIndex = this.readLongNotNull(objectDefinitionElements.get(0), "Data Index from " + description);
+
+        return new CosemObjectDefinition(classId.intValue(), logicalName, attributeIndex.intValue(),
+                dataIndex.intValue());
+    }
+
+    public CosemObisCode readLogicalName(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isByteArray()) {
+            LOGGER.error("Unexpected ResultData for Logical Name value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of ByteArray, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof byte[])) {
+            LOGGER.error("Unexpected ResultData for Logical Name value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type byte[], got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        return new CosemObisCode((byte[]) resultData.value());
+    }
+
+    public SendDestinationAndMethod readSendDestinationAndMethod(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        return this.readSendDestinationAndMethod(getResult.resultData(), description);
+    }
+
+    public SendDestinationAndMethod readSendDestinationAndMethod(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isComplex()) {
+            LOGGER.error("Unexpected ResultData for Structure value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Structure, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof List)) {
+            LOGGER.error("Unexpected ResultData for Structure value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type List, got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        @SuppressWarnings("unchecked")
+        final List<DataObject> sendDestinationAndMethodElements = (List<DataObject>) resultData.value();
+
+        final TransportServiceType transportService = this.readTransportServiceType(
+                sendDestinationAndMethodElements.get(0), "Transport Service from " + description);
+        final String destination = this.readString(sendDestinationAndMethodElements.get(1), "Destination from "
+                + description);
+        final MessageType message = this.readMessageType(sendDestinationAndMethodElements.get(2), "Message from "
+                + description);
+
+        return new SendDestinationAndMethod(transportService, destination, message);
+    }
+
+    public TransportServiceType readTransportServiceType(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isNumber()) {
+            LOGGER.error("Unexpected ResultData for Enum value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Enum, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof Number)) {
+            LOGGER.error("Unexpected ResultData for Enum value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type Number, got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        final TransportServiceType transportService;
+        final int enumValue = ((Number) resultData.value()).intValue();
+        switch (enumValue) {
+        case 0:
+            transportService = TransportServiceType.TCP;
+            break;
+        case 1:
+            transportService = TransportServiceType.UDP;
+            break;
+        case 2:
+            transportService = TransportServiceType.FTP;
+            break;
+        case 3:
+            transportService = TransportServiceType.SMTP;
+            break;
+        case 4:
+            transportService = TransportServiceType.SMS;
+            break;
+        case 5:
+            transportService = TransportServiceType.HDLC;
+            break;
+        case 6:
+            transportService = TransportServiceType.M_BUS;
+            break;
+        case 7:
+            transportService = TransportServiceType.ZIG_BEE;
+            break;
+        default:
+            if (enumValue < 200 || enumValue > 255) {
+                LOGGER.error("Unexpected Enum value for TransportServiceType: {}", enumValue);
+                throw new ProtocolAdapterException("Unknown Enum value for TransportServiceType: " + enumValue);
+            }
+            transportService = TransportServiceType.MANUFACTURER_SPECIFIC;
+        }
+        return transportService;
+    }
+
+    public MessageType readMessageType(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isNumber()) {
+            LOGGER.error("Unexpected ResultData for Enum value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Enum, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof Number)) {
+            LOGGER.error("Unexpected ResultData for Enum value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type Number, got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        final MessageType message;
+        final int enumValue = ((Number) resultData.value()).intValue();
+        switch (enumValue) {
+        case 0:
+            message = MessageType.A_XDR_ENCODED_X_DLMS_APDU;
+            break;
+        case 1:
+            message = MessageType.XML_ENCODED_X_DLMS_APDU;
+            break;
+        default:
+            if (enumValue < 128 || enumValue > 255) {
+                LOGGER.error("Unexpected Enum value for MessageType: {}", enumValue);
+                throw new ProtocolAdapterException("Unknown Enum value for MessageType: " + enumValue);
+            }
+            message = MessageType.MANUFACTURER_SPECIFIC;
+        }
+        return message;
+    }
+
+    public List<WindowElement> readListOfWindowElement(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        return this.readListOfWindowElement(getResult.resultData(), description);
+    }
+
+    public List<WindowElement> readListOfWindowElement(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isComplex()) {
+            LOGGER.error("Unexpected ResultData for Array value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Array, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof List)) {
+            LOGGER.error("Unexpected ResultData for Array value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type List, got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        @SuppressWarnings("unchecked")
+        final List<DataObject> listOfWindowElement = (List<DataObject>) resultData.value();
+        final List<WindowElement> windowElementList = new ArrayList<>();
+        for (final DataObject windowElementObject : listOfWindowElement) {
+            windowElementList.add(this.readWindowElement(windowElementObject, "Window Element from " + description));
+        }
+        return windowElementList;
+    }
+
+    public WindowElement readWindowElement(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
+        LOGGER.debug(description + " - ResultData: {}", this.getDebugInfo(resultData));
+        if (resultData == null || resultData.isNull()) {
+            return null;
+        }
+        if (!resultData.isComplex()) {
+            LOGGER.error("Unexpected ResultData for Structure value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData of Structure, got: " + resultData.choiceIndex());
+        }
+        if (!(resultData.value() instanceof List)) {
+            LOGGER.error("Unexpected ResultData for Structure value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected ResultData value to be of type List, got: "
+                    + (resultData.value() == null ? "null" : resultData.value().getClass().getName()));
+        }
+        @SuppressWarnings("unchecked")
+        final List<DataObject> windowElementElements = (List<DataObject>) resultData.value();
+        if (windowElementElements.size() != 2) {
+            LOGGER.error("Unexpected ResultData for WindowElement value: {}", this.getDebugInfo(resultData));
+            throw new ProtocolAdapterException("Expected list for WindowElement to contain 2 elements, got: "
+                    + windowElementElements.size());
+        }
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime startTime = this.readCosemDateTime(
+                windowElementElements.get(0), "Start Time from " + description);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime endTime = this.readCosemDateTime(
+                windowElementElements.get(0), "End Time from " + description);
+
+        return new WindowElement(startTime, endTime);
     }
 
     public String getDebugInfo(final DataObject dataObject) {
