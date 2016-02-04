@@ -303,10 +303,10 @@ public class FirmwareManagementEndpoint {
             this.handleException(e);
         }
 
-        final RemoveManufacturerResponse RemoveManufacturerResponse = new RemoveManufacturerResponse();
-        RemoveManufacturerResponse.setResult(OsgpResultType.OK);
+        final RemoveManufacturerResponse removeManufacturerResponse = new RemoveManufacturerResponse();
+        removeManufacturerResponse.setResult(OsgpResultType.OK);
 
-        return RemoveManufacturerResponse;
+        return removeManufacturerResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {
