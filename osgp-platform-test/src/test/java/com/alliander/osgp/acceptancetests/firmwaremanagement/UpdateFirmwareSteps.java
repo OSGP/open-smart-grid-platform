@@ -48,6 +48,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRe
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors.CommonUpdateFirmwareRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerClient;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpDeviceService;
+import com.alliander.osgp.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagementService;
 import com.alliander.osgp.adapter.ws.core.endpoints.FirmwareManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
@@ -219,14 +220,14 @@ public class UpdateFirmwareSteps {
 
         when(this.deviceRepositoryMock.findByDeviceIdentification(deviceIdentification)).thenReturn(this.device);
         when(this.oslpDeviceRepositoryMock.findByDeviceIdentification(deviceIdentification))
-                .thenReturn(this.oslpDevice);
+        .thenReturn(this.oslpDevice);
         when(this.oslpDeviceRepositoryMock.findByDeviceUid(DEVICE_UID)).thenReturn(this.oslpDevice);
 
         final List<DeviceAuthorization> authorizations = new ArrayList<>();
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.FIRMWARE).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the update firmware request is received")
@@ -422,7 +423,8 @@ public class UpdateFirmwareSteps {
                 this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
-        this.firmwareManagementEndpoint = new FirmwareManagementEndpoint(this.wsFirmwareManagementService);
+        this.firmwareManagementEndpoint = new FirmwareManagementEndpoint(this.wsFirmwareManagementService,
+                new FirmwareManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 

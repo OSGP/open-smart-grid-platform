@@ -47,6 +47,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpDeviceServi
 import com.alliander.osgp.adapter.ws.core.application.mapping.ConfigurationManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceInstallationMapper;
 import com.alliander.osgp.adapter.ws.core.application.mapping.DeviceManagementMapper;
+import com.alliander.osgp.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import com.alliander.osgp.adapter.ws.core.endpoints.AdHocManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.endpoints.ConfigurationManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.endpoints.DeviceInstallationEndpoint;
@@ -776,7 +777,7 @@ public class VerifyAuthorizeDeviceFunctionSteps {
                 new DeviceInstallationMapper());
         this.coreDeviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
                 this.deviceManagementMapper);
-        this.coreFirmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService);
+        this.coreFirmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService, new FirmwareManagementMapper());
         this.lightDeviceMonitoringEndpoint = new DeviceMonitoringEndpoint(this.deviceMonitoringService,
                 new DeviceMonitoringMapper());
 

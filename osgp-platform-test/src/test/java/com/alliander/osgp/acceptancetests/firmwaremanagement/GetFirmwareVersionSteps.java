@@ -43,6 +43,7 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDeviceBuilde
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpChannelHandlerClient;
 import com.alliander.osgp.adapter.protocol.oslp.infra.networking.OslpDeviceService;
+import com.alliander.osgp.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagementService;
 import com.alliander.osgp.adapter.ws.core.endpoints.FirmwareManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
@@ -440,7 +441,8 @@ public class GetFirmwareVersionSteps {
                 this.deviceAuthorizationRepositoryMock, this.deviceLogItemRepositoryMock, this.channelMock,
                 this.webServiceResponseMessageSenderMock, this.oslpDeviceRepositoryMock });
 
-        this.firmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService);
+        this.firmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService,
+                new FirmwareManagementMapper());
         this.deviceRegistrationService.setSequenceNumberMaximum(OslpTestUtils.OSLP_SEQUENCE_NUMBER_MAXIMUM);
         this.deviceRegistrationService.setSequenceNumberWindow(OslpTestUtils.OSLP_SEQUENCE_NUMBER_WINDOW);
 
