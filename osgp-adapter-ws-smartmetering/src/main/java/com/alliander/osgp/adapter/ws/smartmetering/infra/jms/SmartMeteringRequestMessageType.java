@@ -12,7 +12,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.jms;
  *
  */
 public enum SmartMeteringRequestMessageType {
-    // TODO: insert message types for smart metering
+    // insert message types for smart metering
 
     ADD_METER,
     FIND_EVENTS,
@@ -27,4 +27,6 @@ public enum SmartMeteringRequestMessageType {
     SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER,
     REQUEST_ACTUAL_METER_DATA,
     READ_ALARM_REGISTER,
+    SEND_WAKEUP_SMS,
+    GET_SMS_DETAILS
 }

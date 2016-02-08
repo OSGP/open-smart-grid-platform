@@ -84,17 +84,14 @@ public class DeviceManagementService extends AbstractService {
                 throw osgpException;
             }
 
-            Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+            Ssld device = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
             if (device == null) {
                 // Device not found, create new device
                 LOGGER.debug("Device [{}] does not exist, creating new device", deviceIdentification);
-                device = new Device(deviceIdentification);
+                device = new Ssld(deviceIdentification);
             }
-
-            final Ssld ssld = this.ssldRepository.findByDeviceIdentification(deviceIdentification);
-
-            ssld.setPublicKeyPresent(true);
-            this.ssldRepository.save(ssld);
+            device.setPublicKeyPresent(true);
+            this.ssldRepository.save(device);
 
             LOGGER.info("publicKey has been set for device: {} for organisation: {}", deviceIdentification,
                     organisationIdentification);

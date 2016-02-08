@@ -1,11 +1,9 @@
 <!--
-
-    Copyright 2015 Smart Society Services B.V.
+    Copyright 2014-2016 Smart Society Services B.V.
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
 
         http://www.apache.org/licenses/LICENSE-2.0
-
 -->
 <xsd:schema 
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
@@ -90,5 +88,97 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+
+	<xsd:element name="FindAllManufacturersRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="FindAllManufacturersResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element maxOccurs="unbounded" name="Manufacturers"
+					type="tns:Manufacturer" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="AddManufacturerRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Manufacturer" type="tns:Manufacturer" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="AddManufacturerResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="RemoveManufacturerRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Code" minOccurs="1" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:string">
+							<xsd:maxLength value="4" />
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="RemoveManufacturerResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ChangeManufacturerRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Manufacturer" type="tns:Manufacturer" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="ChangeManufacturerResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" maxOccurs="1" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:complexType name="Manufacturer">
+		<xsd:sequence>
+
+			<xsd:element name="Name" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="50" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+			<xsd:element name="Code" minOccurs="1" maxOccurs="1">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:maxLength value="4" />
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+
+		</xsd:sequence>
+	</xsd:complexType>
 
 </xsd:schema>

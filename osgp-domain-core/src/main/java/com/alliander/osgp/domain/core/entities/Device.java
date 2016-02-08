@@ -23,6 +23,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
@@ -185,6 +187,20 @@ public class Device implements Serializable {
      */
     @Transient
     protected final List<String> organisations = new ArrayList<String>();
+
+    /**
+     * Firmware information indicates which firmware this device is using.
+     */
+    @ManyToOne()
+    @JoinColumn(name = "firmware")
+    protected Firmware firmware;
+
+    /**
+     * Firmware history information
+     */
+    @ManyToMany()
+    @JoinTable(name = "firmware_history", joinColumns = { @JoinColumn(name = "device") }, inverseJoinColumns = { @JoinColumn(name = "firmware") })
+    protected List<Firmware> firmwareHistory;
 
     public Device() {
         // Default constructor
@@ -413,5 +429,21 @@ public class Device implements Serializable {
 
     public void updateGatewayDevice(final Device gatewayDevice) {
         this.gatewayDevice = gatewayDevice;
+    }
+
+    public Firmware getFirmware() {
+        return this.firmware;
+    }
+
+    public void setFirmware(final Firmware firmware) {
+        this.firmware = firmware;
+    }
+
+    public List<Firmware> getFirmwareHistory() {
+        return this.firmwareHistory;
+    }
+
+    public void addFirmwareHistory(final Firmware firmware) {
+        this.firmwareHistory.add(firmware);
     }
 }

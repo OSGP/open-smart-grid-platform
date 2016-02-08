@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms;
 
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -18,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.infra.jms.RequestMessage;
-import com.alliander.osgp.shared.infra.jms.UnknownMessageTypeException;
+import com.alliander.osgp.shared.infra.jms.MessageProcessor;
+import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 
 // This class should fetch request messages from incoming requests queue of OSGP Core.
 @Component(value = "domainSmartMeteringIncomingOsgpCoreRequestMessageListener")
@@ -28,26 +27,27 @@ public class OsgpCoreRequestMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreRequestMessageListener.class);
 
     @Autowired
-    @Qualifier(value = "domainSmartMeteringIncomingOsgpCoreRequestMessageProcessor")
-    private OsgpCoreRequestMessageProcessor osgpCoreRequestMessageProcessor;
+    @Qualifier("domainSmartMeteringOsgpCoreRequestMessageProcessorMap")
+    private MessageProcessorMap osgpCoreRequestMessageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
         try {
-            LOGGER.info("Received message");
-
+            LOGGER.info("Received message of type: {}", message.getJMSType());
             final ObjectMessage objectMessage = (ObjectMessage) message;
-            final String messageType = objectMessage.getJMSType();
-            final RequestMessage requestMessage = (RequestMessage) objectMessage.getObject();
 
-            this.osgpCoreRequestMessageProcessor.processMessage(requestMessage, messageType);
+            final MessageProcessor processor = this.osgpCoreRequestMessageProcessorMap
+                    .getMessageProcessor(objectMessage);
 
-        } catch (final JMSException e) {
-            // Can't read message.
-            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
-        } catch (final UnknownMessageTypeException e) {
-            // Don't know this message.
-            LOGGER.error("UnknownMessageTypeException", e);
+            processor.processMessage(objectMessage);
+
+        } catch (final Exception e) {
+            /*
+             * Just catch and log any exception. There is no response flow for
+             * requests coming in from OSGP-Core, where exceptions should be
+             * rapported to.
+             */
+            LOGGER.error("Exception while handling a request from OSGP-Core: ", e);
         }
     }
 }
