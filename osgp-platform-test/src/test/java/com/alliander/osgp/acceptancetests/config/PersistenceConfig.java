@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.ws.infra.specifications.JpaDeviceSpecification
 import com.alliander.osgp.adapter.ws.infra.specifications.JpaEventSpecifications;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceAuthorizationRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableDeviceRepository;
+import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableManufacturerRepository;
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
@@ -119,6 +120,11 @@ public class PersistenceConfig {
     @Bean
     public ScheduledTaskRepository scheduleTaskRepositoryMock() {
         return mock(ScheduledTaskRepository.class);
+    }
+
+    @Bean
+    public WritableManufacturerRepository writableManufacturerRepositoryMock() {
+        return mock(WritableManufacturerRepository.class);
     }
 
     // OSLP
