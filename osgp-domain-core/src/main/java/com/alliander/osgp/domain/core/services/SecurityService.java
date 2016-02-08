@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -38,7 +38,9 @@ public class SecurityService {
                 PlatformFunction.GET_ORGANISATIONS, PlatformFunction.REMOVE_ORGANISATION,
                 PlatformFunction.CHANGE_ORGANISATION, PlatformFunction.GET_DEVICE_NO_OWNER,
                 PlatformFunction.GET_MESSAGES, PlatformFunction.FIND_DEVICES, PlatformFunction.SET_OWNER,
-                PlatformFunction.UPDATE_KEY, PlatformFunction.REVOKE_KEY, PlatformFunction.FIND_SCHEDULED_TASKS });
+                PlatformFunction.UPDATE_KEY, PlatformFunction.REVOKE_KEY, PlatformFunction.FIND_SCHEDULED_TASKS,
+                PlatformFunction.CREATE_MANUFACTURER, PlatformFunction.GET_MANUFACTURERS,
+                PlatformFunction.CHANGE_MANUFACTURER, PlatformFunction.REMOVE_MANUFACTURER });
 
         platformMapping.put(PlatformFunctionGroup.USER, new PlatformFunction[] { PlatformFunction.GET_ORGANISATIONS,
                 PlatformFunction.FIND_DEVICES });
