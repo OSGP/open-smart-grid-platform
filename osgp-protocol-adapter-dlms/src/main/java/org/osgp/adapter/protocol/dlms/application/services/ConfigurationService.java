@@ -147,13 +147,13 @@ public class ConfigurationService extends DlmsApplicationService {
             final ConfigurationObject configurationObject = setConfigurationObjectRequest
                     .getSetConfigurationObjectRequestData().getConfigurationObject();
 
-            final GprsOperationModeType GprsOperationModeType = configurationObject.getGprsOperationMode();
+            final GprsOperationModeType gprsOperationModeType = configurationObject.getGprsOperationMode();
             final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
             LOGGER.info("******************************************************");
             LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
             LOGGER.info("******************************************************");
-            LOGGER.info("Operation mode:{} ", GprsOperationModeType.value());
+            LOGGER.info("Operation mode:{} ", gprsOperationModeType.value());
             LOGGER.info("Flags:");
 
             for (final ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
@@ -381,6 +381,7 @@ public class ConfigurationService extends DlmsApplicationService {
             }
 
         } catch (IOException | TimeoutException e) {
+            LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw new ProtocolAdapterException(e.getMessage());
         }
 
