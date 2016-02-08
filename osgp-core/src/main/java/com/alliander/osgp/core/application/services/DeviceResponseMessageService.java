@@ -24,6 +24,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -33,6 +34,11 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 public class DeviceResponseMessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseMessageService.class);
+
+    // The array of exceptions which have to be retried.
+    private static final String[] RETRY_EXCEPTIONS = { "Unable to connect", "ConnectException",
+        "Failed to receive response within timelimit", "Timeout waiting for",
+    "Connection closed by remote host while waiting for association response" };
 
     @Autowired
     private DomainResponseService domainResponseMessageSender;
@@ -53,32 +59,7 @@ public class DeviceResponseMessageService {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
-
-            // The array of exceptions which have to be retried.
-            final String[] retryExceptions = { "Unable to connect", "ConnectException",
-                    "Failed to receive response within timelimit", "Timeout waiting for",
-            "Connection closed by remote host while waiting for association response" };
-            Boolean retryMessage = false;
-
-            // Validate the actual exception with the list of exception to be
-            // retried.
-            if (message.getOsgpException() != null) {
-                for (final String retryException : retryExceptions) {
-
-                    final String exceptionMsg = message.getOsgpException().toString();
-                    if (message.getOsgpException().getCause() != null) {
-                        exceptionMsg.concat(message.getOsgpException().getCause().toString());
-                    }
-
-                    if (exceptionMsg.contains(retryException)) {
-                        retryMessage = true;
-                        break;
-                    }
-                }
-            }
-
-            if (message.getResult() == ResponseMessageResultType.NOT_OK
-                    && message.getRetryCount() < this.getMaxRetryCount && retryMessage) {
+            if (this.shouldRetryBasedOnMessage(message)) {
                 LOGGER.info("Retrying: {} for {} time", message.getMessageType(), message.getRetryCount() + 1);
                 final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
                 this.deviceRequestMessageService.processMessage(protocolRequestMessage);
@@ -94,6 +75,48 @@ public class DeviceResponseMessageService {
         } catch (JMSException | FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
         }
+    }
+
+    /**
+     * Determine if the request should be retried.
+     *
+     * @param message
+     *            Response message.
+     * @return True if result is NOT_OK and the maximum number of retries has
+     *         been reached and the exception indicates a problem that might be
+     *         gone when retried.
+     */
+    private boolean shouldRetryBasedOnMessage(final ProtocolResponseMessage message) {
+        return message.getResult() == ResponseMessageResultType.NOT_OK
+                && message.getRetryCount() < this.getMaxRetryCount
+                && this.shouldRetryBasedOnException(message.getOsgpException());
+    }
+
+    /**
+     * Determine if the exception or its cause indicaties a problem that might
+     * be gone when retried.
+     *
+     * @param e
+     *            OsgpException
+     * @return True when exception message matches one from the RETRY_EXCEPTIONS
+     *         list.
+     */
+    private boolean shouldRetryBasedOnException(final OsgpException e) {
+        if (e == null) {
+            return false;
+        }
+
+        final String exceptionMsg = e.toString();
+        if (e.getCause() != null) {
+            exceptionMsg.concat(e.getCause().toString());
+        }
+
+        for (final String retryException : RETRY_EXCEPTIONS) {
+            if (exceptionMsg.contains(retryException)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleScheduleTask(final ProtocolResponseMessage message) {
