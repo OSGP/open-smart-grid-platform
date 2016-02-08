@@ -337,17 +337,12 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "replaceKeys");
 
-        LnClientConnection conn = null;
+        final LnClientConnection conn = null;
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            conn = this.dlmsConnectionFactory.getConnection(device);
 
             LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
-
-            this.executeReplaceKey(device, conn, keySet.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION,
-                    KeyId.AUTHENTICATION_KEY);
-            this.executeReplaceKey(device, conn, keySet.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION,
-                    KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY);
+            LOGGER.info("*** NOT IMPLEMENTED - Replace key ***");
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
         } catch (final Exception e) {
