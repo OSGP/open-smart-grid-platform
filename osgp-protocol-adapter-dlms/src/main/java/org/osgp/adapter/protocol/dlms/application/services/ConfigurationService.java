@@ -317,4 +317,28 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
+    public void requestFirmwareVersion(final DlmsDeviceMessageMetadata messageMetadata,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "requestFirmwareVersion");
+
+        final LnClientConnection conn = null;
+        try {
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            // Send placeholder version number
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    "1.0.3");
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during requestFirmwareVersion", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
 }
