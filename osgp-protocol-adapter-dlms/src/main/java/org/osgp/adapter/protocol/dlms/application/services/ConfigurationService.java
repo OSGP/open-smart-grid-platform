@@ -358,6 +358,27 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
+    /**
+     * Replace a key on the meter.
+     *
+     * NOTE: Not used while there is a problem with the jDLMS library. When that
+     * problem is fixed, this method can probably be called from the replaceKeys
+     * method.
+     *
+     * @param device
+     *            Device entity.
+     * @param conn
+     *            Connection with the meter.
+     * @param key
+     *            Ket value to be set.
+     * @param securityKeyType
+     *            type op the key.
+     * @param keyId
+     *            type of the key in jDLMS terms.
+     * @throws ProtocolAdapterException
+     *             when anything goes wrong a ProtocolAdapterException is
+     *             thrown.
+     */
     private void executeReplaceKey(final DlmsDevice device, final LnClientConnection conn, final byte[] key,
             final SecurityKeyType securityKeyType, final KeyId keyId) throws ProtocolAdapterException {
 
@@ -387,6 +408,5 @@ public class ConfigurationService extends DlmsApplicationService {
         oldKey.setValidTo(now);
         newKey.setValidFrom(now);
         this.dlmsDeviceRepository.save(device);
-
     }
 }

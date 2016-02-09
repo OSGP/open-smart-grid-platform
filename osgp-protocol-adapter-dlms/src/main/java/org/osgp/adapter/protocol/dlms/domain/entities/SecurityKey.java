@@ -25,6 +25,11 @@ public class SecurityKey extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private SecurityKeyType securityKeyType;
 
+    /**
+     * Security keys with a null value for validFrom are keys that have not yet
+     * or not successfully been set on the meter. When set on the meter this
+     * value should immediately be updated.
+     */
     @Column(nullable = true)
     private Date validFrom;
 
@@ -61,10 +66,7 @@ public class SecurityKey extends AbstractEntity {
         }
 
         final SecurityKey compareKey = (SecurityKey) o;
-
-        return Objects.equals(this.getDlmsDevice(), compareKey.getDlmsDevice())
-                && Objects.equals(this.getSecurityKeyType(), compareKey.getSecurityKeyType())
-                && Objects.equals(this.getId(), compareKey.getId());
+        return Objects.equals(this.getId(), compareKey.getId());
     }
 
     @Override
