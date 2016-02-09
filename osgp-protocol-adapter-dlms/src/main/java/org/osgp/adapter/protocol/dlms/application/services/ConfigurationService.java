@@ -13,6 +13,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
@@ -73,6 +74,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
+
+    @Autowired
+    private GetFirmwareVersionCommandExecutor getFirmwareVersionCommandExecutor;
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
@@ -322,13 +326,16 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "requestFirmwareVersion");
 
-        final LnClientConnection conn = null;
+        LnClientConnection conn = null;
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final String firmwareVersion = this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
 
             // Send placeholder version number
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    "1.0.3");
+                    firmwareVersion);
 
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during requestFirmwareVersion", e);
