@@ -26,6 +26,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
@@ -83,7 +87,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
         final SetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createSetAdministrativeStatusAsyncResponse();
+        .createSetAdministrativeStatusAsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
 
@@ -122,7 +126,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification());
 
         final GetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createGetAdministrativeStatusAsyncResponse();
+        .createGetAdministrativeStatusAsyncResponse();
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -345,6 +349,54 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "ReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public ReplaceKeysAsyncResponse replaceKeys(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ReplaceKeysRequest request) throws OsgpException {
+
+        ReplaceKeysAsyncResponse asyncResponse = null;
+        try {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySet = this.configurationMapper
+                    .map(request.getKeySet(), com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+
+            final String correlationUid = this.configurationService.enqueueReplaceKeysRequest(
+                    organisationIdentification, request.getDeviceIdentification(), keySet);
+
+            asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+            .createReplaceKeysAsyncResponse();
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "ReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public ReplaceKeysResponse getReplaceKeysResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ReplaceKeysAsyncRequest request) throws OsgpException {
+
+        ReplaceKeysResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.configurationService.dequeueReplaceKeysResponse(request
+                    .getCorrelationUid());
+
+            response = new ReplaceKeysResponse();
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+
         } catch (final Exception e) {
             this.handleException(e);
         }
