@@ -24,6 +24,7 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -101,6 +102,24 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
                 messageType);
+    }
+
+    public void setPushSetupAlarm(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
+
+        final PushSetupAlarm pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm, PushSetupAlarm.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), messageType);
     }
 
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,
@@ -261,6 +280,22 @@ public class ConfigurationService {
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
             LOGGER.error(DEVICE_RESPONSE_NOT_OK_LOG_MSG, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
+    }
+
+    public void handleSetPushSetupAlarmResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleSetPushSetupAlarmResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Set Push Setup Alarm Response not ok. Unexpected Exception", exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 

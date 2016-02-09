@@ -92,6 +92,23 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="SetPushSetupAlarmRequest">
+        <wsdl:part element="smconf:SetPushSetupAlarmRequest" name="SetPushSetupAlarmRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupAlarmAsyncResponse"> 
+        <wsdl:part element="smconf:SetPushSetupAlarmAsyncResponse" name="SetPushSetupAlarmAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupAlarmAsyncRequest">
+        <wsdl:part element="smconf:SetPushSetupAlarmAsyncRequest" name="SetPushSetupAlarmAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupAlarmResponse">
+        <wsdl:part element="smconf:SetPushSetupAlarmResponse" name="SetPushSetupAlarmResponse">
+        </wsdl:part>
+    </wsdl:message>
+
 	<wsdl:message name="SetAdministrativeStatusRequest">
 		<wsdl:part element="smconf:SetAdministrativeStatusRequest" 
 			name="SetAdministrativieStatusRequest">
@@ -155,6 +172,19 @@
             <wsdl:input message="tns:SetConfigurationObjectAsyncRequest" name="SetConfigurationObjectAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetPushSetupAlarm">
+            <wsdl:input message="tns:SetPushSetupAlarmRequest" name="SetPushSetupAlarmRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetPushSetupAlarmAsyncResponse" name="SetPushSetupAlarmAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSetPushSetupAlarmResponse">
+            <wsdl:input message="tns:SetPushSetupAlarmAsyncRequest" name="SetPushSetupAlarmAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetPushSetupAlarmResponse" name="SetPushSetupAlarmResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -264,6 +294,32 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetConfigurationObjectResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetPushSetupAlarm">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetPushSetupAlarmRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetPushSetupAlarmAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetPushSetupAlarmResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetPushSetupAlarmAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetPushSetupAlarmResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

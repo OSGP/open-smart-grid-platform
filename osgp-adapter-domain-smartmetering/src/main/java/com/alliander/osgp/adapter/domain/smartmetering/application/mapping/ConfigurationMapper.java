@@ -26,6 +26,14 @@ public class ConfigurationMapper extends ConfigurableMapper {
 
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new SendDestinationAndMethodConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new WindowElementConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new CosemObjectDefinitionConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter(this));
         mapperFactory.getConverterFactory().registerConverter(new ActivityCalendarConverter());
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusConverter());
     }
