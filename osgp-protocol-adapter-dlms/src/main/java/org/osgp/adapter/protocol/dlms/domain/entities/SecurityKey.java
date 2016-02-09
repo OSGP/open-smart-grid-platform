@@ -25,7 +25,12 @@ public class SecurityKey extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private SecurityKeyType securityKeyType;
 
-    @Column(nullable = false)
+    /**
+     * Security keys with a null value for validFrom are keys that have not yet
+     * or not successfully been set on the meter. When set on the meter this
+     * value should immediately be updated.
+     */
+    @Column(nullable = true)
     private Date validFrom;
 
     @Column(nullable = true)
@@ -42,7 +47,9 @@ public class SecurityKey extends AbstractEntity {
             final Date validFrom, final Date validTo) {
         this.dlmsDevice = dlmsDevice;
         this.securityKeyType = securityKeyType;
-        this.validFrom = new Date(validFrom.getTime());
+        if (validFrom != null) {
+            this.validFrom = new Date(validFrom.getTime());
+        }
         if (validTo != null) {
             this.validTo = new Date(validTo.getTime());
         }
@@ -59,15 +66,12 @@ public class SecurityKey extends AbstractEntity {
         }
 
         final SecurityKey compareKey = (SecurityKey) o;
-
-        return Objects.equals(this.getDlmsDevice(), compareKey.getDlmsDevice())
-                && Objects.equals(this.getSecurityKeyType(), compareKey.getSecurityKeyType())
-                && Objects.equals(this.getValidFrom(), compareKey.getValidFrom());
+        return Objects.equals(this.getId(), compareKey.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getDlmsDevice(), this.getSecurityKeyType(), this.getValidFrom());
+        return Objects.hash(this.getDlmsDevice(), this.getSecurityKeyType(), this.getId());
     }
 
     public DlmsDevice getDlmsDevice() {
@@ -82,12 +86,16 @@ public class SecurityKey extends AbstractEntity {
         return this.validFrom;
     }
 
+    public void setValidFrom(final Date validFrom) {
+        this.validFrom = new Date(validFrom.getTime());
+    }
+
     public Date getValidTo() {
         return this.validTo;
     }
 
     public void setValidTo(final Date validTo) {
-        this.validTo = validTo;
+        this.validTo = new Date(validTo.getTime());
     }
 
     public String getKey() {
