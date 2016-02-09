@@ -60,7 +60,8 @@ public class CosemObjectDefinition implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%d,%s,%d,%d", this.classId, this.logicalName, this.attributeIndex, this.dataIndex);
+        return String.format("CosemObjectDefinition[%d, %s, %d, %d]", this.classId, this.logicalName,
+                this.attributeIndex, this.dataIndex);
     }
 
     public String toDsmrString() {
@@ -71,5 +72,21 @@ public class CosemObjectDefinition implements Serializable {
     public String toHexString() {
         return String.format("%04X%s%02X%04X", this.classId, this.logicalName.toHexString(), this.attributeIndex,
                 this.dataIndex);
+    }
+
+    public int getClassId() {
+        return this.classId;
+    }
+
+    public CosemObisCode getLogicalName() {
+        return this.logicalName;
+    }
+
+    public int getAttributeIndex() {
+        return this.attributeIndex;
+    }
+
+    public int getDataIndex() {
+        return this.dataIndex;
     }
 }
