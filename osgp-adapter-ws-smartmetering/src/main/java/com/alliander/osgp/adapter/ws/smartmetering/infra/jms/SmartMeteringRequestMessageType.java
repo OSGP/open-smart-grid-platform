@@ -28,5 +28,6 @@ public enum SmartMeteringRequestMessageType {
     READ_ALARM_REGISTER,
     SEND_WAKEUP_SMS,
     GET_SMS_DETAILS,
+    REPLACE_KEYS,
     SET_PUSH_SETUP_ALARM
 }

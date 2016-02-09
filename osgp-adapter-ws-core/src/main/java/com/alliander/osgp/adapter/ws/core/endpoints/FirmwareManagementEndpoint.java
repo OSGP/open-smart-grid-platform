@@ -1,11 +1,13 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 package com.alliander.osgp.adapter.ws.core.endpoints;
+
+import java.util.List;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.joda.time.DateTime;
@@ -19,18 +21,28 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.core.application.mapping.FirmwareManagementMapper;
 import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagementService;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.common.OsgpResultType;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.AddManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
+import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -51,11 +63,14 @@ public class FirmwareManagementEndpoint {
     private static final ComponentType COMPONENT_WS_CORE = ComponentType.WS_CORE;
 
     private final FirmwareManagementService firmwareManagementService;
+    private final FirmwareManagementMapper firmwareManagementMapper;
 
     @Autowired
     public FirmwareManagementEndpoint(
-            @Qualifier(value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService) {
+            @Qualifier(value = "wsCoreFirmwareManagementService") final FirmwareManagementService firmwareManagementService,
+            @Qualifier(value = "coreFirmwareManagementMapper") final FirmwareManagementMapper firmwareManagementMapper) {
         this.firmwareManagementService = firmwareManagementService;
+        this.firmwareManagementMapper = firmwareManagementMapper;
     }
 
     // === UPDATE FIRMWARE ===
@@ -182,6 +197,116 @@ public class FirmwareManagementEndpoint {
         }
 
         return response;
+    }
+
+    // === MANUFACTURERS LOGIC ===
+
+    @PayloadRoot(localPart = "FindAllManufacturersRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public FindAllManufacturersResponse findAllManufacturers(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final FindAllManufacturersRequest request) throws OsgpException {
+
+        LOGGER.info("Find all Manufacturers for organisation: {}.", organisationIdentification);
+
+        final FindAllManufacturersResponse response = new FindAllManufacturersResponse();
+
+        try {
+            final List<Manufacturer> manufacturers = this.firmwareManagementService
+                    .findAllManufacturers(organisationIdentification);
+
+            response.getManufacturers().addAll(
+                    this.firmwareManagementMapper.mapAsList(manufacturers,
+                            com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.Manufacturer.class));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "AddManufacturerRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public AddManufacturerResponse adddManufacturer(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final AddManufacturerRequest request) throws OsgpException {
+
+        LOGGER.info("Adding manufacturer:{}.", request.getManufacturer().getName());
+
+        try {
+            this.firmwareManagementService.addManufacturer(organisationIdentification, new Manufacturer(request
+                    .getManufacturer().getCode(), request.getManufacturer().getName()));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while adding manufacturer: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getManufacturer().getCode(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final AddManufacturerResponse addManufacturerResponse = new AddManufacturerResponse();
+        addManufacturerResponse.setResult(OsgpResultType.OK);
+
+        return addManufacturerResponse;
+    }
+
+    @PayloadRoot(localPart = "ChangeManufacturerRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public ChangeManufacturerResponse changeManufacturer(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ChangeManufacturerRequest request) throws OsgpException {
+
+        LOGGER.info("Changeing manufacturer:{}.", request.getManufacturer().getName());
+
+        try {
+            this.firmwareManagementService.changeManufacturer(organisationIdentification, new Manufacturer(request
+                    .getManufacturer().getCode(), request.getManufacturer().getName()));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception Changeing manufacturer: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while Changeing manufacturer: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getManufacturer().getCode(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final ChangeManufacturerResponse changeManufacturerResponse = new ChangeManufacturerResponse();
+        changeManufacturerResponse.setResult(OsgpResultType.OK);
+
+        return changeManufacturerResponse;
+    }
+
+    @PayloadRoot(localPart = "RemoveManufacturerRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public RemoveManufacturerResponse removedManufacturer(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final RemoveManufacturerRequest request) throws OsgpException {
+
+        LOGGER.info("Removing manufacturer:{}.", request.getCode());
+
+        try {
+            this.firmwareManagementService.removeManufacturer(organisationIdentification, request.getCode());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception Removeing manufacturer: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            LOGGER.error("Exception: {} while Removeing manufacturer: {} for organisation {}",
+                    new Object[] { e.getMessage(), request.getCode(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+
+        final RemoveManufacturerResponse removeManufacturerResponse = new RemoveManufacturerResponse();
+        removeManufacturerResponse.setResult(OsgpResultType.OK);
+
+        return removeManufacturerResponse;
     }
 
     private void handleException(final Exception e) throws OsgpException {

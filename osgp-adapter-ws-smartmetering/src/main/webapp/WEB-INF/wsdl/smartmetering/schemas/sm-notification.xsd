@@ -58,6 +58,7 @@
 			<xsd:enumeration value="PUSH_NOTIFICATION_ALARM" />
 			<xsd:enumeration value="SEND_WAKEUP_SMS" />
 			<xsd:enumeration value="GET_SMS_DETAILS" />
+            <xsd:enumeration value="REPLACE_KEYS" />
 			<xsd:enumeration value="SET_PUSH_SETUP_ALARM" />
 		</xsd:restriction>
 	</xsd:simpleType>

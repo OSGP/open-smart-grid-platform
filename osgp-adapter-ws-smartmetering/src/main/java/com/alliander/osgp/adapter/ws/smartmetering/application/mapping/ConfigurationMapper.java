@@ -22,8 +22,8 @@ public class ConfigurationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory
-        .classMap(SetSpecialDaysRequest.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
+                .classMap(SetSpecialDaysRequest.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
                 .register();
 
         mapperFactory.getConverterFactory().registerConverter(new ActivityCalendarConverter());
@@ -31,5 +31,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusConverter());
+        mapperFactory.getConverterFactory().registerConverter(new KeySetConverter());
     }
 }
