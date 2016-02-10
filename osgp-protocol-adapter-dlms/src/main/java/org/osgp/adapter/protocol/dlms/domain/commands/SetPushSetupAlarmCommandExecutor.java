@@ -10,7 +10,9 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
@@ -39,6 +41,35 @@ public class SetPushSetupAlarmCommandExecutor implements CommandExecutor<PushSet
     private static final int CLASS_ID = 40;
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
     private static final int ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD = 3;
+
+    private static final Map<TransportServiceType, Integer> ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE = new EnumMap<>(
+            TransportServiceType.class);
+
+    private static final Map<MessageType, Integer> ENUM_VALUE_PER_MESSAGE_TYPE = new EnumMap<>(MessageType.class);
+
+    static {
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.TCP, 0);
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.UDP, 1);
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.FTP, 2);
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.SMTP, 3);
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.SMS, 4);
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.HDLC, 5);
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.M_BUS, 6);
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.ZIG_BEE, 7);
+        /*
+         * Could be 200..255, use first value as long as no more information is
+         * available.
+         */
+        ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.MANUFACTURER_SPECIFIC, 200);
+
+        ENUM_VALUE_PER_MESSAGE_TYPE.put(MessageType.A_XDR_ENCODED_X_DLMS_APDU, 0);
+        ENUM_VALUE_PER_MESSAGE_TYPE.put(MessageType.XML_ENCODED_X_DLMS_APDU, 1);
+        /*
+         * Could be 128..255, use first value as long as no more information is
+         * available.
+         */
+        ENUM_VALUE_PER_MESSAGE_TYPE.put(MessageType.MANUFACTURER_SPECIFIC, 128);
+    }
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -109,62 +140,16 @@ public class SetPushSetupAlarmCommandExecutor implements CommandExecutor<PushSet
     }
 
     private int getEnumValueTransportServiceType(final TransportServiceType transportServiceType) {
-        final short enumValue;
-        switch (transportServiceType) {
-        case TCP:
-            enumValue = 0;
-            break;
-        case UDP:
-            enumValue = 1;
-            break;
-        case FTP:
-            enumValue = 2;
-            break;
-        case SMTP:
-            enumValue = 3;
-            break;
-        case SMS:
-            enumValue = 4;
-            break;
-        case HDLC:
-            enumValue = 5;
-            break;
-        case M_BUS:
-            enumValue = 6;
-            break;
-        case ZIG_BEE:
-            enumValue = 7;
-            break;
-        case MANUFACTURER_SPECIFIC:
-            /*
-             * Could be 200..255, use first value as long as no more information
-             * is available.
-             */
-            enumValue = 200;
-            break;
-        default:
+        final Integer enumValue = ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.get(transportServiceType);
+        if (enumValue == null) {
             throw new AssertionError("Unknown TransportServiceType: " + transportServiceType);
         }
         return enumValue;
     }
 
     private int getEnumValueMessageType(final MessageType messageType) {
-        final short enumValue;
-        switch (messageType) {
-        case A_XDR_ENCODED_X_DLMS_APDU:
-            enumValue = 0;
-            break;
-        case XML_ENCODED_X_DLMS_APDU:
-            enumValue = 1;
-            break;
-        case MANUFACTURER_SPECIFIC:
-            /*
-             * Could be 128..255, use first value as long as no more information
-             * is available.
-             */
-            enumValue = 128;
-            break;
-        default:
+        final Integer enumValue = ENUM_VALUE_PER_MESSAGE_TYPE.get(messageType);
+        if (enumValue == null) {
             throw new AssertionError("Unknown MessageType: " + messageType);
         }
         return enumValue;
