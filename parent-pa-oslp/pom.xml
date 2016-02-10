@@ -140,6 +140,13 @@
                 <version>${osgp.version}</version>
                 <classifier>classes</classifier>
             </dependency>
+
+            <dependency>
+                <groupId>com.alliander.osgp</groupId>
+                <artifactId>osgp-protocol-adapter-oslp-elster</artifactId>
+                <version>${osgp.version}</version>
+                <classifier>classes</classifier>
+            </dependency>
             
             <dependency>
                 <groupId>com.alliander.osgp</groupId>
