@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
+import java.util.Objects;
+
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -24,6 +26,26 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.WindowE
 
     public WindowElementConverter(final ConfigurationMapper mapper) {
         this.mapper = mapper;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof WindowElementConverter)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final WindowElementConverter o = (WindowElementConverter) other;
+        if (this.mapper == null) {
+            return o.mapper == null;
+        }
+        return this.mapper.getClass().equals(o.mapper.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hashCode(this.mapper);
     }
 
     @Override

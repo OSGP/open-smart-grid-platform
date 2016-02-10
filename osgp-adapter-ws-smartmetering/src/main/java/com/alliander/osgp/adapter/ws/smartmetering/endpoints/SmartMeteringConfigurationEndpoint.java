@@ -280,6 +280,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetPushSetupAlarmAsyncRequest request) throws OsgpException {
 
+        LOGGER.info("Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
         SetPushSetupAlarmResponse response = null;
         try {
             response = new SetPushSetupAlarmResponse();

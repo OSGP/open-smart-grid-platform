@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
+import java.util.Objects;
+
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -26,6 +28,26 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDa
 
     public CosemDateTimeConverter(final ConfigurationMapper mapper) {
         this.mapper = mapper;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if (!(other instanceof CosemDateTimeConverter)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final CosemDateTimeConverter o = (CosemDateTimeConverter) other;
+        if (this.mapper == null) {
+            return o.mapper == null;
+        }
+        return this.mapper.getClass().equals(o.mapper.getClass());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hashCode(this.mapper);
     }
 
     @Override
