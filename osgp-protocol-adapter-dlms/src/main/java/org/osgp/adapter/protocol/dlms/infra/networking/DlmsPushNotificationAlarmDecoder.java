@@ -90,8 +90,10 @@ public class DlmsPushNotificationAlarmDecoder extends ReplayingDecoder<DlmsPushN
         while ((nextByte = buffer.readByte()) != COMMA) {
             baos.write(nextByte);
         }
-        final String equipmentIdentifier = new String(baos.toByteArray(), StandardCharsets.US_ASCII);
+        final byte[] equipmentIdentifierBytes = baos.toByteArray();
+        final String equipmentIdentifier = new String(equipmentIdentifierBytes, StandardCharsets.US_ASCII);
         this.builder.withEquipmentIdentifier(equipmentIdentifier);
+        this.builder.appendBytes(equipmentIdentifierBytes).appendByte(COMMA);
     }
 
     private void decodeAlarmObject(final ChannelBuffer buffer) {
@@ -99,9 +101,17 @@ public class DlmsPushNotificationAlarmDecoder extends ReplayingDecoder<DlmsPushN
         long registerValue = 0;
         for (final byte b : alarmObject) {
             registerValue = registerValue << 8;
-            registerValue = registerValue + b;
+            final int unsignedValue = b & 0xFF;
+            registerValue = registerValue + unsignedValue;
         }
         final Set<AlarmType> alarms = this.alarmHelperService.toAlarmTypes(registerValue);
         this.builder.withAlarms(alarms);
+        this.builder.appendBytes(alarmObject);
+        int remaining = 0;
+        while ((remaining = buffer.readableBytes()) > 0) {
+            final byte[] bytes = new byte[remaining];
+            buffer.readBytes(bytes);
+            this.builder.appendBytes(bytes);
+        }
     }
 }
