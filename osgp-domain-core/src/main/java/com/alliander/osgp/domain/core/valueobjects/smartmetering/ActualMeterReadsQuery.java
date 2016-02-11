@@ -11,24 +11,29 @@ import java.io.Serializable;
 
 /**
  * request actual reads for E or GAS meters
- * 
+ *
  * @author dev
  */
-public class ActualMeterReadsQuery implements Serializable {
+public class ActualMeterReadsQuery implements Serializable, ChannelQuery {
     private static final long serialVersionUID = 3751586818507193990L;
 
-    private final boolean gas;
+    private final Channel channel;
 
-    public ActualMeterReadsQuery(final String deviceIdentification) {
-        this(false);
+    public ActualMeterReadsQuery() {
+        this(Channel.NONE);
     }
 
-    public ActualMeterReadsQuery(final boolean gas) {
-        this.gas = gas;
+    public ActualMeterReadsQuery(final Channel channel) {
+        this.channel = channel;
     }
 
     public boolean isGas() {
-        return gas;
+        return this.channel != Channel.NONE;
+    }
+
+    @Override
+    public Channel getChannel() {
+        return this.channel;
     }
 
 }

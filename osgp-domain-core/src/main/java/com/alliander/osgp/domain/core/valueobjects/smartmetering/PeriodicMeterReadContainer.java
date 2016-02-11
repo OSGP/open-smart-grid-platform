@@ -10,7 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class PeriodicMeterReadContainer implements Serializable {
+public class PeriodicMeterReadContainer implements Serializable, UnitResponse {
 
     private static final long serialVersionUID = -156966569210717657L;
     private final PeriodType periodType;
@@ -28,6 +28,11 @@ public class PeriodicMeterReadContainer implements Serializable {
 
     public PeriodType getPeriodType() {
         return this.periodType;
+    }
+
+    @Override
+    public final OsgpUnit getOsgpUnit() {
+        return OsgpUnit.KWH;
     }
 
 }

@@ -131,6 +131,62 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+    <xsd:simpleType name="DlmsUnitType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="A" >
+                <xsd:annotation><xsd:documentation>year</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="MO" >
+                <xsd:annotation><xsd:documentation>month</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="WK" >
+                <xsd:annotation><xsd:documentation>week</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="D" >
+                <xsd:annotation><xsd:documentation>day</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="H" >
+                <xsd:annotation><xsd:documentation>hour</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="MIN" >
+                <xsd:annotation><xsd:documentation>minute</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="S" >
+                <xsd:annotation><xsd:documentation>second</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="M" >
+                <xsd:annotation><xsd:documentation>meter</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="M3" >
+                <xsd:annotation><xsd:documentation>cubic meter</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="M3COR" >
+                <xsd:annotation><xsd:documentation>corrected cubic meter</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="L" >
+                <xsd:annotation><xsd:documentation>liter</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="W" >
+                <xsd:annotation><xsd:documentation>watt</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="WH" >
+                <xsd:annotation><xsd:documentation>watt hour</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="AMP" >
+                <xsd:annotation><xsd:documentation>ampere</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="V" >
+                <xsd:annotation><xsd:documentation>volt</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="O" >
+                <xsd:annotation><xsd:documentation>ohm</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="J" >
+                <xsd:annotation><xsd:documentation>joule</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
 	<xsd:simpleType name="AmrProfileStatusCodeFlag">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="CRITICAL_ERROR" />
