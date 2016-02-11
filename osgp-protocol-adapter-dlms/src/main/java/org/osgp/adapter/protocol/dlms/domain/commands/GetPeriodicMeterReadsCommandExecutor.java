@@ -323,17 +323,6 @@ public class GetPeriodicMeterReadsCommandExecutor implements
             throw new AssertionError("Unknown PeriodType: " + periodType);
         }
 
-        /*
-         * For properly limiting data retrieved from the meter selectedValues
-         * should be something like: DataObject.newArrayData(objectDefinitions);
-         */
-        LOGGER.warn("TODO - figure out how to set selectedValues to something like: "
-                + this.dlmsHelperService.getDebugInfo(DataObject.newArrayData(objectDefinitions)));
-        /*
-         * As long as specifying a subset of captured objects from the buffer
-         * through selectedValues does not work, retrieve all captured objects
-         * by setting selectedValues to an empty array.
-         */
         final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
 
         final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
