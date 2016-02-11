@@ -7,71 +7,46 @@
  */
 package org.osgp.adapter.protocol.dlms.application.mapping;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.metadata.Type;
+
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
 
-@Component(value = "seasonProfileConverter")
-public class SeasonProfileConverter {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeasonProfileConverter.class);
+public class SeasonProfileConverter extends CustomConverter<SeasonProfile, DataObject> {
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    public DataObject convert(final List<SeasonProfile> source) {
+    @Override
+    public DataObject convert(final SeasonProfile source, final Type<? extends DataObject> destinationType) {
         if (source == null) {
             return null;
         }
 
-        try {
-            final DataObject seasonsArray = DataObject.newArrayData(this.getSeasonList(source));
-            return seasonsArray;
-        } catch (IllegalArgumentException | IOException e) {
-            LOGGER.error("Unexpected exception during SeasonProfile converstion to DataObject", e);
-        }
-
-        return null;
-
-    }
-
-    private List<DataObject> getSeasonList(final List<SeasonProfile> seasonProfileList) throws IOException {
-        final List<DataObject> seasonList = new ArrayList<>();
-
-        for (final SeasonProfile seasonProfile : seasonProfileList) {
-            final DataObject seasonStructure = DataObject.newStructureData(this.getSeason(seasonProfile));
-            seasonList.add(seasonStructure);
-        }
-        return seasonList;
-    }
-
-    private List<DataObject> getSeason(final SeasonProfile seasonProfile) throws IOException {
         final List<DataObject> seasonElements = new ArrayList<>();
 
-        final DataObject seasonProfileNameObject = DataObject.newOctetStringData(seasonProfile.getSeasonProfileName()
+        final DataObject seasonProfileNameObject = DataObject.newOctetStringData(source.getSeasonProfileName()
                 .getBytes(StandardCharsets.UTF_8));
         seasonElements.add(seasonProfileNameObject);
 
-        final DateTime dt = new DateTime(seasonProfile.getSeasonStart());
+        final DateTime dt = new DateTime(source.getSeasonStart());
         final DataObject seasonStartObject = this.dlmsHelperService.asDataObject(dt);
         seasonElements.add(seasonStartObject);
 
-        final DataObject seasonWeekProfileNameObject = DataObject.newOctetStringData(seasonProfile.getWeekProfile()
+        final DataObject seasonWeekProfileNameObject = DataObject.newOctetStringData(source.getWeekProfile()
                 .getWeekProfileName().getBytes(StandardCharsets.UTF_8));
         seasonElements.add(seasonWeekProfileNameObject);
 
-        return seasonElements;
+        return DataObject.newStructureData(seasonElements);
     }
 
 }

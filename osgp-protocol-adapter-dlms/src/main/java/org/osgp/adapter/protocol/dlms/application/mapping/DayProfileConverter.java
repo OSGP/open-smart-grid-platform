@@ -10,44 +10,22 @@ package org.osgp.adapter.protocol.dlms.application.mapping;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.metadata.Type;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
 
-@Component(value = "dayProfileConverter")
-public class DayProfileConverter {
+public class DayProfileConverter extends CustomConverter<DayProfile, DataObject> {
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
-
-    public DataObject convert(final Set<DayProfile> source) {
-        if (source == null) {
-            return null;
-        }
-
-        final DataObject dayArray = DataObject.newArrayData(this.getDayObjectList(source));
-
-        return dayArray;
-
-    }
-
-    private List<DataObject> getDayObjectList(final Set<DayProfile> dayProfileSet) {
-        final List<DataObject> dayObjectList = new ArrayList<>();
-
-        for (final DayProfile dayProfile : dayProfileSet) {
-            final DataObject dayObject = DataObject.newStructureData(this.getDayObjectElements(dayProfile));
-            dayObjectList.add(dayObject);
-        }
-
-        return dayObjectList;
-    }
 
     private List<DataObject> getDayObjectElements(final DayProfile dayProfile) {
         final List<DataObject> dayObjectElements = new ArrayList<>();
@@ -83,5 +61,14 @@ public class DayProfileConverter {
 
         dayActionObjectElements.addAll(Arrays.asList(startTimeObject, nameObject, scriptSelectorObject));
         return dayActionObjectElements;
+    }
+
+    @Override
+    public DataObject convert(final DayProfile source, final Type<? extends DataObject> destinationType) {
+        if (source == null) {
+            return null;
+        }
+
+        return DataObject.newStructureData(this.getDayObjectElements(source));
     }
 }

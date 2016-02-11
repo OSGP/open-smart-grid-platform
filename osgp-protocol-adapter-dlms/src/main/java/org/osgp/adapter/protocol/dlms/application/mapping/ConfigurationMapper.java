@@ -17,5 +17,8 @@ public class ConfigurationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusTypeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new SeasonProfileConverter());
+        mapperFactory.getConverterFactory().registerConverter(new WeekProfileConverter());
+        mapperFactory.getConverterFactory().registerConverter(new DayProfileConverter());
     }
 }

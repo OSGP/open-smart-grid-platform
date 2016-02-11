@@ -20,9 +20,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.osgp.adapter.protocol.dlms.application.mapping.DayProfileConverter;
-import org.osgp.adapter.protocol.dlms.application.mapping.SeasonProfileConverter;
-import org.osgp.adapter.protocol.dlms.application.mapping.WeekProfileConverter;
+import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -48,13 +46,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private static final int ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE = 9;
 
     @Autowired
-    private SeasonProfileConverter seasonProfileConverter;
-
-    @Autowired
-    private WeekProfileConverter weekProfileConverter;
-
-    @Autowired
-    private DayProfileConverter dayProfileConverter;
+    private ConfigurationMapper configurationMapper;
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -136,7 +128,8 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private SetParameter getDayProfileTablePassive(final Set<DayProfile> dayProfileSet) {
         final AttributeAddress dayProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
-        final DataObject dayArray = this.dayProfileConverter.convert(dayProfileSet);
+        final DataObject dayArray = DataObject.newArrayData(this.configurationMapper.mapAsList(dayProfileSet,
+                DataObject.class));
 
         LOGGER.info("DayProfileTablePassive to set is: {}", this.dlmsHelperService.getDebugInfo(dayArray));
 
@@ -163,7 +156,8 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final AttributeAddress weekProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
-        final DataObject weekArray = this.weekProfileConverter.convert(weekProfileSet);
+        final DataObject weekArray = DataObject.newArrayData(this.configurationMapper.mapAsList(weekProfileSet,
+                DataObject.class));
 
         LOGGER.info("WeekProfileTablePassive to set is: {}", this.dlmsHelperService.getDebugInfo(weekArray));
 
@@ -185,7 +179,8 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final AttributeAddress seasonProfilePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);
-        final DataObject seasonsArray = this.seasonProfileConverter.convert(seasonProfileList);
+        final DataObject seasonsArray = DataObject.newArrayData(this.configurationMapper.mapAsList(seasonProfileList,
+                DataObject.class));
 
         LOGGER.info("SeasonProfilePassive to set is: {}", this.dlmsHelperService.getDebugInfo(seasonsArray));
 
