@@ -31,9 +31,9 @@ public class PeriodicMeterReads extends MeterReads {
     public PeriodicMeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
             final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
             final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo,
-            final AmrProfileStatusCode amrProfileStatusCode, final ScalerUnit scalerUnit) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo, scalerUnit);
+            final AmrProfileStatusCode amrProfileStatusCode) {
+        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
+                activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
@@ -49,10 +49,10 @@ public class PeriodicMeterReads extends MeterReads {
      */
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
-            final Long activeEnergyExportTariffTwo, final ScalerUnit scalerUnit) {
+            final Long activeEnergyExportTariffTwo) {
 
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, null, scalerUnit);
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
+                activeEnergyExportTariffTwo, null);
     }
 
     /**
@@ -67,10 +67,9 @@ public class PeriodicMeterReads extends MeterReads {
      */
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
-            final long activeEnergyExportTariffTwo, final AmrProfileStatusCode amrProfileStatusCode,
-            final ScalerUnit scalerUnit) {
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, amrProfileStatusCode, scalerUnit);
+            final long activeEnergyExportTariffTwo, final AmrProfileStatusCode amrProfileStatusCode) {
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
+                activeEnergyExportTariffTwo, amrProfileStatusCode);
     }
 
     /**
@@ -82,8 +81,8 @@ public class PeriodicMeterReads extends MeterReads {
      * @param amrProfileStatusCode
      */
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImport, final long activeEnergyExport,
-            final AmrProfileStatusCode amrProfileStatusCode, final ScalerUnit scalerUnit) {
-        super(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null, scalerUnit);
+            final AmrProfileStatusCode amrProfileStatusCode) {
+        super(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null);
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
@@ -91,4 +90,5 @@ public class PeriodicMeterReads extends MeterReads {
     public AmrProfileStatusCode getAmrProfileStatusCode() {
         return this.amrProfileStatusCode;
     }
+
 }

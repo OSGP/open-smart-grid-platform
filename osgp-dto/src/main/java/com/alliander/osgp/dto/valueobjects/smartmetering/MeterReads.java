@@ -10,7 +10,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class MeterReads implements Serializable, ScalerUnitResponse {
+public abstract class MeterReads implements Serializable {
     private static final long serialVersionUID = -297320204916085999L;
 
     private final Date logTime;
@@ -24,11 +24,9 @@ public abstract class MeterReads implements Serializable, ScalerUnitResponse {
     // may be null
     private final Long activeEnergyExportTariffTwo;
 
-    private final ScalerUnit scalerUnit;
-
     protected MeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
             final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
-            final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo, final ScalerUnit scalerUnit) {
+            final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo) {
         super();
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
@@ -37,7 +35,6 @@ public abstract class MeterReads implements Serializable, ScalerUnitResponse {
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
         this.activeEnergyImport = activeEnergyImport;
         this.activeEnergyExport = activeEnergyExport;
-        this.scalerUnit = scalerUnit;
     }
 
     public Date getLogTime() {
@@ -69,17 +66,12 @@ public abstract class MeterReads implements Serializable, ScalerUnitResponse {
     }
 
     @Override
-    public ScalerUnit getScalerUnit() {
-        return this.scalerUnit;
+    public String toString() {
+        return "MeterReads{" + "logTime=" + logTime + ", activeEnergyImport=" + activeEnergyImport
+                + ", activeEnergyExport=" + activeEnergyExport + ", activeEnergyImportTariffOne="
+                + activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo=" + activeEnergyImportTariffTwo
+                + ", activeEnergyExportTariffOne=" + activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
+                + activeEnergyExportTariffTwo + '}';
     }
 
-    @Override
-    public String toString() {
-        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport=" + this.activeEnergyImport
-                + ", activeEnergyExport=" + this.activeEnergyExport + ", activeEnergyImportTariffOne="
-                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
-                + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
-                + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
-                + this.activeEnergyExportTariffTwo + ", scalerUnit=" + this.scalerUnit + "]";
-    }
 }
