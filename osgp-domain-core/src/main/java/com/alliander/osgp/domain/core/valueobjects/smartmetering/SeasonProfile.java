@@ -8,7 +8,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Arrays;
 
 public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
@@ -16,11 +16,11 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
     private String seasonProfileName;
 
-    private Date seasonStart;
+    private byte[] seasonStart;
 
     private WeekProfile weekProfile;
 
-    public SeasonProfile(final String seasonProfileName, final Date seasonStart, final WeekProfile weekProfile) {
+    public SeasonProfile(final String seasonProfileName, final byte[] seasonStart, final WeekProfile weekProfile) {
         this.seasonProfileName = seasonProfileName;
         this.seasonStart = seasonStart;
         this.weekProfile = weekProfile;
@@ -30,7 +30,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
         return this.seasonProfileName;
     }
 
-    public Date getSeasonStart() {
+    public byte[] getSeasonStart() {
         return this.seasonStart;
     }
 
@@ -54,7 +54,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + this.seasonProfileName.hashCode();
-        result = prime * result + this.seasonStart.hashCode();
+        result = prime * result + Arrays.hashCode(this.seasonStart);
         result = prime * result + this.weekProfile.hashCode();
         return result;
     }
@@ -74,7 +74,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
         if (!this.seasonProfileName.equals(other.seasonProfileName)) {
             return false;
         }
-        if (!this.seasonStart.equals(other.seasonStart)) {
+        if (!Arrays.equals(this.seasonStart, other.seasonStart)) {
             return false;
         }
         if (!this.weekProfile.equals(other.weekProfile)) {
