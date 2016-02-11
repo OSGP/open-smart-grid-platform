@@ -261,7 +261,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
         SelectiveAccessDescription access = null;
 
-        if (isSelectiveAccessSupported == true) {
+        if (isSelectiveAccessSupported) {
             access = this.getSelectiveAccessDescription(periodType, beginDateTime, endDateTime);
         }
 
