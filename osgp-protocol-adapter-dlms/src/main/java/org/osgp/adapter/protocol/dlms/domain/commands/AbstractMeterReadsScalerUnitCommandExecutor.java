@@ -31,7 +31,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
  * @param <R>
  */
 public abstract class AbstractMeterReadsScalerUnitCommandExecutor<T extends ChannelQuery, R extends ScalerUnitResponse>
-implements ScalerUnitAwareCommandExecutor<T, R> {
+        implements ScalerUnitAwareCommandExecutor<T, R> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMeterReadsScalerUnitCommandExecutor.class);
 
@@ -75,19 +75,19 @@ implements ScalerUnitAwareCommandExecutor<T, R> {
         final DataObject scaler = value.get(0);
         final DataObject unit = value.get(1);
 
-        return new ScalerUnit(DlmsUnit.fromDlmsEnum(this.dlmsHelperService.readLongNotNull(unit, "unit value")
-                .intValue()), this.dlmsHelperService.readLongNotNull(scaler, "scaler value").intValue());
+        return new ScalerUnit(
+                DlmsUnit.fromDlmsEnum(this.dlmsHelperService.readLongNotNull(unit, "unit value").intValue()),
+                this.dlmsHelperService.readLongNotNull(scaler, "scaler value").intValue());
     }
 
     @Override
-    public AttributeAddress getScalerUnitAttributeAddress(final ChannelQuery channelQuery)
-            throws ProtocolAdapterException {
+    public AttributeAddress getScalerUnitAttributeAddress(final T channelQuery) throws ProtocolAdapterException {
         final ObisCode obisCodeRegister = channelQuery.getChannel().equals(Channel.NONE) ? REGISTER_FOR_SCALER_UNIT
                 : this.registerForScalerUnit(channelQuery.getChannel().getChannelNumber());
 
-        return channelQuery.getChannel().equals(Channel.NONE) ? new AttributeAddress(CLASS_ID, obisCodeRegister,
-                ATTRIBUTE_ID_SCALER_UNIT) : new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister,
-                        ATTRIBUTE_ID_SCALER_UNIT);
+        return channelQuery.getChannel().equals(Channel.NONE)
+                ? new AttributeAddress(CLASS_ID, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT)
+                : new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT);
     }
 
 }

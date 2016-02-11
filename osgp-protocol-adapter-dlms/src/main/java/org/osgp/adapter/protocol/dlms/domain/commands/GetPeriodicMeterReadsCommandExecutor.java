@@ -40,8 +40,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsConta
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 @Component()
-public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+public class GetPeriodicMeterReadsCommandExecutor
+        extends AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -86,8 +86,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
     @Override
     public PeriodicMeterReadsContainer execute(final LnClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final PeriodicMeterReadsQuery periodicMeterReadsRequest)
+                    throws IOException, TimeoutException, ProtocolAdapterException {
 
         final PeriodType periodType;
         final DateTime beginDateTime;
@@ -103,10 +103,11 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
         final AttributeAddress profileBuffer = this.getProfileBuffer(periodType, beginDateTime, endDateTime);
 
-        LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
-                periodType, beginDateTime, endDateTime);
+        LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}", periodType,
+                beginDateTime, endDateTime);
 
-        final List<GetResult> getResultList = conn.get(profileBuffer);
+        final List<GetResult> getResultList = conn.get(profileBuffer,
+                getScalerUnitAttributeAddress(periodicMeterReadsRequest));
 
         checkResultList(getResultList);
 
@@ -124,8 +125,9 @@ public class GetPeriodicMeterReadsCommandExecutor implements
             this.processNextPeriodicMeterReads(periodType, beginDateTime, endDateTime, periodicMeterReads,
                     bufferedObjects);
         }
+        final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(1), "Scaler and Unit");
 
-        return new PeriodicMeterReadsContainer(periodType, periodicMeterReads);
+        return new PeriodicMeterReadsContainer(periodType, periodicMeterReads, convert(scalerUnit));
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
@@ -163,13 +165,13 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
-                .get(BUFFER_INDEX_AMR_STATUS));
+        final AmrProfileStatusCode amrProfileStatusCode = this
+                .readAmrProfileStatusCode(bufferedObjects.get(BUFFER_INDEX_AMR_STATUS));
 
-        final Long positiveActiveEnergy = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_POS), "positiveActiveEnergy");
-        final Long negativeActiveEnergy = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG), "negativeActiveEnergy");
+        final Long positiveActiveEnergy = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_POS), "positiveActiveEnergy");
+        final Long negativeActiveEnergy = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_NEG), "negativeActiveEnergy");
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                 positiveActiveEnergy, negativeActiveEnergy, amrProfileStatusCode);
@@ -179,17 +181,17 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime) throws ProtocolAdapterException {
 
-        final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
-                .get(BUFFER_INDEX_AMR_STATUS));
+        final AmrProfileStatusCode amrProfileStatusCode = this
+                .readAmrProfileStatusCode(bufferedObjects.get(BUFFER_INDEX_AMR_STATUS));
 
-        final Long positiveActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1), "positiveActiveEnergyTariff1");
-        final Long positiveActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2), "positiveActiveEnergyTariff2");
-        final Long negativeActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), "negativeActiveEnergyTariff1");
-        final Long negativeActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), "negativeActiveEnergyTariff2");
+        final Long positiveActiveEnergyTariff1 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1), "positiveActiveEnergyTariff1");
+        final Long positiveActiveEnergyTariff2 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2), "positiveActiveEnergyTariff2");
+        final Long negativeActiveEnergyTariff1 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1), "negativeActiveEnergyTariff1");
+        final Long negativeActiveEnergyTariff2 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), "negativeActiveEnergyTariff2");
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                 positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
@@ -229,14 +231,14 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * Buffer indexes minus one, since Monthly captured objects don't
          * include the AMR Profile status.
          */
-        final Long positiveActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1), "positiveActiveEnergyTariff1");
-        final Long positiveActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1), "positiveActiveEnergyTariff2");
-        final Long negativeActiveEnergyTariff1 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), "negativeActiveEnergyTariff1");
-        final Long negativeActiveEnergyTariff2 = this.dlmsHelperService.readLongNotNull(
-                bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), "negativeActiveEnergyTariff2");
+        final Long positiveActiveEnergyTariff1 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_1 - 1), "positiveActiveEnergyTariff1");
+        final Long positiveActiveEnergyTariff2 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_POS_RATE_2 - 1), "positiveActiveEnergyTariff2");
+        final Long negativeActiveEnergyTariff1 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_1 - 1), "negativeActiveEnergyTariff1");
+        final Long negativeActiveEnergyTariff2 = this.dlmsHelperService
+                .readLongNotNull(bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), "negativeActiveEnergyTariff2");
 
         final PeriodicMeterReads nextMeterReads = new PeriodicMeterReads(bufferedDateTime.toDate(),
                 positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
@@ -269,8 +271,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     ATTRIBUTE_ID_BUFFER, access);
             break;
         case DAILY:
-            profileBuffer = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING,
-                    ATTRIBUTE_ID_BUFFER, access);
+            profileBuffer = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_DAILY_BILLING, ATTRIBUTE_ID_BUFFER,
+                    access);
             break;
         case MONTHLY:
             profileBuffer = new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_MONTHLY_BILLING,
@@ -333,8 +335,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          */
         final DataObject selectedValues = DataObject.newArrayData(Collections.<DataObject> emptyList());
 
-        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
-                toValue, selectedValues));
+        final DataObject accessParameter = DataObject
+                .newStructureData(Arrays.asList(clockDefinition, fromValue, toValue, selectedValues));
 
         return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
@@ -359,14 +361,12 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:1.8.0.255,2,0} - Active energy import (+A)
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:2.8.0.255,2,0} - Active energy export (-A)
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
@@ -403,26 +403,22 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
@@ -453,26 +449,22 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          */
 
         // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
 
         // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }

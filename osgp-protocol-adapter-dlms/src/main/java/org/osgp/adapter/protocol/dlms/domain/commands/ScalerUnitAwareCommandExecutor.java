@@ -34,7 +34,7 @@ public interface ScalerUnitAwareCommandExecutor<T, R extends ScalerUnitResponse>
      */
     AttributeAddress getScalerUnitAttributeAddress(T t) throws ProtocolAdapterException;
 
-/**
+    /**
      * convert a data object holding scaler and unit, the data object argument
      * is the result of the query with {@link #getScalerUnitAttributeAddress()
      * the attribute address. The data object should be the container for 2 data

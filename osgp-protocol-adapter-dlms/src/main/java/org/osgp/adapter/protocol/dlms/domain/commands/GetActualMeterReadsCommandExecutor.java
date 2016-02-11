@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -16,6 +17,7 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
+import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -27,7 +29,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 
 @Component()
-public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, ActualMeterReads> {
+public class GetActualMeterReadsCommandExecutor extends
+AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReads> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -44,6 +47,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private static final ObisCode OBIS_CODE_CLOCK = new ObisCode("0.0.1.0.0.255");
     private static final byte ATTRIBUTE_ID_TIME = 2;
 
+    // scaler unit attribute address is filled dynamically
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
         new AttributeAddress(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
         new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
@@ -51,7 +55,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
         new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
         new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
         new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE) };
+        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE), null };
 
     private static final int INDEX_TIME = 0;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT = 1;
@@ -60,6 +64,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private static final int INDEX_ACTIVE_ENERGY_EXPORT = 4;
     private static final int INDEX_ACTIVE_ENERGY_EXPORT_RATE_1 = 5;
     private static final int INDEX_ACTIVE_ENERGY_EXPORT_RATE_2 = 6;
+    private static final int INDEX_SCALER_UNIT = 7;
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
@@ -74,8 +79,9 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
         }
 
         LOGGER.info("Retrieving actual energy reads");
-
-        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
+        final AttributeAddress[] copy = Arrays.copyOf(ATTRIBUTE_ADDRESSES, ATTRIBUTE_ADDRESSES.length);
+        copy[INDEX_SCALER_UNIT] = this.getScalerUnitAttributeAddress(actualMeterReadsQuery);
+        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, copy);
 
         checkResultList(getResultList);
 
@@ -96,9 +102,11 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_1), "Actual Energy Reads -A rate 1");
         final Long activeEnergyExportRate2 = this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2), "Actual Energy Reads -A rate 2");
+        final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(INDEX_SCALER_UNIT),
+                "Scaler and Unit");
 
         return new ActualMeterReads(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
-                activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2);
+                activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2, this.convert(scalerUnit));
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
