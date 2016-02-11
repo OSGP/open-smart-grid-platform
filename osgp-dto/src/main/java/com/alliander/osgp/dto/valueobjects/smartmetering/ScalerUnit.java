@@ -11,7 +11,8 @@ import java.io.Serializable;
 
 /**
  * response to {@link ScalerUnitQuery scaler and unit query} for E or GAS
- * meters.
+ * meters. Note that this is the scaler and unit as used on the device, not the
+ * standardized unit for the outside world.
  *
  */
 public class ScalerUnit implements Serializable {
@@ -20,7 +21,7 @@ public class ScalerUnit implements Serializable {
     private final DlmsUnit dlmsUnit;
     private final int scaler;
 
-    public ScalerUnit(DlmsUnit dlmsUnit, int scaler) {
+    public ScalerUnit(final DlmsUnit dlmsUnit, final int scaler) {
         this.dlmsUnit = dlmsUnit;
         this.scaler = scaler;
     }
@@ -31,6 +32,11 @@ public class ScalerUnit implements Serializable {
 
     public int getScaler() {
         return this.scaler;
+    }
+
+    @Override
+    public String toString() {
+        return "ScalerUnit [dlmsUnit=" + this.dlmsUnit + ", scaler=" + this.scaler + "]";
     }
 
 }

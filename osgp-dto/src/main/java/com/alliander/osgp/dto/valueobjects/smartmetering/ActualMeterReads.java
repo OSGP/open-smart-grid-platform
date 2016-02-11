@@ -15,18 +15,9 @@ public class ActualMeterReads extends MeterReads {
 
     public ActualMeterReads(final Date logTime, final long activeEnergyImport, final long activeEnergyExport,
             final long activeEnergyImportTariffOne, final long activeEnergyImportTariffTwo,
-            final long activeEnergyExportTariffOne, final long activeEnergyExportTariffTwo) {
+            final long activeEnergyExportTariffOne, final long activeEnergyExportTariffTwo, final ScalerUnit scalerUnit) {
         super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo, scalerUnit);
     }
 
-    @Override
-    public String toString() {
-        return "ActualMeterReads [logTime=" + this.getLogTime() + ", activeEnergyImport="
-                + this.getActiveEnergyImport() + ", activeEnergyExport=" + this.getActiveEnergyExport()
-                + ", activeEnergyImportTariffOne=" + this.getActiveEnergyImportTariffOne()
-                + ", activeEnergyImportTariffTwo=" + this.getActiveEnergyImportTariffTwo()
-                + ", activeEnergyExportTariffOne=" + this.getActiveEnergyExportTariffOne()
-                + ", activeEnergyExportTariffTwo=" + this.getActiveEnergyExportTariffTwo() + "]";
-    }
 }
