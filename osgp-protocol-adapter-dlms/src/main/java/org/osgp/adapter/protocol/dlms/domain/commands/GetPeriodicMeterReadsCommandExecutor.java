@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
@@ -101,7 +100,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                     "PeriodicMeterReadsRequestData should contain PeriodType, BeginDate and EndDate.");
         }
 
-        final AttributeAddress profileBuffer = this.getProfileBuffer(periodType, beginDateTime, endDateTime);
+        final AttributeAddress profileBuffer = this.getProfileBuffer(periodType, beginDateTime, endDateTime,
+                device.isSelectiveAccessSupported());
 
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
@@ -257,10 +257,13 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     }
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final DateTime beginDateTime,
-            final DateTime endDateTime) throws ProtocolAdapterException {
+            final DateTime endDateTime, final boolean isSelectiveAccessSupported) throws ProtocolAdapterException {
 
-        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
-                endDateTime);
+        SelectiveAccessDescription access = null;
+
+        if (isSelectiveAccessSupported == true) {
+            access = this.getSelectiveAccessDescription(periodType, beginDateTime, endDateTime);
+        }
 
         final AttributeAddress profileBuffer;
         switch (periodType) {
@@ -331,7 +334,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * through selectedValues does not work, retrieve all captured objects
          * by setting selectedValues to an empty array.
          */
-        final DataObject selectedValues = DataObject.newArrayData(Collections.<DataObject> emptyList());
+        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
 
         final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
                 toValue, selectedValues));
@@ -348,15 +351,9 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * {3,1-0:2.8.0.255,2,0}    -  Active energy export (-A)
          */
 
-        /*
-         * Do not include {8,0-0:1.0.0.255,2,0} - clock here, since it is
-         * already used as restricting object.
-         */
+        this.addClock(objectDefinitions);
 
-        // {1,0-0:96.10.2.255,2,0} - AMR profile status
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_DATA),
-                DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+        this.addAMRProfileStatus(objectDefinitions);
 
         // {3,1-0:1.8.0.255,2,0} - Active energy import (+A)
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
@@ -392,39 +389,23 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        /*
-         * Do not include {8,0-0:1.0.0.255,2,0} - clock here, since it is
-         * already used as restricting object.
-         */
+        this.addClock(objectDefinitions);
 
-        // {1,0-0:96.10.2.255,2,0} - AMR profile status
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_DATA),
-                DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+        this.addAMRProfileStatus(objectDefinitions);
 
-        // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+        this.addActiveEnergyImportRate1(objectDefinitions);
+        this.addActiveEnergyImportRate2(objectDefinitions);
 
-        // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+        this.addActiveEnergyExportRate1(objectDefinitions);
+        this.addActiveEnergyExportRate2(objectDefinitions);
+    }
 
-        // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+    private void addClock(final List<DataObject> objectDefinitions) {
+        // {8,0-0:1.0.0.255,2,0} - Clock
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_CLOCK),
+                DataObject.newOctetStringData(OBIS_BYTES_CLOCK), DataObject.newInteger8Data(ATTRIBUTE_ID_TIME),
+                DataObject.newUInteger16Data(0))));
 
-        // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addSelectedValuesForMonthly(final List<DataObject> objectDefinitions) {
@@ -452,28 +433,50 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * already used as restricting object.
          */
 
+        this.addActiveEnergyImportRate1(objectDefinitions);
+        this.addActiveEnergyImportRate2(objectDefinitions);
+
+        this.addActiveEnergyExportRate1(objectDefinitions);
+        this.addActiveEnergyExportRate2(objectDefinitions);
+    }
+
+    private void addAMRProfileStatus(final List<DataObject> objectDefinitions) {
+        // {1,0-0:96.10.2.255,2,0} - AMR profile status
+        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_DATA),
+                DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
+                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+    }
+
+    private void addActiveEnergyImportRate1(final List<DataObject> objectDefinitions) {
         // {3,1-0:1.8.1.255,2,0} - Active energy import (+A) rate 1
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
                 DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+    }
 
+    private void addActiveEnergyImportRate2(final List<DataObject> objectDefinitions) {
         // {3,1-0:1.8.2.255,2,0} - Active energy import (+A) rate 2
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
                 DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+    }
 
+    private void addActiveEnergyExportRate1(final List<DataObject> objectDefinitions) {
         // {3,1-0:2.8.1.255,2,0} - Active energy export (-A) rate 1
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
                 DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
+    }
 
+    private void addActiveEnergyExportRate2(final List<DataObject> objectDefinitions) {
         // {3,1-0:2.8.2.255,2,0} - Active energy export (-A) rate 2
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
                 DataObject.newUInteger16Data(CLASS_ID_REGISTER),
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
+
 }
