@@ -50,18 +50,10 @@ public class GetPeriodicMeterReadsCommandExecutor implements
     private static final ObisCode OBIS_CODE_MONTHLY_BILLING = new ObisCode("0.0.98.1.0.255");
     private static final byte ATTRIBUTE_ID_BUFFER = 2;
 
-    private static final int CLASS_ID_CLOCK = 8;
-    private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
-    private static final byte ATTRIBUTE_ID_TIME = 2;
-
-    private static final int CLASS_ID_DATA = 1;
-    private static final byte[] OBIS_BYTES_AMR_PROFILE_STATUS = new byte[] { 0, 0, 96, 10, 2, (byte) 255 };
-
     private static final int CLASS_ID_REGISTER = 3;
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT = new byte[] { 1, 0, 1, 8, 0, (byte) 255 };
+
     private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_1 = new byte[] { 1, 0, 1, 8, 1, (byte) 255 };
     private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_IMPORT_RATE_2 = new byte[] { 1, 0, 1, 8, 2, (byte) 255 };
-    private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT = new byte[] { 1, 0, 2, 8, 0, (byte) 255 };
     private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_1 = new byte[] { 1, 0, 2, 8, 1, (byte) 255 };
     private static final byte[] OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2 = new byte[] { 1, 0, 2, 8, 2, (byte) 255 };
     private static final byte ATTRIBUTE_ID_VALUE = 2;
@@ -296,9 +288,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * value to determine which elements from the buffered array should be
          * retrieved.
          */
-        final DataObject clockDefinition = DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_CLOCK), DataObject.newOctetStringData(OBIS_BYTES_CLOCK),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_TIME), DataObject.newUInteger16Data(0)));
+        final DataObject clockDefinition = this.dlmsHelperService.getClockDefinition();
 
         final DataObject fromValue = this.dlmsHelperService.asDataObject(beginDateTime);
         final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
@@ -311,7 +301,8 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
         switch (periodType) {
         case INTERVAL:
-            this.addSelectedValuesForInterval(objectDefinitions);
+            // empty objectDefinitions is ok, since all values are applicable,
+            // hence selective access is not applicable
             break;
         case DAILY:
             this.addSelectedValuesForDaily(objectDefinitions);
@@ -329,32 +320,6 @@ public class GetPeriodicMeterReadsCommandExecutor implements
                 toValue, selectedValues));
 
         return new SelectiveAccessDescription(accessSelector, accessParameter);
-    }
-
-    private void addSelectedValuesForInterval(final List<DataObject> objectDefinitions) {
-        /*-
-         * Available objects in the profile buffer (1-0:99.1.0.255):
-         * {8,0-0:1.0.0.255,2,0}    -  clock
-         * {1,0-0:96.10.2.255,2,0}  -  AMR profile status
-         * {3,1-0:1.8.0.255,2,0}    -  Active energy import (+A)
-         * {3,1-0:2.8.0.255,2,0}    -  Active energy export (-A)
-         */
-
-        this.addClock(objectDefinitions);
-
-        this.addAMRProfileStatus(objectDefinitions);
-
-        // {3,1-0:1.8.0.255,2,0} - Active energy import (+A)
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_IMPORT),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
-
-        // {3,1-0:2.8.0.255,2,0} - Active energy export (-A)
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(
-                DataObject.newUInteger16Data(CLASS_ID_REGISTER),
-                DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addSelectedValuesForDaily(final List<DataObject> objectDefinitions) {
@@ -378,23 +343,15 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        this.addClock(objectDefinitions);
+        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
 
-        this.addAMRProfileStatus(objectDefinitions);
+        objectDefinitions.add(this.dlmsHelperService.getAMRProfileDefinition());
 
         this.addActiveEnergyImportRate1(objectDefinitions);
         this.addActiveEnergyImportRate2(objectDefinitions);
 
         this.addActiveEnergyExportRate1(objectDefinitions);
         this.addActiveEnergyExportRate2(objectDefinitions);
-    }
-
-    private void addClock(final List<DataObject> objectDefinitions) {
-        // {8,0-0:1.0.0.255,2,0} - Clock
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_CLOCK),
-                DataObject.newOctetStringData(OBIS_BYTES_CLOCK), DataObject.newInteger8Data(ATTRIBUTE_ID_TIME),
-                DataObject.newUInteger16Data(0))));
-
     }
 
     private void addSelectedValuesForMonthly(final List<DataObject> objectDefinitions) {
@@ -417,23 +374,13 @@ public class GetPeriodicMeterReadsCommandExecutor implements
          * {4,0-4.24.2.1.255,5,0}  -  M-Bus Master Value 1 Channel 4 Capture time
          */
 
-        /*
-         * Do not include {8,0-0:1.0.0.255,2,0} - clock here, since it is
-         * already used as restricting object.
-         */
+        objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
 
         this.addActiveEnergyImportRate1(objectDefinitions);
         this.addActiveEnergyImportRate2(objectDefinitions);
 
         this.addActiveEnergyExportRate1(objectDefinitions);
         this.addActiveEnergyExportRate2(objectDefinitions);
-    }
-
-    private void addAMRProfileStatus(final List<DataObject> objectDefinitions) {
-        // {1,0-0:96.10.2.255,2,0} - AMR profile status
-        objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_DATA),
-                DataObject.newOctetStringData(OBIS_BYTES_AMR_PROFILE_STATUS),
-                DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
 
     private void addActiveEnergyImportRate1(final List<DataObject> objectDefinitions) {

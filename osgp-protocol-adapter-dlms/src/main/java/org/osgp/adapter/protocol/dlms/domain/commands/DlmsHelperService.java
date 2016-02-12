@@ -60,6 +60,14 @@ public class DlmsHelperService {
         }
     }
 
+    public DataObject getClockDefinition() {
+        return DataObjectDefinitions.getClockDefinition();
+    }
+
+    public DataObject getAMRProfileDefinition() {
+        return DataObjectDefinitions.getAMRProfileDefinition();
+    }
+
     /**
      * Workaround method mimicking a Get-Request with-list for devices that do
      * not support the actual functionality from DLMS.
