@@ -7,7 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -25,13 +24,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.Channel;
-import org.joda.time.DateTime;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 @Component()
-public class GetActualMeterReadsGasCommandExecutor
-        extends AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
+public class GetActualMeterReadsGasCommandExecutor extends
+        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -48,8 +48,8 @@ public class GetActualMeterReadsGasCommandExecutor
 
     @Override
     public ActualMeterReadsGas execute(final LnClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsQuery actualMeterReadsRequest)
-                    throws IOException, TimeoutException, ProtocolAdapterException {
+            final ActualMeterReadsQuery actualMeterReadsRequest) throws IOException, TimeoutException,
+            ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
 
@@ -64,15 +64,23 @@ public class GetActualMeterReadsGasCommandExecutor
                 ATTRIBUTE_ID_TIME);
 
         final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, mbusValue, mbusTime,
-                getScalerUnitAttributeAddress(actualMeterReadsRequest));
+                this.getScalerUnitAttributeAddress(actualMeterReadsRequest));
 
         checkResultList(getResultList);
 
         final long consumption = this.dlmsHelperService.readLong(getResultList.get(0), "gas consumption");
-        final DateTime captureTime = this.dlmsHelperService.readDateTime(getResultList.get(1), "captureTime gas");
+        final DataObject time = this.dlmsHelperService.readDataObject(getResultList.get(1), "captureTime gas");
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) time.value());
+        final Date captureTime;
+        if (cosemDateTime.isDateTimeSpecified()) {
+            captureTime = cosemDateTime.asDateTime().toDate();
+        } else {
+            throw new ProtocolAdapterException("Unexpected null/unspecified value for M-Bus Capture Time");
+        }
         final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(2), "Scaler and Unit");
 
-        return new ActualMeterReadsGas(new Date(), consumption, captureTime.toDate(), convert(scalerUnit));
+        return new ActualMeterReadsGas(new Date(), consumption, captureTime, this.convert(scalerUnit));
+
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {

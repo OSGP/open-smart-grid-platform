@@ -83,6 +83,10 @@ public class ManagementService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
                     findEventsQueryMessageDataContainer);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 

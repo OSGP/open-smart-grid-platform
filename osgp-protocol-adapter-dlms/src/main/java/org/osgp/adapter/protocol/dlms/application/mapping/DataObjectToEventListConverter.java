@@ -60,7 +60,10 @@ public class DataObjectToEventListConverter {
                     + eventLogCategory.getNumberOfEventElements());
         }
 
-        final DateTime dateTime = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0));
+        final DateTime dateTime = this.dlmsHelperService.convertDataObjectToDateTime(eventData.get(0)).asDateTime();
+        if (dateTime == null) {
+            throw new ProtocolAdapterException("eventData time is null/unspecified");
+        }
         if (!eventData.get(1).isNumber()) {
             throw new ProtocolAdapterException("eventData value is not a number");
         }
