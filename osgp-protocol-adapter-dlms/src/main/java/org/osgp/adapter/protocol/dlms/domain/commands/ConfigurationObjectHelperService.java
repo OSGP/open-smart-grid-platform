@@ -12,11 +12,9 @@ import java.util.BitSet;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -73,28 +71,22 @@ public class ConfigurationObjectHelperService {
     }
 
     /**
-     * Create a set of configuration flag type objects representing the active
-     * bits in the register value.
+     * Create a list of unique configuration flag type objects representing the
+     * active bits in the register value.
      *
      * @param flagByteArray
      *            The byte array holding the flag bits.
      * @return List of active configuration flag type objects.
      */
     public List<ConfigurationFlag> toConfigurationFlags(final byte[] flagByteArray) {
-        final Set<ConfigurationFlag> configurationFlags = new HashSet<>();
-
-        this.toConfigurationFlags(flagByteArray, configurationFlags);
-
-        return new ArrayList<ConfigurationFlag>(configurationFlags);
-    }
-
-    private void toConfigurationFlags(final byte[] flagByteArray, final Set<ConfigurationFlag> configurationFlags) {
+        final List<ConfigurationFlag> configurationFlags = new ArrayList<>();
         final BitSet bitSet = BitSet
                 .valueOf(new long[] { ((flagByteArray[0] & 0xFF) << 8) + (flagByteArray[1] & 0xFF) });
         for (int i = bitSet.nextSetBit(0); i >= 0; i = bitSet.nextSetBit(i + 1)) {
             final ConfigurationFlagType configurationFlagType = CONFIGURATION_FLAG_TYPE_PER_BIT_INDEX.get(i);
             configurationFlags.add(new ConfigurationFlag(configurationFlagType, true));
         }
+        return configurationFlags;
     }
 
     /**
