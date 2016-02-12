@@ -44,6 +44,17 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
     private static final int ATTRIBUTE_ID = 2;
 
+    private static final List<ConfigurationFlagType> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<ConfigurationFlagType>();
+    static {
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_3_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_4_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_5_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_3_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_4_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_5_ON_PO_ENABLE);
+    }
+
     @Autowired
     private ConfigurationObjectHelperService configurationObjectHelperService;
 
@@ -103,8 +114,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
      */
     private BitString getMergedFlags(final ConfigurationObject configurationObject,
             final ConfigurationObject configurationObjectOnDevice) {
-        final List<ConfigurationFlag> configurationFlags = new ArrayList<ConfigurationFlag>();
-        this.getNewFlags(configurationObject, configurationFlags);
+        final List<ConfigurationFlag> configurationFlags = this.getNewFlags(configurationObject);
         this.mergeOldFlags(configurationObjectOnDevice, configurationFlags);
 
         final byte[] newConfigurationObjectFlagsByteArray = this.configurationObjectHelperService
@@ -127,12 +137,32 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         }
     }
 
-    private void getNewFlags(final ConfigurationObject configurationObject,
-            final List<ConfigurationFlag> configurationFlags) {
+    private List<ConfigurationFlag> getNewFlags(final ConfigurationObject configurationObject) {
+        final List<ConfigurationFlag> configurationFlags = new ArrayList<ConfigurationFlag>();
         for (final ConfigurationFlag configurationFlag : configurationObject.getConfigurationFlags()
                 .getConfigurationFlag()) {
-            configurationFlags.add(configurationFlag);
+            if (!this.isForbidden(configurationFlag.getConfigurationFlagType())) {
+                configurationFlags.add(configurationFlag);
+            }
         }
+        return configurationFlags;
+    }
+
+    /**
+     * Check if the configuratioFlag is forbidden. Check is done agains the list
+     * of forbidden flag types
+     *
+     * @param configurationFlag
+     *            the flag to check
+     * @return true if the flag is forbidden, else false
+     */
+    private boolean isForbidden(final ConfigurationFlagType configurationFlagType) {
+        for (final ConfigurationFlagType forbiddenFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
+            if (forbiddenFlagType.equals(configurationFlagType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private ConfigurationFlag getConfigurationFlag(final Collection<ConfigurationFlag> flags,
@@ -209,8 +239,12 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         }
         final byte[] flagByteArray = ((BitString) flagsData.value()).bitString();
 
-        return new ConfigurationObject(gprsOperationMode, new ConfigurationFlags(
-                this.configurationObjectHelperService.toConfigurationFlags(flagByteArray)));
-    }
+        final List<ConfigurationFlag> listConfigurationFlag = this.configurationObjectHelperService
+                .toConfigurationFlags(flagByteArray);
 
+        final ConfigurationObject configurationObject = new ConfigurationObject(gprsOperationMode,
+                new ConfigurationFlags(listConfigurationFlag));
+
+        return configurationObject;
+    }
 }
