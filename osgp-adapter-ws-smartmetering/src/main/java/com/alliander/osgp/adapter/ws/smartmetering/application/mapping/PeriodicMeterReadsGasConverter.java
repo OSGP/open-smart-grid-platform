@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -28,8 +27,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 
 public class PeriodicMeterReadsGasConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
+extends
+BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsGasConverter.class);
 
@@ -73,20 +72,8 @@ public class PeriodicMeterReadsGasConverter
     @Override
     public PeriodicMeterReadsContainerGas convertFrom(final PeriodicMeterReadsGasResponse source,
             final Type<PeriodicMeterReadsContainerGas> destinationType) {
-        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> meterReads = new ArrayList<>(
-                source.getPeriodicMeterReadsGas().size());
-        for (final PeriodicMeterReadsGas reads : source.getPeriodicMeterReadsGas()) {
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade
-                    .map(reads.getAmrProfileStatusCode(),
-                            com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode.class);
-
-            meterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas(reads
-                    .getLogTime().toGregorianCalendar().getTime(), reads.getConsumption(), reads.getCaptureTime()
-                    .toGregorianCalendar().getTime(), amrProfileStatusCode));
-        }
-        return new PeriodicMeterReadsContainerGas(
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), meterReads);
+        throw new IllegalStateException(
+                "mapping a response meant for the ws layer to a response from the platform layer should not be necessary");
     }
 
 }

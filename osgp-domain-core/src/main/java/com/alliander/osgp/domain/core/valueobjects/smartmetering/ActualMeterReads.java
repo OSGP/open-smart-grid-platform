@@ -9,7 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class ActualMeterReads extends MeterReads implements UnitResponse {
+public class ActualMeterReads extends MeterReads implements OsgpUnitResponse {
 
     private static final long serialVersionUID = 4052150124072820551L;
 

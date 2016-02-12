@@ -23,8 +23,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFacto
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 
 public class ActualMeterReadsConverter
-extends
-BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
+        extends
+        BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
@@ -34,7 +34,7 @@ BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.sm
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
-        .createActualMeterReadsResponse();
+                .createActualMeterReadsResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -62,9 +62,7 @@ BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.sm
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse source,
             final Type<ActualMeterReads> destinationType) {
 
-        return new ActualMeterReads(source.getLogTime().toGregorianCalendar().getTime(),
-                source.getActiveEnergyImport(), source.getActiveEnergyExport(),
-                source.getActiveEnergyImportTariffOne(), source.getActiveEnergyImportTariffTwo(),
-                source.getActiveEnergyExportTariffOne(), source.getActiveEnergyExportTariffTwo());
+        throw new IllegalStateException(
+                "mapping a response meant for the ws layer to a response from the platform layer should not be necessary");
     }
 }

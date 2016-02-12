@@ -9,11 +9,11 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class ActualMeterReadsGas extends MeterReadsGas implements UnitResponse {
+public class ActualMeterReadsGas extends MeterReadsGas implements OsgpUnitResponse {
 
     private static final long serialVersionUID = 4052150124072820551L;
 
-    public ActualMeterReadsGas(final Date logTime, final long consumption, final Date captureTime) {
+    public ActualMeterReadsGas(final Date logTime, final double consumption, final Date captureTime) {
         super(logTime, consumption, captureTime);
     }
 

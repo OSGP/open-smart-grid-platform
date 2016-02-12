@@ -8,11 +8,11 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 /**
- * interface for queries that should provide channel info
+ * interface for responses from devices that should provide Unit information
  *
  */
-public interface ChannelQuery {
+public interface OsgpUnitResponse {
 
-    Channel getChannel();
+    OsgpUnit getOsgpUnit();
 
 }

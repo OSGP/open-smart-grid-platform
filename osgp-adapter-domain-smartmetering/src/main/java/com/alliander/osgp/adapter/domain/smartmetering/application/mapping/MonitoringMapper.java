@@ -10,21 +10,31 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
+
+    public static final String SCALERUNIT = "scalerunit";
+
+    @Autowired
+    private StandardUnitCalculator standardUnitCalculator;
+
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsGasConverter());
+        mapperFactory.getConverterFactory().registerConverter(
+                new ActualMeterReadsConverter(this.standardUnitCalculator));
+        mapperFactory.getConverterFactory().registerConverter(
+                new ActualMeterReadsGasConverter(this.standardUnitCalculator));
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsGasResponseConverter());
+        mapperFactory.getConverterFactory().registerConverter(
+                new PeriodicMeterReadsResponseConverter(this.standardUnitCalculator));
+        mapperFactory.getConverterFactory().registerConverter(
+                new PeriodicMeterReadsGasResponseConverter(this.standardUnitCalculator));
 
         mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsGasConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsConverter());
     }
+
 }

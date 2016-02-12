@@ -7,22 +7,40 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
+
+/**
+ * Calculate a meter value:
+ *
+ * <pre>
+ * - apply the scaler by dividing through a power of 10
+ * - determine the multiplier for the DlmsUnit
+ * - apply the multiplier
+ * - round to fraction digits (default 3, can be configured)
+ * </pre>
+ *
+ */
+@Component
 public class StandardUnitCalculator {
 
     public double calculateStandardizedValue(final long meterValue, final ScalerUnit scalerUnit) {
-        final double multiplier = getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
-        return round(meterValue * multiplier * Math.pow(10, scalerUnit.getScaler()), DECIMAL_PLACES);
+        final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
+        return round((meterValue / Math.pow(10, scalerUnit.getScaler())) * multiplier, this.fraction_digits);
     }
 
-    public static final int DECIMAL_PLACES = 3;
+    @Value("${fraction_digits:3}")
+    private int fraction_digits = 3;
 
-    public double getMultiplierToOsgpUnit(final DlmsUnit dlmsUnit) {
+    private double getMultiplierToOsgpUnit(final DlmsUnit dlmsUnit) {
         switch (dlmsUnit) {
         case WH:
+            // convert to KWH
             return 0.001d;
         case M3:
         case M3COR:
@@ -39,7 +57,7 @@ public class StandardUnitCalculator {
      * @param decimalPlace
      * @return
      */
-    public static double round(double d, int decimalPlace) {
+    public static double round(final double d, final int decimalPlace) {
         return new BigDecimal(Double.toString(d)).setScale(decimalPlace, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 

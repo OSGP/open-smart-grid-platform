@@ -7,25 +7,18 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 public class PeriodicMeterReadsRequestConverter
-extends
-BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> {
+        extends
+        BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestConverter.class);
 
@@ -34,22 +27,8 @@ BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.sc
             final PeriodicMeterReadsQuery source,
             final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> destinationType) {
 
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest data = source.isGas() ? new PeriodicMeterReadsGasRequest()
-        : new PeriodicMeterReadsRequest();
-        data.setPeriodicReadsRequestData(new PeriodicReadsRequestData());
-
-        try {
-            data.getPeriodicReadsRequestData().setBeginDate(
-                    DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                            new DateTime(source.getBeginDate()).toGregorianCalendar()));
-            data.getPeriodicReadsRequestData().setEndDate(
-                    DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                            new DateTime(source.getEndDate()).toGregorianCalendar()));
-        } catch (final DatatypeConfigurationException e) {
-            LOGGER.error("problem converting date to xmlgergoriancalendat", e);
-        }
-        data.getPeriodicReadsRequestData().setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
-        return data;
+        throw new IllegalStateException(
+                "mapping a request meant for the platform layer to a request from the ws layer should not be necessary");
     }
 
     @Override

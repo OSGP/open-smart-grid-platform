@@ -13,27 +13,26 @@ import java.util.List;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
 public class PeriodicMeterReadsGasResponseConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> {
+extends
+BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> {
+    private final StandardUnitCalculator standardUnitCalculator;
+
+    public PeriodicMeterReadsGasResponseConverter(final StandardUnitCalculator standardUnitCalculator) {
+        super();
+        this.standardUnitCalculator = standardUnitCalculator;
+    }
 
     @Override
     public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas convertTo(
             final PeriodicMeterReadsContainerGas source,
             final Type<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> destinationType) {
-        final List<PeriodicMeterReadsGas> meterReadsGas = new ArrayList<>(source.getMeterReadsGas().size());
-        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas pmr : source
-                .getMeterReadsGas()) {
-
-            meterReadsGas.add(this.mapperFacade.map(pmr, PeriodicMeterReadsGas.class));
-        }
-
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas(
-                PeriodType.valueOf(source.getPeriodType().name()), meterReadsGas);
+        throw new IllegalStateException(
+                "mapping a response meant for the platform layer to a response from the protocol layer should not be necessary");
     }
 
     @Override
@@ -43,8 +42,12 @@ public class PeriodicMeterReadsGasResponseConverter
         final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> meterReadsGas = new ArrayList<>(
                 source.getMeterReadsGas().size());
         for (final PeriodicMeterReadsGas pmr : source.getMeterReadsGas()) {
-            meterReadsGas.add(this.mapperFacade.map(pmr,
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas.class));
+
+            final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(pmr.getAmrProfileStatusCode(),
+                    AmrProfileStatusCode.class);
+            meterReadsGas.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas(pmr
+                    .getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(pmr.getConsumption(),
+                            source.getScalerUnit()), pmr.getCaptureTime(), amrProfileStatusCode));
         }
 
         return new PeriodicMeterReadsContainerGas(

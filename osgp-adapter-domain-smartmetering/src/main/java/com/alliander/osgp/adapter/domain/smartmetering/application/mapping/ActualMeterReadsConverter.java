@@ -11,18 +11,30 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
 public class ActualMeterReadsConverter extends
         BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
+
+    private final StandardUnitCalculator standardUnitCalculator;
+
+    private double toStandard(final long value, final ScalerUnitResponse scalerUnitResponse) {
+        return this.standardUnitCalculator.calculateStandardizedValue(value, scalerUnitResponse.getScalerUnit());
+    }
+
+    public ActualMeterReadsConverter(final StandardUnitCalculator standardUnitCalculator) {
+        this.standardUnitCalculator = standardUnitCalculator;
+    }
 
     @Override
     public ActualMeterReads convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
             final Type<ActualMeterReads> destinationType) {
 
-        return new ActualMeterReads(source.getLogTime(), source.getActiveEnergyImport(),
-                source.getActiveEnergyExport(), source.getActiveEnergyImportTariffOne(),
-                source.getActiveEnergyImportTariffTwo(), source.getActiveEnergyExportTariffOne(),
-                source.getActiveEnergyExportTariffTwo());
+        return new ActualMeterReads(source.getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(
+                source.getActiveEnergyImport(), source.getScalerUnit()), this.toStandard(
+                source.getActiveEnergyExport(), source), this.toStandard(source.getActiveEnergyImportTariffOne(),
+                source), this.toStandard(source.getActiveEnergyImportTariffTwo(), source), this.toStandard(
+                source.getActiveEnergyExportTariffOne(), source), source.getActiveEnergyExportTariffTwo());
     }
 
     @Override
@@ -30,9 +42,7 @@ public class ActualMeterReadsConverter extends
             final ActualMeterReads source,
             final Type<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads> destinationType) {
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads(source.getLogTime(),
-                source.getActiveEnergyImport(), source.getActiveEnergyExport(),
-                source.getActiveEnergyImportTariffOne(), source.getActiveEnergyImportTariffTwo(),
-                source.getActiveEnergyExportTariffOne(), source.getActiveEnergyExportTariffTwo());
+        throw new IllegalStateException(
+                "mapping a response meant for the platform layer to a response from the protocol layer should not be necessary");
     }
 }

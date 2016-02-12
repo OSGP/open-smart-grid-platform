@@ -10,23 +10,33 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
 
-public class ActualMeterReadsGasConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas, MeterReadsGas> {
+public class ActualMeterReadsGasConverter
+extends
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
+    private final StandardUnitCalculator standardUnitCalculator;
 
-    @Override
-    public MeterReadsGas convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas source,
-            final Type<MeterReadsGas> destinationType) {
-
-        return new MeterReadsGas(source.getLogTime(), source.getConsumption(), source.getCaptureTime());
+    public ActualMeterReadsGasConverter(final StandardUnitCalculator standardUnitCalculator) {
+        super();
+        this.standardUnitCalculator = standardUnitCalculator;
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas convertFrom(final MeterReadsGas source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas> destinationType) {
+    public ActualMeterReadsGas convertTo(
+            final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas source,
+            final Type<ActualMeterReadsGas> destinationType) {
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas(source.getLogTime(),
-                source.getConsumption(), source.getCaptureTime());
+        return new ActualMeterReadsGas(source.getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(
+                source.getConsumption(), source.getScalerUnit()), source.getCaptureTime());
+    }
+
+    @Override
+    public com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas convertFrom(
+            final ActualMeterReadsGas source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas> destinationType) {
+
+        throw new IllegalStateException(
+                "mapping a response meant for the platform layer to a response from the protocol layer should not be necessary");
     }
 }
