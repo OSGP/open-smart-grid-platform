@@ -25,6 +25,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommand
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
@@ -47,6 +48,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySet;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -72,6 +74,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
+
+    @Autowired
+    private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
@@ -230,6 +235,42 @@ public class ConfigurationService extends DlmsApplicationService {
 
     }
 
+    public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
+            final AlarmNotifications alarmNotifications, final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
+
+        LnClientConnection conn = null;
+        try {
+
+            LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
+                    alarmNotifications);
+            if (AccessResultCode.SUCCESS != accessResultCode) {
+                throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
+                        + accessResultCode);
+            }
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setAlarmNotifications", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    alarmNotifications);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
+
     public void requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
             final DeviceResponseMessageSender responseMessageSender) {
 
@@ -301,34 +342,36 @@ public class ConfigurationService extends DlmsApplicationService {
 
     }
 
-    public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
-            final AlarmNotifications alarmNotifications, final DeviceResponseMessageSender responseMessageSender) {
+    public void setPushSetupAlarm(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupAlarm pushSetupAlarm,
+            final DeviceResponseMessageSender responseMessageSender) {
 
-        this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
+        this.logStart(LOGGER, messageMetadata, "setPushSetupAlarm");
 
         LnClientConnection conn = null;
         try {
-            LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
+
+            LOGGER.info("Push Setup Alarm to set on the device: {}", pushSetupAlarm);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AccessResultCode accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
-                    alarmNotifications);
+            final AccessResultCode accessResultCode = this.setPushSetupAlarmCommandExecutor.execute(conn, device,
+                    pushSetupAlarm);
+
             if (AccessResultCode.SUCCESS != accessResultCode) {
-                throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
+                throw new ProtocolAdapterException("AccessResultCode for set push setup alarm was not SUCCESS: "
                         + accessResultCode);
             }
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
 
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setAlarmNotifications", e);
+            LOGGER.error("Unexpected exception during setPushSetupAlarm", e);
             final OsgpException ex = this.ensureOsgpException(e);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    alarmNotifications);
+                    pushSetupAlarm);
         } finally {
             if (conn != null) {
                 conn.close();
