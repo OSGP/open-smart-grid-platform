@@ -16,16 +16,11 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
 
 public class DayProfileConverter extends CustomConverter<DayProfile, DataObject> {
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     private List<DataObject> getDayObjectElements(final DayProfile dayProfile) {
         final List<DataObject> dayObjectElements = new ArrayList<>();
@@ -52,8 +47,9 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
     private List<DataObject> getDayActionObjectElements(final DayProfileAction dayProfileAction) {
         final List<DataObject> dayActionObjectElements = new ArrayList<>();
 
-        final DataObject startTimeObject = this.dlmsHelperService.dateAsDataObjectOctetString(new DateTime(
-                dayProfileAction.getStartTime()));
+        final DataObject startTimeObject = this.dateAsDataObjectOctetString(new DateTime(dayProfileAction
+                .getStartTime()));
+
         // See "DSMR P3 v4.2.2 Final P3.pdf" Tariffication Script Table (Class
         // ID: 9). Value: 0-0:10.0.100.255
         final DataObject nameObject = DataObject.newOctetStringData(new byte[] { 0, 0, 10, 0, 100, (byte) 255 });
@@ -61,6 +57,16 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
 
         dayActionObjectElements.addAll(Arrays.asList(startTimeObject, nameObject, scriptSelectorObject));
         return dayActionObjectElements;
+    }
+
+    public DataObject dateAsDataObjectOctetString(final DateTime dateTime) {
+
+        final Integer h = dateTime.getHourOfDay();
+        final Integer m = dateTime.getMinuteOfHour();
+        final Integer s = dateTime.getSecondOfMinute();
+
+        final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), (byte) 0 };
+        return DataObject.newOctetStringData(ba);
     }
 
     @Override

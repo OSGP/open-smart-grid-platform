@@ -14,17 +14,12 @@ import java.util.List;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.joda.time.DateTime;
+import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
 
 public class SeasonProfileConverter extends CustomConverter<SeasonProfile, DataObject> {
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     @Override
     public DataObject convert(final SeasonProfile source, final Type<? extends DataObject> destinationType) {
@@ -38,8 +33,8 @@ public class SeasonProfileConverter extends CustomConverter<SeasonProfile, DataO
                 .getBytes(StandardCharsets.UTF_8));
         seasonElements.add(seasonProfileNameObject);
 
-        final DateTime dt = new DateTime(source.getSeasonStart());
-        final DataObject seasonStartObject = this.dlmsHelperService.asDataObject(dt);
+        final DataObject seasonStartObject = DataObject.newDateTimeData(this.mapperFacade.map(source.getSeasonStart(),
+                CosemDateTime.class));
         seasonElements.add(seasonStartObject);
 
         final DataObject seasonWeekProfileNameObject = DataObject.newOctetStringData(source.getWeekProfile()
