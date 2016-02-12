@@ -36,10 +36,10 @@ public class CosemDate implements Serializable {
 
     public CosemDate(final int year, final int month, final int dayOfMonth, final int dayOfWeek) {
         this.checkInputs(year, month, dayOfMonth, dayOfWeek);
-        this.year = year;
-        this.month = month;
-        this.dayOfMonth = dayOfMonth;
-        this.dayOfWeek = dayOfWeek;
+        this.year = year & 0xFFFF;
+        this.month = month & 0xFF;
+        this.dayOfMonth = dayOfMonth & 0xFF;
+        this.dayOfWeek = dayOfWeek & 0xFF;
     }
 
     public CosemDate(final int year, final int month, final int dayOfMonth) {
