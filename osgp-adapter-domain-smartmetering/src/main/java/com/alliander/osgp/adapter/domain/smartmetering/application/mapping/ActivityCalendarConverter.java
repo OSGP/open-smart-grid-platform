@@ -40,8 +40,11 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Activit
         final CosemDateTime activatePassiveCalendarTime = this.mapperFacade.map(
                 source.getActivatePassiveCalendarTime(), CosemDateTime.class);
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(source.getCalendarName(),
-                activatePassiveCalendarTime, this.processSeasonProfile(source.getSeasonProfileList()));
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar destination = new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(
+                source.getCalendarName(), activatePassiveCalendarTime, this.processSeasonProfile(source
+                        .getSeasonProfileList()));
+
+        return destination;
     }
 
     private List<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> processSeasonProfile(
@@ -49,7 +52,9 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Activit
         final List<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> spl = new ArrayList<>();
 
         for (final SeasonProfile sp : seasonProfiles) {
-            spl.add(this.processSeasonProfile(sp));
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile profile = this
+                    .processSeasonProfile(sp);
+            spl.add(profile);
         }
 
         return spl;
