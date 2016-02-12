@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 
 @Component()
@@ -78,8 +79,14 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
         final DataObject time = getResult.resultData();
         LOGGER.debug(this.dlmsHelperService.getDebugInfo(time));
 
-        return new MeterReadsGas(new Date(), (Long) value.value(), this.dlmsHelperService.fromDateTimeValue(
-                (byte[]) time.value()).toDate());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) time.value());
+        final Date captureTime;
+        if (cosemDateTime.isDateTimeSpecified()) {
+            captureTime = cosemDateTime.asDateTime().toDate();
+        } else {
+            throw new ProtocolAdapterException("Unexpected null/unspecified value for M-Bus Capture Time");
+        }
+        return new MeterReadsGas(new Date(), (Long) value.value(), captureTime);
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
