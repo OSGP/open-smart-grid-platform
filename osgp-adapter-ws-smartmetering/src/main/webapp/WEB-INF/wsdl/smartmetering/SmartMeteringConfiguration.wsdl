@@ -59,7 +59,7 @@
         <wsdl:part element="smconf:SetAlarmNotificationsResponse" name="SetAlarmNotificationsResponse">
         </wsdl:part>
     </wsdl:message>
-	
+
     <wsdl:message name="SetActivityCalendarRequest">
         <wsdl:part element="smconf:SetActivityCalendarRequest" name="setActivityCalendarRequest">
         </wsdl:part>
@@ -74,7 +74,7 @@
     <wsdl:message name="SetActivityCalendarResponse">
         <wsdl:part element="smconf:SetActivityCalendarResponse" name="SetActivityCalendarResponse" />
     </wsdl:message>
-    
+
     <wsdl:message name="SetConfigurationObjectRequest">
         <wsdl:part element="smconf:SetConfigurationObjectRequest" name="SetConfigurationObjectRequest">
         </wsdl:part>
@@ -89,6 +89,23 @@
     </wsdl:message>
     <wsdl:message name="SetConfigurationObjectResponse">
         <wsdl:part element="smconf:SetConfigurationObjectResponse" name="SetConfigurationObjectResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="SetPushSetupAlarmRequest">
+        <wsdl:part element="smconf:SetPushSetupAlarmRequest" name="SetPushSetupAlarmRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupAlarmAsyncResponse"> 
+        <wsdl:part element="smconf:SetPushSetupAlarmAsyncResponse" name="SetPushSetupAlarmAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupAlarmAsyncRequest">
+        <wsdl:part element="smconf:SetPushSetupAlarmAsyncRequest" name="SetPushSetupAlarmAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupAlarmResponse">
+        <wsdl:part element="smconf:SetPushSetupAlarmResponse" name="SetPushSetupAlarmResponse">
         </wsdl:part>
     </wsdl:message>
 
@@ -111,22 +128,37 @@
         <wsdl:part element="smconf:SetAdministrativeStatusResponse" name="SetAdministrativeStatusResponse">
         </wsdl:part>
     </wsdl:message>
-	
-	<wsdl:message name="GetAdministrativeStatusRequest">
-		<wsdl:part element="smconf:GetAdministrativeStatusRequest" 
-			name="GetAdministrativeStatusRequest" />
-	</wsdl:message>
-	<wsdl:message name="GetAdministrativeStatusAsyncResponse">
-		<wsdl:part element="smconf:GetAdministrativeStatusAsyncResponse" 
-			name="GetAdministrativeStatusAsyncResponse" />
-	</wsdl:message>
-	
+
+    <wsdl:message name="GetAdministrativeStatusRequest">
+        <wsdl:part element="smconf:GetAdministrativeStatusRequest"
+            name="GetAdministrativeStatusRequest" />
+    </wsdl:message>
+    <wsdl:message name="GetAdministrativeStatusAsyncResponse">
+        <wsdl:part element="smconf:GetAdministrativeStatusAsyncResponse"
+            name="GetAdministrativeStatusAsyncResponse" />
+    </wsdl:message>
+
     <wsdl:message name="GetAdministrativeStatusAsyncRequest">
         <wsdl:part element="smconf:GetAdministrativeStatusAsyncRequest" name="GetAdministrativeStatusAsyncRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="GetAdministrativeStatusResponse">
         <wsdl:part element="smconf:GetAdministrativeStatusResponse" name="GSetAdministrativeStatusResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="ReplaceKeysRequest">
+        <wsdl:part element="smconf:ReplaceKeysRequest" name="ReplaceKeysRequest" />
+    </wsdl:message>
+    <wsdl:message name="ReplaceKeysAsyncResponse">
+        <wsdl:part element="smconf:ReplaceKeysAsyncResponse" name="ReplaceKeysAsyncResponse" />
+    </wsdl:message>
+    <wsdl:message name="ReplaceKeysAsyncRequest">
+        <wsdl:part element="smconf:ReplaceKeysAsyncRequest" name="ReplaceKeysAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="ReplaceKeysResponse">
+        <wsdl:part element="smconf:ReplaceKeysResponse" name="ReplaceKeysResponse">
         </wsdl:part>
     </wsdl:message>
 
@@ -158,6 +190,19 @@
             </wsdl:output>
         </wsdl:operation>
 
+        <wsdl:operation name="SetPushSetupAlarm">
+            <wsdl:input message="tns:SetPushSetupAlarmRequest" name="SetPushSetupAlarmRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetPushSetupAlarmAsyncResponse" name="SetPushSetupAlarmAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSetPushSetupAlarmResponse">
+            <wsdl:input message="tns:SetPushSetupAlarmAsyncRequest" name="SetPushSetupAlarmAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetPushSetupAlarmResponse" name="SetPushSetupAlarmResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
         <wsdl:operation name="SetAlarmNotifications">
             <wsdl:input message="tns:SetAlarmNotificationsRequest" name="SetAlarmNotificationsRequest">
             </wsdl:input>
@@ -177,7 +222,7 @@
             <wsdl:output message="tns:SetActivityCalendarAsyncResponse" name="SetActivityCalendarAsyncResponse">
             </wsdl:output>
         </wsdl:operation>
-		
+
         <wsdl:operation name="GetSetActivityCalendarResponse">
             <wsdl:input message="tns:SetActivityCalendarAsyncRequest" name="SetActivityCalendarAsyncRequest">
             </wsdl:input>
@@ -185,12 +230,12 @@
             </wsdl:output>
         </wsdl:operation>
 
-		<wsdl:operation name="SetAdministrativeStatus">
-			<wsdl:input message="tns:SetAdministrativeStatusRequest" name="SetAdministrativeStatusRequest">
-			</wsdl:input>
-			<wsdl:output message="tns:SetAdministrativeStatusAsyncResponse" name="SetAdministrativeStatusAsyncResponse">
-			</wsdl:output> 
-		</wsdl:operation>
+        <wsdl:operation name="SetAdministrativeStatus">
+            <wsdl:input message="tns:SetAdministrativeStatusRequest" name="SetAdministrativeStatusRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetAdministrativeStatusAsyncResponse" name="SetAdministrativeStatusAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
         
         <wsdl:operation name="GetSetAdministrativeStatusResponse">
             <wsdl:input message="tns:SetAdministrativeStatusAsyncRequest" name="SetAdministrativeStatusAsyncRequest">
@@ -199,17 +244,30 @@
             </wsdl:output>
         </wsdl:operation>
         
-		<wsdl:operation name="GetAdministrativeStatus">
-			<wsdl:input message="tns:GetAdministrativeStatusRequest" name="GetAdministrativeStatusRequest">
-			</wsdl:input>
-			<wsdl:output message="tns:GetAdministrativeStatusAsyncResponse" name="GetAdministrativeStatusAsyncResponse">
-			</wsdl:output> 
-		</wsdl:operation>
+        <wsdl:operation name="GetAdministrativeStatus">
+            <wsdl:input message="tns:GetAdministrativeStatusRequest" name="GetAdministrativeStatusRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:GetAdministrativeStatusAsyncResponse" name="GetAdministrativeStatusAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
         
         <wsdl:operation name="GetGetAdministrativeStatusResponse">
             <wsdl:input message="tns:GetAdministrativeStatusAsyncRequest" name="GetAdministrativeStatusAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:GetAdministrativeStatusResponse" name="GetAdministrativeStatusResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="ReplaceKeys">
+            <wsdl:input message="tns:ReplaceKeysRequest" name="ReplaceKeysRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:ReplaceKeysAsyncResponse" name="ReplaceKeysAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetReplaceKeysResponse">
+            <wsdl:input message="tns:ReplaceKeysAsyncRequest" name="ReplaceKeysAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:ReplaceKeysResponse" name="ReplaceKeysResponse">
             </wsdl:output>
         </wsdl:operation>
     </wsdl:portType>
@@ -268,6 +326,32 @@
             </wsdl:output>
         </wsdl:operation>
 
+        <wsdl:operation name="SetPushSetupAlarm">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetPushSetupAlarmRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetPushSetupAlarmAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetPushSetupAlarmResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetPushSetupAlarmAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetPushSetupAlarmResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
         <wsdl:operation name="SetAlarmNotifications">
             <soap:operation soapAction="" />
             <wsdl:input name="SetAlarmNotificationsRequest">
@@ -319,16 +403,16 @@
         </wsdl:operation>
 
         <wsdl:operation name="SetAdministrativeStatus">
-        	<soap:operation soapAction="" />
-        	<wsdl:input name="SetAdministrativeStatusRequest">
-				<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-        		<soap:body use="literal" />
-        	</wsdl:input>
-        	<wsdl:output name="SetAdministrativeStatusAsyncResponse">
-        		<soap:body use="literal" />
-        	</wsdl:output>
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetAdministrativeStatusRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetAdministrativeStatusAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
         </wsdl:operation>
         
         <wsdl:operation name="GetSetAdministrativeStatusResponse">
@@ -336,7 +420,7 @@
             <wsdl:input name="SetAdministrativeStatusAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetAdministrativeStatusResponse">
@@ -344,28 +428,53 @@
             </wsdl:output>
         </wsdl:operation>
 
-		<wsdl:operation name="GetAdministrativeStatus">
-			<soap:operation soapAction="" />
+        <wsdl:operation name="GetAdministrativeStatus">
+            <soap:operation soapAction="" />
             <wsdl:input name="GetAdministrativeStatusRequest">
-				<soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="GetAdministrativeStatusAsyncResponse">
                 <soap:body use="literal" />
-            </wsdl:output>			
-		</wsdl:operation>
+            </wsdl:output>
+        </wsdl:operation>
         
         <wsdl:operation name="GetGetAdministrativeStatusResponse">
             <soap:operation soapAction="" />
             <wsdl:input name="GetAdministrativeStatusAsyncRequest">
                 <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="GetAdministrativeStatusResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="ReplaceKeys">
+            <soap:operation soapAction="" />
+            <wsdl:input name="ReplaceKeysRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="ReplaceKeysAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetReplaceKeysResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="ReplaceKeysAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="ReplaceKeysResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
