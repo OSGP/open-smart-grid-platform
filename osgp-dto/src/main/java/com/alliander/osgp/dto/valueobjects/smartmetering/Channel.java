@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
+
 public enum Channel {
 
     ONE(1),
@@ -23,6 +24,21 @@ public enum Channel {
 
     public int getChannelNumber() {
         return this.channelNumber;
+    }
+
+    public static Channel fromNumber(final int channel) {
+        switch (channel) {
+        case 1:
+            return ONE;
+        case 2:
+            return TWO;
+        case 3:
+            return THREE;
+        case 4:
+            return FOUR;
+        default:
+            throw new IllegalArgumentException(String.format("channel %s not supported", channel));
+        }
     }
 
 }
