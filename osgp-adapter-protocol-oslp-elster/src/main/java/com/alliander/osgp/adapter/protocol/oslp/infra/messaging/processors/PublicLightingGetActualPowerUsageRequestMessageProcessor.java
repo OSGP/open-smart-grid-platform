@@ -40,7 +40,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  */
 @Component("oslpPublicLightingGetActualPowerUsageRequestMessageProcessor")
 public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-        OslpEnvelopeProcessor {
+OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -93,6 +93,7 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
         final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
                 correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
+        // return NotSupportedException
         this.deviceService.getActualPowerUsage(deviceRequest);
     }
 
