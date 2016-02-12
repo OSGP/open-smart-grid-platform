@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
@@ -123,7 +125,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
             final List<DataObject> bufferedObjects, final int channel) throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
-        final DateTime bufferedDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
+        final DateTime bufferedDateTime = cosemDateTime.asDateTime();
+        if (bufferedDateTime == null) {
+            final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
+            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime.toString()
+                    + "), because the date does not match the given period, since it is not fully specified: ["
+                    + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
+            return;
+        }
         if (bufferedDateTime.isBefore(beginDateTime) || bufferedDateTime.isAfter(endDateTime)) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
             LOGGER.warn("Not using an object from capture buffer (clock=" + dtf.print(bufferedDateTime)
@@ -162,9 +172,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_INT);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value());
+        final Date captureTime;
+        if (cosemDateTime.isDateTimeSpecified()) {
+            captureTime = cosemDateTime.asDateTime().toDate();
+        } else {
+            throw new ProtocolAdapterException("Unexpected null/unspecified value for Gas Capture Time");
+        }
         final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
-                (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
-                        .toDate(), amrProfileStatusCode);
+                (Long) gasValue.value(), captureTime, amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -183,9 +199,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + offset);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value());
+        final Date captureTime;
+        if (cosemDateTime.isDateTimeSpecified()) {
+            captureTime = cosemDateTime.asDateTime().toDate();
+        } else {
+            throw new ProtocolAdapterException("Unexpected null/unspecified value for Gas Capture Time");
+        }
         final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
-                (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
-                        .toDate(), amrProfileStatusCode);
+                (Long) gasValue.value(), captureTime, amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -202,9 +224,15 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_FIRST + offset);
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value());
+        final Date captureTime;
+        if (cosemDateTime.isDateTimeSpecified()) {
+            captureTime = cosemDateTime.asDateTime().toDate();
+        } else {
+            throw new ProtocolAdapterException("Unexpected null/unspecified value for Gas Capture Time");
+        }
         final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
-                (Long) gasValue.value(), this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value())
-                        .toDate());
+                (Long) gasValue.value(), captureTime);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
