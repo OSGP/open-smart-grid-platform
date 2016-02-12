@@ -106,6 +106,25 @@ public class CosemDateTime implements Serializable {
         return sb.append(']').toString();
     }
 
+    public byte[] toByteArray() {
+        final byte[] data = new byte[12];
+
+        data[0] = (byte) (this.date.getYear() & 0xFF);
+        data[1] = (byte) ((this.date.getYear() >> 8) & 0xFF);
+        data[2] = (byte) this.date.getMonth();
+        data[3] = (byte) this.date.getDayOfMonth();
+        data[4] = (byte) this.date.getDayOfWeek();
+        data[5] = (byte) this.time.getHour();
+        data[6] = (byte) this.time.getMinute();
+        data[7] = (byte) this.time.getSecond();
+        data[8] = (byte) this.time.getHundredths();
+        data[9] = (byte) (this.getDeviation() & 0xFF);
+        data[10] = (byte) ((this.getDeviation() >> 8) & 0xFF);
+        data[11] = (byte) this.getClockStatus().getStatus();
+
+        return data;
+    }
+
     public CosemDate getDate() {
         return this.date;
     }
