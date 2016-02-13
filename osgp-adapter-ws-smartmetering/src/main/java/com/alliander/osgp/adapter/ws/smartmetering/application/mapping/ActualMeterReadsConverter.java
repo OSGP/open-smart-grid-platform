@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.eFromDouble;
+
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -47,12 +49,12 @@ public class ActualMeterReadsConverter
         }
 
         destination.setLogTime(convertedDate);
-        destination.setActiveEnergyImport(source.getActiveEnergyImport());
-        destination.setActiveEnergyExport(source.getActiveEnergyExport());
-        destination.setActiveEnergyExportTariffOne(source.getActiveEnergyExportTariffOne());
-        destination.setActiveEnergyExportTariffTwo(source.getActiveEnergyExportTariffTwo());
-        destination.setActiveEnergyImportTariffOne(source.getActiveEnergyImportTariffOne());
-        destination.setActiveEnergyImportTariffTwo(source.getActiveEnergyImportTariffTwo());
+        destination.setActiveEnergyImport(eFromDouble(source.getActiveEnergyImport()));
+        destination.setActiveEnergyExport(eFromDouble(source.getActiveEnergyExport()));
+        destination.setActiveEnergyExportTariffOne(eFromDouble(source.getActiveEnergyExportTariffOne()));
+        destination.setActiveEnergyExportTariffTwo(eFromDouble(source.getActiveEnergyExportTariffTwo()));
+        destination.setActiveEnergyImportTariffOne(eFromDouble(source.getActiveEnergyImportTariffOne()));
+        destination.setActiveEnergyImportTariffTwo(eFromDouble(source.getActiveEnergyImportTariffTwo()));
 
         return destination;
     }

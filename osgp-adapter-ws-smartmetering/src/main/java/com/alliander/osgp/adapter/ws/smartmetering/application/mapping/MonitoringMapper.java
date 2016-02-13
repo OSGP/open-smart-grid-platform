@@ -7,10 +7,15 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import java.math.BigDecimal;
+
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.EMeterValue;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.GMeterValue;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
@@ -25,4 +30,17 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushNotificationsAlarmConverter());
     }
+
+    public static EMeterValue eFromDouble(final double value) {
+        final EMeterValue eMeterValue = new EMeterValue();
+        eMeterValue.setValue(new BigDecimal(value));
+        return eMeterValue;
+    }
+
+    public static GMeterValue gFromDouble(final double value) {
+        final GMeterValue eMeterValue = new GMeterValue();
+        eMeterValue.setValue(new BigDecimal(value));
+        return eMeterValue;
+    }
+
 }

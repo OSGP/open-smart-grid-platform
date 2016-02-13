@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.eFromDouble;
+
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -27,8 +29,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsConverter
-extends
-BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+        extends
+        BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsConverter.class);
 
@@ -55,12 +57,12 @@ BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws
                     AmrProfileStatusCode.class);
 
             meterReads.setLogTime(convertedDate);
-            meterReads.setActiveEnergyImport(m.getActiveEnergyImport());
-            meterReads.setActiveEnergyExport(m.getActiveEnergyExport());
-            meterReads.setActiveEnergyImportTariffOne(m.getActiveEnergyImportTariffOne());
-            meterReads.setActiveEnergyImportTariffTwo(m.getActiveEnergyImportTariffTwo());
-            meterReads.setActiveEnergyExportTariffOne(m.getActiveEnergyExportTariffOne());
-            meterReads.setActiveEnergyExportTariffTwo(m.getActiveEnergyExportTariffTwo());
+            meterReads.setActiveEnergyImport(eFromDouble(m.getActiveEnergyImport()));
+            meterReads.setActiveEnergyExport(eFromDouble(m.getActiveEnergyExport()));
+            meterReads.setActiveEnergyImportTariffOne(eFromDouble(m.getActiveEnergyImportTariffOne()));
+            meterReads.setActiveEnergyImportTariffTwo(eFromDouble(m.getActiveEnergyImportTariffTwo()));
+            meterReads.setActiveEnergyExportTariffOne(eFromDouble(m.getActiveEnergyExportTariffOne()));
+            meterReads.setActiveEnergyExportTariffTwo(eFromDouble(m.getActiveEnergyExportTariffTwo()));
             meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
             periodicMeterReads.add(meterReads);
         }
