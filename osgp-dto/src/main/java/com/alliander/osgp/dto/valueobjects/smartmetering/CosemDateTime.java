@@ -40,7 +40,15 @@ public class CosemDateTime implements Serializable {
         this.checkDeviation(deviation);
         this.date = date;
         this.time = time;
-        this.deviation = deviation;
+        if (deviation == -DEVIATION_NOT_SPECIFIED) {
+            /*
+             * Has to do with specifics regarding 4 byte shorts and int values.
+             * See comments with isDeviationNotSpecified(int).
+             */
+            this.deviation = DEVIATION_NOT_SPECIFIED;
+        } else {
+            this.deviation = deviation;
+        }
         this.clockStatus = clockStatus;
     }
 
@@ -51,11 +59,20 @@ public class CosemDateTime implements Serializable {
     }
 
     private boolean isValidDeviation(final int deviation) {
-        return this.isSpecificDeviation(deviation) || DEVIATION_NOT_SPECIFIED == deviation;
+        return this.isSpecificDeviation(deviation) || this.isDeviationNotSpecified(deviation);
     }
 
     private boolean isSpecificDeviation(final int deviation) {
         return deviation >= -720 && deviation <= 720;
+    }
+
+    private boolean isDeviationNotSpecified(final int deviation) {
+        /*
+         * Deviation comes from a short value (4 bytes), where the int value of
+         * DEVIATION_NOT_SPECIFIED equals the negative value as 4 byte short.
+         * Take this into account checking the deviation value.
+         */
+        return DEVIATION_NOT_SPECIFIED == deviation || -DEVIATION_NOT_SPECIFIED == deviation;
     }
 
     public CosemDateTime(final LocalDate date, final LocalTime time, final int deviation, final ClockStatus clockStatus) {

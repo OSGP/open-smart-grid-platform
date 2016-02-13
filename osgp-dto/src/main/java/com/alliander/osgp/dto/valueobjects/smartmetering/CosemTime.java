@@ -57,25 +57,25 @@ public class CosemTime implements Serializable {
     }
 
     private void checkHour(final int hour) {
-        if ((hour < 0 || hour > 23) && HOUR_NOT_SPECIFIED != hour) {
+        if (hour < 0 || hour > 23 && HOUR_NOT_SPECIFIED != hour) {
             throw new IllegalArgumentException("Hour not in [0..23, 0xFF]: " + hour);
         }
     }
 
     private void checkMinute(final int minute) {
-        if ((minute < 0 || minute > 59) && MINUTE_NOT_SPECIFIED != minute) {
+        if (minute < 0 || minute > 59 && MINUTE_NOT_SPECIFIED != minute) {
             throw new IllegalArgumentException("Minute not in [0..59, 0xFF]: " + minute);
         }
     }
 
     private void checkSecond(final int second) {
-        if ((second < 0 || second > 59) && SECOND_NOT_SPECIFIED != second) {
+        if (second < 0 || second > 59 && SECOND_NOT_SPECIFIED != second) {
             throw new IllegalArgumentException("Second not in [0..59, 0xFF]: " + second);
         }
     }
 
     private void checkHundredths(final int hundredths) {
-        if ((hundredths < 0 || hundredths > 99) && HUNDREDTHS_NOT_SPECIFIED != hundredths) {
+        if (hundredths < 0 || hundredths > 99 && HUNDREDTHS_NOT_SPECIFIED != hundredths) {
             throw new IllegalArgumentException("Hundredths not in [0..99, 0xFF]: " + hundredths);
         }
     }
