@@ -22,6 +22,8 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -150,6 +152,29 @@ public class ConfigurationService {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 
+    public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm) {
+
+        LOGGER.debug("enqueueSetPushSetupAlarmRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.SET_PUSH_SETUP_ALARM, correlationUid, organisationIdentification,
+                deviceIdentification, pushSetupAlarm);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueSetPushSetupAlarmResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches) {
 
@@ -187,6 +212,25 @@ public class ConfigurationService {
     }
 
     public MeterResponseData dequeueSetActivityCalendarResponse(final String correlationUid)
+            throws UnknownCorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid);
+    }
+
+    public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final KeySet keySet) {
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
+                SmartMeteringRequestMessageType.REPLACE_KEYS, correlationUid, organisationIdentification,
+                deviceIdentification, keySet);
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public MeterResponseData dequeueReplaceKeysResponse(final String correlationUid)
             throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }

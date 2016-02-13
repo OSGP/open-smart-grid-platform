@@ -1,45 +1,80 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
+
+import java.util.Objects;
 
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatus;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemTime;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime;
+public class CosemDateTimeConverter extends
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime, CosemDateTime> {
 
-public class CosemDateTimeConverter extends BidirectionalConverter<CosemDateTime, byte[]> {
+    private final ConfigurationMapper mapper;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CosemDateTimeConverter.class);
+    public CosemDateTimeConverter() {
+        this.mapper = new ConfigurationMapper();
+    }
 
-    @Override
-    public byte[] convertTo(final CosemDateTime source, final Type<byte[]> destinationType) {
-        throw new UnsupportedOperationException("Conversion from CosemDateTime to byte array is not yet supported");
+    public CosemDateTimeConverter(final ConfigurationMapper mapper) {
+        this.mapper = mapper;
     }
 
     @Override
-    public CosemDateTime convertFrom(final byte[] source, final Type<CosemDateTime> destinationType) {
-        final int year = (source[0] << 8) | (source[1] & 0xff);
-        final int month = source[2] & 0xFF;
-        final int dayOfMonth = source[3] & 0xFF;
-        final int dayOfWeek = source[4] & 0xFF;
-        final int hour = source[5] & 0xFF;
-        final int minute = source[6] & 0xFF;
-        final int second = source[7] & 0xFF;
-        final int hundredths = source[8] & 0xFF;
+    public boolean equals(final Object other) {
+        if (!(other instanceof CosemDateTimeConverter)) {
+            return false;
+        }
+        if (!super.equals(other)) {
+            return false;
+        }
+        final CosemDateTimeConverter o = (CosemDateTimeConverter) other;
+        if (this.mapper == null) {
+            return o.mapper == null;
+        }
+        return this.mapper.getClass().equals(o.mapper.getClass());
+    }
 
-        final int deviation = (source[9] << 8) | (source[10] & 0xff);
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hashCode(this.mapper);
+    }
 
-        LOGGER.info("Deviation {} : {} ({}-{})", deviation, Integer.toBinaryString(deviation), source[9], source[10]);
+    @Override
+    public CosemDateTime convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime source,
+            final Type<CosemDateTime> destinationType) {
+        if (source == null) {
+            return null;
+        }
 
-        final ClockStatus clockStatus = new ClockStatus(source[11]);
+        final ClockStatus clockStatus = new ClockStatus(source.getClockStatus().getStatus());
 
-        final CosemTime time = new CosemTime(hour, minute, second, hundredths);
-        final CosemDate date = new CosemDate(year, month, dayOfMonth, dayOfWeek);
+        return new CosemDateTime(this.mapper.map(source.getDate(), CosemDate.class), this.mapper.map(source.getTime(),
+                CosemTime.class), source.getDeviation(), clockStatus);
+    }
 
-        return new CosemDateTime(date, time, deviation, clockStatus);
+    @Override
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime convertFrom(final CosemDateTime source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime> destinationType) {
+        if (source == null) {
+            return null;
+        }
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus(
+                source.getClockStatus().getStatus());
+
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(this.mapper.map(source.getDate(),
+                com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate.class), this.mapper.map(source.getTime(),
+                com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime.class), source.getDeviation(), clockStatus);
     }
 }

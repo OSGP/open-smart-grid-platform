@@ -24,6 +24,8 @@ import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -68,8 +70,7 @@ public class ConfigurationService {
         LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -90,8 +91,7 @@ public class ConfigurationService {
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
@@ -101,6 +101,24 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
                 messageType);
+    }
+
+    public void setPushSetupAlarm(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
+
+        final PushSetupAlarm pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm, PushSetupAlarm.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), messageType);
     }
 
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,
@@ -128,8 +146,7 @@ public class ConfigurationService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications alarmNotificationsDto = this.configurationMapper
                 .map(alarmNotifications, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class);
@@ -141,14 +158,13 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto = this.configurationMapper
                 .map(administrativeStatusType,
@@ -184,8 +200,7 @@ public class ConfigurationService {
                 "Get Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
                 organisationIdentification, deviceIdentification, administrativeStatusType);
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
@@ -226,8 +241,7 @@ public class ConfigurationService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final SmartMeter smartMeteringDevice = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendarDto = this.configurationMapper
                 .map(activityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar.class);
@@ -268,6 +282,22 @@ public class ConfigurationService {
                 deviceIdentification, result, exception, null), messageType);
     }
 
+    public void handleSetPushSetupAlarmResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleSetPushSetupAlarmResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Set Push Setup Alarm Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
+    }
+
     public void handleSetActivityCalendarResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
@@ -283,5 +313,37 @@ public class ConfigurationService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, resultString), messageType);
 
+    }
+
+    public void replaceKeys(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final KeySet keySet,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info("replaceKeys for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        final com.alliander.osgp.dto.valueobjects.smartmetering.KeySet keySetDto = this.configurationMapper.map(keySet,
+                com.alliander.osgp.dto.valueobjects.smartmetering.KeySet.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), keySetDto), messageType);
+    }
+
+    public void handleReplaceKeysResponse(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
+            final OsgpException exception) {
+
+        LOGGER.info("handleReplaceKeysResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Replace Keys Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
     }
 }
