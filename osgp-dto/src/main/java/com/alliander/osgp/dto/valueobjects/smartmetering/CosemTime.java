@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.LocalTime;
 
-public class CosemTime implements Serializable {
+public class CosemTime implements Serializable, Comparable<CosemTime> {
 
     private static final long serialVersionUID = 1505799304987059469L;
 
@@ -43,6 +43,10 @@ public class CosemTime implements Serializable {
 
     public CosemTime(final LocalTime time) {
         this(time.getHourOfDay(), time.getMinuteOfHour(), time.getSecondOfMinute(), time.getMillisOfSecond() / 10);
+    }
+
+    public CosemTime(final CosemTime time) {
+        this(time.getHour(), time.getMinute(), time.getSecond(), time.getHundredths());
     }
 
     public CosemTime() {
@@ -212,5 +216,27 @@ public class CosemTime implements Serializable {
 
     public boolean isHundredthsNotSpecified() {
         return HUNDREDTHS_NOT_SPECIFIED == this.hundredths;
+    }
+
+    @Override
+    public int compareTo(final CosemTime o) {
+        // NOT_SPECIFIED equals every other value.
+        if (this.hour != HOUR_NOT_SPECIFIED && o.hour != HOUR_NOT_SPECIFIED) {
+            return this.hour - o.hour;
+        }
+
+        if (this.minute != MINUTE_NOT_SPECIFIED && o.minute != MINUTE_NOT_SPECIFIED) {
+            return this.minute - o.minute;
+        }
+
+        if (this.second != SECOND_NOT_SPECIFIED && o.second != SECOND_NOT_SPECIFIED) {
+            return this.second - o.second;
+        }
+
+        if (this.hundredths != HUNDREDTHS_NOT_SPECIFIED && o.hundredths != HUNDREDTHS_NOT_SPECIFIED) {
+            return this.hundredths - o.hundredths;
+        }
+
+        return 0;
     }
 }
