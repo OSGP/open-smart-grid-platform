@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.LocalTime;
 
-public class CosemTime implements Serializable {
+public class CosemTime implements Serializable, Comparable<CosemTime> {
 
     private static final long serialVersionUID = 1505799304987059469L;
 
@@ -45,6 +45,10 @@ public class CosemTime implements Serializable {
         this(time.getHourOfDay(), time.getMinuteOfHour(), time.getSecondOfMinute(), time.getMillisOfSecond() / 10);
     }
 
+    public CosemTime(final CosemTime cosemTime) {
+        this(cosemTime.getHour(), cosemTime.getMinute(), cosemTime.getSecond(), cosemTime.getHundredths());
+    }
+
     public CosemTime() {
         this(LocalTime.now());
     }
@@ -57,25 +61,25 @@ public class CosemTime implements Serializable {
     }
 
     private void checkHour(final int hour) {
-        if (hour < 0 || hour > 23 || HOUR_NOT_SPECIFIED != hour) {
+        if (hour < 0 || hour > 23 && HOUR_NOT_SPECIFIED != hour) {
             throw new IllegalArgumentException("Hour not in [0..23, 0xFF]: " + hour);
         }
     }
 
     private void checkMinute(final int minute) {
-        if (minute < 0 || minute > 59 || MINUTE_NOT_SPECIFIED != minute) {
+        if (minute < 0 || minute > 59 && MINUTE_NOT_SPECIFIED != minute) {
             throw new IllegalArgumentException("Minute not in [0..59, 0xFF]: " + minute);
         }
     }
 
     private void checkSecond(final int second) {
-        if (second < 0 || second > 59 || SECOND_NOT_SPECIFIED != second) {
+        if (second < 0 || second > 59 && SECOND_NOT_SPECIFIED != second) {
             throw new IllegalArgumentException("Second not in [0..59, 0xFF]: " + second);
         }
     }
 
     private void checkHundredths(final int hundredths) {
-        if (hundredths < 0 || hundredths > 99 || HUNDREDTHS_NOT_SPECIFIED != hundredths) {
+        if (hundredths < 0 || hundredths > 99 && HUNDREDTHS_NOT_SPECIFIED != hundredths) {
             throw new IllegalArgumentException("Hundredths not in [0..99, 0xFF]: " + hundredths);
         }
     }
@@ -212,5 +216,27 @@ public class CosemTime implements Serializable {
 
     public boolean isHundredthsNotSpecified() {
         return HUNDREDTHS_NOT_SPECIFIED == this.hundredths;
+    }
+
+    @Override
+    public int compareTo(final CosemTime o) {
+        // NOT_SPECIFIED equals every other value.
+        if (this.hour != HOUR_NOT_SPECIFIED && o.hour != HOUR_NOT_SPECIFIED) {
+            return this.hour - o.hour;
+        }
+
+        if (this.minute != MINUTE_NOT_SPECIFIED && o.minute != MINUTE_NOT_SPECIFIED) {
+            return this.minute - o.minute;
+        }
+
+        if (this.second != SECOND_NOT_SPECIFIED && o.second != SECOND_NOT_SPECIFIED) {
+            return this.second - o.second;
+        }
+
+        if (this.hundredths != HUNDREDTHS_NOT_SPECIFIED && o.hundredths != HUNDREDTHS_NOT_SPECIFIED) {
+            return this.hundredths - o.hundredths;
+        }
+
+        return 0;
     }
 }

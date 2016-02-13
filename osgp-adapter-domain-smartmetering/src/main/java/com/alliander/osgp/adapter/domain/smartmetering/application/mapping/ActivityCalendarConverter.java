@@ -21,7 +21,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 public class ActivityCalendarConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar, ActivityCalendar> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar, ActivityCalendar> {
 
     @Override
     public ActivityCalendar convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar source,
@@ -94,7 +94,10 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Activit
     private com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction processDayProfileActionType(
             final DayProfileAction dpat) {
 
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime startTime = this.mapperFacade.map(
+                dpat.getStartTime(), com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime.class);
+
         return new com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction(dpat.getScriptSelector(),
-                dpat.getStartTime());
+                startTime);
     }
 }

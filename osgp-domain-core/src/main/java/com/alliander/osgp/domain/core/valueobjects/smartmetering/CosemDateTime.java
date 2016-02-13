@@ -38,24 +38,10 @@ public class CosemDateTime implements Serializable {
         Objects.requireNonNull(time, "time must not be null");
         Objects.requireNonNull(clockStatus, "clockStatus must not be null");
         this.checkDeviation(deviation);
-        this.date = date;
-        this.time = time;
+        this.date = new CosemDate(date);
+        this.time = new CosemTime(time);
         this.deviation = deviation;
-        this.clockStatus = clockStatus;
-    }
-
-    private void checkDeviation(final int deviation) {
-        if (!this.isValidDeviation(deviation)) {
-            throw new IllegalArgumentException("Deviation not in [-720..720, 0x8000]: " + deviation);
-        }
-    }
-
-    private boolean isValidDeviation(final int deviation) {
-        return this.isSpecificDeviation(deviation) || DEVIATION_NOT_SPECIFIED == deviation;
-    }
-
-    private boolean isSpecificDeviation(final int deviation) {
-        return deviation >= -720 && deviation <= 720;
+        this.clockStatus = new ClockStatus(clockStatus);
     }
 
     public CosemDateTime(final LocalDate date, final LocalTime time, final int deviation, final ClockStatus clockStatus) {
@@ -77,6 +63,25 @@ public class CosemDateTime implements Serializable {
     public CosemDateTime(final DateTime dateTime) {
         this(dateTime.toLocalDate(), dateTime.toLocalTime(), determineDeviation(dateTime),
                 determineClockStatus(dateTime));
+    }
+
+    public CosemDateTime(final CosemDateTime cosemDateTime) {
+        this(cosemDateTime.getDate(), cosemDateTime.getTime(), cosemDateTime.getDeviation(), cosemDateTime
+                .getClockStatus());
+    }
+
+    private void checkDeviation(final int deviation) {
+        if (!this.isValidDeviation(deviation)) {
+            throw new IllegalArgumentException("Deviation not in [-720..720, 0x8000]: " + deviation);
+        }
+    }
+
+    private boolean isValidDeviation(final int deviation) {
+        return this.isSpecificDeviation(deviation) || DEVIATION_NOT_SPECIFIED == deviation;
+    }
+
+    private boolean isSpecificDeviation(final int deviation) {
+        return deviation >= -720 && deviation <= 720;
     }
 
     private static int determineDeviation(final DateTime dateTime) {

@@ -50,6 +50,10 @@ public class CosemDate implements Serializable {
         this(date.getYear(), date.getMonthOfYear(), date.getDayOfMonth(), DAY_OF_WEEK_NOT_SPECIFIED);
     }
 
+    public CosemDate(final CosemDate cosemDate) {
+        this(cosemDate.getYear(), cosemDate.getMonth(), cosemDate.getDayOfMonth(), cosemDate.getDayOfWeek());
+    }
+
     public CosemDate() {
         this(LocalDate.now());
     }
