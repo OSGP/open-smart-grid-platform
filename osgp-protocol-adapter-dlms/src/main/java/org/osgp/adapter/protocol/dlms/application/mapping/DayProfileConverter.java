@@ -14,9 +14,9 @@ import java.util.List;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
 
@@ -47,8 +47,7 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
     private List<DataObject> getDayActionObjectElements(final DayProfileAction dayProfileAction) {
         final List<DataObject> dayActionObjectElements = new ArrayList<>();
 
-        final DataObject startTimeObject = this.dateAsDataObjectOctetString(new DateTime(dayProfileAction
-                .getStartTime()));
+        final DataObject startTimeObject = this.timeAsDataObjectOctetString(dayProfileAction.getStartTime());
 
         // See "DSMR P3 v4.2.2 Final P3.pdf" Tariffication Script Table (Class
         // ID: 9). Value: 0-0:10.0.100.255
@@ -59,13 +58,14 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
         return dayActionObjectElements;
     }
 
-    public DataObject dateAsDataObjectOctetString(final DateTime dateTime) {
+    public DataObject timeAsDataObjectOctetString(final CosemTime time) {
 
-        final Integer h = dateTime.getHourOfDay();
-        final Integer m = dateTime.getMinuteOfHour();
-        final Integer s = dateTime.getSecondOfMinute();
+        final Integer h = time.getHour();
+        final Integer m = time.getMinute();
+        final Integer s = time.getSecond();
+        final Integer hu = time.getHundredths();
 
-        final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), (byte) 0 };
+        final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), hu.byteValue() };
         return DataObject.newOctetStringData(ba);
     }
 

@@ -22,5 +22,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new WeekProfileConverter());
         mapperFactory.getConverterFactory().registerConverter(new DayProfileConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
     }
 }
