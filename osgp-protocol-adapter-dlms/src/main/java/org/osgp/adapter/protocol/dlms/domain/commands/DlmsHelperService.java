@@ -19,7 +19,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -150,12 +149,14 @@ public class DlmsHelperService {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    public DateTime readDateTime(final GetResult getResult, final String description) throws ProtocolAdapterException {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime readDateTime(final GetResult getResult,
+            final String description) throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return this.readDateTime(getResult.resultData(), description);
     }
 
-    public DateTime readDateTime(final DataObject resultData, final String description) throws ProtocolAdapterException {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime readDateTime(final DataObject resultData,
+            final String description) throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
             return null;
@@ -217,8 +218,9 @@ public class DlmsHelperService {
         return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(date, time, deviation, clockStatus);
     }
 
-    public DateTime convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
-        DateTime dateTime = null;
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime convertDataObjectToDateTime(
+            final DataObject object) throws ProtocolAdapterException {
+        com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime dateTime = null;
         if (object.isByteArray()) {
             dateTime = this.fromDateTimeValue((byte[]) object.value());
         } else if (object.isCosemDateFormat()) {
@@ -229,60 +231,29 @@ public class DlmsHelperService {
         return dateTime;
     }
 
-    public DateTime fromDateTimeValue(final byte[] dateTimeValue) throws ProtocolAdapterException {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime fromDateTimeValue(final byte[] dateTimeValue)
+            throws ProtocolAdapterException {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
-        int year = bb.getShort();
-        final boolean yearUnspecified = year == (short) 0xFFFF;
-        int monthOfYear = bb.get();
-        final boolean monthUnspecified = monthOfYear == (byte) 0xFF;
-        int dayOfMonth = bb.get();
-        final boolean dayUnspecified = dayOfMonth == (byte) 0xFF;
 
-        if (yearUnspecified && monthUnspecified && dayUnspecified) {
-            // use dummy values, standing out as not realistic
-            year = 1;
-            monthOfYear = 1;
-            dayOfMonth = 1;
-        } else if (yearUnspecified) {
-            throw new ProtocolAdapterException("Handling unspecified year in date-time value is not supported.");
-        } else if (monthUnspecified) {
-            throw new ProtocolAdapterException("Handling unspecified month in date-time value is not supported.");
-        } else if (dayUnspecified) {
-            throw new ProtocolAdapterException("Handling unspecified day of month in date-time value is not supported.");
-        }
-        // final int dayOfWeek =
-        bb.get();
-        int hourOfDay = bb.get();
-        if (hourOfDay == (byte) 0xFF) {
-            // treat time part as start of day if not specified
-            hourOfDay = 0;
-        }
-        int minuteOfHour = bb.get();
-        if (minuteOfHour == (byte) 0xFF) {
-            // treat time part as start of day if not specified
-            minuteOfHour = 0;
-        }
-        int secondOfMinute = bb.get();
-        if (secondOfMinute == (byte) 0xFF) {
-            // treat time part as start of day if not specified
-            secondOfMinute = 0;
-        }
-        int hundredthsOfSecond = bb.get();
-        if (hundredthsOfSecond == (byte) 0xFF) {
-            // treat time part as start of day if not specified
-            hundredthsOfSecond = 0;
-        }
-        int deviation = bb.getShort();
-        if (deviation == (short) 0x8000) {
-            // treat unspecified deviation as no deviation
-            deviation = 0;
-        }
-        // final int clockStatus =
-        bb.get();
+        final int year = bb.getShort() & 0xFFFF;
+        final int monthOfYear = bb.get() & 0xFF;
+        final int dayOfMonth = bb.get() & 0xFF;
+        final int dayOfWeek = bb.get() & 0xFF;
+        final int hourOfDay = bb.get() & 0xFF;
+        final int minuteOfHour = bb.get() & 0xFF;
+        final int secondOfMinute = bb.get() & 0xFF;
+        final int hundredthsOfSecond = bb.get() & 0xFF;
+        final int deviation = bb.getShort();
+        final byte clockStatusValue = bb.get();
 
-        return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
-                hundredthsOfSecond * 10, DateTimeZone.forOffsetMillis(-deviation * MILLISECONDS_PER_MINUTE));
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate(
+                year, monthOfYear, dayOfMonth, dayOfWeek);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime(
+                hourOfDay, minuteOfHour, secondOfMinute, hundredthsOfSecond);
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus(
+                clockStatusValue);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(date, time, deviation, clockStatus);
     }
 
     public DataObject dateAsDataObjectOctetString(final DateTime dateTime) {
