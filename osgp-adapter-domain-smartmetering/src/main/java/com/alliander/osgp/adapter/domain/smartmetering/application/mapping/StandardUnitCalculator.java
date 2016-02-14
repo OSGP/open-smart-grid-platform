@@ -9,7 +9,10 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Value;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
@@ -22,19 +25,30 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
  * - apply the scaler by dividing through a power of 10
  * - determine the multiplier for the DlmsUnit
  * - apply the multiplier
- * - round to fraction digits (default 3, can be configured)
+ * - round to 3 fraction digits
  * </pre>
  *
  */
 @Component
 public class StandardUnitCalculator {
 
+    public static final String FRACTION_DIGITS = "fraction_digits";
+
+    @Resource
+    private Environment environment;
+
+    @PostConstruct
+    private void init() {
+        if (this.environment.containsProperty(FRACTION_DIGITS)) {
+            this.fraction_digits = this.environment.getProperty(FRACTION_DIGITS, Integer.class);
+        }
+    }
+
     public double calculateStandardizedValue(final long meterValue, final ScalerUnit scalerUnit) {
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
         return round((meterValue / Math.pow(10, scalerUnit.getScaler())) * multiplier, this.fraction_digits);
     }
 
-    @Value("${fraction_digits:3}")
     private int fraction_digits = 3;
 
     private double getMultiplierToOsgpUnit(final DlmsUnit dlmsUnit) {
