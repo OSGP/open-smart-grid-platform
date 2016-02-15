@@ -239,4 +239,32 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
 
         return 0;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.hour;
+        result = prime * result + this.hundredths;
+        result = prime * result + this.minute;
+        result = prime * result + this.second;
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final CosemTime other = (CosemTime) obj;
+
+        return this.hundredths == other.hundredths && this.second == other.second && this.minute == other.minute
+                && this.hour == other.hour;
+    }
 }
