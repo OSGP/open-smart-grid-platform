@@ -8,9 +8,15 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodParameter;
@@ -19,17 +25,17 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SecurityUtils;
 import org.openmuc.jdlms.datatypes.DataObject;
+import org.openmuc.jdlms.interfaceclass.method.MBusClientMethod;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -47,58 +53,61 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
         OBIS_HASHMAP.put(4, OBIS_CODE_INTERVAL_MBUS_4);
     }
 
-    private enum AttributeEnum {
-        SET_ENCRYPTION_KEY_ATTRIBUTE_ID(7),
-        TRANSFER_KEY_ATTRIBUTE_ID(8);
-
-        private int attrValue;
-
-        private AttributeEnum(final int attrValue) {
-            this.attrValue = attrValue;
-        }
-
-        public int getAttrValue() {
-            return this.attrValue;
-        }
-    }
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
-
     @Override
     public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device,
             final ProtocolMeterInfo protocolMeterInfo) throws IOException, ProtocolAdapterException {
         LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
         final byte[] unencryptedEncryptionKey = protocolMeterInfo.getEncryptionKey().getBytes();
-        final byte[] encryptedEncryptionKey = SecurityUtils.aesRFC3394KeyWrap(protocolMeterInfo.getMasterKey()
-                .getBytes(), protocolMeterInfo.getEncryptionKey().getBytes());
-
-        final DataObject encryptedEncryptionKeyDataObject = DataObject.newOctetStringData(encryptedEncryptionKey);
-        final DataObject unencryptedEncryptionKeyDataObject = DataObject.newOctetStringData(unencryptedEncryptionKey);
+        final byte[] masterKey = protocolMeterInfo.getMasterKey().getBytes();
 
         final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
-        this.performKeyAction(conn, encryptedEncryptionKeyDataObject, obisCode, AttributeEnum.TRANSFER_KEY_ATTRIBUTE_ID);
-        this.performKeyAction(conn, unencryptedEncryptionKeyDataObject, obisCode,
-                AttributeEnum.SET_ENCRYPTION_KEY_ATTRIBUTE_ID);
+        try {
+            final MethodParameter methodTransferKey = this.transferKeyToMBus(obisCode, masterKey,
+                    unencryptedEncryptionKey);
 
-        return MethodResultCode.SUCCESS;
-    }
+            final List<MethodResult> methodResultCode = conn.action(methodTransferKey);
 
-    private void performKeyAction(final LnClientConnection conn, final DataObject keyToSetDataObject,
-            final ObisCode obisCode, final AttributeEnum attribute) throws IOException {
-        final MethodParameter setEncryptionKeyMethod = new MethodParameter(CLASS_ID, obisCode,
-                attribute.getAttrValue(), keyToSetDataObject);
-        final List<MethodResult> methodResultCode = conn.action(setEncryptionKeyMethod);
+            if (!MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
+                throw new IOException("Error while executing transferKeyToMBus. Reason = "
+                        + methodResultCode.get(0).resultCode());
+            }
 
+            LOGGER.info("Success!: Finished calling transferKeyToMBus class_id {} obis_code {}", CLASS_ID, obisCode);
+
+        } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
+                | BadPaddingException e) {
+            throw new ProtocolAdapterException(e.getMessage());
+        }
+        final MethodParameter methodSetEncryptionKey = this.setEncryptionKey(obisCode, unencryptedEncryptionKey);
+        final List<MethodResult> methodResultCode = conn.action(methodSetEncryptionKey);
         if (!MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
-            throw new IOException("Error while executing for attribute " + attribute + " Reason = "
+            throw new IOException("Error while executing setEncryptionKey. Reason = "
                     + methodResultCode.get(0).resultCode());
         }
 
-        LOGGER.info("Success!: Finished calling performKeyAction class_id {} obis_code {} attribute{}", CLASS_ID,
-                obisCode, attribute);
+        LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
+        return MethodResultCode.SUCCESS;
+    }
+
+    private MethodParameter transferKeyToMBus(final ObisCode obisCode, final byte[] defaultMBusKey,
+            final byte[] encryptionKey) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException,
+            IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+        byte[] encryptedEncryptionkey;
+        encryptedEncryptionkey = SecurityUtils.aes128Ciphering(defaultMBusKey, encryptionKey);
+
+        final DataObject methodParameter = DataObject.newOctetStringData(encryptedEncryptionkey);
+        final MethodParameter ret = new MethodParameter(MBusClientMethod.TRANSFER_KEY, obisCode, methodParameter);
+
+        return ret;
+    }
+
+    private MethodParameter setEncryptionKey(final ObisCode obisCode, final byte[] encryptionKey) throws IOException {
+        final DataObject methodParameter = DataObject.newOctetStringData(encryptionKey);
+        final MethodParameter ret = new MethodParameter(MBusClientMethod.SET_ENCRYPTION_KEY, obisCode, methodParameter);
+
+        return ret;
     }
 
 }
