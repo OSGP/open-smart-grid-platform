@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 /**
  * Class for processing set push setup sms request messages
@@ -47,7 +47,7 @@ public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessage
         try {
             messageMetadata.handleMessage(message);
 
-            final PushSetupAlarm pushSetupSms = (PushSetupAlarm) message.getObject();
+            final PushSetupSms pushSetupSms = (PushSetupSms) message.getObject();
 
             this.configurationService.setPushSetupSms(messageMetadata, pushSetupSms, this.responseMessageSender);
 

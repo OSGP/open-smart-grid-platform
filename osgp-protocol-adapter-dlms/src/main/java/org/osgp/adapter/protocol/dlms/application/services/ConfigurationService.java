@@ -387,7 +387,7 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
-    public void setPushSetupSms(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupAlarm pushSetupSms,
+    public void setPushSetupSms(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupSms pushSetupSms,
             final DeviceResponseMessageSender responseMessageSender) {
 
         this.logStart(LOGGER, messageMetadata, "setPushSetupSms");
