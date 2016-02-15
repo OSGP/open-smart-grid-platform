@@ -46,7 +46,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.SigningServerReq
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
+@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
 public class MessagingConfig {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessagingConfig.class);

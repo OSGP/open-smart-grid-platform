@@ -29,6 +29,7 @@ import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.NotSupportedException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -40,7 +41,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
  */
 @Component("oslpPublicLightingGetActualPowerUsageRequestMessageProcessor")
 public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends DeviceRequestMessageProcessor implements
-OslpEnvelopeProcessor {
+        OslpEnvelopeProcessor {
     /**
      * Logger for this class
      */
@@ -62,8 +63,8 @@ OslpEnvelopeProcessor {
         String organisationIdentification = null;
         String deviceIdentification = null;
         String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
+        // int retryCount = 0;
+        // boolean isScheduled = false;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -73,9 +74,10 @@ OslpEnvelopeProcessor {
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+            // retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+            // isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ?
+            // message
+            // .getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -88,15 +90,25 @@ OslpEnvelopeProcessor {
             return;
         }
 
-        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
-
-        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
-                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
-
-        // return NotSupportedException
-        this.deviceService.getActualPowerUsage(deviceRequest);
+        this.handleError(
+                new NotSupportedException(ComponentType.PROTOCOL_OSLP, "GetActualPowerUsage is not supported"),
+                correlationUid, organisationIdentification, deviceIdentification, domain, domainVersion, messageType);
+        //
+        // LOGGER.info("Calling DeviceService function: {} for domain: {} {}",
+        // messageType, domain, domainVersion);
+        //
+        // final DeviceRequest deviceRequest = new
+        // DeviceRequest(organisationIdentification, deviceIdentification,
+        // correlationUid, domain, domainVersion, messageType, ipAddress,
+        // retryCount, isScheduled);
+        //
+        // // return NotSupportedException
+        // this.deviceService.getActualPowerUsage(deviceRequest);
     }
 
+    /**
+     * DEAD CODE
+     */
     protected void handleGetActualPowerUsageDeviceResponse(final DeviceResponse deviceResponse,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
@@ -123,6 +135,9 @@ OslpEnvelopeProcessor {
         responseMessageSender.send(responseMessage);
     }
 
+    /**
+     * DEAD CODE
+     */
     @Override
     public void processSignedOslpEnvelope(final String deviceIdentification,
             final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {

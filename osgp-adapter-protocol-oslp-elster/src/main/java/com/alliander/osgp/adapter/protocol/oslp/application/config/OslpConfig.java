@@ -7,10 +7,7 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.config;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
@@ -51,7 +48,7 @@ import com.alliander.osgp.oslp.OslpUtils;
  */
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
+@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
 public class OslpConfig {
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
@@ -72,9 +69,6 @@ public class OslpConfig {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
     }
 
-    /**
-     * @return
-     */
     @Bean(destroyMethod = "releaseExternalResources")
     public ClientBootstrap clientBootstrap() {
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
@@ -104,9 +98,6 @@ public class OslpConfig {
         return bootstrap;
     }
 
-    /**
-     * @return
-     */
     @Bean(destroyMethod = "releaseExternalResources")
     public ServerBootstrap serverBootstrap() {
         final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
@@ -153,12 +144,6 @@ public class OslpConfig {
         return new OslpSecurityHandler();
     }
 
-    /**
-     * @return
-     * @throws InvalidKeySpecException
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
-     */
     @Bean
     public OslpDecoder oslpDecoder() throws ProtocolAdapterException {
         return new OslpDecoder(this.oslpSignature(), this.oslpSignatureProvider());
@@ -169,65 +154,41 @@ public class OslpConfig {
         return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_KEYTYPE);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public String oslpSignatureProvider() {
         return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_PROVIDER);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public String oslpSignature() {
         return this.environment.getProperty(PROPERTY_NAME_OSLP_SECURITY_SIGNATURE);
     }
 
-    /**
-     * @return
-     */
     @Bean
     public int connectionTimeout() {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_TIMEOUT_CONNECT));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public int oslpPortClient() {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_CLIENT));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public int oslpPortClientLocal() {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_CLIENTLOCAL));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public int oslpPortServer() {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_SERVER));
     }
 
-    /**
-     * @return
-     */
     @Bean
     public OslpChannelHandlerServer oslpChannelHandlerServer() {
         return new OslpChannelHandlerServer();
     }
 
-    /**
-     * @return
-     */
     @Bean
     public OslpChannelHandlerClient oslpChannelHandlerClient() {
         return new OslpChannelHandlerClient();

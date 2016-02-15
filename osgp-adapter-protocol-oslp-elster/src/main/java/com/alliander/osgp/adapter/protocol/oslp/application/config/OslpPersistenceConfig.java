@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.oslp.domain.repositories.OslpDeviceRepository;
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
-import com.googlecode.flyway.core.Flyway;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -41,7 +39,7 @@ import com.zaxxer.hikari.HikariDataSource;
 @EnableJpaRepositories(entityManagerFactoryRef = "oslpEntityManagerFactory", basePackageClasses = { OslpDeviceRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
+@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
 public class OslpPersistenceConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
@@ -121,23 +119,20 @@ public class OslpPersistenceConfig {
         return transactionManager;
     }
 
-    /**
-     * @return
-     */
-    @Bean(initMethod = "migrate")
-    public Flyway oslpFlyway() {
-        final Flyway flyway = new Flyway();
-
-        // Initialization for non-empty schema with no metadata table
-        flyway.setInitVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION));
-        flyway.setInitDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
-        flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
-                .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
-
-        flyway.setDataSource(this.getOslpDataSource());
-
-        return flyway;
-    }
+    // @Bean(initMethod = "migrate")
+    // public Flyway oslpFlyway() {
+    // final Flyway flyway = new Flyway();
+    //
+    // // Initialization for non-empty schema with no metadata table
+    // flyway.setInitVersion(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_VERSION));
+    // flyway.setInitDescription(this.environment.getRequiredProperty(PROPERTY_NAME_FLYWAY_INITIAL_DESCRIPTION));
+    // flyway.setInitOnMigrate(Boolean.parseBoolean(this.environment
+    // .getRequiredProperty(PROPERTY_NAME_FLYWAY_INIT_ON_MIGRATE)));
+    //
+    // flyway.setDataSource(this.getOslpDataSource());
+    //
+    // return flyway;
+    // }
 
     /**
      * Method for creating the Entity Manager Factory Bean.
@@ -147,7 +142,7 @@ public class OslpPersistenceConfig {
      *             when class not found
      */
     @Bean
-    @DependsOn("oslpFlyway")
+    // @DependsOn("oslpFlyway")
     public LocalContainerEntityManagerFactoryBean oslpEntityManagerFactory() throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 

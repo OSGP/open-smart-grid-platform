@@ -34,7 +34,7 @@ import com.alliander.osgp.shared.application.config.PagingSettings;
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.protocol.oslp", "com.alliander.osgp.core.db.api" })
 @EnableTransactionManagement()
 @Import({ MessagingConfig.class, OslpConfig.class, OslpPersistenceConfig.class, OsgpCoreDbApiPersistenceConfig.class })
-@PropertySource("file:${osp/osgpAdapterProtocolOslp/config}")
+@PropertySource("file:${osp/osgpAdapterProtocolOslpElster/config}")
 public class ApplicationContext {
 
     private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
@@ -62,7 +62,7 @@ public class ApplicationContext {
     public PagingSettings pagingSettings() {
         return new PagingSettings(Integer.parseInt(this.environment
                 .getRequiredProperty(PROPERTY_NAME_PAGING_MAXIMUM_PAGE_SIZE)), Integer.parseInt(this.environment
-                        .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
+                .getRequiredProperty(PROPERTY_NAME_PAGING_DEFAULT_PAGE_SIZE)));
     }
 
     /**
