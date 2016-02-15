@@ -124,7 +124,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the send wakeup sms response data");
 
             response = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
-            .createSendWakeupSmsResponse();
+                    .createSendWakeupSmsResponse();
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             final SmsDetailsType dataRequest = this.adhocMapper.map(meterResponseData.getMessageData(),
@@ -172,7 +172,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the get sms details response data");
 
             response = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
-            .createGetSmsDetailsResponse();
+                    .createGetSmsDetailsResponse();
 
             final SmsDetailsType smsDetailsType = this.adhocMapper.map(meterResponseData.getMessageData(),
                     SmsDetailsType.class);
@@ -186,18 +186,18 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "RetrieveConfigurationObjectsRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
-    public RetrieveConfigurationObjectsAsyncResponse RetrieveConfigurationObjects(
+    public RetrieveConfigurationObjectsAsyncResponse retrieveConfigurationObjects(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RetrieveConfigurationObjectsRequest request) throws OsgpException {
 
         final RetrieveConfigurationObjectsAsyncResponse response = new RetrieveConfigurationObjectsAsyncResponse();
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest RetrieveConfigurationObjectsRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest(
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest retrieveConfigurationObjectsRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest(
                 request.getDeviceIdentification());
 
         final String correlationUid = this.adhocService.enqueueRetrieveConfigurationObjectsRequest(
-                organisationIdentification, RetrieveConfigurationObjectsRequest.getDeviceIdentification(),
-                RetrieveConfigurationObjectsRequest);
+                organisationIdentification, retrieveConfigurationObjectsRequest.getDeviceIdentification(),
+                retrieveConfigurationObjectsRequest);
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
