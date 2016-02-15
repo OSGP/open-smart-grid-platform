@@ -1,10 +1,11 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
+
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import javax.jms.JMSException;
@@ -19,40 +20,39 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
 
-/**
- * Class for processing Synchronize Time Request messages
- */
-@Component("dlmsSynchronizeTimeRequestMessageProcessor")
-public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeRequestMessageProcessor.class);
+@Component("dlmsRetrieveConfigurationObjectsRequestMessageProcessor")
+public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RetrieveConfigurationObjectsRequestMessageProcessor.class);
 
     @Autowired
     private AdhocService adhocService;
 
-    public SynchronizeTimeRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SYNCHRONIZE_TIME);
+    protected RetrieveConfigurationObjectsRequestMessageProcessor() {
+        super(DeviceRequestMessageType.GET_CONFIGURATION_OBJECTS);
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing synchronize time request message");
-
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing retrieve configuration objects request message");
         final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
 
         try {
             messageMetadata.handleMessage(message);
 
-            final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) message.getObject();
+            final RetrieveConfigurationObjectsRequest synchronizeTimeRequest = (RetrieveConfigurationObjectsRequest) message
+                    .getObject();
 
-            this.adhocService.synchronizeTime(messageMetadata, synchronizeTimeRequest, this.responseMessageSender);
+            this.adhocService.retrieveConfigurationObjects(messageMetadata, synchronizeTimeRequest,
+                    this.responseMessageSender);
 
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
         }
+
     }
+
 }
