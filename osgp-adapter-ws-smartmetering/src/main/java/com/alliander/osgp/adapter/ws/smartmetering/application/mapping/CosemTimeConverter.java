@@ -16,5 +16,4 @@ public class CosemTimeConverter extends CustomConverter<byte[], CosemTime> {
 
         return new CosemTime(hour, minute, second, hundredths);
     }
-
 }
