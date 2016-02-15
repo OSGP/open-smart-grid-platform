@@ -19,6 +19,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -49,6 +50,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -77,6 +79,12 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
+
+    @Autowired
+    private GetPushSetupSmsCommandExecutor getPushSetupSmsCommandExecutor;
+
+    @Autowired
+    private SetPushSetupAlarmCommandExecutor setPushSetupSmsCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
@@ -372,6 +380,43 @@ public class ConfigurationService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
                     pushSetupAlarm);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
+
+    public void setPushSetupSms(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupAlarm pushSetupSms,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "setPushSetupSms");
+
+        LnClientConnection conn = null;
+        try {
+
+            LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final PushSetupSms returnedPushSetupSms = this.getPushSetupSmsCommandExecutor.execute(conn, device, null);
+
+            final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
+            if (AccessResultCode.SUCCESS != accessResultCode) {
+                throw new ProtocolAdapterException("AccessResultCode for set push setup sms was not SUCCESS: "
+                        + accessResultCode);
+            }
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setPushSetupSms", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    pushSetupSms);
         } finally {
             if (conn != null) {
                 conn.close();
