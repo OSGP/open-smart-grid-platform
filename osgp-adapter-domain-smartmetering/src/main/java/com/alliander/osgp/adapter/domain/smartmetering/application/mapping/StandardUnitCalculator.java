@@ -29,7 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
  * </pre>
  *
  */
-@Component
+@Component(value = "standardUnitCalculator")
 public class StandardUnitCalculator {
 
     public static final String FRACTION_DIGITS = "fraction_digits";
@@ -46,7 +46,8 @@ public class StandardUnitCalculator {
 
     public double calculateStandardizedValue(final long meterValue, final ScalerUnit scalerUnit) {
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
-        return round((meterValue / Math.pow(10, scalerUnit.getScaler())) * multiplier, this.fraction_digits);
+        final double power = scalerUnit.getScaler() == 0 ? 1 : Math.pow(10, scalerUnit.getScaler());
+        return round((meterValue / power) * multiplier, this.fraction_digits);
     }
 
     private int fraction_digits = 3;
@@ -60,7 +61,7 @@ public class StandardUnitCalculator {
         case M3COR:
             return 1d;
         default:
-            throw new IllegalArgumentException(String.format("unit %s not supported yet", dlmsUnit.name()));
+            throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", dlmsUnit.name()));
         }
     }
 
@@ -72,7 +73,7 @@ public class StandardUnitCalculator {
      * @return
      */
     public static double round(final double d, final int decimalPlace) {
-        return new BigDecimal(Double.toString(d)).setScale(decimalPlace, BigDecimal.ROUND_HALF_UP).doubleValue();
+        return BigDecimal.valueOf(d).setScale(decimalPlace, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
 }
