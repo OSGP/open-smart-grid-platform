@@ -49,7 +49,8 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST,
+            CascadeType.REFRESH })
     private List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
@@ -100,8 +101,7 @@ public class DlmsDevice extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        final int result = 31 * (this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0);
-        return result;
+        return 31 * (this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0);
     }
 
     public String getCommunicationMethod() {
@@ -221,6 +221,10 @@ public class DlmsDevice extends AbstractEntity {
      * @return activated
      */
     private boolean securityKeyActivated(final SecurityKey securityKey) {
+        if (securityKey.getValidFrom() == null) {
+            return false;
+        }
+
         final Date now = new Date();
         return securityKey.getValidFrom().before(now) || securityKey.getValidFrom().equals(now);
     }
