@@ -221,19 +221,20 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
     @Override
     public int compareTo(final CosemTime o) {
         // NOT_SPECIFIED equals every other value.
-        if (this.hour != HOUR_NOT_SPECIFIED && o.hour != HOUR_NOT_SPECIFIED) {
+        if (this.hour != HOUR_NOT_SPECIFIED && o.hour != HOUR_NOT_SPECIFIED && this.hour - o.hour != 0) {
             return this.hour - o.hour;
         }
 
-        if (this.minute != MINUTE_NOT_SPECIFIED && o.minute != MINUTE_NOT_SPECIFIED) {
+        if (this.minute != MINUTE_NOT_SPECIFIED && o.minute != MINUTE_NOT_SPECIFIED && this.minute - o.minute != 0) {
             return this.minute - o.minute;
         }
 
-        if (this.second != SECOND_NOT_SPECIFIED && o.second != SECOND_NOT_SPECIFIED) {
+        if (this.second != SECOND_NOT_SPECIFIED && o.second != SECOND_NOT_SPECIFIED && this.second - o.second != 0) {
             return this.second - o.second;
         }
 
-        if (this.hundredths != HUNDREDTHS_NOT_SPECIFIED && o.hundredths != HUNDREDTHS_NOT_SPECIFIED) {
+        if (this.hundredths != HUNDREDTHS_NOT_SPECIFIED && o.hundredths != HUNDREDTHS_NOT_SPECIFIED
+                && this.hundredths - o.hundredths != 0) {
             return this.hundredths - o.hundredths;
         }
 
