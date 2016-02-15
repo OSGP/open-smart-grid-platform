@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
@@ -29,7 +28,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
  * </pre>
  *
  */
-@Component
 public class StandardUnitCalculator {
 
     public static final String FRACTION_DIGITS = "fraction_digits";

@@ -7,10 +7,13 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.StandardUnitCalculator;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -21,5 +24,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @PropertySource("file:${osp/osgpAdapterDomainSmartMetering/config}")
 public class ApplicationContext {
+    @Bean
+    public StandardUnitCalculator getStandardUnitCalculator() {
+        return new StandardUnitCalculator();
+    }
 
 }

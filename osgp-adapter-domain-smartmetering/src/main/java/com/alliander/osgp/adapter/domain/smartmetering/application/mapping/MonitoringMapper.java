@@ -16,8 +16,6 @@ import org.springframework.stereotype.Component;
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
 
-    public static final String SCALERUNIT = "scalerunit";
-
     @Autowired
     private StandardUnitCalculator standardUnitCalculator;
 
