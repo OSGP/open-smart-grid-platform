@@ -43,5 +43,6 @@ public enum DeviceRequestMessageType {
     SEND_WAKEUP_SMS,
     GET_SMS_DETAILS,
     REPLACE_KEYS,
+    SET_PUSH_SETUP_ALARM,
     GET_CONFIGURATION_OBJECTS
 }

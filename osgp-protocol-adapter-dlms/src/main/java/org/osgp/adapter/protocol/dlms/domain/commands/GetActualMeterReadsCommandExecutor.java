@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 @Component()
 public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, ActualMeterReads> {
@@ -79,10 +80,11 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
 
         checkResultList(getResultList);
 
-        final DateTime time = this.dlmsHelperService.readDateTime(getResultList.get(INDEX_TIME),
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.readDateTime(getResultList.get(INDEX_TIME),
                 "Actual Energy Reads Time");
+        final DateTime time = cosemDateTime.asDateTime();
         if (time == null) {
-            throw new ProtocolAdapterException("Unexpected null value for Actual Energy Reads Time");
+            throw new ProtocolAdapterException("Unexpected null/unspecified value for Actual Energy Reads Time");
         }
         final Long activeEnergyImport = this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_ACTIVE_ENERGY_IMPORT), "Actual Energy Reads +A");
