@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.LocalDate;
 
-public class CosemDate implements Serializable {
+public class CosemDate implements Serializable, Comparable<CosemDate> {
 
     private static final long serialVersionUID = -3965207413972253042L;
 
@@ -48,6 +48,10 @@ public class CosemDate implements Serializable {
 
     public CosemDate(final LocalDate date) {
         this(date.getYear(), date.getMonthOfYear(), date.getDayOfMonth(), DAY_OF_WEEK_NOT_SPECIFIED);
+    }
+
+    public CosemDate(final CosemDate cosemDate) {
+        this(cosemDate.getYear(), cosemDate.getMonth(), cosemDate.getDayOfMonth(), cosemDate.getDayOfWeek());
     }
 
     public CosemDate() {
@@ -325,4 +329,23 @@ public class CosemDate implements Serializable {
                 && this.year == other.year;
     }
 
+    @Override
+    public int compareTo(final CosemDate o) {
+        if (this.year != YEAR_NOT_SPECIFIED && o.year != YEAR_NOT_SPECIFIED && this.year - o.year != 0) {
+            return this.year - o.year;
+        }
+        if (this.month != MONTH_NOT_SPECIFIED && o.month != MONTH_NOT_SPECIFIED && this.month - o.month != 0) {
+            return this.month - o.month;
+        }
+        if (this.dayOfMonth != DAY_OF_MONTH_NOT_SPECIFIED && o.dayOfMonth != DAY_OF_MONTH_NOT_SPECIFIED
+                && this.dayOfMonth - o.dayOfMonth != 0) {
+            return this.dayOfMonth - o.dayOfMonth;
+        }
+        if (this.dayOfWeek != DAY_OF_WEEK_NOT_SPECIFIED && o.dayOfWeek != DAY_OF_WEEK_NOT_SPECIFIED
+                && this.dayOfWeek - o.dayOfWeek != 0) {
+            return this.dayOfWeek - o.dayOfWeek;
+        }
+
+        return 0;
+    }
 }

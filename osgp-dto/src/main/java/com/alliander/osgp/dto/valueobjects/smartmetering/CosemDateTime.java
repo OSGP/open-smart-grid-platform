@@ -18,7 +18,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
-public class CosemDateTime implements Serializable {
+public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
 
     private static final long serialVersionUID = 4157582293990514746L;
 
@@ -38,8 +38,8 @@ public class CosemDateTime implements Serializable {
         Objects.requireNonNull(time, "time must not be null");
         Objects.requireNonNull(clockStatus, "clockStatus must not be null");
         this.checkDeviation(deviation);
-        this.date = date;
-        this.time = time;
+        this.date = new CosemDate(date);
+        this.time = new CosemTime(time);
         if (deviation == -DEVIATION_NOT_SPECIFIED) {
             /*
              * Has to do with specifics regarding 4 byte shorts and int values.
@@ -50,6 +50,11 @@ public class CosemDateTime implements Serializable {
             this.deviation = deviation;
         }
         this.clockStatus = clockStatus;
+    }
+
+    public CosemDateTime(final CosemDateTime cosemDateTime) {
+        this(cosemDateTime.getDate(), cosemDateTime.getTime(), cosemDateTime.getDeviation(), cosemDateTime
+                .getClockStatus());
     }
 
     private void checkDeviation(final int deviation) {
@@ -121,25 +126,6 @@ public class CosemDateTime implements Serializable {
         sb.append(", deviation=" + this.deviation);
         sb.append(", " + this.clockStatus);
         return sb.append(']').toString();
-    }
-
-    public byte[] toByteArray() {
-        final byte[] data = new byte[12];
-
-        data[0] = (byte) (this.date.getYear() & 0xFF);
-        data[1] = (byte) ((this.date.getYear() >> 8) & 0xFF);
-        data[2] = (byte) this.date.getMonth();
-        data[3] = (byte) this.date.getDayOfMonth();
-        data[4] = (byte) this.date.getDayOfWeek();
-        data[5] = (byte) this.time.getHour();
-        data[6] = (byte) this.time.getMinute();
-        data[7] = (byte) this.time.getSecond();
-        data[8] = (byte) this.time.getHundredths();
-        data[9] = (byte) (this.getDeviation() & 0xFF);
-        data[10] = (byte) ((this.getDeviation() >> 8) & 0xFF);
-        data[11] = (byte) this.getClockStatus().getStatus();
-
-        return data;
     }
 
     public CosemDate getDate() {
@@ -271,5 +257,20 @@ public class CosemDateTime implements Serializable {
      */
     public LocalTime asLocalTime() {
         return this.time.asLocalTime();
+    }
+
+    @Override
+    public int compareTo(final CosemDateTime o) {
+        final int compDate = this.date.compareTo(o.date);
+        if (compDate != 0) {
+            return compDate;
+        }
+
+        final int compTime = this.time.compareTo(o.time);
+        if (compTime != 0) {
+            return compTime;
+        }
+
+        return 0;
     }
 }

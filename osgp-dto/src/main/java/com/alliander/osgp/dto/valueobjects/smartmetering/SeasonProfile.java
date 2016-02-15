@@ -21,7 +21,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
     public SeasonProfile(final String seasonProfileName, final CosemDateTime seasonStart, final WeekProfile weekProfile) {
         this.seasonProfileName = seasonProfileName;
-        this.seasonStart = new CosemDateTime(seasonStart.asDateTime());
+        this.seasonStart = new CosemDateTime(seasonStart);
         this.weekProfile = weekProfile;
     }
 
@@ -30,7 +30,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
     }
 
     public CosemDateTime getSeasonStart() {
-        return new CosemDateTime(this.seasonStart.asDateTime());
+        return new CosemDateTime(this.seasonStart);
     }
 
     public WeekProfile getWeekProfile() {
@@ -45,7 +45,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
     @Override
     public int compareTo(final SeasonProfile other) {
-        return this.seasonStart.asDateTime().compareTo(other.seasonStart.asDateTime());
+        return this.seasonStart.compareTo(other.seasonStart);
     }
 
     @Override

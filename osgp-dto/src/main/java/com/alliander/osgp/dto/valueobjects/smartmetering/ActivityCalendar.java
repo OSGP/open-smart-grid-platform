@@ -25,7 +25,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
     public ActivityCalendar(final String calendarName, final CosemDateTime activatePassiveCalendarTime,
             final List<SeasonProfile> seasonProfileList) {
         this.calendarName = calendarName;
-        this.activatePassiveCalendarTime = new CosemDateTime(activatePassiveCalendarTime.asDateTime());
+        this.activatePassiveCalendarTime = new CosemDateTime(activatePassiveCalendarTime);
         this.seasonProfileList = new ArrayList<SeasonProfile>(seasonProfileList);
         Collections.sort(this.seasonProfileList);
     }
@@ -35,7 +35,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
     }
 
     public CosemDateTime getActivatePassiveCalendarTime() {
-        return new CosemDateTime(this.activatePassiveCalendarTime.asDateTime());
+        return new CosemDateTime(this.activatePassiveCalendarTime);
     }
 
     public List<SeasonProfile> getSeasonProfileList() {
