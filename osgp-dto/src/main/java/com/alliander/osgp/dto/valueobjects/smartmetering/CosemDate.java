@@ -296,4 +296,33 @@ public class CosemDate implements Serializable {
     public boolean isDayOfWeekNotSpecified() {
         return DAY_OF_WEEK_NOT_SPECIFIED == this.dayOfWeek;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.dayOfMonth;
+        result = prime * result + this.dayOfWeek;
+        result = prime * result + this.month;
+        result = prime * result + this.year;
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final CosemDate other = (CosemDate) obj;
+
+        return this.dayOfMonth == other.dayOfMonth && this.dayOfWeek == other.dayOfWeek && this.month == other.month
+                && this.year == other.year;
+    }
+
 }
