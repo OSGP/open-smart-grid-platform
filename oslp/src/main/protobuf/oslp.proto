@@ -114,7 +114,25 @@ message GetStatusResponse {
     required LinkType preferredLinktype = 3;
     required LinkType actualLinktype = 4;
     required LightType lightType = 5;
-    required uint32 eventNotificationMask = 6; // Bitmask for max 32 events, using NotificationBit for bit positions.
+    required uint32 eventNotificationMask = 6;         // Bitmask for max 32 events, using NotificationBit for bit positions.
+    optional uint32 numberOfOutputs = 7;               // Hardware - The number of outputs of this device.
+    optional uint32 dcOutputVoltageMaximum = 8;        // Hardware - DC output voltage MAXimum (in mV).
+    optional uint32 dcOutputVoltageCurrent = 9;        // Hardware - DC output current voltage (in mV).
+    optional uint32 maximumOutputPowerOnDcOutput = 10; // Hardware - Maximum output power on DC output (mW). 
+    optional bytes serialNumber = 11; // [(nanopb).max_size = 18]; // Hardware - Serial number of this device.
+    optional bytes macAddress = 12; // [(nanopb).max_size = 6]; // Hardware - MAC-address of this device.
+    optional string hardwareId = 13; // [(nanopb).min_size = 10, (nanopd).max_size = 25] ; // Hardware - The hardware ID of this device.
+    optional uint32 internalFlashMemSize = 14;         // Hardware - The internal flash memory size.
+    optional uint32 externalFlashMemSize = 15;         // Hardware - The external flash memory size.
+    optional uint32 lastInternalTestResultCode = 16;   // Hardware - The last internal test result code.
+    optional uint32 startupCounter = 17;               // Hardware - The startup counter.
+    optional string bootLoaderVersion = 18;            // Software - The boot loader version.
+    optional string firmwareVersion = 19;              // Software - The firmware version.
+    optional bytes currentConfigurationBackUsed = 20; // [(nanopb).max_size = 6]; // Software - The current configuration bank in use.
+    optional string name = 21;                         // Device - The name of this device.
+    optional LocationInfo locationInfo = 22;           // Device - The location information of this device.
+    optional string currentTime = 23;                  // Device - Not UTC, the time used in timing operations (adjusted "offset" + summer timing). YYYYMMDDhhmmss format.
+    optional string currentIp = 24;                    // Device - The current IP address of this device.
 }
 
 message ResumeScheduleRequest {
@@ -179,8 +197,33 @@ message SetConfigurationRequest {
     optional LinkType preferredLinkType = 5;
     optional MeterType meterType = 6;
     optional uint32 longTermHistoryInterval = 7; 
-    optional LongTermIntervalType longTermHistoryIntervalType = 8; 
+    optional LongTermIntervalType longTermHistoryIntervalType = 8;
+    optional uint32 timeSyncFrequency = 9 [default = 86400];                             // Time synch frequency (seconds).
+    optional bytes deviceFixIpValue = 10; // [(nanopb).max_count = 4];                   // The fixed IP address of this device.
+    optional bool isDhcpEnabled = 11 [default = true];                                   // Is DHCP enabled for this device?
+    optional uint32 communicationTimeout = 12 [default = 20];                            // Communication Timeouts (seconds) (wait for answer, socket establish, or server response = comm watchdog for local mode).
+    optional uint32 communicationNumberOfRetries = 13 [default = 3];                     // Communication number of retries.
+    optional uint32 communicationPauseTimeBetweenConnectionTrials = 14 [default = 60];   // Time between communication attempts.
+    optional bytes ospgIpAddress = 15; // [(nanopb).max_count = 4];                      // The IP address of the platform.
+    optional uint32 osgpPortNumber = 16;                                                 // The port number of the platform.
+    optional bool isTestButtonEnabled = 17 [default = true];                             // Is the test button enabled for this device?
+    optional bool isAutomaticSummerTimingEnabled = 18 [default = true];                  // Is the automatic summer timing enabled for this device?
+    optional sint32 astroGateSunRiseOffset = 19 [default = 0];                           // The calculated sunrise time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    optional sint32 astroGateSunSetOffset = 20 [default = 0];                            // The calculated sunset time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    repeated uint32 switchingDelay = 21; // [(nanopb).max_count = 4];                    // Switching delay (seconds), array of 4 values. Default 0, 0, 0, 0.
+    repeated RelayMatrix relayLinking = 22;                                              // Relay linking is a software linking, to may link each relay with each other relay. It is a matrix. Example, if relay 1 is linked with relay 3, if relay 1 will be switched (by OSGP or local by internal scheduler), the relay 3 will switch automatically (on or off, as it set) without new command.
+    optional bool relayRefreshing = 23 [default = true];                                 // Is relayRefreshing enabled for this device? Set minutely the nominal relay state and status according to active schedule after power outage and missed switching or anti manipulation.
+    optional string summerTimeDetails = 24 [default = '0360100']; //[default = '0360100',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
+    optional string winterTimeDetails = 25 [default = '1060200']; //[default = '1060200',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
 }
+// summerTimeDetails string, winterTimeDetails:
+//MMWHHmi
+//
+//where: (note, north hemisphere summer begins at the end of march)
+//MM: 	month
+//W: 	day of the week (0- Monday, 6- Sunday)
+//HH: 	hour of the changing time
+//mi: 	minutes of the changing time
 
 message SetConfigurationResponse {
     required Status status = 1;
@@ -199,7 +242,24 @@ message GetConfigurationResponse {
     optional LinkType preferredLinkType = 6;
     optional MeterType meterType = 7;
     optional uint32 longTermHistoryInterval = 8; 
-    optional LongTermIntervalType longTermHistoryIntervalType = 9; 
+    optional LongTermIntervalType longTermHistoryIntervalType = 9;
+    optional uint32 timeSyncFrequency = 10 [default = 86400];                            // Time synch frequency (seconds).
+    optional bytes deviceFixIpValue = 11; // [(nanopb).max_count = 4];                   // The fixed IP address of this device.
+    optional bool isDhcpEnabled = 12 [default = true];                                   // Is DHCP enabled for this device?
+    optional uint32 communicationTimeout = 13 [default = 20];                            // Communication Timeouts (seconds) (wait for answer, socket establish, or server response = comm watchdog for local mode).
+    optional uint32 communicationNumberOfRetries = 14 [default = 3];                     // Communication number of retries.
+    optional uint32 communicationPauseTimeBetweenConnectionTrials = 15 [default = 60];   // Time between communication attempts.
+    optional bytes ospgIpAddress = 16; // [(nanopb).max_count = 4];                      // The IP address of the platform.
+    optional uint32 osgpPortNumber = 17;                                                 // The port number of the platform.
+    optional bool isTestButtonEnabled = 18 [default = true];                             // Is the test button enabled for this device?
+    optional bool isAutomaticSummerTimingEnabled = 19 [default = true];                  // Is the automatic summer timing enabled for this device?
+    optional sint32 astroGateSunRiseOffset = 20 [default = 0];                           // The calculated sunrise time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    optional sint32 astroGateSunSetOffset = 21 [default = 0];                            // The calculated sunset time modified by this value. Time is moved earlier (if offset is negative) or later (if offset is positive). In seconds.
+    repeated uint32 switchingDelay = 22; // [(nanopb).max_count = 4];                    // Switching delay (seconds), array of 4 values. Default 0, 0, 0, 0.
+    repeated RelayMatrix relayLinking = 23;                                              // Relay linking is a software linking, to may link each relay with each other relay. It is a matrix. Example, if relay 1 is linked with relay 3, if relay 1 will be switched (by OSGP or local by internal scheduler), the relay 3 will switch automatically (on or off, as it set) without new command.
+    optional bool relayRefreshing = 24 [default = true];                                 // Is relayRefreshing enabled for this device? Set minutely the nominal relay state and status according to active schedule after power outage and missed switching or anti manipulation.
+    optional string summerTimeDetails = 25 [default = '0360100']; //[default = '0360100',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
+    optional string winterTimeDetails = 26 [default = '1060200']; //[default = '1060200',(nanopb).max_count = 7]; // The time point for DST for Europe is not identical in every country. It should be added as parameters the weekday, month and time point for DST/summer and winter.
 }
 
 message ConfirmRegisterDeviceRequest {
@@ -264,6 +324,7 @@ message Schedule {
     optional Window window = 6; // window to wait for light sensor trigger
     repeated LightValue value = 7; // [(nanopb).max_count = 6];
     optional TriggerType triggerType = 8; // React to setTransition or switch astronomical
+    optional uint32 minimumLightsOn = 9; // Minimal time (in seconds) the lights should burn before deciding to switch the lights on 
 }
 
 message Window {
@@ -278,6 +339,13 @@ message DaliConfiguration {
 
 message RelayConfiguration {
     repeated IndexAddressMap addressMap = 1; // [(nanopb).max_count = 6];
+}
+
+message RelayMatrix {
+    required bytes masterRelayIndex = 1;  // [(nanopb).max_count = 1];
+    required bool masterRelayOn = 2; // [(nanopb).max_count = 1];
+    optional bytes indicesOfControlledRelaysOn = 3; // [(nanopb).max_count = 4];  // IndexNumber of output Relay to switch ON if Master Relay state changes as determined by masterRelayOn.
+    optional bytes indicesOfControlledRelaysOff = 4; // [(nanopb).max_count = 4]; // IndexNumber of output Relay to switch OFF if Master Relay sate changes as determined by MasterRelayOff.
 }
 
 message IndexAddressMap {
