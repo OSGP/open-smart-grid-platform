@@ -18,6 +18,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
@@ -35,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -58,8 +59,8 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
             final ProtocolMeterInfo protocolMeterInfo) throws IOException, ProtocolAdapterException {
         LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-        final byte[] unencryptedEncryptionKey = protocolMeterInfo.getEncryptionKey().getBytes();
-        final byte[] masterKey = protocolMeterInfo.getMasterKey().getBytes();
+        final byte[] unencryptedEncryptionKey = Hex.decode(protocolMeterInfo.getEncryptionKey());
+        final byte[] masterKey = Hex.decode(protocolMeterInfo.getMasterKey());
 
         final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
