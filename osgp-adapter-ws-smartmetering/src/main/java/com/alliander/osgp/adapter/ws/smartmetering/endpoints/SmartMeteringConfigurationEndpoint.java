@@ -26,6 +26,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdmin
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ReplaceKeysResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetActivityCalendarRequest;
@@ -47,6 +51,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncry
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -289,7 +298,57 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             LOGGER.error(
                     "Exception: {} while setting Encryption Key Exchange On G-Meter on device: {} for organisation {}.",
                     new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+        return response;
+    }
 
+    @PayloadRoot(localPart = "SetPushSetupAlarmRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetPushSetupAlarmRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetPushSetupAlarmRequest for meter: {}.", request.getDeviceIdentification());
+
+        final SetPushSetupAlarmAsyncResponse response = new SetPushSetupAlarmAsyncResponse();
+
+        final String deviceIdentification = request.getDeviceIdentification();
+        final SetPushSetupAlarmRequestData requestData = request.getSetPushSetupAlarmRequestData();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm = this.configurationMapper
+                .map(requestData.getPushSetupAlarm(),
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
+
+        final String correlationUid = this.configurationService.enqueueSetPushSetupAlarmRequest(
+                organisationIdentification, deviceIdentification, pushSetupAlarm);
+
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(deviceIdentification);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetPushSetupAlarmAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetPushSetupAlarmResponse getSetPushSetupAlarmResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetPushSetupAlarmAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        SetPushSetupAlarmResponse response = null;
+        try {
+            response = new SetPushSetupAlarmResponse();
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetPushSetupAlarmResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final Exception e) {
             this.handleException(e);
         }
         return response;
@@ -401,6 +460,54 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             if (meterResponseData.getMessageData() instanceof String) {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "ReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public ReplaceKeysAsyncResponse replaceKeys(@OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ReplaceKeysRequest request) throws OsgpException {
+
+        ReplaceKeysAsyncResponse asyncResponse = null;
+        try {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySet = this.configurationMapper
+                    .map(request.getKeySet(), com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+
+            final String correlationUid = this.configurationService.enqueueReplaceKeysRequest(
+                    organisationIdentification, request.getDeviceIdentification(), keySet);
+
+            asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
+                    .createReplaceKeysAsyncResponse();
+
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return asyncResponse;
+    }
+
+    @PayloadRoot(localPart = "ReplaceKeysAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public ReplaceKeysResponse getReplaceKeysResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final ReplaceKeysAsyncRequest request) throws OsgpException {
+
+        ReplaceKeysResponse response = null;
+        try {
+            final MeterResponseData meterResponseData = this.configurationService.dequeueReplaceKeysResponse(request
+                    .getCorrelationUid());
+
+            response = new ReplaceKeysResponse();
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+
         } catch (final Exception e) {
             this.handleException(e);
         }

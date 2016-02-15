@@ -20,13 +20,22 @@ public class ConfigurationMapper extends ConfigurableMapper {
 
         // domain value object -> dto value object
         mapperFactory
-                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
+        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class,
+                com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
                 .register();
 
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new SendDestinationAndMethodConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new WindowElementConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new CosemObjectDefinitionConverter(this));
+        mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter(this));
         mapperFactory.getConverterFactory().registerConverter(new ActivityCalendarConverter());
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusConverter());
+        mapperFactory.getConverterFactory().registerConverter(new KeySetConverter());
     }
 }
