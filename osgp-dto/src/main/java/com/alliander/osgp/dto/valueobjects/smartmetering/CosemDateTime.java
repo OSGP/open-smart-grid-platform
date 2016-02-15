@@ -49,7 +49,7 @@ public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
         } else {
             this.deviation = deviation;
         }
-        this.clockStatus = clockStatus;
+        this.clockStatus = new ClockStatus(clockStatus);
     }
 
     public CosemDateTime(final CosemDateTime cosemDateTime) {

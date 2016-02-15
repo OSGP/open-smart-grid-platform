@@ -35,6 +35,10 @@ public class ClockStatus implements Serializable {
         this(ClockStatusBit.forClockStatus(status));
     }
 
+    public ClockStatus(final ClockStatus clockStatus) {
+        this(clockStatus.getStatus());
+    }
+
     public int getStatus() {
         return ClockStatusBit.getStatus(this.statusBits);
     }
