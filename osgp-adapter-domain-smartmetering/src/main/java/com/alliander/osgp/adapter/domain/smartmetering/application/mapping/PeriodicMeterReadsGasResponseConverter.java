@@ -18,8 +18,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
 public class PeriodicMeterReadsGasResponseConverter
-        extends
-        CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> {
+extends
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas, PeriodicMeterReadsContainerGas> {
     private final StandardUnitCalculator standardUnitCalculator;
 
     public PeriodicMeterReadsGasResponseConverter(final StandardUnitCalculator standardUnitCalculator) {
@@ -28,9 +28,9 @@ public class PeriodicMeterReadsGasResponseConverter
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas convert(
-            final PeriodicMeterReadsContainerGas source,
-            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas> destinationType) {
+    public PeriodicMeterReadsContainerGas convert(
+            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas source,
+            final Type<? extends PeriodicMeterReadsContainerGas> destinationType) {
         final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> meterReadsGas = new ArrayList<>(
                 source.getMeterReadsGas().size());
         for (final PeriodicMeterReadsGas pmr : source.getMeterReadsGas()) {
@@ -39,7 +39,7 @@ public class PeriodicMeterReadsGasResponseConverter
                     AmrProfileStatusCode.class);
             meterReadsGas.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas(pmr
                     .getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(pmr.getConsumption(),
-                    source.getScalerUnit()), pmr.getCaptureTime(), amrProfileStatusCode));
+                            source.getScalerUnit()), pmr.getCaptureTime(), amrProfileStatusCode));
         }
 
         return new PeriodicMeterReadsContainerGas(
