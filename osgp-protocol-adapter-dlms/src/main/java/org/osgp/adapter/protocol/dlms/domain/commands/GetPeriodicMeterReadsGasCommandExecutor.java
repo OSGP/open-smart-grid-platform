@@ -10,9 +10,8 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +44,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -246,7 +245,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
             final DateTime endDateTime, final List<PeriodicMeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final int channel, final boolean isSelectiveAccessSupported)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -401,7 +400,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final int channel,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectiveAccessSupported)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         SelectiveAccessDescription access = null;
 
@@ -570,10 +569,10 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         // {4,0-x.24.2.1.255,2,0} - M-Bus Master Value 1 Channel x
         // where x is the channel
         objectDefinitions
-                .add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
-                        DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel)),
-                        DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                        DataObject.newUInteger16Data(0))));
+        .add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
+                DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel)),
+                DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
+                DataObject.newUInteger16Data(0))));
     }
 
 }
