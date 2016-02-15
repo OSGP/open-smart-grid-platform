@@ -7,14 +7,14 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
 public class ActualMeterReadsConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
 
     private final StandardUnitCalculator standardUnitCalculator;
 
@@ -27,22 +27,12 @@ public class ActualMeterReadsConverter extends
     }
 
     @Override
-    public ActualMeterReads convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
-            final Type<ActualMeterReads> destinationType) {
-
+    public ActualMeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
+            final Type<? extends ActualMeterReads> destinationType) {
         return new ActualMeterReads(source.getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(
                 source.getActiveEnergyImport(), source.getScalerUnit()), this.toStandard(
-                source.getActiveEnergyExport(), source), this.toStandard(source.getActiveEnergyImportTariffOne(),
-                source), this.toStandard(source.getActiveEnergyImportTariffTwo(), source), this.toStandard(
-                source.getActiveEnergyExportTariffOne(), source), source.getActiveEnergyExportTariffTwo());
-    }
-
-    @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads convertFrom(
-            final ActualMeterReads source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads> destinationType) {
-
-        throw new IllegalStateException(
-                "mapping a response meant for the platform layer to a response from the protocol layer should not be necessary");
+                        source.getActiveEnergyExport(), source), this.toStandard(source.getActiveEnergyImportTariffOne(),
+                                source), this.toStandard(source.getActiveEnergyImportTariffTwo(), source), this.toStandard(
+                                        source.getActiveEnergyExportTariffOne(), source), source.getActiveEnergyExportTariffTwo());
     }
 }

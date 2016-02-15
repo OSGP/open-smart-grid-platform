@@ -7,35 +7,25 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 public class PeriodicMeterReadsRequestConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadsQuery, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> {
+extends
+CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestConverter.class);
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest convertTo(
-            final PeriodicMeterReadsQuery source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest> destinationType) {
-
-        throw new IllegalStateException(
-                "mapping a request meant for the platform layer to a request from the ws layer should not be necessary");
-    }
-
-    @Override
-    public PeriodicMeterReadsQuery convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest source,
-            final Type<PeriodicMeterReadsQuery> destinationType) {
-
+    public PeriodicMeterReadsQuery convert(final PeriodicReadsRequest source,
+            final Type<? extends PeriodicMeterReadsQuery> destinationType) {
         return new PeriodicMeterReadsQuery(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source
                         .getPeriodicReadsRequestData().getPeriodType().name()), source.getPeriodicReadsRequestData()

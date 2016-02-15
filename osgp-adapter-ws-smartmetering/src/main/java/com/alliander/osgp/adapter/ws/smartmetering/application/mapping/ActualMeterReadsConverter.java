@@ -15,25 +15,25 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 
 public class ActualMeterReadsConverter
         extends
-        BidirectionalConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
+        CustomConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse convertTo(
-            final ActualMeterReads source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> destinationType) {
+    public ActualMeterReadsResponse convert(final ActualMeterReads source,
+            final Type<? extends ActualMeterReadsResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
                 .createActualMeterReadsResponse();
@@ -57,14 +57,5 @@ public class ActualMeterReadsConverter
         destination.setActiveEnergyImportTariffTwo(eFromDouble(source.getActiveEnergyImportTariffTwo()));
 
         return destination;
-    }
-
-    @Override
-    public ActualMeterReads convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse source,
-            final Type<ActualMeterReads> destinationType) {
-
-        throw new IllegalStateException(
-                "mapping a response meant for the ws layer to a response from the platform layer should not be necessary");
     }
 }

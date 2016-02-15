@@ -16,7 +16,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
@@ -29,14 +29,14 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 
 public class PeriodicMeterReadsGasConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
+extends
+CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsGasConverter.class);
 
     @Override
-    public PeriodicMeterReadsGasResponse convertTo(final PeriodicMeterReadsContainerGas source,
-            final Type<PeriodicMeterReadsGasResponse> destinationType) {
+    public PeriodicMeterReadsGasResponse convert(final PeriodicMeterReadsContainerGas source,
+            final Type<? extends PeriodicMeterReadsGasResponse> destinationType) {
         final PeriodicMeterReadsGasResponse periodicMeterReadsResponse = new PeriodicMeterReadsGasResponse();
         periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
         final List<PeriodicMeterReadsGas> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReadsGas();
@@ -69,13 +69,6 @@ public class PeriodicMeterReadsGasConverter
             periodicMeterReads.add(meterReads);
         }
         return periodicMeterReadsResponse;
-    }
-
-    @Override
-    public PeriodicMeterReadsContainerGas convertFrom(final PeriodicMeterReadsGasResponse source,
-            final Type<PeriodicMeterReadsContainerGas> destinationType) {
-        throw new IllegalStateException(
-                "mapping a response meant for the ws layer to a response from the platform layer should not be necessary");
     }
 
 }

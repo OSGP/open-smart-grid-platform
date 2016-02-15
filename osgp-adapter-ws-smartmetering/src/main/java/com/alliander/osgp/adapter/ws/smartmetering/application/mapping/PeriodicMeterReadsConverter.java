@@ -16,7 +16,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
@@ -29,14 +29,14 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+extends
+CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsConverter.class);
 
     @Override
-    public PeriodicMeterReadsResponse convertTo(final PeriodicMeterReadContainer source,
-            final Type<PeriodicMeterReadsResponse> destinationType) {
+    public PeriodicMeterReadsResponse convert(final PeriodicMeterReadContainer source,
+            final Type<? extends PeriodicMeterReadsResponse> destinationType) {
         final PeriodicMeterReadsResponse periodicMeterReadsResponse = new PeriodicMeterReadsResponse();
         periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
         final List<PeriodicMeterReads> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReads();
@@ -67,12 +67,5 @@ public class PeriodicMeterReadsConverter
             periodicMeterReads.add(meterReads);
         }
         return periodicMeterReadsResponse;
-    }
-
-    @Override
-    public PeriodicMeterReadContainer convertFrom(final PeriodicMeterReadsResponse source,
-            final Type<PeriodicMeterReadContainer> destinationType) {
-        throw new IllegalStateException(
-                "mapping a response meant for the ws layer to a response from the platform layer should not be necessary");
     }
 }
