@@ -107,11 +107,5 @@ public class DlmsPushNotificationAlarmDecoder extends ReplayingDecoder<DlmsPushN
         final Set<AlarmType> alarms = this.alarmHelperService.toAlarmTypes(registerValue);
         this.builder.withAlarms(alarms);
         this.builder.appendBytes(alarmObject);
-        int remaining = 0;
-        while ((remaining = buffer.readableBytes()) > 0) {
-            final byte[] bytes = new byte[remaining];
-            buffer.readBytes(bytes);
-            this.builder.appendBytes(bytes);
-        }
     }
 }
