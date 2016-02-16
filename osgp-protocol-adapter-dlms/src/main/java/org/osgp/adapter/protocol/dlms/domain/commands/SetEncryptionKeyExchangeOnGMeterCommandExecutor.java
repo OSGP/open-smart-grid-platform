@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -95,6 +95,7 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             encryptedEncryptionkey = SecurityUtils.aes128Ciphering(defaultMBusKey, encryptionKey);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
                 | BadPaddingException e) {
+            LOGGER.error("Unexpected exception during getTransferKeyToMBusMethodParameter", e);
             throw new ProtocolAdapterException(e.getMessage());
         }
 
