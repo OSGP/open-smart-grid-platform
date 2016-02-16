@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.gFromDouble;
-
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -23,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.GMeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGas;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
@@ -56,7 +55,11 @@ CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.sc
                     AmrProfileStatusCode.class);
 
             meterReads.setLogTime(convertedDate);
-            meterReads.setConsumption(gFromDouble(m.getConsumption()));
+            meterReads.setConsumption(this.gFromDouble(m.getConsumption()));
+            if (!meterReads.getConsumption().getUnit().name().equals(source.getOsgpUnit().name())) {
+                throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
+                        meterReads.getConsumption().getUnit(), source.getOsgpUnit()));
+            }
             c.setTime(m.getCaptureTime());
             try {
                 convertedDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
@@ -69,6 +72,10 @@ CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.sc
             periodicMeterReads.add(meterReads);
         }
         return periodicMeterReadsResponse;
+    }
+
+    private GMeterValue gFromDouble(final Double d) {
+        return this.mapperFacade.map(d, GMeterValue.class);
     }
 
 }

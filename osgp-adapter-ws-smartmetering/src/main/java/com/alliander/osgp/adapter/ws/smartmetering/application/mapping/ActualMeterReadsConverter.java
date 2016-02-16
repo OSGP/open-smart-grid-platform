@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.eFromDouble;
-
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -22,12 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.EMeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 
 public class ActualMeterReadsConverter
-        extends
-        CustomConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
+extends
+CustomConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
@@ -36,7 +35,7 @@ public class ActualMeterReadsConverter
             final Type<? extends ActualMeterReadsResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
-                .createActualMeterReadsResponse();
+        .createActualMeterReadsResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -49,13 +48,21 @@ public class ActualMeterReadsConverter
         }
 
         destination.setLogTime(convertedDate);
-        destination.setActiveEnergyImport(eFromDouble(source.getActiveEnergyImport()));
-        destination.setActiveEnergyExport(eFromDouble(source.getActiveEnergyExport()));
-        destination.setActiveEnergyExportTariffOne(eFromDouble(source.getActiveEnergyExportTariffOne()));
-        destination.setActiveEnergyExportTariffTwo(eFromDouble(source.getActiveEnergyExportTariffTwo()));
-        destination.setActiveEnergyImportTariffOne(eFromDouble(source.getActiveEnergyImportTariffOne()));
-        destination.setActiveEnergyImportTariffTwo(eFromDouble(source.getActiveEnergyImportTariffTwo()));
+        destination.setActiveEnergyImport(this.eFromDouble(source.getActiveEnergyImport()));
+        if (!destination.getActiveEnergyImport().getUnit().name().equals(source.getOsgpUnit().name())) {
+            throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
+                    destination.getActiveEnergyImport().getUnit(), source.getOsgpUnit()));
+        }
+        destination.setActiveEnergyExport(this.eFromDouble(source.getActiveEnergyExport()));
+        destination.setActiveEnergyExportTariffOne(this.eFromDouble(source.getActiveEnergyExportTariffOne()));
+        destination.setActiveEnergyExportTariffTwo(this.eFromDouble(source.getActiveEnergyExportTariffTwo()));
+        destination.setActiveEnergyImportTariffOne(this.eFromDouble(source.getActiveEnergyImportTariffOne()));
+        destination.setActiveEnergyImportTariffTwo(this.eFromDouble(source.getActiveEnergyImportTariffTwo()));
 
         return destination;
+    }
+
+    private EMeterValue eFromDouble(final Double d) {
+        return this.mapperFacade.map(d, EMeterValue.class);
     }
 }

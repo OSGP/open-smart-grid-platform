@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.eFromDouble;
-
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -23,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.EMeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
@@ -57,15 +56,23 @@ CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema
                     AmrProfileStatusCode.class);
 
             meterReads.setLogTime(convertedDate);
-            meterReads.setActiveEnergyImport(eFromDouble(m.getActiveEnergyImport()));
-            meterReads.setActiveEnergyExport(eFromDouble(m.getActiveEnergyExport()));
-            meterReads.setActiveEnergyImportTariffOne(eFromDouble(m.getActiveEnergyImportTariffOne()));
-            meterReads.setActiveEnergyImportTariffTwo(eFromDouble(m.getActiveEnergyImportTariffTwo()));
-            meterReads.setActiveEnergyExportTariffOne(eFromDouble(m.getActiveEnergyExportTariffOne()));
-            meterReads.setActiveEnergyExportTariffTwo(eFromDouble(m.getActiveEnergyExportTariffTwo()));
+            meterReads.setActiveEnergyImport(this.eFromDouble(m.getActiveEnergyImport()));
+            if (!meterReads.getActiveEnergyImport().getUnit().name().equals(source.getOsgpUnit().name())) {
+                throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
+                        meterReads.getActiveEnergyImport().getUnit(), source.getOsgpUnit()));
+            }
+            meterReads.setActiveEnergyExport(this.eFromDouble(m.getActiveEnergyExport()));
+            meterReads.setActiveEnergyImportTariffOne(this.eFromDouble(m.getActiveEnergyImportTariffOne()));
+            meterReads.setActiveEnergyImportTariffTwo(this.eFromDouble(m.getActiveEnergyImportTariffTwo()));
+            meterReads.setActiveEnergyExportTariffOne(this.eFromDouble(m.getActiveEnergyExportTariffOne()));
+            meterReads.setActiveEnergyExportTariffTwo(this.eFromDouble(m.getActiveEnergyExportTariffTwo()));
             meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
             periodicMeterReads.add(meterReads);
         }
         return periodicMeterReadsResponse;
+    }
+
+    private EMeterValue eFromDouble(final Double d) {
+        return this.mapperFacade.map(d, EMeterValue.class);
     }
 }
