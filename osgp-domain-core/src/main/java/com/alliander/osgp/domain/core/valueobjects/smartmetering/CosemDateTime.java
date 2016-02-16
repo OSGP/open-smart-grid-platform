@@ -244,6 +244,17 @@ public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
 
     @Override
     public int compareTo(final CosemDateTime o) {
+        // If a valid datetime can be created, use this to compare.
+        // This will take deviation in to account.
+        final LocalDateTime timeThis = this.asLocalDateTime();
+        final LocalDateTime timeOther = o.asLocalDateTime();
+        if (timeThis != null && timeOther != null) {
+            return timeThis.compareTo(timeOther);
+        }
+
+        // Otherwise compare date/time on an byte value basis.
+        // Taking deviation into account is complex and bluebook
+        // does not describe how that should even work with unspecified values.
         final int compDate = this.date.compareTo(o.date);
         if (compDate != 0) {
             return compDate;
@@ -255,5 +266,27 @@ public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
         }
 
         return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.date, this.time, this.clockStatus, this.deviation);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final CosemDateTime other = (CosemDateTime) obj;
+
+        return Objects.equals(this.date, other.date) && Objects.equals(this.time, other.time)
+                && Objects.equals(this.clockStatus, other.clockStatus) && this.deviation == other.deviation;
     }
 }

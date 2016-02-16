@@ -221,24 +221,27 @@ public class CosemTime implements Serializable, Comparable<CosemTime> {
     @Override
     public int compareTo(final CosemTime o) {
         // NOT_SPECIFIED equals every other value.
-        if (this.hour != HOUR_NOT_SPECIFIED && o.hour != HOUR_NOT_SPECIFIED && this.hour - o.hour != 0) {
+        if (this.compareNotEqual(this.hour, o.hour, HOUR_NOT_SPECIFIED)) {
             return this.hour - o.hour;
         }
 
-        if (this.minute != MINUTE_NOT_SPECIFIED && o.minute != MINUTE_NOT_SPECIFIED && this.minute - o.minute != 0) {
+        if (this.compareNotEqual(this.minute, o.minute, MINUTE_NOT_SPECIFIED)) {
             return this.minute - o.minute;
         }
 
-        if (this.second != SECOND_NOT_SPECIFIED && o.second != SECOND_NOT_SPECIFIED && this.second - o.second != 0) {
+        if (this.compareNotEqual(this.second, o.second, SECOND_NOT_SPECIFIED)) {
             return this.second - o.second;
         }
 
-        if (this.hundredths != HUNDREDTHS_NOT_SPECIFIED && o.hundredths != HUNDREDTHS_NOT_SPECIFIED
-                && this.hundredths - o.hundredths != 0) {
+        if (this.compareNotEqual(this.hundredths, o.hundredths, HUNDREDTHS_NOT_SPECIFIED)) {
             return this.hundredths - o.hundredths;
         }
 
         return 0;
+    }
+
+    private boolean compareNotEqual(final int value, final int compareValue, final int unspecifiedConstant) {
+        return value != unspecifiedConstant && value != unspecifiedConstant && value - compareValue != 0;
     }
 
     @Override
