@@ -23,11 +23,11 @@ public class ResponseMessage implements Serializable {
     private final String deviceIdentification;
     private final ResponseMessageResultType result;
     private final OsgpException osgpException;
-    private final Object dataObject;
+    private final Serializable dataObject;
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
-            final OsgpException osgpException, final Object dataObject) {
+            final OsgpException osgpException, final Serializable dataObject) {
         this.correlationUid = correlationUid;
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
@@ -61,7 +61,7 @@ public class ResponseMessage implements Serializable {
         return this.osgpException;
     }
 
-    public Object getDataObject() {
+    public Serializable getDataObject() {
         return this.dataObject;
     }
 }
