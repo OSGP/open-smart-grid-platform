@@ -36,6 +36,11 @@ public class ResponseMessage implements Serializable {
         this.dataObject = dataObject;
     }
 
+    public ResponseMessage(final String correlationUid, final String organisationIdentification,
+            final String deviceIdentification, final ResponseMessageResultType result, final OsgpException osgpException) {
+        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null);
+    }
+
     public String getCorrelationUid() {
         return this.correlationUid;
     }

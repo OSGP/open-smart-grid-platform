@@ -10,29 +10,17 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 
 /**
- * request actual reads for E or GAS meters
- *
- * @author dev
+ * Class to pass G-Meter information to the protocol adapter
  */
 public class GMeterInfo implements Serializable {
-    private static final long serialVersionUID = 2732155908848684414L;
 
-    private static final int NOCHANNEL = -1;
-
+    private static final long serialVersionUID = -4321438772672309715L;
     private final int channel;
     private final String deviceIdentification;
-
-    public GMeterInfo() {
-        this(NOCHANNEL, "");
-    }
 
     public GMeterInfo(final int channel, final String deviceIdentification) {
         this.channel = channel;
         this.deviceIdentification = deviceIdentification;
-    }
-
-    public boolean isGas() {
-        return this.channel > NOCHANNEL;
     }
 
     public int getChannel() {
