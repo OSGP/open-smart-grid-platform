@@ -21,8 +21,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
-import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -92,7 +92,7 @@ public class AdhocService {
 
     public void sendWakeupSms(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -128,7 +128,7 @@ public class AdhocService {
 
     public void getSmsDetails(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("retrieve sms details request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -169,7 +169,7 @@ public class AdhocService {
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest request,
             final String messageType) throws FunctionalException {
 
-        LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
+        LOGGER.debug("retrieveConfigurationObjects for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
