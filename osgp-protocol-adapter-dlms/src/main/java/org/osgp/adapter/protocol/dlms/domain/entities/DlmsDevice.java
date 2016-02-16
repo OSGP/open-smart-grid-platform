@@ -59,6 +59,9 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean withListSupported;
 
+    @Column
+    private boolean selectiveAccessSupported;
+
     @Transient
     private String ipAddress;
 
@@ -166,6 +169,14 @@ public class DlmsDevice extends AbstractEntity {
 
     public void setWithListSupported(final boolean withListSupported) {
         this.withListSupported = withListSupported;
+    }
+
+    public boolean isSelectiveAccessSupported() {
+        return this.selectiveAccessSupported;
+    }
+
+    public void setSelectiveAccessSupported(final boolean selectiveAccessSupported) {
+        this.selectiveAccessSupported = selectiveAccessSupported;
     }
 
     public void setDeviceIdentification(final String deviceIdentification) {
