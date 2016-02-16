@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -159,5 +160,42 @@ public class AdhocService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, smsDetails), messageType);
+    }
+
+    public void retrieveConfigurationObjects(
+            @Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest request,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.debug("retrieveConfigurationObjects for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        final RetrieveConfigurationObjectsRequest requestDto = new RetrieveConfigurationObjectsRequest(
+                request.getDeviceIdentification());
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), requestDto), messageType);
+
+    }
+
+    public void handleRetrieveConfigurationObjectsResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
+
+        LOGGER.debug("handleRetrieveConfigurationObjectsResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, resultData), messageType);
+
     }
 }
