@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.LocalTime;
 
-public class CosemTime implements Serializable {
+public class CosemTime implements Serializable, Comparable<CosemTime> {
 
     private static final long serialVersionUID = 1505799304987059469L;
 
@@ -43,6 +43,10 @@ public class CosemTime implements Serializable {
 
     public CosemTime(final LocalTime time) {
         this(time.getHourOfDay(), time.getMinuteOfHour(), time.getSecondOfMinute(), time.getMillisOfSecond() / 10);
+    }
+
+    public CosemTime(final CosemTime time) {
+        this(time.getHour(), time.getMinute(), time.getSecond(), time.getHundredths());
     }
 
     public CosemTime() {
@@ -213,4 +217,59 @@ public class CosemTime implements Serializable {
     public boolean isHundredthsNotSpecified() {
         return HUNDREDTHS_NOT_SPECIFIED == this.hundredths;
     }
+
+    @Override
+    public int compareTo(final CosemTime o) {
+        // NOT_SPECIFIED equals every other value.
+        if (this.compareNotEqual(this.hour, o.hour, HOUR_NOT_SPECIFIED)) {
+            return this.hour - o.hour;
+        }
+
+        if (this.compareNotEqual(this.minute, o.minute, MINUTE_NOT_SPECIFIED)) {
+            return this.minute - o.minute;
+        }
+
+        if (this.compareNotEqual(this.second, o.second, SECOND_NOT_SPECIFIED)) {
+            return this.second - o.second;
+        }
+
+        if (this.compareNotEqual(this.hundredths, o.hundredths, HUNDREDTHS_NOT_SPECIFIED)) {
+            return this.hundredths - o.hundredths;
+        }
+
+        return 0;
+    }
+
+    private boolean compareNotEqual(final int value, final int compareValue, final int unspecifiedConstant) {
+        return value != unspecifiedConstant && compareValue != unspecifiedConstant && value - compareValue != 0;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.hour;
+        result = prime * result + this.hundredths;
+        result = prime * result + this.minute;
+        result = prime * result + this.second;
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final CosemTime other = (CosemTime) obj;
+
+        return this.hundredths == other.hundredths && this.second == other.second && this.minute == other.minute
+                && this.hour == other.hour;
+    }
+
 }

@@ -8,7 +8,6 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class DayProfileAction implements Comparable<DayProfileAction>, Serializable {
 
@@ -16,19 +15,19 @@ public class DayProfileAction implements Comparable<DayProfileAction>, Serializa
 
     private Integer scriptSelector;
 
-    private Date startTime;
+    private CosemTime startTime;
 
-    public DayProfileAction(final Integer scriptSelector, final Date startTime) {
+    public DayProfileAction(final Integer scriptSelector, final CosemTime startTime) {
         this.scriptSelector = scriptSelector;
-        this.startTime = new Date(startTime.getTime());
+        this.startTime = new CosemTime(startTime);
     }
 
     public Integer getScriptSelector() {
         return this.scriptSelector;
     }
 
-    public Date getStartTime() {
-        return new Date(this.startTime.getTime());
+    public CosemTime getStartTime() {
+        return new CosemTime(this.startTime);
     }
 
     @Override
