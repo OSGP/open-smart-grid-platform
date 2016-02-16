@@ -15,8 +15,10 @@ import javax.annotation.Resource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
 /**
  * Calculate a meter value:
@@ -29,8 +31,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
  * </pre>
  *
  */
-@Component(value = "standardUnitCalculator")
-public class StandardUnitCalculator {
+@Component(value = "standardUnitConverter")
+public class StandardUnitConverter {
 
     public static final String FRACTION_DIGITS = "fraction_digits";
 
@@ -44,7 +46,8 @@ public class StandardUnitCalculator {
         }
     }
 
-    public double calculateStandardizedValue(final long meterValue, final ScalerUnit scalerUnit) {
+    public double calculateStandardizedValue(final long meterValue, final ScalerUnitResponse scalerUnitResponse) {
+        final ScalerUnit scalerUnit = scalerUnitResponse.getScalerUnit();
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
         final double power = scalerUnit.getScaler() == 0 ? 1 : Math.pow(10, scalerUnit.getScaler());
         return round((meterValue / power) * multiplier, this.fraction_digits);
@@ -62,6 +65,19 @@ public class StandardUnitCalculator {
             return 1d;
         default:
             throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", dlmsUnit.name()));
+        }
+    }
+
+    public OsgpUnit toStandardUnit(final ScalerUnitResponse scalerUnitResponse) {
+        switch (scalerUnitResponse.getScalerUnit().getDlmsUnit()) {
+        case WH:
+            return OsgpUnit.KWH;
+        case M3:
+        case M3COR:
+            return OsgpUnit.M3;
+        default:
+            throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", scalerUnitResponse
+                    .getScalerUnit().getDlmsUnit().name()));
         }
     }
 

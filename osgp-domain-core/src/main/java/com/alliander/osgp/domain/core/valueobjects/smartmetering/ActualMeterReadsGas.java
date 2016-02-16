@@ -12,14 +12,17 @@ import java.util.Date;
 public class ActualMeterReadsGas extends MeterReadsGas implements OsgpUnitResponse {
 
     private static final long serialVersionUID = 4052150124072820551L;
+    private final OsgpUnit osgpUnit;
 
-    public ActualMeterReadsGas(final Date logTime, final double consumption, final Date captureTime) {
+    public ActualMeterReadsGas(final Date logTime, final double consumption, final Date captureTime,
+            final OsgpUnit osgpUnit) {
         super(logTime, consumption, captureTime);
+        this.osgpUnit = osgpUnit;
     }
 
     @Override
     public final OsgpUnit getOsgpUnit() {
-        return OsgpUnit.M3;
+        return this.osgpUnit;
     }
 
 }

@@ -11,28 +11,26 @@ import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
 public class ActualMeterReadsConverter extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
 
-    private final StandardUnitCalculator standardUnitCalculator;
+    private final StandardUnitConverter standardUnitConverter;
 
-    private double toStandard(final long value, final ScalerUnitResponse scalerUnitResponse) {
-        return this.standardUnitCalculator.calculateStandardizedValue(value, scalerUnitResponse.getScalerUnit());
-    }
-
-    public ActualMeterReadsConverter(final StandardUnitCalculator standardUnitCalculator) {
-        this.standardUnitCalculator = standardUnitCalculator;
+    public ActualMeterReadsConverter(final StandardUnitConverter standardUnitConverter) {
+        this.standardUnitConverter = standardUnitConverter;
     }
 
     @Override
     public ActualMeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
             final Type<? extends ActualMeterReads> destinationType) {
-        return new ActualMeterReads(source.getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(
-                source.getActiveEnergyImport(), source.getScalerUnit()), this.toStandard(
-                        source.getActiveEnergyExport(), source), this.toStandard(source.getActiveEnergyImportTariffOne(),
-                                source), this.toStandard(source.getActiveEnergyImportTariffTwo(), source), this.toStandard(
-                                        source.getActiveEnergyExportTariffOne(), source), source.getActiveEnergyExportTariffTwo());
+        return new ActualMeterReads(
+                source.getLogTime(),
+                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyImport(), source),
+                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyExport(), source),
+                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyImportTariffOne(), source),
+                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyImportTariffTwo(), source),
+                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyExportTariffOne(), source),
+                source.getActiveEnergyExportTariffTwo(), this.standardUnitConverter.toStandardUnit(source));
     }
 }

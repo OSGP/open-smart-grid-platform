@@ -17,11 +17,13 @@ public class PeriodicMeterReadsContainerGas implements Serializable, OsgpUnitRes
 
     private final List<PeriodicMeterReadsGas> meterReadsGas;
     private final PeriodType periodType;
+    private final OsgpUnit osgpUnit;
 
-    public PeriodicMeterReadsContainerGas(final PeriodType periodType,
-            final List<PeriodicMeterReadsGas> meterReadsGas) {
+    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<PeriodicMeterReadsGas> meterReadsGas,
+            final OsgpUnit osgpUnit) {
         this.meterReadsGas = Collections.unmodifiableList(meterReadsGas);
         this.periodType = periodType;
+        this.osgpUnit = osgpUnit;
     }
 
     public List<PeriodicMeterReadsGas> getMeterReadsGas() {
@@ -34,7 +36,7 @@ public class PeriodicMeterReadsContainerGas implements Serializable, OsgpUnitRes
 
     @Override
     public final OsgpUnit getOsgpUnit() {
-        return OsgpUnit.M3;
+        return this.osgpUnit;
     }
 
 }

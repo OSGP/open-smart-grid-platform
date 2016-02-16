@@ -12,17 +12,19 @@ import java.util.Date;
 public class ActualMeterReads extends MeterReads implements OsgpUnitResponse {
 
     private static final long serialVersionUID = 4052150124072820551L;
+    private final OsgpUnit osgpUnit;
 
     public ActualMeterReads(final Date logTime, final double activeEnergyImport, final double activeEnergyExport,
             final double activeEnergyImportTariffOne, final double activeEnergyImportTariffTwo,
-            final double activeEnergyExportTariffOne, final double activeEnergyExportTariffTwo) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+            final double activeEnergyExportTariffOne, final double activeEnergyExportTariffTwo, final OsgpUnit osgpUnit) {
+        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
+                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+        this.osgpUnit = osgpUnit;
     }
 
     @Override
     public final OsgpUnit getOsgpUnit() {
-        return OsgpUnit.KWH;
+        return this.osgpUnit;
     }
 
 }

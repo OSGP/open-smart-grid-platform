@@ -18,13 +18,13 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
 public class PeriodicMeterReadsGasResponseConverter
-extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas, PeriodicMeterReadsContainerGas> {
-    private final StandardUnitCalculator standardUnitCalculator;
+        extends
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas, PeriodicMeterReadsContainerGas> {
+    private final StandardUnitConverter standardUnitConverter;
 
-    public PeriodicMeterReadsGasResponseConverter(final StandardUnitCalculator standardUnitCalculator) {
+    public PeriodicMeterReadsGasResponseConverter(final StandardUnitConverter standardUnitConverter) {
         super();
-        this.standardUnitCalculator = standardUnitCalculator;
+        this.standardUnitConverter = standardUnitConverter;
     }
 
     @Override
@@ -38,13 +38,14 @@ CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterR
             final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(pmr.getAmrProfileStatusCode(),
                     AmrProfileStatusCode.class);
             meterReadsGas.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas(pmr
-                    .getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(pmr.getConsumption(),
-                            source.getScalerUnit()), pmr.getCaptureTime(), amrProfileStatusCode));
+                    .getLogTime(),
+                    this.standardUnitConverter.calculateStandardizedValue(pmr.getConsumption(), source), pmr
+                            .getCaptureTime(), amrProfileStatusCode));
         }
 
         return new PeriodicMeterReadsContainerGas(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), meterReadsGas);
+                        .name()), meterReadsGas, this.standardUnitConverter.toStandardUnit(source));
     }
 
 }

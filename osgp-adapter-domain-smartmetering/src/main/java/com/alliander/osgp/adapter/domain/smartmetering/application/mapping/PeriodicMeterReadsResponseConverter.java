@@ -17,20 +17,15 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatu
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
 public class PeriodicMeterReadsResponseConverter
-        extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
-    private final StandardUnitCalculator standardUnitCalculator;
+extends
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+    private final StandardUnitConverter standardUnitConverter;
 
-    public PeriodicMeterReadsResponseConverter(final StandardUnitCalculator standardUnitCalculator) {
+    public PeriodicMeterReadsResponseConverter(final StandardUnitConverter standardUnitConverter) {
         super();
-        this.standardUnitCalculator = standardUnitCalculator;
-    }
-
-    private double toStandard(final long value, final ScalerUnitResponse scalerUnitResponse) {
-        return this.standardUnitCalculator.calculateStandardizedValue(value, scalerUnitResponse.getScalerUnit());
+        this.standardUnitConverter = standardUnitConverter;
     }
 
     @Override
@@ -42,18 +37,23 @@ public class PeriodicMeterReadsResponseConverter
             final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(pmr.getAmrProfileStatusCode(),
                     AmrProfileStatusCode.class);
 
-            periodicMeterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(pmr
-                    .getLogTime(), this.toStandard(pmr.getActiveEnergyImport(), source), this.toStandard(
-                            pmr.getActiveEnergyExport(), source),
-                            this.toStandard(pmr.getActiveEnergyImportTariffOne(), source), this.toStandard(
-                                    pmr.getActiveEnergyImportTariffTwo(), source), this.toStandard(
-                            pmr.getActiveEnergyExportTariffOne(), source), this.toStandard(
-                                                    pmr.getActiveEnergyExportTariffTwo(), source), amrProfileStatusCode));
+            periodicMeterReads
+                    .add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(pmr
+                            .getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
+                            pmr.getActiveEnergyImport(), source), this.standardUnitConverter
+                            .calculateStandardizedValue(pmr.getActiveEnergyExport(), source),
+                            this.standardUnitConverter.calculateStandardizedValue(
+                                    pmr.getActiveEnergyImportTariffOne(), source), this.standardUnitConverter
+                                    .calculateStandardizedValue(pmr.getActiveEnergyImportTariffTwo(), source),
+                            this.standardUnitConverter.calculateStandardizedValue(
+                                    pmr.getActiveEnergyExportTariffOne(), source), this.standardUnitConverter
+                                    .calculateStandardizedValue(pmr.getActiveEnergyExportTariffTwo(), source),
+                            amrProfileStatusCode));
         }
 
         return new PeriodicMeterReadContainer(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), periodicMeterReads);
+                        .name()), periodicMeterReads, this.standardUnitConverter.toStandardUnit(source));
     }
 
 }

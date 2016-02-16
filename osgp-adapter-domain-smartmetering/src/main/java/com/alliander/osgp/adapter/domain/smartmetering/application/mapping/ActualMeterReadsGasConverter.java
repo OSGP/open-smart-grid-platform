@@ -13,19 +13,20 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
 
 public class ActualMeterReadsGasConverter extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
-    private final StandardUnitCalculator standardUnitCalculator;
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
+    private final StandardUnitConverter standardUnitConverter;
 
-    public ActualMeterReadsGasConverter(final StandardUnitCalculator standardUnitCalculator) {
+    public ActualMeterReadsGasConverter(final StandardUnitConverter standardUnitConverter) {
         super();
-        this.standardUnitCalculator = standardUnitCalculator;
+        this.standardUnitConverter = standardUnitConverter;
     }
 
     @Override
     public ActualMeterReadsGas convert(
             final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas source,
             final Type<? extends ActualMeterReadsGas> destinationType) {
-        return new ActualMeterReadsGas(source.getLogTime(), this.standardUnitCalculator.calculateStandardizedValue(
-                source.getConsumption(), source.getScalerUnit()), source.getCaptureTime());
+        return new ActualMeterReadsGas(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
+                source.getConsumption(), source), source.getCaptureTime(),
+                this.standardUnitConverter.toStandardUnit(source));
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class MonitoringMapper extends ConfigurableMapper {
 
     @Autowired
-    private StandardUnitCalculator standardUnitCalculator;
+    private StandardUnitConverter standardUnitConverter;
 
     private MapperFactory mapperFactory;
 
@@ -35,18 +35,18 @@ public class MonitoringMapper extends ConfigurableMapper {
      *
      * @param standardUnitCalculator
      */
-    public final void setStandardUnitCalculator(final StandardUnitCalculator standardUnitCalculator) {
-        this.standardUnitCalculator = standardUnitCalculator;
+    public final void setStandardUnitCalculator(final StandardUnitConverter standardUnitConverter) {
+        this.standardUnitConverter = standardUnitConverter;
         this.mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
         this.mapperFactory.getConverterFactory().registerConverter(
-                new ActualMeterReadsConverter(this.standardUnitCalculator));
+                new ActualMeterReadsConverter(this.standardUnitConverter));
         this.mapperFactory.getConverterFactory().registerConverter(
-                new ActualMeterReadsGasConverter(this.standardUnitCalculator));
+                new ActualMeterReadsGasConverter(this.standardUnitConverter));
         this.mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
         this.mapperFactory.getConverterFactory().registerConverter(
-                new PeriodicMeterReadsResponseConverter(this.standardUnitCalculator));
+                new PeriodicMeterReadsResponseConverter(this.standardUnitConverter));
         this.mapperFactory.getConverterFactory().registerConverter(
-                new PeriodicMeterReadsGasResponseConverter(this.standardUnitCalculator));
+                new PeriodicMeterReadsGasResponseConverter(this.standardUnitConverter));
 
         this.mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
     }
