@@ -21,7 +21,6 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -92,7 +91,7 @@ public class AdhocService {
 
     public void sendWakeupSms(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -128,7 +127,7 @@ public class AdhocService {
 
     public void getSmsDetails(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("retrieve sms details request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -174,7 +173,7 @@ public class AdhocService {
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
 
-        final RetrieveConfigurationObjectsRequest requestDto = new RetrieveConfigurationObjectsRequest(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest requestDto = new com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest(
                 request.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
