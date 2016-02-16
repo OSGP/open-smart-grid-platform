@@ -15,6 +15,7 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
+import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
@@ -23,6 +24,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommand
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -44,6 +46,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
@@ -78,6 +81,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
+
+    @Autowired
+    private SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
@@ -296,6 +302,48 @@ public class ConfigurationService extends DlmsApplicationService {
                 conn.close();
             }
         }
+    }
+
+    public void setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
+            final GMeterInfo gMeterInfo, final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "setEncryptionKeyExchangeOnGMeter");
+
+        LnClientConnection conn = null;
+        DlmsDevice device = null;
+        try {
+            final String deviceIdentification = messageMetadata.getDeviceIdentification();
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            // Get G-Meter
+            final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo
+                    .getDeviceIdentification());
+            final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
+                    gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
+                            SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
+                            SecurityKeyType.G_METER_MASTER).getKey());
+
+            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setEncryptionKeyExchangeOnGMeter", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.close();
+            }
+        }
+
     }
 
     public void setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
