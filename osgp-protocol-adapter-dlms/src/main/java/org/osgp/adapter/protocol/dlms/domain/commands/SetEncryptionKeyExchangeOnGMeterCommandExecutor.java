@@ -59,56 +59,53 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             final ProtocolMeterInfo protocolMeterInfo) throws IOException, ProtocolAdapterException {
         LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-        final byte[] unencryptedEncryptionKey = Hex.decode(protocolMeterInfo.getEncryptionKey());
+        final byte[] encryptionKey = Hex.decode(protocolMeterInfo.getEncryptionKey());
         final byte[] masterKey = Hex.decode(protocolMeterInfo.getMasterKey());
 
         final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
+        final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode, masterKey,
+                encryptionKey);
+        List<MethodResult> methodResultCode = conn.action(methodTransferKey);
+        this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
+        LOGGER.info("Success!: Finished calling getTransferKeyToMBusMethodParameter class_id {} obis_code {}",
+                CLASS_ID, obisCode);
+
+        final MethodParameter methodSetEncryptionKey = this.getSetEncryptionKeyMethodParameter(obisCode, encryptionKey);
+        methodResultCode = conn.action(methodSetEncryptionKey);
+        this.checkMethodResultCode(methodResultCode, "getSetEncryptionKeyMethodParameter");
+        LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
+
+        return MethodResultCode.SUCCESS;
+    }
+
+    private void checkMethodResultCode(final List<MethodResult> methodResultCode, final String methodParameterName)
+            throws ProtocolAdapterException {
+        if (methodResultCode == null || methodResultCode.size() != 1 || methodResultCode.get(0) == null
+                || !MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
+            throw new ProtocolAdapterException("Error while executing " + methodParameterName + ". Reason = "
+                    + methodResultCode.get(0).resultCode());
+        }
+    }
+
+    private MethodParameter getTransferKeyToMBusMethodParameter(final ObisCode obisCode, final byte[] defaultMBusKey,
+            final byte[] encryptionKey) throws ProtocolAdapterException {
+        byte[] encryptedEncryptionkey;
         try {
-            final MethodParameter methodTransferKey = this.transferKeyToMBus(obisCode, masterKey,
-                    unencryptedEncryptionKey);
-
-            final List<MethodResult> methodResultCode = conn.action(methodTransferKey);
-
-            if (!MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
-                throw new IOException("Error while executing transferKeyToMBus. Reason = "
-                        + methodResultCode.get(0).resultCode());
-            }
-
-            LOGGER.info("Success!: Finished calling transferKeyToMBus class_id {} obis_code {}", CLASS_ID, obisCode);
-
+            encryptedEncryptionkey = SecurityUtils.aes128Ciphering(defaultMBusKey, encryptionKey);
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
                 | BadPaddingException e) {
             throw new ProtocolAdapterException(e.getMessage());
         }
-        final MethodParameter methodSetEncryptionKey = this.setEncryptionKey(obisCode, unencryptedEncryptionKey);
-        final List<MethodResult> methodResultCode = conn.action(methodSetEncryptionKey);
-        if (!MethodResultCode.SUCCESS.equals(methodResultCode.get(0).resultCode())) {
-            throw new IOException("Error while executing setEncryptionKey. Reason = "
-                    + methodResultCode.get(0).resultCode());
-        }
-
-        LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
-        return MethodResultCode.SUCCESS;
-    }
-
-    private MethodParameter transferKeyToMBus(final ObisCode obisCode, final byte[] defaultMBusKey,
-            final byte[] encryptionKey) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException,
-            IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-        byte[] encryptedEncryptionkey;
-        encryptedEncryptionkey = SecurityUtils.aes128Ciphering(defaultMBusKey, encryptionKey);
 
         final DataObject methodParameter = DataObject.newOctetStringData(encryptedEncryptionkey);
-        final MethodParameter ret = new MethodParameter(MBusClientMethod.TRANSFER_KEY, obisCode, methodParameter);
-
-        return ret;
+        return new MethodParameter(MBusClientMethod.TRANSFER_KEY, obisCode, methodParameter);
     }
 
-    private MethodParameter setEncryptionKey(final ObisCode obisCode, final byte[] encryptionKey) throws IOException {
+    private MethodParameter getSetEncryptionKeyMethodParameter(final ObisCode obisCode, final byte[] encryptionKey)
+            throws IOException {
         final DataObject methodParameter = DataObject.newOctetStringData(encryptionKey);
-        final MethodParameter ret = new MethodParameter(MBusClientMethod.SET_ENCRYPTION_KEY, obisCode, methodParameter);
-
-        return ret;
+        return new MethodParameter(MBusClientMethod.SET_ENCRYPTION_KEY, obisCode, methodParameter);
     }
 
 }
