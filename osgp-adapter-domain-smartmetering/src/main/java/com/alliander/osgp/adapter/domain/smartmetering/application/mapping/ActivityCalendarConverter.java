@@ -10,7 +10,7 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
@@ -18,26 +18,23 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DayProfileAction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 public class ActivityCalendarConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar, ActivityCalendar> {
+CustomConverter<ActivityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar> {
 
     @Override
-    public ActivityCalendar convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar source,
-            final Type<ActivityCalendar> destinationType) {
-        throw new IllegalStateException("convertTo is not supported");
-    }
-
-    @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar convertFrom(
-            final ActivityCalendar source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar convert(final ActivityCalendar source,
+            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar> destinationType) {
         if (source == null) {
             return null;
         }
 
+        final CosemDateTime activatePassiveCalendarTime = this.mapperFacade.map(
+                source.getActivatePassiveCalendarTime(), CosemDateTime.class);
+
         return new com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar(source.getCalendarName(),
-                source.getActivatePassiveCalendarTime(), this.processSeasonProfile(source.getSeasonProfileList()));
+                activatePassiveCalendarTime, this.processSeasonProfile(source.getSeasonProfileList()));
     }
 
     private List<com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile> processSeasonProfile(
@@ -52,8 +49,10 @@ public class ActivityCalendarConverter extends
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile processSeasonProfile(final SeasonProfile sp) {
+        final CosemDateTime seasonStart = this.mapperFacade.map(sp.getSeasonStart(), CosemDateTime.class);
+
         return new com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile(sp.getSeasonProfileName(),
-                sp.getSeasonStart(), this.processWeekProfile(sp.getWeekProfile()));
+                seasonStart, this.processWeekProfile(sp.getWeekProfile()));
     }
 
     private com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile processWeekProfile(
@@ -83,7 +82,11 @@ public class ActivityCalendarConverter extends
     private com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction processDayProfileActionType(
             final DayProfileAction dpat) {
 
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime startTime = this.mapperFacade.map(
+                dpat.getStartTime(), com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime.class);
+
         return new com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction(dpat.getScriptSelector(),
-                dpat.getStartTime());
+                startTime);
     }
+
 }

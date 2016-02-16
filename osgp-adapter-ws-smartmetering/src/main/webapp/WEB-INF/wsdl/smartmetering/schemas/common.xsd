@@ -172,4 +172,22 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+    
+    <xsd:simpleType name="CosemDateType">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="5" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CosemTimeType">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="CosemDateTimeType">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="12" />
+        </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>
