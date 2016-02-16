@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
-
 @Component("dlmsRetrieveConfigurationObjectsRequestMessageProcessor")
 public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
@@ -43,10 +41,10 @@ public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceR
         try {
             messageMetadata.handleMessage(message);
 
-            final RetrieveConfigurationObjectsRequest synchronizeTimeRequest = (RetrieveConfigurationObjectsRequest) message
+            final RetrieveConfigurationObjectsRequest retrieveConfigurationRequest = (RetrieveConfigurationObjectsRequest) message
                     .getObject();
 
-            this.adhocService.retrieveConfigurationObjects(messageMetadata, synchronizeTimeRequest,
+            this.adhocService.retrieveConfigurationObjects(messageMetadata, retrieveConfigurationRequest,
                     this.responseMessageSender);
 
         } catch (final JMSException exception) {
