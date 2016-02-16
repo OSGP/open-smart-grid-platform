@@ -10,16 +10,16 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
 
+@Component
 public class ActualMeterReadsGasConverter extends
         CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
-    private final StandardUnitConverter standardUnitConverter;
-
-    public ActualMeterReadsGasConverter(final StandardUnitConverter standardUnitConverter) {
-        super();
-        this.standardUnitConverter = standardUnitConverter;
-    }
+    @Autowired
+    private StandardUnitConverter standardUnitConverter;
 
     @Override
     public ActualMeterReadsGas convert(

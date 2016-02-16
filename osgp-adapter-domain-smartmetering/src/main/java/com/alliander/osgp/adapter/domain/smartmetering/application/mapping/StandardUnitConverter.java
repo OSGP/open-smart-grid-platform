@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +38,8 @@ public class StandardUnitConverter {
 
     public static final String FRACTION_DIGITS = "fraction_digits";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(StandardUnitConverter.class);
+
     @Resource
     private Environment environment;
 
@@ -50,7 +54,9 @@ public class StandardUnitConverter {
         final ScalerUnit scalerUnit = scalerUnitResponse.getScalerUnit();
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
         final double power = scalerUnit.getScaler() == 0 ? 1 : Math.pow(10, scalerUnit.getScaler());
-        return round((meterValue / power) * multiplier, this.fraction_digits);
+        final double calculated = round((meterValue / power) * multiplier, this.fraction_digits);
+        LOGGER.debug(String.format("calcualted %s from %s using %s", calculated, meterValue, scalerUnit));
+        return calculated;
     }
 
     private int fraction_digits = 3;

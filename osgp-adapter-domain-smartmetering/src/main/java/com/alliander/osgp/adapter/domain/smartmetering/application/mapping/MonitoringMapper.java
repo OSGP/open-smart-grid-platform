@@ -11,44 +11,39 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
 
-    @Autowired
-    private StandardUnitConverter standardUnitConverter;
+    public MonitoringMapper() {
+        // init after autowire
+        super(false);
+    }
 
-    private MapperFactory mapperFactory;
+    private ApplicationContext applicationContext;
+
+    @Autowired
+    public void setApplicationContext(final ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+        this.init();
+    }
 
     @Override
     public final void configure(final MapperFactory mapperFactory) {
-        /*
-         * configure is called at construction time, before autowiring causing
-         * npe's therefore postpone configure to until autowiring is done
-         */
-        this.mapperFactory = mapperFactory;
-    }
+        mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(ActualMeterReadsConverter.class));
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(ActualMeterReadsGasConverter.class));
+        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(PeriodicMeterReadsResponseConverter.class));
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(PeriodicMeterReadsGasResponseConverter.class));
 
-    /**
-     * will be called from spring autowiring, converters will be registered here
-     *
-     * @param standardUnitCalculator
-     */
-    public final void setStandardUnitCalculator(final StandardUnitConverter standardUnitConverter) {
-        this.standardUnitConverter = standardUnitConverter;
-        this.mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
-        this.mapperFactory.getConverterFactory().registerConverter(
-                new ActualMeterReadsConverter(this.standardUnitConverter));
-        this.mapperFactory.getConverterFactory().registerConverter(
-                new ActualMeterReadsGasConverter(this.standardUnitConverter));
-        this.mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
-        this.mapperFactory.getConverterFactory().registerConverter(
-                new PeriodicMeterReadsResponseConverter(this.standardUnitConverter));
-        this.mapperFactory.getConverterFactory().registerConverter(
-                new PeriodicMeterReadsGasResponseConverter(this.standardUnitConverter));
-
-        this.mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
     }
 
 }
