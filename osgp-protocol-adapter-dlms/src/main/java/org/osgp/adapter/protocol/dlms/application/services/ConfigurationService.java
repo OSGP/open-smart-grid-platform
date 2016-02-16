@@ -25,6 +25,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCom
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
@@ -82,7 +83,7 @@ public class ConfigurationService extends DlmsApplicationService {
     private GetPushSetupSmsCommandExecutor getPushSetupSmsCommandExecutor;
 
     @Autowired
-    private SetPushSetupAlarmCommandExecutor setPushSetupSmsCommandExecutor;
+    private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
@@ -399,9 +400,16 @@ public class ConfigurationService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final PushSetupSms returnedPushSetupSms = this.getPushSetupSmsCommandExecutor.execute(conn, device, null);
+            // final PushSetupSms returnedPushSetupSms =
+            // this.getPushSetupSmsCommandExecutor.execute(conn, device, null);
+            // LOGGER.info("Push Setup Sms to set on the device: {}",
+            // returnedPushSetupSms);
 
-            final AccessResultCode accessResultCode = AccessResultCode.SUCCESS;
+            final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor.execute(conn, device,
+                    pushSetupSms);
+
+            // final AccessResultCode accessResultCode =
+            // AccessResultCode.SUCCESS;
             if (AccessResultCode.SUCCESS != accessResultCode) {
                 throw new ProtocolAdapterException("AccessResultCode for set push setup sms was not SUCCESS: "
                         + accessResultCode);

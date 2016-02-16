@@ -13,17 +13,23 @@ import java.util.Set;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 
-public class DlmsPushNotificationAlarm implements Serializable {
+public class DlmsPushNotification implements Serializable {
 
     private static final long serialVersionUID = 1408450287084256721L;
 
     public static class Builder {
 
         private String equipmentIdentifier;
+        private String obiscode;
         private EnumSet<AlarmType> alarms;
 
         public Builder withEquipmentIdentifier(final String equipmentIdentifier) {
             this.equipmentIdentifier = equipmentIdentifier;
+            return this;
+        }
+
+        public Builder withObiscode(final String obiscode) {
+            this.obiscode = obiscode;
             return this;
         }
 
@@ -36,16 +42,18 @@ public class DlmsPushNotificationAlarm implements Serializable {
             return this;
         }
 
-        public DlmsPushNotificationAlarm build() {
-            return new DlmsPushNotificationAlarm(this.equipmentIdentifier, this.alarms);
+        public DlmsPushNotification build() {
+            return new DlmsPushNotification(this.equipmentIdentifier, this.obiscode, this.alarms);
         }
     }
 
     private final String equipmentIdentifier;
+    private final String obiscode;
     private final EnumSet<AlarmType> alarms;
 
-    public DlmsPushNotificationAlarm(final String equipmentIdentifier, final Set<AlarmType> alarms) {
+    public DlmsPushNotification(final String equipmentIdentifier, final String obiscode, final Set<AlarmType> alarms) {
         this.equipmentIdentifier = equipmentIdentifier;
+        this.obiscode = obiscode;
         if (alarms == null || alarms.isEmpty()) {
             this.alarms = EnumSet.noneOf(AlarmType.class);
         } else {
@@ -55,11 +63,20 @@ public class DlmsPushNotificationAlarm implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("DlmsPushNotificationAlarm[device=%s, alarms=%s]", this.equipmentIdentifier, this.alarms);
+        if (this.obiscode != null && !"".equals(this.obiscode)) {
+            return String.format("DlmsPushNotification [device=%s, obiscode=%s]", this.equipmentIdentifier,
+                    this.obiscode);
+        } else {
+            return String.format("DlmsPushNotification [device=%s, alarms=%s]", this.equipmentIdentifier, this.alarms);
+        }
     }
 
     public String getEquipmentIdentifier() {
         return this.equipmentIdentifier;
+    }
+
+    public String getObiscode() {
+        return this.obiscode;
     }
 
     public Set<AlarmType> getAlarms() {
