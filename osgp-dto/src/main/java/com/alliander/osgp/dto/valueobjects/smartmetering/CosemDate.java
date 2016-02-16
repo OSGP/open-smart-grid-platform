@@ -331,21 +331,23 @@ public class CosemDate implements Serializable, Comparable<CosemDate> {
 
     @Override
     public int compareTo(final CosemDate o) {
-        if (this.year != YEAR_NOT_SPECIFIED && o.year != YEAR_NOT_SPECIFIED && this.year - o.year != 0) {
+        if (this.compareNotEqual(this.year, o.year, YEAR_NOT_SPECIFIED)) {
             return this.year - o.year;
         }
-        if (this.month != MONTH_NOT_SPECIFIED && o.month != MONTH_NOT_SPECIFIED && this.month - o.month != 0) {
+        if (this.compareNotEqual(this.month, o.month, MONTH_NOT_SPECIFIED)) {
             return this.month - o.month;
         }
-        if (this.dayOfMonth != DAY_OF_MONTH_NOT_SPECIFIED && o.dayOfMonth != DAY_OF_MONTH_NOT_SPECIFIED
-                && this.dayOfMonth - o.dayOfMonth != 0) {
+        if (this.compareNotEqual(this.dayOfMonth, o.dayOfMonth, DAY_OF_MONTH_NOT_SPECIFIED)) {
             return this.dayOfMonth - o.dayOfMonth;
         }
-        if (this.dayOfWeek != DAY_OF_WEEK_NOT_SPECIFIED && o.dayOfWeek != DAY_OF_WEEK_NOT_SPECIFIED
-                && this.dayOfWeek - o.dayOfWeek != 0) {
+        if (this.compareNotEqual(this.dayOfWeek, o.dayOfWeek, DAY_OF_WEEK_NOT_SPECIFIED)) {
             return this.dayOfWeek - o.dayOfWeek;
         }
 
         return 0;
+    }
+
+    private boolean compareNotEqual(final int value, final int compareValue, final int unspecifiedConstant) {
+        return value != unspecifiedConstant && compareValue != unspecifiedConstant && value - compareValue != 0;
     }
 }
