@@ -7,9 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.openmuc.jdlms.LnClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -44,6 +47,9 @@ public class AdhocService extends DlmsApplicationService {
 
     @Autowired
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
+
+    @Autowired
+    private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
 
     @Autowired
     private JasperWirelessSmsClient smsClient;
@@ -145,5 +151,35 @@ public class AdhocService extends DlmsApplicationService {
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
+    }
+
+    public void retrieveConfigurationObjects(final DlmsDeviceMessageMetadata messageMetadata,
+            final RetrieveConfigurationObjectsRequest request, final DeviceResponseMessageSender responseMessageSender) {
+        this.logStart(LOGGER, messageMetadata, "retrieveConfigurationObjects");
+
+        LnClientConnection conn = null;
+        try {
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final Serializable response = this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    response);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during retrieveConfigurationObjects", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
+                    request);
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+
     }
 }
