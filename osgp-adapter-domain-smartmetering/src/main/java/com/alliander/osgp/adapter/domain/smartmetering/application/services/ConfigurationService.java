@@ -359,9 +359,8 @@ public class ConfigurationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        // TODO: overload the method so that null doesnt have to be returned?
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception), messageType);
     }
 
     public void replaceKeys(@Identification final String organisationIdentification,

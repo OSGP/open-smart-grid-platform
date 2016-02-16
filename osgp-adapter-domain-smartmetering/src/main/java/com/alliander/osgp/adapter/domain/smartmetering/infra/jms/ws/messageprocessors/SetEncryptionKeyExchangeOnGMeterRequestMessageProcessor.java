@@ -31,9 +31,6 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends Web
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
 
-        // TODO remove: dataObject should be null. Only a trigger is send. The
-        // actual key for the G meter is located in the db of the prot. adapter
-
         this.configurationService.setEncryptionKeyExchangeOnGMeter(organisationIdentification, deviceIdentification,
                 correlationUid, messageType);
     }

@@ -96,7 +96,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification(), dataRequest);
 
         final SetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createSetAdministrativeStatusAsyncResponse();
+        .createSetAdministrativeStatusAsyncResponse();
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
 
@@ -135,7 +135,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 organisationIdentification, request.getDeviceIdentification());
 
         final GetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                .createGetAdministrativeStatusAsyncResponse();
+        .createGetAdministrativeStatusAsyncResponse();
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -255,7 +255,6 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
-            @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request) throws OsgpException {
 
         SetEncryptionKeyExchangeOnGMeterResponse response = null;
@@ -480,7 +479,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                     organisationIdentification, request.getDeviceIdentification(), keySet);
 
             asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
-                    .createReplaceKeysAsyncResponse();
+            .createReplaceKeysAsyncResponse();
 
             asyncResponse.setCorrelationUid(correlationUid);
             asyncResponse.setDeviceIdentification(request.getDeviceIdentification());

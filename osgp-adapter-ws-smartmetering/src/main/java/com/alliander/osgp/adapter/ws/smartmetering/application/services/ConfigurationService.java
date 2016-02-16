@@ -202,11 +202,9 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        // TODO: make a new overloaded SmartMeteringRequestMessage that has not
-        // argument? So that null as paramter is not necessary
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, correlationUid,
-                organisationIdentification, deviceIdentification, null);
+                organisationIdentification, deviceIdentification);
 
         this.smartMeteringRequestMessageSender.send(message);
 
