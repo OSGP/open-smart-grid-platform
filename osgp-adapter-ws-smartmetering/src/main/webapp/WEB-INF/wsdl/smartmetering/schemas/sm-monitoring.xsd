@@ -293,7 +293,7 @@
     <xsd:complexType name="EMeterValue">
         <xsd:simpleContent>
             <xsd:extension base="tns:MeterValue">
-                <xsd:attribute name="unit" type="common:OsgpUnitType" fixed="KWH" required="true"/>
+                <xsd:attribute name="unit" type="common:OsgpUnitType" fixed="KWH" use="required"/>
             </xsd:extension>
         </xsd:simpleContent>
     </xsd:complexType>
@@ -301,7 +301,7 @@
     <xsd:complexType name="GMeterValue">
         <xsd:simpleContent>
             <xsd:extension base="tns:MeterValue">
-                <xsd:attribute name="unit" type="common:OsgpUnitType" fixed="M3"  required="true"/>
+                <xsd:attribute name="unit" type="common:OsgpUnitType" fixed="M3"  use="required"/>
             </xsd:extension>
         </xsd:simpleContent>
     </xsd:complexType>
