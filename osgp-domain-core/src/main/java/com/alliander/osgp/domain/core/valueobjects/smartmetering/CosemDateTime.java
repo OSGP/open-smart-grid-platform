@@ -18,7 +18,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 
-public class CosemDateTime implements Serializable {
+public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
 
     private static final long serialVersionUID = 4157582293990514746L;
 
@@ -38,24 +38,10 @@ public class CosemDateTime implements Serializable {
         Objects.requireNonNull(time, "time must not be null");
         Objects.requireNonNull(clockStatus, "clockStatus must not be null");
         this.checkDeviation(deviation);
-        this.date = date;
-        this.time = time;
+        this.date = new CosemDate(date);
+        this.time = new CosemTime(time);
         this.deviation = deviation;
-        this.clockStatus = clockStatus;
-    }
-
-    private void checkDeviation(final int deviation) {
-        if (!this.isValidDeviation(deviation)) {
-            throw new IllegalArgumentException("Deviation not in [-720..720, 0x8000]: " + deviation);
-        }
-    }
-
-    private boolean isValidDeviation(final int deviation) {
-        return this.isSpecificDeviation(deviation) || DEVIATION_NOT_SPECIFIED == deviation;
-    }
-
-    private boolean isSpecificDeviation(final int deviation) {
-        return deviation >= -720 && deviation <= 720;
+        this.clockStatus = new ClockStatus(clockStatus);
     }
 
     public CosemDateTime(final LocalDate date, final LocalTime time, final int deviation, final ClockStatus clockStatus) {
@@ -77,6 +63,25 @@ public class CosemDateTime implements Serializable {
     public CosemDateTime(final DateTime dateTime) {
         this(dateTime.toLocalDate(), dateTime.toLocalTime(), determineDeviation(dateTime),
                 determineClockStatus(dateTime));
+    }
+
+    public CosemDateTime(final CosemDateTime cosemDateTime) {
+        this(cosemDateTime.getDate(), cosemDateTime.getTime(), cosemDateTime.getDeviation(), cosemDateTime
+                .getClockStatus());
+    }
+
+    private void checkDeviation(final int deviation) {
+        if (!this.isValidDeviation(deviation)) {
+            throw new IllegalArgumentException("Deviation not in [-720..720, 0x8000]: " + deviation);
+        }
+    }
+
+    private boolean isValidDeviation(final int deviation) {
+        return this.isSpecificDeviation(deviation) || DEVIATION_NOT_SPECIFIED == deviation;
+    }
+
+    private boolean isSpecificDeviation(final int deviation) {
+        return deviation >= -720 && deviation <= 720;
     }
 
     private static int determineDeviation(final DateTime dateTime) {
@@ -235,5 +240,53 @@ public class CosemDateTime implements Serializable {
      */
     public LocalTime asLocalTime() {
         return this.time.asLocalTime();
+    }
+
+    @Override
+    public int compareTo(final CosemDateTime o) {
+        // If a valid datetime can be created, use this to compare.
+        // This will take deviation in to account.
+        final LocalDateTime timeThis = this.asLocalDateTime();
+        final LocalDateTime timeOther = o.asLocalDateTime();
+        if (timeThis != null && timeOther != null) {
+            return timeThis.compareTo(timeOther);
+        }
+
+        // Otherwise compare date/time on an byte value basis.
+        // Taking deviation into account is complex and bluebook
+        // does not describe how that should even work with unspecified values.
+        final int compDate = this.date.compareTo(o.date);
+        if (compDate != 0) {
+            return compDate;
+        }
+
+        final int compTime = this.time.compareTo(o.time);
+        if (compTime != 0) {
+            return compTime;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.date, this.time, this.clockStatus, this.deviation);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final CosemDateTime other = (CosemDateTime) obj;
+
+        return Objects.equals(this.date, other.date) && Objects.equals(this.time, other.time)
+                && Objects.equals(this.clockStatus, other.clockStatus) && this.deviation == other.deviation;
     }
 }
