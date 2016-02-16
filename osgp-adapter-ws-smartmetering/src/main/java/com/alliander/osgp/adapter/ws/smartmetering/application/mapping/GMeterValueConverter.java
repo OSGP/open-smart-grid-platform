@@ -23,9 +23,10 @@ public class GMeterValueConverter extends CustomConverter<Double, GMeterValue> {
 
     @Override
     public GMeterValue convert(final Double source, final Type<? extends GMeterValue> destinationType) {
-        final GMeterValue eMeterValue = new GMeterValue();
-        eMeterValue.setValue(BigDecimal.valueOf(source));
-        return eMeterValue;
+        final GMeterValue gMeterValue = new GMeterValue();
+        gMeterValue.setValue(BigDecimal.valueOf(source));
+        gMeterValue.setUnit(gMeterValue.getUnit());
+        return gMeterValue;
     }
 
 }

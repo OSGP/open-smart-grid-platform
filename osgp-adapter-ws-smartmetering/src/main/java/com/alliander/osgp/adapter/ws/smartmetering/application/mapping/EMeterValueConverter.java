@@ -25,6 +25,7 @@ public class EMeterValueConverter extends CustomConverter<Double, EMeterValue> {
     public EMeterValue convert(final Double source, final Type<? extends EMeterValue> destinationType) {
         final EMeterValue eMeterValue = new EMeterValue();
         eMeterValue.setValue(BigDecimal.valueOf(source));
+        eMeterValue.setUnit(eMeterValue.getUnit());
         return eMeterValue;
     }
 
