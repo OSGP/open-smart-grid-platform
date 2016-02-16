@@ -22,7 +22,7 @@ public class DlmsConnectionFactory {
     // TODO REPLACE BY CONFIGURATION PROPERTIES
     private static final int W_PORT_SOURCE = 1;
     private static final int W_PORT_DESTINATION = 1;
-    private static final int RESPONSE_TIMEOUT = 60000;
+    private static final int RESPONSE_TIMEOUT = 60000 * 5;
 
     /**
      * Returns an open connection using the appropriate security settings for
@@ -56,9 +56,9 @@ public class DlmsConnectionFactory {
 
         try {
             final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
-                    .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
-                    .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
-                    .clientAccessPoint(W_PORT_SOURCE);
+            .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
+            .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
+            .clientAccessPoint(W_PORT_SOURCE);
 
             final Integer challengeLength = device.getChallengeLength();
             if (challengeLength != null) {
