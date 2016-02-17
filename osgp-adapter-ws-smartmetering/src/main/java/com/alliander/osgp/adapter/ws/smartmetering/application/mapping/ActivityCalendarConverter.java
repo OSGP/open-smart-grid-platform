@@ -8,12 +8,12 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayProfileActionType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayProfileActionsType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.DayType;
@@ -21,6 +21,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SeasonTy
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SeasonsType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.WeekType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemTime;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DayProfileAction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SeasonProfile;
@@ -28,26 +30,19 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
 public class ActivityCalendarConverter
 extends
-BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType> {
+CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType, ActivityCalendar> {
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType convertTo(
-            final ActivityCalendar source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType> destinationType) {
-
-        throw new IllegalStateException("convertTo is not supported");
-    }
-
-    @Override
-    public ActivityCalendar convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType source,
-            final Type<ActivityCalendar> destinationType) {
+    public ActivityCalendar convert(final ActivityCalendarType source,
+            final Type<? extends ActivityCalendar> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return new ActivityCalendar(source.getCalendarName(), source.getActivatePassiveCalendarTime() != null ? source
-                .getActivatePassiveCalendarTime().toGregorianCalendar().getTime() : null,
+        final CosemDateTime activatePassiveCalendarTime = this.mapperFacade.map(
+                source.getActivatePassiveCalendarTime(), CosemDateTime.class);
+
+        return new ActivityCalendar(source.getCalendarName(), activatePassiveCalendarTime,
                 this.processSeasonProfile(source.getSeasonProfile()));
     }
 
@@ -62,8 +57,9 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
     }
 
     private SeasonProfile processSeasonType(final SeasonType st) {
-        return new SeasonProfile(st.getSeasonProfileName(), st.getSeasonStart() != null ? st.getSeasonStart()
-                .toGregorianCalendar().getTime() : null, this.processWeekProfile(st.getWeekProfile()));
+        final CosemDateTime seasonStart = this.mapperFacade.map(st.getSeasonStart(), CosemDateTime.class);
+
+        return new SeasonProfile(st.getSeasonProfileName(), seasonStart, this.processWeekProfile(st.getWeekProfile()));
     }
 
     private WeekProfile processWeekProfile(final WeekType weekProfile) {
@@ -90,7 +86,8 @@ BidirectionalConverter<ActivityCalendar, com.alliander.osgp.adapter.ws.schema.sm
 
     private DayProfileAction processDayProfileActionType(final DayProfileActionType dpat) {
         final Integer scriptSelector = dpat.getScriptSelector() != null ? dpat.getScriptSelector().intValue() : null;
-        final Date startTime = dpat.getStartTime() != null ? dpat.getStartTime().toGregorianCalendar().getTime() : null;
+        final CosemTime startTime = this.mapperFacade.map(dpat.getStartTime(), CosemTime.class);
         return new DayProfileAction(scriptSelector, startTime);
     }
+
 }

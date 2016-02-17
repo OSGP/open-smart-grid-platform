@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.LocalDate;
 
-public class CosemDate implements Serializable {
+public class CosemDate implements Serializable, Comparable<CosemDate> {
 
     private static final long serialVersionUID = -3965207413972253042L;
 
@@ -48,6 +48,10 @@ public class CosemDate implements Serializable {
 
     public CosemDate(final LocalDate date) {
         this(date.getYear(), date.getMonthOfYear(), date.getDayOfMonth(), DAY_OF_WEEK_NOT_SPECIFIED);
+    }
+
+    public CosemDate(final CosemDate cosemDate) {
+        this(cosemDate.getYear(), cosemDate.getMonth(), cosemDate.getDayOfMonth(), cosemDate.getDayOfWeek());
     }
 
     public CosemDate() {
@@ -295,5 +299,55 @@ public class CosemDate implements Serializable {
 
     public boolean isDayOfWeekNotSpecified() {
         return DAY_OF_WEEK_NOT_SPECIFIED == this.dayOfWeek;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.dayOfMonth;
+        result = prime * result + this.dayOfWeek;
+        result = prime * result + this.month;
+        result = prime * result + this.year;
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final CosemDate other = (CosemDate) obj;
+
+        return this.dayOfMonth == other.dayOfMonth && this.dayOfWeek == other.dayOfWeek && this.month == other.month
+                && this.year == other.year;
+    }
+
+    @Override
+    public int compareTo(final CosemDate o) {
+        if (this.compareNotEqual(this.year, o.year, YEAR_NOT_SPECIFIED)) {
+            return this.year - o.year;
+        }
+        if (this.compareNotEqual(this.month, o.month, MONTH_NOT_SPECIFIED)) {
+            return this.month - o.month;
+        }
+        if (this.compareNotEqual(this.dayOfMonth, o.dayOfMonth, DAY_OF_MONTH_NOT_SPECIFIED)) {
+            return this.dayOfMonth - o.dayOfMonth;
+        }
+        if (this.compareNotEqual(this.dayOfWeek, o.dayOfWeek, DAY_OF_WEEK_NOT_SPECIFIED)) {
+            return this.dayOfWeek - o.dayOfWeek;
+        }
+
+        return 0;
+    }
+
+    private boolean compareNotEqual(final int value, final int compareValue, final int unspecifiedConstant) {
+        return value != unspecifiedConstant && compareValue != unspecifiedConstant && value - compareValue != 0;
     }
 }
