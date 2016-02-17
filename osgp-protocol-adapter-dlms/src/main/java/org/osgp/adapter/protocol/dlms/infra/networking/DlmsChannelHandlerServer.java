@@ -46,6 +46,9 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
         if (!"".equals(message.getObiscode())) {
 
+            // Only sms push notification is yet supported
+            // add check on obiscode when scheduler obiscode or csd obiscode is
+            // also received
             final PushNotificationSms pushNotificationSms = new PushNotificationSms(deviceIdentification, ipAddress);
 
             final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
