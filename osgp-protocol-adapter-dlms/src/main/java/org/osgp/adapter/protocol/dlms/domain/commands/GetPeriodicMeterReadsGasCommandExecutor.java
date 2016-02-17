@@ -20,7 +20,6 @@ import java.util.concurrent.TimeoutException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
@@ -45,7 +44,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -227,11 +226,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         final List<PeriodicMeterReadsGas> periodicMeterReads = new ArrayList<>();
 
-        final GetResult getResult = getResultList.get(0);
-        final AccessResultCode resultCode = getResult.resultCode();
-        LOGGER.debug("AccessResultCode: {}({})", resultCode.name());
-        final DataObject resultData = getResult.resultData();
-        LOGGER.debug(this.dlmsHelperService.getDebugInfo(resultData));
+        final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
+                "Periodic G-Meter Reads");
         final List<DataObject> bufferedObjectsList = resultData.value();
 
         for (final DataObject bufferedObject : bufferedObjectsList) {
@@ -248,7 +244,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
             final DateTime endDateTime, final List<PeriodicMeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final Channel channel, final boolean isSelectiveAccessSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -407,7 +403,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final Channel channel,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectiveAccessSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         SelectiveAccessDescription access = null;
 
@@ -579,7 +575,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
                 DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                DataObject.newUInteger16Data(0))));
+                        DataObject.newUInteger16Data(0))));
     }
 
 }

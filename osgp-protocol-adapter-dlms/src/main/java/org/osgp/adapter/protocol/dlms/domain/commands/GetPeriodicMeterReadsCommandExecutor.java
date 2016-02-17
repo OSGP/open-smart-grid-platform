@@ -17,7 +17,6 @@ import java.util.concurrent.TimeoutException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
@@ -106,11 +105,8 @@ public class GetPeriodicMeterReadsCommandExecutor extends
 
         final List<PeriodicMeterReads> periodicMeterReads = new ArrayList<>();
 
-        final GetResult getResult = getResultList.get(0);
-        final AccessResultCode resultCode = getResult.resultCode();
-        LOGGER.debug("AccessResultCode: {}", resultCode.name());
-        final DataObject resultData = getResult.resultData();
-        LOGGER.debug(this.dlmsHelperService.getDebugInfo(resultData));
+        final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
+                "Periodic E-Meter Reads");
         final List<DataObject> bufferedObjectsList = resultData.value();
 
         for (final DataObject bufferedObject : bufferedObjectsList) {
