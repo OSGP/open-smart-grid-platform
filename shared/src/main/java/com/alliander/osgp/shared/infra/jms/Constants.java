@@ -108,6 +108,11 @@ public class Constants {
     public static final String RESPONSE_DATA_SIZE = "ResponseDataSize";
 
     /**
+     * JMS constant for message field: DLMS_LOG_ITEM.
+     */
+    public static final String DLMS_LOG_ITEM_REQUEST = "DLMS_LOG_ITEM";
+
+    /**
      * JMS constant for message field: OSLP_LOG_ITEM.
      */
     public static final String OSLP_LOG_ITEM_REQUEST = "OSLP_LOG_ITEM";
