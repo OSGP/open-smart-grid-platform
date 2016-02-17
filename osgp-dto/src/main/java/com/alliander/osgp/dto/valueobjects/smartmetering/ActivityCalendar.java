@@ -10,7 +10,6 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializable {
@@ -19,14 +18,14 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
 
     private String calendarName;
 
-    private Date activatePassiveCalendarTime;
+    private CosemDateTime activatePassiveCalendarTime;
 
     private List<SeasonProfile> seasonProfileList;
 
-    public ActivityCalendar(final String calendarName, final Date activatePassiveCalendarTime,
+    public ActivityCalendar(final String calendarName, final CosemDateTime activatePassiveCalendarTime,
             final List<SeasonProfile> seasonProfileList) {
         this.calendarName = calendarName;
-        this.activatePassiveCalendarTime = new Date(activatePassiveCalendarTime.getTime());
+        this.activatePassiveCalendarTime = new CosemDateTime(activatePassiveCalendarTime);
         this.seasonProfileList = new ArrayList<SeasonProfile>(seasonProfileList);
         Collections.sort(this.seasonProfileList);
     }
@@ -35,8 +34,8 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         return this.calendarName;
     }
 
-    public Date getActivatePassiveCalendarTime() {
-        return new Date(this.activatePassiveCalendarTime.getTime());
+    public CosemDateTime getActivatePassiveCalendarTime() {
+        return new CosemDateTime(this.activatePassiveCalendarTime);
     }
 
     public List<SeasonProfile> getSeasonProfileList() {
