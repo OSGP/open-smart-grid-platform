@@ -12,7 +12,7 @@ public class CosemDateTimeConverter extends CustomConverter<byte[], CosemDateTim
 
     @Override
     public CosemDateTime convert(final byte[] source, final Type<? extends CosemDateTime> destinationType) {
-        final int year = (source[0] << 8) | (source[1] & 0xff);
+        final int year = ((source[0] & 0xff) << 8) | (source[1] & 0xff);
         final int month = source[2] & 0xFF;
         final int dayOfMonth = source[3] & 0xFF;
         final int dayOfWeek = source[4] & 0xFF;
@@ -20,7 +20,7 @@ public class CosemDateTimeConverter extends CustomConverter<byte[], CosemDateTim
         final int minute = source[6] & 0xFF;
         final int second = source[7] & 0xFF;
         final int hundredths = source[8] & 0xFF;
-        final int deviation = (source[9] << 8) | (source[10] & 0xff);
+        final int deviation = ((source[9] & 0xff) << 8) | (source[10] & 0xff);
 
         final ClockStatus clockStatus = new ClockStatus(source[11]);
         final CosemTime time = new CosemTime(hour, minute, second, hundredths);
