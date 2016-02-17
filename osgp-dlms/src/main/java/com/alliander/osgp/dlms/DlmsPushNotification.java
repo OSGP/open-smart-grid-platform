@@ -7,9 +7,13 @@
  */
 package com.alliander.osgp.dlms;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
+
+import org.apache.cxf.common.util.StringUtils;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 
@@ -22,6 +26,21 @@ public class DlmsPushNotification implements Serializable {
         private String equipmentIdentifier;
         private String obiscode;
         private EnumSet<AlarmType> alarms;
+        private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        public Builder appendByte(final byte b) {
+            this.baos.write(b);
+            return this;
+        }
+
+        public Builder appendBytes(final byte[] bytes) {
+            if (bytes != null) {
+                for (final byte b : bytes) {
+                    this.baos.write(b);
+                }
+            }
+            return this;
+        }
 
         public Builder withEquipmentIdentifier(final String equipmentIdentifier) {
             this.equipmentIdentifier = equipmentIdentifier;
@@ -43,15 +62,27 @@ public class DlmsPushNotification implements Serializable {
         }
 
         public DlmsPushNotification build() {
-            return new DlmsPushNotification(this.equipmentIdentifier, this.obiscode, this.alarms);
+            return new DlmsPushNotification(this.baos.toByteArray(), this.equipmentIdentifier, this.obiscode,
+                    this.alarms);
         }
     }
 
     private final String equipmentIdentifier;
     private final String obiscode;
     private final EnumSet<AlarmType> alarms;
+    private final byte[] bytes;
 
     public DlmsPushNotification(final String equipmentIdentifier, final String obiscode, final Set<AlarmType> alarms) {
+        this(new byte[0], equipmentIdentifier, obiscode, alarms);
+    }
+
+    public DlmsPushNotification(final byte[] bytes, final String equipmentIdentifier, final String obiscode,
+            final Set<AlarmType> alarms) {
+        if (bytes == null) {
+            this.bytes = new byte[0];
+        } else {
+            this.bytes = Arrays.copyOf(bytes, bytes.length);
+        }
         this.equipmentIdentifier = equipmentIdentifier;
         this.obiscode = obiscode;
         if (alarms == null || alarms.isEmpty()) {
@@ -59,6 +90,10 @@ public class DlmsPushNotification implements Serializable {
         } else {
             this.alarms = EnumSet.copyOf(alarms);
         }
+    }
+
+    public boolean isValid() {
+        return !StringUtils.isEmpty(this.equipmentIdentifier) && !this.alarms.isEmpty();
     }
 
     @Override
@@ -69,6 +104,14 @@ public class DlmsPushNotification implements Serializable {
         } else {
             return String.format("DlmsPushNotification [device=%s, alarms=%s]", this.equipmentIdentifier, this.alarms);
         }
+    }
+
+    public byte[] toByteArray() {
+        return Arrays.copyOf(this.bytes, this.bytes.length);
+    }
+
+    public int getSize() {
+        return this.bytes.length;
     }
 
     public String getEquipmentIdentifier() {

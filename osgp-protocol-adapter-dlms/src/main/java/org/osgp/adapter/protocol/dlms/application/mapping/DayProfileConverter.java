@@ -10,44 +10,17 @@ package org.osgp.adapter.protocol.dlms.application.mapping;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
-import org.joda.time.DateTime;
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.metadata.Type;
+
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.osgp.adapter.protocol.dlms.domain.commands.DlmsHelperService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
 
-@Component(value = "dayProfileConverter")
-public class DayProfileConverter {
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
-
-    public DataObject convert(final Set<DayProfile> source) {
-        if (source == null) {
-            return null;
-        }
-
-        final DataObject dayArray = DataObject.newArrayData(this.getDayObjectList(source));
-
-        return dayArray;
-
-    }
-
-    private List<DataObject> getDayObjectList(final Set<DayProfile> dayProfileSet) {
-        final List<DataObject> dayObjectList = new ArrayList<>();
-
-        for (final DayProfile dayProfile : dayProfileSet) {
-            final DataObject dayObject = DataObject.newStructureData(this.getDayObjectElements(dayProfile));
-            dayObjectList.add(dayObject);
-        }
-
-        return dayObjectList;
-    }
+public class DayProfileConverter extends CustomConverter<DayProfile, DataObject> {
 
     private List<DataObject> getDayObjectElements(final DayProfile dayProfile) {
         final List<DataObject> dayObjectElements = new ArrayList<>();
@@ -74,8 +47,8 @@ public class DayProfileConverter {
     private List<DataObject> getDayActionObjectElements(final DayProfileAction dayProfileAction) {
         final List<DataObject> dayActionObjectElements = new ArrayList<>();
 
-        final DataObject startTimeObject = this.dlmsHelperService.dateAsDataObjectOctetString(new DateTime(
-                dayProfileAction.getStartTime()));
+        final DataObject startTimeObject = this.timeAsDataObjectOctetString(dayProfileAction.getStartTime());
+
         // See "DSMR P3 v4.2.2 Final P3.pdf" Tariffication Script Table (Class
         // ID: 9). Value: 0-0:10.0.100.255
         final DataObject nameObject = DataObject.newOctetStringData(new byte[] { 0, 0, 10, 0, 100, (byte) 255 });
@@ -83,5 +56,25 @@ public class DayProfileConverter {
 
         dayActionObjectElements.addAll(Arrays.asList(startTimeObject, nameObject, scriptSelectorObject));
         return dayActionObjectElements;
+    }
+
+    public DataObject timeAsDataObjectOctetString(final CosemTime time) {
+
+        final Integer h = time.getHour();
+        final Integer m = time.getMinute();
+        final Integer s = time.getSecond();
+        final Integer hu = time.getHundredths();
+
+        final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), hu.byteValue() };
+        return DataObject.newOctetStringData(ba);
+    }
+
+    @Override
+    public DataObject convert(final DayProfile source, final Type<? extends DataObject> destinationType) {
+        if (source == null) {
+            return null;
+        }
+
+        return DataObject.newStructureData(this.getDayObjectElements(source));
     }
 }

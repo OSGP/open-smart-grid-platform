@@ -54,9 +54,10 @@ public class ManagementService extends DlmsApplicationService {
         final List<Event> events = new ArrayList<>();
 
         LnClientConnection conn = null;
+        DlmsDevice device = null;
         try {
 
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
@@ -85,9 +86,11 @@ public class ManagementService extends DlmsApplicationService {
                     findEventsQueryMessageDataContainer);
         } finally {
             if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
                 conn.close();
             }
         }
+
     }
 
 }

@@ -38,11 +38,12 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
 
         final DlmsPushNotification message = (DlmsPushNotification) e.getMessage();
-        LOGGER.info("Received " + message);
+        this.logMessage(message);
 
+        final String correlationId = UUID.randomUUID().toString().replace("-", "");
         final String deviceIdentification = message.getEquipmentIdentifier();
         final String ipAddress = this.retrieveIpAddress(ctx, deviceIdentification);
-        final String correlationId = UUID.randomUUID().toString().replace("-", "");
+        
 
         if (!"".equals(message.getObiscode())) {
 
@@ -75,10 +76,10 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         String ipAddress = null;
         try {
             ipAddress = ((InetSocketAddress) ctx.getChannel().getRemoteAddress()).getHostString();
-            LOGGER.info("Push notification alarm for device {} received from IP address {}", deviceIdentification,
+            LOGGER.info("Push notification for device {} received from IP address {}", deviceIdentification,
                     ipAddress);
         } catch (final Exception ex) {
-            LOGGER.info("Unable to determine IP address of the meter sending an alarm notification: ", ex);
+            LOGGER.info("Unable to determine IP address of the meter sending a push notification: ", ex);
         }
         return ipAddress;
     }
