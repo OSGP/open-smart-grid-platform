@@ -47,6 +47,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfi
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
@@ -243,6 +247,56 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                 response.setDescription((String) meterResponseData.getMessageData());
             }
         } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
+            @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request) throws OsgpException {
+
+        SetEncryptionKeyExchangeOnGMeterResponse response = null;
+        try {
+            response = new SetEncryptionKeyExchangeOnGMeterResponse();
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetAdministrativeStatusResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetEncryptionKeyExchangeOnGMeterRequest for meter: {}.",
+                request.getDeviceIdentification());
+
+        SetEncryptionKeyExchangeOnGMeterAsyncResponse response = null;
+        try {
+            response = new SetEncryptionKeyExchangeOnGMeterAsyncResponse();
+            final String deviceIdentification = request.getDeviceIdentification();
+
+            final String correlationUid = this.configurationService.enqueueSetEncryptionKeyExchangeOnGMeterRequest(
+                    organisationIdentification, deviceIdentification);
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+        } catch (final Exception e) {
+
+            LOGGER.error(
+                    "Exception: {} while setting Encryption Key Exchange On G-Meter on device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
             this.handleException(e);
         }
         return response;
