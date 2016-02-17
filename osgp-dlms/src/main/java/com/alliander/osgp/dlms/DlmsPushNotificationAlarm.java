@@ -7,9 +7,13 @@
  */
 package com.alliander.osgp.dlms;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
+
+import org.apache.cxf.common.util.StringUtils;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 
@@ -21,6 +25,21 @@ public class DlmsPushNotificationAlarm implements Serializable {
 
         private String equipmentIdentifier;
         private EnumSet<AlarmType> alarms;
+        private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        public Builder appendByte(final byte b) {
+            this.baos.write(b);
+            return this;
+        }
+
+        public Builder appendBytes(final byte[] bytes) {
+            if (bytes != null) {
+                for (final byte b : bytes) {
+                    this.baos.write(b);
+                }
+            }
+            return this;
+        }
 
         public Builder withEquipmentIdentifier(final String equipmentIdentifier) {
             this.equipmentIdentifier = equipmentIdentifier;
@@ -37,14 +56,24 @@ public class DlmsPushNotificationAlarm implements Serializable {
         }
 
         public DlmsPushNotificationAlarm build() {
-            return new DlmsPushNotificationAlarm(this.equipmentIdentifier, this.alarms);
+            return new DlmsPushNotificationAlarm(this.baos.toByteArray(), this.equipmentIdentifier, this.alarms);
         }
     }
 
+    private final byte[] bytes;
     private final String equipmentIdentifier;
     private final EnumSet<AlarmType> alarms;
 
     public DlmsPushNotificationAlarm(final String equipmentIdentifier, final Set<AlarmType> alarms) {
+        this(new byte[0], equipmentIdentifier, alarms);
+    }
+
+    public DlmsPushNotificationAlarm(final byte[] bytes, final String equipmentIdentifier, final Set<AlarmType> alarms) {
+        if (bytes == null) {
+            this.bytes = new byte[0];
+        } else {
+            this.bytes = Arrays.copyOf(bytes, bytes.length);
+        }
         this.equipmentIdentifier = equipmentIdentifier;
         if (alarms == null || alarms.isEmpty()) {
             this.alarms = EnumSet.noneOf(AlarmType.class);
@@ -53,9 +82,21 @@ public class DlmsPushNotificationAlarm implements Serializable {
         }
     }
 
+    public boolean isValid() {
+        return !StringUtils.isEmpty(this.equipmentIdentifier) && !this.alarms.isEmpty();
+    }
+
     @Override
     public String toString() {
         return String.format("DlmsPushNotificationAlarm[device=%s, alarms=%s]", this.equipmentIdentifier, this.alarms);
+    }
+
+    public byte[] toByteArray() {
+        return Arrays.copyOf(this.bytes, this.bytes.length);
+    }
+
+    public int getSize() {
+        return this.bytes.length;
     }
 
     public String getEquipmentIdentifier() {

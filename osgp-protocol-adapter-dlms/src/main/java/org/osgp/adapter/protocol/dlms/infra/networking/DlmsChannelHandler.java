@@ -11,11 +11,19 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessage;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.alliander.osgp.dlms.DlmsPushNotificationAlarm;
 
 public abstract class DlmsChannelHandler extends SimpleChannelHandler {
 
     private final Logger logger;
+
+    @Autowired
+    private DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender;
 
     protected DlmsChannelHandler(final Logger logger) {
         this.logger = logger;
@@ -50,5 +58,13 @@ public abstract class DlmsChannelHandler extends SimpleChannelHandler {
         final int channelId = e.getChannel().getId();
         this.logger.warn("{} Unexpected exception from downstream. {}", channelId, e.getCause());
         e.getChannel().close();
+    }
+
+    protected void logMessage(final DlmsPushNotificationAlarm message) {
+
+        final DlmsLogItemRequestMessage dlmsLogItemRequestMessage = new DlmsLogItemRequestMessage(
+                message.getEquipmentIdentifier(), true, message.isValid(), message, message.getSize());
+
+        this.dlmsLogItemRequestMessageSender.send(dlmsLogItemRequestMessage);
     }
 }

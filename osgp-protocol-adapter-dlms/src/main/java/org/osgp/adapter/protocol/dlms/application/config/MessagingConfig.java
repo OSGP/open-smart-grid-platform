@@ -19,6 +19,7 @@ import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.OsgpRequestMessageSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -307,6 +308,11 @@ public class MessagingConfig {
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_DLMS_LOG_ITEM_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
+    }
+
+    @Bean
+    public DlmsLogItemRequestMessageSender dlmsLogItemRequestMessageSender() {
+        return new DlmsLogItemRequestMessageSender();
     }
 
     // === OSGP REQUESTS ===

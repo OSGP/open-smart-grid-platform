@@ -35,8 +35,10 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
+
         final DlmsPushNotificationAlarm message = (DlmsPushNotificationAlarm) e.getMessage();
-        LOGGER.info("Received " + message);
+        this.logMessage(message);
+
         final String correlationId = UUID.randomUUID().toString().replace("-", "");
         final String deviceIdentification = message.getEquipmentIdentifier();
         final PushNotificationAlarm pushNotificationAlarm = new PushNotificationAlarm(deviceIdentification,
