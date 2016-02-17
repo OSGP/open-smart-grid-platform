@@ -42,8 +42,8 @@ public class EventNotificationMessageService {
     private SsldRepository ssldRepository;
 
     @Transactional(value = "transactionManager")
-    public void handleEvent(final String deviceIdentification, final String deviceUid, final EventType eventType,
-            final String description, final Integer index) throws UnknownEntityException {
+    public void handleEvent(final String deviceIdentification, final EventType eventType, final String description,
+            final Integer index) throws UnknownEntityException {
 
         // Lookup device
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
@@ -59,7 +59,7 @@ public class EventNotificationMessageService {
             }
 
         } else {
-            throw new UnknownEntityException(Device.class, deviceUid);
+            throw new UnknownEntityException(Device.class, deviceIdentification);
         }
     }
 

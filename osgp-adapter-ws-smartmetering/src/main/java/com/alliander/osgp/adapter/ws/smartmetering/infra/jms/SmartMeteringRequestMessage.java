@@ -29,6 +29,11 @@ public class SmartMeteringRequestMessage extends RequestMessage {
         this.messageType = messageType;
     }
 
+    public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType setEncryptionKeyExchangeOnGMeter,
+            final String correlationUid, final String organisationIdentification, final String deviceIdentification) {
+        this(setEncryptionKeyExchangeOnGMeter, correlationUid, organisationIdentification, deviceIdentification, null);
+    }
+
     public SmartMeteringRequestMessageType getMessageType() {
         return this.messageType;
     }
