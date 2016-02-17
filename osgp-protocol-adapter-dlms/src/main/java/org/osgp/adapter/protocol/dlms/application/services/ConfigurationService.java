@@ -7,16 +7,15 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
+import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
@@ -25,6 +24,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommand
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -46,6 +46,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
@@ -80,6 +81,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
+
+    @Autowired
+    private SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
@@ -300,6 +304,48 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
+    public void setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
+            final GMeterInfo gMeterInfo, final DeviceResponseMessageSender responseMessageSender) {
+
+        this.logStart(LOGGER, messageMetadata, "setEncryptionKeyExchangeOnGMeter");
+
+        LnClientConnection conn = null;
+        DlmsDevice device = null;
+        try {
+            final String deviceIdentification = messageMetadata.getDeviceIdentification();
+            device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            // Get G-Meter
+            final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo
+                    .getDeviceIdentification());
+            final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
+                    gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
+                            SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
+                            SecurityKeyType.G_METER_MASTER).getKey());
+
+            this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
+                    "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification);
+
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during setEncryptionKeyExchangeOnGMeter", e);
+            final OsgpException ex = this.ensureOsgpException(e);
+
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+        } finally {
+            if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.close();
+            }
+        }
+
+    }
+
     public void setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
             final ActivityCalendar activityCalendar, final DeviceResponseMessageSender responseMessageSender) {
 
@@ -413,12 +459,10 @@ public class ConfigurationService extends DlmsApplicationService {
         this.logStart(LOGGER, messageMetadata, "replaceKeys");
 
         final LnClientConnection conn = null;
+
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-            LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
-            LOGGER.info("*** NOT IMPLEMENTED - Replace key ***");
-
+            this.replaceKeySet(conn, device, keySet);
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during replace keys", e);
@@ -433,12 +477,24 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
+    private void replaceKeySet(final LnClientConnection conn, final DlmsDevice device, final KeySet keySet)
+            throws ProtocolAdapterException {
+        try {
+            LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
+            this.executeReplaceKey(device, conn, keySet.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION,
+                    KeyId.AUTHENTICATION_KEY);
+            this.executeReplaceKey(device, conn, keySet.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION,
+                    KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY);
+        } finally {
+            // Store keys even when an exception was thrown, to be able to
+            // retrieve key status in case the key was set on the device.
+            this.dlmsDeviceRepository.save(device);
+        }
+    }
+
     /**
      * Replace a key on the meter.
      *
-     * NOTE: Not used while there is a problem with the jDLMS library. When that
-     * problem is fixed, this method can probably be called from the replaceKeys
-     * method.
      *
      * @param device
      *            Device entity.
@@ -457,31 +513,31 @@ public class ConfigurationService extends DlmsApplicationService {
     private void executeReplaceKey(final DlmsDevice device, final LnClientConnection conn, final byte[] key,
             final SecurityKeyType securityKeyType, final KeyId keyId) throws ProtocolAdapterException {
 
-        // Add the new key and store in the repo
-        final SecurityKey newKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null);
-        device.addSecurityKey(newKey);
-        this.dlmsDeviceRepository.save(device);
-
         try {
-            // Send the key to the device.
-            final MethodResultCode methodResultCode = this.replaceKeyCommandExecutor.execute(conn, device,
-                    ReplaceKeyCommandExecutor.wrap(key, keyId));
-            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
-                throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
-                        + methodResultCode);
-            }
+            // Add the new key and store in the repo
+            final SecurityKey newKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null);
+            device.addSecurityKey(newKey);
 
-        } catch (IOException | TimeoutException e) {
+            /**
+             * Waiting for update of jDLMS library.
+             */
+            // // Send the key to the device.
+            // final MethodResultCode methodResultCode =
+            // this.replaceKeyCommandExecutor.execute(conn, device,
+            // ReplaceKeyCommandExecutor.wrap(key, keyId));
+            // if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+            // throw new
+            // ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
+            // + methodResultCode);
+            // }
+
+            final Date now = new Date();
+            final SecurityKey oldKey = device.getValidSecurityKey(securityKeyType);
+            oldKey.setValidTo(now);
+            newKey.setValidFrom(now);
+        } catch (final Exception e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw new ProtocolAdapterException(e.getMessage());
         }
-
-        // When succesful, expire the oldkey and set new key as valid from
-        // now.
-        final Date now = new Date();
-        final SecurityKey oldKey = device.getValidSecurityKey(securityKeyType);
-        oldKey.setValidTo(now);
-        newKey.setValidFrom(now);
-        this.dlmsDeviceRepository.save(device);
     }
 }
