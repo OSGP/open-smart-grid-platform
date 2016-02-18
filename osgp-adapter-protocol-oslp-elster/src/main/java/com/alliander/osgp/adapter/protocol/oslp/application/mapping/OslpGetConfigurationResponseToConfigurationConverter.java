@@ -20,21 +20,21 @@ import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
 import com.alliander.osgp.oslp.Oslp;
 
 public class OslpGetConfigurationResponseToConfigurationConverter extends
-        CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
+CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
     @Override
     public Configuration convert(final Oslp.GetConfigurationResponse source,
             final Type<? extends Configuration> destinationType) {
         return new Configuration(source.hasLightType() ? this.mapperFacade.map(source.getLightType(), LightType.class)
                 : null, source.hasDaliConfiguration() ? this.mapperFacade.map(source.getDaliConfiguration(),
-                DaliConfiguration.class) : null, source.hasRelayConfiguration() ? this.mapperFacade.map(
-                source.getRelayConfiguration(), RelayConfiguration.class) : null,
-                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
-                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
-                source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
-                        : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterType.class)
-                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
-                        source.getLongTermHistoryInterval(), Integer.class) : null,
-                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
-                        source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
+                        DaliConfiguration.class) : null, source.hasRelayConfiguration() ? this.mapperFacade.map(
+                                source.getRelayConfiguration(), RelayConfiguration.class) : null,
+                                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
+                                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
+                                        source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
+                                                : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterType.class)
+                                                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
+                                                                source.getLongTermHistoryInterval(), Integer.class) : null,
+                                                                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
+                                                                        source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
     }
 }
