@@ -8,6 +8,7 @@
 package com.alliander.osgp.domain.core.valueobjects;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -45,6 +46,40 @@ public class Configuration implements Serializable {
     private final LinkType preferredLinkType;
 
     private final MeterType meterType;
+
+    private Integer timeSyncFrequency;
+
+    private String deviceFixIpValue;
+
+    private boolean isDhcpEnabled;
+
+    private Integer communicationTimeout;
+
+    private Integer communicationNumberOfRetries;
+
+    private Integer communicationPauseTimeBetweenConnectionTrials;
+
+    private String ospgIpAddress;
+
+    private Integer osgpPortNumber;
+
+    private boolean isTestButtonEnabled;
+
+    private boolean isAutomaticSummerTimingEnabled;
+
+    private Integer astroGateSunRiseOffset;
+
+    private Integer astroGateSunSetOffset;
+
+    private List<Integer> switchingDelay;
+
+    private List<RelayMatrix> relayLinking;
+
+    private boolean relayRefreshing;
+
+    private String summerTimeDetails;
+
+    private String winterTimeDetails;
 
     public Configuration(final LightType lightType, final DaliConfiguration daliConfiguration,
             final RelayConfiguration relayConfiguration, final Integer shortTermHistoryIntervalMinutes,
@@ -91,4 +126,141 @@ public class Configuration implements Serializable {
     public LongTermIntervalType getLongTermHistoryIntervalType() {
         return this.longTermHistoryIntervalType;
     }
+
+    public Integer getTimeSyncFrequency() {
+        return this.timeSyncFrequency;
+    }
+
+    public void setTimeSyncFrequency(final Integer timeSyncFrequency) {
+        this.timeSyncFrequency = timeSyncFrequency;
+    }
+
+    public String getDeviceFixIpValue() {
+        return this.deviceFixIpValue;
+    }
+
+    public void setDeviceFixIpValue(final String deviceFixIpValue) {
+        this.deviceFixIpValue = deviceFixIpValue;
+    }
+
+    public boolean isDhcpEnabled() {
+        return this.isDhcpEnabled;
+    }
+
+    public void setDhcpEnabled(final boolean isDhcpEnabled) {
+        this.isDhcpEnabled = isDhcpEnabled;
+    }
+
+    public Integer getCommunicationTimeout() {
+        return this.communicationTimeout;
+    }
+
+    public void setCommunicationTimeout(final Integer communicationTimeout) {
+        this.communicationTimeout = communicationTimeout;
+    }
+
+    public Integer getCommunicationNumberOfRetries() {
+        return this.communicationNumberOfRetries;
+    }
+
+    public void setCommunicationNumberOfRetries(final Integer communicationNumberOfRetries) {
+        this.communicationNumberOfRetries = communicationNumberOfRetries;
+    }
+
+    public Integer getCommunicationPauseTimeBetweenConnectionTrials() {
+        return this.communicationPauseTimeBetweenConnectionTrials;
+    }
+
+    public void setCommunicationPauseTimeBetweenConnectionTrials(final Integer communicationPauseTimeBetweenConnectionTrials) {
+        this.communicationPauseTimeBetweenConnectionTrials = communicationPauseTimeBetweenConnectionTrials;
+    }
+
+    public String getOspgIpAddress() {
+        return this.ospgIpAddress;
+    }
+
+    public void setOspgIpAddress(final String ospgIpAddress) {
+        this.ospgIpAddress = ospgIpAddress;
+    }
+
+    public Integer getOsgpPortNumber() {
+        return this.osgpPortNumber;
+    }
+
+    public void setOsgpPortNumber(final Integer osgpPortNumber) {
+        this.osgpPortNumber = osgpPortNumber;
+    }
+
+    public boolean isTestButtonEnabled() {
+        return this.isTestButtonEnabled;
+    }
+
+    public void setTestButtonEnabled(final boolean isTestButtonEnabled) {
+        this.isTestButtonEnabled = isTestButtonEnabled;
+    }
+
+    public boolean isAutomaticSummerTimingEnabled() {
+        return this.isAutomaticSummerTimingEnabled;
+    }
+
+    public void setAutomaticSummerTimingEnabled(final boolean isAutomaticSummerTimingEnabled) {
+        this.isAutomaticSummerTimingEnabled = isAutomaticSummerTimingEnabled;
+    }
+
+    public Integer getAstroGateSunRiseOffset() {
+        return this.astroGateSunRiseOffset;
+    }
+
+    public void setAstroGateSunRiseOffset(final Integer astroGateSunRiseOffset) {
+        this.astroGateSunRiseOffset = astroGateSunRiseOffset;
+    }
+
+    public Integer getAstroGateSunSetOffset() {
+        return this.astroGateSunSetOffset;
+    }
+
+    public void setAstroGateSunSetOffset(final Integer astroGateSunSetOffset) {
+        this.astroGateSunSetOffset = astroGateSunSetOffset;
+    }
+
+    public List<Integer> getSwitchingDelay() {
+        return this.switchingDelay;
+    }
+
+    public void setSwitchingDelay(final List<Integer> switchingDelay) {
+        this.switchingDelay = switchingDelay;
+    }
+
+    public List<RelayMatrix> getRelayLinking() {
+        return this.relayLinking;
+    }
+
+    public boolean isRelayRefreshing() {
+        return this.relayRefreshing;
+    }
+
+    public void setRelayRefreshing(final boolean relayRefreshing) {
+        this.relayRefreshing = relayRefreshing;
+    }
+
+    public String getSummerTimeDetails() {
+        return this.summerTimeDetails;
+    }
+
+    public void setSummerTimeDetails(final String summerTimeDetails) {
+        this.summerTimeDetails = summerTimeDetails;
+    }
+
+    public String getWinterTimeDetails() {
+        return this.winterTimeDetails;
+    }
+
+    public void setWinterTimeDetails(final String winterTimeDetails) {
+        this.winterTimeDetails = winterTimeDetails;
+    }
+
+    public void setRelayLinking(final List<RelayMatrix> relayLinking) {
+        this.relayLinking = relayLinking;
+    }
+
 }

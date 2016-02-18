@@ -45,7 +45,27 @@ public class ConfigurationConverter extends CustomConverter<com.alliander.osgp.d
         final LongTermIntervalType longTermHistoryIntervalType = this.mapperFacade.map(
                 source.getLongTermHistoryIntervalType(), LongTermIntervalType.class);
 
-        return new Configuration(lightType, daliConfiguration, relayConfiguration, shortTermHistoryIntervalMinutes,
+        final Configuration configuration = new Configuration(lightType, daliConfiguration, relayConfiguration, shortTermHistoryIntervalMinutes,
                 preferredLinkType, meterType, longTermHistoryInterval, longTermHistoryIntervalType);
+
+        configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
+        configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
+        configuration.setAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled());
+        configuration.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
+        configuration.setCommunicationPauseTimeBetweenConnectionTrials(source.getCommunicationPauseTimeBetweenConnectionTrials());
+        configuration.setCommunicationTimeout(source.getCommunicationTimeout());
+        configuration.setDeviceFixIpValue(source.getDeviceFixIpValue());
+        configuration.setDhcpEnabled(source.isDhcpEnabled());
+        configuration.setOsgpPortNumber(source.getOsgpPortNumber());
+        configuration.setOspgIpAddress(source.getOspgIpAddress());
+        configuration.setRelayRefreshing(source.isRelayRefreshing());
+        configuration.setSummerTimeDetails(source.getSummerTimeDetails());
+        configuration.setSwitchingDelay(source.getSwitchingDelay());
+        configuration.setTestButtonEnabled(source.isTestButtonEnabled());
+        configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
+        configuration.setWinterTimeDetails(source.getWinterTimeDetails());
+        configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(), com.alliander.osgp.domain.core.valueobjects.RelayMatrix.class));
+
+        return configuration;
     }
 }
