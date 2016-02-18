@@ -27,7 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 /**
- * Organisation entitiy class
+ * Organisation entity class
  */
 @Entity
 public class Organisation extends AbstractEntity {

@@ -8,7 +8,6 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
@@ -16,11 +15,11 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
 
     private String seasonProfileName;
 
-    private Date seasonStart;
+    private CosemDateTime seasonStart;
 
     private WeekProfile weekProfile;
 
-    public SeasonProfile(final String seasonProfileName, final Date seasonStart, final WeekProfile weekProfile) {
+    public SeasonProfile(final String seasonProfileName, final CosemDateTime seasonStart, final WeekProfile weekProfile) {
         this.seasonProfileName = seasonProfileName;
         this.seasonStart = seasonStart;
         this.weekProfile = weekProfile;
@@ -30,7 +29,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
         return this.seasonProfileName;
     }
 
-    public Date getSeasonStart() {
+    public CosemDateTime getSeasonStart() {
         return this.seasonStart;
     }
 
@@ -74,7 +73,7 @@ public class SeasonProfile implements Comparable<SeasonProfile>, Serializable {
         if (!this.seasonProfileName.equals(other.seasonProfileName)) {
             return false;
         }
-        if (!this.seasonStart.equals(other.seasonStart)) {
+        if (this.seasonStart.equals(other.seasonStart)) {
             return false;
         }
         if (!this.weekProfile.equals(other.weekProfile)) {
