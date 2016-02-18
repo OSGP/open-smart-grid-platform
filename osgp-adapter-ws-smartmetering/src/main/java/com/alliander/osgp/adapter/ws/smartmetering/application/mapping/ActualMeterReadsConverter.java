@@ -25,8 +25,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFacto
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 
 public class ActualMeterReadsConverter
-extends
-CustomConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
+        extends
+        CustomConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
@@ -35,7 +35,7 @@ CustomConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmete
             final Type<? extends ActualMeterReadsResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
-        .createActualMeterReadsResponse();
+                .createActualMeterReadsResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -50,7 +50,7 @@ CustomConverter<ActualMeterReads, com.alliander.osgp.adapter.ws.schema.smartmete
         destination.setLogTime(convertedDate);
         destination.setActiveEnergyImport(this.eFromDouble(source.getActiveEnergyImport()));
         if (!destination.getActiveEnergyImport().getUnit().name().equals(source.getOsgpUnit().name())) {
-            throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
+            throw new IllegalStateException(String.format("unit %s in destination differs from unit %s in source",
                     destination.getActiveEnergyImport().getUnit(), source.getOsgpUnit()));
         }
         destination.setActiveEnergyExport(this.eFromDouble(source.getActiveEnergyExport()));
