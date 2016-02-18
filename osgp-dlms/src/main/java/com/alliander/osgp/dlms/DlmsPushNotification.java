@@ -24,7 +24,7 @@ public class DlmsPushNotification implements Serializable {
     public static class Builder {
 
         private String equipmentIdentifier;
-        private String obiscode;
+        private String triggerType;
         private EnumSet<AlarmType> alarms;
         private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -47,8 +47,8 @@ public class DlmsPushNotification implements Serializable {
             return this;
         }
 
-        public Builder withObiscode(final String obiscode) {
-            this.obiscode = obiscode;
+        public Builder withTriggerType(final String triggerType) {
+            this.triggerType = triggerType;
             return this;
         }
 
@@ -62,21 +62,21 @@ public class DlmsPushNotification implements Serializable {
         }
 
         public DlmsPushNotification build() {
-            return new DlmsPushNotification(this.baos.toByteArray(), this.equipmentIdentifier, this.obiscode,
+            return new DlmsPushNotification(this.baos.toByteArray(), this.equipmentIdentifier, this.triggerType,
                     this.alarms);
         }
     }
 
     private final String equipmentIdentifier;
-    private final String obiscode;
+    private final String triggerType;
     private final EnumSet<AlarmType> alarms;
     private final byte[] bytes;
 
-    public DlmsPushNotification(final String equipmentIdentifier, final String obiscode, final Set<AlarmType> alarms) {
-        this(new byte[0], equipmentIdentifier, obiscode, alarms);
+    public DlmsPushNotification(final String equipmentIdentifier, final String triggerType, final Set<AlarmType> alarms) {
+        this(new byte[0], equipmentIdentifier, triggerType, alarms);
     }
 
-    public DlmsPushNotification(final byte[] bytes, final String equipmentIdentifier, final String obiscode,
+    public DlmsPushNotification(final byte[] bytes, final String equipmentIdentifier, final String triggerType,
             final Set<AlarmType> alarms) {
         if (bytes == null) {
             this.bytes = new byte[0];
@@ -84,7 +84,7 @@ public class DlmsPushNotification implements Serializable {
             this.bytes = Arrays.copyOf(bytes, bytes.length);
         }
         this.equipmentIdentifier = equipmentIdentifier;
-        this.obiscode = obiscode;
+        this.triggerType = triggerType;
         if (alarms == null || alarms.isEmpty()) {
             this.alarms = EnumSet.noneOf(AlarmType.class);
         } else {
@@ -93,16 +93,18 @@ public class DlmsPushNotification implements Serializable {
     }
 
     public boolean isValid() {
-        return !StringUtils.isEmpty(this.equipmentIdentifier) && !this.alarms.isEmpty();
+        return !StringUtils.isEmpty(this.equipmentIdentifier)
+                && (!this.alarms.isEmpty() || !"".equals(this.triggerType));
     }
 
     @Override
     public String toString() {
-        if (this.obiscode != null && !"".equals(this.obiscode)) {
-            return String.format("DlmsPushNotification [device=%s, obiscode=%s]", this.equipmentIdentifier,
-                    this.obiscode);
+        if (this.alarms.isEmpty()) {
+            return String.format("DlmsPushNotification [device = %s, trigger type = %s]", this.equipmentIdentifier,
+                    this.triggerType);
         } else {
-            return String.format("DlmsPushNotification [device=%s, alarms=%s]", this.equipmentIdentifier, this.alarms);
+            return String.format("DlmsPushNotification [device = %s, trigger type = %s, alarms=%s]",
+                    this.equipmentIdentifier, this.triggerType, this.alarms);
         }
     }
 
@@ -118,8 +120,8 @@ public class DlmsPushNotification implements Serializable {
         return this.equipmentIdentifier;
     }
 
-    public String getObiscode() {
-        return this.obiscode;
+    public String getTriggerType() {
+        return this.triggerType;
     }
 
     public Set<AlarmType> getAlarms() {

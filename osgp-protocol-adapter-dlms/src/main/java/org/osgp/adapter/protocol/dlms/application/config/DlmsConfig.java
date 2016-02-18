@@ -91,7 +91,7 @@ public class DlmsConfig {
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));
 
-        pipeline.addLast("dlmsPushNotificationAlarmDecoder", this.dlmsPushNotificationAlarmDecoder());
+        pipeline.addLast("dlmsPushNotificationDecoder", new DlmsPushNotificationDecoder());
 
         pipeline.addLast("dlmsChannelHandler", handler);
 
@@ -119,8 +119,8 @@ public class DlmsConfig {
     /**
      * @return a new {@link DlmsPushNotificationDecoder}.
      */
-    @Bean
-    public DlmsPushNotificationDecoder dlmsPushNotificationAlarmDecoder() {
-        return new DlmsPushNotificationDecoder();
-    }
+    // @Bean
+    // public DlmsPushNotificationDecoder dlmsPushNotificationDecoder() {
+    // return new DlmsPushNotificationDecoder();
+    // }
 }

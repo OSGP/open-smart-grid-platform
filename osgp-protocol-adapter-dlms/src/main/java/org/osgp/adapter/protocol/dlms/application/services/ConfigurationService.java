@@ -334,7 +334,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                            SecurityKeyType.G_METER_MASTER).getKey());
+                                    SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -448,16 +448,9 @@ public class ConfigurationService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            // final PushSetupSms returnedPushSetupSms =
-            // this.getPushSetupSmsCommandExecutor.execute(conn, device, null);
-            // LOGGER.info("Push Setup Sms to set on the device: {}",
-            // returnedPushSetupSms);
-
             final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor.execute(conn, device,
                     pushSetupSms);
 
-            // final AccessResultCode accessResultCode =
-            // AccessResultCode.SUCCESS;
             if (AccessResultCode.SUCCESS != accessResultCode) {
                 throw new ProtocolAdapterException("AccessResultCode for set push setup sms was not SUCCESS: "
                         + accessResultCode);

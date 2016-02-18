@@ -27,6 +27,11 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandlerServer.class);
 
+    // private static final String PUSH_SCHEDULER_TRIGGER = "Push scheduler";
+    private static final String PUSH_ALARM_TRIGGER = "Push alarm monitor";
+    // private static final String PUSH_CDS_TRIGGER = "Push cds wakeup";
+    private static final String PUSH_SMS_TRIGGER = "Push sms wakeup";
+
     @Autowired
     private OsgpRequestMessageSender osgpRequestMessageSender;
 
@@ -38,18 +43,14 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
 
         final DlmsPushNotification message = (DlmsPushNotification) e.getMessage();
-        this.logMessage(message);
 
         final String correlationId = UUID.randomUUID().toString().replace("-", "");
         final String deviceIdentification = message.getEquipmentIdentifier();
         final String ipAddress = this.retrieveIpAddress(ctx, deviceIdentification);
-        
 
-        if (!"".equals(message.getObiscode())) {
+        if (PUSH_SMS_TRIGGER.equals(message.getTriggerType())) {
+            this.logMessage(message);
 
-            // Only sms push notification is yet supported
-            // add check on obiscode when scheduler obiscode or csd obiscode is
-            // also received
             final PushNotificationSms pushNotificationSms = new PushNotificationSms(deviceIdentification, ipAddress);
 
             final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
@@ -58,7 +59,8 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
             LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: " + correlationId);
             this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_SMS.name());
 
-        } else {
+        } else if (PUSH_ALARM_TRIGGER.equals(message.getTriggerType())) {
+            this.logMessage(message);
 
             final PushNotificationAlarm pushNotificationAlarm = new PushNotificationAlarm(deviceIdentification,
                     message.getAlarms());
@@ -69,6 +71,8 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
             LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
             this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_ALARM.name());
 
+        } else {
+            LOGGER.info("Unknown received message, skip processing");
         }
     }
 
@@ -76,8 +80,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         String ipAddress = null;
         try {
             ipAddress = ((InetSocketAddress) ctx.getChannel().getRemoteAddress()).getHostString();
-            LOGGER.info("Push notification for device {} received from IP address {}", deviceIdentification,
-                    ipAddress);
+            LOGGER.info("Push notification for device {} received from IP address {}", deviceIdentification, ipAddress);
         } catch (final Exception ex) {
             LOGGER.info("Unable to determine IP address of the meter sending a push notification: ", ex);
         }
