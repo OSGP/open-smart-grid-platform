@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alliander.osgp.core.application.services.EventNotificationMessageService;
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.entities.Device;
@@ -42,6 +43,9 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PushNotificationAlarmMessageProcessor.class);
+
+    @Autowired
+    private EventNotificationMessageService eventNotificationMessageService;
 
     @Autowired
     private DomainRequestService domainRequestService;
@@ -74,12 +78,14 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
         try {
             final PushNotificationAlarm pushNotificationAlarm = (PushNotificationAlarm) dataObject;
 
-            final String organizationIdentification = this.getOrganizationIdentificationOfOwner(deviceIdentification);
-            LOGGER.info("Matching owner {} with device {} handling {}", organisationIdentification,
-                    deviceIdentification, messageType);
+            this.storeAlarmAsEvent(pushNotificationAlarm);
+
+            final String ownerIdentification = this.getOrganisationIdentificationOfOwner(deviceIdentification);
+            LOGGER.info("Matching owner {} with device {} handling {} from {}", ownerIdentification,
+                    deviceIdentification, messageType, requestMessage.getIpAddress());
             final RequestMessage requestWithUpdatedOrganization = new RequestMessage(
-                    requestMessage.getCorrelationUid(), organizationIdentification,
-                    requestMessage.getDeviceIdentification(), requestMessage.getIpAddress(), pushNotificationAlarm);
+                    requestMessage.getCorrelationUid(), ownerIdentification, requestMessage.getDeviceIdentification(),
+                    requestMessage.getIpAddress(), pushNotificationAlarm);
 
             /*
              * This message processor handles messages that came in on the
@@ -114,7 +120,20 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
         }
     }
 
-    private String getOrganizationIdentificationOfOwner(final String deviceIdentification) throws OsgpException {
+    private void storeAlarmAsEvent(final PushNotificationAlarm pushNotificationAlarm) {
+        try {
+            this.eventNotificationMessageService.handleEvent(pushNotificationAlarm.getDeviceIdentification(),
+                    com.alliander.osgp.domain.core.valueobjects.EventType.ALARM_NOTIFICATION, pushNotificationAlarm
+                            .getAlarms().toString(), 0);
+        } catch (final UnknownEntityException uee) {
+            LOGGER.warn("Unable to store event for Push Notification Alarm from unknown device: "
+                    + pushNotificationAlarm, uee);
+        } catch (final Exception e) {
+            LOGGER.error("Error storing event for Push Notification Alarm: " + pushNotificationAlarm, e);
+        }
+    }
+
+    private String getOrganisationIdentificationOfOwner(final String deviceIdentification) throws OsgpException {
 
         final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 

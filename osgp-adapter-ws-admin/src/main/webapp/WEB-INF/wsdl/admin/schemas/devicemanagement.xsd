@@ -192,7 +192,7 @@
 		<xsd:sequence>
 			<xsd:element name="DeviceUid" type="xsd:string" minOccurs="0" />
 			<xsd:element name="DeviceIdentification" type="common:Identification" />
-			<xsd:element name="Owner" type="common:Identification" minOccurs="0" />
+			<xsd:element name="Owner" type="xsd:string" minOccurs="0" />
 			<xsd:element name="ContainerPostalCode" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="ContainerCity" type="xsd:string" minOccurs="0"/>
 			<xsd:element name="ContainerStreet" type="xsd:string" minOccurs="0"/>

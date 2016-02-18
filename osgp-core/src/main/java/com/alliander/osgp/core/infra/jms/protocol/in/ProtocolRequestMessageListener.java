@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.domain.core.entities.DomainInfo;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -79,10 +80,20 @@ public class ProtocolRequestMessageListener implements MessageListener {
         // TODO: CHOOSE THE RIGHT DOMAIN INFO, PERHAPS BY USING LOOKUP
         // TABLE?? MAP MESSAGETYPE/FUNCTION TO DOMAIN??
         //
+
+        String domain;
+        final String domainVersion;
+        if (DeviceFunction.PUSH_NOTIFICATION_ALARM.name().equals(messageType)) {
+            domain = "SMART_METERING";
+            domainVersion = "1.0";
+        } else {
+            domain = "CORE";
+            domainVersion = "1.0";
+        }
         DomainInfo domainInfo = null;
 
         for (final DomainInfo di : this.domainInfos) {
-            if ("CORE".equals(di.getDomain()) && "1.0".equals(di.getDomainVersion())) {
+            if (domain.equals(di.getDomain()) && domainVersion.equals(di.getDomainVersion())) {
                 domainInfo = di;
             }
         }

@@ -50,7 +50,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
         try {
             final EventNotification eventNotification = (EventNotification) dataObject;
 
-            this.eventNotificationMessageService.handleEvent(deviceIdentification, eventNotification.getDeviceUid(),
+            this.eventNotificationMessageService.handleEvent(deviceIdentification,
                     com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
                             .name()), eventNotification.getDescription(), eventNotification.getIndex());
         } catch (final UnknownEntityException e) {

@@ -47,6 +47,15 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfi
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetEncryptionKeyExchangeOnGMeterResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -232,6 +241,107 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             response = new SetConfigurationObjectResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetConfigurationObjectResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetEncryptionKeyExchangeOnGMeterResponse retrieveSetEncryptionKeyExchangeOnGMeterResponse(
+            @RequestPayload final SetEncryptionKeyExchangeOnGMeterAsyncRequest request) throws OsgpException {
+
+        SetEncryptionKeyExchangeOnGMeterResponse response = null;
+        try {
+            response = new SetEncryptionKeyExchangeOnGMeterResponse();
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetAdministrativeStatusResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetEncryptionKeyExchangeOnGMeterRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetEncryptionKeyExchangeOnGMeterRequest for meter: {}.",
+                request.getDeviceIdentification());
+
+        SetEncryptionKeyExchangeOnGMeterAsyncResponse response = null;
+        try {
+            response = new SetEncryptionKeyExchangeOnGMeterAsyncResponse();
+            final String deviceIdentification = request.getDeviceIdentification();
+
+            final String correlationUid = this.configurationService.enqueueSetEncryptionKeyExchangeOnGMeterRequest(
+                    organisationIdentification, deviceIdentification);
+
+            response.setCorrelationUid(correlationUid);
+            response.setDeviceIdentification(request.getDeviceIdentification());
+        } catch (final Exception e) {
+
+            LOGGER.error(
+                    "Exception: {} while setting Encryption Key Exchange On G-Meter on device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetPushSetupAlarmRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetPushSetupAlarmRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetPushSetupAlarmRequest for meter: {}.", request.getDeviceIdentification());
+
+        final SetPushSetupAlarmAsyncResponse response = new SetPushSetupAlarmAsyncResponse();
+
+        final String deviceIdentification = request.getDeviceIdentification();
+        final SetPushSetupAlarmRequestData requestData = request.getSetPushSetupAlarmRequestData();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm = this.configurationMapper
+                .map(requestData.getPushSetupAlarm(),
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
+
+        final String correlationUid = this.configurationService.enqueueSetPushSetupAlarmRequest(
+                organisationIdentification, deviceIdentification, pushSetupAlarm);
+
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(deviceIdentification);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetPushSetupAlarmAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetPushSetupAlarmResponse getSetPushSetupAlarmResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetPushSetupAlarmAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        SetPushSetupAlarmResponse response = null;
+        try {
+            response = new SetPushSetupAlarmResponse();
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetPushSetupAlarmResponse(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
