@@ -12,14 +12,9 @@ import java.math.BigDecimal;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.EMeterValue;
 
 public class EMeterValueConverter extends CustomConverter<Double, EMeterValue> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EMeterValueConverter.class);
 
     @Override
     public EMeterValue convert(final Double source, final Type<? extends EMeterValue> destinationType) {

@@ -32,18 +32,21 @@ public class MonitoringMapper extends ConfigurableMapper {
 
     @Override
     public final void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(AlarmRegisterConverter.class));
         mapperFactory.getConverterFactory().registerConverter(
                 this.applicationContext.getBean(ActualMeterReadsConverter.class));
         mapperFactory.getConverterFactory().registerConverter(
                 this.applicationContext.getBean(ActualMeterReadsGasConverter.class));
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(PeriodicMeterReadsRequestConverter.class));
         mapperFactory.getConverterFactory().registerConverter(
                 this.applicationContext.getBean(PeriodicMeterReadsResponseConverter.class));
         mapperFactory.getConverterFactory().registerConverter(
                 this.applicationContext.getBean(PeriodicMeterReadsGasResponseConverter.class));
 
-        mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(AmrProfileStatusCodeConverter.class));
     }
 
 }

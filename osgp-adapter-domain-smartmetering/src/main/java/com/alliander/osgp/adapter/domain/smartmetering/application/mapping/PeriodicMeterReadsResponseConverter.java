@@ -23,8 +23,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsConta
 
 @Component
 public class PeriodicMeterReadsResponseConverter
-extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+        extends
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
     @Autowired
     private StandardUnitConverter standardUnitConverter;
 
@@ -37,17 +37,19 @@ CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterR
             final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(pmr.getAmrProfileStatusCode(),
                     AmrProfileStatusCode.class);
 
+            // no mapping here because the converter would need source to do the
+            // calculation of the standardized value
             periodicMeterReads
-                    .add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(pmr
-                            .getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
+            .add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(pmr
+                    .getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
                             pmr.getActiveEnergyImport(), source), this.standardUnitConverter
                             .calculateStandardizedValue(pmr.getActiveEnergyExport(), source),
                             this.standardUnitConverter.calculateStandardizedValue(pmr.getActiveEnergyImportTariffOne(),
                                     source), this.standardUnitConverter.calculateStandardizedValue(
-                                            pmr.getActiveEnergyImportTariffTwo(), source), this.standardUnitConverter
-                                            .calculateStandardizedValue(pmr.getActiveEnergyExportTariffOne(), source),
-                                            this.standardUnitConverter.calculateStandardizedValue(pmr.getActiveEnergyExportTariffTwo(),
-                                                    source), amrProfileStatusCode));
+                                    pmr.getActiveEnergyImportTariffTwo(), source), this.standardUnitConverter
+                                    .calculateStandardizedValue(pmr.getActiveEnergyExportTariffOne(), source),
+                            this.standardUnitConverter.calculateStandardizedValue(pmr.getActiveEnergyExportTariffTwo(),
+                                    source), amrProfileStatusCode));
         }
 
         return new PeriodicMeterReadContainer(

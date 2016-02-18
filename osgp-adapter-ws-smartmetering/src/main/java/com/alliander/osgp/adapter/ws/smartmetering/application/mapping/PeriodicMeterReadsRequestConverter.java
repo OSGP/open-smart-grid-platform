@@ -10,18 +10,13 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 public class PeriodicMeterReadsRequestConverter
-extends
-CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestConverter.class);
+        extends
+        CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
 
     @Override
     public PeriodicMeterReadsQuery convert(final PeriodicReadsRequest source,

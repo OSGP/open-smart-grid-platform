@@ -13,11 +13,14 @@ import java.util.TreeSet;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import org.springframework.stereotype.Component;
+
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
+@Component
 public class AlarmRegisterConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister, AlarmRegister> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister, AlarmRegister> {
 
     @Override
     public AlarmRegister convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister source,

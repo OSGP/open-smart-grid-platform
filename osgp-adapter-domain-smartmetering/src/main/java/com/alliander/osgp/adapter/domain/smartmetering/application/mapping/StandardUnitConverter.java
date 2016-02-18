@@ -43,10 +43,12 @@ public class StandardUnitConverter {
     @Resource
     private Environment environment;
 
+    private int fractionDigits = 3;
+
     @PostConstruct
     private void init() {
         if (this.environment.containsProperty(FRACTION_DIGITS)) {
-            this.fraction_digits = this.environment.getProperty(FRACTION_DIGITS, Integer.class);
+            this.fractionDigits = this.environment.getProperty(FRACTION_DIGITS, Integer.class);
         }
     }
 
@@ -54,12 +56,10 @@ public class StandardUnitConverter {
         final ScalerUnit scalerUnit = scalerUnitResponse.getScalerUnit();
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
         final double power = scalerUnit.getScaler() == 0 ? 1 : Math.pow(10, scalerUnit.getScaler());
-        final double calculated = round((meterValue / power) * multiplier, this.fraction_digits);
-        LOGGER.debug(String.format("calcualted %s from %s using %s", calculated, meterValue, scalerUnit));
+        final double calculated = round((meterValue / power) * multiplier, this.fractionDigits);
+        LOGGER.debug(String.format("calculated %s from %s using %s", calculated, meterValue, scalerUnit));
         return calculated;
     }
-
-    private int fraction_digits = 3;
 
     private double getMultiplierToOsgpUnit(final DlmsUnit dlmsUnit) {
         switch (dlmsUnit) {

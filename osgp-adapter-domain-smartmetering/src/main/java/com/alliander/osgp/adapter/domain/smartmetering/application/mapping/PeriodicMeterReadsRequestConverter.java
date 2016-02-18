@@ -10,11 +10,14 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import org.springframework.stereotype.Component;
+
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
+@Component
 public class PeriodicMeterReadsRequestConverter
-extends
-CustomConverter<PeriodicMeterReadsQuery, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> {
+        extends
+        CustomConverter<PeriodicMeterReadsQuery, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> {
 
     @Override
     public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery convert(

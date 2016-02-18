@@ -32,8 +32,7 @@ public class PeriodicMeterReadsQuery implements Serializable {
         this.mbusDevice = mbusDevice;
     }
 
-    public PeriodicMeterReadsQuery(final String deviceIdentification, final PeriodType periodType,
-            final Date beginDate, final Date endDate) {
+    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate) {
         this(periodType, beginDate, endDate, false);
     }
 
