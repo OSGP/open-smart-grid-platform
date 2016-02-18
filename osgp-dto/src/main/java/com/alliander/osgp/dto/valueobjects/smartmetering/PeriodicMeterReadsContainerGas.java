@@ -18,13 +18,13 @@ public class PeriodicMeterReadsContainerGas implements Serializable, ScalerUnitR
 
     private final List<PeriodicMeterReadsGas> meterReadsGas;
     private final PeriodType periodType;
-    private final ScalerUnit scalerunit;
+    private final ScalerUnit scalerUnit;
 
     public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<PeriodicMeterReadsGas> meterReadsGas,
             final ScalerUnit scalerUnit) {
         this.meterReadsGas = new ArrayList<PeriodicMeterReadsGas>(meterReadsGas);
         this.periodType = periodType;
-        this.scalerunit = scalerUnit;
+        this.scalerUnit = new ScalerUnit(scalerUnit.getDlmsUnit(), scalerUnit.getScaler());
     }
 
     public List<PeriodicMeterReadsGas> getMeterReadsGas() {
@@ -37,7 +37,7 @@ public class PeriodicMeterReadsContainerGas implements Serializable, ScalerUnitR
 
     @Override
     public ScalerUnit getScalerUnit() {
-        return this.scalerunit;
+        return new ScalerUnit(this.scalerUnit.getDlmsUnit(), this.scalerUnit.getScaler());
     }
 
 }

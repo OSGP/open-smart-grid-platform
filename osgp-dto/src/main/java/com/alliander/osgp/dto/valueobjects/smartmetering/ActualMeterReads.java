@@ -16,16 +16,15 @@ public class ActualMeterReads extends MeterReads implements ScalerUnitResponse {
 
     public ActualMeterReads(final Date logTime, final long activeEnergyImport, final long activeEnergyExport,
             final long activeEnergyImportTariffOne, final long activeEnergyImportTariffTwo,
-            final long activeEnergyExportTariffOne, final long activeEnergyExportTariffTwo,
-            final ScalerUnit scalerUnit) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
-        this.scalerUnit = scalerUnit;
+            final long activeEnergyExportTariffOne, final long activeEnergyExportTariffTwo, final ScalerUnit scalerUnit) {
+        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
+                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+        this.scalerUnit = new ScalerUnit(scalerUnit.getDlmsUnit(), scalerUnit.getScaler());
     }
 
     @Override
     public ScalerUnit getScalerUnit() {
-        return this.scalerUnit;
+        return new ScalerUnit(this.scalerUnit.getDlmsUnit(), this.scalerUnit.getScaler());
     }
 
 }

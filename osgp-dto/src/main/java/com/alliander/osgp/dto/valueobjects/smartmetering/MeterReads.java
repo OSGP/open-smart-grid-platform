@@ -67,11 +67,12 @@ public abstract class MeterReads implements Serializable {
 
     @Override
     public String toString() {
-        return "MeterReads{" + "logTime=" + logTime + ", activeEnergyImport=" + activeEnergyImport
-                + ", activeEnergyExport=" + activeEnergyExport + ", activeEnergyImportTariffOne="
-                + activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo=" + activeEnergyImportTariffTwo
-                + ", activeEnergyExportTariffOne=" + activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
-                + activeEnergyExportTariffTwo + '}';
+        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport=" + this.activeEnergyImport
+                + ", activeEnergyExport=" + this.activeEnergyExport + ", activeEnergyImportTariffOne="
+                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
+                + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
+                + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
+                + this.activeEnergyExportTariffTwo + "]";
     }
 
 }

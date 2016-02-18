@@ -10,9 +10,10 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 
 /**
- * response to {@link ScalerUnitQuery scaler and unit query} for E or GAS
+ * response for {@link ScalerUnitQuery scaler and unit query} for E or GAS
  * meters. Note that this is the scaler and unit as used on the device, not the
- * standardized unit for the outside world.
+ * standardized unit for the outside world. For the latter the Platform knows an
+ * OsgpUnit.
  *
  */
 public class ScalerUnit implements Serializable {

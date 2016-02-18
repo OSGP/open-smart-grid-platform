@@ -17,12 +17,12 @@ public class ActualMeterReadsGas extends MeterReadsGas implements ScalerUnitResp
     public ActualMeterReadsGas(final Date logTime, final long consumption, final Date captureTime,
             final ScalerUnit scalerUnit) {
         super(logTime, consumption, captureTime);
-        this.scalerUnit = scalerUnit;
+        this.scalerUnit = new ScalerUnit(scalerUnit.getDlmsUnit(), scalerUnit.getScaler());
     }
 
     @Override
     public ScalerUnit getScalerUnit() {
-        return this.scalerUnit;
+        return new ScalerUnit(this.scalerUnit.getDlmsUnit(), this.scalerUnit.getScaler());
     }
 
 }
