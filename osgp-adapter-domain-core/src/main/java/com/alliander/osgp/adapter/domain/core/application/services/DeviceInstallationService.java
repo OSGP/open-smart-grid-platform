@@ -97,6 +97,25 @@ public class DeviceInstallationService extends AbstractService {
                             DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
                             status.getLightType(), status.getEventNotificationsMask());
 
+            deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
+            deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
+            deviceStatusMapped.setCurrentIp(status.getCurrentIp());
+            deviceStatusMapped.setCurrentTime(status.getCurrentTime());
+            deviceStatusMapped.setDcOutputVoltageCurrent(status.getDcOutputVoltageCurrent());
+            deviceStatusMapped.setDcOutputVoltageMaximum(status.getDcOutputVoltageMaximum());
+            deviceStatusMapped.setEventNotificationsMask(status.getEventNotificationsMask());
+            deviceStatusMapped.setExternalFlashMemSize(status.getExternalFlashMemSize());
+            deviceStatusMapped.setFirmwareVersion(status.getFirmwareVersion());
+            deviceStatusMapped.setHardwareId(status.getHardwareId());
+            deviceStatusMapped.setInternalFlashMemSize(status.getInternalFlashMemSize());
+            deviceStatusMapped.setLastInternalTestResultCode(status.getLastInternalTestResultCode());
+            deviceStatusMapped.setMacAddress(status.getMacAddress());
+            deviceStatusMapped.setMaximumOutputPowerOnDcOutput(status.getMaximumOutputPowerOnDcOutput());
+            deviceStatusMapped.setName(status.getName());
+            deviceStatusMapped.setNumberOfOutputs(status.getNumberOfOutputs());
+            deviceStatusMapped.setSerialNumber(status.getSerialNumber());
+            deviceStatusMapped.setStartupCounter(status.getStartupCounter());
+
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
