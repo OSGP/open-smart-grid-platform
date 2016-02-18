@@ -62,7 +62,7 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
              * This message processor handles messages that came in on the
              * osgp-core.1_0.protocol-dlms.1_0.requests queue. Therefore lookup
              * the DomainInfo for DLMS (domain: SMART_METERING) version 1.0.
-             * 
+             *
              * At some point in time there may be a cleaner solution, where the
              * DomainInfo can be derived from information in the message or JMS
              * metadata, but for now this will have to do.
@@ -75,7 +75,7 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
                 final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
                 if (device != null) {
                     device.updateRegistrationData(address, device.getDeviceType());
-                    // this.deviceRepository.save(device);
+                    this.deviceRepository.save(device);
                 } else {
                     LOGGER.warn(
                             "Device with ID = {} not found. Discard Sms notification request from ip address = {} of device",
