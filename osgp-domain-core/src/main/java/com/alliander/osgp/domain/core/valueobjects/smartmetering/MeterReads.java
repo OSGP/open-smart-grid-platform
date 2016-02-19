@@ -11,55 +11,66 @@ import java.io.Serializable;
 import java.util.Date;
 
 public abstract class MeterReads implements Serializable {
-
-    private static final long serialVersionUID = -156966569210717654L;
+    private static final long serialVersionUID = -297320204916085999L;
 
     private final Date logTime;
-    private final Long activeEnergyImport;
-    private final Long activeEnergyExport;
-    private final Long activeEnergyImportTariffOne;
-    private final Long activeEnergyImportTariffTwo;
-    private final Long activeEnergyExportTariffOne;
-    private final Long activeEnergyExportTariffTwo;
 
-    public MeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
-            final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
-            final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo) {
-        this.logTime = logTime;
-        this.activeEnergyImport = activeEnergyImport;
-        this.activeEnergyExport = activeEnergyExport;
+    private final Double activeEnergyImport;
+    private final Double activeEnergyExport;
+    private final Double activeEnergyImportTariffOne;
+    // may be null
+    private final Double activeEnergyImportTariffTwo;
+    private final Double activeEnergyExportTariffOne;
+    // may be null
+    private final Double activeEnergyExportTariffTwo;
+
+    protected MeterReads(final Date logTime, final Double activeEnergyImport, final Double activeEnergyExport,
+            final Double activeEnergyImportTariffOne, final Double activeEnergyImportTariffTwo,
+            final Double activeEnergyExportTariffOne, final Double activeEnergyExportTariffTwo) {
+        super();
+        this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
         this.activeEnergyImportTariffTwo = activeEnergyImportTariffTwo;
         this.activeEnergyExportTariffOne = activeEnergyExportTariffOne;
         this.activeEnergyExportTariffTwo = activeEnergyExportTariffTwo;
-    }
-
-    public Long getActiveEnergyImport() {
-        return this.activeEnergyImport;
-    }
-
-    public Long getActiveEnergyExport() {
-        return this.activeEnergyExport;
-    }
-
-    public Long getActiveEnergyImportTariffOne() {
-        return this.activeEnergyImportTariffOne;
-    }
-
-    public Long getActiveEnergyImportTariffTwo() {
-        return this.activeEnergyImportTariffTwo;
-    }
-
-    public Long getActiveEnergyExportTariffOne() {
-        return this.activeEnergyExportTariffOne;
-    }
-
-    public Long getActiveEnergyExportTariffTwo() {
-        return this.activeEnergyExportTariffTwo;
+        this.activeEnergyImport = activeEnergyImport;
+        this.activeEnergyExport = activeEnergyExport;
     }
 
     public Date getLogTime() {
-        return this.logTime;
+        return new Date(this.logTime.getTime());
     }
 
+    public Double getActiveEnergyImportTariffOne() {
+        return this.activeEnergyImportTariffOne;
+    }
+
+    public Double getActiveEnergyImportTariffTwo() {
+        return this.activeEnergyImportTariffTwo;
+    }
+
+    public Double getActiveEnergyExportTariffOne() {
+        return this.activeEnergyExportTariffOne;
+    }
+
+    public Double getActiveEnergyExportTariffTwo() {
+        return this.activeEnergyExportTariffTwo;
+    }
+
+    public Double getActiveEnergyImport() {
+        return this.activeEnergyImport;
+    }
+
+    public Double getActiveEnergyExport() {
+        return this.activeEnergyExport;
+    }
+
+    @Override
+    public String toString() {
+        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport=" + this.activeEnergyImport
+                + ", activeEnergyExport=" + this.activeEnergyExport + ", activeEnergyImportTariffOne="
+                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo=" + this.activeEnergyImportTariffTwo
+                + ", activeEnergyExportTariffOne=" + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
+                + this.activeEnergyExportTariffTwo + "]";
+    }
 }

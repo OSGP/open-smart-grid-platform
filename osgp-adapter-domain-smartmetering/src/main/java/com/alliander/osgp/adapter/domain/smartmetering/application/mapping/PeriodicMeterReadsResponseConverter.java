@@ -10,44 +10,51 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 
+@Component
 public class PeriodicMeterReadsResponseConverter
-extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+        extends
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer, PeriodicMeterReadContainer> {
+    @Autowired
+    private StandardUnitConverter standardUnitConverter;
 
     @Override
-    public PeriodicMeterReadContainer convertTo(final PeriodicMeterReadsContainer source,
-            final Type<PeriodicMeterReadContainer> destinationType) {
+    public PeriodicMeterReadContainer convert(final PeriodicMeterReadsContainer source,
+            final Type<? extends PeriodicMeterReadContainer> destinationType) {
         final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> periodicMeterReads = new ArrayList<>(
                 source.getMeterReads().size());
         for (final PeriodicMeterReads pmr : source.getMeterReads()) {
-            periodicMeterReads.add(this.mapperFacade.map(pmr,
-                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads.class));
+            final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(pmr.getAmrProfileStatusCode(),
+                    AmrProfileStatusCode.class);
+
+            // no mapping here because the converter would need source to do the
+            // calculation of the standardized value
+            periodicMeterReads
+            .add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(pmr
+                    .getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
+                            pmr.getActiveEnergyImport(), source), this.standardUnitConverter
+                            .calculateStandardizedValue(pmr.getActiveEnergyExport(), source),
+                            this.standardUnitConverter.calculateStandardizedValue(pmr.getActiveEnergyImportTariffOne(),
+                                    source), this.standardUnitConverter.calculateStandardizedValue(
+                                    pmr.getActiveEnergyImportTariffTwo(), source), this.standardUnitConverter
+                                    .calculateStandardizedValue(pmr.getActiveEnergyExportTariffOne(), source),
+                            this.standardUnitConverter.calculateStandardizedValue(pmr.getActiveEnergyExportTariffTwo(),
+                                    source), amrProfileStatusCode));
         }
 
         return new PeriodicMeterReadContainer(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), periodicMeterReads);
-    }
-
-    @Override
-    public PeriodicMeterReadsContainer convertFrom(final PeriodicMeterReadContainer source,
-            final Type<PeriodicMeterReadsContainer> destinationType) {
-        final List<PeriodicMeterReads> periodicMeterReads = new ArrayList<>(source.getPeriodicMeterReads().size());
-        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads pmr : source
-                .getPeriodicMeterReads()) {
-
-            periodicMeterReads.add(this.mapperFacade.map(pmr, PeriodicMeterReads.class));
-        }
-
-        return new PeriodicMeterReadsContainer(PeriodType.valueOf(source.getPeriodType().name()), periodicMeterReads);
+                        .name()), periodicMeterReads, this.standardUnitConverter.toStandardUnit(source));
     }
 
 }

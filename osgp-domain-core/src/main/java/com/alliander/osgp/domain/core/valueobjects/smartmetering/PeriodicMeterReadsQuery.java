@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  * request periodic reads for E or GAS meter
- * 
+ *
  * @author dev
  */
 public class PeriodicMeterReadsQuery implements Serializable {
@@ -22,17 +22,17 @@ public class PeriodicMeterReadsQuery implements Serializable {
     private final PeriodType periodType;
     private final Date beginDate;
     private final Date endDate;
-    private final boolean gas;
+    private final boolean mbusDevice;
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
-            final boolean gas) {
+            final boolean mbusDevice) {
         this.periodType = periodType;
         this.beginDate = new Date(beginDate.getTime());
         this.endDate = new Date(endDate.getTime());
-        this.gas = gas;
+        this.mbusDevice = mbusDevice;
     }
 
-    public PeriodicMeterReadsQuery(String deviceIdentification, PeriodType periodType, Date beginDate, Date endDate) {
+    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate) {
         this(periodType, beginDate, endDate, false);
     }
 
@@ -48,8 +48,8 @@ public class PeriodicMeterReadsQuery implements Serializable {
         return new Date(this.endDate.getTime());
     }
 
-    public boolean isGas() {
-        return gas;
+    public boolean isMbusDevice() {
+        return this.mbusDevice;
     }
 
 }

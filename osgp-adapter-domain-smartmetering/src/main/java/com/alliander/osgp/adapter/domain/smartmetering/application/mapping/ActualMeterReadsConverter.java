@@ -7,32 +7,61 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReads;
 
+@Component
 public class ActualMeterReadsConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
+
+    @Autowired
+    private StandardUnitConverter standardUnitConverter;
 
     @Override
-    public ActualMeterReads convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
-            final Type<ActualMeterReads> destinationType) {
-
-        return new ActualMeterReads(source.getLogTime(), source.getActiveEnergyImport(),
-                source.getActiveEnergyExport(), source.getActiveEnergyImportTariffOne(),
-                source.getActiveEnergyImportTariffTwo(), source.getActiveEnergyExportTariffOne(),
-                source.getActiveEnergyExportTariffTwo());
+    public ActualMeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
+            final Type<? extends ActualMeterReads> destinationType) {
+        return new ActualMeterReads(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
+                source.getActiveEnergyImport(), source), this.standardUnitConverter.calculateStandardizedValue(
+                        source.getActiveEnergyExport(), source), this.standardUnitConverter.calculateStandardizedValue(
+                                source.getActiveEnergyImportTariffOne(), source),
+                                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyImportTariffTwo(), source),
+                                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyExportTariffOne(), source),
+                                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyExportTariffTwo(), source),
+                                this.standardUnitConverter.toStandardUnit(source));
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads convertFrom(
-            final ActualMeterReads source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads> destinationType) {
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((this.standardUnitConverter == null) ? 0 : this.standardUnitConverter.hashCode());
+        return result;
+    }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads(source.getLogTime(),
-                source.getActiveEnergyImport(), source.getActiveEnergyExport(),
-                source.getActiveEnergyImportTariffOne(), source.getActiveEnergyImportTariffTwo(),
-                source.getActiveEnergyExportTariffOne(), source.getActiveEnergyExportTariffTwo());
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final ActualMeterReadsConverter other = (ActualMeterReadsConverter) obj;
+        if (this.standardUnitConverter == null) {
+            if (other.standardUnitConverter != null) {
+                return false;
+            }
+        } else if (!this.standardUnitConverter.equals(other.standardUnitConverter)) {
+            return false;
+        }
+        return true;
     }
 }

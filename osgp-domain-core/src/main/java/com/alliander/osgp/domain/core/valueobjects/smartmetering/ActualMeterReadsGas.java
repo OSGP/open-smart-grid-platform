@@ -9,16 +9,14 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class ActualMeterReads extends MeterReads implements OsgpUnitResponse {
+public class ActualMeterReadsGas extends MeterReadsGas implements OsgpUnitResponse {
 
     private static final long serialVersionUID = 4052150124072820551L;
     private final OsgpUnit osgpUnit;
 
-    public ActualMeterReads(final Date logTime, final double activeEnergyImport, final double activeEnergyExport,
-            final double activeEnergyImportTariffOne, final double activeEnergyImportTariffTwo,
-            final double activeEnergyExportTariffOne, final double activeEnergyExportTariffTwo, final OsgpUnit osgpUnit) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+    public ActualMeterReadsGas(final Date logTime, final double consumption, final Date captureTime,
+            final OsgpUnit osgpUnit) {
+        super(logTime, consumption, captureTime);
         this.osgpUnit = osgpUnit;
     }
 
