@@ -13,28 +13,29 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.GMeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
 
 public class ActualMeterReadsGasConverter
-        extends
-        BidirectionalConverter<MeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
+extends
+CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGasConverter.class);
 
     @Override
-    public com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse convertTo(
-            final MeterReadsGas source,
-            final Type<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> destinationType) {
+    public ActualMeterReadsGasResponse convert(final ActualMeterReadsGas source,
+            final Type<? extends ActualMeterReadsGasResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse destination = new ObjectFactory()
-                .createActualMeterReadsGasResponse();
+        .createActualMeterReadsGasResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -55,18 +56,13 @@ public class ActualMeterReadsGasConverter
             convertedDate = null;
         }
 
-        destination.setConsumption(source.getConsumption());
+        destination.setConsumption(this.mapperFacade.map(source.getConsumption(), GMeterValue.class));
+        if (!destination.getConsumption().getUnit().name().equals(source.getOsgpUnit().name())) {
+            throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
+                    destination.getConsumption().getUnit(), source.getOsgpUnit()));
+        }
 
         return destination;
-    }
-
-    @Override
-    public MeterReadsGas convertFrom(
-            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse source,
-            final Type<MeterReadsGas> destinationType) {
-
-        return new MeterReadsGas(source.getLogTime().toGregorianCalendar().getTime(), source.getConsumption(), source
-                .getCaptureTime().toGregorianCalendar().getTime());
     }
 
 }
