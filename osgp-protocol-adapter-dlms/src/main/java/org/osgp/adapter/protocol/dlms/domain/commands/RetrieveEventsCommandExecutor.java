@@ -38,12 +38,6 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     private static final int CLASS_ID = 7;
     private static final int ATTRIBUTE_ID = 2;
 
-    private static final int CLASS_ID_CLOCK = 8;
-    private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
-    private static final byte ATTRIBUTE_ID_TIME = 2;
-
-    private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
-
     @Autowired
     DataObjectToEventListConverter dataObjectToEventListConverter;
 
@@ -57,7 +51,7 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.STANDARD_EVENT_LOG, new ObisCode("0.0.99.98.0.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.FRAUD_DETECTION_LOG, new ObisCode("0.0.99.98.1.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP
-        .put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
+                .put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
         EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG, new ObisCode("0.0.99.98.3.255"));
     }
 
