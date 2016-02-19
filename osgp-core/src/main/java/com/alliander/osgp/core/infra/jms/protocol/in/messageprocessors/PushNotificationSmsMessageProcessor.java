@@ -30,7 +30,6 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSms;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -123,7 +122,7 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         try {
             this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
                     com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
-                    .getIpAddress().toString(), 0);
+                            .getIpAddress().toString(), 0);
         } catch (final UnknownEntityException uee) {
             LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: " + pushNotificationSms,
                     uee);
