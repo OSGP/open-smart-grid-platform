@@ -17,7 +17,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 
 @Component
 public class ActualMeterReadsGasConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
     @Autowired
     private StandardUnitConverter standardUnitConverter;
 
@@ -28,5 +28,35 @@ public class ActualMeterReadsGasConverter extends
         return new ActualMeterReadsGas(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
                 source.getConsumption(), source), source.getCaptureTime(),
                 this.standardUnitConverter.toStandardUnit(source));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((this.standardUnitConverter == null) ? 0 : this.standardUnitConverter.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final ActualMeterReadsGasConverter other = (ActualMeterReadsGasConverter) obj;
+        if (this.standardUnitConverter == null) {
+            if (other.standardUnitConverter != null) {
+                return false;
+            }
+        } else if (!this.standardUnitConverter.equals(other.standardUnitConverter)) {
+            return false;
+        }
+        return true;
     }
 }

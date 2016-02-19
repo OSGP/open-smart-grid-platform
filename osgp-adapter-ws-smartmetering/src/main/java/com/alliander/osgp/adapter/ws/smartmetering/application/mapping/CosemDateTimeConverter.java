@@ -1,5 +1,7 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import java.nio.ByteBuffer;
+
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -12,17 +14,19 @@ public class CosemDateTimeConverter extends CustomConverter<byte[], CosemDateTim
 
     @Override
     public CosemDateTime convert(final byte[] source, final Type<? extends CosemDateTime> destinationType) {
-        final int year = (source[0] << 8) | (source[1] & 0xff);
-        final int month = source[2] & 0xFF;
-        final int dayOfMonth = source[3] & 0xFF;
-        final int dayOfWeek = source[4] & 0xFF;
-        final int hour = source[5] & 0xFF;
-        final int minute = source[6] & 0xFF;
-        final int second = source[7] & 0xFF;
-        final int hundredths = source[8] & 0xFF;
-        final int deviation = (source[9] << 8) | (source[10] & 0xff);
+        final ByteBuffer bb = ByteBuffer.wrap(source);
 
-        final ClockStatus clockStatus = new ClockStatus(source[11]);
+        final int year = bb.getShort() & 0xFFFF;
+        final int month = bb.get() & 0xFF;
+        final int dayOfMonth = bb.get() & 0xFF;
+        final int dayOfWeek = bb.get() & 0xFF;
+        final int hour = bb.get() & 0xFF;
+        final int minute = bb.get() & 0xFF;
+        final int second = bb.get() & 0xFF;
+        final int hundredths = bb.get() & 0xFF;
+        final int deviation = bb.getShort();
+
+        final ClockStatus clockStatus = new ClockStatus(bb.get());
         final CosemTime time = new CosemTime(hour, minute, second, hundredths);
         final CosemDate date = new CosemDate(year, month, dayOfMonth, dayOfWeek);
 

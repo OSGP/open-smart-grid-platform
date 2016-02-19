@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
 
+    private ApplicationContext applicationContext;
+
     public MonitoringMapper() {
         // init after autowire
         super(false);
     }
-
-    private ApplicationContext applicationContext;
 
     @Autowired
     public void setApplicationContext(final ApplicationContext applicationContext) {
