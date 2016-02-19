@@ -31,21 +31,6 @@ public class CosemObisCode implements Serializable {
         this.f = f;
     }
 
-    private void checkValues(final int a, final int b, final int c, final int d, final int e, final int f) {
-        this.checkValue("a", a);
-        this.checkValue("b", b);
-        this.checkValue("c", c);
-        this.checkValue("d", d);
-        this.checkValue("e", e);
-        this.checkValue("f", f);
-    }
-
-    private void checkValue(final String letter, final int value) {
-        if (value < 0 || value > 255) {
-            throw new IllegalArgumentException(letter + " not in [0..0xFF]");
-        }
-    }
-
     public CosemObisCode(final int[] code) {
         if (code.length != 6) {
             throw new IllegalArgumentException("ObisCode must have 6 values: " + code.length);
@@ -73,6 +58,21 @@ public class CosemObisCode implements Serializable {
 
     public CosemObisCode(final String code) {
         this(parseCode(code));
+    }
+
+    private void checkValues(final int a, final int b, final int c, final int d, final int e, final int f) {
+        this.checkValue("a", a);
+        this.checkValue("b", b);
+        this.checkValue("c", c);
+        this.checkValue("d", d);
+        this.checkValue("e", e);
+        this.checkValue("f", f);
+    }
+
+    private void checkValue(final String letter, final int value) {
+        if (value < 0 || value > 255) {
+            throw new IllegalArgumentException(letter + " not in [0..0xFF]");
+        }
     }
 
     private static int[] parseCode(final String code) {
