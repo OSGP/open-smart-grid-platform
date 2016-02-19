@@ -19,15 +19,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -100,6 +105,24 @@ public class ConfigurationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeteringDevice.getIpAddress(), setConfigurationObjectRequestDto),
                 messageType);
+    }
+
+    public void setPushSetupAlarm(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm,
+            final String messageType) throws FunctionalException {
+
+        LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
+
+        final PushSetupAlarm pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm, PushSetupAlarm.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, smartMeteringDevice.getIpAddress(), pushSetupAlarmDto), messageType);
     }
 
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,
@@ -263,6 +286,22 @@ public class ConfigurationService {
                 deviceIdentification, result, exception, null), messageType);
     }
 
+    public void handleSetPushSetupAlarmResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+
+        LOGGER.info("handleSetPushSetupAlarmResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = deviceResult;
+        if (exception != null) {
+            LOGGER.error("Set Push Setup Alarm Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception, null), messageType);
+    }
+
     public void handleSetActivityCalendarResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
@@ -278,6 +317,50 @@ public class ConfigurationService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, exception, resultString), messageType);
 
+    }
+
+    public void setEncryptionKeyExchangeOnGMeter(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType)
+            throws FunctionalException {
+
+        LOGGER.info(
+                "set Encryption Key Exchange On G-Meter for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        final SmartMeter gasDevice = this.domainHelperService.findSmartMeter(deviceIdentification);
+
+        final Device gatewayDevice = gasDevice.getGatewayDevice();
+        if (gatewayDevice == null) {
+            /*
+             * For now throw a FunctionalException, based on the same reasoning
+             * as with the channel a couple of lines up. As soon as we have
+             * scenario's with direct communication with gas meters this will
+             * have to be changed.
+             */
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                            "Meter for gas reads should have an energy meter as gateway device."));
+        }
+
+        this.osgpCoreRequestMessageSender.send(
+                new RequestMessage(correlationUid, organisationIdentification, gatewayDevice.getDeviceIdentification(),
+                        gatewayDevice.getIpAddress(), new GMeterInfo(gasDevice.getChannel(), gasDevice
+                                .getDeviceIdentification())), messageType);
+    }
+
+    public void handleSetEncryptionKeyExchangeOnGMeterResponse(final String deviceIdentification,
+            final String organisationIdentification, final String correlationUid, final String messageType,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException exception) {
+        LOGGER.info("handleSetEncryptionKeyExchangeOnGMeterResponse for MessageType: {}", messageType);
+
+        ResponseMessageResultType result = responseMessageResultType;
+        if (exception != null) {
+            LOGGER.error("Set Encryption Key Exchange On G-Meter Response not ok. Unexpected Exception", exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, result, exception), messageType);
     }
 
     public void replaceKeys(@Identification final String organisationIdentification,

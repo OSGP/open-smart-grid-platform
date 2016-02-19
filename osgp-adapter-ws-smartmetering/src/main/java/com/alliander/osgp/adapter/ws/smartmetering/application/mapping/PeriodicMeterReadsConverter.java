@@ -7,86 +7,62 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.EMeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsConverter
-        extends
-        BidirectionalConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+extends
+CustomConverter<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsConverter.class);
 
     @Override
-    public PeriodicMeterReadsResponse convertTo(final PeriodicMeterReadContainer source,
-            final Type<PeriodicMeterReadsResponse> destinationType) {
-        final PeriodicMeterReadsResponse periodicMeterReadsResponse = new PeriodicMeterReadsResponse();
-        periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
-        final List<PeriodicMeterReads> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReads();
-        for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads m : source
-                .getPeriodicMeterReads()) {
-            final PeriodicMeterReads meterReads = new PeriodicMeterReads();
-            final GregorianCalendar c = new GregorianCalendar();
-            c.setTime(m.getLogTime());
-            XMLGregorianCalendar convertedDate;
-            try {
-                convertedDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-            } catch (final DatatypeConfigurationException e) {
-                LOGGER.error("JAXB mapping: An error occured while converting calendar types.", e);
-                convertedDate = null;
-            }
-
-            final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(m.getAmrProfileStatusCode(),
-                    AmrProfileStatusCode.class);
-
-            meterReads.setLogTime(convertedDate);
-            meterReads.setActiveEnergyImport(m.getActiveEnergyImport());
-            meterReads.setActiveEnergyExport(m.getActiveEnergyExport());
-            meterReads.setActiveEnergyImportTariffOne(m.getActiveEnergyImportTariffOne());
-            meterReads.setActiveEnergyImportTariffTwo(m.getActiveEnergyImportTariffTwo());
-            meterReads.setActiveEnergyExportTariffOne(m.getActiveEnergyExportTariffOne());
-            meterReads.setActiveEnergyExportTariffTwo(m.getActiveEnergyExportTariffTwo());
-            meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
-            periodicMeterReads.add(meterReads);
+    public PeriodicMeterReads convert(
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads source,
+            final Type<? extends PeriodicMeterReads> destinationType) {
+        final PeriodicMeterReads meterReads = new PeriodicMeterReads();
+        final GregorianCalendar c = new GregorianCalendar();
+        c.setTime(source.getLogTime());
+        XMLGregorianCalendar convertedDate;
+        try {
+            convertedDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+        } catch (final DatatypeConfigurationException e) {
+            LOGGER.error("JAXB mapping: An error occured while converting calendar types.", e);
+            convertedDate = null;
         }
-        return periodicMeterReadsResponse;
+
+        final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(source.getAmrProfileStatusCode(),
+                AmrProfileStatusCode.class);
+
+        meterReads.setLogTime(convertedDate);
+        meterReads.setActiveEnergyImport(this.electricityMeterValueFromDouble(source.getActiveEnergyImport()));
+        meterReads.setActiveEnergyExport(this.electricityMeterValueFromDouble(source.getActiveEnergyExport()));
+        meterReads.setActiveEnergyImportTariffOne(this.electricityMeterValueFromDouble(source
+                .getActiveEnergyImportTariffOne()));
+        meterReads.setActiveEnergyImportTariffTwo(this.electricityMeterValueFromDouble(source
+                .getActiveEnergyImportTariffTwo()));
+        meterReads.setActiveEnergyExportTariffOne(this.electricityMeterValueFromDouble(source
+                .getActiveEnergyExportTariffOne()));
+        meterReads.setActiveEnergyExportTariffTwo(this.electricityMeterValueFromDouble(source
+                .getActiveEnergyExportTariffTwo()));
+        meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
+        return meterReads;
     }
 
-    @Override
-    public PeriodicMeterReadContainer convertFrom(final PeriodicMeterReadsResponse source,
-            final Type<PeriodicMeterReadContainer> destinationType) {
-        final List<com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> meterReads = new ArrayList<>(
-                source.getPeriodicMeterReads().size());
-        for (final PeriodicMeterReads reads : source.getPeriodicMeterReads()) {
-
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade
-                    .map(reads.getAmrProfileStatusCode(),
-                            com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode.class);
-
-            meterReads.add(new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads(reads
-                    .getLogTime().toGregorianCalendar().getTime(), reads.getActiveEnergyImport(), reads
-                    .getActiveEnergyExport(), reads.getActiveEnergyImportTariffOne(), reads
-                    .getActiveEnergyImportTariffTwo(), reads.getActiveEnergyExportTariffOne(), reads
-                    .getActiveEnergyExportTariffTwo(), amrProfileStatusCode));
-        }
-        return new PeriodicMeterReadContainer(
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), meterReads);
+    private EMeterValue electricityMeterValueFromDouble(final Double d) {
+        return this.mapperFacade.map(d, EMeterValue.class);
     }
 }

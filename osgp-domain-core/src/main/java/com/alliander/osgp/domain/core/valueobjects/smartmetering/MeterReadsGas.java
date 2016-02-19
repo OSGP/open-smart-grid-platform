@@ -16,9 +16,9 @@ public class MeterReadsGas implements Serializable {
 
     private final Date logTime;
     private final Date captureTime;
-    private final long consumption;
+    private final double consumption;
 
-    public MeterReadsGas(final Date logTime, final long consumption, final Date captureTime) {
+    public MeterReadsGas(final Date logTime, final double consumption, final Date captureTime) {
         this.logTime = new Date(logTime.getTime());
         this.captureTime = new Date(captureTime.getTime());
         this.consumption = consumption;
@@ -32,7 +32,7 @@ public class MeterReadsGas implements Serializable {
         return new Date(this.captureTime.getTime());
     }
 
-    public long getConsumption() {
+    public double getConsumption() {
         return this.consumption;
     }
 
