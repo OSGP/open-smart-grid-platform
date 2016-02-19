@@ -57,6 +57,31 @@ public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
                 .getClockStatus());
     }
 
+    public CosemDateTime(final LocalDate date, final LocalTime time, final int deviation, final ClockStatus clockStatus) {
+        this(new CosemDate(date), new CosemTime(time), deviation, clockStatus);
+    }
+
+    public CosemDateTime(final LocalDate date, final LocalTime time, final int deviation) {
+        this(new CosemDate(date), new CosemTime(time), deviation, new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
+    }
+
+    public CosemDateTime(final LocalDateTime dateTime, final int deviation, final ClockStatus clockStatus) {
+        this(dateTime.toLocalDate(), dateTime.toLocalTime(), deviation, clockStatus);
+    }
+
+    public CosemDateTime(final LocalDateTime dateTime, final int deviation) {
+        this(dateTime.toLocalDate(), dateTime.toLocalTime(), deviation);
+    }
+
+    public CosemDateTime(final DateTime dateTime) {
+        this(dateTime.toLocalDate(), dateTime.toLocalTime(), determineDeviation(dateTime),
+                determineClockStatus(dateTime));
+    }
+
+    public CosemDateTime() {
+        this(DateTime.now());
+    }
+
     private void checkDeviation(final int deviation) {
         if (!this.isValidDeviation(deviation)) {
             throw new IllegalArgumentException("Deviation not in [-720..720, 0x8000]: " + deviation);
@@ -80,27 +105,6 @@ public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
         return DEVIATION_NOT_SPECIFIED == deviation || -DEVIATION_NOT_SPECIFIED == deviation;
     }
 
-    public CosemDateTime(final LocalDate date, final LocalTime time, final int deviation, final ClockStatus clockStatus) {
-        this(new CosemDate(date), new CosemTime(time), deviation, clockStatus);
-    }
-
-    public CosemDateTime(final LocalDate date, final LocalTime time, final int deviation) {
-        this(new CosemDate(date), new CosemTime(time), deviation, new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
-    }
-
-    public CosemDateTime(final LocalDateTime dateTime, final int deviation, final ClockStatus clockStatus) {
-        this(dateTime.toLocalDate(), dateTime.toLocalTime(), deviation, clockStatus);
-    }
-
-    public CosemDateTime(final LocalDateTime dateTime, final int deviation) {
-        this(dateTime.toLocalDate(), dateTime.toLocalTime(), deviation);
-    }
-
-    public CosemDateTime(final DateTime dateTime) {
-        this(dateTime.toLocalDate(), dateTime.toLocalTime(), determineDeviation(dateTime),
-                determineClockStatus(dateTime));
-    }
-
     private static int determineDeviation(final DateTime dateTime) {
         return -(dateTime.getZone().getOffset(dateTime.getMillis()) / MILLISECONDS_PER_MINUTE);
     }
@@ -111,10 +115,6 @@ public class CosemDateTime implements Serializable, Comparable<CosemDateTime> {
             statusBits.add(ClockStatusBit.DAYLIGHT_SAVING_ACTIVE);
         }
         return new ClockStatus(statusBits);
-    }
-
-    public CosemDateTime() {
-        this(DateTime.now());
     }
 
     @Override
