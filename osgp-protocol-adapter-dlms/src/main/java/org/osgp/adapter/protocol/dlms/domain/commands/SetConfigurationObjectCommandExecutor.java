@@ -119,8 +119,8 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
 
         final byte[] newConfigurationObjectFlagsByteArray = this.configurationObjectHelperService
                 .toByteArray(configurationFlags);
-        final BitString bitString = new BitString(newConfigurationObjectFlagsByteArray, 16);
-        return bitString;
+
+        return new BitString(newConfigurationObjectFlagsByteArray, 16);
     }
 
     private void mergeOldFlags(final ConfigurationObject configurationObjectOnDevice,
@@ -176,7 +176,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     }
 
     private ConfigurationObject retrieveConfigurationObject(final LnClientConnection conn) throws IOException,
-    TimeoutException, ProtocolAdapterException {
+            TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -216,15 +216,15 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
                     "Expected data in result while retrieving current configuration object, but got nothing");
         }
 
-        final DataObject GprsOperationModeData = linkedList.get(0);
-        if (GprsOperationModeData == null) {
+        final DataObject gprsOperationModeData = linkedList.get(0);
+        if (gprsOperationModeData == null) {
             throw new ProtocolAdapterException(
                     "Expected Gprs operation mode data in result while retrieving current configuration object, but got nothing");
         }
         GprsOperationModeType gprsOperationMode = null;
-        if (((Number) GprsOperationModeData.value()).longValue() == 1) {
+        if (((Number) gprsOperationModeData.value()).longValue() == 1) {
             gprsOperationMode = GprsOperationModeType.ALWAYS_ON;
-        } else if (((Number) GprsOperationModeData.value()).longValue() == 2) {
+        } else if (((Number) gprsOperationModeData.value()).longValue() == 2) {
             gprsOperationMode = GprsOperationModeType.TRIGGERED;
         }
 
@@ -242,9 +242,6 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         final List<ConfigurationFlag> listConfigurationFlag = this.configurationObjectHelperService
                 .toConfigurationFlags(flagByteArray);
 
-        final ConfigurationObject configurationObject = new ConfigurationObject(gprsOperationMode,
-                new ConfigurationFlags(listConfigurationFlag));
-
-        return configurationObject;
+        return new ConfigurationObject(gprsOperationMode, new ConfigurationFlags(listConfigurationFlag));
     }
 }
