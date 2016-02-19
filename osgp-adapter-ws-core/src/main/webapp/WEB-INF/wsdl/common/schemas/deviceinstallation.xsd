@@ -193,6 +193,48 @@
             <xsd:element name="ActualLinkType" type="tns:LinkType" minOccurs="1" maxOccurs="1" />
             <xsd:element name="LightType" type="tns:LightType" minOccurs="0" maxOccurs="1"/>
             <xsd:element minOccurs="0" maxOccurs="8" name="EventNotifications" type="tns:EventNotificationType" />
+            <xsd:element name="numberOfOutputs" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="dcOutputVoltageMaximum" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="dcOutputVoltageCurrent" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="maximumOutputPowerOnDcOutput" type="xsd:int" minOccurs="0" maxOccurs="1" />
+			<xsd:element name="serialNumber" minOccurs="0" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="common:AlphaNumericType">
+							<xsd:length value="18" />
+						</xsd:restriction>
+					</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="macAddress" minOccurs="0" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="common:AlphaNumericType">
+							<xsd:length value="6" />
+						</xsd:restriction>
+					</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="hardwareId" minOccurs="0" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="common:AlphaNumericType">
+							<xsd:minLength value="10"/>
+							<xsd:maxLength value="25"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+			</xsd:element>
+            <xsd:element name="internalFlashMemSize" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="externalFlashMemSize" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="lastInternalTestResultCode" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="startupCounter" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <xsd:element name="bootLoaderVersion" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="firmwareVersion" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="currentConfigurationBackUsed" minOccurs="0" maxOccurs="1">
+					<xsd:simpleType>
+						<xsd:restriction base="common:AlphaNumericType">
+							<xsd:length value="6" />
+						</xsd:restriction>
+					</xsd:simpleType>
+			</xsd:element>
+            <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="currentTime" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="currentIp" type="xsd:string" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
 
@@ -263,5 +305,5 @@
             <xsd:enumeration value="SECURITY_EVENTS" />
         </xsd:restriction>
     </xsd:simpleType>
-
+    
 </xsd:schema>
