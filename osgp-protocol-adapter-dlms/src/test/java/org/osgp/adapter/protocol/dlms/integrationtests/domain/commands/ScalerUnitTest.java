@@ -57,6 +57,7 @@ public class ScalerUnitTest {
         final ScalerUnitTestResponse execute = this.commandExecutor.execute(connection, device, new TestChannelQuery());
 
         Assert.assertEquals(DlmsUnit.WH, execute.getScalerUnit().getDlmsUnit());
+        Assert.assertEquals(0, execute.getScalerUnit().getScaler());
 
     }
 
