@@ -14,6 +14,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Moni
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -44,8 +45,8 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
 
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException, actualMeterReadsDto);
-        } else if (responseMessage.getDataObject() instanceof MeterReadsGas) {
-            final MeterReadsGas meterReadsGas = (MeterReadsGas) responseMessage.getDataObject();
+        } else if (responseMessage.getDataObject() instanceof ActualMeterReadsGas) {
+            final ActualMeterReadsGas meterReadsGas = (ActualMeterReadsGas) responseMessage.getDataObject();
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException, meterReadsGas);
         }
