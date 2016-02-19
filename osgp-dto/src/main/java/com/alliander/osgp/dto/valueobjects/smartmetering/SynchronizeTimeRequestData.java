@@ -11,16 +11,16 @@ import java.io.Serializable;
 
 public class SynchronizeTimeRequestData implements Serializable {
 
-	private static final long serialVersionUID = 2569975731784782614L;
+    private static final long serialVersionUID = 2569975731784782614L;
 
     private String deviceIdentification;
 
-	public String getDeviceIdentification() {
-		return deviceIdentification;
-	}
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
+    }
 
-	public void setDeviceIdentification(String deviceIdentification) {
-		this.deviceIdentification = deviceIdentification;
-	}
+    public void setDeviceIdentification(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+    }
 
 }
