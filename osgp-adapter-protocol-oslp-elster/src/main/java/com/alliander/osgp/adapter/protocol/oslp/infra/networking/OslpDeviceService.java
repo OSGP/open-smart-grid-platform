@@ -483,8 +483,8 @@ public class OslpDeviceService implements DeviceService {
                 .addAllSchedules(oslpSchedules)
                 .setScheduleType(
                         this.mapper.map(deviceRequest.getRelayType(), com.alliander.osgp.oslp.Oslp.RelayType.class))
-                .setPageInfo(
-                        Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
+                        .setPageInfo(
+                                Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
                                 .setPageSize(pager.getPageSize()).setTotalPages(pager.getNumberOfPages()));
 
         final PageInfo pageInfo = new PageInfo(pager.getCurrentPage(), pager.getPageSize(), pager.getNumberOfPages());
@@ -740,7 +740,7 @@ public class OslpDeviceService implements DeviceService {
             final Pager pager, final List<PowerUsageData> powerUsageHistoryData,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
             final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled)
-            throws IOException {
+                    throws IOException {
         LOGGER.info("GetPowerUsageHistory() for device: {}, page: {}", deviceRequest.getDeviceIdentification(),
                 pager.getCurrentPage());
 
@@ -824,7 +824,7 @@ public class OslpDeviceService implements DeviceService {
         powerUsageHistoryResponseMessageDataContainer.setHistoryTermType(deviceRequest.getPowerUsageHistoryContainer()
                 .getHistoryTermType());
         powerUsageHistoryResponseMessageDataContainer
-                .setRequestContainer(deviceRequest.getPowerUsageHistoryContainer());
+        .setRequestContainer(deviceRequest.getPowerUsageHistoryContainer());
 
         this.buildAndSignEnvelope(deviceRequest,
                 Oslp.Message.newBuilder().setGetPowerUsageHistoryRequest(getPowerUsageHistoryRequest).build(),
@@ -1087,7 +1087,7 @@ public class OslpDeviceService implements DeviceService {
                                 com.alliander.osgp.oslp.Oslp.TransitionType.class));
         if (deviceRequest.getTransitionTypeContainer().getDateTime() != null) {
             setTransitionBuilder
-                    .setTime(deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
+            .setTime(deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
         }
 
         this.buildAndSignEnvelope(deviceRequest,
@@ -1176,7 +1176,27 @@ public class OslpDeviceService implements DeviceService {
                         LightValue.class), this.mapper.map(getStatusResponse.getPreferredLinktype(), LinkType.class),
                         this.mapper.map(getStatusResponse.getActualLinktype(), LinkType.class), this.mapper.map(
                                 getStatusResponse.getLightType(), LightType.class),
-                        getStatusResponse.getEventNotificationMask());
+                                getStatusResponse.getEventNotificationMask());
+
+                // optional properties DeviceStatus
+                deviceStatus.setBootLoaderVersion(getStatusResponse.getBootLoaderVersion());
+                deviceStatus.setCurrentConfigurationBackUsed(getStatusResponse.getCurrentConfigurationBackUsed().toStringUtf8());
+                deviceStatus.setCurrentIp(getStatusResponse.getCurrentIp());
+                deviceStatus.setCurrentTime(getStatusResponse.getCurrentTime());
+                deviceStatus.setDcOutputVoltageCurrent(getStatusResponse.getDcOutputVoltageCurrent());
+                deviceStatus.setDcOutputVoltageMaximum(getStatusResponse.getDcOutputVoltageMaximum());
+                deviceStatus.setEventNotificationsMask(getStatusResponse.getEventNotificationMask());
+                deviceStatus.setExternalFlashMemSize(getStatusResponse.getExternalFlashMemSize());
+                deviceStatus.setFirmwareVersion(getStatusResponse.getFirmwareVersion());
+                deviceStatus.setHardwareId(getStatusResponse.getHardwareId());
+                deviceStatus.setInternalFlashMemSize(getStatusResponse.getInternalFlashMemSize());
+                deviceStatus.setLastInternalTestResultCode(getStatusResponse.getLastInternalTestResultCode());
+                deviceStatus.setMacAddress(getStatusResponse.getMacAddress().toStringUtf8());
+                deviceStatus.setMaximumOutputPowerOnDcOutput(getStatusResponse.getMaximumOutputPowerOnDcOutput());
+                deviceStatus.setName(getStatusResponse.getName());
+                deviceStatus.setNumberOfOutputs(getStatusResponse.getNumberOfOutputs());
+                deviceStatus.setSerialNumber(getStatusResponse.getSerialNumber().toStringUtf8());
+                deviceStatus.setStartupCounter(getStatusResponse.getStartupCounter());
             } else {
                 // handle failure by throwing exceptions if needed
             }
