@@ -33,6 +33,8 @@ public class DomainHelperService {
      * If this method turns out to be called from a location where
      * {@link DlmsDeviceMessageMetadata} is not available, check if the IP
      * address needs to be provided in another way.
+     *
+     * @deprecated
      */
     @Deprecated
     public DlmsDevice findDlmsDevice(final String deviceIdentification) throws FunctionalException {
