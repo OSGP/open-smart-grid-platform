@@ -56,8 +56,8 @@ public class SecurityService {
                 DeviceFunction.GET_EVENT_NOTIFICATIONS, DeviceFunction.UPDATE_FIRMWARE,
                 DeviceFunction.GET_FIRMWARE_VERSION, DeviceFunction.SET_LIGHT_SCHEDULE,
                 DeviceFunction.SET_TARIFF_SCHEDULE, DeviceFunction.SET_CONFIGURATION, DeviceFunction.GET_CONFIGURATION,
-                DeviceFunction.GET_STATUS, DeviceFunction.GET_LIGHT_STATUS, DeviceFunction.GET_TARIFF_STATUS,
-                DeviceFunction.REMOVE_DEVICE, DeviceFunction.GET_ACTUAL_POWER_USAGE,
+                DeviceFunction.SWITCH_CONFIGURATION_BANK, DeviceFunction.GET_STATUS, DeviceFunction.GET_LIGHT_STATUS,
+                DeviceFunction.GET_TARIFF_STATUS, DeviceFunction.REMOVE_DEVICE, DeviceFunction.GET_ACTUAL_POWER_USAGE,
                 DeviceFunction.GET_POWER_USAGE_HISTORY, DeviceFunction.RESUME_SCHEDULE, DeviceFunction.SET_REBOOT,
                 DeviceFunction.SET_TRANSITION, DeviceFunction.UPDATE_KEY, DeviceFunction.REVOKE_KEY,
                 DeviceFunction.FIND_SCHEDULED_TASKS, DeviceFunction.ADD_METER });
@@ -86,7 +86,7 @@ public class SecurityService {
 
         deviceMapping.put(DeviceFunctionGroup.CONFIGURATION, new DeviceFunction[] {
                 DeviceFunction.GET_DEVICE_AUTHORIZATION, DeviceFunction.SET_CONFIGURATION,
-                DeviceFunction.GET_CONFIGURATION });
+                DeviceFunction.GET_CONFIGURATION, DeviceFunction.SWITCH_CONFIGURATION_BANK });
 
         deviceMapping.put(DeviceFunctionGroup.MONITORING, new DeviceFunction[] {
                 DeviceFunction.GET_DEVICE_AUTHORIZATION, DeviceFunction.GET_ACTUAL_POWER_USAGE,
