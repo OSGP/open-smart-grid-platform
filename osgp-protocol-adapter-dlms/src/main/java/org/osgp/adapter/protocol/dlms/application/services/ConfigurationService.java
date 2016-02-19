@@ -59,6 +59,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService extends DlmsApplicationService {
+    private static final String DEBUG_MSG_CLOSING_CONNECTION = "Closing connection with {}";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
     @Autowired
@@ -232,7 +234,7 @@ public class ConfigurationService extends DlmsApplicationService {
                     administrativeStatusType);
         } finally {
             if (conn != null) {
-                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
                 conn.close();
             }
         }
@@ -339,7 +341,7 @@ public class ConfigurationService extends DlmsApplicationService {
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         } finally {
             if (conn != null) {
-                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
                 conn.close();
             }
         }
@@ -381,7 +383,7 @@ public class ConfigurationService extends DlmsApplicationService {
                     activityCalendar);
         } finally {
             if (conn != null) {
-                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
                 conn.close();
             }
         }
