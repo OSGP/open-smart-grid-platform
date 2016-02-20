@@ -24,7 +24,7 @@ public class AlarmNotifications implements Serializable {
 
     @Override
     public String toString() {
-        return "AlarmNotifications[" + String.valueOf(this.alarmNotifications) + "]";
+        return "AlarmNotifications[" + this.alarmNotifications + "]";
     }
 
     public Set<AlarmNotification> getAlarmNotifications() {

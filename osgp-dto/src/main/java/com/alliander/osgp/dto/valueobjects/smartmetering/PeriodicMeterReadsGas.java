@@ -29,4 +29,12 @@ public class PeriodicMeterReadsGas extends MeterReadsGas {
     public AmrProfileStatusCode getAmrProfileStatusCode() {
         return this.amrProfileStatusCode;
     }
+
+    @Override
+    public String toString() {
+        return "PeriodicMeterReadsGas [amrProfileStatusCode=" + this.amrProfileStatusCode + ", getLogTime()="
+                + this.getLogTime() + ", getCaptureTime()=" + this.getCaptureTime() + ", getConsumption()="
+                + this.getConsumption() + "]";
+    }
+
 }
