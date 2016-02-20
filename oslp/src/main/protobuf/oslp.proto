@@ -146,9 +146,8 @@ message GetStatusResponse {
     optional string firmwareVersion = 19;              // Software - The firmware version.
     optional bytes currentConfigurationBackUsed = 20; // [(nanopb).max_size = 6]; // Software - The current configuration bank in use.
     optional string name = 21;                         // Device - The name of this device.
-    optional LocationInfo locationInfo = 22;           // Device - The location information of this device.
-    optional string currentTime = 23;                  // Device - Not UTC, the time used in timing operations (adjusted "offset" + summer timing). YYYYMMDDhhmmss format.
-    optional string currentIp = 24;                    // Device - The current IP address of this device.
+    optional string currentTime = 22;                  // Device - Not UTC, the time used in timing operations (adjusted "offset" + summer timing). YYYYMMDDhhmmss format.
+    optional string currentIp = 23;                    // Device - The current IP address of this device.
 }
 
 message ResumeScheduleRequest {
