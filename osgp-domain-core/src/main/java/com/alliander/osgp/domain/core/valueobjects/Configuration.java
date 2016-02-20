@@ -171,7 +171,8 @@ public class Configuration implements Serializable {
         return this.communicationPauseTimeBetweenConnectionTrials;
     }
 
-    public void setCommunicationPauseTimeBetweenConnectionTrials(final Integer communicationPauseTimeBetweenConnectionTrials) {
+    public void setCommunicationPauseTimeBetweenConnectionTrials(
+            final Integer communicationPauseTimeBetweenConnectionTrials) {
         this.communicationPauseTimeBetweenConnectionTrials = communicationPauseTimeBetweenConnectionTrials;
     }
 
@@ -207,6 +208,10 @@ public class Configuration implements Serializable {
         this.isAutomaticSummerTimingEnabled = isAutomaticSummerTimingEnabled;
     }
 
+    public void setRelayLinking(final List<RelayMatrix> relayLinking) {
+        this.relayLinking = relayLinking;
+    }
+
     public Integer getAstroGateSunRiseOffset() {
         return this.astroGateSunRiseOffset;
     }
@@ -221,18 +226,6 @@ public class Configuration implements Serializable {
 
     public void setAstroGateSunSetOffset(final Integer astroGateSunSetOffset) {
         this.astroGateSunSetOffset = astroGateSunSetOffset;
-    }
-
-    public List<Integer> getSwitchingDelay() {
-        return this.switchingDelay;
-    }
-
-    public void setSwitchingDelay(final List<Integer> switchingDelay) {
-        this.switchingDelay = switchingDelay;
-    }
-
-    public List<RelayMatrix> getRelayLinking() {
-        return this.relayLinking;
     }
 
     public boolean isRelayRefreshing() {
@@ -259,8 +252,16 @@ public class Configuration implements Serializable {
         this.winterTimeDetails = winterTimeDetails;
     }
 
-    public void setRelayLinking(final List<RelayMatrix> relayLinking) {
-        this.relayLinking = relayLinking;
+    public List<Integer> getSwitchingDelay() {
+        return this.switchingDelay;
+    }
+
+    public void setSwitchingDelay(final List<Integer> switchingDelay) {
+        this.switchingDelay = switchingDelay;
+    }
+
+    public List<RelayMatrix> getRelayLinking() {
+        return this.relayLinking;
     }
 
 }
