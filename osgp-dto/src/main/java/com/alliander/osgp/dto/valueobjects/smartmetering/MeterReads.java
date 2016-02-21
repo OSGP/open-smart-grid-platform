@@ -13,18 +13,18 @@ import java.util.Date;
 public abstract class MeterReads implements Serializable {
     private static final long serialVersionUID = -297320204916085999L;
 
-    private Date logTime;
+    private final Date logTime;
 
     private final Long activeEnergyImport;
     private final Long activeEnergyExport;
-    private Long activeEnergyImportTariffOne;
+    private final Long activeEnergyImportTariffOne;
     // may be null
-    private Long activeEnergyImportTariffTwo;
-    private Long activeEnergyExportTariffOne;
+    private final Long activeEnergyImportTariffTwo;
+    private final Long activeEnergyExportTariffOne;
     // may be null
-    private Long activeEnergyExportTariffTwo;
+    private final Long activeEnergyExportTariffTwo;
 
-    MeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
+    protected MeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
             final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
             final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo) {
         super();
@@ -67,10 +67,12 @@ public abstract class MeterReads implements Serializable {
 
     @Override
     public String toString() {
-        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImportTariffOne="
+        return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport=" + this.activeEnergyImport
+                + ", activeEnergyExport=" + this.activeEnergyExport + ", activeEnergyImportTariffOne="
                 + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
                 + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
                 + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
                 + this.activeEnergyExportTariffTwo + "]";
     }
+
 }

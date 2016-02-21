@@ -9,16 +9,14 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class ActualMeterReads extends MeterReads implements ScalerUnitResponse {
+public class ActualMeterReadsGas extends MeterReadsGas implements ScalerUnitResponse {
 
     private static final long serialVersionUID = 4052150124072820551L;
     private final ScalerUnit scalerUnit;
 
-    public ActualMeterReads(final Date logTime, final long activeEnergyImport, final long activeEnergyExport,
-            final long activeEnergyImportTariffOne, final long activeEnergyImportTariffTwo,
-            final long activeEnergyExportTariffOne, final long activeEnergyExportTariffTwo, final ScalerUnit scalerUnit) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+    public ActualMeterReadsGas(final Date logTime, final long consumption, final Date captureTime,
+            final ScalerUnit scalerUnit) {
+        super(logTime, consumption, captureTime);
         this.scalerUnit = new ScalerUnit(scalerUnit.getDlmsUnit(), scalerUnit.getScaler());
     }
 

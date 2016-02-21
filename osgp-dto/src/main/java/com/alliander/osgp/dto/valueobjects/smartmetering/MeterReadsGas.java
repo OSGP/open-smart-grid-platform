@@ -36,4 +36,10 @@ public class MeterReadsGas implements Serializable {
         return this.consumption;
     }
 
+    @Override
+    public String toString() {
+        return "MeterReadsGas [logTime=" + this.logTime + ", captureTime=" + this.captureTime + ", consumption="
+                + this.consumption + "]";
+    }
+
 }
