@@ -7,137 +7,134 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.alliander.osgp.dto.valueobjects.Configuration;
-import com.alliander.osgp.dto.valueobjects.RelayMatrix;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
 import com.google.protobuf.ByteString;
 
-public class ConfigurationToOslpSetConfigurationRequestConverter extends BidirectionalConverter<Configuration, Oslp.SetConfigurationRequest> {
+public class ConfigurationToOslpSetConfigurationRequestConverter extends
+CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ConfigurationToOslpSetConfigurationRequestConverter.class);
 
     @Override
-    public SetConfigurationRequest convertTo(final Configuration source, final Type<SetConfigurationRequest> destinationType) {
+    public SetConfigurationRequest convert(final Configuration source,
+            final Type<? extends Oslp.SetConfigurationRequest> destinationType) {
 
         final Oslp.SetConfigurationRequest.Builder setConfigurationRequest = Oslp.SetConfigurationRequest.newBuilder();
 
         if (source.getLightType() != null) {
             setConfigurationRequest.setLightType(this.mapperFacade.map(source.getLightType(), Oslp.LightType.class));
         }
-
         if (source.getDaliConfiguration() != null) {
             setConfigurationRequest.setDaliConfiguration(this.mapperFacade.map(source.getDaliConfiguration(),
                     Oslp.DaliConfiguration.class));
         }
-
         if (source.getRelayConfiguration() != null) {
             setConfigurationRequest.setRelayConfiguration(this.mapperFacade.map(source.getRelayConfiguration(),
                     Oslp.RelayConfiguration.class));
         }
-
         if (source.getShortTermHistoryIntervalMinutes() != null) {
             setConfigurationRequest.setShortTermHistoryIntervalMinutes(this.mapperFacade.map(
                     source.getShortTermHistoryIntervalMinutes(), Integer.class));
         }
-
         if (source.getLongTermHistoryInterval() != null) {
             setConfigurationRequest.setLongTermHistoryInterval(this.mapperFacade.map(
                     source.getLongTermHistoryInterval(), Integer.class));
         }
-
         if (source.getLongTermHistoryIntervalType() != null) {
             setConfigurationRequest.setLongTermHistoryIntervalType(this.mapperFacade.map(
                     source.getLongTermHistoryIntervalType(), Oslp.LongTermIntervalType.class));
         }
-
         if (source.getPreferredLinkType() != null) {
             setConfigurationRequest.setPreferredLinkType(this.mapperFacade.map(source.getPreferredLinkType(),
                     Oslp.LinkType.class));
         }
-
         if (source.getMeterType() != null) {
             setConfigurationRequest.setMeterType(this.mapperFacade.map(source.getMeterType(), Oslp.MeterType.class));
         }
-
-        setConfigurationRequest.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
-        setConfigurationRequest.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
-        setConfigurationRequest.setIsAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled());
-        setConfigurationRequest.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
-        setConfigurationRequest.setCommunicationPauseTimeBetweenConnectionTrials(source.getCommunicationPauseTimeBetweenConnectionTrials());
-        setConfigurationRequest.setCommunicationTimeout(source.getCommunicationTimeout());
-        setConfigurationRequest.setDeviceFixIpValue(ByteString.copyFromUtf8(source.getDeviceFixIpValue()));
-        setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
-        setConfigurationRequest.setOsgpPortNumber(source.getOsgpPortNumber());
-        setConfigurationRequest.setOspgIpAddress(ByteString.copyFromUtf8(source.getOspgIpAddress()));
-        setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
-        setConfigurationRequest.setSummerTimeDetails(source.getSummerTimeDetails());
-        setConfigurationRequest.setIsTestButtonEnabled(source.isTestButtonEnabled());
-        setConfigurationRequest.setTimeSyncFrequency(source.getTimeSyncFrequency());
-        setConfigurationRequest.setWinterTimeDetails(source.getWinterTimeDetails());
-        setConfigurationRequest.addAllSwitchingDelay(source.getSwitchingDelay());
-
-        final List<com.alliander.osgp.oslp.Oslp.RelayMatrix> oslpRelayMatrix = new ArrayList<>();
-        for (final RelayMatrix relayMatrix : source.getRelayLinking()) {
-
-            final Oslp.RelayMatrix newRelayMatrix = Oslp.RelayMatrix.newBuilder()
-                    .setIndicesOfControlledRelaysOff(ByteString.copyFromUtf8(relayMatrix.getIndicesOfControlledRelaysOff()))
-                    .setIndicesOfControlledRelaysOn(ByteString.copyFromUtf8(relayMatrix.getIndicesOfControlledRelaysOn()))
-                    .setMasterRelayIndex(ByteString.copyFromUtf8(relayMatrix.getMasterRelayIndex()))
-                    .setMasterRelayOn(relayMatrix.isMasterRelayOn()).build();
-
-            oslpRelayMatrix.add(newRelayMatrix);
+        if (source.getAstroGateSunRiseOffset() != null) {
+            setConfigurationRequest.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
         }
-        setConfigurationRequest.addAllRelayLinking(oslpRelayMatrix);
+        if (source.getAstroGateSunSetOffset() != null) {
+            setConfigurationRequest.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
+        }
+        if (source.isAutomaticSummerTimingEnabled() != null) {
+            setConfigurationRequest.setIsAutomaticSummerTimingEnabled(source.isAutomaticSummerTimingEnabled());
+        }
+        if (source.getCommunicationNumberOfRetries() != null) {
+            setConfigurationRequest.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
+        }
+        if (source.getCommunicationPauseTimeBetweenConnectionTrials() != null) {
+            setConfigurationRequest.setCommunicationPauseTimeBetweenConnectionTrials(source
+                    .getCommunicationPauseTimeBetweenConnectionTrials());
+        }
+        if (source.getCommunicationTimeout() != null) {
+            setConfigurationRequest.setCommunicationTimeout(source.getCommunicationTimeout());
+        }
+        if (source.getDeviceFixIpValue() != null) {
+            setConfigurationRequest.setDeviceFixIpValue(this.convertTextualIpAddressToByteString(source
+                    .getDeviceFixIpValue()));
+        }
+        if (source.isDhcpEnabled() != null) {
+            setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
+        }
+        if (source.getOsgpPortNumber() != null) {
+            setConfigurationRequest.setOsgpPortNumber(source.getOsgpPortNumber());
+        }
+        if (source.getOspgIpAddress() != null) {
+            setConfigurationRequest
+                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
+        }
+        if (source.isRelayRefreshing() != null) {
+            setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
+        }
+        if (source.getSummerTimeDetails() != null) {
+            setConfigurationRequest.setSummerTimeDetails(source.getSummerTimeDetails());
+        }
+        if (source.isTestButtonEnabled() != null) {
+            setConfigurationRequest.setIsTestButtonEnabled(source.isTestButtonEnabled());
+        }
+        if (source.getTimeSyncFrequency() != null) {
+            setConfigurationRequest.setTimeSyncFrequency(source.getTimeSyncFrequency());
+        }
+        if (source.getWinterTimeDetails() != null) {
+            setConfigurationRequest.setWinterTimeDetails(source.getWinterTimeDetails());
+        }
+        if (source.getSwitchingDelays() != null) {
+            setConfigurationRequest.addAllSwitchingDelay(source.getSwitchingDelays());
+        }
+        if (source.getRelayLinking() != null) {
+            setConfigurationRequest.addAllRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(),
+                    Oslp.RelayMatrix.class));
+        }
 
         return setConfigurationRequest.build();
     }
 
-    @Override
-    public Configuration convertFrom(final SetConfigurationRequest source, final Type<Configuration> destinationType) {
-
-        final Configuration configuration = new Configuration(com.alliander.osgp.dto.valueobjects.LightType.valueOf(source.getLightType().name())
-                , this.mapperFacade.map(source.getDaliConfiguration(), com.alliander.osgp.dto.valueobjects.DaliConfiguration.class)
-                , this.mapperFacade.map(source.getRelayConfiguration(), com.alliander.osgp.dto.valueobjects.RelayConfiguration.class)
-                , source.getShortTermHistoryIntervalMinutes()
-                , this.mapperFacade.map(source.getPreferredLinkType(), com.alliander.osgp.dto.valueobjects.LinkType.class)
-                , this.mapperFacade.map(source.getMeterType(), com.alliander.osgp.dto.valueobjects.MeterType.class)
-                , source.getLongTermHistoryInterval()
-                , this.mapperFacade.map(source.getLongTermHistoryIntervalType(), com.alliander.osgp.dto.valueobjects.LongTermIntervalType.class));
-
-        configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
-        configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
-        configuration.setAutomaticSummerTimingEnabled(source.getIsAutomaticSummerTimingEnabled());
-        configuration.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
-        configuration.setCommunicationPauseTimeBetweenConnectionTrials(source.getCommunicationPauseTimeBetweenConnectionTrials());
-        configuration.setCommunicationTimeout(source.getCommunicationTimeout());
-        configuration.setDeviceFixIpValue(source.getDeviceFixIpValue().toStringUtf8());
-        configuration.setDhcpEnabled(source.getIsDhcpEnabled());
-        configuration.setOsgpPortNumber(source.getOsgpPortNumber());
-        configuration.setOspgIpAddress(source.getOspgIpAddress().toStringUtf8());
-        configuration.setRelayRefreshing(source.getRelayRefreshing());
-        configuration.setSummerTimeDetails(source.getSummerTimeDetails());
-        configuration.setTestButtonEnabled(source.getIsTestButtonEnabled());
-        configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
-        configuration.setWinterTimeDetails(source.getWinterTimeDetails());
-        configuration.setSwitchingDelay(source.getSwitchingDelayList());
-
-        final List<RelayMatrix> relayMatrix = new ArrayList<RelayMatrix>();
-        for (final com.alliander.osgp.oslp.Oslp.RelayMatrix matrix : source.getRelayLinkingList()) {
-            final RelayMatrix newRelayMatrix = new RelayMatrix(matrix.getMasterRelayIndex().toStringUtf8(),
-                    matrix.getMasterRelayOn());
-
-            newRelayMatrix.setIndicesOfControlledRelaysOff(matrix.getIndicesOfControlledRelaysOff().toStringUtf8());
-            newRelayMatrix.setIndicesOfControlledRelaysOn(matrix.getIndicesOfControlledRelaysOn().toStringUtf8());
-            relayMatrix.add(newRelayMatrix);
+    private ByteString convertTextualIpAddressToByteString(final String ipAddress) {
+        try {
+            LOGGER.info("ipAddress: {}", ipAddress);
+            final InetAddress inetAddress = InetAddress.getByName(ipAddress);
+            final byte[] bytes = inetAddress.getAddress();
+            LOGGER.info("bytes.length: {}", bytes.length);
+            for (final byte b : bytes) {
+                LOGGER.info("byte: {}", b);
+            }
+            return ByteString.copyFrom(bytes);
+        } catch (final UnknownHostException e) {
+            LOGGER.error("UnknownHostException", e);
+            return null;
         }
-        configuration.setRelayLinking(relayMatrix);
-
-        return configuration;
     }
-
 }

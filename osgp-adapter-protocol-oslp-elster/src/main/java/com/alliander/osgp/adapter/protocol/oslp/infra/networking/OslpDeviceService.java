@@ -1000,7 +1000,7 @@ public class OslpDeviceService implements DeviceService {
             configuration.setRelayLinking(this.mapper.mapAsList(getConfigurationResponse.getRelayLinkingList(), RelayMatrix.class));
             configuration.setRelayRefreshing(getConfigurationResponse.getRelayRefreshing());
             configuration.setSummerTimeDetails(getConfigurationResponse.getSummerTimeDetails());
-            configuration.setSwitchingDelay(this.mapper.mapAsList(getConfigurationResponse.getSwitchingDelayList(), Integer.class));
+            configuration.setSwitchingDelays(this.mapper.mapAsList(getConfigurationResponse.getSwitchingDelayList(), Integer.class));
             configuration.setTestButtonEnabled(getConfigurationResponse.getIsTestButtonEnabled());
             configuration.setTimeSyncFrequency(getConfigurationResponse.getTimeSyncFrequency());
             configuration.setWinterTimeDetails(getConfigurationResponse.getWinterTimeDetails());
