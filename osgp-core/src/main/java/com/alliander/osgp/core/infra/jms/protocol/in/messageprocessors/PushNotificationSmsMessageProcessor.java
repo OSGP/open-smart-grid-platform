@@ -30,6 +30,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSms;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -77,17 +78,12 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         try {
             final PushNotificationSms pushNotificationSms = (PushNotificationSms) dataObject;
 
-            this.storeAlarmAsEvent(pushNotificationSms);
+            this.storeSmsAsEvent(pushNotificationSms);
 
             final String ownerIdentification = this.getOrganisationIdentificationOfOwner(deviceIdentification);
             LOGGER.info("Matching owner {} with device {} handling {} from {}", ownerIdentification,
                     deviceIdentification, messageType, requestMessage.getIpAddress());
-            // final RequestMessage requestWithUpdatedOrganization = new
-            // RequestMessage(
-            // requestMessage.getCorrelationUid(), ownerIdentification,
-            // requestMessage.getDeviceIdentification(),
-            // requestMessage.getIpAddress(), pushNotificationSms);
-
+            
             /*
              * This message processor handles messages that came in on the
              * osgp-core.1_0.protocol-dlms.1_0.requests queue.
@@ -118,11 +114,11 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         }
     }
 
-    private void storeAlarmAsEvent(final PushNotificationSms pushNotificationSms) {
+    private void storeSmsAsEvent(final PushNotificationSms pushNotificationSms) {
         try {
             this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
                     com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
-                            .getIpAddress().toString(), 0);
+                    .getIpAddress().toString(), 0);
         } catch (final UnknownEntityException uee) {
             LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: " + pushNotificationSms,
                     uee);
