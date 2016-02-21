@@ -63,7 +63,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.Configuration, Config
         configuration.setOspgIpAddress(source.getOspgIpAddress());
         configuration.setRelayRefreshing(source.isRelayRefreshing());
         configuration.setSummerTimeDetails(source.getSummerTimeDetails());
-        configuration.setSwitchingDelay(source.getSwitchingDelay());
+        configuration.setSwitchingDelays(source.getSwitchingDelays());
         configuration.setTestButtonEnabled(source.isTestButtonEnabled());
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         configuration.setWinterTimeDetails(source.getWinterTimeDetails());
@@ -121,7 +121,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.Configuration, Config
         configuration.setOspgIpAddress(source.getOspgIpAddress());
         configuration.setRelayRefreshing(source.isRelayRefreshing());
         configuration.setSummerTimeDetails(source.getSummerTimeDetails());
-        configuration.setSwitchingDelay(source.getSwitchingDelay());
+        configuration.setSwitchingDelays(source.getSwitchingDelays());
         configuration.setTestButtonEnabled(source.isTestButtonEnabled());
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         configuration.setWinterTimeDetails(source.getWinterTimeDetails());

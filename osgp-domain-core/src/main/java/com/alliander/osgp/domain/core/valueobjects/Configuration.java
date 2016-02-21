@@ -51,7 +51,7 @@ public class Configuration implements Serializable {
 
     private String deviceFixIpValue;
 
-    private boolean isDhcpEnabled;
+    private Boolean isDhcpEnabled;
 
     private Integer communicationTimeout;
 
@@ -63,19 +63,19 @@ public class Configuration implements Serializable {
 
     private Integer osgpPortNumber;
 
-    private boolean isTestButtonEnabled;
+    private Boolean isTestButtonEnabled;
 
-    private boolean isAutomaticSummerTimingEnabled;
+    private Boolean isAutomaticSummerTimingEnabled;
 
     private Integer astroGateSunRiseOffset;
 
     private Integer astroGateSunSetOffset;
 
-    private List<Integer> switchingDelay;
+    private List<Integer> switchingDelays;
 
     private List<RelayMatrix> relayLinking;
 
-    private boolean relayRefreshing;
+    private Boolean relayRefreshing;
 
     private String summerTimeDetails;
 
@@ -143,11 +143,11 @@ public class Configuration implements Serializable {
         this.deviceFixIpValue = deviceFixIpValue;
     }
 
-    public boolean isDhcpEnabled() {
+    public Boolean isDhcpEnabled() {
         return this.isDhcpEnabled;
     }
 
-    public void setDhcpEnabled(final boolean isDhcpEnabled) {
+    public void setDhcpEnabled(final Boolean isDhcpEnabled) {
         this.isDhcpEnabled = isDhcpEnabled;
     }
 
@@ -192,19 +192,19 @@ public class Configuration implements Serializable {
         this.osgpPortNumber = osgpPortNumber;
     }
 
-    public boolean isTestButtonEnabled() {
+    public Boolean isTestButtonEnabled() {
         return this.isTestButtonEnabled;
     }
 
-    public void setTestButtonEnabled(final boolean isTestButtonEnabled) {
+    public void setTestButtonEnabled(final Boolean isTestButtonEnabled) {
         this.isTestButtonEnabled = isTestButtonEnabled;
     }
 
-    public boolean isAutomaticSummerTimingEnabled() {
+    public Boolean isAutomaticSummerTimingEnabled() {
         return this.isAutomaticSummerTimingEnabled;
     }
 
-    public void setAutomaticSummerTimingEnabled(final boolean isAutomaticSummerTimingEnabled) {
+    public void setAutomaticSummerTimingEnabled(final Boolean isAutomaticSummerTimingEnabled) {
         this.isAutomaticSummerTimingEnabled = isAutomaticSummerTimingEnabled;
     }
 
@@ -228,11 +228,11 @@ public class Configuration implements Serializable {
         this.astroGateSunSetOffset = astroGateSunSetOffset;
     }
 
-    public boolean isRelayRefreshing() {
+    public Boolean isRelayRefreshing() {
         return this.relayRefreshing;
     }
 
-    public void setRelayRefreshing(final boolean relayRefreshing) {
+    public void setRelayRefreshing(final Boolean relayRefreshing) {
         this.relayRefreshing = relayRefreshing;
     }
 
@@ -252,12 +252,12 @@ public class Configuration implements Serializable {
         this.winterTimeDetails = winterTimeDetails;
     }
 
-    public List<Integer> getSwitchingDelay() {
-        return this.switchingDelay;
+    public List<Integer> getSwitchingDelays() {
+        return this.switchingDelays;
     }
 
-    public void setSwitchingDelay(final List<Integer> switchingDelay) {
-        this.switchingDelay = switchingDelay;
+    public void setSwitchingDelays(final List<Integer> switchingDelays) {
+        this.switchingDelays = switchingDelays;
     }
 
     public List<RelayMatrix> getRelayLinking() {

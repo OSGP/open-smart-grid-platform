@@ -89,27 +89,35 @@
       <xsd:element name="MeterType" type="tns:MeterType" minOccurs="0" maxOccurs="1" />
       <xsd:element name="LongTermHistoryInterval" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="LongTermHistoryIntervalType" type="tns:LongTermIntervalType" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="timeSyncFrequency" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="deviceFixIpValue" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="isDhcpEnabled" type="xsd:boolean" minOccurs="0" />
-      <xsd:element name="communicationTimeout" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="communicationNumberOfRetries" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="communicationPauseTimeBetweenConnectionTrials" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="ospgIpAddress" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="osgpPortNumber" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="isTestButtonEnabled" type="xsd:boolean" minOccurs="0" />
-      <xsd:element name="isAutomaticSummerTimingEnabled" type="xsd:boolean" minOccurs="0" />
-      <xsd:element name="astroGateSunRiseOffset" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="astroGateSunSetOffset" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="TimeSyncFrequency" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="DeviceFixIpValue" type="tns:IPType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IsDhcpEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="CommunicationTimeout" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="CommunicationNumberOfRetries" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="CommunicationPauseTimeBetweenConnectionTrials" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="OspgIpAddress" type="tns:IPType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="OsgpPortNumber" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IsTestButtonEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="IsAutomaticSummerTimingEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="AstroGateSunRiseOffset" type="xsd:int" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="AstroGateSunSetOffset" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:sequence>
-        <xsd:element name="switchingDelay" type="xsd:int" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="SwitchingDelays" type="xsd:int" minOccurs="0" maxOccurs="4" />
       </xsd:sequence>
       <xsd:sequence>
-        <xsd:element name="relayLinking" type="tns:RelayMatrix" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="RelayLinking" type="tns:RelayMatrix" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
-      <xsd:element name="relayRefreshing" type="xsd:boolean" minOccurs="0" />
-      <xsd:element name="summerTimeDetails" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="winterTimeDetails" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="RelayRefreshing" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="SummerTimeDetails" type="xsd:string" minOccurs="0" maxOccurs="1" >
+        <xsd:annotation>
+          <xsd:documentation>Format is: MMWHHmi where MM: month, W: day of the week (0- Monday, 6- Sunday), HH: hour of the changing time, mi: minutes of the changing time</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="WinterTimeDetails" type="xsd:string" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation>Format is: MMWHHmi where MM: month, W: day of the week (0- Monday, 6- Sunday), HH: hour of the changing time, mi: minutes of the changing time</xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -219,10 +227,28 @@
 
   <xsd:complexType name="RelayMatrix">
     <xsd:sequence>
-      <xsd:element name="masterRelayIndex" type="xsd:string" minOccurs="1" />
-      <xsd:element name="masterRelayOn" type="xsd:boolean" minOccurs="1" />
-      <xsd:element name="indicesOfControlledRelaysOn" type="xsd:string" minOccurs="0" />
-      <xsd:element name="indicesOfControlledRelaysOff" type="xsd:string" minOccurs="0" />
+      <xsd:element name="MasterRelayIndex" type="tns:RelayMatrixIndex" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="MasterRelayOn" type="xsd:boolean" minOccurs="1" maxOccurs="1" />
+      <xsd:sequence>
+        <xsd:element name="IndicesOfControlledRelaysOn" type="tns:RelayMatrixIndex" minOccurs="0" maxOccurs="4"/>
+      </xsd:sequence>
+      <xsd:sequence>
+        <xsd:element name="IndicesOfControlledRelaysOff" type="tns:RelayMatrixIndex" minOccurs="0" maxOccurs="4" />
+      </xsd:sequence>
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:simpleType name="RelayMatrixIndex">
+    <xsd:restriction base="xsd:int">
+      <xsd:minInclusive value="1" />
+      <xsd:maxInclusive value="4" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="IPType">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern
+        value="((1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]).){3}(1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])" />
+    </xsd:restriction>
+  </xsd:simpleType>
 </xsd:schema>
