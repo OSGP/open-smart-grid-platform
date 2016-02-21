@@ -178,11 +178,6 @@ public class ConfigurationManagementEndpoint {
                 if (message.getDataObject() != null) {
                     final Configuration configuration = (Configuration) message.getDataObject();
                     if (configuration != null) {
-
-                        if (this.configurationManagementMapper == null) {
-                            this.configurationManagementMapper = new ConfigurationManagementMapper();
-                        }
-
                         response.setConfiguration(this.configurationManagementMapper.map(configuration,
                                 com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.Configuration.class));
                     }
