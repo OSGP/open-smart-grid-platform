@@ -7,8 +7,13 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
+import java.io.UnsupportedEncodingException;
+
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
@@ -17,17 +22,24 @@ import com.alliander.osgp.dto.valueobjects.LinkType;
 import com.alliander.osgp.dto.valueobjects.LongTermIntervalType;
 import com.alliander.osgp.dto.valueobjects.MeterType;
 import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
+import com.alliander.osgp.dto.valueobjects.RelayMatrix;
 import com.alliander.osgp.oslp.Oslp;
+import com.google.protobuf.ByteString;
 
 public class OslpGetConfigurationResponseToConfigurationConverter extends
         CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(OslpGetConfigurationResponseToConfigurationConverter.class);
+
     @Override
     public Configuration convert(final Oslp.GetConfigurationResponse source,
             final Type<? extends Configuration> destinationType) {
-        return new Configuration(source.hasLightType() ? this.mapperFacade.map(source.getLightType(), LightType.class)
-                : null, source.hasDaliConfiguration() ? this.mapperFacade.map(source.getDaliConfiguration(),
-                DaliConfiguration.class) : null, source.hasRelayConfiguration() ? this.mapperFacade.map(
-                source.getRelayConfiguration(), RelayConfiguration.class) : null,
+        final Configuration configuration = new Configuration(source.hasLightType() ? this.mapperFacade.map(
+                source.getLightType(), LightType.class) : null, source.hasDaliConfiguration() ? this.mapperFacade.map(
+                source.getDaliConfiguration(), DaliConfiguration.class) : null,
+                source.hasRelayConfiguration() ? this.mapperFacade.map(source.getRelayConfiguration(),
+                        RelayConfiguration.class) : null,
                 source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
                         source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
                 source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
@@ -36,5 +48,58 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
                         source.getLongTermHistoryInterval(), Integer.class) : null,
                 source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
                         source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
+
+        configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
+        if (source.getDeviceFixIpValue() != null && !source.getDeviceFixIpValue().isEmpty()) {
+            configuration.setDeviceFixIpValue(this.convertIpAddress(source.getDeviceFixIpValue()));
+        }
+        configuration.setDhcpEnabled(source.getIsDhcpEnabled());
+        configuration.setCommunicationTimeout(source.getCommunicationTimeout());
+        configuration.setCommunicationNumberOfRetries(source.getCommunicationNumberOfRetries());
+        configuration.setCommunicationPauseTimeBetweenConnectionTrials(source
+                .getCommunicationPauseTimeBetweenConnectionTrials());
+        if (source.getOspgIpAddress() != null && !source.getOspgIpAddress().isEmpty()) {
+            configuration.setOspgIpAddress(this.convertIpAddress(source.getOspgIpAddress()));
+        }
+        configuration.setOsgpPortNumber(source.getOsgpPortNumber());
+        configuration.setTestButtonEnabled(source.getIsTestButtonEnabled());
+        configuration.setAutomaticSummerTimingEnabled(source.getIsAutomaticSummerTimingEnabled());
+        configuration.setAstroGateSunRiseOffset(source.getAstroGateSunRiseOffset());
+        configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
+        configuration.setSwitchingDelays(source.getSwitchingDelayList());
+        if (source.getRelayLinkingList() != null) {
+            configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinkingList(), RelayMatrix.class));
+        }
+        configuration.setRelayRefreshing(source.getRelayRefreshing());
+        configuration.setSummerTimeDetails(source.getSummerTimeDetails());
+        configuration.setWinterTimeDetails(source.getWinterTimeDetails());
+
+        return configuration;
+    }
+
+    private String convertIpAddress(final ByteString byteString) {
+        LOGGER.info("byteString.toByteArray().length(): {}", byteString.toByteArray().length);
+
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (final byte number : byteString.toByteArray()) {
+            LOGGER.info("number: {}", number);
+            int convertedNumber = number;
+            if (number < 0) {
+                convertedNumber = 256 + number;
+            }
+            final String str = String.valueOf(convertedNumber);
+            LOGGER.info("str: {}", str);
+            stringBuilder.append(str).append(".");
+        }
+        final String ipValue = stringBuilder.toString();
+        LOGGER.info("ipValue: {}", ipValue);
+        final String ipAddress = ipValue.substring(0, ipValue.length() - 1);
+        LOGGER.info("ipAddress: {}", ipAddress);
+        try {
+            return new String(ipAddress.getBytes("UTF-8"));
+        } catch (final UnsupportedEncodingException e) {
+            LOGGER.error("UnsupportedEncodingException", e);
+            return null;
+        }
     }
 }

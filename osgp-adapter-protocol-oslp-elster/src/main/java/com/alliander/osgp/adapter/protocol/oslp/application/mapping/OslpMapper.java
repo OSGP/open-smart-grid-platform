@@ -26,6 +26,7 @@ public class OslpMapper extends ConfigurableMapper {
         factory.getConverterFactory().registerConverter(new IntegerToByteStringConverter());
         factory.getConverterFactory().registerConverter(new ConfigurationToOslpSetConfigurationRequestConverter());
         factory.getConverterFactory().registerConverter(new OslpGetConfigurationResponseToConfigurationConverter());
+        factory.getConverterFactory().registerConverter(new RelayMatrixConverter());
         factory.getConverterFactory().registerConverter(new DaliConfigurationToOslpDaliConfigurationConverter());
         factory.getConverterFactory().registerConverter(new RelayConfigurationToOslpRelayConfigurationConverter());
         factory.getConverterFactory().registerConverter(new LightTypeConverter());

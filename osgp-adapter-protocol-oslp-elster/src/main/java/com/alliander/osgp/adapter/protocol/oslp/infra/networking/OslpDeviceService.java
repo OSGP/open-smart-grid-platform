@@ -60,6 +60,7 @@ import com.alliander.osgp.dto.valueobjects.LinkType;
 import com.alliander.osgp.dto.valueobjects.PageInfo;
 import com.alliander.osgp.dto.valueobjects.PowerUsageData;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.RelayMatrix;
 import com.alliander.osgp.dto.valueobjects.Schedule;
 import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
 import com.alliander.osgp.oslp.Oslp;
@@ -985,6 +986,25 @@ public class OslpDeviceService implements DeviceService {
             final Oslp.GetConfigurationResponse getConfigurationResponse = oslpResponse.getPayloadMessage()
                     .getGetConfigurationResponse();
             configuration = this.mapper.map(getConfigurationResponse, Configuration.class);
+
+            configuration.setAstroGateSunRiseOffset(getConfigurationResponse.getAstroGateSunRiseOffset());
+            configuration.setAstroGateSunSetOffset(getConfigurationResponse.getAstroGateSunSetOffset());
+            configuration.setAutomaticSummerTimingEnabled(getConfigurationResponse.getIsAutomaticSummerTimingEnabled());
+            configuration.setCommunicationNumberOfRetries(getConfigurationResponse.getCommunicationNumberOfRetries());
+            configuration.setCommunicationPauseTimeBetweenConnectionTrials(getConfigurationResponse.getCommunicationPauseTimeBetweenConnectionTrials());
+            configuration.setCommunicationTimeout(getConfigurationResponse.getCommunicationTimeout());
+            configuration.setDeviceFixIpValue(getConfigurationResponse.getDeviceFixIpValue().toStringUtf8());
+            configuration.setDhcpEnabled(getConfigurationResponse.getIsDhcpEnabled());
+            configuration.setOsgpPortNumber(getConfigurationResponse.getOsgpPortNumber());
+            configuration.setOspgIpAddress(getConfigurationResponse.getOspgIpAddress().toStringUtf8());
+            configuration.setRelayLinking(this.mapper.mapAsList(getConfigurationResponse.getRelayLinkingList(), RelayMatrix.class));
+            configuration.setRelayRefreshing(getConfigurationResponse.getRelayRefreshing());
+            configuration.setSummerTimeDetails(getConfigurationResponse.getSummerTimeDetails());
+            configuration.setSwitchingDelays(this.mapper.mapAsList(getConfigurationResponse.getSwitchingDelayList(), Integer.class));
+            configuration.setTestButtonEnabled(getConfigurationResponse.getIsTestButtonEnabled());
+            configuration.setTimeSyncFrequency(getConfigurationResponse.getTimeSyncFrequency());
+            configuration.setWinterTimeDetails(getConfigurationResponse.getWinterTimeDetails());
+
             status = this.mapper.map(getConfigurationResponse.getStatus(), DeviceMessageStatus.class);
         } else {
             status = DeviceMessageStatus.FAILURE;
