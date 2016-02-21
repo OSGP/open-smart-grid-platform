@@ -7,28 +7,22 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
-import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType;
+import org.springframework.stereotype.Component;
+
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
+@Component
 public class PeriodicMeterReadsRequestConverter
         extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery, PeriodicMeterReadsQuery> {
+        CustomConverter<PeriodicMeterReadsQuery, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> {
 
     @Override
-    public PeriodicMeterReadsQuery convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery source,
-            final Type<PeriodicMeterReadsQuery> destinationType) {
-        return new PeriodicMeterReadsQuery(PeriodType.valueOf(source.getPeriodType().name()), source.getBeginDate(),
-                source.getEndDate(), source.isGas());
-    }
-
-    @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery convertFrom(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery convert(
             final PeriodicMeterReadsQuery source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> destinationType) {
+            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> destinationType) {
         return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery(
                 com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType().name()),
                 source.getBeginDate(), source.getEndDate());
