@@ -17,7 +17,6 @@ import java.util.concurrent.TimeoutException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
@@ -40,8 +39,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsConta
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 @Component()
-public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+public class GetPeriodicMeterReadsCommandExecutor extends
+        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -99,17 +98,15 @@ public class GetPeriodicMeterReadsCommandExecutor implements
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
-        final List<GetResult> getResultList = conn.get(profileBuffer);
+        final List<GetResult> getResultList = conn.get(profileBuffer,
+                this.getScalerUnitAttributeAddress(periodicMeterReadsRequest));
 
         checkResultList(getResultList);
 
         final List<PeriodicMeterReads> periodicMeterReads = new ArrayList<>();
 
-        final GetResult getResult = getResultList.get(0);
-        final AccessResultCode resultCode = getResult.resultCode();
-        LOGGER.debug("AccessResultCode: {}", resultCode.name());
-        final DataObject resultData = getResult.resultData();
-        LOGGER.debug(this.dlmsHelperService.getDebugInfo(resultData));
+        final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
+                "Periodic E-Meter Reads");
         final List<DataObject> bufferedObjectsList = resultData.value();
 
         for (final DataObject bufferedObject : bufferedObjectsList) {
@@ -117,8 +114,9 @@ public class GetPeriodicMeterReadsCommandExecutor implements
             this.processNextPeriodicMeterReads(periodType, beginDateTime, endDateTime, periodicMeterReads,
                     bufferedObjects);
         }
+        final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(1), "Scaler and Unit");
 
-        return new PeriodicMeterReadsContainer(periodType, periodicMeterReads);
+        return new PeriodicMeterReadsContainer(periodType, periodicMeterReads, this.convert(scalerUnit));
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,

@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -139,6 +140,12 @@ public class DlmsHelperService {
             throw new ProtocolAdapterException(String.format("Unexpected null value for %s,", description));
         }
         return result;
+    }
+
+    public DataObject readDataObject(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
+        this.checkResultCode(getResult, description);
+        return getResult.resultData();
     }
 
     public Long readLong(final DataObject resultData, final String description) throws ProtocolAdapterException {
@@ -351,7 +358,7 @@ public class DlmsHelperService {
             throws ProtocolAdapterException {
         final List<DataObject> listOfObjectDefinition = this.readList(resultData, description);
         if (listOfObjectDefinition == null) {
-            return null;
+            return Collections.emptyList();
         }
         final List<CosemObjectDefinition> objectDefinitionList = new ArrayList<>();
         for (final DataObject objectDefinitionObject : listOfObjectDefinition) {
@@ -471,7 +478,7 @@ public class DlmsHelperService {
             throws ProtocolAdapterException {
         final List<DataObject> listOfWindowElement = this.readList(resultData, description);
         if (listOfWindowElement == null) {
-            return null;
+            return Collections.emptyList();
         }
         final List<WindowElement> windowElementList = new ArrayList<>();
         for (final DataObject windowElementObject : listOfWindowElement) {
@@ -516,7 +523,7 @@ public class DlmsHelperService {
         final String rawValueClass = this.getRawValueClassForDebugInfo(dataObject);
 
         return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
-        + objectText;
+                + objectText;
     }
 
     private String getObjectTextForDebugInfo(final DataObject dataObject) {
@@ -633,8 +640,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -660,10 +667,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
     }
@@ -674,7 +681,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-        .append(", bits=").append(stringValue);
+                .append(", bits=").append(stringValue);
 
         return sb.toString();
     }
@@ -724,7 +731,7 @@ public class DlmsHelperService {
             throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
-            return null;
+            return new byte[0];
         }
         final Object resultValue = resultData.value();
         if (!resultData.isByteArray() || !(resultValue instanceof byte[])) {
@@ -739,7 +746,7 @@ public class DlmsHelperService {
             throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
-            return null;
+            return Collections.emptyList();
         }
         final Object resultValue = resultData.value();
         if (!resultData.isComplex() || !(resultValue instanceof List)) {
