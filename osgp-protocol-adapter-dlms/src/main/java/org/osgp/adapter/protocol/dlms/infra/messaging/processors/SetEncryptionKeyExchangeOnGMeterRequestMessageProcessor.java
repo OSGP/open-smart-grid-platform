@@ -7,30 +7,24 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing set Activity Calendar request messages
  */
 @Component("dlmsSetEncryptionKeyExchangeOnGMeterRequestMessageProcessor")
 public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
@@ -40,19 +34,9 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends Dev
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing Set Encryption Key Exchange On G-Meter request message");
-
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-        try {
-            messageMetadata.handleMessage(message);
-
-            final GMeterInfo gMeterInfo = (GMeterInfo) message.getObject();
-            this.configurationService.setEncryptionKeyExchangeOnGMeter(messageMetadata, gMeterInfo,
-                    this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        final GMeterInfo gMeterInfo = (GMeterInfo) requestObject;
+        return this.configurationService.setEncryptionKeyExchangeOnGMeter(messageMetadata, gMeterInfo);
     }
 }

@@ -119,10 +119,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         }
     }
 
-    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
-        throw new UnsupportedOperationException("Unsupported, make abstract.");
-    };
+    abstract protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException;
 
     protected OsgpException ensureOsgpException(final Exception e) {
         if (e instanceof OsgpException) {

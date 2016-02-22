@@ -55,7 +55,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService extends DlmsApplicationService {
@@ -106,7 +105,7 @@ public class ConfigurationService extends DlmsApplicationService {
     private DlmsDeviceRepository dlmsDeviceRepository;
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
-            final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
+            final SpecialDaysRequest specialDaysRequest) throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "requestSpecialDays");
 
@@ -132,15 +131,6 @@ public class ConfigurationService extends DlmsApplicationService {
             if (!AccessResultCode.SUCCESS.equals(accessResultCode)) {
                 throw new ProtocolAdapterException("Set special days reported result is: " + accessResultCode);
             }
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during set special days", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    specialDaysRequest);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -151,8 +141,8 @@ public class ConfigurationService extends DlmsApplicationService {
     // === REQUEST Configuration Object DATA ===
 
     public void requestSetConfiguration(final DlmsDeviceMessageMetadata messageMetadata,
-            final SetConfigurationObjectRequest setConfigurationObjectRequest,
-            final DeviceResponseMessageSender responseMessageSender) {
+            final SetConfigurationObjectRequest setConfigurationObjectRequest) throws OsgpException,
+            ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "requestSetConfiguration");
 
@@ -186,14 +176,6 @@ public class ConfigurationService extends DlmsApplicationService {
                 throw new ProtocolAdapterException("Set configuration object reported result is: " + accessResultCode);
             }
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during set Configuration Object", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    setConfigurationObjectRequest);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -202,8 +184,7 @@ public class ConfigurationService extends DlmsApplicationService {
     }
 
     public void requestSetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
-            final AdministrativeStatusType administrativeStatusType,
-            final DeviceResponseMessageSender responseMessageSender) {
+            final AdministrativeStatusType administrativeStatusType) throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "requestSetAdministration");
 
@@ -224,25 +205,16 @@ public class ConfigurationService extends DlmsApplicationService {
                         + accessResultCode);
             }
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setAdministrativeStatus", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    administrativeStatusType);
         } finally {
             if (conn != null) {
                 LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
                 conn.close();
             }
         }
-
     }
 
     public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
-            final AlarmNotifications alarmNotifications, final DeviceResponseMessageSender responseMessageSender) {
+            final AlarmNotifications alarmNotifications) throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
 
@@ -261,15 +233,6 @@ public class ConfigurationService extends DlmsApplicationService {
                 throw new ProtocolAdapterException("AccessResultCode for set alarm notifications was not SUCCESS: "
                         + accessResultCode);
             }
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setAlarmNotifications", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    alarmNotifications);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -277,8 +240,8 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
-    public void requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
-            final DeviceResponseMessageSender responseMessageSender) {
+    public AdministrativeStatusType requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata)
+            throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "requestGetAdministrativeStatus");
 
@@ -288,17 +251,7 @@ public class ConfigurationService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AdministrativeStatusType administrativeStatusType = this.getAdministrativeStatusCommandExecutor
-                    .execute(conn, device, null);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    administrativeStatusType);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during getAdministrativeStatus", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -306,8 +259,8 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
-    public void setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
-            final GMeterInfo gMeterInfo, final DeviceResponseMessageSender responseMessageSender) {
+    public String setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
+            final GMeterInfo gMeterInfo) throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "setEncryptionKeyExchangeOnGMeter");
 
@@ -331,25 +284,17 @@ public class ConfigurationService extends DlmsApplicationService {
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setEncryptionKeyExchangeOnGMeter", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            return "Set Encryption Key Exchange On G-Meter Result is OK for device id: " + deviceIdentification;
         } finally {
             if (conn != null) {
                 LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
                 conn.close();
             }
         }
-
     }
 
-    public void setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
-            final ActivityCalendar activityCalendar, final DeviceResponseMessageSender responseMessageSender) {
+    public String setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
+            final ActivityCalendar activityCalendar) throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "setActivityCalendar");
 
@@ -371,16 +316,8 @@ public class ConfigurationService extends DlmsApplicationService {
                 throw new ProtocolAdapterException("AccessResultCode for set Activity Calendar: " + methodResult);
             }
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
-                            + activityCalendar.getCalendarName());
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setActivityCalendar", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    activityCalendar);
+            return "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
+                    + activityCalendar.getCalendarName();
         } finally {
             if (conn != null) {
                 LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
@@ -390,14 +327,13 @@ public class ConfigurationService extends DlmsApplicationService {
 
     }
 
-    public void setPushSetupAlarm(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupAlarm pushSetupAlarm,
-            final DeviceResponseMessageSender responseMessageSender) {
+    public void setPushSetupAlarm(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupAlarm pushSetupAlarm)
+            throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "setPushSetupAlarm");
 
         LnClientConnection conn = null;
         try {
-
             LOGGER.info("Push Setup Alarm to set on the device: {}", pushSetupAlarm);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -411,15 +347,6 @@ public class ConfigurationService extends DlmsApplicationService {
                 throw new ProtocolAdapterException("AccessResultCode for set push setup alarm was not SUCCESS: "
                         + accessResultCode);
             }
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during setPushSetupAlarm", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    pushSetupAlarm);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -427,8 +354,8 @@ public class ConfigurationService extends DlmsApplicationService {
         }
     }
 
-    public void requestFirmwareVersion(final DlmsDeviceMessageMetadata messageMetadata,
-            final DeviceResponseMessageSender responseMessageSender) {
+    public String requestFirmwareVersion(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
+    ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "requestFirmwareVersion");
 
@@ -437,17 +364,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final String firmwareVersion = this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
-
-            // Send placeholder version number
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    firmwareVersion);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestFirmwareVersion", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
+            return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -456,7 +373,7 @@ public class ConfigurationService extends DlmsApplicationService {
     }
 
     public void replaceKeys(final DlmsDeviceMessageMetadata messageMetadata, final KeySet keySet,
-            final DeviceResponseMessageSender responseMessageSender) {
+            final DeviceResponseMessageSender responseMessageSender) throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "replaceKeys");
 
@@ -465,13 +382,6 @@ public class ConfigurationService extends DlmsApplicationService {
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             this.replaceKeySet(conn, device, keySet);
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during replace keys", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    keySet);
         } finally {
             if (conn != null) {
                 conn.close();

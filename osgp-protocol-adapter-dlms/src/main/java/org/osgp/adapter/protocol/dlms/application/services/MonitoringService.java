@@ -18,7 +18,6 @@ import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandEx
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService extends DlmsApplicationService {
@@ -60,9 +58,8 @@ public class MonitoringService extends DlmsApplicationService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public void requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
-            final PeriodicMeterReadsQuery periodicMeterReadsQuery,
-            final DeviceResponseMessageSender responseMessageSender) {
+    public Serializable requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws OsgpException, ProtocolAdapterException {
 
         this.logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
 
@@ -80,15 +77,8 @@ public class MonitoringService extends DlmsApplicationService {
                 response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
             }
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    response);
+            return response;
 
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    periodicMeterReadsQuery);
         } finally {
             if (conn != null) {
                 conn.close();

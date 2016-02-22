@@ -7,29 +7,24 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.InstallationService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing add meter request messages
  */
 @Component("dlmsAddMeterRequestMessageProcessor")
 public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddMeterRequestMessageProcessor.class);
 
     @Autowired
     private InstallationService installationService;
@@ -39,19 +34,12 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing add meter request message");
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) requestObject;
+        this.installationService.addMeter(messageMetadata, smartMeteringDevice);
 
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        try {
-            messageMetadata.handleMessage(message);
-            final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) message.getObject();
-
-            this.installationService.addMeter(messageMetadata, smartMeteringDevice, this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+        // No return object.
+        return null;
     }
 }
