@@ -99,13 +99,8 @@ public class DlmsPushNotification implements Serializable {
 
     @Override
     public String toString() {
-        if (this.alarms.isEmpty()) {
-            return String.format("DlmsPushNotification [device = %s, trigger type = %s]", this.equipmentIdentifier,
-                    this.triggerType);
-        } else {
-            return String.format("DlmsPushNotification [device = %s, trigger type = %s, alarms=%s]",
-                    this.equipmentIdentifier, this.triggerType, this.alarms);
-        }
+        return String.format("DlmsPushNotification [device = %s, trigger type = %s, alarms=%s]",
+                this.equipmentIdentifier, this.triggerType, this.alarms);
     }
 
     public byte[] toByteArray() {

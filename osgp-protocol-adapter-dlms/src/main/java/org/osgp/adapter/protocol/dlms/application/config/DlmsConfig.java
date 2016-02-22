@@ -115,12 +115,4 @@ public class DlmsConfig {
     public DlmsChannelHandlerServer dlmsChannelHandlerServer() {
         return new DlmsChannelHandlerServer();
     }
-
-    /**
-     * @return a new {@link DlmsPushNotificationDecoder}.
-     */
-    // @Bean
-    // public DlmsPushNotificationDecoder dlmsPushNotificationDecoder() {
-    // return new DlmsPushNotificationDecoder();
-    // }
 }

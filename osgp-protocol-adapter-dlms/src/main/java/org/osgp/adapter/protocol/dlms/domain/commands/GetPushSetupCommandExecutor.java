@@ -23,6 +23,10 @@ public class GetPushSetupCommandExecutor {
     protected static final int INDEX_NUMBER_OF_RETRIES = 4;
     protected static final int INDEX_REPETITION_DELAY = 5;
 
+    protected GetPushSetupCommandExecutor() {
+        // hide public contructor, but keep this accessable by subclasses
+    }
+
     protected static void checkResultList(final List<GetResult> getResultList,
             final AttributeAddress[] attributeAddresses) throws ProtocolAdapterException {
         if (getResultList.isEmpty()) {
