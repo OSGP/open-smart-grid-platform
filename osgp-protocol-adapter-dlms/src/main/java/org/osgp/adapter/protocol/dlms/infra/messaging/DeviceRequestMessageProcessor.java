@@ -7,9 +7,14 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
+import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
 
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,33 +71,6 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 this.deviceRequestMessageType.name(), this);
     }
 
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String domain, final String domainVersion,
-            final String messageType, final int retryCount) {
-        LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN,
-                "Unexpected exception while retrieving response message", e);
-
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
-                messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, ex, null, retryCount);
-
-        this.responseMessageSender.send(protocolResponseMessage);
-    }
-
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
-        LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN,
-                "Unexpected exception while retrieving response message", e);
-
-        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
-                messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ResponseMessageResultType.NOT_OK, ex, null);
-
-        this.responseMessageSender.send(protocolResponseMessage);
-    }
-
     /**
      * @param logger
      *            the logger from the calling subClass
@@ -111,5 +89,74 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         logger.debug("organisationIdentification: {}", messageMetadata.getOrganisationIdentification());
         logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
 
+    }
+
+    @Override
+    public void processMessage(final ObjectMessage message) throws JMSException {
+        LOGGER.debug("Processing {} request message", this.deviceRequestMessageType.name());
+        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
+
+        try {
+            // Handle message
+            messageMetadata.handleMessage(message);
+            final Serializable response = this.handleMessage(messageMetadata, message.getObject());
+
+            // Send response
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
+                    response);
+        } catch (final ConnectionException exception) {
+            // Retry / redeliver by throwing RuntimeException.
+            throw exception;
+        } catch (final JMSException exception) {
+            this.logJmsException(LOGGER, exception, messageMetadata);
+        } catch (final Exception exception) {
+            // Return original request + exception
+            LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
+
+            final OsgpException ex = this.ensureOsgpException(exception);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, this.responseMessageSender,
+                    message.getObject());
+        }
+    }
+
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        throw new UnsupportedOperationException("Unsupported, make abstract.");
+    };
+
+    protected OsgpException ensureOsgpException(final Exception e) {
+        if (e instanceof OsgpException) {
+            final Throwable cause = e.getCause();
+            if (cause != null && !(cause instanceof OsgpException)) {
+                return new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage(), new OsgpException(
+                        ComponentType.PROTOCOL_DLMS, cause.getMessage()));
+            }
+
+            return (OsgpException) e;
+        }
+
+        return new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                "Unexpected exception while handling protocol request/response message", new OsgpException(
+                        ComponentType.PROTOCOL_DLMS, e.getMessage()));
+    }
+
+    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(messageMetadata.getDomain(),
+                messageMetadata.getDomainVersion(), messageMetadata.getMessageType(),
+                messageMetadata.getCorrelationUid(), messageMetadata.getOrganisationIdentification(),
+                messageMetadata.getDeviceIdentification(), result, osgpException, responseObject,
+                messageMetadata.getRetryCount());
+
+        responseMessageSender.send(responseMessage);
+    }
+
+    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final ResponseMessageResultType result, final OsgpException osgpException,
+            final DeviceResponseMessageSender responseMessageSender) {
+
+        this.sendResponseMessage(messageMetadata, result, osgpException, responseMessageSender, null);
     }
 }

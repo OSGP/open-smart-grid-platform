@@ -7,10 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
@@ -31,7 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 @Component()
 public class GetActualMeterReadsCommandExecutor extends
-AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReads> {
+        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReads> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -50,13 +48,13 @@ AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterRe
 
     // scaler unit attribute address is filled dynamically
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-        new AttributeAddress(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
-        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
-        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
-        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
-        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
-        new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE), null };
+            new AttributeAddress(CLASS_ID_CLOCK, OBIS_CODE_CLOCK, ATTRIBUTE_ID_TIME),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_1, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_IMPORT_RATE_2, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_1, ATTRIBUTE_ID_VALUE),
+            new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_ACTIVE_ENERGY_EXPORT_RATE_2, ATTRIBUTE_ID_VALUE), null };
 
     private static final int INDEX_TIME = 0;
     private static final int INDEX_ACTIVE_ENERGY_IMPORT = 1;
@@ -72,8 +70,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterRe
 
     @Override
     public ActualMeterReads execute(final LnClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsQuery actualMeterReadsQuery) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final ActualMeterReadsQuery actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isGas()) {
             throw new IllegalArgumentException("ActualMeterReadsQuery object for energy reads should not be about gas.");
