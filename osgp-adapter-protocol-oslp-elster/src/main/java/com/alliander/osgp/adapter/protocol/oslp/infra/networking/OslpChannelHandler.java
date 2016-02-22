@@ -155,6 +155,7 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
                 || envelope.getPayloadMessage().hasSetTransitionResponse()
                 || envelope.getPayloadMessage().hasSetConfigurationResponse()
                 || envelope.getPayloadMessage().hasGetConfigurationResponse()
+                || envelope.getPayloadMessage().hasSwitchConfigurationResponse()
                 || envelope.getPayloadMessage().hasGetActualPowerUsageResponse()
                 || envelope.getPayloadMessage().hasGetPowerUsageHistoryResponse();
     }
