@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -106,8 +106,6 @@ OslpEnvelopeProcessor {
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-        // final String configurationBank = (String)
-        // unsignedOslpEnvelopeDto.getExtraData();
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 

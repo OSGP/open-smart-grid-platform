@@ -25,7 +25,7 @@ import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
 public class OslpGetConfigurationResponseToConfigurationConverter extends
-CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
+        CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(OslpGetConfigurationResponseToConfigurationConverter.class);
@@ -35,17 +35,17 @@ CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
             final Type<? extends Configuration> destinationType) {
         final Configuration configuration = new Configuration(source.hasLightType() ? this.mapperFacade.map(
                 source.getLightType(), LightType.class) : null, source.hasDaliConfiguration() ? this.mapperFacade.map(
-                        source.getDaliConfiguration(), DaliConfiguration.class) : null,
-                        source.hasRelayConfiguration() ? this.mapperFacade.map(source.getRelayConfiguration(),
-                                RelayConfiguration.class) : null,
-                                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
-                                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
-                                        source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
-                                                : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterType.class)
-                                                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
-                                                                source.getLongTermHistoryInterval(), Integer.class) : null,
-                                                                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
-                                                                        source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
+                source.getDaliConfiguration(), DaliConfiguration.class) : null,
+                source.hasRelayConfiguration() ? this.mapperFacade.map(source.getRelayConfiguration(),
+                        RelayConfiguration.class) : null,
+                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
+                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
+                source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
+                        : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterType.class)
+                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
+                        source.getLongTermHistoryInterval(), Integer.class) : null,
+                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
+                        source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
 
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         if (source.getDeviceFixIpValue() != null && !source.getDeviceFixIpValue().isEmpty()) {
@@ -89,11 +89,5 @@ CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
         }
         final String ipValue = stringBuilder.toString();
         return ipValue.substring(0, ipValue.length() - 1);
-        // try {
-        // return new String(ipAddress.getBytes("UTF-8"));
-        // } catch (final UnsupportedEncodingException e) {
-        // LOGGER.error("UnsupportedEncodingException", e);
-        // return null;
-        // }
     }
 }
