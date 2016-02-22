@@ -209,7 +209,8 @@ public class ConfigurationManagementEndpoint {
 
         try {
             final String correlationUid = this.configurationManagementService.enqueueSwitchConfigurationRequest(
-                    organisationIdentification, request.getDeviceIdentification(), request.getConfigurationBank());
+                    organisationIdentification, request.getDeviceIdentification(),
+                    String.valueOf(request.getConfigurationBank()));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

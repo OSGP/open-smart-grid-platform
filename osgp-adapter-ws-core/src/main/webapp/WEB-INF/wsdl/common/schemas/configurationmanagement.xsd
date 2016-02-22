@@ -84,7 +84,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
-        <xsd:element name="ConfigurationBank" type="xsd:string" />
+        <xsd:element name="ConfigurationBank" type="tns:ConfigurationBank" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -281,6 +281,13 @@
     <xsd:restriction base="xsd:string">
       <xsd:pattern
         value="((1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5]).){3}(1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+    <xsd:simpleType name="ConfigurationBank">
+    <xsd:restriction base="xsd:int">
+      <xsd:minInclusive value="0" />
+      <xsd:maxInclusive value="1" />
     </xsd:restriction>
   </xsd:simpleType>
 </xsd:schema>
