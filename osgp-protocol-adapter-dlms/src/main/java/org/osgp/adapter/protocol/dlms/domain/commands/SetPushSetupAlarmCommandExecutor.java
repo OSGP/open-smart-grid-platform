@@ -27,7 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 
 @Component()
 public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecutor implements
-        CommandExecutor<PushSetupAlarm, AccessResultCode> {
+CommandExecutor<PushSetupAlarm, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
@@ -42,8 +42,8 @@ public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecuto
         final SetParameter setParameterSendDestinationAndMethod;
 
         if (pushSetupAlarm.hasPushObjectList()) {
-            LOGGER.warn("Setting Push Object List of Push Setup Alarm not implemented: "
-                    + pushSetupAlarm.getPushObjectList());
+            LOGGER.warn("Setting Push Object List of Push Setup Alarm not implemented: {}",
+                    pushSetupAlarm.getPushObjectList());
         }
 
         if (pushSetupAlarm.hasSendDestinationAndMethod()) {
@@ -58,20 +58,20 @@ public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecuto
         }
 
         if (pushSetupAlarm.hasCommunicationWindow()) {
-            LOGGER.warn("Setting Communication Window of Push Setup Alarm not implemented: "
-                    + pushSetupAlarm.getCommunicationWindow());
+            LOGGER.warn("Setting Communication Window of Push Setup Alarm not implemented: {}",
+                    pushSetupAlarm.getCommunicationWindow());
         }
         if (pushSetupAlarm.hasRandomisationStartInterval()) {
-            LOGGER.warn("Setting Randomisation Start Interval of Push Setup Alarm not implemented: "
-                    + pushSetupAlarm.getRandomisationStartInterval());
+            LOGGER.warn("Setting Randomisation Start Interval of Push Setup Alarm not implemented: {}",
+                    pushSetupAlarm.getRandomisationStartInterval());
         }
         if (pushSetupAlarm.hasNumberOfRetries()) {
-            LOGGER.warn("Setting Number of Retries of Push Setup Alarm not implemented: "
-                    + pushSetupAlarm.getNumberOfRetries());
+            LOGGER.warn("Setting Number of Retries of Push Setup Alarm not implemented: {}",
+                    pushSetupAlarm.getNumberOfRetries());
         }
         if (pushSetupAlarm.hasRepetitionDelay()) {
-            LOGGER.warn("Setting Repetition Delay of Push Setup Alarm not implemented: "
-                    + pushSetupAlarm.getRepetitionDelay());
+            LOGGER.warn("Setting Repetition Delay of Push Setup Alarm not implemented: {}",
+                    pushSetupAlarm.getRepetitionDelay());
         }
 
         if (setParameterSendDestinationAndMethod == null) {

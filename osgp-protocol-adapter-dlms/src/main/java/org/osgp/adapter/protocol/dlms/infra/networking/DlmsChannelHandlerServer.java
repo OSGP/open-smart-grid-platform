@@ -46,32 +46,47 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
         final String deviceIdentification = message.getEquipmentIdentifier();
         final String ipAddress = this.retrieveIpAddress(ctx, deviceIdentification);
 
+        this.processPushedMessage(message, correlationId, deviceIdentification, ipAddress);
+    }
+
+    private void processPushedMessage(final DlmsPushNotification message, final String correlationId,
+            final String deviceIdentification, final String ipAddress) {
         if (PUSH_SMS_TRIGGER.equals(message.getTriggerType())) {
-            this.logMessage(message);
-
-            final PushNotificationSms pushNotificationSms = new PushNotificationSms(deviceIdentification, ipAddress);
-
-            final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
-                    deviceIdentification, ipAddress, pushNotificationSms);
-
-            LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: " + correlationId);
-            this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_SMS.name());
+            this.processPushedSms(message, correlationId, deviceIdentification, ipAddress);
 
         } else if (PUSH_ALARM_TRIGGER.equals(message.getTriggerType())) {
-            this.logMessage(message);
-
-            final PushNotificationAlarm pushNotificationAlarm = new PushNotificationAlarm(deviceIdentification,
-                    message.getAlarms());
-
-            final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
-                    deviceIdentification, ipAddress, pushNotificationAlarm);
-
-            LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
-            this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_ALARM.name());
+            this.processPushedAlarm(message, correlationId, deviceIdentification, ipAddress);
 
         } else {
             LOGGER.info("Unknown received message, skip processing");
         }
+    }
+
+    private void processPushedAlarm(final DlmsPushNotification message, final String correlationId,
+            final String deviceIdentification, final String ipAddress) {
+        this.logMessage(message);
+
+        final PushNotificationAlarm pushNotificationAlarm = new PushNotificationAlarm(deviceIdentification,
+                message.getAlarms());
+
+        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
+                deviceIdentification, ipAddress, pushNotificationAlarm);
+
+        LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_ALARM.name());
+    }
+
+    private void processPushedSms(final DlmsPushNotification message, final String correlationId,
+            final String deviceIdentification, final String ipAddress) {
+        this.logMessage(message);
+
+        final PushNotificationSms pushNotificationSms = new PushNotificationSms(deviceIdentification, ipAddress);
+
+        final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
+                deviceIdentification, ipAddress, pushNotificationSms);
+
+        LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: " + correlationId);
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_SMS.name());
     }
 
     private String retrieveIpAddress(final ChannelHandlerContext ctx, final String deviceIdentification) {

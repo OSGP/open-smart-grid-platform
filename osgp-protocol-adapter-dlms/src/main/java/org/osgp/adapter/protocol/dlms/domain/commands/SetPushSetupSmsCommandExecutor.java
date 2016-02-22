@@ -27,7 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 @Component()
 public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
-        CommandExecutor<PushSetupSms, AccessResultCode> {
+CommandExecutor<PushSetupSms, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
@@ -42,8 +42,8 @@ public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor 
         final SetParameter setParameterSendDestinationAndMethod;
 
         if (pushSetupSms.hasPushObjectList()) {
-            LOGGER.warn("Setting Push Object List of Push Setup Sms not implemented: "
-                    + pushSetupSms.getPushObjectList());
+            LOGGER.warn("Setting Push Object List of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getPushObjectList());
         }
 
         if (pushSetupSms.hasSendDestinationAndMethod()) {
@@ -58,20 +58,20 @@ public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor 
         }
 
         if (pushSetupSms.hasCommunicationWindow()) {
-            LOGGER.warn("Setting Communication Window of Push Setup Sms not implemented: "
-                    + pushSetupSms.getCommunicationWindow());
+            LOGGER.warn("Setting Communication Window of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getCommunicationWindow());
         }
         if (pushSetupSms.hasRandomisationStartInterval()) {
-            LOGGER.warn("Setting Randomisation Start Interval of Push Setup Sms not implemented: "
-                    + pushSetupSms.getRandomisationStartInterval());
+            LOGGER.warn("Setting Randomisation Start Interval of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getRandomisationStartInterval());
         }
         if (pushSetupSms.hasNumberOfRetries()) {
-            LOGGER.warn("Setting Number of Retries of Push Setup Sms not implemented: "
-                    + pushSetupSms.getNumberOfRetries());
+            LOGGER.warn("Setting Number of Retries of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getNumberOfRetries());
         }
         if (pushSetupSms.hasRepetitionDelay()) {
-            LOGGER.warn("Setting Repetition Delay of Push Setup Sms not implemented: "
-                    + pushSetupSms.getRepetitionDelay());
+            LOGGER.warn("Setting Repetition Delay of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getRepetitionDelay());
         }
 
         if (setParameterSendDestinationAndMethod == null) {
