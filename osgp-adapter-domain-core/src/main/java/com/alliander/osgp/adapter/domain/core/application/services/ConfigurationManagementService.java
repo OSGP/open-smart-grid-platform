@@ -183,4 +183,17 @@ public class ConfigurationManagementService extends AbstractService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, configuration));
     }
+
+    public void switchConfiguration(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType, final String configurationBank)
+                    throws FunctionalException {
+        LOGGER.debug("switchConfiguration called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, configurationBank), messageType, device.getIpAddress());
+    }
 }

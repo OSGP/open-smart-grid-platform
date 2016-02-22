@@ -32,6 +32,10 @@ import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConf
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationRequest;
 import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SetConfigurationResponse;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.SwitchConfigurationResponse;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -182,6 +186,64 @@ public class ConfigurationManagementEndpoint {
                                 com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.Configuration.class));
                     }
                 }
+            } else {
+                LOGGER.debug("Get Configuration data is null");
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SwitchConfigurationRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SwitchConfigurationAsyncResponse switchConfiguration(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SwitchConfigurationRequest request) throws OsgpException {
+
+        LOGGER.info("Switch Configuration Request received from organisation: {} for device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final SwitchConfigurationAsyncResponse response = new SwitchConfigurationAsyncResponse();
+
+        try {
+            final String correlationUid = this.configurationManagementService.enqueueSwitchConfigurationRequest(
+                    organisationIdentification, request.getDeviceIdentification(),
+                    String.valueOf(request.getConfigurationBank()));
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception get configuration: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SwitchConfigurationAsyncRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SwitchConfigurationResponse getSwitchConfigurationResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SwitchConfigurationAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Switch Configuration Async Request received from organisation: {} for device: {}.",
+                organisationIdentification, request.getAsyncRequest().getDeviceId());
+
+        final SwitchConfigurationResponse response = new SwitchConfigurationResponse();
+
+        try {
+            final ResponseMessage message = this.configurationManagementService
+                    .dequeueSwitchConfigurationResponse(request.getAsyncRequest().getCorrelationUid());
+
+            if (message != null) {
+                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
             } else {
                 LOGGER.debug("Get Configuration data is null");
             }
