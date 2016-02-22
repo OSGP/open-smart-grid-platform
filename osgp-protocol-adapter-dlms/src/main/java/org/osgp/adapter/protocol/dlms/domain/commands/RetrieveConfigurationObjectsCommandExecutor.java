@@ -138,9 +138,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         final GetResult getResult = getResultList.get(0);
         LOGGER.info("ResultCode: {}", getResult.resultCode());
 
-        final String output = this.dlmsHelper.getDebugInfo(getResult.resultData());
-
-        return output;
+        return this.dlmsHelper.getDebugInfo(getResult.resultData());
     }
 
     private ObisCode createObisCode(final byte[] obisCodeByteArray) {
@@ -154,10 +152,9 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
         for (final DataObject obisCodeMetaData : obisCodeMetaDataTree) {
             final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.value();
-            final ClassIdObisAttr classIdObisAttr = new ClassIdObisAttr();
-            classIdObisAttr.setClassNumber(this.getClassNumber(obisCodeMetaDataList.get(CLASS_ID_INDEX)));
-            classIdObisAttr.setObisCode(obisCodeMetaDataList.get(OBIS_CODE_INDEX));
-            classIdObisAttr.setNoAttr(this.getNoOffAttributes(obisCodeMetaDataList));
+            final ClassIdObisAttr classIdObisAttr = new ClassIdObisAttr(this.getClassNumber(obisCodeMetaDataList
+                    .get(CLASS_ID_INDEX)), obisCodeMetaDataList.get(OBIS_CODE_INDEX),
+                    this.getNoOffAttributes(obisCodeMetaDataList));
 
             allObisCodes.add(classIdObisAttr);
         }
@@ -192,33 +189,22 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         private DataObject obisCode;
         private int noAttr;
 
-        public ClassIdObisAttr() {
-
+        public ClassIdObisAttr(final int classNumber, final DataObject obisCode, final int noAttr) {
+            this.classNumber = classNumber;
+            this.obisCode = obisCode;
+            this.noAttr = noAttr;
         }
 
         public int getClassNumber() {
             return this.classNumber;
         }
 
-        public void setClassNumber(final int classNumber) {
-            this.classNumber = classNumber;
-        }
-
         public DataObject getObisCode() {
             return this.obisCode;
-        }
-
-        public void setObisCode(final DataObject obisCode) {
-            this.obisCode = obisCode;
         }
 
         public int getNoAttr() {
             return this.noAttr;
         }
-
-        public void setNoAttr(final int noAttr) {
-            this.noAttr = noAttr;
-        }
     }
-
 }
