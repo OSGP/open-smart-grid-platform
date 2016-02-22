@@ -83,11 +83,6 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
             final String ownerIdentification = this.getOrganisationIdentificationOfOwner(deviceIdentification);
             LOGGER.info("Matching owner {} with device {} handling {} from {}", ownerIdentification,
                     deviceIdentification, messageType, requestMessage.getIpAddress());
-            
-            /*
-             * This message processor handles messages that came in on the
-             * osgp-core.1_0.protocol-dlms.1_0.requests queue.
-             */
 
             if (pushNotificationSms.getIpAddress() != null && !"".equals(pushNotificationSms.getIpAddress())) {
                 // Convert the IP address from String to InetAddress.
@@ -118,7 +113,7 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         try {
             this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
                     com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
-                    .getIpAddress().toString(), 0);
+                            .getIpAddress().toString(), 0);
         } catch (final UnknownEntityException uee) {
             LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: " + pushNotificationSms,
                     uee);
