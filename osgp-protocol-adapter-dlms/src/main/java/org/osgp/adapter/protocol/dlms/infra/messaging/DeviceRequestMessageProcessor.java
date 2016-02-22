@@ -106,6 +106,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                     response);
         } catch (final ConnectionException exception) {
             // Retry / redeliver by throwing RuntimeException.
+            LOGGER.info("ConnectionException occurred, JMS will catch this exception.");
             throw exception;
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
