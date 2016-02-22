@@ -26,7 +26,7 @@ public class Ean extends AbstractEntity {
     private Device device;
 
     @Column(nullable = false)
-    private String code;
+    private Long code;
 
     @Column()
     private String description;
@@ -35,7 +35,7 @@ public class Ean extends AbstractEntity {
         // Default constructor
     }
 
-    public Ean(final Device device, final String code, final String description) {
+    public Ean(final Device device, final Long code, final String description) {
         this.device = device;
         this.code = code;
         this.description = description;
@@ -45,7 +45,11 @@ public class Ean extends AbstractEntity {
         return this.device;
     }
 
-    public String getCode() {
+    public void setDevice(final Device device) {
+        this.device = device;
+    }
+
+    public Long getCode() {
         return this.code;
     }
 

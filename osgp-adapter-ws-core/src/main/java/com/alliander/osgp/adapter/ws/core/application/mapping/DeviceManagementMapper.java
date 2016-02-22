@@ -31,6 +31,7 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.RelayType;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
 import com.alliander.osgp.domain.core.entities.DeviceOutputSetting;
+import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
@@ -130,6 +131,13 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 destination.updateOutputSettings(deviceOutputSettings);
                 destination.setPublicKeyPresent(source.isPublicKeyPresent());
                 destination.setHasSchedule(source.isHasSchedule());
+                destination.setActivated(source.isActivated());
+
+                for (final com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Ean ean : source.getEans()) {
+                    final Ean newEan = new Ean(destination, ean.getCode(), ean.getDescription());
+
+                    destination.getEans().add(newEan);
+                }
 
                 return destination;
             }
