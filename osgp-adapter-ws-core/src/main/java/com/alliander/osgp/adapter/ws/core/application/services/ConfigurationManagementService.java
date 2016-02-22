@@ -109,4 +109,30 @@ public class ConfigurationManagementService {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
+    public String enqueueSwitchConfigurationRequest(final String organisationIdentification,
+            final String deviceIdentification, final String configurationBank) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SWITCH_CONFIGURATION_BANK);
+        this.domainHelperService.isInMaintenance(device);
+
+        LOGGER.debug("enqueueGetConfigurationRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final CommonRequestMessage message = new CommonRequestMessage(
+                CommonRequestMessageType.SWITCH_CONFIGURATION_BANK, correlationUid, organisationIdentification,
+                deviceIdentification, configurationBank, null);
+
+        this.commonRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public ResponseMessage dequeueSwitchConfigurationResponse(final String correlationUid) throws OsgpException {
+        return this.commonResponseMessageFinder.findMessage(correlationUid);
+    }
 }
