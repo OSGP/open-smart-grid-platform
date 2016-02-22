@@ -32,8 +32,8 @@ public class PeriodicMeterReads extends MeterReads {
             final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
             final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo,
             final AmrProfileStatusCode amrProfileStatusCode) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
+        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
+                activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
 
         this.amrProfileStatusCode = amrProfileStatusCode;
     }
@@ -51,8 +51,8 @@ public class PeriodicMeterReads extends MeterReads {
             final Long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
             final Long activeEnergyExportTariffTwo) {
 
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, null);
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
+                activeEnergyExportTariffTwo, null);
     }
 
     /**
@@ -68,8 +68,8 @@ public class PeriodicMeterReads extends MeterReads {
     public PeriodicMeterReads(final Date logTime, final long activeEnergyImportTariffOne,
             final long activeEnergyImportTariffTwo, final long activeEnergyExportTariffOne,
             final long activeEnergyExportTariffTwo, final AmrProfileStatusCode amrProfileStatusCode) {
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, amrProfileStatusCode);
+        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo, activeEnergyExportTariffOne,
+                activeEnergyExportTariffTwo, amrProfileStatusCode);
     }
 
     /**
@@ -90,4 +90,5 @@ public class PeriodicMeterReads extends MeterReads {
     public AmrProfileStatusCode getAmrProfileStatusCode() {
         return this.amrProfileStatusCode;
     }
+
 }

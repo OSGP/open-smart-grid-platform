@@ -72,6 +72,10 @@ public enum DeviceFunction {
     SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER,
     REPLACE_KEYS,
     SET_PUSH_SETUP_ALARM,
+<<<<<<< HEAD
     GET_CONFIGURATION_OBJECTS,
     SWITCH_CONFIGURATION_BANK
+=======
+    GET_CONFIGURATION_OBJECTS
+>>>>>>> origin/development
 }

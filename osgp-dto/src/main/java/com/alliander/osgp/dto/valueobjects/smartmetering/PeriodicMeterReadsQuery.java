@@ -12,31 +12,29 @@ import java.util.Date;
 
 /**
  * request periodic reads for E or GAS meter
- * 
+ *
  * @author dev
  */
-public class PeriodicMeterReadsQuery implements Serializable {
+public class PeriodicMeterReadsQuery implements Serializable, ChannelQuery {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
     private final PeriodType periodType;
     private final Date beginDate;
     private final Date endDate;
-    private final int channel;
+    private final Channel channel;
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
-            final int channel) {
+            final Channel channel) {
         this.periodType = periodType;
         this.beginDate = new Date(beginDate.getTime());
         this.endDate = new Date(endDate.getTime());
         this.channel = channel;
     }
 
-    public PeriodicMeterReadsQuery(PeriodType periodType, Date beginDate, Date endDate) {
-        this(periodType, beginDate, endDate, NOCHANNEL);
+    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate) {
+        this(periodType, beginDate, endDate, Channel.NONE);
     }
-
-    private static final int NOCHANNEL = -1;
 
     public PeriodType getPeriodType() {
         return this.periodType;
@@ -51,11 +49,12 @@ public class PeriodicMeterReadsQuery implements Serializable {
     }
 
     public boolean isGas() {
-        return channel > NOCHANNEL;
+        return this.channel != Channel.NONE;
     }
 
-    public int getChannel() {
-        return channel;
+    @Override
+    public Channel getChannel() {
+        return this.channel;
     }
 
 }
