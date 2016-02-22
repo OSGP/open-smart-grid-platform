@@ -120,7 +120,6 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
     }
 
     private byte[] getBytePattern(final ChannelBuffer buffer) {
-        // final int len = buffer.readableBytes();
         final int startIndex = buffer.readerIndex();
         final int endIndex = buffer.writerIndex();
         final byte[] pattern = new byte[endIndex - startIndex];

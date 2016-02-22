@@ -11,11 +11,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,13 +29,21 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecutor implements
         CommandExecutor<Void, PushSetupAlarm> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
+
+    private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = new AttributeAddress[6];
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
     public GetPushSetupAlarmCommandExecutor() {
-        super(OBIS_CODE);
+        ATTRIBUTE_ADDRESSES[0] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST);
+        ATTRIBUTE_ADDRESSES[1] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
+        ATTRIBUTE_ADDRESSES[2] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW);
+        ATTRIBUTE_ADDRESSES[3] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL);
+        ATTRIBUTE_ADDRESSES[4] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES);
+        ATTRIBUTE_ADDRESSES[5] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY);
     }
 
     @Override
@@ -43,7 +54,7 @@ public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecuto
 
         final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
 
-        checkResultList(getResultList);
+        checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 
         final PushSetupAlarm.Builder pushSetupAlarmBuilder = new PushSetupAlarm.Builder();
         pushSetupAlarmBuilder.logicalName(new CosemObisCode(OBIS_CODE.bytes()));

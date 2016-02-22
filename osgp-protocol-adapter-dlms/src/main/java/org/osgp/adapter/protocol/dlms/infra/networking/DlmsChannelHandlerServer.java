@@ -27,9 +27,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsChannelHandlerServer.class);
 
-    // private static final String PUSH_SCHEDULER_TRIGGER = "Push scheduler";
     private static final String PUSH_ALARM_TRIGGER = "Push alarm monitor";
-    // private static final String PUSH_CDS_TRIGGER = "Push cds wakeup";
     private static final String PUSH_SMS_TRIGGER = "Push sms wakeup";
 
     @Autowired

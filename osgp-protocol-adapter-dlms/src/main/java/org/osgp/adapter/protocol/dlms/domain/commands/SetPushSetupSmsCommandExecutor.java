@@ -18,6 +18,8 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,8 +27,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 @Component()
 public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupSms, AccessResultCode> {
+        CommandExecutor<PushSetupSms, AccessResultCode> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
     @Autowired

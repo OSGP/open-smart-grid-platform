@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openmuc.jdlms.datatypes.DataObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod;
@@ -23,14 +21,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceType;
 
 public class SetPushSetupCommandExecutor {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupCommandExecutor.class);
     protected static final int CLASS_ID = 40;
     protected static final int ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD = 3;
 
-    protected static final Map<TransportServiceType, Integer> ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE = new EnumMap<>(
+    private static final Map<TransportServiceType, Integer> ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE = new EnumMap<>(
             TransportServiceType.class);
 
-    protected static final Map<MessageType, Integer> ENUM_VALUE_PER_MESSAGE_TYPE = new EnumMap<>(MessageType.class);
+    private static final Map<MessageType, Integer> ENUM_VALUE_PER_MESSAGE_TYPE = new EnumMap<>(MessageType.class);
 
     static {
         ENUM_VALUE_PER_TRANSPORT_SERVICE_TYPE.put(TransportServiceType.TCP, 0);
