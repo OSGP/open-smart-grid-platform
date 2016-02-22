@@ -27,17 +27,14 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 @Component()
 public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor implements
-CommandExecutor<Void, PushSetupSms> {
+        CommandExecutor<Void, PushSetupSms> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
 
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = new AttributeAddress[6];
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
-
-    public GetPushSetupSmsCommandExecutor() {
+    static {
         ATTRIBUTE_ADDRESSES[0] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST);
         ATTRIBUTE_ADDRESSES[1] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
         ATTRIBUTE_ADDRESSES[2] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW);
@@ -45,6 +42,9 @@ CommandExecutor<Void, PushSetupSms> {
         ATTRIBUTE_ADDRESSES[4] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES);
         ATTRIBUTE_ADDRESSES[5] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY);
     }
+
+    @Autowired
+    private DlmsHelperService dlmsHelperService;
 
     @Override
     public PushSetupSms execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
