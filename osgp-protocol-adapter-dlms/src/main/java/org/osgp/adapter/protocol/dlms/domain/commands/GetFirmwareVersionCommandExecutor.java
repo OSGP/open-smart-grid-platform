@@ -18,6 +18,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
 
     @Override
     public String execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         LOGGER.info(
                 "Retrieving firmware version by issuing get request for class id: {}, obis code: {}, attribute id: {}",
@@ -46,7 +47,12 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
 
         final AttributeAddress firmwareVersionValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = conn.get(firmwareVersionValue);
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(firmwareVersionValue);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving firmware version.");

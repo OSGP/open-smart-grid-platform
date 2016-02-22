@@ -7,9 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -40,12 +38,12 @@ public class GetPushSetupAlarmCommandExecutor implements CommandExecutor<Void, P
     private static final int ATTRIBUTE_ID_REPETITION_DELAY = 7;
 
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST),
-            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD),
-            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW),
-            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL),
-            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES),
-            new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY) };
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY) };
 
     private static final int INDEX_PUSH_OBJECT_LIST = 0;
     private static final int INDEX_SEND_DESTINATION_AND_METHOD = 1;
@@ -59,7 +57,7 @@ public class GetPushSetupAlarmCommandExecutor implements CommandExecutor<Void, P
 
     @Override
     public PushSetupAlarm execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving Push Setup Alarm");
 

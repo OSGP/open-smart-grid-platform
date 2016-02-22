@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -22,6 +21,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public class SetPushSetupAlarmCommandExecutor implements CommandExecutor<PushSet
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final PushSetupAlarm pushSetupAlarm) throws IOException, TimeoutException, ProtocolAdapterException {
+            final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod;
 
@@ -116,7 +116,12 @@ public class SetPushSetupAlarmCommandExecutor implements CommandExecutor<PushSet
         if (setParameterSendDestinationAndMethod == null) {
             return AccessResultCode.OTHER_REASON;
         }
-        return conn.set(setParameterSendDestinationAndMethod).get(0);
+
+        try {
+            return conn.set(setParameterSendDestinationAndMethod).get(0);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
     }
 
     private DataObject buildSendDestinationAndMethodObject(final SendDestinationAndMethod sendDestinationAndMethod) {

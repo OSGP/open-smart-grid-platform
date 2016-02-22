@@ -18,6 +18,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,14 +39,19 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
     @Override
     public String execute(final LnClientConnection conn, final DlmsDevice device, final DataObject object)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         LOGGER.info("Retrieving configuration objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = conn.get(attributeAddress);
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(attributeAddress);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving configuration objects.");

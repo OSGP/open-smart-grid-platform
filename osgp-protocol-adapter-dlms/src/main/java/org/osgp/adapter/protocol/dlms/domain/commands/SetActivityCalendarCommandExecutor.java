@@ -22,6 +22,7 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final ActivityCalendar activityCalendar) throws IOException, ProtocolAdapterException {
+            final ActivityCalendar activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
         final SetParameter calendarNameParameter = this.getCalendarNameParameter(activityCalendar);
@@ -66,20 +67,25 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
         final Map<String, AccessResultCode> allAccessResultCodeMap = new HashMap<>();
 
-        List<AccessResultCode> resultCode = conn.set(calendarNameParameter);
-        allAccessResultCodeMap.put("Activity Calendar Name Passive", resultCode.get(0));
+        List<AccessResultCode> resultCode;
+        try {
+            resultCode = conn.set(calendarNameParameter);
+            allAccessResultCodeMap.put("Activity Calendar Name Passive", resultCode.get(0));
 
-        LOGGER.info("WRITING SEASONS");
-        resultCode = conn.set(seasonProfileParameter);
-        allAccessResultCodeMap.put("Season Profile Passive", resultCode.get(0));
+            LOGGER.info("WRITING SEASONS");
+            resultCode = conn.set(seasonProfileParameter);
+            allAccessResultCodeMap.put("Season Profile Passive", resultCode.get(0));
 
-        LOGGER.info("WRITING DAYS");
-        resultCode = conn.set(dayProfileTablePassive);
-        allAccessResultCodeMap.put("Day Profile Table Passive", resultCode.get(0));
+            LOGGER.info("WRITING DAYS");
+            resultCode = conn.set(dayProfileTablePassive);
+            allAccessResultCodeMap.put("Day Profile Table Passive", resultCode.get(0));
 
-        LOGGER.info("WRITING WEEKS");
-        resultCode = conn.set(weekProfileTableParameter);
-        allAccessResultCodeMap.put("Week Profile Table Passive", resultCode.get(0));
+            LOGGER.info("WRITING WEEKS");
+            resultCode = conn.set(weekProfileTableParameter);
+            allAccessResultCodeMap.put("Week Profile Table Passive", resultCode.get(0));
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
 
         final Map<String, AccessResultCode> failureAccessResultMap = new HashMap<>();
 
