@@ -14,15 +14,14 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -45,6 +44,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     @Autowired
     @Qualifier("protocolDlmsDeviceRequestMessageProcessorMap")
     protected MessageProcessorMap dlmsRequestMessageProcessorMap;
+
+    @Autowired
+    protected OsgpExceptionConverter osgpExceptionConverter;
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
@@ -116,7 +118,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             // Return original request + exception
             LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
 
-            final OsgpException ex = this.ensureOsgpException(exception);
+            final OsgpException ex = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, this.responseMessageSender,
                     message.getObject());
         }
@@ -129,35 +131,6 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String methodName) {
         logger.info("{} called for device: {} for organisation: {}", methodName,
                 messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
-    }
-
-    /**
-     * The service may only throw OsgpExceptions and the cause of the exception
-     * can also only be a OsgpException. This is because other layers need to
-     * deserialize the exception (and the cause within it) and the Exception
-     * class must be known to this layer.
-     *
-     * If the Exception is not an OsgpException, only the exception message will
-     * be wrapped in an OsgpException and returned. This also applies to the
-     * cause when it is an OsgpException.
-     *
-     * @param e
-     * @return OsgpException
-     */
-    protected OsgpException ensureOsgpException(final Exception e) {
-        if (e instanceof OsgpException) {
-            final Throwable cause = e.getCause();
-            if (cause != null && !(cause instanceof OsgpException)) {
-                return new OsgpException(ComponentType.PROTOCOL_DLMS, e.getMessage(), new OsgpException(
-                        ComponentType.PROTOCOL_DLMS, cause.getMessage()));
-            }
-
-            return (OsgpException) e;
-        }
-
-        return new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                "Unexpected exception while handling protocol request/response message", new OsgpException(
-                        ComponentType.PROTOCOL_DLMS, e.getMessage()));
     }
 
     protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
