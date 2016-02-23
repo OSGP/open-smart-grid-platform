@@ -132,6 +132,33 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="SwitchFirmwareHeader">
+          <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+          <wsdl:part element="common:UserName" name="UserName" />
+          <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+      </wsdl:message>
+      <wsdl:message name="SwitchFirmwareRequest">
+          <wsdl:part element="fman:SwitchFirmwareRequest" name="SwitchFirmwareRequest">
+          </wsdl:part>
+      </wsdl:message>
+      <wsdl:message name="SwitchFirmwareAsyncResponse">
+          <wsdl:part element="fman:SwitchFirmwareAsyncResponse" name="SwitchFirmwareAsyncResponse">
+          </wsdl:part>
+      </wsdl:message>
+      <wsdl:message name="SwitchFirmwareAsyncHeader">
+          <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+          <wsdl:part element="common:UserName" name="UserName" />
+      <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+      </wsdl:message>
+      <wsdl:message name="SwitchFirmwareAsyncRequest">
+          <wsdl:part element="fman:SwitchFirmwareAsyncRequest" name="SwitchFirmwareAsyncRequest">
+          </wsdl:part>
+      </wsdl:message>
+      <wsdl:message name="SwitchFirmwareResponse">
+          <wsdl:part element="fman:SwitchFirmwareResponse" name="SwitchFirmwareResponse">
+          </wsdl:part>
+      </wsdl:message>
+      
 	<wsdl:portType name="FirmwareManagementPort">
 		<wsdl:operation name="UpdateFirmware">
 			<wsdl:input message="tns:UpdateFirmwareRequest" name="UpdateFirmwareRequest">
@@ -181,6 +208,18 @@
             <wsdl:input message="tns:RemoveManufacturerRequest" name="RemoveManufacturerRequest">
             </wsdl:input>
             <wsdl:output message="tns:RemoveManufacturerResponse" name="RemoveManufacturerResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SwitchFirmware">
+            <wsdl:input message="tns:SwitchFirmwareRequest" name="SwitchFirmwareRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SwitchFirmwareAsyncResponse" name="SwitchFirmwareAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSwitchFirmwareResponse">
+            <wsdl:input message="tns:SwitchFirmwareAsyncRequest" name="SwitchFirmwareAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SwitchFirmwareResponse" name="SwitchFirmwareResponse">
             </wsdl:output>
         </wsdl:operation>
 	</wsdl:portType>
@@ -289,6 +328,31 @@
             <wsdl:output name="RemoveManufacturerResponse">
                 <soap:body use="literal" />
             </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="SwitchFirmware">
+            <soap:operation soapAction=""/>
+            <wsdl:input name="SwitchFirmwareRequest">
+                <soap:header message="tns:SwitchFirmwareHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SwitchFirmwareHeader" part="UserName" use="literal" />
+                <soap:header message="tns:SwitchFirmwareHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SwitchFirmwareAsyncResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSwitchFirmwareResponse">
+              <soap:operation soapAction=""/>
+              <wsdl:input name="SwitchFirmwareAsyncRequest">
+                  <soap:header message="tns:SwitchFirmwareAsyncHeader" part="OrganisationIdentification" use="literal" />
+                  <soap:header message="tns:SwitchFirmwareAsyncHeader" part="UserName" use="literal" />
+                  <soap:header message="tns:SwitchFirmwareAsyncHeader" part="ApplicationName" use="literal" />
+                  <soap:body use="literal"/>
+              </wsdl:input>
+              <wsdl:output name="SwitchFirmwareResponse">
+                  <soap:body use="literal"/>
+              </wsdl:output>
         </wsdl:operation>
 	</wsdl:binding>
 	
