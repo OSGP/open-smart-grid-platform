@@ -35,7 +35,6 @@ import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,7 +278,7 @@ public class ConfigurationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                            SecurityKeyType.G_METER_MASTER).getKey());
+                                    SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -314,7 +313,7 @@ public class ConfigurationService {
             }
 
             return "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
-                    + activityCalendar.getCalendarName();
+            + activityCalendar.getCalendarName();
         } finally {
             if (conn != null) {
                 LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
@@ -349,8 +348,8 @@ public class ConfigurationService {
         }
     }
 
-    public void setPushSetupSms(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupSms pushSetupSms,
-            final DeviceResponseMessageSender responseMessageSender) throws OsgpException, ProtocolAdapterException {
+    public void setPushSetupSms(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupSms pushSetupSms)
+            throws OsgpException, ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
@@ -376,7 +375,7 @@ public class ConfigurationService {
     }
 
     public String requestFirmwareVersion(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
@@ -392,7 +391,7 @@ public class ConfigurationService {
     }
 
     public void replaceKeys(final DlmsDeviceMessageMetadata messageMetadata, final KeySet keySet) throws OsgpException,
-            ProtocolAdapterException {
+    ProtocolAdapterException {
 
         final LnClientConnection conn = null;
 
