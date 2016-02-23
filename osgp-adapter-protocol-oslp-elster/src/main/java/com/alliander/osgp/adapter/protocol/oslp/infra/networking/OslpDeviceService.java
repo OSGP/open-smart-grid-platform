@@ -592,6 +592,14 @@ public class OslpDeviceService implements DeviceService {
                 scheduleBuilder.setTriggerType(Oslp.TriggerType.valueOf(schedule.getTriggerType().ordinal() + 1));
             }
 
+            if (schedule.getIndex() != null) {
+                scheduleBuilder.setIndex(schedule.getIndex());
+            }
+
+            if (schedule.getIsEnabled() != null) {
+                scheduleBuilder.setIsEnabled(schedule.getIsEnabled());
+            }
+
             oslpSchedules.add(scheduleBuilder.build());
         }
         return oslpSchedules;
