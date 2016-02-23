@@ -40,7 +40,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -249,8 +249,8 @@ public class GetPeriodicMeterReadsCommandExecutor extends
                     "No GetResult received while retrieving current billing period and profiles.");
         }
 
-        if (getResultList.size() > 1) {
-            LOGGER.info("Expected 1 GetResult while retrieving current billing period and profiles, got "
+        if (getResultList.size() > 2) {
+            LOGGER.info("Expected 2 GetResult while retrieving current billing period and profiles, got "
                     + getResultList.size());
         }
     }
