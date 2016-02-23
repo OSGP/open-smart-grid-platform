@@ -18,8 +18,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsResponseConverter
-extends
-CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+        extends
+        CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
 
     @Override
     public PeriodicMeterReadsResponse convert(final PeriodicMeterReadContainer source,
@@ -33,7 +33,7 @@ CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema
             periodicMeterReads.add(meterReads);
             // we check the first value to have the correct unit and assume the
             // rest is ok as well
-            if (!meterReads.getActiveEnergyImport().getUnit().name().equals(source.getOsgpUnit().name())) {
+            if (!meterReads.getActiveEnergyImport().getUnit().value().equals(source.getOsgpUnit().name())) {
                 throw new IllegalStateException(String.format("unit %s in destination differs from unit %s in source",
                         meterReads.getActiveEnergyImport().getUnit(), source.getOsgpUnit()));
             }
