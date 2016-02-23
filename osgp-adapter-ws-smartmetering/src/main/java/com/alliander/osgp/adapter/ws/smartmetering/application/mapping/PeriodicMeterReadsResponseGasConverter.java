@@ -18,8 +18,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMet
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 
 public class PeriodicMeterReadsResponseGasConverter
-extends
-CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
+        extends
+        CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse> {
 
     @Override
     public PeriodicMeterReadsGasResponse convert(final PeriodicMeterReadsContainerGas source,
@@ -31,7 +31,7 @@ CustomConverter<PeriodicMeterReadsContainerGas, com.alliander.osgp.adapter.ws.sc
                 .getMeterReadsGas()) {
             final PeriodicMeterReadsGas meterReads = this.mapperFacade.map(m, PeriodicMeterReadsGas.class);
             periodicMeterReads.add(meterReads);
-            if (!meterReads.getConsumption().getUnit().name().equals(source.getOsgpUnit().name())) {
+            if (!meterReads.getConsumption().getUnit().value().equals(source.getOsgpUnit().name())) {
                 throw new IllegalStateException(String.format("unit %s in destination differs from unit %s in source",
                         meterReads.getConsumption().getUnit(), source.getOsgpUnit()));
             }
