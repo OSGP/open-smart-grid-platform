@@ -40,6 +40,10 @@ public class Schedule implements Serializable {
 
     private WindowType triggerWindow;
 
+    private Integer index;
+
+    private Boolean isEnabled;
+
     @NotNull
     @Size(min = 1, max = 6, message = "Schedule should contain 1 to 6 lightvalues")
     @Valid
@@ -109,5 +113,21 @@ public class Schedule implements Serializable {
 
     public TriggerType getTriggerType() {
         return this.triggerType;
+    }
+
+    public Integer getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(final Integer index) {
+        this.index = index;
+    }
+
+    public Boolean getIsEnabled() {
+        return this.isEnabled;
+    }
+
+    public void setIsEnabled(final Boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 }

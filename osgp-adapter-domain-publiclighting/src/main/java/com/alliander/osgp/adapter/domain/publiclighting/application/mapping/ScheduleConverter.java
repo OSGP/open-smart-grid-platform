@@ -32,6 +32,9 @@ public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp
         schedule.setTriggerType(this.mapperFacade.map(source.getTriggerType(), TriggerType.class));
         schedule.setTriggerWindow(this.mapperFacade.map(source.getTriggerWindow(), WindowType.class));
         schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(), WeekDayType.class));
+        schedule.setIndex(source.getIndex());
+        schedule.setIsEnabled(source.getIsEnabled());
+
         return schedule;
     }
 
@@ -53,6 +56,9 @@ public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp
                 com.alliander.osgp.dto.valueobjects.WindowType.class));
         schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(),
                 com.alliander.osgp.dto.valueobjects.WeekDayType.class));
+        schedule.setIndex(source.getIndex());
+        schedule.setIsEnabled(source.getIsEnabled());
+
         return schedule;
     }
 
