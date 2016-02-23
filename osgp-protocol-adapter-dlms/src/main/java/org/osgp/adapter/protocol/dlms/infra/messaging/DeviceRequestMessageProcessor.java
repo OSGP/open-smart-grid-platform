@@ -81,7 +81,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @param messageMetadata
      *            a DlmsDeviceMessageMetadata containing debug info to be logged
      */
-    protected void logJmsException(final Logger logger, final JMSException exception,
+    private void logJmsException(final Logger logger, final JMSException exception,
             final DlmsDeviceMessageMetadata messageMetadata) {
         logger.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", exception);
         logger.debug("correlationUid: {}", messageMetadata.getCorrelationUid());
@@ -90,7 +90,6 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         logger.debug("messageType: {}", messageMetadata.getMessageType());
         logger.debug("organisationIdentification: {}", messageMetadata.getOrganisationIdentification());
         logger.debug("deviceIdentification: {}", messageMetadata.getDeviceIdentification());
-
     }
 
     @Override
@@ -102,7 +101,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             // Handle message
             messageMetadata.handleMessage(message);
 
-            this.logStart(LOGGER, messageMetadata, message.getJMSType());
+            LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
+
             final Serializable response = this.handleMessage(messageMetadata, message.getObject());
 
             // Send response
@@ -124,16 +125,24 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         }
     }
 
+    /**
+     * Implementation of this method should call a service that can handle the
+     * requestObject and return a response object to be put on the response
+     * queue. This response object can also be null for methods that don't
+     * provide result data.
+     *
+     * @param messageMetadata
+     *            Message meta data.
+     * @param requestObject
+     *            Request data object.
+     * @return A serializable object to be put on the response queue.
+     * @throws OsgpException
+     * @throws ProtocolAdapterException
+     */
     abstract protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException;
 
-    protected void logStart(final Logger logger, final DlmsDeviceMessageMetadata messageMetadata,
-            final String methodName) {
-        logger.info("{} called for device: {} for organisation: {}", methodName,
-                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
-    }
-
-    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
+    private void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
@@ -144,12 +153,5 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 messageMetadata.getRetryCount());
 
         responseMessageSender.send(responseMessage);
-    }
-
-    protected void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender) {
-
-        this.sendResponseMessage(messageMetadata, result, osgpException, responseMessageSender, null);
     }
 }
