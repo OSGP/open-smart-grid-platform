@@ -71,7 +71,7 @@ public class AdhocService {
     // === REQUEST Send Wakeup SMS ===
 
     public SmsDetails sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
 
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
         if (!COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
@@ -79,10 +79,7 @@ public class AdhocService {
         }
 
         final SendSMSResponse response = this.smsClient.sendWakeUpSMS(device.getIccId());
-        final SmsDetails smsDetails = new SmsDetails(device.getDeviceIdentification(), response.getSmsMsgId(), null,
-                null, null);
-
-        return smsDetails;
+        return new SmsDetails(device.getDeviceIdentification(), response.getSmsMsgId(), null, null, null);
     }
 
     // === REQUEST Get SMS Details ===
@@ -118,9 +115,7 @@ public class AdhocService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final Serializable response = this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
-
-            return response;
+            return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
         } finally {
             if (conn != null) {
                 conn.close();

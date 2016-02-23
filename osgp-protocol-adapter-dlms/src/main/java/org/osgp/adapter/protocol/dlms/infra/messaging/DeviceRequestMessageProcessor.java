@@ -139,7 +139,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @throws OsgpException
      * @throws ProtocolAdapterException
      */
-    abstract protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+    protected abstract Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException;
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,

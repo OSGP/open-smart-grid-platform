@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,10 +25,8 @@ public class InstallationService {
     private InstallationMapper installationMapper;
 
     // === ADD METER ===
-    public void addMeter(final DlmsDeviceMessageMetadata messageMetadata, final SmartMeteringDevice smartMeteringDevice) {
-
+    public void addMeter(final SmartMeteringDevice smartMeteringDevice) {
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
-
         this.dlmsDeviceRepository.save(dlmsDevice);
     }
 

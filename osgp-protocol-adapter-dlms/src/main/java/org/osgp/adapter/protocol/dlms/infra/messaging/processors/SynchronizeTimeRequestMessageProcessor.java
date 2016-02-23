@@ -38,7 +38,6 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
         final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) requestObject;
         this.adhocService.synchronizeTime(messageMetadata, synchronizeTimeRequest);
-
         return null;
     }
 }

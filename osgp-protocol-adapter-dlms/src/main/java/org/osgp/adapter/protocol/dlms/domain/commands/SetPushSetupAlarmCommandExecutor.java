@@ -78,6 +78,20 @@ public class SetPushSetupAlarmCommandExecutor implements CommandExecutor<PushSet
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
             final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
 
+        final SetParameter setParameterSendDestinationAndMethod = this.prepareSetParameter(pushSetupAlarm);
+
+        if (setParameterSendDestinationAndMethod == null) {
+            return AccessResultCode.OTHER_REASON;
+        }
+
+        try {
+            return conn.set(setParameterSendDestinationAndMethod).get(0);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
+    }
+
+    private SetParameter prepareSetParameter(final PushSetupAlarm pushSetupAlarm) {
         final SetParameter setParameterSendDestinationAndMethod;
 
         if (pushSetupAlarm.hasPushObjectList()) {
@@ -113,15 +127,7 @@ public class SetPushSetupAlarmCommandExecutor implements CommandExecutor<PushSet
                     + pushSetupAlarm.getRepetitionDelay());
         }
 
-        if (setParameterSendDestinationAndMethod == null) {
-            return AccessResultCode.OTHER_REASON;
-        }
-
-        try {
-            return conn.set(setParameterSendDestinationAndMethod).get(0);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
+        return setParameterSendDestinationAndMethod;
     }
 
     private DataObject buildSendDestinationAndMethodObject(final SendDestinationAndMethod sendDestinationAndMethod) {

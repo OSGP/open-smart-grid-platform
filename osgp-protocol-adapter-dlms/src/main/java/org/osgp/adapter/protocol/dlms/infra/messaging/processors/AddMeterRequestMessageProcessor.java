@@ -37,7 +37,7 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
         final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) requestObject;
-        this.installationService.addMeter(messageMetadata, smartMeteringDevice);
+        this.installationService.addMeter(smartMeteringDevice);
 
         // No return object.
         return null;

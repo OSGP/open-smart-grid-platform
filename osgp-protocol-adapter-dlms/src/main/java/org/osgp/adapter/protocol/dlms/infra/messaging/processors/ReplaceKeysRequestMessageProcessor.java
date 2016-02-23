@@ -34,7 +34,7 @@ public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProc
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
         final KeySet keySet = (KeySet) requestObject;
-        this.configurationService.replaceKeys(messageMetadata, keySet, this.responseMessageSender);
+        this.configurationService.replaceKeys(messageMetadata, keySet);
 
         return null;
     }
