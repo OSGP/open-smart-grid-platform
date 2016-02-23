@@ -25,8 +25,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFacto
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
 
 public class ActualMeterReadsGasConverter
-extends
-CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
+        extends
+        CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGasConverter.class);
 
@@ -35,7 +35,7 @@ CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartm
             final Type<? extends ActualMeterReadsGasResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse destination = new ObjectFactory()
-        .createActualMeterReadsGasResponse();
+                .createActualMeterReadsGasResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -57,7 +57,7 @@ CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartm
         }
 
         destination.setConsumption(this.mapperFacade.map(source.getConsumption(), GMeterValue.class));
-        if (!destination.getConsumption().getUnit().name().equals(source.getOsgpUnit().name())) {
+        if (!destination.getConsumption().getUnit().value().equals(source.getOsgpUnit().name())) {
             throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
                     destination.getConsumption().getUnit(), source.getOsgpUnit()));
         }
