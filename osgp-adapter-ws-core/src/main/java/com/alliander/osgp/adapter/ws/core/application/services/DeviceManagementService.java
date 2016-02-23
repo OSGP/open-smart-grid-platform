@@ -39,6 +39,7 @@ import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.Writ
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.Ean;
 import com.alliander.osgp.domain.core.entities.Event;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
@@ -155,7 +156,7 @@ public class DeviceManagementService {
     @Transactional(value = "readableTransactionManager")
     public Page<DeviceLogItem> findDeviceMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -357,7 +358,7 @@ public class DeviceManagementService {
     @Transactional(value = "transactionManager")
     public String enqueueSetEventNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final List<EventNotificationType> eventNotifications)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -447,8 +448,15 @@ public class DeviceManagementService {
                 updateDevice.getContainerNumber(), updateDevice.getContainerMunicipality(),
                 updateDevice.getGpsLatitude(), updateDevice.getGpsLongitude());
 
+        existingDevice.setActivated(updateDevice.isActivated());
+
         final Ssld ssld = this.writableSsldRepository.findOne(existingDevice.getId());
         ssld.updateOutputSettings(updateDevice.receiveOutputSettings());
+        ssld.setEans(updateDevice.getEans());
+
+        for (final Ean ean : updateDevice.getEans()) {
+            ean.setDevice(ssld);
+        }
 
         this.writableSsldRepository.save(ssld);
     }

@@ -390,8 +390,9 @@
 		<xsd:sequence>
 			<xsd:element name="code" minOccurs="1" maxOccurs="1">
 					<xsd:simpleType>
-						<xsd:restriction base="common:AlphaNumericType">
-							<xsd:length value="18" />
+						<xsd:restriction base="xsd:integer">
+							 <xsd:minInclusive value="100000000000000000"/>
+							 <xsd:maxInclusive value="999999999999999999"/>
 						</xsd:restriction>
 					</xsd:simpleType>
 			</xsd:element>
