@@ -24,7 +24,7 @@ public class GetPushSetupCommandExecutor {
     protected static final int INDEX_REPETITION_DELAY = 5;
 
     protected GetPushSetupCommandExecutor() {
-        // hide public contructor, but keep this accessable by subclasses
+        // hide public constructor, but keep this accessible by subclasses
     }
 
     protected static void checkResultList(final List<GetResult> getResultList,

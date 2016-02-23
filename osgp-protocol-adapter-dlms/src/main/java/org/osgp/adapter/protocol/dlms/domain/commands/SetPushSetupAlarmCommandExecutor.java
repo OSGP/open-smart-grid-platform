@@ -8,7 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -27,7 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 
 @Component()
 public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupAlarm, AccessResultCode> {
+        CommandExecutor<PushSetupAlarm, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
@@ -37,7 +37,7 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final PushSetupAlarm pushSetupAlarm) throws IOException, TimeoutException, ProtocolAdapterException {
+            final PushSetupAlarm pushSetupAlarm) throws IOException, ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod;
 
@@ -54,7 +54,7 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
             setParameterSendDestinationAndMethod = new SetParameter(sendDestinationAndMethodAddress, value);
         } else {
             LOGGER.error("Send Destination and Method of the Push Setup Alarm is expected to be set.");
-            setParameterSendDestinationAndMethod = null;
+            throw new ProtocolAdapterException("Error setting Alarm push setup data. No destination and method data");
         }
 
         if (pushSetupAlarm.hasCommunicationWindow()) {
@@ -74,9 +74,11 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
                     pushSetupAlarm.getRepetitionDelay());
         }
 
-        if (setParameterSendDestinationAndMethod == null) {
-            return AccessResultCode.OTHER_REASON;
+        final List<AccessResultCode> resultCodes = conn.set(setParameterSendDestinationAndMethod);
+        if (resultCodes != null && !resultCodes.isEmpty()) {
+            return resultCodes.get(0);
+        } else {
+            throw new ProtocolAdapterException("Error setting Alarm push setup data.");
         }
-        return conn.set(setParameterSendDestinationAndMethod).get(0);
     }
 }

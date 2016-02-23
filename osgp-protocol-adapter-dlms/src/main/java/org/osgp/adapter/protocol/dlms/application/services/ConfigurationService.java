@@ -62,6 +62,8 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService extends DlmsApplicationService {
+    private static final String VISUAL_SEPARATOR = "******************************************************";
+
     private static final String DEBUG_MSG_CLOSING_CONNECTION = "Closing connection with {}";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
@@ -124,14 +126,14 @@ public class ConfigurationService extends DlmsApplicationService {
             // The Special days towards the Smart Meter
             final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
 
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             LOGGER.info("********** Set Special Days: 0-0:11.0.0.255 **********");
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             final List<SpecialDay> specialDays = specialDaysRequestData.getSpecialDays();
             for (final SpecialDay specialDay : specialDays) {
                 LOGGER.info("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
             }
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
@@ -174,9 +176,9 @@ public class ConfigurationService extends DlmsApplicationService {
             final GprsOperationModeType gprsOperationModeType = configurationObject.getGprsOperationMode();
             final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             LOGGER.info("Operation mode:{} ", gprsOperationModeType.value());
             LOGGER.info("Flags:");
 
@@ -184,7 +186,7 @@ public class ConfigurationService extends DlmsApplicationService {
                 LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
                         configurationFlag.isEnabled());
             }
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
@@ -336,7 +338,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                    SecurityKeyType.G_METER_MASTER).getKey());
+                            SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 

@@ -8,7 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import java.util.List;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -37,7 +37,7 @@ CommandExecutor<PushSetupSms, AccessResultCode> {
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final PushSetupSms pushSetupSms) throws IOException, TimeoutException, ProtocolAdapterException {
+            final PushSetupSms pushSetupSms) throws IOException, ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod;
 
@@ -54,7 +54,7 @@ CommandExecutor<PushSetupSms, AccessResultCode> {
             setParameterSendDestinationAndMethod = new SetParameter(sendDestinationAndMethodAddress, value);
         } else {
             LOGGER.error("Send Destination and Method of the Push Setup Sms is expected to be set.");
-            setParameterSendDestinationAndMethod = null;
+            throw new ProtocolAdapterException("Error setting Sms push setup data. No destination and method data");
         }
 
         if (pushSetupSms.hasCommunicationWindow()) {
@@ -74,9 +74,11 @@ CommandExecutor<PushSetupSms, AccessResultCode> {
                     pushSetupSms.getRepetitionDelay());
         }
 
-        if (setParameterSendDestinationAndMethod == null) {
-            return AccessResultCode.OTHER_REASON;
+        final List<AccessResultCode> resultCodes = conn.set(setParameterSendDestinationAndMethod);
+        if (resultCodes != null && !resultCodes.isEmpty()) {
+            return resultCodes.get(0);
+        } else {
+            throw new ProtocolAdapterException("Error setting Sms push setup data.");
         }
-        return conn.set(setParameterSendDestinationAndMethod).get(0);
     }
 }

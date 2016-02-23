@@ -7,9 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -48,13 +46,13 @@ CommandExecutor<Void, PushSetupAlarm> {
 
     @Override
     public PushSetupAlarm execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving Push Setup Alarm");
 
         final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, ATTRIBUTE_ADDRESSES);
 
-        checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
+        GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 
         final PushSetupAlarm.Builder pushSetupAlarmBuilder = new PushSetupAlarm.Builder();
         pushSetupAlarmBuilder.logicalName(new CosemObisCode(OBIS_CODE.bytes()));

@@ -72,11 +72,7 @@ public class DlmsPushNotification implements Serializable {
     private final EnumSet<AlarmType> alarms;
     private final byte[] bytes;
 
-    public DlmsPushNotification(final String equipmentIdentifier, final String triggerType, final Set<AlarmType> alarms) {
-        this(new byte[0], equipmentIdentifier, triggerType, alarms);
-    }
-
-    public DlmsPushNotification(final byte[] bytes, final String equipmentIdentifier, final String triggerType,
+    private DlmsPushNotification(final byte[] bytes, final String equipmentIdentifier, final String triggerType,
             final Set<AlarmType> alarms) {
         if (bytes == null) {
             this.bytes = new byte[0];
