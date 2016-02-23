@@ -530,11 +530,16 @@ public class ConfigurationService extends DlmsApplicationService {
     private void replaceKeySet(final LnClientConnection conn, final DlmsDevice device, final KeySet keySet)
             throws ProtocolAdapterException {
         try {
+            // Change AUTHENTICATION key.
             LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
             this.executeReplaceKey(device, conn, keySet.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION,
                     KeyId.AUTHENTICATION_KEY);
+            conn.changeClientGlobalAuthenticationKey(keySet.getAuthenticationKey());
+
+            // Change ENCRYPTION key
             this.executeReplaceKey(device, conn, keySet.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION,
                     KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY);
+            conn.changeClientGlobalEncryptionKey(keySet.getEncryptionKey());
         } finally {
             // Store keys even when an exception was thrown, to be able to
             // retrieve key status in case the key was set on the device.
@@ -568,18 +573,13 @@ public class ConfigurationService extends DlmsApplicationService {
             final SecurityKey newKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null);
             device.addSecurityKey(newKey);
 
-            /**
-             * Waiting for update of jDLMS library.
-             */
-            // // Send the key to the device.
-            // final MethodResultCode methodResultCode =
-            // this.replaceKeyCommandExecutor.execute(conn, device,
-            // ReplaceKeyCommandExecutor.wrap(key, keyId));
-            // if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
-            // throw new
-            // ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
-            // + methodResultCode);
-            // }
+            // Send the key to the device.
+            final MethodResultCode methodResultCode = this.replaceKeyCommandExecutor.execute(conn, device,
+                    ReplaceKeyCommandExecutor.wrap(key, keyId));
+            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+                throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
+                        + methodResultCode);
+            }
 
             final Date now = new Date();
             final SecurityKey oldKey = device.getValidSecurityKey(securityKeyType);
