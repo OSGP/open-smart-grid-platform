@@ -21,14 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 @Component()
-public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecutor implements
-CommandExecutor<Void, PushSetupAlarm> {
+public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor implements
+        CommandExecutor<Void, PushSetupSms> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPushSetupAlarmCommandExecutor.class);
-    private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPushSetupSmsCommandExecutor.class);
+    private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
 
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = new AttributeAddress[6];
 
@@ -45,7 +45,7 @@ CommandExecutor<Void, PushSetupAlarm> {
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public PushSetupAlarm execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
+    public PushSetupSms execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving Push Setup Alarm");
@@ -54,27 +54,27 @@ CommandExecutor<Void, PushSetupAlarm> {
 
         GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 
-        final PushSetupAlarm.Builder pushSetupAlarmBuilder = new PushSetupAlarm.Builder();
-        pushSetupAlarmBuilder.logicalName(new CosemObisCode(OBIS_CODE.bytes()));
+        final PushSetupSms.Builder pushSetupSmsBuilder = new PushSetupSms.Builder();
+        pushSetupSmsBuilder.logicalName(new CosemObisCode(OBIS_CODE.bytes()));
 
-        pushSetupAlarmBuilder.pushObjectList(this.dlmsHelperService.readListOfObjectDefinition(
+        pushSetupSmsBuilder.pushObjectList(this.dlmsHelperService.readListOfObjectDefinition(
                 getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));
 
-        pushSetupAlarmBuilder.sendDestinationAndMethod(this.dlmsHelperService.readSendDestinationAndMethod(
+        pushSetupSmsBuilder.sendDestinationAndMethod(this.dlmsHelperService.readSendDestinationAndMethod(
                 getResultList.get(INDEX_SEND_DESTINATION_AND_METHOD), "Send Destination And Method"));
 
-        pushSetupAlarmBuilder.communicationWindow(this.dlmsHelperService.readListOfWindowElement(
+        pushSetupSmsBuilder.communicationWindow(this.dlmsHelperService.readListOfWindowElement(
                 getResultList.get(INDEX_COMMUNICATION_WINDOW), "Communication Window"));
 
-        pushSetupAlarmBuilder.randomisationStartInterval(this.dlmsHelperService.readLongNotNull(
+        pushSetupSmsBuilder.randomisationStartInterval(this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_RANDOMISATION_START_INTERVAL), "Randomisation Start Interval").intValue());
 
-        pushSetupAlarmBuilder.numberOfRetries(this.dlmsHelperService.readLongNotNull(
+        pushSetupSmsBuilder.numberOfRetries(this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_NUMBER_OF_RETRIES), "Number of Retries").intValue());
 
-        pushSetupAlarmBuilder.repetitionDelay(this.dlmsHelperService.readLongNotNull(
+        pushSetupSmsBuilder.repetitionDelay(this.dlmsHelperService.readLongNotNull(
                 getResultList.get(INDEX_REPETITION_DELAY), "Repetition Delay").intValue());
 
-        return pushSetupAlarmBuilder.build();
+        return pushSetupSmsBuilder.build();
     }
 }

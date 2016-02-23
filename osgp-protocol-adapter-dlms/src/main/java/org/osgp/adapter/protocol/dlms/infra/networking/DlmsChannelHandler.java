@@ -16,7 +16,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsLogItemRequestMessageS
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.dlms.DlmsPushNotificationAlarm;
+import com.alliander.osgp.dlms.DlmsPushNotification;
 
 public abstract class DlmsChannelHandler extends SimpleChannelHandler {
 
@@ -60,7 +60,7 @@ public abstract class DlmsChannelHandler extends SimpleChannelHandler {
         e.getChannel().close();
     }
 
-    protected void logMessage(final DlmsPushNotificationAlarm message) {
+    protected void logMessage(final DlmsPushNotification message) {
 
         final DlmsLogItemRequestMessage dlmsLogItemRequestMessage = new DlmsLogItemRequestMessage(
                 message.getEquipmentIdentifier(), true, message.isValid(), message, message.getSize());

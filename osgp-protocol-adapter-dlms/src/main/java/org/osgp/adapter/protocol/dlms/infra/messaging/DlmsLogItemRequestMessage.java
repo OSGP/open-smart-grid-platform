@@ -9,7 +9,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.alliander.osgp.dlms.DlmsPushNotificationAlarm;
+import com.alliander.osgp.dlms.DlmsPushNotification;
 
 public class DlmsLogItemRequestMessage {
 
@@ -28,7 +28,7 @@ public class DlmsLogItemRequestMessage {
     private int payloadMessageSerializedSize;
 
     public DlmsLogItemRequestMessage(final String deviceIdentification, final boolean incoming, final boolean valid,
-            final DlmsPushNotificationAlarm message, final int payloadMessageSerializedSize) {
+            final DlmsPushNotification message, final int payloadMessageSerializedSize) {
         this.deviceIdentification = deviceIdentification;
         this.incoming = incoming;
         this.valid = valid;
