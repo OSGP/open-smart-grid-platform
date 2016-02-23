@@ -13,6 +13,8 @@ import java.util.List;
 
 public class PushSetupSms implements Serializable {
 
+    private static final char TAB_CHAR = '\t';
+
     private static final long serialVersionUID = -3541154908239512383L;
 
     private final CosemObisCode logicalName;
@@ -75,7 +77,7 @@ public class PushSetupSms implements Serializable {
         }
     }
 
-    public PushSetupSms(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
+    private PushSetupSms(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
             final SendDestinationAndMethod sendDestinationAndMethod, final List<WindowElement> communicationWindow,
             final Integer randomisationStartInterval, final Integer numberOfRetries, final Integer repetitionDelay) {
         this.checkRandomisationStartInterval(randomisationStartInterval);
@@ -127,7 +129,7 @@ public class PushSetupSms implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("PushSetupAlarm[").append(System.lineSeparator()).append('\t');
+        final StringBuilder sb = new StringBuilder("PushSetupAlarm[").append(System.lineSeparator()).append(TAB_CHAR);
         this.appendToString(sb, "logicalName", this.logicalName, true);
         this.appendToString(sb, "pushObjectList", this.pushObjectList, true);
         this.appendToString(sb, "sendDestinationAndMethod", this.sendDestinationAndMethod, true);
@@ -142,7 +144,7 @@ public class PushSetupSms implements Serializable {
             final boolean hasNext) {
         sb.append(fieldName).append('=').append(fieldValue).append(System.lineSeparator());
         if (hasNext) {
-            sb.append('\t');
+            sb.append(TAB_CHAR);
         }
         return sb;
     }
