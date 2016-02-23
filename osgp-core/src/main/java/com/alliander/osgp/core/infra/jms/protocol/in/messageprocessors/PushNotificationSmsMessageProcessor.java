@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
+import java.net.InetAddress;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -23,14 +24,13 @@ import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
-import com.alliander.osgp.domain.core.entities.DomainInfo;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSms;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -38,11 +38,11 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
-@Component("dlmsPushNotificationAlarmMessageProcessor")
+@Component("dlmsPushNotificationSmsMessageProcessor")
 @Transactional(value = "transactionManager")
-public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessageProcessor {
+public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PushNotificationAlarmMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PushNotificationSmsMessageProcessor.class);
 
     @Autowired
     private EventNotificationMessageService eventNotificationMessageService;
@@ -59,8 +59,8 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepository;
 
-    protected PushNotificationAlarmMessageProcessor() {
-        super(DeviceFunction.PUSH_NOTIFICATION_ALARM);
+    protected PushNotificationSmsMessageProcessor() {
+        super(DeviceFunction.PUSH_NOTIFICATION_SMS);
     }
 
     @Override
@@ -76,42 +76,31 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
         final Object dataObject = requestMessage.getRequest();
 
         try {
-            final PushNotificationAlarm pushNotificationAlarm = (PushNotificationAlarm) dataObject;
+            final PushNotificationSms pushNotificationSms = (PushNotificationSms) dataObject;
 
-            this.storeAlarmAsEvent(pushNotificationAlarm);
+            this.storeSmsAsEvent(pushNotificationSms);
 
             final String ownerIdentification = this.getOrganisationIdentificationOfOwner(deviceIdentification);
             LOGGER.info("Matching owner {} with device {} handling {} from {}", ownerIdentification,
                     deviceIdentification, messageType, requestMessage.getIpAddress());
-            final RequestMessage requestWithUpdatedOrganization = new RequestMessage(
-                    requestMessage.getCorrelationUid(), ownerIdentification, requestMessage.getDeviceIdentification(),
-                    requestMessage.getIpAddress(), pushNotificationAlarm);
 
-            /*
-             * This message processor handles messages that came in on the
-             * osgp-core.1_0.protocol-dlms.1_0.requests queue. Therefore lookup
-             * the DomainInfo for DLMS (domain: SMART_METERING) version 1.0.
-             * 
-             * At some point in time there may be a cleaner solution, where the
-             * DomainInfo can be derived from information in the message or JMS
-             * metadata, but for now this will have to do.
-             */
-            final List<DomainInfo> domainInfos = this.domainInfoRepository.findAll();
-            DomainInfo smartMeteringDomain = null;
-            for (final DomainInfo di : domainInfos) {
-                if ("SMART_METERING".equals(di.getDomain()) && "1.0".equals(di.getDomainVersion())) {
-                    smartMeteringDomain = di;
-                    break;
+            if (pushNotificationSms.getIpAddress() != null && !"".equals(pushNotificationSms.getIpAddress())) {
+                // Convert the IP address from String to InetAddress.
+                final InetAddress address = InetAddress.getByName(pushNotificationSms.getIpAddress());
+
+                // Lookup device
+                final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+                if (device != null) {
+                    device.updateRegistrationData(address, device.getDeviceType());
+                    this.deviceRepository.save(device);
+                } else {
+                    LOGGER.warn(
+                            "Device with ID = {} not found. Discard Sms notification request from ip address = {} of device",
+                            deviceIdentification, address);
                 }
-            }
-
-            if (smartMeteringDomain == null) {
-                LOGGER.error(
-                        "No DomainInfo found for SMART_METERING 1.0, unable to send message of message type: {} to domain adapter. RequestMessage for {} dropped.",
-                        messageType, pushNotificationAlarm);
             } else {
-                this.domainRequestService.send(requestWithUpdatedOrganization,
-                        DeviceFunction.PUSH_NOTIFICATION_ALARM.name(), smartMeteringDomain);
+                LOGGER.warn("Sms notification request for device = {} has no new IP address. Discard request.",
+                        deviceIdentification);
             }
 
         } catch (final Exception e) {
@@ -120,16 +109,16 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
         }
     }
 
-    private void storeAlarmAsEvent(final PushNotificationAlarm pushNotificationAlarm) {
+    private void storeSmsAsEvent(final PushNotificationSms pushNotificationSms) {
         try {
-            this.eventNotificationMessageService.handleEvent(pushNotificationAlarm.getDeviceIdentification(),
-                    com.alliander.osgp.domain.core.valueobjects.EventType.ALARM_NOTIFICATION, pushNotificationAlarm
-                    .getAlarms().toString(), 0);
+            this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
+                    com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
+                    .getIpAddress().toString(), 0);
         } catch (final UnknownEntityException uee) {
-            LOGGER.warn("Unable to store event for Push Notification Alarm from unknown device: {}",
-                    pushNotificationAlarm, uee);
+            LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: {}", pushNotificationSms,
+                    uee);
         } catch (final Exception e) {
-            LOGGER.error("Error storing event for Push Notification Alarm: {}", pushNotificationAlarm, e);
+            LOGGER.error("Error storing event for Push Notification Sms: {}", pushNotificationSms, e);
         }
     }
 
