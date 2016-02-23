@@ -18,6 +18,7 @@ import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandExecutor;
@@ -26,6 +27,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsComma
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
@@ -33,6 +35,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +52,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
@@ -57,6 +61,8 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
+    private static final String VISUAL_SEPARATOR = "******************************************************";
+
     private static final String DEBUG_MSG_CLOSING_CONNECTION = "Closing connection with {}";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
@@ -78,6 +84,12 @@ public class ConfigurationService {
 
     @Autowired
     private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
+
+    @Autowired
+    private GetPushSetupSmsCommandExecutor getPushSetupSmsCommandExecutor;
+
+    @Autowired
+    private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
@@ -111,14 +123,14 @@ public class ConfigurationService {
             // The Special days towards the Smart Meter
             final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
 
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             LOGGER.info("********** Set Special Days: 0-0:11.0.0.255 **********");
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             final List<SpecialDay> specialDays = specialDaysRequestData.getSpecialDays();
             for (final SpecialDay specialDay : specialDays) {
                 LOGGER.info("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
             }
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
@@ -150,9 +162,9 @@ public class ConfigurationService {
             final GprsOperationModeType gprsOperationModeType = configurationObject.getGprsOperationMode();
             final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
 
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
             LOGGER.info("Operation mode:{} ", gprsOperationModeType.value());
             LOGGER.info("Flags:");
 
@@ -160,7 +172,7 @@ public class ConfigurationService {
                 LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
                         configurationFlag.isEnabled());
             }
-            LOGGER.info("******************************************************");
+            LOGGER.info(VISUAL_SEPARATOR);
 
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
             conn = this.dlmsConnectionFactory.getConnection(device);
@@ -330,6 +342,32 @@ public class ConfigurationService {
                 throw new ProtocolAdapterException("AccessResultCode for set push setup alarm was not SUCCESS: "
                         + accessResultCode);
             }
+        } finally {
+            if (conn != null) {
+                conn.close();
+            }
+        }
+    }
+
+    public void setPushSetupSms(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupSms pushSetupSms,
+            final DeviceResponseMessageSender responseMessageSender) throws OsgpException, ProtocolAdapterException {
+
+        LnClientConnection conn = null;
+        try {
+            LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
+
+            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
+            final AccessResultCode accessResultCode = this.setPushSetupSmsCommandExecutor.execute(conn, device,
+                    pushSetupSms);
+
+            if (AccessResultCode.SUCCESS != accessResultCode) {
+                throw new ProtocolAdapterException("AccessResultCode for set push setup sms was not SUCCESS: "
+                        + accessResultCode);
+            }
+
         } finally {
             if (conn != null) {
                 conn.close();

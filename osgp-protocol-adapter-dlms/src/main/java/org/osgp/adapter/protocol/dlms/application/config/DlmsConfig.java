@@ -25,7 +25,7 @@ import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
-import org.osgp.adapter.protocol.dlms.infra.networking.DlmsPushNotificationAlarmDecoder;
+import org.osgp.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -91,7 +91,7 @@ public class DlmsConfig {
 
         pipeline.addLast("loggingHandler", new LoggingHandler(InternalLogLevel.INFO, true));
 
-        pipeline.addLast("dlmsPushNotificationAlarmDecoder", this.dlmsPushNotificationAlarmDecoder());
+        pipeline.addLast("dlmsPushNotificationDecoder", new DlmsPushNotificationDecoder());
 
         pipeline.addLast("dlmsChannelHandler", handler);
 
@@ -114,13 +114,5 @@ public class DlmsConfig {
     @Bean
     public DlmsChannelHandlerServer dlmsChannelHandlerServer() {
         return new DlmsChannelHandlerServer();
-    }
-
-    /**
-     * @return a new {@link DlmsPushNotificationAlarmDecoder}.
-     */
-    @Bean
-    public DlmsPushNotificationAlarmDecoder dlmsPushNotificationAlarmDecoder() {
-        return new DlmsPushNotificationAlarmDecoder();
     }
 }

@@ -24,13 +24,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 @Component()
-public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupAlarm, AccessResultCode> {
+public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
+        CommandExecutor<PushSetupSms, AccessResultCode> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
     @Autowired
@@ -38,41 +38,41 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
+            final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod;
 
-        if (pushSetupAlarm.hasPushObjectList()) {
-            LOGGER.warn("Setting Push Object List of Push Setup Alarm not implemented: {}",
-                    pushSetupAlarm.getPushObjectList());
+        if (pushSetupSms.hasPushObjectList()) {
+            LOGGER.warn("Setting Push Object List of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getPushObjectList());
         }
 
-        if (pushSetupAlarm.hasSendDestinationAndMethod()) {
+        if (pushSetupSms.hasSendDestinationAndMethod()) {
             final AttributeAddress sendDestinationAndMethodAddress = new AttributeAddress(CLASS_ID, OBIS_CODE,
                     ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
-            final DataObject value = this.buildSendDestinationAndMethodObject(pushSetupAlarm
+            final DataObject value = this.buildSendDestinationAndMethodObject(pushSetupSms
                     .getSendDestinationAndMethod());
             setParameterSendDestinationAndMethod = new SetParameter(sendDestinationAndMethodAddress, value);
         } else {
-            LOGGER.error("Send Destination and Method of the Push Setup Alarm is expected to be set.");
-            throw new ProtocolAdapterException("Error setting Alarm push setup data. No destination and method data");
+            LOGGER.error("Send Destination and Method of the Push Setup Sms is expected to be set.");
+            throw new ProtocolAdapterException("Error setting Sms push setup data. No destination and method data");
         }
 
-        if (pushSetupAlarm.hasCommunicationWindow()) {
-            LOGGER.warn("Setting Communication Window of Push Setup Alarm not implemented: {}",
-                    pushSetupAlarm.getCommunicationWindow());
+        if (pushSetupSms.hasCommunicationWindow()) {
+            LOGGER.warn("Setting Communication Window of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getCommunicationWindow());
         }
-        if (pushSetupAlarm.hasRandomisationStartInterval()) {
-            LOGGER.warn("Setting Randomisation Start Interval of Push Setup Alarm not implemented: {}",
-                    pushSetupAlarm.getRandomisationStartInterval());
+        if (pushSetupSms.hasRandomisationStartInterval()) {
+            LOGGER.warn("Setting Randomisation Start Interval of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getRandomisationStartInterval());
         }
-        if (pushSetupAlarm.hasNumberOfRetries()) {
-            LOGGER.warn("Setting Number of Retries of Push Setup Alarm not implemented: {}",
-                    pushSetupAlarm.getNumberOfRetries());
+        if (pushSetupSms.hasNumberOfRetries()) {
+            LOGGER.warn("Setting Number of Retries of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getNumberOfRetries());
         }
-        if (pushSetupAlarm.hasRepetitionDelay()) {
-            LOGGER.warn("Setting Repetition Delay of Push Setup Alarm not implemented: {}",
-                    pushSetupAlarm.getRepetitionDelay());
+        if (pushSetupSms.hasRepetitionDelay()) {
+            LOGGER.warn("Setting Repetition Delay of Push Setup Sms not implemented: {}",
+                    pushSetupSms.getRepetitionDelay());
         }
 
         List<AccessResultCode> resultCodes;
@@ -81,11 +81,10 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
         } catch (final IOException e) {
             throw new ConnectionException(e);
         }
-
         if (resultCodes != null && !resultCodes.isEmpty()) {
             return resultCodes.get(0);
         } else {
-            throw new ProtocolAdapterException("Error setting Alarm push setup data.");
+            throw new ProtocolAdapterException("Error setting Sms push setup data.");
         }
     }
 }
