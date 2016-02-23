@@ -56,6 +56,11 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushS
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsRequestData;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupSmsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -342,6 +347,57 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             response = new SetPushSetupAlarmResponse();
             final MeterResponseData meterResponseData = this.configurationService
                     .dequeueSetPushSetupAlarmResponse(request.getCorrelationUid());
+
+            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setDescription((String) meterResponseData.getMessageData());
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetPushSetupSmsRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetPushSetupSmsAsyncResponse setPushSetupSms(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetPushSetupSmsRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetPushSetupSmsRequest for meter: {}.", request.getDeviceIdentification());
+
+        final SetPushSetupSmsAsyncResponse response = new SetPushSetupSmsAsyncResponse();
+
+        final String deviceIdentification = request.getDeviceIdentification();
+        final SetPushSetupSmsRequestData requestData = request.getSetPushSetupSmsRequestData();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms = this.configurationMapper
+                .map(requestData.getPushSetupSms(),
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms.class);
+
+        final String correlationUid = this.configurationService.enqueueSetPushSetupSmsRequest(
+                organisationIdentification, deviceIdentification, pushSetupSms);
+
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(deviceIdentification);
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SetPushSetupSmsAsyncRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
+    @ResponsePayload
+    public SetPushSetupSmsResponse getSetPushSetupSmsResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SetPushSetupSmsAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Incoming SetPushSetupAlarmAsyncRequest for organisation {} for meter: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        SetPushSetupSmsResponse response = null;
+        try {
+            response = new SetPushSetupSmsResponse();
+            final MeterResponseData meterResponseData = this.configurationService
+                    .dequeueSetPushSetupSmsResponse(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {

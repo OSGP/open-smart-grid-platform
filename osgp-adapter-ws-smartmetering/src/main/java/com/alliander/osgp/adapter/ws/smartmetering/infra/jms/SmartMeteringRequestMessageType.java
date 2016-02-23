@@ -31,5 +31,6 @@ public enum SmartMeteringRequestMessageType {
     GET_SMS_DETAILS,
     REPLACE_KEYS,
     SET_PUSH_SETUP_ALARM,
+    SET_PUSH_SETUP_SMS,
     GET_CONFIGURATION_OBJECTS
 }
