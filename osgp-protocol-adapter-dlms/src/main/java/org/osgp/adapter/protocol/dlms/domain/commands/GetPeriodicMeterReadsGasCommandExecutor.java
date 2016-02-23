@@ -220,7 +220,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         LOGGER.debug("Retrieving current billing period and profiles for gas for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
-        final List<GetResult> getResultList = conn.get(profileBuffer);
+        final List<GetResult> getResultList = conn.get(profileBuffer,
+                this.getScalerUnitAttributeAddress(periodicMeterReadsQuery));
 
         checkResultList(getResultList);
 
@@ -380,8 +381,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
                     "No GetResult received while retrieving current billing period and profiles for gas.");
         }
 
-        if (getResultList.size() > 1) {
-            LOGGER.info("Expected 1 GetResult while retrieving current billing period and profiles for gas, got "
+        if (getResultList.size() > 2) {
+            LOGGER.info("Expected 2 GetResult while retrieving current billing period and profiles for gas, got "
                     + getResultList.size());
         }
     }
