@@ -19,6 +19,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotifica
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchConfigurationBankRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.dto.valueobjects.PageInfo;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
@@ -49,6 +50,11 @@ public interface DeviceService {
     void setConfiguration(SetConfigurationDeviceRequest deviceRequest);
 
     void doSetConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void switchConfiguration(SwitchConfigurationBankRequest deviceRequest);
+
+    void doSwitchConfiguration(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
     void setEventNotifications(SetEventNotificationsDeviceRequest deviceRequest);

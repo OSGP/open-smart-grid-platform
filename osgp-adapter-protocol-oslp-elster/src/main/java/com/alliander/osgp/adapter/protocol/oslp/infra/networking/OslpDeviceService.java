@@ -41,6 +41,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotifica
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchConfigurationBankRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetActualPowerUsageDeviceResponse;
@@ -60,7 +61,6 @@ import com.alliander.osgp.dto.valueobjects.LinkType;
 import com.alliander.osgp.dto.valueobjects.PageInfo;
 import com.alliander.osgp.dto.valueobjects.PowerUsageData;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.RelayMatrix;
 import com.alliander.osgp.dto.valueobjects.Schedule;
 import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
 import com.alliander.osgp.oslp.Oslp;
@@ -670,6 +670,38 @@ public class OslpDeviceService implements DeviceService {
     }
 
     @Override
+    public void switchConfiguration(final SwitchConfigurationBankRequest deviceRequest) {
+        LOGGER.info("switchConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSwitchConfiguration(deviceRequest);
+    }
+
+    @Override
+    public void doSwitchConfiguration(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+        LOGGER.info("doSwitchConfiguration() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+
+        final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
+
+            @Override
+            public void handleResponse(final OslpEnvelope oslpResponse) {
+                OslpDeviceService.this.handleOslpResponseSwitchConfiguration(deviceRequest, oslpResponse,
+                        deviceResponseHandler);
+            }
+
+            @Override
+            public void handleException(final Throwable t) {
+                OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
+            }
+        };
+
+        this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
+    }
+
+    @Override
     public void getActualPowerUsage(final DeviceRequest deviceRequest) {
         LOGGER.info("getActualPowerUsage() for device: {}.", deviceRequest.getDeviceIdentification());
 
@@ -994,25 +1026,6 @@ public class OslpDeviceService implements DeviceService {
             final Oslp.GetConfigurationResponse getConfigurationResponse = oslpResponse.getPayloadMessage()
                     .getGetConfigurationResponse();
             configuration = this.mapper.map(getConfigurationResponse, Configuration.class);
-
-            configuration.setAstroGateSunRiseOffset(getConfigurationResponse.getAstroGateSunRiseOffset());
-            configuration.setAstroGateSunSetOffset(getConfigurationResponse.getAstroGateSunSetOffset());
-            configuration.setAutomaticSummerTimingEnabled(getConfigurationResponse.getIsAutomaticSummerTimingEnabled());
-            configuration.setCommunicationNumberOfRetries(getConfigurationResponse.getCommunicationNumberOfRetries());
-            configuration.setCommunicationPauseTimeBetweenConnectionTrials(getConfigurationResponse.getCommunicationPauseTimeBetweenConnectionTrials());
-            configuration.setCommunicationTimeout(getConfigurationResponse.getCommunicationTimeout());
-            configuration.setDeviceFixIpValue(getConfigurationResponse.getDeviceFixIpValue().toStringUtf8());
-            configuration.setDhcpEnabled(getConfigurationResponse.getIsDhcpEnabled());
-            configuration.setOsgpPortNumber(getConfigurationResponse.getOsgpPortNumber());
-            configuration.setOspgIpAddress(getConfigurationResponse.getOspgIpAddress().toStringUtf8());
-            configuration.setRelayLinking(this.mapper.mapAsList(getConfigurationResponse.getRelayLinkingList(), RelayMatrix.class));
-            configuration.setRelayRefreshing(getConfigurationResponse.getRelayRefreshing());
-            configuration.setSummerTimeDetails(getConfigurationResponse.getSummerTimeDetails());
-            configuration.setSwitchingDelays(this.mapper.mapAsList(getConfigurationResponse.getSwitchingDelayList(), Integer.class));
-            configuration.setTestButtonEnabled(getConfigurationResponse.getIsTestButtonEnabled());
-            configuration.setTimeSyncFrequency(getConfigurationResponse.getTimeSyncFrequency());
-            configuration.setWinterTimeDetails(getConfigurationResponse.getWinterTimeDetails());
-
             status = this.mapper.map(getConfigurationResponse.getStatus(), DeviceMessageStatus.class);
         } else {
             status = DeviceMessageStatus.FAILURE;
@@ -1020,6 +1033,22 @@ public class OslpDeviceService implements DeviceService {
 
         return new GetConfigurationDeviceResponse(deviceRequest.getOrganisationIdentification(),
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status, configuration);
+    }
+
+    private DeviceResponse buildDeviceResponseSwitchConfiguration(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse) {
+        DeviceMessageStatus status = null;
+
+        if (oslpResponse.getPayloadMessage().hasSwitchConfigurationResponse()) {
+            final Oslp.SwitchConfigurationResponse switchConfigurationResponse = oslpResponse.getPayloadMessage()
+                    .getSwitchConfigurationResponse();
+            status = this.mapper.map(switchConfigurationResponse.getStatus(), DeviceMessageStatus.class);
+        } else {
+            status = DeviceMessageStatus.FAILURE;
+        }
+
+        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
     }
 
     private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
@@ -1035,6 +1064,15 @@ public class OslpDeviceService implements DeviceService {
 
         this.buildAndSignEnvelope(deviceRequest,
                 Oslp.Message.newBuilder().setGetConfigurationRequest(getConfigurationRequest).build(), null);
+    }
+
+    private void buildOslpRequestSwitchConfiguration(final SwitchConfigurationBankRequest deviceRequest) {
+        final Oslp.SwitchConfigurationRequest switchConfigurationRequest = Oslp.SwitchConfigurationRequest.newBuilder()
+                .setNewConfigurationSet(ByteString.copyFrom(deviceRequest.getConfigurationBank().getBytes())).build();
+
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSwitchConfigurationRequest(switchConfigurationRequest).build(),
+                deviceRequest.getConfigurationBank());
     }
 
     private void buildOslpRequestGetFirmwareVersion(final DeviceRequest deviceRequest) {
@@ -1170,6 +1208,18 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
+    private void handleOslpResponseSwitchConfiguration(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
+
+        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
+
+        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
+
+        final DeviceResponse deviceResponse = this.buildDeviceResponseSwitchConfiguration(deviceRequest, oslpResponse);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
     private void handleOslpResponseGetFirmwareVersion(final DeviceRequest deviceRequest,
             final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
         this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
@@ -1208,7 +1258,8 @@ public class OslpDeviceService implements DeviceService {
 
                 // optional properties DeviceStatus
                 deviceStatus.setBootLoaderVersion(getStatusResponse.getBootLoaderVersion());
-                deviceStatus.setCurrentConfigurationBackUsed(getStatusResponse.getCurrentConfigurationBackUsed().toStringUtf8());
+                deviceStatus.setCurrentConfigurationBackUsed(getStatusResponse.getCurrentConfigurationBackUsed()
+                        .toStringUtf8());
                 deviceStatus.setCurrentIp(getStatusResponse.getCurrentIp());
                 deviceStatus.setCurrentTime(getStatusResponse.getCurrentTime());
                 deviceStatus.setDcOutputVoltageCurrent(getStatusResponse.getDcOutputVoltageCurrent());
@@ -1219,11 +1270,11 @@ public class OslpDeviceService implements DeviceService {
                 deviceStatus.setHardwareId(getStatusResponse.getHardwareId());
                 deviceStatus.setInternalFlashMemSize(getStatusResponse.getInternalFlashMemSize());
                 deviceStatus.setLastInternalTestResultCode(getStatusResponse.getLastInternalTestResultCode());
-                deviceStatus.setMacAddress(getStatusResponse.getMacAddress().toStringUtf8());
+                deviceStatus.setMacAddress(this.convertMacAddress(getStatusResponse.getMacAddress()));
                 deviceStatus.setMaximumOutputPowerOnDcOutput(getStatusResponse.getMaximumOutputPowerOnDcOutput());
                 deviceStatus.setName(getStatusResponse.getName());
                 deviceStatus.setNumberOfOutputs(getStatusResponse.getNumberOfOutputs());
-                deviceStatus.setSerialNumber(getStatusResponse.getSerialNumber().toStringUtf8());
+                deviceStatus.setSerialNumber(this.convertSerialNumber(getStatusResponse.getSerialNumber()));
                 deviceStatus.setStartupCounter(getStatusResponse.getStartupCounter());
             } else {
                 // handle failure by throwing exceptions if needed
@@ -1234,6 +1285,23 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                 deviceRequest.getCorrelationUid(), deviceStatus);
         deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
+    private String convertMacAddress(final ByteString byteString) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (final byte b : byteString.toByteArray()) {
+            stringBuilder.append(String.format("%02X ", b)).append("-");
+        }
+        final String macAddress = stringBuilder.toString();
+        return macAddress.substring(0, macAddress.length() - 1);
+    }
+
+    private String convertSerialNumber(final ByteString byteString) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (final byte b : byteString.toByteArray()) {
+            stringBuilder.append(b);
+        }
+        return stringBuilder.toString();
     }
 
     private void handleOslpResponseResumeSchedule(final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse,

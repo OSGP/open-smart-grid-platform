@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 
-import java.io.UnsupportedEncodingException;
-
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
@@ -78,28 +76,18 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
     }
 
     private String convertIpAddress(final ByteString byteString) {
-        LOGGER.info("byteString.toByteArray().length(): {}", byteString.toByteArray().length);
+        LOGGER.debug("byteString.toByteArray().length(): {}", byteString.toByteArray().length);
 
         final StringBuilder stringBuilder = new StringBuilder();
         for (final byte number : byteString.toByteArray()) {
-            LOGGER.info("number: {}", number);
             int convertedNumber = number;
             if (number < 0) {
                 convertedNumber = 256 + number;
             }
             final String str = String.valueOf(convertedNumber);
-            LOGGER.info("str: {}", str);
             stringBuilder.append(str).append(".");
         }
         final String ipValue = stringBuilder.toString();
-        LOGGER.info("ipValue: {}", ipValue);
-        final String ipAddress = ipValue.substring(0, ipValue.length() - 1);
-        LOGGER.info("ipAddress: {}", ipAddress);
-        try {
-            return new String(ipAddress.getBytes("UTF-8"));
-        } catch (final UnsupportedEncodingException e) {
-            LOGGER.error("UnsupportedEncodingException", e);
-            return null;
-        }
+        return ipValue.substring(0, ipValue.length() - 1);
     }
 }

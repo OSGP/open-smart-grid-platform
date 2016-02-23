@@ -8,6 +8,7 @@
 package com.alliander.osgp.webdevicesimulator.service;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.PrivateKey;
 import java.text.ParseException;
@@ -504,6 +505,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             this.handleGetConfigurationRequest(device, request.getGetConfigurationRequest());
 
             response = this.createGetConfigurationResponse(device);
+        } else if (request.hasSwitchConfigurationRequest()) {
+            response = createSwitchConfigurationResponse();
         } else if (request.hasGetActualPowerUsageRequest()) {
             this.handleGetActualPowerUsageRequest(device, request.getGetActualPowerUsageRequest());
 
@@ -829,12 +832,12 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                     .setLongTermHistoryIntervalType(LongTermIntervalType.DAYS)
                     .setLongTermHistoryInterval(1)
                     .setTimeSyncFrequency(86401)
-                    // .setDeviceFixIpValue(ByteString.copyFrom(InetAddress.getByName("127.0.0.1").getAddress()))
+                    .setDeviceFixIpValue(ByteString.copyFrom(InetAddress.getByName("127.0.0.1").getAddress()))
                     .setIsDhcpEnabled(false)
                     .setCommunicationTimeout(30)
                     .setCommunicationNumberOfRetries(5)
                     .setCommunicationPauseTimeBetweenConnectionTrials(120)
-                    // .setOspgIpAddress(ByteString.copyFrom(InetAddress.getByName("168.63.97.65").getAddress()))
+                    .setOspgIpAddress(ByteString.copyFrom(InetAddress.getByName("168.63.97.65").getAddress()))
                     .setOsgpPortNumber(12122)
                     .setIsTestButtonEnabled(false)
                     .setIsAutomaticSummerTimingEnabled(false)
@@ -864,6 +867,13 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             LOGGER.error("Unexpected UnknownHostException", e);
             return null;
         }
+    }
+
+    private static Message createSwitchConfigurationResponse() {
+        return Oslp.Message
+                .newBuilder()
+                .setSwitchConfigurationResponse(Oslp.SwitchConfigurationResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
     }
 
     /**
@@ -950,18 +960,16 @@ public class OslpChannelHandler extends SimpleChannelHandler {
                                 .setDcOutputVoltageMaximum(24)
                                 .setDcOutputVoltageCurrent(24)
                                 .setMaximumOutputPowerOnDcOutput(1100)
-                                // .setSerialNumber(
-                                // ByteString.copyFrom(new byte[] { 1, 2, 3, 4,
-                                // 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6,
-                                // 7, 8, 9 }))
-                                // .setMacAddress(ByteString.copyFrom(new byte[]
-                                // { 1, 2, 3, 4, 5, 6 }))
-                                .setHardwareId("Hardware ID").setInternalFlashMemSize(1024)
-                                .setExternalFlashMemSize(2048).setLastInternalTestResultCode(0).setStartupCounter(42)
-                                .setBootLoaderVersion("1.1.1").setFirmwareVersion("2.8.5")
-                                .setCurrentConfigurationBackUsed(ByteString.copyFrom(new byte[] { 0 }))
-                                .setName("ELS_DEV-SIM-DEVICE").setCurrentTime("20251231155959")
-                                .setCurrentIp("127.0.0.1")).build();
+                                .setSerialNumber(
+                                        ByteString.copyFrom(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6,
+                                                7, 8, 9 }))
+                                .setMacAddress(ByteString.copyFrom(new byte[] { 1, 2, 3, 4, 5, 6 }))
+                                                        .setHardwareId("Hardware ID").setInternalFlashMemSize(1024)
+                                                        .setExternalFlashMemSize(2048).setLastInternalTestResultCode(0).setStartupCounter(42)
+                                                        .setBootLoaderVersion("1.1.1").setFirmwareVersion("2.8.5")
+                                                        .setCurrentConfigurationBackUsed(ByteString.copyFrom(new byte[] { 0 }))
+                                                        .setName("ELS_DEV-SIM-DEVICE").setCurrentTime("20251231155959")
+                                                        .setCurrentIp("127.0.0.1")).build();
     }
 
     private static Message createResumeScheduleResponse() {
