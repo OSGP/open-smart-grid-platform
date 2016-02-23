@@ -75,7 +75,7 @@ public class PushSetupAlarm implements Serializable {
         }
     }
 
-    public PushSetupAlarm(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
+    private PushSetupAlarm(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
             final SendDestinationAndMethod sendDestinationAndMethod, final List<WindowElement> communicationWindow,
             final Integer randomisationStartInterval, final Integer numberOfRetries, final Integer repetitionDelay) {
         this.checkRandomisationStartInterval(randomisationStartInterval);

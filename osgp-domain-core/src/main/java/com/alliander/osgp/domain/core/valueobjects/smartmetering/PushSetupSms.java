@@ -75,7 +75,7 @@ public class PushSetupSms implements Serializable {
         }
     }
 
-    public PushSetupSms(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
+    private PushSetupSms(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
             final SendDestinationAndMethod sendDestinationAndMethod, final List<WindowElement> communicationWindow,
             final Integer randomisationStartInterval, final Integer numberOfRetries, final Integer repetitionDelay) {
         this.checkRandomisationStartInterval(randomisationStartInterval);
