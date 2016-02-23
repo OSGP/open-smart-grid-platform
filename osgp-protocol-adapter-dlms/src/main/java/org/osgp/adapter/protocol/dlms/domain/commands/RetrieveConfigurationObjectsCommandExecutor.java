@@ -50,7 +50,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        LOGGER.info("Retrieving configuration objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
+        LOGGER.debug("Retrieving configuration objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
         final List<GetResult> getResultList = conn.get(attributeAddress);
@@ -77,16 +77,16 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         this.logAllObisCodes(allObisCodes);
 
         final String output = this.createOutput(conn, allObisCodes);
-        LOGGER.info("Total output is: {}", output);
+        LOGGER.debug("Total output is: {}", output);
 
         return output;
     }
 
     private void logAllObisCodes(final List<ClassIdObisAttr> allObisCodes) {
         int index = 1;
-        LOGGER.info("List of all ObisCodes:");
+        LOGGER.debug("List of all ObisCodes:");
         for (final ClassIdObisAttr obisAttr : allObisCodes) {
-            LOGGER.info("{}/{} {} #attr{}", index++, allObisCodes.size(), obisAttr.getObisCode().value(),
+            LOGGER.debug("{}/{} {} #attr{}", index++, allObisCodes.size(), obisAttr.getObisCode().value(),
                     obisAttr.getNoAttr());
         }
     }
@@ -96,9 +96,9 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         String output = "";
         int index = 1;
         for (final ClassIdObisAttr obisAttr : allObisCodes) {
-            LOGGER.info("Creating output for {} {}/{}", obisAttr.getObisCode().value(), index++, allObisCodes.size());
+            LOGGER.debug("Creating output for {} {}/{}", obisAttr.getObisCode().value(), index++, allObisCodes.size());
             output += this.getAllDataFromObisCode(conn, obisAttr);
-            LOGGER.info("Length of output is now: {}", output.length());
+            LOGGER.debug("Length of output is now: {}", output.length());
         }
         return output;
     }
@@ -109,7 +109,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
         final int noOfAttr = obisAttr.getNoAttr();
         for (int attributeValue = 1; attributeValue <= noOfAttr; attributeValue++) {
-            LOGGER.info("Creating output for {} attr: {}/{}", obisAttr.getObisCode().value(), attributeValue, noOfAttr);
+            LOGGER.debug("Creating output for {} attr: {}/{}", obisAttr.getObisCode().value(), attributeValue, noOfAttr);
             output += this.getAllDataFromAttribute(conn, obisAttr.getClassNumber(), obisAttr.getObisCode(),
                     attributeValue);
         }
@@ -131,12 +131,12 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         final AttributeAddress attributeAddress = new AttributeAddress(classNumber,
                 this.createObisCode(obisCodeByteArray), attributeValue);
 
-        LOGGER.info("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
+        LOGGER.debug("Retrieving configuration objects data for class id: {}, obis code: {}, attribute id: {}",
                 classNumber, obisCodeByteArray, attributeValue);
         final List<GetResult> getResultList = conn.get(attributeAddress);
 
         final GetResult getResult = getResultList.get(0);
-        LOGGER.info("ResultCode: {}", getResult.resultCode());
+        LOGGER.debug("ResultCode: {}", getResult.resultCode());
 
         return this.dlmsHelper.getDebugInfo(getResult.resultData());
     }
