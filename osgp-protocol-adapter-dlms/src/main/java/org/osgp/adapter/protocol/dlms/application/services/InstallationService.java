@@ -11,17 +11,13 @@ import org.osgp.adapter.protocol.dlms.application.mapping.InstallationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
 
 @Service(value = "dlmsInstallationService")
-public class InstallationService extends DlmsApplicationService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(InstallationService.class);
+public class InstallationService {
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -31,8 +27,6 @@ public class InstallationService extends DlmsApplicationService {
 
     // === ADD METER ===
     public void addMeter(final DlmsDeviceMessageMetadata messageMetadata, final SmartMeteringDevice smartMeteringDevice) {
-
-        this.logStart(LOGGER, messageMetadata, "addMeter");
 
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
 

@@ -99,6 +99,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         try {
             // Handle message
             messageMetadata.handleMessage(message);
+
+            this.logStart(LOGGER, messageMetadata, message.getJMSType());
             final Serializable response = this.handleMessage(messageMetadata, message.getObject());
 
             // Send response
@@ -123,6 +125,25 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     abstract protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException;
 
+    protected void logStart(final Logger logger, final DlmsDeviceMessageMetadata messageMetadata,
+            final String methodName) {
+        logger.info("{} called for device: {} for organisation: {}", methodName,
+                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
+    }
+
+    /**
+     * The service may only throw OsgpExceptions and the cause of the exception
+     * can also only be a OsgpException. This is because other layers need to
+     * deserialize the exception (and the cause within it) and the Exception
+     * class must be known to this layer.
+     *
+     * If the Exception is not an OsgpException, only the exception message will
+     * be wrapped in an OsgpException and returned. This also applies to the
+     * cause when it is an OsgpException.
+     *
+     * @param e
+     * @return OsgpException
+     */
     protected OsgpException ensureOsgpException(final Exception e) {
         if (e instanceof OsgpException) {
             final Throwable cause = e.getCause();

@@ -18,8 +18,6 @@ import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,10 +31,8 @@ import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
 import com.jasperwireless.api.ws.service.sms.SmsMessageType;
 
 @Service(value = "dlmsAdhocService")
-public class AdhocService extends DlmsApplicationService {
+public class AdhocService {
     private static final String COMMUNICATION_METHOD_GPRS = "GPRS";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -58,8 +54,6 @@ public class AdhocService extends DlmsApplicationService {
     public void synchronizeTime(final DlmsDeviceMessageMetadata messageMetadata,
             final SynchronizeTimeRequest synchronizeTimeRequest) throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "synchronizeTime");
-
         LnClientConnection conn = null;
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -79,8 +73,6 @@ public class AdhocService extends DlmsApplicationService {
     public SmsDetails sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
     ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "sendWakeUpSms");
-
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
         if (!COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
             throw new OsgpException(ComponentType.PROTOCOL_DLMS, "Device communication method is not GPRS");
@@ -97,8 +89,6 @@ public class AdhocService extends DlmsApplicationService {
 
     public SmsDetails getSmsDetails(final DlmsDeviceMessageMetadata messageMetadata, final SmsDetails smsDetailsRequest)
             throws OsgpException, ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "synchronizeTime");
 
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
@@ -120,7 +110,6 @@ public class AdhocService extends DlmsApplicationService {
 
     public Serializable retrieveConfigurationObjects(final DlmsDeviceMessageMetadata messageMetadata,
             final RetrieveConfigurationObjectsRequest request) throws OsgpException, ProtocolAdapterException {
-        this.logStart(LOGGER, messageMetadata, "retrieveConfigurationObjects");
 
         LnClientConnection conn = null;
         try {

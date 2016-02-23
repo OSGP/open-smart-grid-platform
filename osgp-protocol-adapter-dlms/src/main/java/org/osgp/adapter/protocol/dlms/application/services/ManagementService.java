@@ -28,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageD
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsManagementService")
-public class ManagementService extends DlmsApplicationService {
+public class ManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
 
@@ -46,8 +46,6 @@ public class ManagementService extends DlmsApplicationService {
     public EventMessageDataContainer findEvents(final DlmsDeviceMessageMetadata messageMetadata,
             final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) throws OsgpException,
             ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "findEvents");
 
         final List<Event> events = new ArrayList<>();
 

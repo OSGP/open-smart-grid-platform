@@ -19,8 +19,6 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterReques
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsDeviceMonitoringService")
-public class MonitoringService extends DlmsApplicationService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
+public class MonitoringService {
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -61,8 +57,6 @@ public class MonitoringService extends DlmsApplicationService {
     public Serializable requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
             final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
-
         LnClientConnection conn = null;
         try {
 
@@ -89,8 +83,6 @@ public class MonitoringService extends DlmsApplicationService {
     public Serializable requestActualMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
             final ActualMeterReadsQuery actualMeterReadsRequest) throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "requestActualMeterReads");
-
         LnClientConnection conn = null;
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -113,8 +105,6 @@ public class MonitoringService extends DlmsApplicationService {
 
     public AlarmRegister requestReadAlarmRegister(final DlmsDeviceMessageMetadata messageMetadata,
             final ReadAlarmRegisterRequest readAlarmRegisterRequest) throws OsgpException, ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "requestReadAlarmRegister");
 
         LnClientConnection conn = null;
         try {

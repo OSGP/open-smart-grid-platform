@@ -57,7 +57,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsConfigurationService")
-public class ConfigurationService extends DlmsApplicationService {
+public class ConfigurationService {
     private static final String DEBUG_MSG_CLOSING_CONNECTION = "Closing connection with {}";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
@@ -107,8 +107,6 @@ public class ConfigurationService extends DlmsApplicationService {
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest) throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "requestSpecialDays");
-
         LnClientConnection conn = null;
         try {
             // The Special days towards the Smart Meter
@@ -143,8 +141,6 @@ public class ConfigurationService extends DlmsApplicationService {
     public void requestSetConfiguration(final DlmsDeviceMessageMetadata messageMetadata,
             final SetConfigurationObjectRequest setConfigurationObjectRequest) throws OsgpException,
             ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "requestSetConfiguration");
 
         LnClientConnection conn = null;
         try {
@@ -186,8 +182,6 @@ public class ConfigurationService extends DlmsApplicationService {
     public void requestSetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
             final AdministrativeStatusType administrativeStatusType) throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "requestSetAdministration");
-
         LnClientConnection conn = null;
         DlmsDevice device = null;
         try {
@@ -216,8 +210,6 @@ public class ConfigurationService extends DlmsApplicationService {
     public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
             final AlarmNotifications alarmNotifications) throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "setAlarmNotifications");
-
         LnClientConnection conn = null;
         try {
 
@@ -243,8 +235,6 @@ public class ConfigurationService extends DlmsApplicationService {
     public AdministrativeStatusType requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata)
             throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "requestGetAdministrativeStatus");
-
         LnClientConnection conn = null;
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
@@ -262,8 +252,6 @@ public class ConfigurationService extends DlmsApplicationService {
     public String setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
             final GMeterInfo gMeterInfo) throws OsgpException, ProtocolAdapterException {
 
-        this.logStart(LOGGER, messageMetadata, "setEncryptionKeyExchangeOnGMeter");
-
         LnClientConnection conn = null;
         DlmsDevice device = null;
         try {
@@ -280,7 +268,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                            SecurityKeyType.G_METER_MASTER).getKey());
+                                    SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -295,8 +283,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
     public String setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
             final ActivityCalendar activityCalendar) throws OsgpException, ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "setActivityCalendar");
 
         LnClientConnection conn = null;
         DlmsDevice device = null;
@@ -317,7 +303,7 @@ public class ConfigurationService extends DlmsApplicationService {
             }
 
             return "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
-                    + activityCalendar.getCalendarName();
+            + activityCalendar.getCalendarName();
         } finally {
             if (conn != null) {
                 LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
@@ -329,8 +315,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
     public void setPushSetupAlarm(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupAlarm pushSetupAlarm)
             throws OsgpException, ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "setPushSetupAlarm");
 
         LnClientConnection conn = null;
         try {
@@ -355,9 +339,7 @@ public class ConfigurationService extends DlmsApplicationService {
     }
 
     public String requestFirmwareVersion(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
-    ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "requestFirmwareVersion");
+            ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
@@ -374,8 +356,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
     public void replaceKeys(final DlmsDeviceMessageMetadata messageMetadata, final KeySet keySet,
             final DeviceResponseMessageSender responseMessageSender) throws OsgpException, ProtocolAdapterException {
-
-        this.logStart(LOGGER, messageMetadata, "replaceKeys");
 
         final LnClientConnection conn = null;
 
