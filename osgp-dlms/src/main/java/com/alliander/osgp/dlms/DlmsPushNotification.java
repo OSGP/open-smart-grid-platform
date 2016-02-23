@@ -17,13 +17,14 @@ import org.apache.cxf.common.util.StringUtils;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 
-public class DlmsPushNotificationAlarm implements Serializable {
+public class DlmsPushNotification implements Serializable {
 
     private static final long serialVersionUID = 1408450287084256721L;
 
     public static class Builder {
 
         private String equipmentIdentifier;
+        private String triggerType;
         private EnumSet<AlarmType> alarms;
         private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -46,6 +47,11 @@ public class DlmsPushNotificationAlarm implements Serializable {
             return this;
         }
 
+        public Builder withTriggerType(final String triggerType) {
+            this.triggerType = triggerType;
+            return this;
+        }
+
         public Builder withAlarms(final Set<AlarmType> alarms) {
             if (alarms == null || alarms.isEmpty()) {
                 this.alarms = EnumSet.noneOf(AlarmType.class);
@@ -55,26 +61,26 @@ public class DlmsPushNotificationAlarm implements Serializable {
             return this;
         }
 
-        public DlmsPushNotificationAlarm build() {
-            return new DlmsPushNotificationAlarm(this.baos.toByteArray(), this.equipmentIdentifier, this.alarms);
+        public DlmsPushNotification build() {
+            return new DlmsPushNotification(this.baos.toByteArray(), this.equipmentIdentifier, this.triggerType,
+                    this.alarms);
         }
     }
 
-    private final byte[] bytes;
     private final String equipmentIdentifier;
+    private final String triggerType;
     private final EnumSet<AlarmType> alarms;
+    private final byte[] bytes;
 
-    public DlmsPushNotificationAlarm(final String equipmentIdentifier, final Set<AlarmType> alarms) {
-        this(new byte[0], equipmentIdentifier, alarms);
-    }
-
-    public DlmsPushNotificationAlarm(final byte[] bytes, final String equipmentIdentifier, final Set<AlarmType> alarms) {
+    private DlmsPushNotification(final byte[] bytes, final String equipmentIdentifier, final String triggerType,
+            final Set<AlarmType> alarms) {
         if (bytes == null) {
             this.bytes = new byte[0];
         } else {
             this.bytes = Arrays.copyOf(bytes, bytes.length);
         }
         this.equipmentIdentifier = equipmentIdentifier;
+        this.triggerType = triggerType;
         if (alarms == null || alarms.isEmpty()) {
             this.alarms = EnumSet.noneOf(AlarmType.class);
         } else {
@@ -83,12 +89,14 @@ public class DlmsPushNotificationAlarm implements Serializable {
     }
 
     public boolean isValid() {
-        return !StringUtils.isEmpty(this.equipmentIdentifier) && !this.alarms.isEmpty();
+        return !StringUtils.isEmpty(this.equipmentIdentifier)
+                && (!this.alarms.isEmpty() || !"".equals(this.triggerType));
     }
 
     @Override
     public String toString() {
-        return String.format("DlmsPushNotificationAlarm[device=%s, alarms=%s]", this.equipmentIdentifier, this.alarms);
+        return String.format("DlmsPushNotification [device = %s, trigger type = %s, alarms=%s]",
+                this.equipmentIdentifier, this.triggerType, this.alarms);
     }
 
     public byte[] toByteArray() {
@@ -101,6 +109,10 @@ public class DlmsPushNotificationAlarm implements Serializable {
 
     public String getEquipmentIdentifier() {
         return this.equipmentIdentifier;
+    }
+
+    public String getTriggerType() {
+        return this.triggerType;
     }
 
     public Set<AlarmType> getAlarms() {

@@ -8,11 +8,11 @@
 package org.osgp.adapter.protocol.dlms.infra.networking;
 
 @SuppressWarnings("serial")
-public class UnknownAlarmDecodingStateException extends Exception {
+public class UnknownDecodingStateException extends Exception {
 
     private static final String MESSAGE = "Unknown DLMS Push Notification Alarm decoding state: %1$s";
 
-    public UnknownAlarmDecodingStateException(final String unknownState) {
+    public UnknownDecodingStateException(final String unknownState) {
         super(String.format(MESSAGE, unknownState));
     }
 }
