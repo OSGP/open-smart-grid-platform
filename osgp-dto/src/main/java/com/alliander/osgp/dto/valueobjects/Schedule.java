@@ -35,6 +35,10 @@ public class Schedule implements Serializable {
 
     private TriggerType triggerType;
 
+    private Integer index;
+
+    private Boolean isEnabled;
+
     public WeekDayType getWeekDay() {
         return this.weekDay;
     }
@@ -97,5 +101,21 @@ public class Schedule implements Serializable {
 
     public TriggerType getTriggerType() {
         return this.triggerType;
+    }
+
+    public Integer getIndex() {
+        return this.index;
+    }
+
+    public void setIndex(final Integer index) {
+        this.index = index;
+    }
+
+    public Boolean getIsEnabled() {
+        return this.isEnabled;
+    }
+
+    public void setIsEnabled(final Boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 }
