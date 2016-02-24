@@ -78,13 +78,11 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         try {
             final PushNotificationSms pushNotificationSms = (PushNotificationSms) dataObject;
 
-            this.storeSmsAsEvent(pushNotificationSms);
-
-            final String ownerIdentification = this.getOrganisationIdentificationOfOwner(deviceIdentification);
-            LOGGER.info("Matching owner {} with device {} handling {} from {}", ownerIdentification,
-                    deviceIdentification, messageType, requestMessage.getIpAddress());
-
             if (pushNotificationSms.getIpAddress() != null && !"".equals(pushNotificationSms.getIpAddress())) {
+
+                LOGGER.info("Updating device {} IP address from {} to {}", deviceIdentification,
+                        requestMessage.getIpAddress(), pushNotificationSms.getIpAddress());
+
                 // Convert the IP address from String to InetAddress.
                 final InetAddress address = InetAddress.getByName(pushNotificationSms.getIpAddress());
 
@@ -106,19 +104,6 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         } catch (final Exception e) {
             LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
-        }
-    }
-
-    private void storeSmsAsEvent(final PushNotificationSms pushNotificationSms) {
-        try {
-            this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
-                    com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
-                    .getIpAddress().toString(), 0);
-        } catch (final UnknownEntityException uee) {
-            LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: {}", pushNotificationSms,
-                    uee);
-        } catch (final Exception e) {
-            LOGGER.error("Error storing event for Push Notification Sms: {}", pushNotificationSms, e);
         }
     }
 
