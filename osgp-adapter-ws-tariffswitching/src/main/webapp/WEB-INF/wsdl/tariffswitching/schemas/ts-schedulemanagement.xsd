@@ -62,6 +62,8 @@
 			<xsd:element minOccurs="0" name="EndDay" type="xsd:date" />
 			<xsd:element minOccurs="1" name="Time" type="xsd:string" />
 			<xsd:element maxOccurs="6" name="TariffValue" type="tns:TariffValue" />
+			<xsd:element minOccurs="0" name="Index" type="xsd:int" />
+			<xsd:element minOccurs="0" name="IsEnabled" type="xsd:boolean" />
 		</xsd:sequence>
 	</xsd:complexType>
 
