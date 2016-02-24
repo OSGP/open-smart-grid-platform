@@ -64,6 +64,8 @@
 			<xsd:element minOccurs="0" name="TriggerWindow" type="tns:WindowType" />
 			<xsd:element maxOccurs="6" name="LightValue" type="tns:LightValue" />
 			<xsd:element minOccurs="0" name="TriggerType" type="tns:TriggerType" />
+			<xsd:element minOccurs="0" name="Index" type="xsd:int" />
+			<xsd:element minOccurs="0" name="IsEnabled" type="xsd:boolean" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

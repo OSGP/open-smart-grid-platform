@@ -34,6 +34,8 @@ public class TariffScheduleToScheduleConverter extends CustomConverter<TariffSch
         schedule.setStartDay(this.mapperFacade.map(source.getStartDay(), DateTime.class));
         schedule.setEndDay(this.mapperFacade.map(source.getEndDay(), DateTime.class));
         schedule.setTime(source.getTime());
+        schedule.setIndex(source.getIndex());
+        schedule.setIsEnabled(source.isIsEnabled());
 
         try {
             // Set the lightvalue
