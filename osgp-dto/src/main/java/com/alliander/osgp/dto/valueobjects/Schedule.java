@@ -111,11 +111,12 @@ public class Schedule implements Serializable {
         this.index = index;
     }
 
+    public void setIsEnabled(final Boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
     public Boolean getIsEnabled() {
         return this.isEnabled;
     }
 
-    public void setIsEnabled(final Boolean isEnabled) {
-        this.isEnabled = isEnabled;
-    }
 }
