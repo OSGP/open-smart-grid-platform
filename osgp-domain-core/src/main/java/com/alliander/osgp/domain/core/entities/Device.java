@@ -154,6 +154,10 @@ public class Device implements Serializable {
      */
     protected boolean isActivated;
 
+    public void setActivated(final boolean isActivated) {
+        this.isActivated = isActivated;
+    }
+
     /**
      * List of { @see DeviceAuthorization.class } containing authorizations for
      * this device. More that one organisation can be authorized to use one ore

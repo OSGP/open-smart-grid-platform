@@ -49,9 +49,9 @@ public class Ssld extends Device {
 
     private boolean hasSchedule;
 
-    @OneToMany(mappedBy = "device", targetEntity = Ean.class)
+    @OneToMany(mappedBy = "device", targetEntity = Ean.class, cascade = CascadeType.ALL)
     @LazyCollection(LazyCollectionOption.FALSE)
-    private final List<Ean> eans = new ArrayList<Ean>();
+    private List<Ean> eans = new ArrayList<Ean>();
 
     @LazyCollection(LazyCollectionOption.FALSE)
     @ElementCollection()
@@ -116,6 +116,10 @@ public class Ssld extends Device {
      */
     public List<Ean> getEans() {
         return this.eans;
+    }
+
+    public void setEans(final List<Ean> eans) {
+        this.eans = eans;
     }
 
     public List<DeviceOutputSetting> getOutputSettings() {

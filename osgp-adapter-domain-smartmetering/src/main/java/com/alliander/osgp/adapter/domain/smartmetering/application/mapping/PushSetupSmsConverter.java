@@ -12,19 +12,19 @@ import java.util.List;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
 
-public class PushSetupAlarmConverter extends
-CustomConverter<PushSetupAlarm, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm> {
+public class PushSetupSmsConverter extends
+        CustomConverter<PushSetupSms, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms> {
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm convert(final PushSetupAlarm source,
-            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms convert(final PushSetupSms source,
+            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm.Builder builder = new com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm.Builder();
+        final com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms.Builder builder = new com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms.Builder();
 
         builder.logicalName(this.mapperFacade.map(source.getLogicalName(),
                 com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode.class));
