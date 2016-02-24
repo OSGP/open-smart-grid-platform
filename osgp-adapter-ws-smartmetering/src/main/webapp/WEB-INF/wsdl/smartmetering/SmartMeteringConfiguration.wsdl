@@ -127,6 +127,23 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="SetPushSetupSmsRequest">
+        <wsdl:part element="smconf:SetPushSetupSmsRequest" name="SetPushSetupSmsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupSmsAsyncResponse"> 
+        <wsdl:part element="smconf:SetPushSetupSmsAsyncResponse" name="SetPushSetupSmsAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupSmsAsyncRequest">
+        <wsdl:part element="smconf:SetPushSetupSmsAsyncRequest" name="SetPushSetupSmsAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SetPushSetupSmsResponse">
+        <wsdl:part element="smconf:SetPushSetupSmsResponse" name="SetPushSetupSmsResponse">
+        </wsdl:part>
+    </wsdl:message>
+
 	<wsdl:message name="SetAdministrativeStatusRequest">
 		<wsdl:part element="smconf:SetAdministrativeStatusRequest" 
 			name="SetAdministrativieStatusRequest">
@@ -218,6 +235,19 @@
             <wsdl:input message="tns:SetPushSetupAlarmAsyncRequest" name="SetPushSetupAlarmAsyncRequest">
             </wsdl:input>
             <wsdl:output message="tns:SetPushSetupAlarmResponse" name="SetPushSetupAlarmResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetPushSetupSms">
+            <wsdl:input message="tns:SetPushSetupSmsRequest" name="SetPushSetupSmsRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetPushSetupSmsAsyncResponse" name="SetPushSetupSmsAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetSetPushSetupSmsResponse">
+            <wsdl:input message="tns:SetPushSetupSmsAsyncRequest" name="SetPushSetupSmsAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:SetPushSetupSmsResponse" name="SetPushSetupSmsResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -380,6 +410,32 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SetPushSetupAlarmResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetPushSetupSms">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetPushSetupSmsRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetPushSetupSmsAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSetPushSetupSmsResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SetPushSetupSmsAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SetPushSetupSmsResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

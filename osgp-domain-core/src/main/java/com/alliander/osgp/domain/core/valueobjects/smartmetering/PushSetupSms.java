@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PushSetupAlarm implements Serializable {
+public class PushSetupSms implements Serializable {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
@@ -33,8 +33,8 @@ public class PushSetupAlarm implements Serializable {
         private Integer numberOfRetries;
         private Integer repetitionDelay;
 
-        public PushSetupAlarm build() {
-            return new PushSetupAlarm(this.logicalName, this.pushObjectList, this.sendDestinationAndMethod,
+        public PushSetupSms build() {
+            return new PushSetupSms(this.logicalName, this.pushObjectList, this.sendDestinationAndMethod,
                     this.communicationWindow, this.randomisationStartInterval, this.numberOfRetries,
                     this.repetitionDelay);
         }
@@ -75,7 +75,7 @@ public class PushSetupAlarm implements Serializable {
         }
     }
 
-    private PushSetupAlarm(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
+    private PushSetupSms(final CosemObisCode logicalName, final List<CosemObjectDefinition> pushObjectList,
             final SendDestinationAndMethod sendDestinationAndMethod, final List<WindowElement> communicationWindow,
             final Integer randomisationStartInterval, final Integer numberOfRetries, final Integer repetitionDelay) {
         this.checkRandomisationStartInterval(randomisationStartInterval);
@@ -127,7 +127,7 @@ public class PushSetupAlarm implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("PushSetupAlarm[").append(System.lineSeparator()).append('\t');
+        final StringBuilder sb = new StringBuilder("PushSetup[").append(System.lineSeparator()).append('\t');
         this.appendToString(sb, "logicalName", this.logicalName, true);
         this.appendToString(sb, "pushObjectList", this.pushObjectList, true);
         this.appendToString(sb, "sendDestinationAndMethod", this.sendDestinationAndMethod, true);
