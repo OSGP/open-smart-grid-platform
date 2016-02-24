@@ -24,9 +24,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 
 public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotificationDecoder.DecodingState> {
 
-    private static final byte[] SMS_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x00, 0x02, 0x03, (byte) 0xFF };
-    private static final byte[] CSD_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x02, 0x00, (byte) 0xFF };
-    private static final byte[] SCHEDULER_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x0F, 0x00, 0x04, (byte) 0xFF };
+    private static final byte[] SMS_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x03, (byte) 0xFF };
+    private static final byte[] CSD_OBISCODE_BYTES = new byte[] { 0x00, 0x02, 0x02, 0x00, (byte) 0xFF };
+    private static final byte[] SCHEDULER_OBISCODE_BYTES = new byte[] { 0x00, 0x0F, 0x00, 0x04, (byte) 0xFF };
 
     private static final String PUSH_SCHEDULER_TRIGGER = "Push scheduler";
     private static final String PUSH_ALARM_TRIGGER = "Push alarm monitor";
