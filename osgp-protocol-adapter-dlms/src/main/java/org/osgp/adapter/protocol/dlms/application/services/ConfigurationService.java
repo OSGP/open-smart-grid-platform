@@ -508,10 +508,12 @@ public class ConfigurationService extends DlmsApplicationService {
 
         this.logStart(LOGGER, messageMetadata, "replaceKeys");
 
-        final LnClientConnection conn = null;
+        LnClientConnection conn = null;
 
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
             this.replaceKeySet(conn, device, keySet);
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
         } catch (final Exception e) {
