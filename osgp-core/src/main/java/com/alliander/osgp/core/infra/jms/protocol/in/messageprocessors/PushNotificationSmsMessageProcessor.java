@@ -8,7 +8,6 @@
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
 import java.net.InetAddress;
-import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -23,18 +22,11 @@ import com.alliander.osgp.core.application.services.EventNotificationMessageServ
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.entities.Device;
-import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
-import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSms;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -105,28 +97,5 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
             LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
         }
-    }
-
-    private String getOrganisationIdentificationOfOwner(final String deviceIdentification) throws OsgpException {
-
-        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
-
-        if (device == null) {
-            LOGGER.error("No known device for deviceIdentification {} with alarm notification", deviceIdentification);
-            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.OSGP_CORE,
-                    new UnknownEntityException(Device.class, deviceIdentification));
-        }
-
-        final List<DeviceAuthorization> deviceAuthorizations = this.deviceAuthorizationRepository
-                .findByDeviceAndFunctionGroup(device, DeviceFunctionGroup.OWNER);
-
-        if (deviceAuthorizations == null || deviceAuthorizations.isEmpty()) {
-            LOGGER.error("No owner authorization for deviceIdentification {} with alarm notification",
-                    deviceIdentification);
-            throw new FunctionalException(FunctionalExceptionType.UNAUTHORIZED, ComponentType.OSGP_CORE,
-                    new UnknownEntityException(DeviceAuthorization.class, deviceIdentification));
-        }
-
-        return deviceAuthorizations.get(0).getOrganisation().getOrganisationIdentification();
     }
 }
