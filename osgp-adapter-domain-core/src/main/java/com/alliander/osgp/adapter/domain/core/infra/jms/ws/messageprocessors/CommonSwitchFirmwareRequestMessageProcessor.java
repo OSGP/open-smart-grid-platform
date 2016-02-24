@@ -18,7 +18,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing common switch firmware request messages
  *
  */
-@Component("domainCoreCommonSwitchConfigurationRequestMessageProcessor")
+@Component("domainCoreCommonSwitchFirmwareRequestMessageProcessor")
 public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     /**
@@ -32,7 +32,7 @@ public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceReque
     private FirmwareManagementService firmwareManagementService;
 
     public CommonSwitchFirmwareRequestMessageProcessor() {
-        super(DeviceFunction.UPDATE_FIRMWARE);
+        super(DeviceFunction.SWITCH_FIRMWARE);
     }
 
     @Override
