@@ -22,6 +22,7 @@ import com.alliander.osgp.core.application.services.EventNotificationMessageServ
 import com.alliander.osgp.core.domain.model.domain.DomainRequestService;
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
@@ -70,6 +71,8 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         try {
             final PushNotificationSms pushNotificationSms = (PushNotificationSms) dataObject;
 
+            this.storeSmsAsEvent(pushNotificationSms);
+
             if (pushNotificationSms.getIpAddress() != null && !"".equals(pushNotificationSms.getIpAddress())) {
 
                 LOGGER.info("Updating device {} IP address from {} to {}", deviceIdentification,
@@ -96,6 +99,19 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         } catch (final Exception e) {
             LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());
+        }
+    }
+
+    private void storeSmsAsEvent(final PushNotificationSms pushNotificationSms) {
+        try {
+            this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
+                    com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
+                    .getIpAddress().toString(), 0);
+        } catch (final UnknownEntityException uee) {
+            LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: {}", pushNotificationSms,
+                    uee);
+        } catch (final Exception e) {
+            LOGGER.error("Error storing event for Push Notification Sms: {}", pushNotificationSms, e);
         }
     }
 }
