@@ -7,24 +7,21 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component("dlmsReadAlarmRegisterRequestMessageProcessor")
 public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterRequestMessageProcessor.class);
 
     @Autowired
     private MonitoringService monitoringService;
@@ -34,20 +31,10 @@ public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessa
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing read alarm register request message");
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
 
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        try {
-            messageMetadata.handleMessage(message);
-            final ReadAlarmRegisterRequest readAlarmRegisterRequest = (ReadAlarmRegisterRequest) message.getObject();
-
-            this.monitoringService.requestReadAlarmRegister(messageMetadata, readAlarmRegisterRequest,
-                    this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+        final ReadAlarmRegisterRequest readAlarmRegisterRequest = (ReadAlarmRegisterRequest) requestObject;
+        return this.monitoringService.requestReadAlarmRegister(messageMetadata, readAlarmRegisterRequest);
     }
 }

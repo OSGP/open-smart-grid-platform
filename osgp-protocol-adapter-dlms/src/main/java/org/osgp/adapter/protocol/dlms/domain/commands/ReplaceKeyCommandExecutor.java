@@ -1,7 +1,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -13,6 +12,7 @@ import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.stereotype.Component;
 
@@ -44,12 +44,15 @@ public class ReplaceKeyCommandExecutor implements
 
     @Override
     public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper object) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final ReplaceKeyCommandExecutor.KeyWrapper object) throws ProtocolAdapterException {
 
-        final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
-                object.getBytes(), object.getKeyId());
-        return conn.action(methodParameterAuth).get(0).resultCode();
+        try {
+            final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
+                    object.getBytes(), object.getKeyId());
+            return conn.action(methodParameterAuth).get(0).resultCode();
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
     }
 
     /**

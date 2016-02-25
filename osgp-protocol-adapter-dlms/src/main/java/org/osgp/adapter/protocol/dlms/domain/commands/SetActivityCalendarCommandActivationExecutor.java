@@ -9,6 +9,8 @@ import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -24,13 +26,19 @@ public class SetActivityCalendarCommandActivationExecutor implements CommandExec
 
     @Override
     public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device, final Void v)
-            throws IOException {
+            throws ProtocolAdapterException {
 
         LOGGER.info("ACTIVATING PASSIVE CALENDAR");
         final MethodParameter method = new MethodParameter(CLASS_ID, OBIS_CODE, METHOD_ID_ACTIVATE_PASSIVE_CALENDAR);
-        final List<MethodResult> methodResultCode = conn.action(method);
+        List<MethodResult> methodResultCode;
+        try {
+            methodResultCode = conn.action(method);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
         if (methodResultCode == null || methodResultCode.isEmpty() || methodResultCode.get(0) == null) {
-            throw new IOException("action method for ClientConnection should return a list with one MethodResult");
+            throw new ProtocolAdapterException(
+                    "action method for ClientConnection should return a list with one MethodResult");
         }
         return methodResultCode.get(0).resultCode();
     }

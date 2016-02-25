@@ -30,16 +30,14 @@ CommandExecutor<Void, PushSetupAlarm> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
-    private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = new AttributeAddress[6];
+    private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES),
+        new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY) };
 
-    static {
-        ATTRIBUTE_ADDRESSES[0] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_PUSH_OBJECT_LIST);
-        ATTRIBUTE_ADDRESSES[1] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
-        ATTRIBUTE_ADDRESSES[2] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_COMMUNICATION_WINDOW);
-        ATTRIBUTE_ADDRESSES[3] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_RANDOMISATION_START_INTERVAL);
-        ATTRIBUTE_ADDRESSES[4] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_NUMBER_OF_RETRIES);
-        ATTRIBUTE_ADDRESSES[5] = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID_REPETITION_DELAY);
-    }
 
     @Autowired
     private DlmsHelperService dlmsHelperService;

@@ -7,25 +7,23 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing Send Wakeup SMS Request messages
  */
 @Component("dlmsSendWakeupSMSRequestMessageProcessor")
 public class SendWakeupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SendWakeupSmsRequestMessageProcessor.class);
 
     @Autowired
     private AdhocService adhocService;
@@ -35,19 +33,9 @@ public class SendWakeupSmsRequestMessageProcessor extends DeviceRequestMessagePr
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing send wakeup sms request message");
-
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        try {
-            messageMetadata.handleMessage(message);
-
-            this.adhocService.sendWakeUpSms(messageMetadata, this.responseMessageSender);
-
-        } catch (final JMSException e) {
-            this.logJmsException(LOGGER, e, messageMetadata);
-        }
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        return this.adhocService.sendWakeUpSms(messageMetadata);
     }
 
 }

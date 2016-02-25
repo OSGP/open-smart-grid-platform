@@ -7,29 +7,24 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing set Activity Calendar request messages
  */
 @Component("dlmsSetActicityCalendarRequestMessageProcessor")
 public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarRequestMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
@@ -39,19 +34,10 @@ public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMes
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing set activity calendar request message");
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        final ActivityCalendar activityCalendarDto = (ActivityCalendar) requestObject;
 
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-        try {
-            messageMetadata.handleMessage(message);
-            final ActivityCalendar activityCalendarDto = (ActivityCalendar) message.getObject();
-
-            this.configurationService.setActivityCalendar(messageMetadata, activityCalendarDto,
-                    this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+        return this.configurationService.setActivityCalendar(messageMetadata, activityCalendarDto);
     }
 }

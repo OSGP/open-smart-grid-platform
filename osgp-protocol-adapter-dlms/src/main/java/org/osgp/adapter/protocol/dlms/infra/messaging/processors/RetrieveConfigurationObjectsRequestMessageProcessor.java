@@ -8,25 +8,21 @@
 
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component("dlmsRetrieveConfigurationObjectsRequestMessageProcessor")
 public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(RetrieveConfigurationObjectsRequestMessageProcessor.class);
 
     @Autowired
     private AdhocService adhocService;
@@ -36,23 +32,10 @@ public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceR
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing retrieve configuration objects request message");
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        final RetrieveConfigurationObjectsRequest retrieveConfigurationRequest = (RetrieveConfigurationObjectsRequest) requestObject;
 
-        try {
-            messageMetadata.handleMessage(message);
-
-            final RetrieveConfigurationObjectsRequest retrieveConfigurationRequest = (RetrieveConfigurationObjectsRequest) message
-                    .getObject();
-
-            this.adhocService.retrieveConfigurationObjects(messageMetadata, retrieveConfigurationRequest,
-                    this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
-
+        return this.adhocService.retrieveConfigurationObjects(messageMetadata, retrieveConfigurationRequest);
     }
-
 }
