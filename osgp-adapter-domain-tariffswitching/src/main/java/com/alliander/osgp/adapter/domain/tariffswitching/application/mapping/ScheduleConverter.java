@@ -34,6 +34,7 @@ public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp
         schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(), WeekDayType.class));
         schedule.setIndex(source.getIndex());
         schedule.setIsEnabled(source.getIsEnabled());
+        schedule.setMinimumLightsOn(source.getMinimumLightsOn());
 
         return schedule;
     }
@@ -58,6 +59,7 @@ public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp
                 com.alliander.osgp.dto.valueobjects.WeekDayType.class));
         schedule.setIndex(source.getIndex());
         schedule.setIsEnabled(source.getIsEnabled());
+        schedule.setMinimumLightsOn(source.getMinimumLightsOn());
 
         return schedule;
     }
