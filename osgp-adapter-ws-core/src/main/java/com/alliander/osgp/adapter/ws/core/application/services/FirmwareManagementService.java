@@ -193,4 +193,32 @@ public class FirmwareManagementService {
     public ResponseMessage dequeueGetFirmwareResponse(final String correlationUid) throws OsgpException {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
+
+    public String enqueueSwitchFirmwareRequest(final String organisationIdentification,
+            final String deviceIdentification, final String version) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SWITCH_FIRMWARE);
+        this.domainHelperService.isInMaintenance(device);
+
+        LOGGER.debug("enqueueSwitchFirmwareRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final CommonRequestMessage message = new CommonRequestMessage(
+                CommonRequestMessageType.SWITCH_FIRMWARE, correlationUid, organisationIdentification,
+                deviceIdentification, version, null);
+
+        this.commonRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public ResponseMessage dequeueSwitchFirmwareResponse(final String correlationUid) throws OsgpException {
+        return this.commonResponseMessageFinder.findMessage(correlationUid);
+    }
+
 }
