@@ -44,7 +44,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -220,7 +220,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         LOGGER.debug("Retrieving current billing period and profiles for gas for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
-        final List<GetResult> getResultList = conn.get(profileBuffer,
+        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, profileBuffer,
                 this.getScalerUnitAttributeAddress(periodicMeterReadsQuery));
 
         checkResultList(getResultList);
@@ -245,7 +245,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
             final DateTime endDateTime, final List<PeriodicMeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final Channel channel, final boolean isSelectiveAccessSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -404,7 +404,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final Channel channel,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectiveAccessSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         SelectiveAccessDescription access = null;
 
@@ -576,7 +576,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
                 DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                DataObject.newUInteger16Data(0))));
+                        DataObject.newUInteger16Data(0))));
     }
 
 }
