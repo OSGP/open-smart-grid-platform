@@ -38,6 +38,10 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareV
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.RemoveManufacturerResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.SwitchFirmwareResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareRequest;
@@ -307,6 +311,64 @@ public class FirmwareManagementEndpoint {
         removeManufacturerResponse.setResult(OsgpResultType.OK);
 
         return removeManufacturerResponse;
+    }
+
+    @PayloadRoot(localPart = "SwitchFirmwareRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SwitchFirmwareAsyncResponse switchFirmware(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SwitchFirmwareRequest request) throws OsgpException {
+
+        LOGGER.info("Switch Firmware Request received from organisation: {} for device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final SwitchFirmwareAsyncResponse response = new SwitchFirmwareAsyncResponse();
+
+        try {
+            final String correlationUid = this.firmwareManagementService
+                    .enqueueSwitchFirmwareRequest(organisationIdentification, request.getDeviceIdentification(),
+                            String.valueOf(request.getVersion()));
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception switch firmware: {} ", e.getMessage(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SwitchFirmwareAsyncRequest", namespace = NAMESPACE)
+    @ResponsePayload
+    public SwitchFirmwareResponse getSwitchFirmwareResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SwitchFirmwareAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Switch Firmware Async Request received from organisation: {} for device: {}.",
+                organisationIdentification, request.getAsyncRequest().getDeviceId());
+
+        final SwitchFirmwareResponse response = new SwitchFirmwareResponse();
+
+        try {
+            final ResponseMessage message = this.firmwareManagementService.dequeueSwitchFirmwareResponse(request
+                    .getAsyncRequest().getCorrelationUid());
+
+            if (message != null) {
+                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+            } else {
+                LOGGER.debug("Switch Firmware data is null");
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
     }
 
     private void handleException(final Exception e) throws OsgpException {
