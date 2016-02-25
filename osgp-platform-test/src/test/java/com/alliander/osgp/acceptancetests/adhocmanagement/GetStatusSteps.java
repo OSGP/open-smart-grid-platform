@@ -13,6 +13,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -237,7 +238,7 @@ public class GetStatusSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
     }
 
     @DomainStep("the get status oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), and (.*)")
@@ -273,12 +274,12 @@ public class GetStatusSteps {
                 .setPreferredLinktype(
                         StringUtils.isBlank(preferredLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
                                 Oslp.LinkType.class, preferredLinkType))
-                .setActualLinktype(
-                        StringUtils.isBlank(actualLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
-                                Oslp.LinkType.class, actualLinkType))
-                .setLightType(
-                        StringUtils.isBlank(lightType) ? Oslp.LightType.LT_NOT_SET : Enum.valueOf(Oslp.LightType.class,
-                                lightType)).setEventNotificationMask(mask).addValue(lightValueBuilder).build();
+                                .setActualLinktype(
+                                        StringUtils.isBlank(actualLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
+                                                Oslp.LinkType.class, actualLinkType))
+                                                .setLightType(
+                                                        StringUtils.isBlank(lightType) ? Oslp.LightType.LT_NOT_SET : Enum.valueOf(Oslp.LightType.class,
+                                                                lightType)).setEventNotificationMask(mask).addValue(lightValueBuilder).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetStatusResponse(getStatusResponse).build()).build();
@@ -351,7 +352,7 @@ public class GetStatusSteps {
                 final ResponseMessage message;
 
                 final ResponseMessageResultType result = ResponseMessageResultType.valueOf(qresult);
-                Object dataObject = null;
+                Serializable dataObject = null;
 
                 if (result.equals(ResponseMessageResultType.NOT_OK)) {
                     dataObject = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
@@ -682,10 +683,10 @@ public class GetStatusSteps {
                     if (StringUtils.isNotBlank(eventnotifications)) {
                         for (final String event : eventnotifications.split(",")) {
                             expectedEventNotificationTypes
-                                    .add(Enum
-                                            .valueOf(
-                                                    com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType.class,
-                                                    event));
+                            .add(Enum
+                                    .valueOf(
+                                            com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType.class,
+                                            event));
                         }
                     }
                     final HashSet<com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType> actualEventNotificationTypes = new HashSet<>(
