@@ -82,10 +82,15 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         final List<ClassIdObisAttr> allObisCodes = this.getAllObisCodes(resultDataValue);
         this.logAllObisCodes(allObisCodes);
 
-        final String output = this.createOutput(conn, allObisCodes);
-        LOGGER.debug("Total output is: {}", output);
+        try {
+            final String output = this.createOutput(conn, allObisCodes);
 
-        return output;
+            LOGGER.debug("Total output is: {}", output);
+
+            return output;
+        } catch (final IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
     }
 
     private void logAllObisCodes(final List<ClassIdObisAttr> allObisCodes) {
