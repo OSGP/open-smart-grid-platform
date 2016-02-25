@@ -356,6 +356,8 @@
 			<xsd:enumeration value="MONITOR_SHORT_RESOLVED" />
 			<xsd:enumeration value="MONITOR_DOOR_OPENED" />
 			<xsd:enumeration value="MONITOR_DOOR_CLOSED" />
+			<xsd:enumeration value="ALARM_NOTIFICATION" />
+			<xsd:enumeration value="SMS_NOTIFICATION" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	
