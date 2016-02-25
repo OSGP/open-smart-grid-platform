@@ -54,7 +54,7 @@ public class SecurityService {
                 DeviceFunction.START_SELF_TEST, DeviceFunction.STOP_SELF_TEST, DeviceFunction.SET_LIGHT,
                 DeviceFunction.GET_DEVICE_AUTHORIZATION, DeviceFunction.SET_EVENT_NOTIFICATIONS,
                 DeviceFunction.GET_EVENT_NOTIFICATIONS, DeviceFunction.UPDATE_FIRMWARE,
-                DeviceFunction.GET_FIRMWARE_VERSION, DeviceFunction.SET_LIGHT_SCHEDULE,
+                DeviceFunction.GET_FIRMWARE_VERSION, DeviceFunction.SWITCH_FIRMWARE, DeviceFunction.SET_LIGHT_SCHEDULE,
                 DeviceFunction.SET_TARIFF_SCHEDULE, DeviceFunction.SET_CONFIGURATION, DeviceFunction.GET_CONFIGURATION,
                 DeviceFunction.SWITCH_CONFIGURATION_BANK, DeviceFunction.GET_STATUS, DeviceFunction.GET_LIGHT_STATUS,
                 DeviceFunction.GET_TARIFF_STATUS, DeviceFunction.REMOVE_DEVICE, DeviceFunction.GET_ACTUAL_POWER_USAGE,
@@ -76,7 +76,7 @@ public class SecurityService {
                 DeviceFunction.REVOKE_KEY });
 
         deviceMapping.put(DeviceFunctionGroup.FIRMWARE, new DeviceFunction[] { DeviceFunction.GET_DEVICE_AUTHORIZATION,
-                DeviceFunction.UPDATE_FIRMWARE, DeviceFunction.GET_FIRMWARE_VERSION });
+                DeviceFunction.UPDATE_FIRMWARE, DeviceFunction.GET_FIRMWARE_VERSION, DeviceFunction.SWITCH_FIRMWARE });
 
         deviceMapping.put(DeviceFunctionGroup.SCHEDULING, new DeviceFunction[] {
                 DeviceFunction.GET_DEVICE_AUTHORIZATION, DeviceFunction.SET_LIGHT_SCHEDULE, });

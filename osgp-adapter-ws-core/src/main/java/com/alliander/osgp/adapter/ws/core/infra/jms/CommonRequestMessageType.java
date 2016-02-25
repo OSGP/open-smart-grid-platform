@@ -25,5 +25,6 @@ public enum CommonRequestMessageType {
     GET_STATUS,
     UPDATE_KEY,
     REVOKE_KEY,
-    SWITCH_CONFIGURATION_BANK
+    SWITCH_CONFIGURATION_BANK,
+    SWITCH_FIRMWARE
 }
