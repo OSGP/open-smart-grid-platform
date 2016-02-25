@@ -56,7 +56,7 @@ public class FirmwareManagementService extends AbstractService {
 
     public void getFirmwareVersion(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("Get firmware version called with organisation [{}], device [{}].", organisationIdentification,
                 deviceIdentification);
@@ -91,5 +91,19 @@ public class FirmwareManagementService extends AbstractService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, firmwareVersion));
+    }
+
+    // === SWITCH TO OTHER FIRMWARE VERSION ===
+
+    public void switchFirmware(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String messageType, final String version) throws FunctionalException {
+        LOGGER.debug("switchFirmware called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, version), messageType, device.getIpAddress());
     }
 }
