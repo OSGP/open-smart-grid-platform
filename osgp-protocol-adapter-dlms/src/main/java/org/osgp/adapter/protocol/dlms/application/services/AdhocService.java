@@ -70,8 +70,7 @@ public class AdhocService {
 
     // === REQUEST Send Wakeup SMS ===
 
-    public SmsDetails sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
-            ProtocolAdapterException {
+    public SmsDetails sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException {
 
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
         if (!COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
@@ -85,7 +84,7 @@ public class AdhocService {
     // === REQUEST Get SMS Details ===
 
     public SmsDetails getSmsDetails(final DlmsDeviceMessageMetadata messageMetadata, final SmsDetails smsDetailsRequest)
-            throws OsgpException, ProtocolAdapterException {
+            throws OsgpException {
 
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
