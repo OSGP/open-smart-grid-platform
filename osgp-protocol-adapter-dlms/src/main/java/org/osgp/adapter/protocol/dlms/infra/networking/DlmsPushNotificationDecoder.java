@@ -24,7 +24,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
 
 public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotificationDecoder.DecodingState> {
 
-    private static final byte[] SMS_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x00, 0x02, 0x03, (byte) 0xFF };
+    private static final byte[] SMS_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x03, 0x00, (byte) 0xFF };
     private static final byte[] CSD_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x02, 0x02, 0x00, (byte) 0xFF };
     private static final byte[] SCHEDULER_OBISCODE_BYTES = new byte[] { 0x00, 0x00, 0x0F, 0x00, 0x04, (byte) 0xFF };
 
@@ -60,7 +60,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
 
     @Override
     protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer,
-            final DecodingState state) throws UnknownDecodingStateException {
+            final DecodingState state) throws UnknownDecodingStateException, UnrecognizedMessageDataException {
 
         LOGGER.info("Decoding state: {}", state.toString());
 
@@ -102,15 +102,18 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         buffer.readBytes(equipmentIdentifierBytes.length);
     }
 
-    private void decodeReceivedData(final ChannelBuffer buffer) {
+    private void decodeReceivedData(final ChannelBuffer buffer) throws UnrecognizedMessageDataException {
         final byte[] pattern = this.getBytePattern(buffer);
         final int separator = this.getFirstIndexOf(pattern, COMMA);
 
         final byte[] dataBytes = Arrays.copyOfRange(pattern, separator + 1, pattern.length);
-        if (dataBytes.length <= 4) {
+        if (dataBytes.length == 4) {
             this.decodeAlarmRegisterData(dataBytes);
-        } else {
+        } else if (dataBytes.length == 6) {
             this.decodeObiscodeData(dataBytes);
+        } else {
+            LOGGER.info("Unrecognized length of data bytes in message. length is {}", dataBytes.length);
+            throw new UnrecognizedMessageDataException("length of data bytes is not 4 (alarm) or 6 (obiscode)");
         }
         this.builder.appendBytes(dataBytes);
 
@@ -145,7 +148,8 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
     }
 
     private Object setCheckpointAndContinueDecode(final ChannelHandlerContext ctx, final Channel channel,
-            final ChannelBuffer buffer, final DecodingState nextState) throws UnknownDecodingStateException {
+            final ChannelBuffer buffer, final DecodingState nextState) throws UnknownDecodingStateException,
+            UnrecognizedMessageDataException {
         this.checkpoint(nextState);
         return this.decode(ctx, channel, buffer, nextState);
     }
