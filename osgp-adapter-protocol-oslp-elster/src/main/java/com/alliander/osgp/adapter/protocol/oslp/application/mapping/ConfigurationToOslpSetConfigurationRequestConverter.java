@@ -94,13 +94,13 @@ CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
         }
         if (source.getOspgIpAddress() != null) {
             setConfigurationRequest
-                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
+            .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
         }
         if (source.isRelayRefreshing() != null) {
             setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
         }
         if (source.getSummerTimeDetails() != null) {
-            setConfigurationRequest.setSummerTimeDetails(source.getSummerTimeDetails());
+            setConfigurationRequest.setSummerTimeDetails(this.mapperFacade.map(source.getSummerTimeDetails(), String.class));
         }
         if (source.isTestButtonEnabled() != null) {
             setConfigurationRequest.setIsTestButtonEnabled(source.isTestButtonEnabled());
@@ -109,7 +109,7 @@ CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
             setConfigurationRequest.setTimeSyncFrequency(source.getTimeSyncFrequency());
         }
         if (source.getWinterTimeDetails() != null) {
-            setConfigurationRequest.setWinterTimeDetails(source.getWinterTimeDetails());
+            setConfigurationRequest.setWinterTimeDetails(this.mapperFacade.map(source.getWinterTimeDetails(), String.class));
         }
         if (source.getSwitchingDelays() != null) {
             setConfigurationRequest.addAllSwitchingDelay(source.getSwitchingDelays());
