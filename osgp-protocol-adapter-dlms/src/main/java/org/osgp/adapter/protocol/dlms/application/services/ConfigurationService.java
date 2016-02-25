@@ -7,10 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
@@ -30,10 +28,8 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandEx
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
@@ -110,9 +106,6 @@ public class ConfigurationService {
 
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
-
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest) throws OsgpException, ProtocolAdapterException {
@@ -278,7 +271,7 @@ public class ConfigurationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                    SecurityKeyType.G_METER_MASTER).getKey());
+                            SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -313,7 +306,7 @@ public class ConfigurationService {
             }
 
             return "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
-            + activityCalendar.getCalendarName();
+                    + activityCalendar.getCalendarName();
         } finally {
             if (conn != null) {
                 LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
@@ -375,7 +368,7 @@ public class ConfigurationService {
     }
 
     public String requestFirmwareVersion(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
-            ProtocolAdapterException {
+    ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
@@ -391,12 +384,14 @@ public class ConfigurationService {
     }
 
     public void replaceKeys(final DlmsDeviceMessageMetadata messageMetadata, final KeySet keySet) throws OsgpException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
 
-        final LnClientConnection conn = null;
+        LnClientConnection conn = null;
 
         try {
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+            conn = this.dlmsConnectionFactory.getConnection(device);
+
             this.replaceKeySet(conn, device, keySet);
         } finally {
             if (conn != null) {
@@ -407,65 +402,24 @@ public class ConfigurationService {
 
     private void replaceKeySet(final LnClientConnection conn, final DlmsDevice device, final KeySet keySet)
             throws ProtocolAdapterException {
+
         try {
+            // Change AUTHENTICATION key.
             LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
-            this.executeReplaceKey(device, conn, keySet.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION,
-                    KeyId.AUTHENTICATION_KEY);
-            this.executeReplaceKey(device, conn, keySet.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION,
-                    KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY);
-        } finally {
-            // Store keys even when an exception was thrown, to be able to
-            // retrieve key status in case the key was set on the device.
-            this.dlmsDeviceRepository.save(device);
-        }
-    }
+            DlmsDevice devicePostSave = this.replaceKeyCommandExecutor.execute(conn, device, ReplaceKeyCommandExecutor
+                    .wrap(keySet.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
+                            SecurityKeyType.E_METER_AUTHENTICATION));
+            conn.changeClientGlobalAuthenticationKey(keySet.getAuthenticationKey());
 
-    /**
-     * Replace a key on the meter.
-     *
-     *
-     * @param device
-     *            Device entity.
-     * @param conn
-     *            Connection with the meter.
-     * @param key
-     *            Ket value to be set.
-     * @param securityKeyType
-     *            type op the key.
-     * @param keyId
-     *            type of the key in jDLMS terms.
-     * @throws ProtocolAdapterException
-     *             when anything goes wrong a ProtocolAdapterException is
-     *             thrown.
-     */
-    private void executeReplaceKey(final DlmsDevice device, final LnClientConnection conn, final byte[] key,
-            final SecurityKeyType securityKeyType, final KeyId keyId) throws ProtocolAdapterException {
-
-        try {
-            // Add the new key and store in the repo
-            final SecurityKey newKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null);
-            device.addSecurityKey(newKey);
-
-            /**
-             * Waiting for update of jDLMS library.
-             */
-            // // Send the key to the device.
-            // final MethodResultCode methodResultCode =
-            // this.replaceKeyCommandExecutor.execute(conn, device,
-            // ReplaceKeyCommandExecutor.wrap(key, keyId));
-            // if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
-            // throw new
-            // ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
-            // + methodResultCode);
-            // }
-
-            final Date now = new Date();
-            final SecurityKey oldKey = device.getValidSecurityKey(securityKeyType);
-            oldKey.setValidTo(now);
-            newKey.setValidFrom(now);
-        } catch (final Exception e) {
+            // Change ENCRYPTION key
+            devicePostSave = this.replaceKeyCommandExecutor.execute(conn, devicePostSave, ReplaceKeyCommandExecutor
+                    .wrap(keySet.getEncryptionKey(), KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY,
+                            SecurityKeyType.E_METER_ENCRYPTION));
+            conn.changeClientGlobalEncryptionKey(keySet.getEncryptionKey());
+        } catch (final ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
-            throw new ProtocolAdapterException(e.getMessage());
+            throw e;
         }
     }
+
 }
