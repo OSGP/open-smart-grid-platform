@@ -44,7 +44,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor extends
-AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -220,8 +220,15 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
         LOGGER.debug("Retrieving current billing period and profiles for gas for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, profileBuffer,
-                this.getScalerUnitAttributeAddress(periodicMeterReadsQuery));
+        /*
+         * workaround for a problem when using with_list and retrieving a
+         * profile buffer, this will be returned erroneously:
+         *
+         * 1 an empty list 2 the profile buffer 3 a null value 4 the scaler unit
+         */
+        final List<GetResult> getResultList = new ArrayList<GetResult>(2);
+        getResultList.addAll(this.dlmsHelperService.getWithList(conn, device, profileBuffer));
+        getResultList.addAll(conn.get(this.getScalerUnitAttributeAddress(periodicMeterReadsQuery)));
 
         checkResultList(getResultList);
 
@@ -245,7 +252,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
             final DateTime endDateTime, final List<PeriodicMeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final Channel channel, final boolean isSelectiveAccessSupported)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -404,7 +411,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final Channel channel,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectiveAccessSupported)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         SelectiveAccessDescription access = null;
 
@@ -576,7 +583,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
                 DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                        DataObject.newUInteger16Data(0))));
+                DataObject.newUInteger16Data(0))));
     }
 
 }
