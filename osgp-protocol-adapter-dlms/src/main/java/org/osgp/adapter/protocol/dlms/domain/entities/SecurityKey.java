@@ -101,4 +101,11 @@ public class SecurityKey extends AbstractEntity {
     public String getKey() {
         return this.key;
     }
+
+    @Override
+    public String toString() {
+        return "SecurityKey [securityKeyType=" + this.securityKeyType + ", validFrom=" + this.validFrom + ", validTo="
+                + this.validTo + ", key=" + this.key + "]";
+    }
+
 }

@@ -18,6 +18,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
 
     @Override
     public AdministrativeStatusType execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -48,7 +49,12 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
                 "Retrieving current administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
                 CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = conn.get(getParameter);
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(getParameter);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving administrative status.");

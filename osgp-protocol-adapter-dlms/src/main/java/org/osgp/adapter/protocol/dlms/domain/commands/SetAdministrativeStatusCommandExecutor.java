@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
@@ -18,6 +17,7 @@ import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +41,7 @@ CommandExecutor<AdministrativeStatusType, AccessResultCode> {
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final AdministrativeStatusType administrativeStatusType) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final AdministrativeStatusType administrativeStatusType) throws ProtocolAdapterException {
 
         LOGGER.info(
                 "Set administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",
@@ -54,6 +53,10 @@ CommandExecutor<AdministrativeStatusType, AccessResultCode> {
 
         final SetParameter setParameter = new SetParameter(attributeAddress, value);
 
-        return conn.set(setParameter).get(0);
+        try {
+            return conn.set(setParameter).get(0);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
     }
 }

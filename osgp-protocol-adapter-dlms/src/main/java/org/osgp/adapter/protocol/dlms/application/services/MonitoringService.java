@@ -17,10 +17,8 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCo
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +26,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "dlmsDeviceMonitoringService")
-public class MonitoringService extends DlmsApplicationService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
+public class MonitoringService {
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -61,11 +54,8 @@ public class MonitoringService extends DlmsApplicationService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public void requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
-            final PeriodicMeterReadsQuery periodicMeterReadsQuery,
-            final DeviceResponseMessageSender responseMessageSender) {
-
-        this.logStart(LOGGER, messageMetadata, "requestPeriodicMeterReads");
+    public Serializable requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws OsgpException, ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
@@ -81,15 +71,8 @@ public class MonitoringService extends DlmsApplicationService {
                 response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
             }
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    response);
+            return response;
 
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestPeriodicMeterReads", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    periodicMeterReadsQuery);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -97,16 +80,12 @@ public class MonitoringService extends DlmsApplicationService {
         }
     }
 
-    public void requestActualMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
-            final ActualMeterReadsQuery actualMeterReadsRequest, final DeviceResponseMessageSender responseMessageSender) {
-
-        this.logStart(LOGGER, messageMetadata, "requestActualMeterReads");
+    public Serializable requestActualMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
+            final ActualMeterReadsQuery actualMeterReadsRequest) throws OsgpException, ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
-
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             Serializable response = null;
@@ -116,28 +95,16 @@ public class MonitoringService extends DlmsApplicationService {
                 response = this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
             }
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    response);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestActualMeterReads", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    actualMeterReadsRequest);
+            return response;
         } finally {
             if (conn != null) {
                 conn.close();
             }
         }
-
     }
 
-    public void requestReadAlarmRegister(final DlmsDeviceMessageMetadata messageMetadata,
-            final ReadAlarmRegisterRequest readAlarmRegisterRequest,
-            final DeviceResponseMessageSender responseMessageSender) {
-
-        this.logStart(LOGGER, messageMetadata, "requestReadAlarmRegister");
+    public AlarmRegister requestReadAlarmRegister(final DlmsDeviceMessageMetadata messageMetadata,
+            final ReadAlarmRegisterRequest readAlarmRegisterRequest) throws OsgpException, ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
@@ -145,19 +112,7 @@ public class MonitoringService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final AlarmRegister alarmRegister = this.readAlarmRegisterCommandExecutor.execute(conn, device,
-                    readAlarmRegisterRequest);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    alarmRegister);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during requestReadAlarmRegister", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    readAlarmRegisterRequest);
+            return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
         } finally {
             if (conn != null) {
                 conn.close();

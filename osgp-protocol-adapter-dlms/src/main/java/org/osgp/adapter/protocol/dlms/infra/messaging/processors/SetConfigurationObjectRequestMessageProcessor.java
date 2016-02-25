@@ -8,30 +8,24 @@
 
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing Set Configuration Request messages
  */
 @Component("dlmsSetConfigurationObjectRequestMessageProcessor")
 public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectRequestMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
@@ -41,22 +35,12 @@ public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequest
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing special days request message");
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) requestObject;
 
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-        try {
-            messageMetadata.handleMessage(message);
-
-            final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) message
-                    .getObject();
-
-            this.configurationService.requestSetConfiguration(messageMetadata, setConfigurationObjectRequest,
-                    this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+        this.configurationService.requestSetConfiguration(messageMetadata, setConfigurationObjectRequest);
+        return null;
     }
 
 }

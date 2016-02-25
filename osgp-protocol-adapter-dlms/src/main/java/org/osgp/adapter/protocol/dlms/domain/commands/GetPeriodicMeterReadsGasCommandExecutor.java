@@ -27,6 +27,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -199,8 +200,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     @Override
     public PeriodicMeterReadsContainerGas execute(final LnClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         final PeriodType periodType;
         final DateTime beginDateTime;
@@ -220,6 +220,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         LOGGER.debug("Retrieving current billing period and profiles for gas for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
+<<<<<<< HEAD
         /*
          * workaround for a problem when using with_list and retrieving a
          * profile buffer, this will be returned erroneously:
@@ -229,6 +230,14 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final List<GetResult> getResultList = new ArrayList<GetResult>(2);
         getResultList.addAll(this.dlmsHelperService.getWithList(conn, device, profileBuffer));
         getResultList.addAll(conn.get(this.getScalerUnitAttributeAddress(periodicMeterReadsQuery)));
+=======
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(profileBuffer);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
+>>>>>>> development
 
         checkResultList(getResultList);
 
@@ -252,7 +261,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
             final DateTime endDateTime, final List<PeriodicMeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final Channel channel, final boolean isSelectiveAccessSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
         final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
@@ -411,7 +420,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final Channel channel,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectiveAccessSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         SelectiveAccessDescription access = null;
 
@@ -583,7 +592,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
                 DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                DataObject.newUInteger16Data(0))));
+                        DataObject.newUInteger16Data(0))));
     }
 
 }

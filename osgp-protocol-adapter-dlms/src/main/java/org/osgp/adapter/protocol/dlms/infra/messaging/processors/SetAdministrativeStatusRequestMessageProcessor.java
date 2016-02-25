@@ -7,27 +7,24 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing the Set Administrative Status request message
  */
 @Component("dlmsSetAdministrationStatusRequestMessageProcessor")
 public class SetAdministrativeStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusRequestMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
@@ -37,22 +34,12 @@ public class SetAdministrativeStatusRequestMessageProcessor extends DeviceReques
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing set administration request message");
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) requestObject;
 
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        try {
-            messageMetadata.handleMessage(message);
-
-            final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) message.getObject();
-
-            this.configurationService.requestSetAdministrativeStatus(messageMetadata, administrativeStatusType,
-                    this.responseMessageSender);
-
-        } catch (final JMSException e) {
-            this.logJmsException(LOGGER, e, messageMetadata);
-        }
+        this.configurationService.requestSetAdministrativeStatus(messageMetadata, administrativeStatusType);
+        return null;
     }
 
 }

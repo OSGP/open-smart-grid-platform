@@ -15,11 +15,9 @@ import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjec
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,16 +26,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 import com.jasperwireless.api.ws.service.sms.GetSMSDetailsResponse;
 import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
 import com.jasperwireless.api.ws.service.sms.SmsMessageType;
 
 @Service(value = "dlmsAdhocService")
-public class AdhocService extends DlmsApplicationService {
+public class AdhocService {
     private static final String COMMUNICATION_METHOD_GPRS = "GPRS";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -57,27 +52,15 @@ public class AdhocService extends DlmsApplicationService {
     // === REQUEST Synchronize Time DATA ===
 
     public void synchronizeTime(final DlmsDeviceMessageMetadata messageMetadata,
-            final SynchronizeTimeRequest synchronizeTimeRequest, final DeviceResponseMessageSender responseMessageSender) {
-
-        this.logStart(LOGGER, messageMetadata, "synchronizeTime");
+            final SynchronizeTimeRequest synchronizeTimeRequest) throws OsgpException, ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
-
             final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
             this.synchronizeTimeCommandExecutor.execute(conn, device, null);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during synchronizeTime", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    synchronizeTimeRequest);
         } finally {
             if (conn != null) {
                 conn.close();
@@ -87,75 +70,42 @@ public class AdhocService extends DlmsApplicationService {
 
     // === REQUEST Send Wakeup SMS ===
 
-    public void sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata,
-            final DeviceResponseMessageSender responseMessageSender) {
+    public SmsDetails sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException {
 
-        this.logStart(LOGGER, messageMetadata, "sendWakeUpSms");
-
-        try {
-
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-            if (COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
-                final SendSMSResponse response = this.smsClient.sendWakeUpSMS(device.getIccId());
-                final SmsDetails smsDetails = new SmsDetails(device.getDeviceIdentification(), response.getSmsMsgId(),
-                        null, null, null);
-                this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                        smsDetails);
-            } else {
-                final OsgpException oex = new OsgpException(ComponentType.PROTOCOL_DLMS,
-                        "Device communication method is not GPRS");
-
-                this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, oex, responseMessageSender,
-                        "");
-            }
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during Send Wakeup SMS", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender, "");
+        final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
+        if (!COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
+            throw new OsgpException(ComponentType.PROTOCOL_DLMS, "Device communication method is not GPRS");
         }
+
+        final SendSMSResponse response = this.smsClient.sendWakeUpSMS(device.getIccId());
+        return new SmsDetails(device.getDeviceIdentification(), response.getSmsMsgId(), null, null, null);
     }
 
     // === REQUEST Get SMS Details ===
 
-    public void getSmsDetails(final DlmsDeviceMessageMetadata messageMetadata, final SmsDetails smsDetailsRequest,
-            final DeviceResponseMessageSender responseMessageSender) {
+    public SmsDetails getSmsDetails(final DlmsDeviceMessageMetadata messageMetadata, final SmsDetails smsDetailsRequest)
+            throws OsgpException {
 
-        this.logStart(LOGGER, messageMetadata, "synchronizeTime");
+        final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
-        try {
+        final GetSMSDetailsResponse response = this.smsClient.getSMSDetails(smsDetailsRequest.getSmsMsgId(),
+                device.getIccId());
 
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-            final GetSMSDetailsResponse response = this.smsClient.getSMSDetails(smsDetailsRequest.getSmsMsgId(),
-                    device.getIccId());
-
-            SmsDetails smsDetailsResponse = null;
-            final List<SmsMessageType> smsMessagesTypes = response.getSmsMessages().getSmsMessage();
-            for (final SmsMessageType smsMessageType : smsMessagesTypes) {
-                if (smsMessageType.getSmsMsgId() == smsDetailsRequest.getSmsMsgId().longValue()) {
-                    smsDetailsResponse = new SmsDetails(device.getDeviceIdentification(), smsMessageType.getSmsMsgId(),
-                            smsMessageType.getStatus(), smsMessageType.getSmsMsgAttemptStatus(),
-                            smsMessageType.getMsgType());
-                }
+        SmsDetails smsDetailsResponse = null;
+        final List<SmsMessageType> smsMessagesTypes = response.getSmsMessages().getSmsMessage();
+        for (final SmsMessageType smsMessageType : smsMessagesTypes) {
+            if (smsMessageType.getSmsMsgId() == smsDetailsRequest.getSmsMsgId().longValue()) {
+                smsDetailsResponse = new SmsDetails(device.getDeviceIdentification(), smsMessageType.getSmsMsgId(),
+                        smsMessageType.getStatus(), smsMessageType.getSmsMsgAttemptStatus(),
+                        smsMessageType.getMsgType());
             }
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    smsDetailsResponse);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during Get SMS Details", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }
+
+        return smsDetailsResponse;
     }
 
-    public void retrieveConfigurationObjects(final DlmsDeviceMessageMetadata messageMetadata,
-            final RetrieveConfigurationObjectsRequest request, final DeviceResponseMessageSender responseMessageSender) {
-        this.logStart(LOGGER, messageMetadata, "retrieveConfigurationObjects");
+    public Serializable retrieveConfigurationObjects(final DlmsDeviceMessageMetadata messageMetadata,
+            final RetrieveConfigurationObjectsRequest request) throws OsgpException, ProtocolAdapterException {
 
         LnClientConnection conn = null;
         try {
@@ -164,17 +114,7 @@ public class AdhocService extends DlmsApplicationService {
 
             conn = this.dlmsConnectionFactory.getConnection(device);
 
-            final Serializable response = this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    response);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during retrieveConfigurationObjects", e);
-            final OsgpException ex = this.ensureOsgpException(e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    request);
+            return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
         } finally {
             if (conn != null) {
                 conn.close();

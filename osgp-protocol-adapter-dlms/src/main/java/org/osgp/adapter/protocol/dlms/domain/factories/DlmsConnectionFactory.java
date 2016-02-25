@@ -11,6 +11,7 @@ import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -56,9 +57,9 @@ public class DlmsConnectionFactory {
 
         try {
             final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(ipAddress))
-            .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
-            .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
-            .clientAccessPoint(W_PORT_SOURCE);
+                    .useGmacAuthentication(authenticationKey, encryptionKey).enableEncryption(encryptionKey)
+                    .responseTimeout(RESPONSE_TIMEOUT).logicalDeviceAddress(W_PORT_DESTINATION)
+                    .clientAccessPoint(W_PORT_SOURCE);
 
             final Integer challengeLength = device.getChallengeLength();
             if (challengeLength != null) {
@@ -67,7 +68,7 @@ public class DlmsConnectionFactory {
 
             return tcpConnectionBuilder.buildLnConnection();
         } catch (final IOException e) {
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while creating TCP connection.", e);
+            throw new ConnectionException("Error while creating TCP connection.", e);
         }
     }
 

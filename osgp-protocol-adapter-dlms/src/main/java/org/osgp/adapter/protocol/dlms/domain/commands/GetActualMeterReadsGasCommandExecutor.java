@@ -7,10 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.GetResult;
@@ -31,7 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 @Component()
 public class GetActualMeterReadsGasCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
+AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -48,8 +46,7 @@ public class GetActualMeterReadsGasCommandExecutor extends
 
     @Override
     public ActualMeterReadsGas execute(final LnClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsQuery actualMeterReadsRequest) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
 

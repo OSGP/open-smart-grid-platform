@@ -225,6 +225,16 @@ public class DlmsDevice extends AbstractEntity {
         return null;
     }
 
+    public SecurityKey getNewSecurityKey(final SecurityKeyType securityKeyType) {
+        for (final SecurityKey securityKey : this.securityKeys) {
+            if (securityKey.getSecurityKeyType().equals(securityKeyType) && securityKey.getValidFrom() == null) {
+                return securityKey;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Check if the security key has become active before now.
      *
