@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRe
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchConfigurationBankRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.dto.valueobjects.PageInfo;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
@@ -76,6 +77,11 @@ public interface DeviceService {
 
     void doUpdateFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void doSwitchFirmware(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void switchFirmware(SwitchFirmwareDeviceRequest deviceRequest);
 
     void getActualPowerUsage(DeviceRequest deviceRequest);
 
