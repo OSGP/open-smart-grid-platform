@@ -7,10 +7,10 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
@@ -30,10 +30,8 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmCommandEx
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
@@ -112,9 +110,6 @@ public class ConfigurationService extends DlmsApplicationService {
 
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
-
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest, final DeviceResponseMessageSender responseMessageSender) {
@@ -338,7 +333,7 @@ public class ConfigurationService extends DlmsApplicationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                            SecurityKeyType.G_METER_MASTER).getKey());
+                                    SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -531,65 +526,24 @@ public class ConfigurationService extends DlmsApplicationService {
 
     private void replaceKeySet(final LnClientConnection conn, final DlmsDevice device, final KeySet keySet)
             throws ProtocolAdapterException {
+
         try {
             // Change AUTHENTICATION key.
             LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySet);
-            this.executeReplaceKey(device, conn, keySet.getAuthenticationKey(), SecurityKeyType.E_METER_AUTHENTICATION,
-                    KeyId.AUTHENTICATION_KEY);
+            DlmsDevice devicePostSave = this.replaceKeyCommandExecutor.execute(conn, device, ReplaceKeyCommandExecutor
+                    .wrap(keySet.getAuthenticationKey(), KeyId.AUTHENTICATION_KEY,
+                            SecurityKeyType.E_METER_AUTHENTICATION));
             conn.changeClientGlobalAuthenticationKey(keySet.getAuthenticationKey());
 
             // Change ENCRYPTION key
-            this.executeReplaceKey(device, conn, keySet.getEncryptionKey(), SecurityKeyType.E_METER_ENCRYPTION,
-                    KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY);
+            devicePostSave = this.replaceKeyCommandExecutor.execute(conn, devicePostSave, ReplaceKeyCommandExecutor
+                    .wrap(keySet.getEncryptionKey(), KeyId.GLOBAL_UNICAST_ENCRYPTION_KEY,
+                            SecurityKeyType.E_METER_ENCRYPTION));
             conn.changeClientGlobalEncryptionKey(keySet.getEncryptionKey());
-        } finally {
-            // Store keys even when an exception was thrown, to be able to
-            // retrieve key status in case the key was set on the device.
-            this.dlmsDeviceRepository.save(device);
-        }
-    }
-
-    /**
-     * Replace a key on the meter.
-     *
-     *
-     * @param device
-     *            Device entity.
-     * @param conn
-     *            Connection with the meter.
-     * @param key
-     *            Ket value to be set.
-     * @param securityKeyType
-     *            type op the key.
-     * @param keyId
-     *            type of the key in jDLMS terms.
-     * @throws ProtocolAdapterException
-     *             when anything goes wrong a ProtocolAdapterException is
-     *             thrown.
-     */
-    private void executeReplaceKey(final DlmsDevice device, final LnClientConnection conn, final byte[] key,
-            final SecurityKeyType securityKeyType, final KeyId keyId) throws ProtocolAdapterException {
-
-        try {
-            // Add the new key and store in the repo
-            final SecurityKey newKey = new SecurityKey(device, securityKeyType, Hex.encodeHexString(key), null, null);
-            device.addSecurityKey(newKey);
-
-            // Send the key to the device.
-            final MethodResultCode methodResultCode = this.replaceKeyCommandExecutor.execute(conn, device,
-                    ReplaceKeyCommandExecutor.wrap(key, keyId));
-            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
-                throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
-                        + methodResultCode);
-            }
-
-            final Date now = new Date();
-            final SecurityKey oldKey = device.getValidSecurityKey(securityKeyType);
-            oldKey.setValidTo(now);
-            newKey.setValidFrom(now);
-        } catch (final Exception e) {
+        } catch (final IOException | TimeoutException | ProtocolAdapterException e) {
             LOGGER.error("Unexpected exception during replaceKeys.", e);
             throw new ProtocolAdapterException(e.getMessage());
         }
     }
+
 }
