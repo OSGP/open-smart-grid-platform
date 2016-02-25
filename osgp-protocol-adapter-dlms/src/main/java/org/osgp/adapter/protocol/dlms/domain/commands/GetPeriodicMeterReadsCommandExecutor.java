@@ -24,6 +24,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -77,8 +78,7 @@ public class GetPeriodicMeterReadsCommandExecutor extends
 
     @Override
     public PeriodicMeterReadsContainer execute(final LnClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final PeriodicMeterReadsQuery periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodType periodType;
         final DateTime beginDateTime;
@@ -98,8 +98,12 @@ public class GetPeriodicMeterReadsCommandExecutor extends
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
-        final List<GetResult> getResultList = conn.get(profileBuffer,
-                this.getScalerUnitAttributeAddress(periodicMeterReadsRequest));
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(profileBuffer, this.getScalerUnitAttributeAddress(periodicMeterReadsRequest));
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         checkResultList(getResultList);
 

@@ -2,7 +2,6 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -15,6 +14,7 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,8 +55,7 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
 
     @Override
     public DlmsDevice execute(final LnClientConnection conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
 
         // Add the new key and store in the repo
         DlmsDevice devicePostSave = this.storeNewKey(device, keyWrapper.getBytes(), keyWrapper.getSecurityKeyType());
@@ -83,13 +82,18 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
      * @throws ProtocolAdapterException
      */
     private void sendToDevice(final LnClientConnection conn, final DlmsDevice device,
-            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws IOException, ProtocolAdapterException {
-        final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
-                keyWrapper.getBytes(), keyWrapper.getKeyId());
-        final MethodResultCode methodResultCode = conn.action(methodParameterAuth).get(0).resultCode();
+            final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
+        try {
+            final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
+                    keyWrapper.getBytes(), keyWrapper.getKeyId());
+            final MethodResultCode methodResultCode = conn.action(methodParameterAuth).get(0).resultCode();
 
-        if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
-            throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: " + methodResultCode);
+            if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
+                throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
+                        + methodResultCode);
+            }
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
         }
     }
 

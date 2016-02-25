@@ -18,6 +18,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,17 +43,21 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
 
     @Override
     public AlarmRegister execute(final LnClientConnection conn, final DlmsDevice device,
-            final ReadAlarmRegisterRequest object) throws IOException, TimeoutException, ProtocolAdapterException {
+            final ReadAlarmRegisterRequest object) throws ProtocolAdapterException {
 
         return new AlarmRegister(this.retrieveAlarmRegister(conn));
     }
 
-    private Set<AlarmType> retrieveAlarmRegister(final LnClientConnection conn) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+    private Set<AlarmType> retrieveAlarmRegister(final LnClientConnection conn) throws ProtocolAdapterException {
 
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = conn.get(alarmRegisterValue);
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(alarmRegisterValue);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving alarm register.");

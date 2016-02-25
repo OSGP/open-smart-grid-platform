@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.exceptions;
 
 public class ProtocolAdapterException extends Exception {
-
     /**
      * Serial Version UID.
      */

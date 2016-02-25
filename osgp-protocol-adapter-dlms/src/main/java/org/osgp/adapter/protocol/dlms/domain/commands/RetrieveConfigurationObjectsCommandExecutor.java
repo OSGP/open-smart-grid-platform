@@ -19,6 +19,7 @@ import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,14 +47,19 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
     @Override
     public String execute(final LnClientConnection conn, final DlmsDevice device, final DataObject object)
-            throws IOException, TimeoutException, ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final AttributeAddress attributeAddress = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         LOGGER.debug("Retrieving configuration objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = conn.get(attributeAddress);
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(attributeAddress);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving configuration objects.");
@@ -76,10 +82,15 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         final List<ClassIdObisAttr> allObisCodes = this.getAllObisCodes(resultDataValue);
         this.logAllObisCodes(allObisCodes);
 
-        final String output = this.createOutput(conn, allObisCodes);
-        LOGGER.debug("Total output is: {}", output);
+        try {
+            final String output = this.createOutput(conn, allObisCodes);
 
-        return output;
+            LOGGER.debug("Total output is: {}", output);
+
+            return output;
+        } catch (final IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
     }
 
     private void logAllObisCodes(final List<ClassIdObisAttr> allObisCodes) {

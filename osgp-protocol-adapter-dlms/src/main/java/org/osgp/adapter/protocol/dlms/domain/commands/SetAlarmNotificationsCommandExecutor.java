@@ -25,6 +25,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,22 +97,26 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final AlarmNotifications alarmNotifications) throws IOException, TimeoutException, ProtocolAdapterException {
+            final AlarmNotifications alarmNotifications) throws ProtocolAdapterException {
 
-        final AlarmNotifications alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
+        try {
+            final AlarmNotifications alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
 
-        LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
+            LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
-        final long alarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
-                alarmNotifications);
+            final long alarmFilterLongValue = this.calculateAlarmFilterLongValue(alarmNotificationsOnDevice,
+                    alarmNotifications);
 
-        LOGGER.info("Modified Alarm Filter long value for device: {}", alarmFilterLongValue);
+            LOGGER.info("Modified Alarm Filter long value for device: {}", alarmFilterLongValue);
 
-        return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
+            return this.writeUpdatedAlarmNotifications(conn, alarmFilterLongValue);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
     }
 
     public AlarmNotifications retrieveCurrentAlarmNotifications(final LnClientConnection conn) throws IOException,
-    TimeoutException, ProtocolAdapterException {
+            TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -168,11 +173,11 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         /*
          * Create a new (modifyable) set of alarm notifications, based on the
          * notifications to set.
-         *
+         * 
          * Next, add all notifications on the device. These will only really be
          * added to the new set of notifications if it did not contain a
          * notification for the alarm type for which the notification is added.
-         *
+         * 
          * This works because of the specification of addAll for the set,
          * claiming elements will only be added if not already present, and the
          * defintion of equals on the AlarmNotification, ensuring only a simgle

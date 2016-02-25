@@ -17,6 +17,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 @Component()
 public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupSms, AccessResultCode> {
+        CommandExecutor<PushSetupSms, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
@@ -37,7 +38,7 @@ CommandExecutor<PushSetupSms, AccessResultCode> {
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final PushSetupSms pushSetupSms) throws IOException, ProtocolAdapterException {
+            final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod;
 
@@ -74,7 +75,12 @@ CommandExecutor<PushSetupSms, AccessResultCode> {
                     pushSetupSms.getRepetitionDelay());
         }
 
-        final List<AccessResultCode> resultCodes = conn.set(setParameterSendDestinationAndMethod);
+        List<AccessResultCode> resultCodes;
+        try {
+            resultCodes = conn.set(setParameterSendDestinationAndMethod);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
         if (resultCodes != null && !resultCodes.isEmpty()) {
             return resultCodes.get(0);
         } else {

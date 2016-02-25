@@ -7,22 +7,20 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+
 @Component("dlmsGetFirmwareVersionRequestMessageProcessor")
 public class GetFirmwareVersionRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionRequestMessageProcessor.class);
 
     @Autowired
     private ConfigurationService configurationService;
@@ -32,17 +30,8 @@ public class GetFirmwareVersionRequestMessageProcessor extends DeviceRequestMess
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing get firmware version request message");
-
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        try {
-            messageMetadata.handleMessage(message);
-            this.configurationService.requestFirmwareVersion(messageMetadata, this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+        return this.configurationService.requestFirmwareVersion(messageMetadata);
     }
 }
