@@ -12,14 +12,15 @@ import java.util.List;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.EMeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsResponseConverter
-        extends
-        CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+extends
+CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
 
     @Override
     public PeriodicMeterReadsResponse convert(final PeriodicMeterReadContainer source,
@@ -31,11 +32,14 @@ public class PeriodicMeterReadsResponseConverter
                 .getPeriodicMeterReads()) {
             final PeriodicMeterReads meterReads = this.mapperFacade.map(m, PeriodicMeterReads.class);
             periodicMeterReads.add(meterReads);
-            // we check the first value to have the correct unit and assume the
-            // rest is ok as well
-            if (!meterReads.getActiveEnergyImport().getUnit().value().equals(source.getOsgpUnit().name())) {
+            // we try to check the unit
+            EMeterValue eMeterValue = meterReads.getActiveEnergyImport();
+            if (eMeterValue == null) {
+                eMeterValue = meterReads.getActiveEnergyImportTariffOne();
+            }
+            if (eMeterValue != null && !eMeterValue.getUnit().value().equals(source.getOsgpUnit().name())) {
                 throw new IllegalStateException(String.format("unit %s in destination differs from unit %s in source",
-                        meterReads.getActiveEnergyImport().getUnit(), source.getOsgpUnit()));
+                        eMeterValue.getUnit(), source.getOsgpUnit()));
             }
         }
         return periodicMeterReadsResponse;
