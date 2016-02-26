@@ -10,6 +10,7 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
 public class OslpGetConfigurationResponseToConfigurationConverter extends
-        CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
+CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(OslpGetConfigurationResponseToConfigurationConverter.class);
@@ -35,17 +36,17 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
             final Type<? extends Configuration> destinationType) {
         final Configuration configuration = new Configuration(source.hasLightType() ? this.mapperFacade.map(
                 source.getLightType(), LightType.class) : null, source.hasDaliConfiguration() ? this.mapperFacade.map(
-                source.getDaliConfiguration(), DaliConfiguration.class) : null,
-                source.hasRelayConfiguration() ? this.mapperFacade.map(source.getRelayConfiguration(),
-                        RelayConfiguration.class) : null,
-                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
-                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
-                source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
-                        : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterType.class)
-                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
-                        source.getLongTermHistoryInterval(), Integer.class) : null,
-                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
-                        source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
+                        source.getDaliConfiguration(), DaliConfiguration.class) : null,
+                        source.hasRelayConfiguration() ? this.mapperFacade.map(source.getRelayConfiguration(),
+                                RelayConfiguration.class) : null,
+                                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
+                                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
+                                        source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
+                                                : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterType.class)
+                                                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
+                                                                source.getLongTermHistoryInterval(), Integer.class) : null,
+                                                                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
+                                                                        source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
 
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         if (source.getDeviceFixIpValue() != null && !source.getDeviceFixIpValue().isEmpty()) {
@@ -69,8 +70,8 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
             configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinkingList(), RelayMatrix.class));
         }
         configuration.setRelayRefreshing(source.getRelayRefreshing());
-        configuration.setSummerTimeDetails(source.getSummerTimeDetails());
-        configuration.setWinterTimeDetails(source.getWinterTimeDetails());
+        configuration.setSummerTimeDetails(this.mapperFacade.map(source.getSummerTimeDetails(), DateTime.class));
+        configuration.setWinterTimeDetails(this.mapperFacade.map(source.getWinterTimeDetails(), DateTime.class));
 
         return configuration;
     }
