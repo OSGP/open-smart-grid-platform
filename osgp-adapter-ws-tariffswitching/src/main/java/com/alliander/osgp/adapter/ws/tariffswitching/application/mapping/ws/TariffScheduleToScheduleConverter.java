@@ -36,6 +36,7 @@ public class TariffScheduleToScheduleConverter extends CustomConverter<TariffSch
         schedule.setTime(source.getTime());
         schedule.setIndex(source.getIndex());
         schedule.setIsEnabled(source.isIsEnabled());
+        schedule.setMinimumLightsOn(source.getMinimumLightsOn());
 
         try {
             // Set the lightvalue
