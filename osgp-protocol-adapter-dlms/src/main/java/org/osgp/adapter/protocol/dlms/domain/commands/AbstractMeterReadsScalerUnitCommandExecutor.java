@@ -31,7 +31,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
  * @param <R>
  */
 public abstract class AbstractMeterReadsScalerUnitCommandExecutor<T extends ChannelQuery, R extends ScalerUnitResponse>
-        implements ScalerUnitAwareCommandExecutor<T, R> {
+implements ScalerUnitAwareCommandExecutor<T, R> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractMeterReadsScalerUnitCommandExecutor.class);
 
@@ -66,18 +66,19 @@ public abstract class AbstractMeterReadsScalerUnitCommandExecutor<T extends Chan
     public ScalerUnit convert(final DataObject dataObject) throws ProtocolAdapterException {
         LOGGER.debug(this.dlmsHelperService.getDebugInfo(dataObject));
         if (!dataObject.isComplex()) {
-            throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit.");
+            throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit."
+                    + this.dlmsHelperService.getDebugInfo(dataObject));
         }
         final List<DataObject> value = dataObject.value();
         if (value.size() != 2) {
-            throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit.");
+            throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit."
+                    + this.dlmsHelperService.getDebugInfo(dataObject));
         }
         final DataObject scaler = value.get(0);
         final DataObject unit = value.get(1);
 
-        return new ScalerUnit(
-                DlmsUnit.fromDlmsEnum(this.dlmsHelperService.readLongNotNull(unit, "unit value").intValue()),
-                this.dlmsHelperService.readLongNotNull(scaler, "scaler value").intValue());
+        return new ScalerUnit(DlmsUnit.fromDlmsEnum(this.dlmsHelperService.readLongNotNull(unit, "unit value")
+                .intValue()), this.dlmsHelperService.readLongNotNull(scaler, "scaler value").intValue());
     }
 
     @Override
@@ -85,9 +86,9 @@ public abstract class AbstractMeterReadsScalerUnitCommandExecutor<T extends Chan
         final ObisCode obisCodeRegister = channelQuery.getChannel().equals(Channel.NONE) ? REGISTER_FOR_SCALER_UNIT
                 : this.registerForScalerUnit(channelQuery.getChannel().getChannelNumber());
 
-        return channelQuery.getChannel().equals(Channel.NONE)
-                ? new AttributeAddress(CLASS_ID, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT)
-                : new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister, ATTRIBUTE_ID_SCALER_UNIT);
+        return channelQuery.getChannel().equals(Channel.NONE) ? new AttributeAddress(CLASS_ID, obisCodeRegister,
+                ATTRIBUTE_ID_SCALER_UNIT) : new AttributeAddress(CLASS_ID_MBUS, obisCodeRegister,
+                ATTRIBUTE_ID_SCALER_UNIT);
     }
 
 }
