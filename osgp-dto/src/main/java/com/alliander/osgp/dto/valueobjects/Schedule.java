@@ -39,6 +39,8 @@ public class Schedule implements Serializable {
 
     private Boolean isEnabled;
 
+    private Integer minimumLightsOn;
+
     public WeekDayType getWeekDay() {
         return this.weekDay;
     }
@@ -111,11 +113,19 @@ public class Schedule implements Serializable {
         this.index = index;
     }
 
+    public void setIsEnabled(final Boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
     public Boolean getIsEnabled() {
         return this.isEnabled;
     }
 
-    public void setIsEnabled(final Boolean isEnabled) {
-        this.isEnabled = isEnabled;
+    public Integer getMinimumLightsOn() {
+        return this.minimumLightsOn;
+    }
+
+    public void setMinimumLightsOn(final Integer minimumLightsOn) {
+        this.minimumLightsOn = minimumLightsOn;
     }
 }
