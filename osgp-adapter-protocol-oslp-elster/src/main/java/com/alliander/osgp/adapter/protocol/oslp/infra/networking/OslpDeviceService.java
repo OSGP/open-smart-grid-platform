@@ -42,6 +42,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRe
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchConfigurationBankRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetActualPowerUsageDeviceResponse;
@@ -288,6 +289,47 @@ public class OslpDeviceService implements DeviceService {
 
         this.oslpChannelHandler.send(this.createAddress(ipAddress), oslpRequest, oslpResponseHandler,
                 deviceRequest.getDeviceIdentification());
+    }
+
+    @Override
+    public void switchFirmware(final SwitchFirmwareDeviceRequest deviceRequest) {
+        LOGGER.info("switchFirmware() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSwitchFirmware(deviceRequest);
+    }
+
+    private void buildOslpRequestSwitchFirmware(final SwitchFirmwareDeviceRequest deviceRequest) {
+        final Oslp.SwitchFirmwareRequest switchFirmwareRequest = Oslp.SwitchFirmwareRequest.newBuilder()
+                .setNewFirmwareVersion(deviceRequest.getVersion()).build();
+
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSwitchFirmwareRequest(switchFirmwareRequest).build(),
+                deviceRequest.getVersion());
+    }
+
+    @Override
+    public void doSwitchFirmware(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+
+        LOGGER.info("doSwitchFirmware() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+
+        final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
+
+            @Override
+            public void handleResponse(final OslpEnvelope oslpResponse) {
+                OslpDeviceService.this.handleOslpResponseSwitchFirmware(deviceRequest, oslpResponse, deviceResponseHandler);
+            }
+
+            @Override
+            public void handleException(final Throwable t) {
+                OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
+            }
+        };
+
+        this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
     }
 
     @Override
@@ -1055,6 +1097,22 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
     }
 
+    private DeviceResponse buildDeviceResponseSwitchFirmware(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse) {
+        DeviceMessageStatus status = null;
+
+        if (oslpResponse.getPayloadMessage().hasSwitchFirmwareResponse()) {
+            final Oslp.SwitchFirmwareResponse switchFirmwareResponse = oslpResponse.getPayloadMessage()
+                    .getSwitchFirmwareResponse();
+            status = this.mapper.map(switchFirmwareResponse.getStatus(), DeviceMessageStatus.class);
+        } else {
+            status = DeviceMessageStatus.FAILURE;
+        }
+
+        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+    }
+
     private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
         final Oslp.GetActualPowerUsageRequest getActualPowerUsageRequest = Oslp.GetActualPowerUsageRequest.newBuilder()
                 .build();
@@ -1239,6 +1297,18 @@ public class OslpDeviceService implements DeviceService {
         final DeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
                 deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
                 deviceRequest.getCorrelationUid(), firmwareVersion);
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
+    private void handleOslpResponseSwitchFirmware(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
+
+        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
+
+        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
+
+        final DeviceResponse deviceResponse = this.buildDeviceResponseSwitchFirmware(deviceRequest, oslpResponse);
+
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
@@ -1607,4 +1677,7 @@ public class OslpDeviceService implements DeviceService {
     public void setOslpChannelHandler(final OslpChannelHandlerClient channelHandler) {
         this.oslpChannelHandler = channelHandler;
     }
+
+
+
 }
