@@ -221,6 +221,11 @@ body {
 											<option value="3000">TARIFF_EVENTS_TARIFF_ON</option>
 											<option value="3001">TARIFF_EVENTS_TARIFF_OFF</option>
 											<option value="4000">MONITOR_EVENTS_LONG_BUFFER_FULL</option>
+											<option value="4702">MONITOR_EVENTS_TEST_RELAY_ON</option>
+											<option value="4703">MONITOR_EVENTS_TEST_RELAY_OFF</option>
+											<option value="4800">MONITOR_EVENTS_LOSS_OF_POWER</option>
+											<option value="4900">MONITOR_EVENTS_LOCAL_MODE</option>
+											<option value="4901">MONITOR_EVENTS_REMOTE_MODE</option>
 											<option value="4500">MONITOR_FAILURE_P1_COMMUNICATION</option>
 											<option value="4600">MONITOR_SHORT_DETECTED</option>
 											<option value="4601">MONITOR_SHORT_RESOLVED</option>
@@ -229,6 +234,7 @@ body {
 											<option value="5000">FIRMWARE_EVENTS_ACTIVATING</option>
 											<option value="5501">FIRMWARE_EVENTS_DOWNLOAD_NOTFOUND</option>
 											<option value="5502">FIRMWARE_EVENTS_DOWNLOAD_FAILED</option>
+											<option value="5503">FIRMWARE_EVENTS_CONFIGURATION_CHANGED</option>
 											<option value="6000">COMM_EVENTS_ALTERNATIVE_CHANNEL</option>
 											<option value="6001">COMM_EVENTS_RECOVERED_CHANNEL</option>
 											<option value="7000">SECURITY_EVENTS_OUT_OF_SEQUENCE</option>
