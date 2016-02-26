@@ -22,7 +22,7 @@ public class StandardUnitCalulatorTest {
                 return new ScalerUnit(DlmsUnit.WH, 0);
             }
         };
-        assertEquals(Double.valueOf(123.456d), Double.valueOf(calculator.calculateStandardizedValue(123456, response)));
+        assertEquals(Double.valueOf(123.456d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
         response = new ScalerUnitResponse() {
 
             @Override
@@ -30,7 +30,7 @@ public class StandardUnitCalulatorTest {
                 return new ScalerUnit(DlmsUnit.WH, 2);
             }
         };
-        assertEquals(Double.valueOf(1.235d), Double.valueOf(calculator.calculateStandardizedValue(123456, response)));
+        assertEquals(Double.valueOf(1.235d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
         response = new ScalerUnitResponse() {
 
             @Override
@@ -38,7 +38,7 @@ public class StandardUnitCalulatorTest {
                 return new ScalerUnit(DlmsUnit.M3, 2);
             }
         };
-        assertEquals(Double.valueOf(1234.56d), Double.valueOf(calculator.calculateStandardizedValue(123456, response)));
+        assertEquals(Double.valueOf(1234.56d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
         response = new ScalerUnitResponse() {
 
             @Override
@@ -46,7 +46,7 @@ public class StandardUnitCalulatorTest {
                 return new ScalerUnit(DlmsUnit.M3COR, 2);
             }
         };
-        assertEquals(Double.valueOf(1234.56d), Double.valueOf(calculator.calculateStandardizedValue(123456, response)));
+        assertEquals(Double.valueOf(1234.56d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
         response = new ScalerUnitResponse() {
 
             @Override
@@ -55,7 +55,7 @@ public class StandardUnitCalulatorTest {
             }
         };
         try {
-            calculator.calculateStandardizedValue(123456, response);
+            calculator.calculateStandardizedValue(123456l, response);
             fail("dlms unit A not supported, expected exception");
         } catch (final IllegalArgumentException ex) {
 

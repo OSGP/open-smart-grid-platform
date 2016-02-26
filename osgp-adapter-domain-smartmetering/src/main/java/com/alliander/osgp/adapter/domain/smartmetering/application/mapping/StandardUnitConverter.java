@@ -52,7 +52,18 @@ public class StandardUnitConverter {
         }
     }
 
-    public double calculateStandardizedValue(final long meterValue, final ScalerUnitResponse scalerUnitResponse) {
+    /**
+     * Return a meterValue in standardized unit and fraction digits. When the
+     * argument value is null, null is returned.
+     * 
+     * @param meterValue
+     * @param scalerUnitResponse
+     * @return
+     */
+    public Double calculateStandardizedValue(final Long meterValue, final ScalerUnitResponse scalerUnitResponse) {
+        if (meterValue == null) {
+            return null;
+        }
         final ScalerUnit scalerUnit = scalerUnitResponse.getScalerUnit();
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
         final double power = scalerUnit.getScaler() == 0 ? 1 : Math.pow(10, scalerUnit.getScaler());

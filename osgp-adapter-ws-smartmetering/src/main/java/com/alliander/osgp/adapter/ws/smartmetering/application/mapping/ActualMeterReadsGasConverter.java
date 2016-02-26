@@ -57,7 +57,8 @@ CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartm
         }
 
         destination.setConsumption(this.mapperFacade.map(source.getConsumption(), GMeterValue.class));
-        if (!destination.getConsumption().getUnit().name().equals(source.getOsgpUnit().name())) {
+        if (destination.getConsumption() != null
+                && !destination.getConsumption().getUnit().value().equals(source.getOsgpUnit().name())) {
             throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
                     destination.getConsumption().getUnit(), source.getOsgpUnit()));
         }

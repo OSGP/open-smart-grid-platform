@@ -49,9 +49,14 @@ public class ActualMeterReadsConverter
 
         destination.setLogTime(convertedDate);
         destination.setActiveEnergyImport(this.eFromDouble(source.getActiveEnergyImport()));
-        if (!destination.getActiveEnergyImport().getUnit().name().equals(source.getOsgpUnit().name())) {
+        // we try to check the unit
+        EMeterValue eMeterValue = destination.getActiveEnergyImport();
+        if (eMeterValue == null) {
+            eMeterValue = destination.getActiveEnergyImportTariffOne();
+        }
+        if (eMeterValue != null && !eMeterValue.getUnit().value().equals(source.getOsgpUnit().name())) {
             throw new IllegalStateException(String.format("unit %s in destination differs from unit %s in source",
-                    destination.getActiveEnergyImport().getUnit(), source.getOsgpUnit()));
+                    eMeterValue.getUnit(), source.getOsgpUnit()));
         }
         destination.setActiveEnergyExport(this.eFromDouble(source.getActiveEnergyExport()));
         destination.setActiveEnergyExportTariffOne(this.eFromDouble(source.getActiveEnergyExportTariffOne()));
