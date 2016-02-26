@@ -13,6 +13,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
+import org.joda.time.DateTime;
+
 import com.alliander.osgp.domain.core.validation.LightTypeAndConfiguration;
 import com.alliander.osgp.domain.core.validation.LongTermIntervalAndLongTermIntervalType;
 import com.alliander.osgp.domain.core.validation.ShortTermHistoryIntervalMinutes;
@@ -77,9 +79,9 @@ public class Configuration implements Serializable {
 
     private Boolean relayRefreshing;
 
-    private String summerTimeDetails;
+    private DateTime summerTimeDetails;
 
-    private String winterTimeDetails;
+    private DateTime winterTimeDetails;
 
     public Configuration(final LightType lightType, final DaliConfiguration daliConfiguration,
             final RelayConfiguration relayConfiguration, final Integer shortTermHistoryIntervalMinutes,
@@ -236,22 +238,6 @@ public class Configuration implements Serializable {
         this.relayRefreshing = relayRefreshing;
     }
 
-    public String getSummerTimeDetails() {
-        return this.summerTimeDetails;
-    }
-
-    public void setSummerTimeDetails(final String summerTimeDetails) {
-        this.summerTimeDetails = summerTimeDetails;
-    }
-
-    public String getWinterTimeDetails() {
-        return this.winterTimeDetails;
-    }
-
-    public void setWinterTimeDetails(final String winterTimeDetails) {
-        this.winterTimeDetails = winterTimeDetails;
-    }
-
     public List<Integer> getSwitchingDelays() {
         return this.switchingDelays;
     }
@@ -264,4 +250,19 @@ public class Configuration implements Serializable {
         return this.relayLinking;
     }
 
+    public DateTime getSummerTimeDetails() {
+        return this.summerTimeDetails;
+    }
+
+    public DateTime getWinterTimeDetails() {
+        return this.winterTimeDetails;
+    }
+
+    public void setSummerTimeDetails(final DateTime summerTimeDetails) {
+        this.summerTimeDetails = summerTimeDetails;
+    }
+
+    public void setWinterTimeDetails(final DateTime winterTimeDetails) {
+        this.winterTimeDetails = winterTimeDetails;
+    }
 }

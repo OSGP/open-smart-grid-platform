@@ -44,6 +44,8 @@ public class Schedule implements Serializable {
 
     private Boolean isEnabled;
 
+    private Integer minimumLightsOn;
+
     @NotNull
     @Size(min = 1, max = 6, message = "Schedule should contain 1 to 6 lightvalues")
     @Valid
@@ -129,5 +131,13 @@ public class Schedule implements Serializable {
 
     public void setIsEnabled(final Boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public Integer getMinimumLightsOn() {
+        return this.minimumLightsOn;
+    }
+
+    public void setMinimumLightsOn(final Integer minimumLightsOn) {
+        this.minimumLightsOn = minimumLightsOn;
     }
 }

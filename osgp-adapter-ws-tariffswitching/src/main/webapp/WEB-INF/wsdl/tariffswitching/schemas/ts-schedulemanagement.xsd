@@ -64,6 +64,7 @@
 			<xsd:element maxOccurs="6" name="TariffValue" type="tns:TariffValue" />
 			<xsd:element minOccurs="0" name="Index" type="xsd:int" />
 			<xsd:element minOccurs="0" name="IsEnabled" type="xsd:boolean" />
+			<xsd:element minOccurs="0" name="minimumLightsOn" type="xsd:int" />
 		</xsd:sequence>
 	</xsd:complexType>
 
