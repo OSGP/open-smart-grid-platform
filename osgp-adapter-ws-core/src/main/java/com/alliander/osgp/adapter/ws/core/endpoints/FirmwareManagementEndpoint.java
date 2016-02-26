@@ -243,7 +243,8 @@ public class FirmwareManagementEndpoint {
 
         try {
             this.firmwareManagementService.addManufacturer(organisationIdentification, new Manufacturer(request
-                    .getManufacturer().getCode(), request.getManufacturer().getName()));
+                    .getManufacturer().getCode(), request.getManufacturer().getName(), request.getManufacturer()
+                    .isUsePrefix()));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception adding manufacturer: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
@@ -270,7 +271,8 @@ public class FirmwareManagementEndpoint {
 
         try {
             this.firmwareManagementService.changeManufacturer(organisationIdentification, new Manufacturer(request
-                    .getManufacturer().getCode(), request.getManufacturer().getName()));
+                    .getManufacturer().getCode(), request.getManufacturer().getName(), request.getManufacturer()
+                    .isUsePrefix()));
         } catch (final MethodConstraintViolationException e) {
             LOGGER.error("Exception Changeing manufacturer: {} ", e.getMessage(), e);
             throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
