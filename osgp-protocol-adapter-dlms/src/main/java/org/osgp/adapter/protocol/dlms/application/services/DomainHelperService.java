@@ -7,10 +7,16 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.SessionProvider;
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.SessionProviderException;
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.SessionProviderService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
+import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +27,18 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
+
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
+
+    @Autowired
+    private SessionProviderService sessionProviderService;
+
+    @Autowired
+    private JasperWirelessSmsClient jasperWirelessSmsClient;
 
     /**
      * Use {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this
@@ -46,14 +60,48 @@ public class DomainHelperService {
         return dlmsDevice;
     }
 
-    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException {
+    public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException,
+    SessionProviderException, InterruptedException {
         final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
                     new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification));
         }
-        dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
+        // TODO: call the services that gets the ip address via getsessioinfo or
+        // wake up the meter and get the ip address
+
+        dlmsDevice.setIpAddress(this.getDeviceIpAddress(dlmsDevice));
+
         return dlmsDevice;
+    }
+
+    private String getDeviceIpAddress(final DlmsDevice dlmsDevice) throws InterruptedException,
+    SessionProviderException {
+        SessionProvider sessionProvider = null;
+        sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice.getCommunicationProvider());
+
+        final String iccId = dlmsDevice.getIccId();
+
+        String deviceIpAddress = sessionProvider.getIpAddress(iccId);
+
+        // If the result is null then the meter is not in session (not awake).
+        // So wake up the meter and start polling for the session
+        if (deviceIpAddress == null) {
+            this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
+            for (int i = 0; i < 30; i++) {
+                Thread.sleep(10 * 1000);
+                deviceIpAddress = sessionProvider.getIpAddress(iccId);
+                if (deviceIpAddress != null) {
+                    return deviceIpAddress;
+                }
+            }
+        }
+
+        if (deviceIpAddress == null) {
+            throw new SessionProviderException("The meter did not wake up in 5 minutes");
+        }
+
+        return deviceIpAddress;
     }
 }
