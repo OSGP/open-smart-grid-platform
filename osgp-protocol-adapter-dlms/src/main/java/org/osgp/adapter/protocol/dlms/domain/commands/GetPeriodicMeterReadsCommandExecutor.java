@@ -98,7 +98,6 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
-<<<<<<< HEAD
         /*
          * workaround for a problem when using with_list and retrieving a
          * profile buffer, this will be returned erroneously:
@@ -106,16 +105,12 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
          * 1 an empty list 2 the profile buffer 3 a null value 4 the scaler unit
          */
         final List<GetResult> getResultList = new ArrayList<GetResult>(2);
-        getResultList.addAll(this.dlmsHelperService.getWithList(conn, device, profileBuffer));
-        getResultList.addAll(conn.get(this.getScalerUnitAttributeAddress(periodicMeterReadsRequest)));
-=======
-        List<GetResult> getResultList;
         try {
-            getResultList = conn.get(profileBuffer, this.getScalerUnitAttributeAddress(periodicMeterReadsRequest));
+            getResultList.addAll(this.dlmsHelperService.getWithList(conn, device, profileBuffer));
+            getResultList.addAll(conn.get(this.getScalerUnitAttributeAddress(periodicMeterReadsRequest)));
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
         }
->>>>>>> development
 
         checkResultList(getResultList);
 
