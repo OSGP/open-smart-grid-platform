@@ -16,6 +16,7 @@ import org.jboss.netty.logging.Slf4JLoggerFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.ws.CorrelationIdProviderService;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
+import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessTerminalClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,7 @@ import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 public class JasperWirelessConfig {
 
     // JMS Settings
+    private static final String PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI = "jwcc.uri.terminal";
     private static final String PROPERTY_NAME_CONTROLCENTER_SMS_URI = "jwcc.uri.sms";
     private static final String PROPERTY_NAME_CONTROLCENTER_LICENSEKEY = "jwcc.licensekey";
     private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
@@ -56,7 +58,8 @@ public class JasperWirelessConfig {
     @Bean
     public Jaxb2Marshaller marshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("com.jasperwireless.api.ws.service.sms");
+        marshaller.setContextPaths("com.jasperwireless.api.ws.service.sms");
+        // "com.jasperwireless.api.ws.service.terminal");
         return marshaller;
     }
 
@@ -98,8 +101,23 @@ public class JasperWirelessConfig {
     }
 
     @Bean
+    public JasperWirelessTerminalClient jasperWirelessTerminalClient() {
+        return new JasperWirelessTerminalClient();
+    }
+
+    @Bean
     public JasperWirelessAccess jasperWirelessAccess() {
         return new JasperWirelessAccess(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_SMS_URI),
+                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
+                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
+                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
+                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_API_VERSION));
+    }
+
+    @Bean
+    public JasperWirelessTerminalAccess jasperWirelessTerminalAccess() {
+        return new JasperWirelessTerminalAccess(
+                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),

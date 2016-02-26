@@ -32,7 +32,7 @@ public class JasperWirelessTerminalClient {
     @Autowired
     JasperWirelessTerminalAccess jasperWirelessTerminalAccess;
 
-    public GetSessionInfoResponse pollGetSession(final String iccid) {
+    public GetSessionInfoResponse getSession(final String iccid) {
         final GetSessionInfoRequest getSessionInfoRequest = WS_CLIENT_FACTORY.createGetSessionInfoRequest();
 
         getSessionInfoRequest.setLicenseKey(this.jasperWirelessTerminalAccess.getLicenseKey());

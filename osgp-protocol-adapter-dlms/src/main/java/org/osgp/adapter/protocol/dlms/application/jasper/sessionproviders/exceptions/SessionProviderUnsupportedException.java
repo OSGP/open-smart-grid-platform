@@ -1,4 +1,4 @@
-package org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders;
+package org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions;
 
 /**
  * Copyright 2015 Smart Society Services B.V.
@@ -10,18 +10,18 @@ package org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders;
  * http://www.apache.org/licenses/LICENSE-2.0
  */
 
-public class SessionProviderException extends Exception {
+public class SessionProviderUnsupportedException extends Exception {
 
     /**
      * Serial Version UID.
      */
     private static final long serialVersionUID = -5449632007365870329L;
 
-    public SessionProviderException(final String message) {
+    public SessionProviderUnsupportedException(final String message) {
         super(message);
     }
 
-    public SessionProviderException(final String message, final Throwable throwable) {
+    public SessionProviderUnsupportedException(final String message, final Throwable throwable) {
         super(message, throwable);
     }
 }

@@ -8,8 +8,9 @@
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.SessionProvider;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.SessionProviderService;
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderUnsupportedException;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -26,6 +27,8 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
+
+    private static final int TEN_SECONDS = 10 * 1000;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
@@ -61,7 +64,7 @@ public class DomainHelperService {
     }
 
     public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException,
-    SessionProviderException, InterruptedException {
+            SessionProviderException, InterruptedException {
         final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
@@ -71,31 +74,43 @@ public class DomainHelperService {
         // TODO: call the services that gets the ip address via getsessioinfo or
         // wake up the meter and get the ip address
 
-        dlmsDevice.setIpAddress(this.getDeviceIpAddress(dlmsDevice));
+        dlmsDevice.setIpAddress(this.getDeviceIpAddress(dlmsDevice, messageMetadata.getIpAddress()));
 
         return dlmsDevice;
     }
 
-    private String getDeviceIpAddress(final DlmsDevice dlmsDevice) throws InterruptedException,
-    SessionProviderException {
-        SessionProvider sessionProvider = null;
-        sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice.getCommunicationProvider());
-
+    private String getDeviceIpAddress(final DlmsDevice dlmsDevice, final String messageMetaDataIpAddress)
+            throws InterruptedException, SessionProviderException {
+        final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
+                .getCommunicationProvider());
+        String deviceIpAddress = null;
         final String iccId = dlmsDevice.getIccId();
 
-        String deviceIpAddress = sessionProvider.getIpAddress(iccId);
+        try {
 
-        // If the result is null then the meter is not in session (not awake).
-        // So wake up the meter and start polling for the session
-        if (deviceIpAddress == null) {
-            this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
-            for (int i = 0; i < 30; i++) {
-                Thread.sleep(10 * 1000);
-                deviceIpAddress = sessionProvider.getIpAddress(iccId);
-                if (deviceIpAddress != null) {
-                    return deviceIpAddress;
+            deviceIpAddress = sessionProvider.getIpAddress(iccId);
+
+            // If the result is null then the meter is not in session (not
+            // awake).
+            // So wake up the meter and start polling for the session
+            if (deviceIpAddress == null) {
+                this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
+                // Retry for max 5 minutes (30 * 10 sec = 300 sec)
+                for (int i = 0; i < 30; i++) {
+                    Thread.sleep(TEN_SECONDS);
+                    deviceIpAddress = sessionProvider.getIpAddress(iccId);
+                    if (deviceIpAddress != null) {
+                        return deviceIpAddress;
+                    }
                 }
             }
+        } catch (final SessionProviderUnsupportedException e) {
+            // The iccId is not supported by the sessionProvider. Use IP address
+            // from the core
+            LOGGER.warn(
+                    "iccId {} is not supported by the sessionProvider for {}. Using device messageMetaData IpAddress {}",
+                    iccId, dlmsDevice.getCommunicationProvider(), messageMetaDataIpAddress);
+            return messageMetaDataIpAddress;
         }
 
         if (deviceIpAddress == null) {
