@@ -29,13 +29,17 @@ public class Manufacturer implements Serializable {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column
+    private boolean usePrefix;
+
     public Manufacturer() {
         // Default constructor
     }
 
-    public Manufacturer(final String code, final String name) {
+    public Manufacturer(final String code, final String name, final boolean usePrefix) {
         this.code = code;
         this.name = name;
+        this.usePrefix = usePrefix;
     }
 
     public String getCode() {
@@ -52,5 +56,13 @@ public class Manufacturer implements Serializable {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public boolean isUsePrefix() {
+        return this.usePrefix;
+    }
+
+    public void setUsePrefix(final boolean usePrefix) {
+        this.usePrefix = usePrefix;
     }
 }
