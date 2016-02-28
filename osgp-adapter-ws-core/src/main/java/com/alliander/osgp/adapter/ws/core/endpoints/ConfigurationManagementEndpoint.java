@@ -87,10 +87,17 @@ public class ConfigurationManagementEndpoint {
 
             final Configuration configuration = this.configurationManagementMapper.map(request.getConfiguration(),
                     Configuration.class);
-            configuration
-                    .setAutomaticSummerTimingEnabled(request.getConfiguration().isIsAutomaticSummerTimingEnabled());
-            configuration.setDhcpEnabled(request.getConfiguration().isIsDhcpEnabled());
-            configuration.setTestButtonEnabled(request.getConfiguration().isIsTestButtonEnabled());
+            if (request.getConfiguration() != null
+                    && request.getConfiguration().isIsAutomaticSummerTimingEnabled() != null) {
+                configuration.setAutomaticSummerTimingEnabled(request.getConfiguration()
+                        .isIsAutomaticSummerTimingEnabled());
+            }
+            if (request.getConfiguration() != null && request.getConfiguration().isIsDhcpEnabled() != null) {
+                configuration.setDhcpEnabled(request.getConfiguration().isIsDhcpEnabled());
+            }
+            if (request.getConfiguration() != null && request.getConfiguration().isIsTestButtonEnabled() != null) {
+                configuration.setTestButtonEnabled(request.getConfiguration().isIsTestButtonEnabled());
+            }
 
             final String correlationUid = this.configurationManagementService.enqueueSetConfigurationRequest(
                     organisationIdentification, request.getDeviceIdentification(), configuration, scheduleTime);
