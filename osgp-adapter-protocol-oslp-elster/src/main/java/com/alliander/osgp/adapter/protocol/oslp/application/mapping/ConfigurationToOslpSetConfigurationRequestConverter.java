@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,7 @@ import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
 import com.google.protobuf.ByteString;
 
 public class ConfigurationToOslpSetConfigurationRequestConverter extends
-CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
+        CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ConfigurationToOslpSetConfigurationRequestConverter.class);
@@ -94,13 +95,14 @@ CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
         }
         if (source.getOspgIpAddress() != null) {
             setConfigurationRequest
-            .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
+                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
         }
         if (source.isRelayRefreshing() != null) {
             setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
         }
         if (source.getSummerTimeDetails() != null) {
-            setConfigurationRequest.setSummerTimeDetails(this.mapperFacade.map(source.getSummerTimeDetails(), String.class));
+            final String summerTimeDetails = this.convertSummerTimeWinterTimeDetails(source.getSummerTimeDetails());
+            setConfigurationRequest.setSummerTimeDetails(summerTimeDetails);
         }
         if (source.isTestButtonEnabled() != null) {
             setConfigurationRequest.setIsTestButtonEnabled(source.isTestButtonEnabled());
@@ -109,7 +111,8 @@ CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
             setConfigurationRequest.setTimeSyncFrequency(source.getTimeSyncFrequency());
         }
         if (source.getWinterTimeDetails() != null) {
-            setConfigurationRequest.setWinterTimeDetails(this.mapperFacade.map(source.getWinterTimeDetails(), String.class));
+            final String winterTimeDetails = this.convertSummerTimeWinterTimeDetails(source.getWinterTimeDetails());
+            setConfigurationRequest.setWinterTimeDetails(winterTimeDetails);
         }
         if (source.getSwitchingDelays() != null) {
             setConfigurationRequest.addAllSwitchingDelay(source.getSwitchingDelays());
@@ -136,5 +139,34 @@ CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
             LOGGER.error("UnknownHostException", e);
             return null;
         }
+    }
+
+    // @formatter:off
+    /*
+     * SummerTimeDetails/WinterTimeDetails string: MMWHHmi
+     *
+     * where: (note, north hemisphere summer begins at the end of march)
+     * MM: month
+     * W: day of the week (0- Monday, 6- Sunday)
+     * HH: hour of the changing time
+     * mi: minutes of the changing time
+     *
+     * Default value for summer time: 0360100
+     * Default value for summer time: 1060200
+     */
+    // @formatter:on
+    private String convertSummerTimeWinterTimeDetails(final DateTime dateTime) {
+        LOGGER.info("dateTime: {}", dateTime);
+
+        final StringBuilder timeDetails = new StringBuilder();
+        timeDetails.append(String.format("%02d", dateTime.getMonthOfYear()));
+        timeDetails.append(dateTime.getDayOfWeek() - 1);
+        timeDetails.append(String.format("%02d", dateTime.getHourOfDay()));
+        timeDetails.append(String.format("%02d", dateTime.getMinuteOfHour()));
+        final String formattedTimeDetails = timeDetails.toString();
+
+        LOGGER.info("formattedTimeDetails: {}", formattedTimeDetails);
+
+        return formattedTimeDetails;
     }
 }
