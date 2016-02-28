@@ -142,12 +142,12 @@
       <xsd:element name="RelayRefreshing" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
       <xsd:element name="SummerTimeDetails" type="xsd:dateTime" minOccurs="0" maxOccurs="1" >
         <xsd:annotation>
-          <xsd:documentation>Format is: MMWHHmi where MM: month, W: day of the week (0- Monday, 6- Sunday), HH: hour of the changing time, mi: minutes of the changing time</xsd:documentation>
+          <xsd:documentation>Start of DST / SummerTime. Last Sunday of March for Europe.</xsd:documentation>
         </xsd:annotation>
       </xsd:element>
       <xsd:element name="WinterTimeDetails" type="xsd:dateTime" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
-          <xsd:documentation>Format is: MMWHHmi where MM: month, W: day of the week (0- Monday, 6- Sunday), HH: hour of the changing time, mi: minutes of the changing time</xsd:documentation>
+          <xsd:documentation>End of DST / SummerTime. Last Sunday of October for Europe.</xsd:documentation>
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
