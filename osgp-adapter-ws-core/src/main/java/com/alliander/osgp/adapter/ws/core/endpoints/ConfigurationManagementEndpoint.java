@@ -184,6 +184,10 @@ public class ConfigurationManagementEndpoint {
                     if (configuration != null) {
                         response.setConfiguration(this.configurationManagementMapper.map(configuration,
                                 com.alliander.osgp.adapter.ws.schema.core.configurationmanagement.Configuration.class));
+                        response.getConfiguration().setIsAutomaticSummerTimingEnabled(
+                                configuration.isAutomaticSummerTimingEnabled());
+                        response.getConfiguration().setIsDhcpEnabled(configuration.isDhcpEnabled());
+                        response.getConfiguration().setIsTestButtonEnabled(configuration.isTestButtonEnabled());
                     }
                 }
             } else {

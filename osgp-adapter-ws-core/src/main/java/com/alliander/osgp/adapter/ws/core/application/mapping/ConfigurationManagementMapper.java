@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.core.application.mapping.ws.DaliConfigurationConverter;
 import com.alliander.osgp.adapter.ws.core.application.mapping.ws.MeterTypeConverter;
+import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 @Component(value = "coreConfigurationManagementMapper")
 public class ConfigurationManagementMapper extends ConfigurableMapper {
@@ -21,5 +22,6 @@ public class ConfigurationManagementMapper extends ConfigurableMapper {
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new MeterTypeConverter());
         mapperFactory.getConverterFactory().registerConverter(new DaliConfigurationConverter());
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }
 }
