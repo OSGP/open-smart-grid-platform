@@ -43,6 +43,12 @@ public class DomainHelperService {
     @Autowired
     private JasperWirelessSmsClient jasperWirelessSmsClient;
 
+    @Autowired
+    private int dlmsJwccGetSessionRetries;
+
+    @Autowired
+    private int dlmsJwccGetSessionSleepBetweenRetries;
+
     /**
      * Use {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this
      * will also set the IP address.
@@ -81,29 +87,11 @@ public class DomainHelperService {
 
     private String getDeviceIpAddress(final DlmsDevice dlmsDevice, final String messageMetaDataIpAddress)
             throws InterruptedException, SessionProviderException {
-        final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
-                .getCommunicationProvider());
         String deviceIpAddress = null;
         final String iccId = dlmsDevice.getIccId();
 
         try {
-
-            deviceIpAddress = sessionProvider.getIpAddress(iccId);
-
-            // If the result is null then the meter is not in session (not
-            // awake).
-            // So wake up the meter and start polling for the session
-            if (deviceIpAddress == null) {
-                this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
-                // Retry for max 5 minutes (30 * 10 sec = 300 sec)
-                for (int i = 0; i < 30; i++) {
-                    Thread.sleep(TEN_SECONDS);
-                    deviceIpAddress = sessionProvider.getIpAddress(iccId);
-                    if (deviceIpAddress != null) {
-                        return deviceIpAddress;
-                    }
-                }
-            }
+            deviceIpAddress = this.getDeviceIpAddressFromSessionProvider(iccId, dlmsDevice);
         } catch (final SessionProviderUnsupportedException e) {
             // The iccId is not supported by the sessionProvider. Use IP address
             // from the core
@@ -117,6 +105,31 @@ public class DomainHelperService {
             throw new SessionProviderException("The meter did not wake up in 5 minutes");
         }
 
+        return deviceIpAddress;
+    }
+
+    private String getDeviceIpAddressFromSessionProvider(final String iccId, final DlmsDevice dlmsDevice)
+            throws SessionProviderException, SessionProviderUnsupportedException, InterruptedException {
+
+        final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
+                .getCommunicationProvider());
+
+        String deviceIpAddress;
+        deviceIpAddress = sessionProvider.getIpAddress(iccId);
+
+        // If the result is null then the meter is not in session (not
+        // awake).
+        // So wake up the meter and start polling for the session
+        if (deviceIpAddress == null) {
+            this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
+            for (int i = 0; i < this.dlmsJwccGetSessionRetries; i++) {
+                Thread.sleep(this.dlmsJwccGetSessionSleepBetweenRetries);
+                deviceIpAddress = sessionProvider.getIpAddress(iccId);
+                if (deviceIpAddress != null) {
+                    return deviceIpAddress;
+                }
+            }
+        }
         return deviceIpAddress;
     }
 }

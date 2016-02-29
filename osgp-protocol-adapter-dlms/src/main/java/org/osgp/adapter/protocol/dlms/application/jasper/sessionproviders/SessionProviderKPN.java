@@ -43,8 +43,10 @@ public class SessionProviderKPN extends SessionProvider {
         try {
             response = this.jasperWirelessTerminalClient.getSession(iccId);
         } catch (final SoapFaultClientException e) {
-            throw new SessionProviderUnsupportedException("iccId " + iccId
-                    + " is probably not supported in this session provider", e);
+            final String errorMessage = String.format("iccId %s is probably not supported in this session provider",
+                    iccId);
+            LOGGER.warn(errorMessage);
+            throw new SessionProviderUnsupportedException(errorMessage, e);
         }
 
         final SessionInfoType sessionInfoType = this.getSessionInfo(response);
@@ -57,7 +59,9 @@ public class SessionProviderKPN extends SessionProvider {
 
     private SessionInfoType getSessionInfo(final GetSessionInfoResponse response) throws SessionProviderException {
         if (response == null || response.getSessionInfo() == null || response.getSessionInfo().getSession() == null) {
-            throw new SessionProviderException("Response Object is not ok: " + response);
+            final String errorMessage = String.format("Response Object is not ok: %s" + response);
+            LOGGER.warn(errorMessage);
+            throw new SessionProviderException(errorMessage);
         }
         if (response.getSessionInfo().getSession().size() == 1) {
             return response.getSessionInfo().getSession().get(0);
