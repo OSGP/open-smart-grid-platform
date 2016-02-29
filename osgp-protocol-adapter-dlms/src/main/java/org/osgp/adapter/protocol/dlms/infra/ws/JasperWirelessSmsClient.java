@@ -17,11 +17,11 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 
-import com.jasperwireless.api.ws.service.sms.GetSMSDetailsRequest;
-import com.jasperwireless.api.ws.service.sms.GetSMSDetailsResponse;
-import com.jasperwireless.api.ws.service.sms.ObjectFactory;
-import com.jasperwireless.api.ws.service.sms.SendSMSRequest;
-import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
+import com.jasperwireless.api.ws.service.GetSMSDetailsRequest;
+import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
+import com.jasperwireless.api.ws.service.ObjectFactory;
+import com.jasperwireless.api.ws.service.SendSMSRequest;
+import com.jasperwireless.api.ws.service.SendSMSResponse;
 
 public class JasperWirelessSmsClient {
 

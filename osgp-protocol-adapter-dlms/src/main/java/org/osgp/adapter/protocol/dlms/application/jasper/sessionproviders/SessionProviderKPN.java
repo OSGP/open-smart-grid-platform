@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
-import com.jasperwireless.api.ws.service.sms.GetSessionInfoResponse;
-import com.jasperwireless.api.ws.service.sms.SessionInfoType;
+import com.jasperwireless.api.ws.service.GetSessionInfoResponse;
+import com.jasperwireless.api.ws.service.SessionInfoType;
 
 @Component
 public class SessionProviderKPN extends SessionProvider {

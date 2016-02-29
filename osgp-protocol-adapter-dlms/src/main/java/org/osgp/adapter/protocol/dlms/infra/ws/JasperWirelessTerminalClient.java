@@ -15,9 +15,9 @@ import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.soap.security.wss4j.Wss4jSecurityInterceptor;
 
-import com.jasperwireless.api.ws.service.sms.GetSessionInfoRequest;
-import com.jasperwireless.api.ws.service.sms.GetSessionInfoResponse;
-import com.jasperwireless.api.ws.service.sms.ObjectFactory;
+import com.jasperwireless.api.ws.service.GetSessionInfoRequest;
+import com.jasperwireless.api.ws.service.GetSessionInfoResponse;
+import com.jasperwireless.api.ws.service.ObjectFactory;
 
 public class JasperWirelessTerminalClient {
 

@@ -29,9 +29,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.jasperwireless.api.ws.service.sms.GetSMSDetailsResponse;
-import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
-import com.jasperwireless.api.ws.service.sms.SmsMessageType;
+import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
+import com.jasperwireless.api.ws.service.SendSMSResponse;
+import com.jasperwireless.api.ws.service.SmsMessageType;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService extends DlmsApplicationService {
