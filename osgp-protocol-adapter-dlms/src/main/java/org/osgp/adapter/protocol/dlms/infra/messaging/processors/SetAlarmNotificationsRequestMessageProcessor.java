@@ -36,8 +36,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final AlarmNotifications alarmNotifications = (AlarmNotifications) requestObject;
 
         this.configurationService.setAlarmNotifications(messageMetadata, alarmNotifications);

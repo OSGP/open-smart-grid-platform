@@ -54,7 +54,7 @@ public class AdhocService {
 
     public void synchronizeTime(final DlmsDeviceMessageMetadata messageMetadata,
             final SynchronizeTimeRequest synchronizeTimeRequest) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -73,7 +73,7 @@ public class AdhocService {
     // === REQUEST Send Wakeup SMS ===
 
     public SmsDetails sendWakeUpSms(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
-            SessionProviderException, InterruptedException {
+    SessionProviderException {
 
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
         if (!COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
@@ -87,7 +87,7 @@ public class AdhocService {
     // === REQUEST Get SMS Details ===
 
     public SmsDetails getSmsDetails(final DlmsDeviceMessageMetadata messageMetadata, final SmsDetails smsDetailsRequest)
-            throws OsgpException, SessionProviderException, InterruptedException {
+            throws OsgpException, SessionProviderException {
 
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
@@ -109,7 +109,7 @@ public class AdhocService {
 
     public Serializable retrieveConfigurationObjects(final DlmsDeviceMessageMetadata messageMetadata,
             final RetrieveConfigurationObjectsRequest request) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         try {

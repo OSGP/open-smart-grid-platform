@@ -36,8 +36,7 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final PeriodicMeterReadsQuery periodicMeterReadsQuery = (PeriodicMeterReadsQuery) requestObject;
 
         return this.monitoringService.requestPeriodicMeterReads(messageMetadata, periodicMeterReadsQuery);

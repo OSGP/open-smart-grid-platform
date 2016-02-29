@@ -110,7 +110,7 @@ public class ConfigurationService {
 
     public void requestSpecialDays(final DlmsDeviceMessageMetadata messageMetadata,
             final SpecialDaysRequest specialDaysRequest) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -145,7 +145,7 @@ public class ConfigurationService {
 
     public void requestSetConfiguration(final DlmsDeviceMessageMetadata messageMetadata,
             final SetConfigurationObjectRequest setConfigurationObjectRequest) throws OsgpException,
-            ProtocolAdapterException, SessionProviderException, InterruptedException {
+            ProtocolAdapterException, SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -186,7 +186,7 @@ public class ConfigurationService {
 
     public void requestSetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata,
             final AdministrativeStatusType administrativeStatusType) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         DlmsDevice device = null;
@@ -215,7 +215,7 @@ public class ConfigurationService {
 
     public void setAlarmNotifications(final DlmsDeviceMessageMetadata messageMetadata,
             final AlarmNotifications alarmNotifications) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -240,7 +240,7 @@ public class ConfigurationService {
     }
 
     public AdministrativeStatusType requestGetAdministrativeStatus(final DlmsDeviceMessageMetadata messageMetadata)
-            throws OsgpException, ProtocolAdapterException, SessionProviderException, InterruptedException {
+            throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -257,8 +257,7 @@ public class ConfigurationService {
     }
 
     public String setEncryptionKeyExchangeOnGMeter(final DlmsDeviceMessageMetadata messageMetadata,
-            final GMeterInfo gMeterInfo) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final GMeterInfo gMeterInfo) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
         LnClientConnection conn = null;
         DlmsDevice device = null;
@@ -276,7 +275,7 @@ public class ConfigurationService {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                    SecurityKeyType.G_METER_MASTER).getKey());
+                            SecurityKeyType.G_METER_MASTER).getKey());
 
             this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -291,7 +290,7 @@ public class ConfigurationService {
 
     public String setActivityCalendar(final DlmsDeviceMessageMetadata messageMetadata,
             final ActivityCalendar activityCalendar) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         DlmsDevice device = null;
@@ -312,7 +311,7 @@ public class ConfigurationService {
             }
 
             return "Set Activity Calendar Result is OK for device id: " + deviceIdentification + " calendar name: "
-            + activityCalendar.getCalendarName();
+                    + activityCalendar.getCalendarName();
         } finally {
             if (conn != null) {
                 LOGGER.info(DEBUG_MSG_CLOSING_CONNECTION, device.getDeviceIdentification());
@@ -323,7 +322,7 @@ public class ConfigurationService {
     }
 
     public void setPushSetupAlarm(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupAlarm pushSetupAlarm)
-            throws OsgpException, ProtocolAdapterException, SessionProviderException, InterruptedException {
+            throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -348,7 +347,7 @@ public class ConfigurationService {
     }
 
     public void setPushSetupSms(final DlmsDeviceMessageMetadata messageMetadata, final PushSetupSms pushSetupSms)
-            throws OsgpException, ProtocolAdapterException, SessionProviderException, InterruptedException {
+            throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -374,7 +373,7 @@ public class ConfigurationService {
     }
 
     public String requestFirmwareVersion(final DlmsDeviceMessageMetadata messageMetadata) throws OsgpException,
-            ProtocolAdapterException, SessionProviderException, InterruptedException {
+    ProtocolAdapterException, SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -390,7 +389,7 @@ public class ConfigurationService {
     }
 
     public void replaceKeys(final DlmsDeviceMessageMetadata messageMetadata, final KeySet keySet) throws OsgpException,
-    ProtocolAdapterException, SessionProviderException, InterruptedException {
+            ProtocolAdapterException, SessionProviderException {
 
         LnClientConnection conn = null;
 

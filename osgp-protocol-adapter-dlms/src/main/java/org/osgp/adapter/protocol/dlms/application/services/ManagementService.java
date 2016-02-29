@@ -46,7 +46,7 @@ public class ManagementService {
 
     public EventMessageDataContainer findEvents(final DlmsDeviceMessageMetadata messageMetadata,
             final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) throws OsgpException,
-            ProtocolAdapterException, SessionProviderException, InterruptedException {
+            ProtocolAdapterException, SessionProviderException {
 
         final List<Event> events = new ArrayList<>();
 

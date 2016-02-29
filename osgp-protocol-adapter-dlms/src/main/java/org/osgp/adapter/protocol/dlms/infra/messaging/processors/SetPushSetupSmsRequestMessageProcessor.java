@@ -36,8 +36,7 @@ public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessage
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
         final PushSetupSms pushSetupSms = (PushSetupSms) requestObject;
         this.configurationService.setPushSetupSms(messageMetadata, pushSetupSms);

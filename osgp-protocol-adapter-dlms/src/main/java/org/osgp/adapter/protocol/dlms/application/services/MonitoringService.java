@@ -57,7 +57,7 @@ public class MonitoringService {
 
     public Serializable requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
             final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -84,7 +84,7 @@ public class MonitoringService {
 
     public Serializable requestActualMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
             final ActualMeterReadsQuery actualMeterReadsRequest) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         try {
@@ -108,7 +108,7 @@ public class MonitoringService {
 
     public AlarmRegister requestReadAlarmRegister(final DlmsDeviceMessageMetadata messageMetadata,
             final ReadAlarmRegisterRequest readAlarmRegisterRequest) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException, InterruptedException {
+            SessionProviderException {
 
         LnClientConnection conn = null;
         try {

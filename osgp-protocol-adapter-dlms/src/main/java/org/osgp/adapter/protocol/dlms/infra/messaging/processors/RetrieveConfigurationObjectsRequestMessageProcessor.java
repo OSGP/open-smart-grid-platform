@@ -34,8 +34,7 @@ public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceR
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final RetrieveConfigurationObjectsRequest retrieveConfigurationRequest = (RetrieveConfigurationObjectsRequest) requestObject;
 
         return this.adhocService.retrieveConfigurationObjects(messageMetadata, retrieveConfigurationRequest);

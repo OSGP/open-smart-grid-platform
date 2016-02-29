@@ -35,8 +35,7 @@ public class SendWakeupSmsRequestMessageProcessor extends DeviceRequestMessagePr
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         return this.adhocService.sendWakeUpSms(messageMetadata);
     }
 

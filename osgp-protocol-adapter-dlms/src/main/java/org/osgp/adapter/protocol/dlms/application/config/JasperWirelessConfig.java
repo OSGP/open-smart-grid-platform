@@ -59,7 +59,6 @@ public class JasperWirelessConfig {
     public Jaxb2Marshaller marshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         marshaller.setContextPaths("com.jasperwireless.api.ws.service");
-        // "com.jasperwireless.api.ws.service.terminal");
         return marshaller;
     }
 

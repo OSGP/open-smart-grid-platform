@@ -36,8 +36,7 @@ public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProc
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final SpecialDaysRequest specialDaysRequest = (SpecialDaysRequest) requestObject;
 
         this.configurationService.requestSpecialDays(messageMetadata, specialDaysRequest);

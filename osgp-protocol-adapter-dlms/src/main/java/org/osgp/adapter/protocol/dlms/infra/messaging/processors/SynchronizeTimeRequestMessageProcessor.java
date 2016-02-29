@@ -36,8 +36,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) requestObject;
         this.adhocService.synchronizeTime(messageMetadata, synchronizeTimeRequest);
         return null;

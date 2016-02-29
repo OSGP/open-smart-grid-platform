@@ -36,8 +36,7 @@ public class GetSmsDetailsRequestMessageProcessor extends DeviceRequestMessagePr
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final SmsDetails smsDetails = (SmsDetails) requestObject;
         return this.adhocService.getSmsDetails(messageMetadata, smsDetails);
     }

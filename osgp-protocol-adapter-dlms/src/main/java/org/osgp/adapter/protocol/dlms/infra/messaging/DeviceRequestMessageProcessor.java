@@ -139,12 +139,10 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @return A serializable object to be put on the response queue.
      * @throws OsgpException
      * @throws ProtocolAdapterException
-     * @throws InterruptedException
      * @throws SessionProviderException
      */
     protected abstract Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException;
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException;
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,

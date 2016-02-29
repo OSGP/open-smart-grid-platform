@@ -28,8 +28,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
 
-    private static final int TEN_SECONDS = 10 * 1000;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
@@ -70,7 +68,7 @@ public class DomainHelperService {
     }
 
     public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException,
-    SessionProviderException, InterruptedException {
+            SessionProviderException {
         final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
@@ -84,7 +82,7 @@ public class DomainHelperService {
     }
 
     private String getDeviceIpAddress(final DlmsDevice dlmsDevice, final String messageMetaDataIpAddress)
-            throws InterruptedException, SessionProviderException {
+            throws SessionProviderException {
         String deviceIpAddress = null;
         final String iccId = dlmsDevice.getIccId();
 
@@ -107,7 +105,7 @@ public class DomainHelperService {
     }
 
     private String getDeviceIpAddressFromSessionProvider(final String iccId, final DlmsDevice dlmsDevice)
-            throws SessionProviderException, SessionProviderUnsupportedException, InterruptedException {
+            throws SessionProviderException, SessionProviderUnsupportedException {
 
         final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
                 .getCommunicationProvider());
@@ -121,7 +119,12 @@ public class DomainHelperService {
         if (deviceIpAddress == null) {
             this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
             for (int i = 0; i < this.dlmsJwccGetSessionRetries; i++) {
-                Thread.sleep(this.dlmsJwccGetSessionSleepBetweenRetries);
+                try {
+                    Thread.sleep(this.dlmsJwccGetSessionSleepBetweenRetries);
+                } catch (final InterruptedException e) {
+                    throw new SessionProviderException(
+                            "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);
+                }
                 deviceIpAddress = sessionProvider.getIpAddress(iccId);
                 if (deviceIpAddress != null) {
                     return deviceIpAddress;

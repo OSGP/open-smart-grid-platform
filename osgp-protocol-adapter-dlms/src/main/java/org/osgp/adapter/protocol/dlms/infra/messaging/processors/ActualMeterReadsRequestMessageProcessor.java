@@ -33,8 +33,7 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
         final ActualMeterReadsQuery actualMeterReadsRequest = (ActualMeterReadsQuery) requestObject;
         return this.monitoringService.requestActualMeterReads(messageMetadata, actualMeterReadsRequest);

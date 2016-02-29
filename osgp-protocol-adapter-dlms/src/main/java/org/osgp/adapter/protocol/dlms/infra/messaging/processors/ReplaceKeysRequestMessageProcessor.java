@@ -33,8 +33,7 @@ public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProc
 
     @Override
     protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
-            InterruptedException {
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final KeySet keySet = (KeySet) requestObject;
         this.configurationService.replaceKeys(messageMetadata, keySet);
 

@@ -59,7 +59,7 @@ public class SessionProviderKPN extends SessionProvider {
 
     private SessionInfoType getSessionInfo(final GetSessionInfoResponse response) throws SessionProviderException {
         if (response == null || response.getSessionInfo() == null || response.getSessionInfo().getSession() == null) {
-            final String errorMessage = String.format("Response Object is not ok: %s" + response);
+            final String errorMessage = String.format("Response Object is not ok: %s", response);
             LOGGER.warn(errorMessage);
             throw new SessionProviderException(errorMessage);
         }
