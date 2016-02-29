@@ -7,27 +7,25 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing Get SMS Details Request messages
  */
 @Component("dlmsGetSMSDetailsRequestMessageProcessor")
 public class GetSmsDetailsRequestMessageProcessor extends DeviceRequestMessageProcessor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSmsDetailsRequestMessageProcessor.class);
 
     @Autowired
     private AdhocService adhocService;
@@ -37,21 +35,11 @@ public class GetSmsDetailsRequestMessageProcessor extends DeviceRequestMessagePr
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) throws JMSException {
-        LOGGER.debug("Processing get sms details request message");
-
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        try {
-            messageMetadata.handleMessage(message);
-
-            final SmsDetails smsDetails = (SmsDetails) message.getObject();
-
-            this.adhocService.getSmsDetails(messageMetadata, smsDetails, this.responseMessageSender);
-
-        } catch (final JMSException e) {
-            this.logJmsException(LOGGER, e, messageMetadata);
-        }
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
+            InterruptedException {
+        final SmsDetails smsDetails = (SmsDetails) requestObject;
+        return this.adhocService.getSmsDetails(messageMetadata, smsDetails);
     }
 
 }

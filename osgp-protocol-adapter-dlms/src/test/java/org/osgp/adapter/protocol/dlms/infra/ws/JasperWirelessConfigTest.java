@@ -50,7 +50,7 @@ public class JasperWirelessConfigTest {
     @Bean
     public Jaxb2Marshaller jasperWirelessMarshaller() {
         final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("com.jasperwireless.api.ws.service.sms");
+        marshaller.setContextPath("com.jasperwireless.api.ws.service");
         return marshaller;
     }
 

@@ -20,6 +20,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,12 +58,17 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
 
     @Override
     public List<Event> execute(final LnClientConnection conn, final DlmsDevice device,
-            final FindEventsQuery findEventsQuery) throws IOException, ProtocolAdapterException, TimeoutException {
+            final FindEventsQuery findEventsQuery) throws ProtocolAdapterException {
 
         final AttributeAddress eventLogBuffer = new AttributeAddress(CLASS_ID,
                 EVENT_LOG_CATEGORY_OBISCODE_MAP.get(findEventsQuery.getEventLogCategory()), ATTRIBUTE_ID);
 
-        final List<GetResult> getResultList = conn.get(eventLogBuffer);
+        List<GetResult> getResultList;
+        try {
+            getResultList = conn.get(eventLogBuffer);
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received while retrieving event register "

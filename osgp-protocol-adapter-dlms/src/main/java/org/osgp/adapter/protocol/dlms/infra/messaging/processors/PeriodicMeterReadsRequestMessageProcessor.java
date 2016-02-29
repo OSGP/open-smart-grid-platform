@@ -7,29 +7,25 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing Periodic Meter Request messages
  */
 @Component("dlmsPeriodicMeterRequestMessageProcessor")
 public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsRequestMessageProcessor.class);
 
     @Autowired
     private MonitoringService monitoringService;
@@ -39,20 +35,11 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing periodic meter reads request message");
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
+            InterruptedException {
+        final PeriodicMeterReadsQuery periodicMeterReadsQuery = (PeriodicMeterReadsQuery) requestObject;
 
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-        try {
-            messageMetadata.handleMessage(message);
-
-            final PeriodicMeterReadsQuery periodicMeterReadsQuery = (PeriodicMeterReadsQuery) message.getObject();
-
-            this.monitoringService.requestPeriodicMeterReads(messageMetadata, periodicMeterReadsQuery,
-                    this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+        return this.monitoringService.requestPeriodicMeterReads(messageMetadata, periodicMeterReadsQuery);
     }
 }

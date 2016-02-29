@@ -29,6 +29,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.openmuc.jdlms.interfaceclass.method.MBusClientMethod;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,27 +57,34 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
 
     @Override
     public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device,
-            final ProtocolMeterInfo protocolMeterInfo) throws IOException, ProtocolAdapterException {
-        LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
+            final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
 
-        final byte[] encryptionKey = Hex.decode(protocolMeterInfo.getEncryptionKey());
-        final byte[] masterKey = Hex.decode(protocolMeterInfo.getMasterKey());
+        try {
+            LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-        final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
+            final byte[] encryptionKey = Hex.decode(protocolMeterInfo.getEncryptionKey());
+            final byte[] masterKey = Hex.decode(protocolMeterInfo.getMasterKey());
 
-        final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode, masterKey,
-                encryptionKey);
-        List<MethodResult> methodResultCode = conn.action(methodTransferKey);
-        this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
-        LOGGER.info("Success!: Finished calling getTransferKeyToMBusMethodParameter class_id {} obis_code {}",
-                CLASS_ID, obisCode);
+            final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
-        final MethodParameter methodSetEncryptionKey = this.getSetEncryptionKeyMethodParameter(obisCode, encryptionKey);
-        methodResultCode = conn.action(methodSetEncryptionKey);
-        this.checkMethodResultCode(methodResultCode, "getSetEncryptionKeyMethodParameter");
-        LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
+            final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode, masterKey,
+                    encryptionKey);
 
-        return MethodResultCode.SUCCESS;
+            List<MethodResult> methodResultCode = conn.action(methodTransferKey);
+            this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
+            LOGGER.info("Success!: Finished calling getTransferKeyToMBusMethodParameter class_id {} obis_code {}",
+                    CLASS_ID, obisCode);
+
+            final MethodParameter methodSetEncryptionKey = this.getSetEncryptionKeyMethodParameter(obisCode,
+                    encryptionKey);
+            methodResultCode = conn.action(methodSetEncryptionKey);
+            this.checkMethodResultCode(methodResultCode, "getSetEncryptionKeyMethodParameter");
+            LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
+
+            return MethodResultCode.SUCCESS;
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
     }
 
     private void checkMethodResultCode(final List<MethodResult> methodResultCode, final String methodParameterName)

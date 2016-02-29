@@ -70,15 +70,13 @@ public class DomainHelperService {
     }
 
     public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException,
-            SessionProviderException, InterruptedException {
+    SessionProviderException, InterruptedException {
         final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
                     new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification));
         }
-        // TODO: call the services that gets the ip address via getsessioinfo or
-        // wake up the meter and get the ip address
 
         dlmsDevice.setIpAddress(this.getDeviceIpAddress(dlmsDevice, messageMetadata.getIpAddress()));
 

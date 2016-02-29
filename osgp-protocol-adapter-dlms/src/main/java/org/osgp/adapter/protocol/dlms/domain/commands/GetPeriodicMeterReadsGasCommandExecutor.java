@@ -27,6 +27,7 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,8 +200,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
     @Override
     public PeriodicMeterReadsContainerGas execute(final LnClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws IOException, TimeoutException,
-            ProtocolAdapterException {
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         final PeriodType periodType;
         final DateTime beginDateTime;
@@ -220,7 +220,19 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         LOGGER.debug("Retrieving current billing period and profiles for gas for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
-        final List<GetResult> getResultList = conn.get(profileBuffer);
+        /*
+         * workaround for a problem when using with_list and retrieving a
+         * profile buffer, this will be returned erroneously:
+         * 
+         * 1 an empty list 2 the profile buffer 3 a null value 4 the scaler unit
+         */
+        final List<GetResult> getResultList = new ArrayList<GetResult>(2);
+        try {
+            getResultList.addAll(this.dlmsHelperService.getWithList(conn, device, profileBuffer));
+            getResultList.addAll(conn.get(this.getScalerUnitAttributeAddress(periodicMeterReadsQuery)));
+        } catch (IOException | TimeoutException e) {
+            throw new ConnectionException(e);
+        }
 
         checkResultList(getResultList);
 
@@ -380,8 +392,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
                     "No GetResult received while retrieving current billing period and profiles for gas.");
         }
 
-        if (getResultList.size() > 1) {
-            LOGGER.info("Expected 1 GetResult while retrieving current billing period and profiles for gas, got "
+        if (getResultList.size() > 2) {
+            LOGGER.info("Expected 2 GetResult while retrieving current billing period and profiles for gas, got "
                     + getResultList.size());
         }
     }

@@ -11,10 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.LnClientConnection;
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceResponseMessageSender;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.Event;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsManagementService")
-public class ManagementService extends DlmsApplicationService {
+public class ManagementService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManagementService.class);
 
@@ -45,18 +44,15 @@ public class ManagementService extends DlmsApplicationService {
 
     // === FIND EVENTS ===
 
-    public void findEvents(final DlmsDeviceMessageMetadata messageMetadata,
-            final DeviceResponseMessageSender responseMessageSender,
-            final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) {
-
-        this.logStart(LOGGER, messageMetadata, "findEvents");
+    public EventMessageDataContainer findEvents(final DlmsDeviceMessageMetadata messageMetadata,
+            final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) throws OsgpException,
+            ProtocolAdapterException, SessionProviderException, InterruptedException {
 
         final List<Event> events = new ArrayList<>();
 
         LnClientConnection conn = null;
         DlmsDevice device = null;
         try {
-
             device = this.domainHelperService.findDlmsDevice(messageMetadata);
 
             LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
@@ -72,18 +68,8 @@ public class ManagementService extends DlmsApplicationService {
                 events.addAll(this.retrieveEventsCommandExecutor.execute(conn, device, findEventsQuery));
             }
 
-            final EventMessageDataContainer eventMessageDataContainer = new EventMessageDataContainer(events);
+            return new EventMessageDataContainer(events);
 
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, responseMessageSender,
-                    eventMessageDataContainer);
-
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during findEvents", e);
-            final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
-
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, responseMessageSender,
-                    findEventsQueryMessageDataContainer);
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());

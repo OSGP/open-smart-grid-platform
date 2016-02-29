@@ -17,6 +17,8 @@ import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +34,7 @@ public class SynchronizeTimeCommandExecutor implements CommandExecutor<DataObjec
 
     @Override
     public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device, final DataObject object)
-            throws IOException {
+            throws ProtocolAdapterException {
         final AttributeAddress clockTime = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
         final DateTime dt = DateTime.now();
@@ -40,6 +42,10 @@ public class SynchronizeTimeCommandExecutor implements CommandExecutor<DataObjec
 
         final SetParameter setParameter = new SetParameter(clockTime, time);
 
-        return conn.set(setParameter).get(0);
+        try {
+            return conn.set(setParameter).get(0);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
     }
 }

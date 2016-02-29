@@ -7,29 +7,25 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
+import java.io.Serializable;
 
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing Synchronize Time Request messages
  */
 @Component("dlmsSynchronizeTimeRequestMessageProcessor")
 public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessageProcessor {
-    /**
-     * Logger for this class
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeRequestMessageProcessor.class);
 
     @Autowired
     private AdhocService adhocService;
@@ -39,20 +35,11 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     }
 
     @Override
-    public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing synchronize time request message");
-
-        final DlmsDeviceMessageMetadata messageMetadata = new DlmsDeviceMessageMetadata();
-
-        try {
-            messageMetadata.handleMessage(message);
-
-            final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) message.getObject();
-
-            this.adhocService.synchronizeTime(messageMetadata, synchronizeTimeRequest, this.responseMessageSender);
-
-        } catch (final JMSException exception) {
-            this.logJmsException(LOGGER, exception, messageMetadata);
-        }
+    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException,
+            InterruptedException {
+        final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) requestObject;
+        this.adhocService.synchronizeTime(messageMetadata, synchronizeTimeRequest);
+        return null;
     }
 }
