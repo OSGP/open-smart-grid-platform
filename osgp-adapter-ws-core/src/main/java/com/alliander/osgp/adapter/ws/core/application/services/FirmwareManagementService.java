@@ -163,6 +163,7 @@ public class FirmwareManagementService {
         } else {
             databaseManufacturer.setCode(manufacturer.getCode());
             databaseManufacturer.setName(manufacturer.getName());
+            databaseManufacturer.setUsePrefix(manufacturer.isUsePrefix());
 
             this.manufacturerRepository.save(databaseManufacturer);
         }
@@ -208,9 +209,8 @@ public class FirmwareManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final CommonRequestMessage message = new CommonRequestMessage(
-                CommonRequestMessageType.SWITCH_FIRMWARE, correlationUid, organisationIdentification,
-                deviceIdentification, version, null);
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SWITCH_FIRMWARE,
+                correlationUid, organisationIdentification, deviceIdentification, version, null);
 
         this.commonRequestMessageSender.send(message);
 
