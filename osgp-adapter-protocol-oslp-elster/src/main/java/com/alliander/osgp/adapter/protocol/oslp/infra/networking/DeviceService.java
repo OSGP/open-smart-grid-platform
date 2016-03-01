@@ -21,6 +21,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDevic
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchConfigurationBankRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchFirmwareDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateDeviceSslCertificationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.dto.valueobjects.PageInfo;
 import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
@@ -116,4 +117,9 @@ public interface DeviceService {
 
     void doSetTransition(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void doUpdateDeviceSslCertification(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void updateDeviceSslCertification(UpdateDeviceSslCertificationDeviceRequest deviceRequest);
 }

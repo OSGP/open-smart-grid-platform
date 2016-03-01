@@ -495,6 +495,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             response = createGetFirmwareVersionResponse();
         } else if (request.hasSwitchFirmwareRequest()) {
             response = createSwitchFirmwareResponse();
+        } else if (request.hasUpdateDeviceSslCertificationRequest()) {
+            response = createUpdateDeviceSslCertificationResponse();
         } else if (request.hasSetScheduleRequest()) {
             this.handleSetScheduleRequest(device, request.getSetScheduleRequest());
 
@@ -598,6 +600,13 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         return Oslp.Message
                 .newBuilder()
                 .setSwitchFirmwareResponse(Oslp.SwitchFirmwareResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
+    }
+
+    private static Message createUpdateDeviceSslCertificationResponse() {
+        return Oslp.Message
+                .newBuilder()
+                .setUpdateDeviceSslCertificationResponse(Oslp.UpdateDeviceSslCertificationResponse.newBuilder().setStatus(Oslp.Status.OK))
                 .build();
     }
 

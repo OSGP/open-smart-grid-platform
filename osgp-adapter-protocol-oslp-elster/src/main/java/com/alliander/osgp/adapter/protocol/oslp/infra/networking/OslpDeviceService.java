@@ -43,6 +43,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDevic
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchConfigurationBankRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchFirmwareDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateDeviceSslCertificationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetActualPowerUsageDeviceResponse;
@@ -320,6 +321,49 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleResponse(final OslpEnvelope oslpResponse) {
                 OslpDeviceService.this.handleOslpResponseSwitchFirmware(deviceRequest, oslpResponse, deviceResponseHandler);
+            }
+
+            @Override
+            public void handleException(final Throwable t) {
+                OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
+            }
+        };
+
+        this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
+    }
+
+    @Override
+    public void updateDeviceSslCertification(final UpdateDeviceSslCertificationDeviceRequest deviceRequest) {
+        LOGGER.info("UpdateDeviceSslCertification() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestUpdateDeviceSslCertification(deviceRequest);
+    }
+
+    private void buildOslpRequestUpdateDeviceSslCertification(final UpdateDeviceSslCertificationDeviceRequest deviceRequest) {
+        final Oslp.UpdateDeviceSslCertificationRequest updateDeviceSslCertificationRequest = Oslp.UpdateDeviceSslCertificationRequest.newBuilder()
+                .setCertificateDomain(deviceRequest.getCertification().getCertificateDomain())
+                .setCertificateUrl(deviceRequest.getCertification().getCertificateUrl()).build();
+
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setUpdateDeviceSslCertificationRequest(updateDeviceSslCertificationRequest).build(),
+                deviceRequest.getCertification());
+
+    }
+
+    @Override
+    public void doUpdateDeviceSslCertification(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+
+        LOGGER.info("doUpdateDeviceSslCertification() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+
+        final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
+
+            @Override
+            public void handleResponse(final OslpEnvelope oslpResponse) {
+                OslpDeviceService.this.handleOslpResponseUpdateDeviceSslCertification(deviceRequest, oslpResponse, deviceResponseHandler);
             }
 
             @Override
@@ -1113,6 +1157,23 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
     }
 
+    private DeviceResponse buildDeviceResponseUpdateDeviceSslCertification(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse) {
+        DeviceMessageStatus status = null;
+
+        if (oslpResponse.getPayloadMessage().hasUpdateDeviceSslCertificationResponse()) {
+            final Oslp.UpdateDeviceSslCertificationResponse updateDeviceSslCertificationResponse = oslpResponse.getPayloadMessage()
+                    .getUpdateDeviceSslCertificationResponse();
+
+            status = this.mapper.map(updateDeviceSslCertificationResponse.getStatus(), DeviceMessageStatus.class);
+        } else {
+            status = DeviceMessageStatus.FAILURE;
+        }
+
+        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+    }
+
     private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
         final Oslp.GetActualPowerUsageRequest getActualPowerUsageRequest = Oslp.GetActualPowerUsageRequest.newBuilder()
                 .build();
@@ -1311,6 +1372,22 @@ public class OslpDeviceService implements DeviceService {
 
         deviceResponseHandler.handleResponse(deviceResponse);
     }
+
+
+
+    private void handleOslpResponseUpdateDeviceSslCertification(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
+
+        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
+
+        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
+
+        final DeviceResponse deviceResponse = this.buildDeviceResponseUpdateDeviceSslCertification(deviceRequest, oslpResponse);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
+
 
     private void handleOslpResponseGetStatus(final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse,
             final DeviceResponseHandler deviceResponseHandler) {
