@@ -136,6 +136,33 @@
         </wsdl:part>
     </wsdl:message>
 
+    <wsdl:message name="UpdateDeviceSslCertificationHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceSslCertificationRequest">
+        <wsdl:part element="dman:UpdateDeviceSslCertificationRequest" name="UpdateDeviceSslCertificationRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceSslCertificationAsyncResponse">
+        <wsdl:part element="dman:UpdateDeviceSslCertificationAsyncResponse" name="UpdateDeviceSslCertificationAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceSslCertificationAsyncHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
+        <wsdl:part element="common:UserName" name="UserName" />
+    <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceSslCertificationAsyncRequest">
+        <wsdl:part element="dman:UpdateDeviceSslCertificationAsyncRequest" name="UpdateDeviceSslCertificationAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceSslCertificationResponse">
+        <wsdl:part element="dman:UpdateDeviceSslCertificationResponse" name="UpdateDeviceSslCertificationResponse">
+        </wsdl:part>
+    </wsdl:message>
+    
     <wsdl:portType name="DeviceManagementPort">
         <wsdl:operation name="FindEvents">
             <wsdl:input message="tns:FindEventsRequest" name="FindEventsRequest">
@@ -197,7 +224,19 @@
             <wsdl:output message="tns:SetMaintenanceStatusResponse" name="SetMaintenanceStatusResponse">
             </wsdl:output>
         </wsdl:operation>
-
+        
+        <wsdl:operation name="UpdateDeviceSslCertification">
+            <wsdl:input message="tns:UpdateDeviceSslCertificationRequest" name="UpdateDeviceSslCertificationRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:UpdateDeviceSslCertificationAsyncResponse" name="UpdateDeviceSslCertificationAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUpdateDeviceSslCertificationResponse">
+            <wsdl:input message="tns:UpdateDeviceSslCertificationAsyncRequest" name="UpdateDeviceSslCertificationAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:UpdateDeviceSslCertificationResponse" name="UpdateDeviceSslCertificationResponse">
+            </wsdl:output>
+        </wsdl:operation>
     </wsdl:portType>
     
     <wsdl:binding name="DeviceManagementPortSoap11" type="tns:DeviceManagementPort">
@@ -306,6 +345,30 @@
             </wsdl:output>
         </wsdl:operation>
 
+        <wsdl:operation name="UpdateDeviceSslCertification">
+            <soap:operation soapAction=""/>
+            <wsdl:input name="UpdateDeviceSslCertificationRequest">
+                <soap:header message="tns:UpdateDeviceSslCertificationHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:UpdateDeviceSslCertificationHeader" part="UserName" use="literal" />
+                <soap:header message="tns:UpdateDeviceSslCertificationHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="UpdateDeviceSslCertificationAsyncResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetUpdateDeviceSslCertificationResponse">
+            <soap:operation soapAction=""/>
+            <wsdl:input name="UpdateDeviceSslCertificationAsyncRequest">
+                <soap:header message="tns:UpdateDeviceSslCertificationAsyncHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:UpdateDeviceSslCertificationAsyncHeader" part="UserName" use="literal" />
+                <soap:header message="tns:UpdateDeviceSslCertificationAsyncHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="UpdateDeviceSslCertificationResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
     </wsdl:binding>
     
     <wsdl:service name="DeviceManagementPortService">
