@@ -9,7 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.io.Serializable;
 
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
@@ -19,7 +19,6 @@ import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandEx
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,72 +54,39 @@ public class MonitoringService {
 
     // === REQUEST PERIODIC METER DATA ===
 
-    public Serializable requestPeriodicMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
+    public Serializable requestPeriodicMeterReads(final ClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws OsgpException, ProtocolAdapterException,
             SessionProviderException {
 
-        LnClientConnection conn = null;
-        try {
-
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-            conn = this.dlmsConnectionFactory.getConnection(device);
-
-            Serializable response = null;
-            if (periodicMeterReadsQuery.isGas()) {
-                response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
-            } else {
-                response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
-            }
-
-            return response;
-
-        } finally {
-            if (conn != null) {
-                conn.close();
-            }
+        Serializable response = null;
+        if (periodicMeterReadsQuery.isGas()) {
+            response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
+        } else {
+            response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
         }
+
+        return response;
+
     }
 
-    public Serializable requestActualMeterReads(final DlmsDeviceMessageMetadata messageMetadata,
+    public Serializable requestActualMeterReads(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsRequest) throws OsgpException, ProtocolAdapterException,
             SessionProviderException {
 
-        LnClientConnection conn = null;
-        try {
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            conn = this.dlmsConnectionFactory.getConnection(device);
-
-            Serializable response = null;
-            if (actualMeterReadsRequest.isGas()) {
-                response = this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
-            } else {
-                response = this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
-            }
-
-            return response;
-        } finally {
-            if (conn != null) {
-                conn.close();
-            }
+        Serializable response = null;
+        if (actualMeterReadsRequest.isGas()) {
+            response = this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
+        } else {
+            response = this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
         }
+
+        return response;
     }
 
-    public AlarmRegister requestReadAlarmRegister(final DlmsDeviceMessageMetadata messageMetadata,
+    public AlarmRegister requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequest readAlarmRegisterRequest) throws OsgpException, ProtocolAdapterException,
             SessionProviderException {
 
-        LnClientConnection conn = null;
-        try {
-            final DlmsDevice device = this.domainHelperService.findDlmsDevice(messageMetadata);
-
-            conn = this.dlmsConnectionFactory.getConnection(device);
-
-            return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
-        } finally {
-            if (conn != null) {
-                conn.close();
-            }
-        }
+        return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
     }
 }

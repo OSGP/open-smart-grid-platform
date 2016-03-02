@@ -9,12 +9,13 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
+import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.MonitoringService;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,10 +36,10 @@ public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMess
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
+    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final PeriodicMeterReadsQuery periodicMeterReadsQuery = (PeriodicMeterReadsQuery) requestObject;
 
-        return this.monitoringService.requestPeriodicMeterReads(messageMetadata, periodicMeterReadsQuery);
+        return this.monitoringService.requestPeriodicMeterReads(conn, device, periodicMeterReadsQuery);
     }
 }

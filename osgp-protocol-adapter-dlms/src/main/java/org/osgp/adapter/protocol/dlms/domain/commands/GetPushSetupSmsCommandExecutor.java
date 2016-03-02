@@ -10,8 +10,8 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -45,7 +45,7 @@ public class GetPushSetupSmsCommandExecutor extends GetPushSetupCommandExecutor 
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public PushSetupSms execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
+    public PushSetupSms execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving Push Setup Alarm");

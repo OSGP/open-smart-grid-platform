@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils;
@@ -54,7 +54,7 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
     }
 
     @Override
-    public DlmsDevice execute(final LnClientConnection conn, final DlmsDevice device,
+    public DlmsDevice execute(final ClientConnection conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
 
         // Add the new key and store in the repo
@@ -81,7 +81,7 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
      * @throws IOException
      * @throws ProtocolAdapterException
      */
-    private void sendToDevice(final LnClientConnection conn, final DlmsDevice device,
+    private void sendToDevice(final ClientConnection conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
             final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
