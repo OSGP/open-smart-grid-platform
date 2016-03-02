@@ -225,9 +225,20 @@ public class DlmsDevice extends AbstractEntity {
         return null;
     }
 
-    public SecurityKey getNewSecurityKey(final SecurityKeyType securityKeyType) {
+    public List<SecurityKey> getNewSecurityKeys() {
+        final List<SecurityKey> keys = new ArrayList<>();
         for (final SecurityKey securityKey : this.securityKeys) {
-            if (securityKey.getSecurityKeyType().equals(securityKeyType) && securityKey.getValidFrom() == null) {
+            if (securityKey.getValidFrom() == null) {
+                keys.add(securityKey);
+            }
+        }
+        return keys;
+    }
+
+    public SecurityKey getNewSecurityKey(final SecurityKeyType securityKeyType) {
+        final List<SecurityKey> keys = this.getNewSecurityKeys();
+        for (final SecurityKey securityKey : keys) {
+            if (securityKey.getSecurityKeyType().equals(securityKeyType)) {
                 return securityKey;
             }
         }

@@ -23,11 +23,14 @@ import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -43,6 +46,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class DlmsConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
+
+    private static final String PROPERTY_JDLMS_RESPONSE_TIMEOUT = "jdlms.response_timeout";
+    private static final String PROPERTY_JDLMS_LOGICAL_DEVICE_ADDRESS = "jdlms.logical_device_address";
+    private static final String PROPERTY_JDLMS_CLIENT_ACCESS_POINT = "jdlms.client_access_point";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConfig.class);
 
@@ -114,5 +121,14 @@ public class DlmsConfig {
     @Bean
     public DlmsChannelHandlerServer dlmsChannelHandlerServer() {
         return new DlmsChannelHandlerServer();
+    }
+
+    @Bean
+    @Autowired
+    public DlmsConnectionFactory dlmsConnectionFactory(final DlmsDeviceRepository dlmsDeviceRepository) {
+        return new DlmsConnectionFactory(dlmsDeviceRepository, Integer.parseInt(this.environment
+                .getProperty(PROPERTY_JDLMS_CLIENT_ACCESS_POINT)), Integer.parseInt(this.environment
+                .getProperty(PROPERTY_JDLMS_LOGICAL_DEVICE_ADDRESS)), Integer.parseInt(this.environment
+                .getProperty(PROPERTY_JDLMS_RESPONSE_TIMEOUT)));
     }
 }
