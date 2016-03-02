@@ -57,7 +57,7 @@ class Hls5Connector {
             // Exception while connecting with the meter.
             // Fall back on keys that have not been marked valid.
             if (this.neverValidAuthenticationKey == null && this.neverValidEncryptionKey == null) {
-                throw new ConnectionException(ERROR_WHILE_CREATING_TCP_CONNECTION);
+                throw new ConnectionException(e.getMessage());
             }
 
             if (this.neverValidAuthenticationKey != null && this.neverValidEncryptionKey != null) {
@@ -102,26 +102,16 @@ class Hls5Connector {
      * but only one keys should really be switched.
      */
     private void switchToNeverValidKey() {
-        this.switchKeys(this.usedAuthenticationKey, this.validAuthenticationKey, this.neverValidAuthenticationKey);
-        this.switchKeys(this.usedEncryptionKey, this.validEncryptionKey, this.neverValidEncryptionKey);
-    }
-
-    /**
-     * Makes target reference other, but only if target is current and other is
-     * not null.
-     *
-     * @param target
-     *            Key reference.
-     * @param current
-     *            Key reference.
-     * @param other
-     *            Key reference.
-     */
-    private void switchKeys(SecurityKey target, final SecurityKey current, final SecurityKey other) {
-        if (target == current && other != null) {
-            target = other;
+        if (this.usedAuthenticationKey == this.validAuthenticationKey && this.neverValidAuthenticationKey != null) {
+            this.usedAuthenticationKey = this.neverValidAuthenticationKey;
         } else {
-            target = current;
+            this.usedAuthenticationKey = this.validAuthenticationKey;
+        }
+
+        if (this.usedEncryptionKey == this.validEncryptionKey && this.neverValidEncryptionKey != null) {
+            this.usedEncryptionKey = this.neverValidEncryptionKey;
+        } else {
+            this.usedEncryptionKey = this.validEncryptionKey;
         }
     }
 
