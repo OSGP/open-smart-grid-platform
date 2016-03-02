@@ -43,8 +43,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class DlmsConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
-    private static final String JWCC_GETSESSION_RETRIES = "jwcc.getsession.retries";
-    private static final String JWCC_GETSESSION_SLEEP_BETWEEN_RETRIES = "jwcc.getsession.sleep.between.retries";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConfig.class);
 
@@ -116,16 +114,6 @@ public class DlmsConfig {
     @Bean
     public DlmsChannelHandlerServer dlmsChannelHandlerServer() {
         return new DlmsChannelHandlerServer();
-    }
-
-    @Bean
-    public int dlmsJwccGetSessionRetries() {
-        return Integer.parseInt(this.environment.getProperty(JWCC_GETSESSION_RETRIES));
-    }
-
-    @Bean
-    public int dlmsJwccGetSessionSleepBetweenRetries() {
-        return Integer.parseInt(this.environment.getProperty(JWCC_GETSESSION_SLEEP_BETWEEN_RETRIES));
     }
 
 }

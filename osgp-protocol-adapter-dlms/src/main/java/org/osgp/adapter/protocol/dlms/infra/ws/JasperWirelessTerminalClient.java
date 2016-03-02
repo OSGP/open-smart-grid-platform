@@ -8,7 +8,7 @@
 package org.osgp.adapter.protocol.dlms.infra.ws;
 
 import org.apache.ws.security.WSConstants;
-import org.osgp.adapter.protocol.dlms.application.config.JasperWirelessTerminalAccess;
+import org.osgp.adapter.protocol.dlms.application.config.JasperWirelessAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
@@ -30,7 +30,7 @@ public class JasperWirelessTerminalClient {
     CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
-    JasperWirelessTerminalAccess jasperWirelessTerminalAccess;
+    JasperWirelessAccess jasperWirelessTerminalAccess;
 
     public GetSessionInfoResponse getSession(final String iccid) {
         final GetSessionInfoRequest getSessionInfoRequest = WS_CLIENT_FACTORY.createGetSessionInfoRequest();
@@ -49,7 +49,7 @@ public class JasperWirelessTerminalClient {
         }
 
         // override default uri
-        this.webServiceTemplate.setDefaultUri(this.jasperWirelessTerminalAccess.getTerminalUri());
+        this.webServiceTemplate.setDefaultUri(this.jasperWirelessTerminalAccess.getUri());
 
         return (GetSessionInfoResponse) this.webServiceTemplate.marshalSendAndReceive(getSessionInfoRequest,
                 new SoapActionCallback("http://api.jasperwireless.com/ws/service/terminal/GetSessionInfo"));

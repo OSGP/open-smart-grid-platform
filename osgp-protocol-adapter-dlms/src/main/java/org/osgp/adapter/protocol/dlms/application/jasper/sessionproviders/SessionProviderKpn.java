@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders;
 
 import javax.annotation.PostConstruct;
@@ -16,9 +23,9 @@ import com.jasperwireless.api.ws.service.GetSessionInfoResponse;
 import com.jasperwireless.api.ws.service.SessionInfoType;
 
 @Component
-public class SessionProviderKPN extends SessionProvider {
+public class SessionProviderKpn extends SessionProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKPN.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionProviderKpn.class);
 
     @Autowired
     JasperWirelessTerminalClient jasperWirelessTerminalClient;
@@ -29,8 +36,7 @@ public class SessionProviderKPN extends SessionProvider {
     /**
      * Initialization function executed after dependency injection has finished.
      * The SessionProvider Singleton is added to the HashMap of
-     * SessionProviderMap. The key for the HashMap is the string value of the
-     * enumeration member.
+     * SessionProviderMap.
      */
     @PostConstruct
     public void init() {

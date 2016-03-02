@@ -9,23 +9,23 @@ package org.osgp.adapter.protocol.dlms.application.config;
 
 public class JasperWirelessAccess {
 
-    private String smsUri;
+    private String uri;
     private String licenseKey;
     private String username;
     private String password;
     private String apiVersion;
 
-    public JasperWirelessAccess(final String smsUri, final String licenseKey, final String username,
+    public JasperWirelessAccess(final String uri, final String licenseKey, final String username,
             final String password, final String apiVersion) {
-        this.smsUri = smsUri;
+        this.uri = uri;
         this.licenseKey = licenseKey;
         this.username = username;
         this.password = password;
         this.apiVersion = apiVersion;
     }
 
-    public String getSmsUri() {
-        return this.smsUri;
+    public String getUri() {
+        return this.uri;
     }
 
     public String getLicenseKey() {

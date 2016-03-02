@@ -45,6 +45,8 @@ public class JasperWirelessConfig {
     private static final String PROPERTY_NAME_CONTROLCENTER_USERNAME = "jwcc.username";
     private static final String PROPERTY_NAME_CONTROLCENTER_PASSWORD = "jwcc.password";
     private static final String PROPERTY_NAME_CONTROLCENTER_API_VERSION = "jwcc.api_version";
+    private static final String GETSESSION_RETRIES = "jwcc.getsession.retries";
+    private static final String GETSESSION_SLEEP_BETWEEN_RETRIES = "jwcc.getsession.sleep.between.retries";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JasperWirelessConfig.class);
 
@@ -114,9 +116,8 @@ public class JasperWirelessConfig {
     }
 
     @Bean
-    public JasperWirelessTerminalAccess jasperWirelessTerminalAccess() {
-        return new JasperWirelessTerminalAccess(
-                this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI),
+    public JasperWirelessAccess jasperWirelessTerminalAccess() {
+        return new JasperWirelessAccess(this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_TERMINAL_URI),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_LICENSEKEY),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_USERNAME),
                 this.environment.getRequiredProperty(PROPERTY_NAME_CONTROLCENTER_PASSWORD),
@@ -126,5 +127,15 @@ public class JasperWirelessConfig {
     @Bean
     public CorrelationIdProviderService correlationIdProviderService() {
         return new CorrelationIdProviderService();
+    }
+
+    @Bean
+    public int jasperGetSessionRetries() {
+        return Integer.parseInt(this.environment.getProperty(GETSESSION_RETRIES));
+    }
+
+    @Bean
+    public int jasperGetSessionSleepBetweenRetries() {
+        return Integer.parseInt(this.environment.getProperty(GETSESSION_SLEEP_BETWEEN_RETRIES));
     }
 }

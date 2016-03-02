@@ -42,10 +42,10 @@ public class DomainHelperService {
     private JasperWirelessSmsClient jasperWirelessSmsClient;
 
     @Autowired
-    private int dlmsJwccGetSessionRetries;
+    private int jasperGetSessionRetries;
 
     @Autowired
-    private int dlmsJwccGetSessionSleepBetweenRetries;
+    private int jasperGetSessionSleepBetweenRetries;
 
     /**
      * Use {@link #findDlmsDevice(DlmsDeviceMessageMetadata)} instead, as this
@@ -68,7 +68,7 @@ public class DomainHelperService {
     }
 
     public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException,
-            SessionProviderException {
+    SessionProviderException {
         final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
@@ -98,7 +98,9 @@ public class DomainHelperService {
         }
 
         if (deviceIpAddress == null) {
-            throw new SessionProviderException("The meter did not wake up in 5 minutes");
+            throw new SessionProviderException("The meter did not wake up. Retried " + this.jasperGetSessionRetries
+                    + " times in a total amount of " + this.jasperGetSessionRetries
+                    * this.jasperGetSessionSleepBetweenRetries + " seconds");
         }
 
         return deviceIpAddress;
@@ -110,17 +112,16 @@ public class DomainHelperService {
         final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
                 .getCommunicationProvider());
 
-        String deviceIpAddress;
-        deviceIpAddress = sessionProvider.getIpAddress(iccId);
+        String deviceIpAddress = sessionProvider.getIpAddress(iccId);
 
         // If the result is null then the meter is not in session (not
         // awake).
         // So wake up the meter and start polling for the session
         if (deviceIpAddress == null) {
             this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
-            for (int i = 0; i < this.dlmsJwccGetSessionRetries; i++) {
+            for (int i = 0; i < this.jasperGetSessionRetries; i++) {
                 try {
-                    Thread.sleep(this.dlmsJwccGetSessionSleepBetweenRetries);
+                    Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
                 } catch (final InterruptedException e) {
                     throw new SessionProviderException(
                             "Interrupted while sleeping before calling the sessionProvider.getIpAddress", e);

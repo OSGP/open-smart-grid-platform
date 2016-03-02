@@ -56,7 +56,7 @@ public class JasperWirelessSmsClient {
         }
 
         // override default uri
-        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getSmsUri());
+        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());
 
         return (SendSMSResponse) this.webServiceTemplate.marshalSendAndReceive(sendSMSRequest, new SoapActionCallback(
                 "http://api.jasperwireless.com/ws/service/sms/SendSMS"));
@@ -83,7 +83,7 @@ public class JasperWirelessSmsClient {
         }
 
         // override default uri
-        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getSmsUri());
+        this.webServiceTemplate.setDefaultUri(this.jasperWirelessAccess.getUri());
 
         return (GetSMSDetailsResponse) this.webServiceTemplate.marshalSendAndReceive(getSMSDetailsRequest,
                 new SoapActionCallback("http://api.jasperwireless.com/ws/service/sms/GetSMSDetails"));
