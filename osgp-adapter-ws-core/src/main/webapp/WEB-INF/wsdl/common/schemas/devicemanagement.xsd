@@ -447,16 +447,16 @@
     <xsd:sequence>
       <xsd:element name="certificateDomain" minOccurs="0" maxOccurs="1">
         <xsd:simpleType>
-          <xsd:restriction base="common:AlphaNumericType">
-            <xsd:minLength value="0"/>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="1"/>
             <xsd:maxLength value="100"/>
           </xsd:restriction>
         </xsd:simpleType>
       </xsd:element>
       <xsd:element name="certificateUrl" minOccurs="0" maxOccurs="1">
         <xsd:simpleType>
-          <xsd:restriction base="common:AlphaNumericType">
-            <xsd:minLength value="0"/>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="1"/>
             <xsd:maxLength value="255"/>
           </xsd:restriction>
         </xsd:simpleType>
