@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -90,8 +89,7 @@ public class AdhocService {
     }
 
     public Serializable retrieveConfigurationObjects(final ClientConnection conn, final DlmsDevice device,
-            final RetrieveConfigurationObjectsRequest request) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException {
+            final RetrieveConfigurationObjectsRequest request) throws ProtocolAdapterException {
 
         return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
     }
