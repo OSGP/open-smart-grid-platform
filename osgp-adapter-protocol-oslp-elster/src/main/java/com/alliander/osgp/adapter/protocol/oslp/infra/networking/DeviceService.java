@@ -15,6 +15,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetPowerUsageHis
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.ResumeScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetConfigurationDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetDeviceVerificationKeyDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotificationsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
@@ -122,4 +123,9 @@ public interface DeviceService {
             DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
 
     void updateDeviceSslCertification(UpdateDeviceSslCertificationDeviceRequest deviceRequest);
+
+    void doSetDeviceVerificationKey(OslpEnvelope oslpRequest, DeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler, String ipAddress) throws IOException;
+
+    void setDeviceVerificationKey(SetDeviceVerificationKeyDeviceRequest deviceRequest);
 }

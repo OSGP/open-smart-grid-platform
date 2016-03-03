@@ -159,7 +159,8 @@ public abstract class OslpChannelHandler extends SimpleChannelHandler {
                 || envelope.getPayloadMessage().hasGetActualPowerUsageResponse()
                 || envelope.getPayloadMessage().hasGetPowerUsageHistoryResponse()
                 || envelope.getPayloadMessage().hasSwitchFirmwareResponse()
-                || envelope.getPayloadMessage().hasUpdateDeviceSslCertificationResponse();
+                || envelope.getPayloadMessage().hasUpdateDeviceSslCertificationResponse()
+                || envelope.getPayloadMessage().hasSetDeviceVerificationKeyResponse();
     }
 
     private String getDeviceIdentificationFromMessage(final Oslp.Message message) {

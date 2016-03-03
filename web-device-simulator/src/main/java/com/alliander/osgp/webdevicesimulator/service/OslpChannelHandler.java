@@ -497,6 +497,8 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             response = createSwitchFirmwareResponse();
         } else if (request.hasUpdateDeviceSslCertificationRequest()) {
             response = createUpdateDeviceSslCertificationResponse();
+        } else if (request.hasSetDeviceVerificationKeyRequest()) {
+            response = createSetDeviceVerificationKeyResponse();
         } else if (request.hasSetScheduleRequest()) {
             this.handleSetScheduleRequest(device, request.getSetScheduleRequest());
 
@@ -519,7 +521,6 @@ public class OslpChannelHandler extends SimpleChannelHandler {
             this.handleGetPowerUsageHistoryRequest(device, request.getGetPowerUsageHistoryRequest());
 
             response = createGetPowerUsageHistoryWithDatesResponse(device, request.getGetPowerUsageHistoryRequest());
-
         } else if (request.hasGetStatusRequest()) {
             response = createGetStatusResponse(device);
         } else if (request.hasResumeScheduleRequest()) {
@@ -527,7 +528,6 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         } else if (request.hasSetRebootRequest()) {
             response = createSetRebootResponse();
         } else if (request.hasSetTransitionRequest()) {
-
             this.handleSetTransitionRequest(device);
 
             response = createSetTransitionResponse();
@@ -600,6 +600,13 @@ public class OslpChannelHandler extends SimpleChannelHandler {
         return Oslp.Message
                 .newBuilder()
                 .setSwitchFirmwareResponse(Oslp.SwitchFirmwareResponse.newBuilder().setStatus(Oslp.Status.OK))
+                .build();
+    }
+
+    private static Message createSetDeviceVerificationKeyResponse() {
+        return Oslp.Message
+                .newBuilder()
+                .setSetDeviceVerificationKeyResponse(Oslp.SetDeviceVerificationKeyResponse.newBuilder().setStatus(Oslp.Status.OK))
                 .build();
     }
 

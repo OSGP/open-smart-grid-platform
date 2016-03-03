@@ -37,6 +37,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetPowerUsageHis
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.ResumeScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetConfigurationDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetDeviceVerificationKeyDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotificationsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
@@ -364,6 +365,38 @@ public class OslpDeviceService implements DeviceService {
             @Override
             public void handleResponse(final OslpEnvelope oslpResponse) {
                 OslpDeviceService.this.handleOslpResponseUpdateDeviceSslCertification(deviceRequest, oslpResponse, deviceResponseHandler);
+            }
+
+            @Override
+            public void handleException(final Throwable t) {
+                OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
+            }
+        };
+
+        this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
+    }
+
+    @Override
+    public void setDeviceVerificationKey(final SetDeviceVerificationKeyDeviceRequest deviceRequest) {
+        LOGGER.info("SetDeviceVerificationKey() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSetDeviceVerificationKey(deviceRequest);
+    }
+
+    @Override
+    public void doSetDeviceVerificationKey(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+
+        LOGGER.info("doSetDeviceVerificationKey() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+
+        final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
+
+            @Override
+            public void handleResponse(final OslpEnvelope oslpResponse) {
+                OslpDeviceService.this.handleOslpResponseSetDeviceVerificationKey(deviceRequest, oslpResponse, deviceResponseHandler);
             }
 
             @Override
@@ -1174,6 +1207,23 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
     }
 
+    private DeviceResponse buildDeviceResponseSetDeviceVerificationKey(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse) {
+        DeviceMessageStatus status = null;
+
+        if (oslpResponse.getPayloadMessage().hasSetDeviceVerificationKeyResponse()) {
+            final Oslp.SetDeviceVerificationKeyResponse setDeviceVerificationKeyResponse = oslpResponse.getPayloadMessage()
+                    .getSetDeviceVerificationKeyResponse();
+
+            status = this.mapper.map(setDeviceVerificationKeyResponse.getStatus(), DeviceMessageStatus.class);
+        } else {
+            status = DeviceMessageStatus.FAILURE;
+        }
+
+        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+    }
+
     private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
         final Oslp.GetActualPowerUsageRequest getActualPowerUsageRequest = Oslp.GetActualPowerUsageRequest.newBuilder()
                 .build();
@@ -1307,6 +1357,14 @@ public class OslpDeviceService implements DeviceService {
                 Oslp.Message.newBuilder().setUpdateFirmwareRequest(updateFirmwareRequest).build(), null);
     }
 
+    private void buildOslpRequestSetDeviceVerificationKey(final SetDeviceVerificationKeyDeviceRequest deviceRequest) {
+        final Oslp.SetDeviceVerificationKeyRequest setDeviceVerificationKey = Oslp.SetDeviceVerificationKeyRequest.newBuilder()
+                .setCertificateChunk(ByteString.copyFrom(deviceRequest.getVerificationKey().getBytes())).build();
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSetDeviceVerificationKeyRequest(setDeviceVerificationKey).build(),
+                deviceRequest.getVerificationKey());
+    }
+
     private void handleOslpResponseGetActualPowerUsage(final DeviceRequest deviceRequest,
             final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
 
@@ -1381,6 +1439,18 @@ public class OslpDeviceService implements DeviceService {
         this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
 
         final DeviceResponse deviceResponse = this.buildDeviceResponseUpdateDeviceSslCertification(deviceRequest, oslpResponse);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
+    private void handleOslpResponseSetDeviceVerificationKey(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
+
+        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
+
+        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
+
+        final DeviceResponse deviceResponse = this.buildDeviceResponseSetDeviceVerificationKey(deviceRequest, oslpResponse);
 
         deviceResponseHandler.handleResponse(deviceResponse);
     }
