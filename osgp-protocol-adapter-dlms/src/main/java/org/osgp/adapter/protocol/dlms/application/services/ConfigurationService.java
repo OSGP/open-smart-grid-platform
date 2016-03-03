@@ -13,7 +13,6 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionCommandExecutor;
@@ -53,7 +52,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsConfigurationService")
 public class ConfigurationService {
@@ -162,8 +160,7 @@ public class ConfigurationService {
     }
 
     public void requestSetAdministrativeStatus(final ClientConnection conn, final DlmsDevice device,
-            final AdministrativeStatusType administrativeStatusType) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException {
+            final AdministrativeStatusType administrativeStatusType) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Administrative Status is: {}", device);
 
@@ -178,8 +175,7 @@ public class ConfigurationService {
     }
 
     public void setAlarmNotifications(final ClientConnection conn, final DlmsDevice device,
-            final AlarmNotifications alarmNotifications) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException {
+            final AlarmNotifications alarmNotifications) throws ProtocolAdapterException {
 
         LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
@@ -207,7 +203,7 @@ public class ConfigurationService {
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                         SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                        SecurityKeyType.G_METER_MASTER).getKey());
+                                SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
@@ -215,8 +211,7 @@ public class ConfigurationService {
     }
 
     public String setActivityCalendar(final ClientConnection conn, final DlmsDevice device,
-            final ActivityCalendar activityCalendar) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException {
+            final ActivityCalendar activityCalendar) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Activity Calendar is: {}", device);
 
