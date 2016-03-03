@@ -8,19 +8,21 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 public class SpecialDaysRequestData implements Serializable {
 
     private static final long serialVersionUID = 2733945253731054997L;
-    
-    private List<SpecialDay> specialDays;
 
-    public List<SpecialDay> getSpecialDays() {
-        return specialDays;
+    private final List<SpecialDay> specialDays;
+
+    public SpecialDaysRequestData(final List<SpecialDay> specialDays) {
+        super();
+        this.specialDays = Collections.unmodifiableList(specialDays);
     }
 
-    public void setSpecialDays(List<SpecialDay> specialDays) {
-        this.specialDays = specialDays;
+    public List<SpecialDay> getSpecialDays() {
+        return this.specialDays;
     }
 }
