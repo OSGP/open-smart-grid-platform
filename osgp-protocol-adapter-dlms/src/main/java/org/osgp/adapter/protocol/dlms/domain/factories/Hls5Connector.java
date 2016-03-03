@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.LnClientConnection;
@@ -12,11 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 class Hls5Connector {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
     private static final String ERROR_WHILE_CREATING_TCP_CONNECTION = "Error while creating TCP connection.";
 
     private final int responseTimeout;
@@ -151,6 +155,15 @@ class Hls5Connector {
     private LnClientConnection createFallbackConnection() {
         try {
             this.switchToNeverValidKey();
+            try {
+                // This fixes the problem of the connection refusal by the meter
+                // directly after the first connection attempt. Blocking state
+                // is not acceptable so this must be solved in a different way.
+                LOGGER.info("Sleeping before trying fallback connection.");
+                TimeUnit.MINUTES.sleep(2);
+            } catch (final InterruptedException e) {
+                LOGGER.info("Wait for fallback connection interrupted.");
+            }
             return this.createConnection();
         } catch (final IOException e) {
             // Exception while connecting with the meter.
