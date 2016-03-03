@@ -45,7 +45,7 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
 
             final List<DataObject> specDayEntry = new ArrayList<DataObject>();
             specDayEntry.add(DataObject.newUInteger16Data(i));
-            specDayEntry.add(this.dlmsHelperService.dateStringToOctetString(specialDay.getSpecialDayDate()));
+            specDayEntry.add(this.dlmsHelperService.asDataObject(specialDay.getSpecialDayDate()));
             specDayEntry.add(DataObject.newUInteger8Data((short) specialDay.getDayId()));
 
             final DataObject dayStruct = DataObject.newStructureData(specDayEntry);
