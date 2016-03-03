@@ -57,8 +57,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 public class ConfigurationService {
     private static final String VISUAL_SEPARATOR = "******************************************************";
 
-    private static final String DEBUG_MSG_CLOSING_CONNECTION = "Closing connection with {}";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
 
     @Autowired
@@ -164,8 +162,6 @@ public class ConfigurationService {
 
         LOGGER.info("Device for Set Administrative Status is: {}", device);
 
-        this.setAdministrativeStatusCommandExecutor.execute(conn, device, administrativeStatusType);
-
         final AccessResultCode accessResultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
                 administrativeStatusType);
         if (AccessResultCode.SUCCESS != accessResultCode) {
@@ -194,16 +190,21 @@ public class ConfigurationService {
     }
 
     public String setEncryptionKeyExchangeOnGMeter(final ClientConnection conn, final DlmsDevice device,
-            final GMeterInfo gMeterInfo) throws ProtocolAdapterException, FunctionalException {
+            final GMeterInfo gMeterInfo) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
 
         // Get G-Meter
-        final DlmsDevice gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
+        DlmsDevice gMeterDevice;
+        try {
+            gMeterDevice = this.domainHelperService.findDlmsDevice(gMeterInfo.getDeviceIdentification());
+        } catch (final FunctionalException e) {
+            throw new ProtocolAdapterException("Error while looking up G-Meter", e);
+        }
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                         SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                SecurityKeyType.G_METER_MASTER).getKey());
+                        SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 
