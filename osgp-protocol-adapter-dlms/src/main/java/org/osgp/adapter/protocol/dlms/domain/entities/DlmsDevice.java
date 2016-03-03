@@ -18,6 +18,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -49,8 +51,8 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST,
-            CascadeType.REFRESH })
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     private List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
