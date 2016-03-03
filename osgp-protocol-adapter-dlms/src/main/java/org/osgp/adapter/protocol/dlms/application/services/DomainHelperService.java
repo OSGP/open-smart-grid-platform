@@ -92,8 +92,8 @@ public class DomainHelperService {
             // The iccId is not supported by the sessionProvider. Use IP address
             // from the core
             LOGGER.warn(
-                    "iccId {} is not supported by the sessionProvider for {}. Using device messageMetaData IpAddress {}",
-                    iccId, dlmsDevice.getCommunicationProvider(), messageMetaDataIpAddress);
+                    "iccId {} is not supported by the sessionProvider for {}. Using device messageMetaData IpAddress {}. Exception is: {}",
+                    iccId, dlmsDevice.getCommunicationProvider(), messageMetaDataIpAddress, e.getMessage());
             return messageMetaDataIpAddress;
         }
 
