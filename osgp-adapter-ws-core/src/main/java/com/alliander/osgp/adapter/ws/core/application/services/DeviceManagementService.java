@@ -523,4 +523,29 @@ public class DeviceManagementService {
         return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 
+    public String enqueueSetDeviceVerificationKeyRequest(final String organisationIdentification,
+            final String deviceIdentification, final String verificationKey) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_VERIFICATION_KEY);
+        this.domainHelperService.isInMaintenance(device);
+
+        LOGGER.debug("enqueueSetDeviceVerificationKeyRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY,
+                correlationUid, organisationIdentification, deviceIdentification, verificationKey, null);
+
+        this.commonRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public ResponseMessage dequeueSetDeviceVerificationKeyResponse(final String correlationUid) throws OsgpException {
+        return this.commonResponseMessageFinder.findMessage(correlationUid);
+    }
 }

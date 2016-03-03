@@ -77,4 +77,22 @@ public class DeviceManagementService extends AbstractService {
                 deviceIdentification, certificationDto), messageType, device.getIpAddress());
     }
 
+    //  === SET DEVICE VERIFICATION KEY ===
+
+    public void setDeviceVerificationKey(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final String verificationKey, final String messageType) throws FunctionalException {
+        LOGGER.debug("SetDeviceVerificationKey called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
+
+        if (verificationKey == null) {
+            LOGGER.info("Verification key is empty, skip sending a request to device");
+            return;
+        }
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, verificationKey), messageType, device.getIpAddress());
+    }
 }

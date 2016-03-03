@@ -18,45 +18,45 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.core.application.services.DeviceManagementService;
 import com.alliander.osgp.adapter.domain.core.infra.jms.ws.WebServiceRequestMessageProcessor;
-import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
- * Class for processing common update device ssl certification request messages
+ * Class for processing common set device verification key request messages
  *
  */
-@Component("domainCoreCommonUpdateDeviceSslCertificationRequestMessageProcessor")
-public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
+@Component("domainCoreCommonSetDeviceVerificationKeyRequestMessageProcessor")
+public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonUpdateDeviceSslCertificationRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonSetDeviceVerificationKeyRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreDeviceManagementService")
     private DeviceManagementService deviceManagementService;
 
-    public CommonUpdateDeviceSslCertificationRequestMessageProcessor() {
-        super(DeviceFunction.UPDATE_DEVICE_SSL_CERTIFICATION);
+    public CommonSetDeviceVerificationKeyRequestMessageProcessor() {
+        super(DeviceFunction.SET_DEVICE_VERIFICATION_KEY);
     }
 
     @Override
     public void processMessage(final ObjectMessage message) {
-        LOGGER.debug("Processing update device ssl certification message");
+        LOGGER.debug("Processing common set device verification key message");
 
         String correlationUid = null;
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
+        String verificationKey = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-
+            verificationKey = (String) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -67,12 +67,10 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends W
         }
 
         try {
-            final Certification certification = (Certification) message.getObject();
-
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.deviceManagementService.updateDeviceSslCertification(organisationIdentification, deviceIdentification,
-                    correlationUid, certification, messageType);
+            this.deviceManagementService.setDeviceVerificationKey(organisationIdentification, deviceIdentification,
+                    correlationUid, verificationKey, messageType);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
