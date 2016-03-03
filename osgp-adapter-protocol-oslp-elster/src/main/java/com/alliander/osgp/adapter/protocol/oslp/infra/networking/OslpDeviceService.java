@@ -1373,8 +1373,6 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-
-
     private void handleOslpResponseUpdateDeviceSslCertification(final DeviceRequest deviceRequest,
             final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
 
@@ -1386,8 +1384,6 @@ public class OslpDeviceService implements DeviceService {
 
         deviceResponseHandler.handleResponse(deviceResponse);
     }
-
-
 
     private void handleOslpResponseGetStatus(final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse,
             final DeviceResponseHandler deviceResponseHandler) {
