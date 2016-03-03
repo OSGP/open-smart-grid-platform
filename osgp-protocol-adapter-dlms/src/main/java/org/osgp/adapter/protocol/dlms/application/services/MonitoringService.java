@@ -10,7 +10,6 @@ package org.osgp.adapter.protocol.dlms.application.services;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
@@ -26,7 +25,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
@@ -55,8 +53,7 @@ public class MonitoringService {
     // === REQUEST PERIODIC METER DATA ===
 
     public Serializable requestPeriodicMeterReads(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException {
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
         if (periodicMeterReadsQuery.isGas()) {
@@ -70,8 +67,7 @@ public class MonitoringService {
     }
 
     public Serializable requestActualMeterReads(final ClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsQuery actualMeterReadsRequest) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException {
+            final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
 
         Serializable response = null;
         if (actualMeterReadsRequest.isGas()) {
@@ -84,8 +80,7 @@ public class MonitoringService {
     }
 
     public AlarmRegister requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
-            final ReadAlarmRegisterRequest readAlarmRegisterRequest) throws OsgpException, ProtocolAdapterException,
-            SessionProviderException {
+            final ReadAlarmRegisterRequest readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
     }

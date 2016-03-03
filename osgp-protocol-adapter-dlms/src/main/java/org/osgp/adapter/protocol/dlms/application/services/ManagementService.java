@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
@@ -25,7 +24,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.Event;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "dlmsManagementService")
 public class ManagementService {
@@ -44,8 +42,8 @@ public class ManagementService {
     // === FIND EVENTS ===
 
     public EventMessageDataContainer findEvents(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) throws OsgpException,
-            ProtocolAdapterException, SessionProviderException {
+            final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer)
+            throws ProtocolAdapterException {
 
         final List<Event> events = new ArrayList<>();
 
