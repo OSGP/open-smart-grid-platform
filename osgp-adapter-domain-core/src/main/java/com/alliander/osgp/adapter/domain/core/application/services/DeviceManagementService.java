@@ -57,7 +57,7 @@ public class DeviceManagementService extends AbstractService {
 
     //   === UPDATE DEVICE SSL CERTIFICATION ===
 
-    public void UpdateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
+    public void updateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Certification certification, final String messageType) throws FunctionalException {
         LOGGER.debug("UpdateDeviceSslCertification called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);

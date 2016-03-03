@@ -64,7 +64,7 @@ public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends W
 
             LOGGER.info("Calling application service function: {}", messageType);
 
-            this.deviceManagementService.UpdateDeviceSslCertification(organisationIdentification, deviceIdentification,
+            this.deviceManagementService.updateDeviceSslCertification(organisationIdentification, deviceIdentification,
                     correlationUid, certification, messageType);
 
         } catch (final Exception e) {
