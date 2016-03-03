@@ -10,7 +10,7 @@
                    elementFormDefault="qualified" attributeFormDefault="unqualified"
                    xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd">
             <xs:import namespace="http://api.jasperwireless.com/ws/schema"
-                       schemaLocation="../jasperwireless/JasperAPI.xsd"/>
+                       schemaLocation="JasperAPI.xsd"/>
         </xs:schema>
     </types>
 

@@ -51,7 +51,7 @@
                             <goal>xjc</goal>
                         </goals>
                         <configuration>
-                            <schemaDirectory>src/main/webapp/wsdl/jasperwireless-terminal</schemaDirectory>
+                            <schemaDirectory>src/main/webapp/wsdl/jasperwireless</schemaDirectory>
                             <schemaFiles>Terminal.wsdl</schemaFiles>
                             <packageName>com.jasperwireless.api.ws.service</packageName>
                             <wsdl>true</wsdl>
