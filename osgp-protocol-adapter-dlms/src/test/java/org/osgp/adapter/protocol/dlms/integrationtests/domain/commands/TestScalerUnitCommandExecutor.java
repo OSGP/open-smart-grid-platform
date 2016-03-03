@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.AbstractMeterReadsScalerUnitCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
@@ -24,12 +24,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TestScalerUnitCommandExecutor extends
-AbstractMeterReadsScalerUnitCommandExecutor<TestChannelQuery, ScalerUnitTestResponse> {
+        AbstractMeterReadsScalerUnitCommandExecutor<TestChannelQuery, ScalerUnitTestResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestScalerUnitCommandExecutor.class);
 
     @Override
-    public ScalerUnitTestResponse execute(final LnClientConnection conn, final DlmsDevice device,
+    public ScalerUnitTestResponse execute(final ClientConnection conn, final DlmsDevice device,
             final TestChannelQuery object) throws ProtocolAdapterException {
         List<GetResult> getResultList;
         try {

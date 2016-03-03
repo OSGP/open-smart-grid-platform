@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -42,13 +42,13 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     private AlarmHelperService alarmHelperService;
 
     @Override
-    public AlarmRegister execute(final LnClientConnection conn, final DlmsDevice device,
+    public AlarmRegister execute(final ClientConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequest object) throws ProtocolAdapterException {
 
         return new AlarmRegister(this.retrieveAlarmRegister(conn));
     }
 
-    private Set<AlarmType> retrieveAlarmRegister(final LnClientConnection conn) throws ProtocolAdapterException {
+    private Set<AlarmType> retrieveAlarmRegister(final ClientConnection conn) throws ProtocolAdapterException {
 
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 

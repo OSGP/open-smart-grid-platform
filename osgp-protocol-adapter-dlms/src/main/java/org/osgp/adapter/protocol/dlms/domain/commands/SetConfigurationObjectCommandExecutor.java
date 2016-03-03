@@ -16,8 +16,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -63,7 +63,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final ConfigurationObject configurationObject) throws ProtocolAdapterException {
 
         try {
@@ -179,8 +179,8 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return null;
     }
 
-    private ConfigurationObject retrieveConfigurationObject(final LnClientConnection conn) throws IOException,
-            TimeoutException, ProtocolAdapterException {
+    private ConfigurationObject retrieveConfigurationObject(final ClientConnection conn) throws IOException,
+    TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 

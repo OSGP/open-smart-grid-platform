@@ -10,7 +10,7 @@ package org.osgp.adapter.protocol.dlms.integrationtests.domain.commands;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.application.config.ApplicationContext;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -52,7 +52,7 @@ public class ScalerUnitTest {
         dlmsDeviceMessageMetadata.setIpAddress("89.200.96.223");
 
         final DlmsDevice device = this.domainHelperService.findDlmsDevice(dlmsDeviceMessageMetadata);
-        final LnClientConnection connection = this.dlmsConnectionFactory.getConnection(device);
+        final ClientConnection connection = this.dlmsConnectionFactory.getConnection(device);
 
         final ScalerUnitTestResponse execute = this.commandExecutor.execute(connection, device, new TestChannelQuery());
 

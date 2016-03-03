@@ -8,7 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
@@ -19,7 +19,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
  * interface for command executors that should provide scaler unit information.
  * Implementations should retrieve scaler unit information by providing multiple
  * (two) AttributeAddresses to
- * {@link LnClientConnection#get(org.openmuc.jdlms.AttributeAddress...)}.
+ * {@link ClientConnection#get(org.openmuc.jdlms.AttributeAddress...)}.
  *
  * @param <R>
  *            a response from which scaler unit information can be retrieved
@@ -29,7 +29,7 @@ public interface ScalerUnitAwareCommandExecutor<T, R extends ScalerUnitResponse>
     /**
      * the attribute address to scaler unit information on the dlms device
      *
-     * @see LnClientConnection#get(org.openmuc.jdlms.AttributeAddress...)
+     * @see ClientConnection#get(org.openmuc.jdlms.AttributeAddress...)
      * @return the address of the scaler / unit to be used
      */
     AttributeAddress getScalerUnitAttributeAddress(T t) throws ProtocolAdapterException;

@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -45,7 +45,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterRe
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReadsGas execute(final LnClientConnection conn, final DlmsDevice device,
+    public ActualMeterReadsGas execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());

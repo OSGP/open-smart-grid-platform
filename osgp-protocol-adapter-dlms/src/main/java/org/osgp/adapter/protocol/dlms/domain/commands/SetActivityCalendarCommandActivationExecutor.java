@@ -3,7 +3,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.List;
 
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
@@ -25,7 +25,7 @@ public class SetActivityCalendarCommandActivationExecutor implements CommandExec
     private static final int METHOD_ID_ACTIVATE_PASSIVE_CALENDAR = 1;
 
     @Override
-    public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device, final Void v)
+    public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device, final Void v)
             throws ProtocolAdapterException {
 
         LOGGER.info("ACTIVATING PASSIVE CALENDAR");

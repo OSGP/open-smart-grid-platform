@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -53,7 +53,7 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public AccessResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+    public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final ActivityCalendar activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 

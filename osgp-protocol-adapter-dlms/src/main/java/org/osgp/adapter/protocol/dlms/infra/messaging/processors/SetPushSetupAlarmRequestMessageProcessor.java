@@ -9,11 +9,13 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
 
+import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
-import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,10 +36,10 @@ public class SetPushSetupAlarmRequestMessageProcessor extends DeviceRequestMessa
     }
 
     @Override
-    protected Serializable handleMessage(final DlmsDeviceMessageMetadata messageMetadata,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
+    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
         final PushSetupAlarm pushSetupAlarm = (PushSetupAlarm) requestObject;
-        this.configurationService.setPushSetupAlarm(messageMetadata, pushSetupAlarm);
+        this.configurationService.setPushSetupAlarm(conn, device, pushSetupAlarm);
         return null;
     }
 }

@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -34,11 +34,9 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
     private static final ObisCode OBIS_CODE = new ObisCode("1.0.0.2.0.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
 
     @Override
-    public String execute(final LnClientConnection conn, final DlmsDevice device, final Void useless)
+    public String execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         LOGGER.info(
