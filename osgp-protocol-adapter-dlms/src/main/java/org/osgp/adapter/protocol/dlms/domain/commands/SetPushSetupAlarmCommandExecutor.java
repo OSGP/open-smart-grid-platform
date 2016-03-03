@@ -27,7 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
 
 @Component()
 public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupAlarm, AccessResultCode> {
+        CommandExecutor<PushSetupAlarm, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
@@ -36,22 +36,41 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
 
-        final SetParameter setParameterSendDestinationAndMethod;
+        final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupAlarm);
+
+        List<AccessResultCode> resultCodes;
+        try {
+            resultCodes = conn.set(setParameterSendDestinationAndMethod);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
+
+        if (resultCodes != null && !resultCodes.isEmpty()) {
+            return resultCodes.get(0);
+        } else {
+            throw new ProtocolAdapterException("Error setting Alarm push setup data.");
+        }
+    }
+
+    private SetParameter getSetParameter(final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
+
+        checkPushSetupAlarm(pushSetupAlarm);
+
+        final AttributeAddress sendDestinationAndMethodAddress = new AttributeAddress(CLASS_ID, OBIS_CODE,
+                ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
+        final DataObject value = this.buildSendDestinationAndMethodObject(pushSetupAlarm.getSendDestinationAndMethod());
+        return new SetParameter(sendDestinationAndMethodAddress, value);
+    }
+
+    private void checkPushSetupAlarm(final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
+        if (!pushSetupAlarm.hasSendDestinationAndMethod()) {
+            LOGGER.error("Send Destination and Method of the Push Setup Alarm is expected to be set.");
+            throw new ProtocolAdapterException("Error setting Alarm push setup data. No destination and method data");
+        }
 
         if (pushSetupAlarm.hasPushObjectList()) {
             LOGGER.warn("Setting Push Object List of Push Setup Alarm not implemented: {}",
                     pushSetupAlarm.getPushObjectList());
-        }
-
-        if (pushSetupAlarm.hasSendDestinationAndMethod()) {
-            final AttributeAddress sendDestinationAndMethodAddress = new AttributeAddress(CLASS_ID, OBIS_CODE,
-                    ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
-            final DataObject value = this.buildSendDestinationAndMethodObject(pushSetupAlarm
-                    .getSendDestinationAndMethod());
-            setParameterSendDestinationAndMethod = new SetParameter(sendDestinationAndMethodAddress, value);
-        } else {
-            LOGGER.error("Send Destination and Method of the Push Setup Alarm is expected to be set.");
-            throw new ProtocolAdapterException("Error setting Alarm push setup data. No destination and method data");
         }
 
         if (pushSetupAlarm.hasCommunicationWindow()) {
@@ -69,19 +88,6 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
         if (pushSetupAlarm.hasRepetitionDelay()) {
             LOGGER.warn("Setting Repetition Delay of Push Setup Alarm not implemented: {}",
                     pushSetupAlarm.getRepetitionDelay());
-        }
-
-        List<AccessResultCode> resultCodes;
-        try {
-            resultCodes = conn.set(setParameterSendDestinationAndMethod);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
-
-        if (resultCodes != null && !resultCodes.isEmpty()) {
-            return resultCodes.get(0);
-        } else {
-            throw new ProtocolAdapterException("Error setting Alarm push setup data.");
         }
     }
 }
