@@ -36,22 +36,41 @@ public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor 
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
 
-        final SetParameter setParameterSendDestinationAndMethod;
+        final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
+
+        List<AccessResultCode> resultCodes;
+        try {
+            resultCodes = conn.set(setParameterSendDestinationAndMethod);
+        } catch (final IOException e) {
+            throw new ConnectionException(e);
+        }
+        if (resultCodes != null && !resultCodes.isEmpty()) {
+            return resultCodes.get(0);
+        } else {
+            throw new ProtocolAdapterException("Error setting Sms push setup data.");
+        }
+    }
+
+    private SetParameter getSetParameter(final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
+
+        this.checkPushSetupSms(pushSetupSms);
+
+        final AttributeAddress sendDestinationAndMethodAddress = new AttributeAddress(CLASS_ID, OBIS_CODE,
+                ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
+        final DataObject value = this.buildSendDestinationAndMethodObject(pushSetupSms.getSendDestinationAndMethod());
+        return new SetParameter(sendDestinationAndMethodAddress, value);
+
+    }
+
+    private void checkPushSetupSms(final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
+        if (!pushSetupSms.hasSendDestinationAndMethod()) {
+            LOGGER.error("Send Destination and Method of the Push Setup Sms is expected to be set.");
+            throw new ProtocolAdapterException("Error setting Sms push setup data. No destination and method data");
+        }
 
         if (pushSetupSms.hasPushObjectList()) {
             LOGGER.warn("Setting Push Object List of Push Setup Sms not implemented: {}",
                     pushSetupSms.getPushObjectList());
-        }
-
-        if (pushSetupSms.hasSendDestinationAndMethod()) {
-            final AttributeAddress sendDestinationAndMethodAddress = new AttributeAddress(CLASS_ID, OBIS_CODE,
-                    ATTRIBUTE_ID_SEND_DESTINATION_AND_METHOD);
-            final DataObject value = this.buildSendDestinationAndMethodObject(pushSetupSms
-                    .getSendDestinationAndMethod());
-            setParameterSendDestinationAndMethod = new SetParameter(sendDestinationAndMethodAddress, value);
-        } else {
-            LOGGER.error("Send Destination and Method of the Push Setup Sms is expected to be set.");
-            throw new ProtocolAdapterException("Error setting Sms push setup data. No destination and method data");
         }
 
         if (pushSetupSms.hasCommunicationWindow()) {
@@ -69,18 +88,6 @@ public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor 
         if (pushSetupSms.hasRepetitionDelay()) {
             LOGGER.warn("Setting Repetition Delay of Push Setup Sms not implemented: {}",
                     pushSetupSms.getRepetitionDelay());
-        }
-
-        List<AccessResultCode> resultCodes;
-        try {
-            resultCodes = conn.set(setParameterSendDestinationAndMethod);
-        } catch (final IOException e) {
-            throw new ConnectionException(e);
-        }
-        if (resultCodes != null && !resultCodes.isEmpty()) {
-            return resultCodes.get(0);
-        } else {
-            throw new ProtocolAdapterException("Error setting Sms push setup data.");
         }
     }
 }
