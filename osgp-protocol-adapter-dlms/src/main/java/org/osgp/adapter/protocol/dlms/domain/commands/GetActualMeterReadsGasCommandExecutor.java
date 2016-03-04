@@ -29,7 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 @Component()
 public class GetActualMeterReadsGasCommandExecutor extends
-AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
+        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -86,8 +86,8 @@ AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterRe
                     "No GetResult received while retrieving current MBUS master capture time.");
         }
 
-        if (getResultList.size() != 2) {
-            LOGGER.info("Expected 2 GetResult while retrieving current MBUS master capture time, got "
+        if (getResultList.size() != 3) {
+            LOGGER.info("Expected 3 GetResult while retrieving current MBUS master capture time, got "
                     + getResultList.size());
         }
     }
