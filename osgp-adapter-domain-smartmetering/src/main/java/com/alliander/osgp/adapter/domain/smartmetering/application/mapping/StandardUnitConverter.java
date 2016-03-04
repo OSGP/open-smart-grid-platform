@@ -79,6 +79,7 @@ public class StandardUnitConverter {
             return 0.001d;
         case M3:
         case M3COR:
+        case UNDEFINED:
             return 1d;
         default:
             throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", dlmsUnit.name()));
@@ -92,6 +93,8 @@ public class StandardUnitConverter {
         case M3:
         case M3COR:
             return OsgpUnit.M3;
+        case UNDEFINED:
+            return OsgpUnit.UNDEFINED;
         default:
             throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", scalerUnitResponse
                     .getScalerUnit().getDlmsUnit().name()));
