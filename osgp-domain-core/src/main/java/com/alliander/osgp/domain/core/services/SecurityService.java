@@ -59,8 +59,8 @@ public class SecurityService {
                 DeviceFunction.SWITCH_CONFIGURATION_BANK, DeviceFunction.GET_STATUS, DeviceFunction.GET_LIGHT_STATUS,
                 DeviceFunction.GET_TARIFF_STATUS, DeviceFunction.REMOVE_DEVICE, DeviceFunction.GET_ACTUAL_POWER_USAGE,
                 DeviceFunction.GET_POWER_USAGE_HISTORY, DeviceFunction.RESUME_SCHEDULE, DeviceFunction.SET_REBOOT,
-                DeviceFunction.SET_TRANSITION, DeviceFunction.UPDATE_KEY, DeviceFunction.REVOKE_KEY,
-                DeviceFunction.FIND_SCHEDULED_TASKS, DeviceFunction.ADD_METER });
+                DeviceFunction.SET_TRANSITION, DeviceFunction.UPDATE_KEY, DeviceFunction.UPDATE_DEVICE_SSL_CERTIFICATION,
+                DeviceFunction.REVOKE_KEY, DeviceFunction.FIND_SCHEDULED_TASKS, DeviceFunction.ADD_METER });
 
         deviceMapping.put(DeviceFunctionGroup.INSTALLATION, new DeviceFunction[] { DeviceFunction.START_SELF_TEST,
                 DeviceFunction.STOP_SELF_TEST, DeviceFunction.GET_DEVICE_AUTHORIZATION, DeviceFunction.ADD_METER });
@@ -73,7 +73,7 @@ public class SecurityService {
         deviceMapping.put(DeviceFunctionGroup.MANAGEMENT, new DeviceFunction[] {
                 DeviceFunction.GET_DEVICE_AUTHORIZATION, DeviceFunction.SET_EVENT_NOTIFICATIONS,
                 DeviceFunction.GET_EVENT_NOTIFICATIONS, DeviceFunction.REMOVE_DEVICE, DeviceFunction.UPDATE_KEY,
-                DeviceFunction.REVOKE_KEY });
+                DeviceFunction.UPDATE_DEVICE_SSL_CERTIFICATION, DeviceFunction.REVOKE_KEY });
 
         deviceMapping.put(DeviceFunctionGroup.FIRMWARE, new DeviceFunction[] { DeviceFunction.GET_DEVICE_AUTHORIZATION,
                 DeviceFunction.UPDATE_FIRMWARE, DeviceFunction.GET_FIRMWARE_VERSION, DeviceFunction.SWITCH_FIRMWARE });

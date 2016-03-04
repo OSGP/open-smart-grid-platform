@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -37,7 +38,7 @@ public class DeviceManagementService extends AbstractService {
 
     public void setEventNotifications(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<EventNotificationType> eventNotifications, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("setEventNotifications called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
@@ -53,4 +54,27 @@ public class DeviceManagementService extends AbstractService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, eventNotificationMessageDataContainer), messageType, device.getIpAddress());
     }
+
+    //   === UPDATE DEVICE SSL CERTIFICATION ===
+
+    public void updateDeviceSslCertification(final String organisationIdentification, final String deviceIdentification,
+            final String correlationUid, final Certification certification, final String messageType) throws FunctionalException {
+        LOGGER.debug("UpdateDeviceSslCertification called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        this.findOrganisation(organisationIdentification);
+        final Device device = this.findActiveDevice(deviceIdentification);
+
+        if (certification == null) {
+            LOGGER.info("Certification is empty, skip sending a request to device");
+            return;
+        }
+
+        final com.alliander.osgp.dto.valueobjects.Certification certificationDto = this.domainCoreMapper.map(
+                certification, com.alliander.osgp.dto.valueobjects.Certification.class);
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
+                deviceIdentification, certificationDto), messageType, device.getIpAddress());
+    }
+
 }

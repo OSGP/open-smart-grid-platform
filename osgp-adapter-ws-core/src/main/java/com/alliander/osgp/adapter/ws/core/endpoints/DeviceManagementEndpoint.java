@@ -46,10 +46,15 @@ import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenance
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.SetMaintenanceStatusResponse;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationRequest;
+import com.alliander.osgp.adapter.ws.schema.core.devicemanagement.UpdateDeviceSslCertificationResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
+import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -346,6 +351,67 @@ public class DeviceManagementEndpoint {
         setMaintenanceStatusResponse.setResult(OsgpResultType.OK);
 
         return setMaintenanceStatusResponse;
+    }
+
+    @PayloadRoot(localPart = "UpdateDeviceSslCertificationRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public UpdateDeviceSslCertificationAsyncResponse updateDeviceSslCertification(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateDeviceSslCertificationRequest request) throws OsgpException {
+
+        LOGGER.info("Update Device Ssl Certification Request received from organisation: {} for device: {}.",
+                organisationIdentification, request.getDeviceIdentification());
+
+        final UpdateDeviceSslCertificationAsyncResponse response = new UpdateDeviceSslCertificationAsyncResponse();
+
+        try {
+            final Certification certification = this.deviceManagementMapper.map(request.getCertification(),
+                    Certification.class);
+
+            final String correlationUid = this.deviceManagementService
+                    .enqueueUpdateDeviceSslCertificationRequest(organisationIdentification, request.getDeviceIdentification(),
+                            certification);
+
+            final AsyncResponse asyncResponse = new AsyncResponse();
+            asyncResponse.setCorrelationUid(correlationUid);
+            asyncResponse.setDeviceId(request.getDeviceIdentification());
+            response.setAsyncResponse(asyncResponse);
+
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
+    }
+
+    @PayloadRoot(localPart = "UpdateDeviceSslCertificationAsyncRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public UpdateDeviceSslCertificationResponse getUpdateDeviceSslCertificationResponse(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateDeviceSslCertificationAsyncRequest request) throws OsgpException {
+
+        LOGGER.info("Update Device Ssl Certification Response received from organisation: {} with correlationUid: {}.",
+                organisationIdentification, request.getAsyncRequest().getCorrelationUid());
+
+        final UpdateDeviceSslCertificationResponse response = new UpdateDeviceSslCertificationResponse();
+
+        try {
+            final ResponseMessage message = this.deviceManagementService.dequeueUpdateDeviceSslCertificationResponse(request
+                    .getAsyncRequest().getCorrelationUid());
+            if (message != null) {
+                response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
+            }  else {
+                LOGGER.debug("Update Device Ssl Certification data is null");
+            }
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return response;
     }
 
     private void handleException(final Exception e) throws OsgpException {

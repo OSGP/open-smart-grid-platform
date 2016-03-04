@@ -47,6 +47,7 @@ public class CommonDefaultResponseMessageProcessor extends OsgpCoreResponseMessa
         this.addMessageType(DeviceFunction.STOP_SELF_TEST);
         this.addMessageType(DeviceFunction.SWITCH_CONFIGURATION_BANK);
         this.addMessageType(DeviceFunction.SWITCH_FIRMWARE);
+        this.addMessageType(DeviceFunction.UPDATE_DEVICE_SSL_CERTIFICATION);
     }
 
     @Override

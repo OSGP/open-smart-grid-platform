@@ -154,6 +154,37 @@
     </xsd:complexType>
   </xsd:element>
 
+  <xsd:element name="UpdateDeviceSslCertificationRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="DeviceIdentification" type="common:Identification" />
+        <xsd:element name="Certification" type="tns:Certification" minOccurs="0" maxOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateDeviceSslCertificationResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
+        <xsd:element name="Description" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateDeviceSslCertificationAsyncRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncRequest" type="common:AsyncRequest" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="UpdateDeviceSslCertificationAsyncResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="AsyncResponse" type="common:AsyncResponse" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  
   <xsd:element name="SetMaintenanceStatusResponse">
     <xsd:complexType>
       <xsd:sequence>
@@ -411,4 +442,26 @@
       <xsd:element name="organisation" type="xsd:string" minOccurs="0" />
     </xsd:sequence>
   </xsd:complexType>
+
+  <xsd:complexType name="Certification">
+    <xsd:sequence>
+      <xsd:element name="certificateDomain" minOccurs="0" maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="100"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="certificateUrl" minOccurs="0" maxOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="255"/>
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+    </xsd:sequence>   
+  </xsd:complexType>
+  
 </xsd:schema>
