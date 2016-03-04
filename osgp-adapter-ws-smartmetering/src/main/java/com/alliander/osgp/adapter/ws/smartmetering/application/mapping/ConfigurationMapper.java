@@ -35,6 +35,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new KeySetConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
-        mapperFactory.getConverterFactory().registerConverter(new SpecialDayMapper());
+        mapperFactory.getConverterFactory().registerConverter(new SpecialDayConverter());
     }
 }
