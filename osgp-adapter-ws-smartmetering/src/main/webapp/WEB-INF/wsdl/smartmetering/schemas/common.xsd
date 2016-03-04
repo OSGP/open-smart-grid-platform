@@ -139,6 +139,9 @@
             <xsd:enumeration value="KWH" >
                 <xsd:annotation><xsd:documentation>kilo watt hour</xsd:documentation></xsd:annotation>
             </xsd:enumeration>
+            <xsd:enumeration value="UNDEFINED" >
+                <xsd:annotation><xsd:documentation>undefined unit</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
         </xsd:restriction>
     </xsd:simpleType>
 
