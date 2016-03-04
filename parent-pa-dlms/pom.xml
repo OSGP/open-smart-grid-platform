@@ -81,7 +81,7 @@
         <apache.commons.schema>2.0.3</apache.commons.schema>
         <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
         <netty.version>3.9.4.Final</netty.version>
-        <openmuc.jdlms.version>0.11.4-SNAPSHOT</openmuc.jdlms.version>
+        <openmuc.jdlms.version>0.11.4</openmuc.jdlms.version>
     </properties>
 
     <repositories>

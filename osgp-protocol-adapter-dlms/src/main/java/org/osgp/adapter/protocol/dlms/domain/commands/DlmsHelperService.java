@@ -22,8 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
 import org.openmuc.jdlms.datatypes.CosemDateFormat;
@@ -71,7 +71,7 @@ public class DlmsHelperService {
     private static final String NOT_SPECIFIED = "FF";
     public static final int MILLISECONDS_PER_MINUTE = 60000;
 
-    public List<GetResult> getWithList(final LnClientConnection conn, final DlmsDevice device,
+    public List<GetResult> getWithList(final ClientConnection conn, final DlmsDevice device,
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
             if (device.isWithListSupported()) {
@@ -99,9 +99,9 @@ public class DlmsHelperService {
      * @throws IOException
      * @throws TimeoutException
      *
-     * @see #getWithList(LnClientConnection, DlmsDevice, AttributeAddress...)
+     * @see #getWithList(ClientConnection, DlmsDevice, AttributeAddress...)
      */
-    private List<GetResult> getWithListWorkaround(final LnClientConnection conn, final AttributeAddress... params)
+    private List<GetResult> getWithListWorkaround(final ClientConnection conn, final AttributeAddress... params)
             throws IOException, TimeoutException {
         final List<GetResult> getResultList = new ArrayList<>();
         for (final AttributeAddress param : params) {

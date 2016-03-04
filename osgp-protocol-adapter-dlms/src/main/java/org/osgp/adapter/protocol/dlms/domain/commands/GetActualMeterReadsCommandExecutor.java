@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -69,7 +69,7 @@ public class GetActualMeterReadsCommandExecutor extends
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReads execute(final LnClientConnection conn, final DlmsDevice device,
+    public ActualMeterReads execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isGas()) {

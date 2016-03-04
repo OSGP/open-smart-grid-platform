@@ -14,8 +14,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.application.mapping.DataObjectToEventListConverter;
@@ -42,24 +42,19 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     @Autowired
     DataObjectToEventListConverter dataObjectToEventListConverter;
 
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
-
     // @formatter:off
     private static final EnumMap<EventLogCategory, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(
             EventLogCategory.class);
     static {
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.STANDARD_EVENT_LOG, new ObisCode("0.0.99.98.0.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.FRAUD_DETECTION_LOG, new ObisCode("0.0.99.98.1.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP
-                .put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
-        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG, new ObisCode("0.0.99.98.3.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.STANDARD_EVENT_LOG,        new ObisCode("0.0.99.98.0.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.FRAUD_DETECTION_LOG,       new ObisCode("0.0.99.98.1.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.COMMUNICATION_SESSION_LOG, new ObisCode("0.0.99.98.4.255"));
+        EVENT_LOG_CATEGORY_OBISCODE_MAP.put(EventLogCategory.M_BUS_EVENT_LOG,           new ObisCode("0.0.99.98.3.255"));
     }
-
     // @formatter:on
 
     @Override
-    public List<Event> execute(final LnClientConnection conn, final DlmsDevice device,
+    public List<Event> execute(final ClientConnection conn, final DlmsDevice device,
             final FindEventsQuery findEventsQuery) throws ProtocolAdapterException {
 
         final AttributeAddress eventLogBuffer = new AttributeAddress(CLASS_ID,

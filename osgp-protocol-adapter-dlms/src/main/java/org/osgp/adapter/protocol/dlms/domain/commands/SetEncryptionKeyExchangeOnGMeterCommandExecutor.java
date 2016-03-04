@@ -19,7 +19,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.MethodParameter;
 import org.openmuc.jdlms.MethodResult;
 import org.openmuc.jdlms.MethodResultCode;
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -56,7 +56,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
     }
 
     @Override
-    public MethodResultCode execute(final LnClientConnection conn, final DlmsDevice device,
+    public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
 
         try {

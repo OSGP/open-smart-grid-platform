@@ -6,7 +6,7 @@ import java.net.InetAddress;
 import javax.naming.OperationNotSupportedException;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
@@ -34,7 +34,7 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public LnClientConnection getConnection(final DlmsDevice device) throws TechnicalException {
+    public ClientConnection getConnection(final DlmsDevice device) throws TechnicalException {
 
         if (device.isHls5Active()) {
             return this.getHls5Connection(device);
@@ -44,7 +44,7 @@ public class DlmsConnectionFactory {
         }
     }
 
-    private LnClientConnection getHls5Connection(final DlmsDevice device) throws TechnicalException {
+    private ClientConnection getHls5Connection(final DlmsDevice device) throws TechnicalException {
 
         final byte[] authenticationKey = this.getSecurityKey(device, SecurityKeyType.E_METER_AUTHENTICATION);
         final byte[] encryptionKey = this.getSecurityKey(device, SecurityKeyType.E_METER_ENCRYPTION);

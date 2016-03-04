@@ -115,4 +115,5 @@ public class DlmsConfig {
     public DlmsChannelHandlerServer dlmsChannelHandlerServer() {
         return new DlmsChannelHandlerServer();
     }
+
 }
