@@ -14,6 +14,10 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 public enum OsgpUnit {
 
     /**
+     * unit is not defined
+     */
+    UNDEFINED,
+    /**
      * cubic meter
      */
     M3,
