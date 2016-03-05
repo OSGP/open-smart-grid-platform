@@ -9,7 +9,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDay;
 
 public class SpecialDayConverter extends
-CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDay, SpecialDay> {
+        CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDay, SpecialDay> {
 
     @Override
     public SpecialDay convert(final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDay source,
@@ -18,7 +18,8 @@ CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration
         final short year = bb.getShort();
         final byte month = bb.get();
         final byte day = bb.get();
-        final SpecialDay specialDay = new SpecialDay(new CosemDate(year == -1 ? 0xFFFF : year, month, day),
+        final byte weekDay = bb.get();
+        final SpecialDay specialDay = new SpecialDay(new CosemDate(year == -1 ? 0xFFFF : year, month, day, weekDay),
                 source.getDayId());
 
         return specialDay;
