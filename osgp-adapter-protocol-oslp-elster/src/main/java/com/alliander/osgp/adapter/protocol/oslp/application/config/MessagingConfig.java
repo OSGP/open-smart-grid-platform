@@ -7,9 +7,6 @@
  */
 package com.alliander.osgp.adapter.protocol.oslp.application.config;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import javax.annotation.Resource;
 import javax.jms.MessageListener;
 
@@ -516,20 +513,13 @@ public class MessagingConfig {
      */
     @Bean
     public ActiveMQDestination replyToQueue() {
-        try {
-            final String prefix = this.environment
-                    .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE);
-            final String hostName = InetAddress.getLocalHost().getHostName();
-            final String randomPostFix = RandomStringUtils.random(10, false, true);
-            final String queueName = prefix.concat("-").concat(hostName).concat("-").concat(randomPostFix);
+        final String prefix = this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE);
+        final String randomPostFix = RandomStringUtils.random(10, false, true);
+        final String queueName = prefix.concat("-").concat(randomPostFix);
 
-            LOGGER.info("------> replyToQueue: {}", queueName);
+        LOGGER.info("------> replyToQueue: {}", queueName);
 
-            return new ActiveMQQueue(queueName);
-        } catch (final UnknownHostException e) {
-            LOGGER.error("UnknownHostException while trying to create replyToQueue", e);
-            return null;
-        }
+        return new ActiveMQQueue(queueName);
     }
 
     @Bean
