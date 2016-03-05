@@ -37,12 +37,14 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetPowerUsageHis
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.ResumeScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetConfigurationDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetDeviceVerificationKeyDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetEventNotificationsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchConfigurationBankRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.SwitchFirmwareDeviceRequest;
+import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateDeviceSslCertificationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetActualPowerUsageDeviceResponse;
@@ -319,7 +321,86 @@ public class OslpDeviceService implements DeviceService {
 
             @Override
             public void handleResponse(final OslpEnvelope oslpResponse) {
-                OslpDeviceService.this.handleOslpResponseSwitchFirmware(deviceRequest, oslpResponse, deviceResponseHandler);
+                OslpDeviceService.this.handleOslpResponseSwitchFirmware(deviceRequest, oslpResponse,
+                        deviceResponseHandler);
+            }
+
+            @Override
+            public void handleException(final Throwable t) {
+                OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
+            }
+        };
+
+        this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
+    }
+
+    @Override
+    public void updateDeviceSslCertification(final UpdateDeviceSslCertificationDeviceRequest deviceRequest) {
+        LOGGER.info("UpdateDeviceSslCertification() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestUpdateDeviceSslCertification(deviceRequest);
+    }
+
+    private void buildOslpRequestUpdateDeviceSslCertification(
+            final UpdateDeviceSslCertificationDeviceRequest deviceRequest) {
+        final Oslp.UpdateDeviceSslCertificationRequest updateDeviceSslCertificationRequest = Oslp.UpdateDeviceSslCertificationRequest
+                .newBuilder().setCertificateDomain(deviceRequest.getCertification().getCertificateDomain())
+                .setCertificateUrl(deviceRequest.getCertification().getCertificateUrl()).build();
+
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setUpdateDeviceSslCertificationRequest(updateDeviceSslCertificationRequest)
+                        .build(), deviceRequest.getCertification());
+
+    }
+
+    @Override
+    public void doUpdateDeviceSslCertification(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+
+        LOGGER.info("doUpdateDeviceSslCertification() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+
+        final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
+
+            @Override
+            public void handleResponse(final OslpEnvelope oslpResponse) {
+                OslpDeviceService.this.handleOslpResponseUpdateDeviceSslCertification(deviceRequest, oslpResponse,
+                        deviceResponseHandler);
+            }
+
+            @Override
+            public void handleException(final Throwable t) {
+                OslpDeviceService.this.handleException(t, deviceRequest, deviceResponseHandler);
+            }
+        };
+
+        this.oslpChannelHandler.send(this.createAddress(InetAddress.getByName(ipAddress)), oslpRequest,
+                oslpResponseHandler, deviceRequest.getDeviceIdentification());
+    }
+
+    @Override
+    public void setDeviceVerificationKey(final SetDeviceVerificationKeyDeviceRequest deviceRequest) {
+        LOGGER.info("SetDeviceVerificationKey() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.buildOslpRequestSetDeviceVerificationKey(deviceRequest);
+    }
+
+    @Override
+    public void doSetDeviceVerificationKey(final OslpEnvelope oslpRequest, final DeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler, final String ipAddress) throws IOException {
+
+        LOGGER.info("doSetDeviceVerificationKey() for device: {}.", deviceRequest.getDeviceIdentification());
+
+        this.saveOslpRequestLogEntry(deviceRequest, oslpRequest);
+
+        final OslpResponseHandler oslpResponseHandler = new OslpResponseHandler() {
+
+            @Override
+            public void handleResponse(final OslpEnvelope oslpResponse) {
+                OslpDeviceService.this.handleOslpResponseSetDeviceVerificationKey(deviceRequest, oslpResponse,
+                        deviceResponseHandler);
             }
 
             @Override
@@ -526,8 +607,8 @@ public class OslpDeviceService implements DeviceService {
                 .addAllSchedules(oslpSchedules)
                 .setScheduleType(
                         this.mapper.map(deviceRequest.getRelayType(), com.alliander.osgp.oslp.Oslp.RelayType.class))
-                        .setPageInfo(
-                                Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
+                .setPageInfo(
+                        Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
                                 .setPageSize(pager.getPageSize()).setTotalPages(pager.getNumberOfPages()));
 
         final PageInfo pageInfo = new PageInfo(pager.getCurrentPage(), pager.getPageSize(), pager.getNumberOfPages());
@@ -827,7 +908,7 @@ public class OslpDeviceService implements DeviceService {
             final Pager pager, final List<PowerUsageData> powerUsageHistoryData,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
             final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled)
-                    throws IOException {
+            throws IOException {
         LOGGER.info("GetPowerUsageHistory() for device: {}, page: {}", deviceRequest.getDeviceIdentification(),
                 pager.getCurrentPage());
 
@@ -911,7 +992,7 @@ public class OslpDeviceService implements DeviceService {
         powerUsageHistoryResponseMessageDataContainer.setHistoryTermType(deviceRequest.getPowerUsageHistoryContainer()
                 .getHistoryTermType());
         powerUsageHistoryResponseMessageDataContainer
-        .setRequestContainer(deviceRequest.getPowerUsageHistoryContainer());
+                .setRequestContainer(deviceRequest.getPowerUsageHistoryContainer());
 
         this.buildAndSignEnvelope(deviceRequest,
                 Oslp.Message.newBuilder().setGetPowerUsageHistoryRequest(getPowerUsageHistoryRequest).build(),
@@ -1113,6 +1194,40 @@ public class OslpDeviceService implements DeviceService {
                 deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
     }
 
+    private DeviceResponse buildDeviceResponseUpdateDeviceSslCertification(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse) {
+        DeviceMessageStatus status = null;
+
+        if (oslpResponse.getPayloadMessage().hasUpdateDeviceSslCertificationResponse()) {
+            final Oslp.UpdateDeviceSslCertificationResponse updateDeviceSslCertificationResponse = oslpResponse
+                    .getPayloadMessage().getUpdateDeviceSslCertificationResponse();
+
+            status = this.mapper.map(updateDeviceSslCertificationResponse.getStatus(), DeviceMessageStatus.class);
+        } else {
+            status = DeviceMessageStatus.FAILURE;
+        }
+
+        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+    }
+
+    private DeviceResponse buildDeviceResponseSetDeviceVerificationKey(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse) {
+        DeviceMessageStatus status = null;
+
+        if (oslpResponse.getPayloadMessage().hasSetDeviceVerificationKeyResponse()) {
+            final Oslp.SetDeviceVerificationKeyResponse setDeviceVerificationKeyResponse = oslpResponse
+                    .getPayloadMessage().getSetDeviceVerificationKeyResponse();
+
+            status = this.mapper.map(setDeviceVerificationKeyResponse.getStatus(), DeviceMessageStatus.class);
+        } else {
+            status = DeviceMessageStatus.FAILURE;
+        }
+
+        return new EmptyDeviceResponse(deviceRequest.getOrganisationIdentification(),
+                deviceRequest.getDeviceIdentification(), deviceRequest.getCorrelationUid(), status);
+    }
+
     private void buildOslpRequestGetActualPowerUsage(final DeviceRequest deviceRequest) {
         final Oslp.GetActualPowerUsageRequest getActualPowerUsageRequest = Oslp.GetActualPowerUsageRequest.newBuilder()
                 .build();
@@ -1215,7 +1330,7 @@ public class OslpDeviceService implements DeviceService {
                                 com.alliander.osgp.oslp.Oslp.TransitionType.class));
         if (deviceRequest.getTransitionTypeContainer().getDateTime() != null) {
             setTransitionBuilder
-            .setTime(deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
+                    .setTime(deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
         }
 
         this.buildAndSignEnvelope(deviceRequest,
@@ -1244,6 +1359,16 @@ public class OslpDeviceService implements DeviceService {
 
         this.buildAndSignEnvelope(deviceRequest,
                 Oslp.Message.newBuilder().setUpdateFirmwareRequest(updateFirmwareRequest).build(), null);
+    }
+
+    private void buildOslpRequestSetDeviceVerificationKey(final SetDeviceVerificationKeyDeviceRequest deviceRequest) {
+        final Oslp.SetDeviceVerificationKeyRequest setDeviceVerificationKey = Oslp.SetDeviceVerificationKeyRequest
+                .newBuilder().setCertificateChunk(ByteString.copyFrom(deviceRequest.getVerificationKey().getBytes()))
+                .build();
+
+        this.buildAndSignEnvelope(deviceRequest,
+                Oslp.Message.newBuilder().setSetDeviceVerificationKeyRequest(setDeviceVerificationKey).build(),
+                deviceRequest.getVerificationKey());
     }
 
     private void handleOslpResponseGetActualPowerUsage(final DeviceRequest deviceRequest,
@@ -1300,14 +1425,40 @@ public class OslpDeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-    private void handleOslpResponseSwitchFirmware(final DeviceRequest deviceRequest,
-            final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
+    private void handleOslpResponseSwitchFirmware(final DeviceRequest deviceRequest, final OslpEnvelope oslpResponse,
+            final DeviceResponseHandler deviceResponseHandler) {
 
         this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
 
         this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
 
         final DeviceResponse deviceResponse = this.buildDeviceResponseSwitchFirmware(deviceRequest, oslpResponse);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
+    private void handleOslpResponseUpdateDeviceSslCertification(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
+
+        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
+
+        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
+
+        final DeviceResponse deviceResponse = this.buildDeviceResponseUpdateDeviceSslCertification(deviceRequest,
+                oslpResponse);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
+    private void handleOslpResponseSetDeviceVerificationKey(final DeviceRequest deviceRequest,
+            final OslpEnvelope oslpResponse, final DeviceResponseHandler deviceResponseHandler) {
+
+        this.saveOslpResponseLogEntry(deviceRequest, oslpResponse);
+
+        this.updateSequenceNumber(deviceRequest.getDeviceIdentification(), oslpResponse);
+
+        final DeviceResponse deviceResponse = this.buildDeviceResponseSetDeviceVerificationKey(deviceRequest,
+                oslpResponse);
 
         deviceResponseHandler.handleResponse(deviceResponse);
     }
@@ -1328,7 +1479,7 @@ public class OslpDeviceService implements DeviceService {
                         LightValue.class), this.mapper.map(getStatusResponse.getPreferredLinktype(), LinkType.class),
                         this.mapper.map(getStatusResponse.getActualLinktype(), LinkType.class), this.mapper.map(
                                 getStatusResponse.getLightType(), LightType.class),
-                                getStatusResponse.getEventNotificationMask());
+                        getStatusResponse.getEventNotificationMask());
 
                 // optional properties DeviceStatus
                 deviceStatus.setBootLoaderVersion(getStatusResponse.getBootLoaderVersion());
@@ -1677,7 +1828,5 @@ public class OslpDeviceService implements DeviceService {
     public void setOslpChannelHandler(final OslpChannelHandlerClient channelHandler) {
         this.oslpChannelHandler = channelHandler;
     }
-
-
 
 }
