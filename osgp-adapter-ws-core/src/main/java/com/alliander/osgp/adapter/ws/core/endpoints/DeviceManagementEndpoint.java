@@ -372,9 +372,8 @@ public class DeviceManagementEndpoint {
             final Certification certification = this.deviceManagementMapper.map(request.getCertification(),
                     Certification.class);
 
-            final String correlationUid = this.deviceManagementService
-                    .enqueueUpdateDeviceSslCertificationRequest(organisationIdentification, request.getDeviceIdentification(),
-                            certification);
+            final String correlationUid = this.deviceManagementService.enqueueUpdateDeviceSslCertificationRequest(
+                    organisationIdentification, request.getDeviceIdentification(), certification);
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -404,11 +403,11 @@ public class DeviceManagementEndpoint {
         final UpdateDeviceSslCertificationResponse response = new UpdateDeviceSslCertificationResponse();
 
         try {
-            final ResponseMessage message = this.deviceManagementService.dequeueUpdateDeviceSslCertificationResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceManagementService
+                    .dequeueUpdateDeviceSslCertificationResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }  else {
+            } else {
                 LOGGER.debug("Update Device Ssl Certification data is null");
             }
         } catch (final Exception e) {
@@ -431,8 +430,7 @@ public class DeviceManagementEndpoint {
 
         try {
             final String correlationUid = this.deviceManagementService.enqueueSetDeviceVerificationKeyRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    String.valueOf(request.getVerificationKey()));
+                    organisationIdentification, request.getDeviceIdentification(), request.getVerificationKey());
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -462,11 +460,11 @@ public class DeviceManagementEndpoint {
         final SetDeviceVerificationKeyResponse response = new SetDeviceVerificationKeyResponse();
 
         try {
-            final ResponseMessage message = this.deviceManagementService.dequeueSetDeviceVerificationKeyResponse(request
-                    .getAsyncRequest().getCorrelationUid());
+            final ResponseMessage message = this.deviceManagementService
+                    .dequeueSetDeviceVerificationKeyResponse(request.getAsyncRequest().getCorrelationUid());
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
-            }  else {
+            } else {
                 LOGGER.debug("Set Device Verification Key is null");
             }
         } catch (final Exception e) {
