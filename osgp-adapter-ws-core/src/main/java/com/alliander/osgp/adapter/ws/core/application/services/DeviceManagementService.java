@@ -55,6 +55,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.specifications.DeviceSpecifications;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
@@ -494,5 +495,57 @@ public class DeviceManagementService {
                         new NotAuthorizedException(organisationIdentification));
             }
         }
+    }
+
+    public String enqueueUpdateDeviceSslCertificationRequest(final String organisationIdentification,
+            final String deviceIdentification, final Certification certification) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.UPDATE_DEVICE_SSL_CERTIFICATION);
+        this.domainHelperService.isInMaintenance(device);
+
+        LOGGER.debug("enqueueUpdateDeviceSslCertificationRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.UPDATE_DEVICE_SSL_CERTIFICATION,
+                correlationUid, organisationIdentification, deviceIdentification, certification, null);
+
+        this.commonRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public ResponseMessage dequeueUpdateDeviceSslCertificationResponse(final String correlationUid) throws OsgpException {
+        return this.commonResponseMessageFinder.findMessage(correlationUid);
+    }
+
+    public String enqueueSetDeviceVerificationKeyRequest(final String organisationIdentification,
+            final String deviceIdentification, final String verificationKey) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_DEVICE_VERIFICATION_KEY);
+        this.domainHelperService.isInMaintenance(device);
+
+        LOGGER.debug("enqueueSetDeviceVerificationKeyRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final CommonRequestMessage message = new CommonRequestMessage(CommonRequestMessageType.SET_DEVICE_VERIFICATION_KEY,
+                correlationUid, organisationIdentification, deviceIdentification, verificationKey, null);
+
+        this.commonRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public ResponseMessage dequeueSetDeviceVerificationKeyResponse(final String correlationUid) throws OsgpException {
+        return this.commonResponseMessageFinder.findMessage(correlationUid);
     }
 }
