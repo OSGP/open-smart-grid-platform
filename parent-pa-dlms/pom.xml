@@ -82,6 +82,7 @@
         <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
         <netty.version>3.9.4.Final</netty.version>
         <openmuc.jdlms.version>0.11.4-SNAPSHOT</openmuc.jdlms.version>
+        <javax.inject.version>1</javax.inject.version>
     </properties>
 
     <repositories>
@@ -219,6 +220,13 @@
                 <artifactId>spring-ws</artifactId>
                 <version>${spring.ws.version}</version>
                 <classifier>all</classifier>
+            </dependency>
+
+            <!-- javax inject -->
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject.version}</version>
             </dependency>
 
             <!-- ws support -->

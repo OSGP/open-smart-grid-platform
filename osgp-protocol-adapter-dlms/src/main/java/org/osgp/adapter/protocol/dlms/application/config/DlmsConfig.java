@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.application.config;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.Resource;
 
@@ -23,17 +24,16 @@ import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.osgp.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -124,11 +124,15 @@ public class DlmsConfig {
     }
 
     @Bean
-    @Autowired
-    public DlmsConnectionFactory dlmsConnectionFactory(final DlmsDeviceRepository dlmsDeviceRepository) {
-        return new DlmsConnectionFactory(dlmsDeviceRepository, Integer.parseInt(this.environment
-                .getProperty(PROPERTY_JDLMS_CLIENT_ACCESS_POINT)), Integer.parseInt(this.environment
-                .getProperty(PROPERTY_JDLMS_LOGICAL_DEVICE_ADDRESS)), Integer.parseInt(this.environment
-                .getProperty(PROPERTY_JDLMS_RESPONSE_TIMEOUT)));
+    @Scope("prototype")
+    public Hls5Connector hls5Connector() {
+        return new Hls5Connector(Integer.parseInt(this.environment.getProperty(PROPERTY_JDLMS_RESPONSE_TIMEOUT)),
+                Integer.parseInt(this.environment.getProperty(PROPERTY_JDLMS_LOGICAL_DEVICE_ADDRESS)),
+                Integer.parseInt(this.environment.getProperty(PROPERTY_JDLMS_CLIENT_ACCESS_POINT)));
+    }
+
+    @Bean
+    public ScheduledExecutorService scheduledExecutorService() {
+        return Executors.newScheduledThreadPool(5);
     }
 }

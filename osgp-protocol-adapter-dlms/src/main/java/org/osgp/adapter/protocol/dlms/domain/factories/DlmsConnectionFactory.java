@@ -2,28 +2,24 @@ package org.osgp.adapter.protocol.dlms.domain.factories;
 
 import java.io.IOException;
 
+import javax.inject.Provider;
 import javax.naming.OperationNotSupportedException;
 
 import org.openmuc.jdlms.LnClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
+@Component
 public class DlmsConnectionFactory {
 
-    private final int clientAccessPoint;
-    private final int logicalDeviceAddress;
-    private final int responseTimeout;
+    @Autowired
+    private Provider<Hls5Connector> hls5ConnectorProvider;
 
-    private final DlmsDeviceRepository dlmsDeviceRepository;
+    public DlmsConnectionFactory() {
 
-    public DlmsConnectionFactory(final DlmsDeviceRepository dlmsDeviceRepository, final int clientAccessPoint,
-            final int logicalDeviceAddress, final int responseTimeout) {
-        this.dlmsDeviceRepository = dlmsDeviceRepository;
-        this.clientAccessPoint = clientAccessPoint;
-        this.logicalDeviceAddress = logicalDeviceAddress;
-        this.responseTimeout = responseTimeout;
     }
 
     /**
@@ -38,13 +34,11 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public LnClientConnection getConnection(DlmsDevice device) throws TechnicalException {
+    public LnClientConnection getConnection(final DlmsDevice device) throws TechnicalException {
         if (device.isHls5Active()) {
-            final Hls5Connector connector = new Hls5Connector(device, this.responseTimeout, this.logicalDeviceAddress,
-                    this.clientAccessPoint);
-            final LnClientConnection connection = connector.connect();
-            device = this.dlmsDeviceRepository.save(connector.getUpdatedDevice());
-            return connection;
+            final Hls5Connector connector = this.hls5ConnectorProvider.get();
+            connector.setDevice(device);
+            return connector.connect();
         } else {
             // TODO ADD IMPLEMENTATIONS FOR OTHER SECURITY MODES
             throw new UnsupportedOperationException("Only HLS 5 connections are currently supported");
