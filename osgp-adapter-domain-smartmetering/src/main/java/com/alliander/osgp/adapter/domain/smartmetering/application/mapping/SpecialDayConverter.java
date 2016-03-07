@@ -1,0 +1,21 @@
+package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
+
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.metadata.Type;
+
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDay;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate;
+
+public class SpecialDayConverter extends
+CustomConverter<SpecialDay, com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay> {
+
+    @Override
+    public com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay convert(final SpecialDay source,
+            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay> destinationType) {
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate cosemDate = source
+                .getSpecialDayDate();
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay(new CosemDate(cosemDate.getYear(),
+                cosemDate.getMonth(), cosemDate.getDayOfMonth(), cosemDate.getDayOfWeek()), source.getDayId());
+    }
+
+}
