@@ -21,8 +21,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SelectiveAccessDescription;
 import org.openmuc.jdlms.datatypes.DataObject;
@@ -199,7 +199,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadsContainerGas execute(final LnClientConnection conn, final DlmsDevice device,
+    public PeriodicMeterReadsContainerGas execute(final ClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         final PeriodType periodType;

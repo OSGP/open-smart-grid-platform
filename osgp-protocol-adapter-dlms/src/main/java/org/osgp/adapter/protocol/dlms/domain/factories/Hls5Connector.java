@@ -8,7 +8,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -26,9 +26,11 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 @Component
 @Scope("prototype")
 public class Hls5Connector {
+
     private final int responseTimeout;
     private final int logicalDeviceAddress;
     private final int clientAccessPoint;
+    private final int recoverKeyDelay;
 
     @Autowired
     private RecoverKeyProcess recoverKeyProcess;
@@ -41,19 +43,19 @@ public class Hls5Connector {
 
     private DlmsDevice device;
 
-    private LnClientConnection connection;
-
-    public Hls5Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint) {
+    public Hls5Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint,
+            final int recoverKeyDelay) {
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
+        this.recoverKeyDelay = recoverKeyDelay;
     }
 
     public void setDevice(final DlmsDevice device) {
         this.device = device;
     }
 
-    public LnClientConnection connect() throws TechnicalException {
+    public ClientConnection connect() throws TechnicalException {
         if (this.device == null) {
             throw new IllegalStateException("Can not connect because no device is set.");
         }
@@ -61,7 +63,7 @@ public class Hls5Connector {
         this.checkIpAddress();
 
         try {
-            final LnClientConnection connection = this.createConnection();
+            final ClientConnection connection = this.createConnection();
             this.removeInvalidKeys();
             return connection;
         } catch (final UnknownHostException e) {
@@ -72,7 +74,8 @@ public class Hls5Connector {
             if (!this.device.getNewSecurityKeys().isEmpty()) {
                 // Queue key recovery process.
                 this.recoverKeyProcess.setDeviceIdentification(this.device.getDeviceIdentification());
-                this.executorService.schedule(this.recoverKeyProcess, 2, TimeUnit.MINUTES);
+                this.recoverKeyProcess.setIpAddress(this.device.getIpAddress());
+                this.executorService.schedule(this.recoverKeyProcess, this.recoverKeyDelay, TimeUnit.MILLISECONDS);
             }
             throw new ConnectionException(e.getMessage(), e);
         }
@@ -93,7 +96,7 @@ public class Hls5Connector {
      *             When there are problems in connecting to or communicating
      *             with the device.
      */
-    private LnClientConnection createConnection() throws IOException, TechnicalException {
+    private ClientConnection createConnection() throws IOException, TechnicalException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
@@ -110,9 +113,7 @@ public class Hls5Connector {
             tcpConnectionBuilder.challengeLength(challengeLength);
         }
 
-        // Store the connection to use as a 'connected' flag
-        this.connection = tcpConnectionBuilder.buildLnConnection();
-        return this.connection;
+        return tcpConnectionBuilder.buildLnConnection();
     }
 
     private void removeInvalidKeys() {

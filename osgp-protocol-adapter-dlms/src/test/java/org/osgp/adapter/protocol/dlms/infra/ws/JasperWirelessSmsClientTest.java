@@ -38,9 +38,9 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.test.client.MockWebServiceServer;
 import org.springframework.xml.transform.StringSource;
 
-import com.jasperwireless.api.ws.service.sms.GetSMSDetailsResponse;
-import com.jasperwireless.api.ws.service.sms.SendSMSResponse;
-import com.jasperwireless.api.ws.service.sms.SmsMessageType;
+import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
+import com.jasperwireless.api.ws.service.SendSMSResponse;
+import com.jasperwireless.api.ws.service.SmsMessageType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = JasperWirelessConfigTest.class, initializers = JasperWirelessSmsClientTest.PropertyMockingApplicationContextInitializer.class)
@@ -55,7 +55,7 @@ public class JasperWirelessSmsClientTest {
     private static final String API_VERSION = "1234";
 
     public static class PropertyMockingApplicationContextInitializer implements
-            ApplicationContextInitializer<ConfigurableApplicationContext> {
+    ApplicationContextInitializer<ConfigurableApplicationContext> {
 
         @Override
         public void initialize(final ConfigurableApplicationContext applicationContext) {

@@ -36,8 +36,7 @@
                         </goals>
                         <configuration>
                             <schemaDirectory>src/main/webapp/wsdl/jasperwireless</schemaDirectory>
-                            <schemaFiles>Sms.wsdl</schemaFiles>
-                            <packageName>com.jasperwireless.api.ws.service.sms</packageName>
+                            <packageName>com.jasperwireless.api.ws.service</packageName>
                             <wsdl>true</wsdl>
                             <xmlschema>false</xmlschema>
                             <staleFile>${project.build.directory}/jaxb2/.schema-smart-metering-configuration-stale-flag</staleFile>

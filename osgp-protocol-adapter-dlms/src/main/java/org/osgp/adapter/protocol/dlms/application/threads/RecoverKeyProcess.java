@@ -11,6 +11,8 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class RecoverKeyProcess implements Runnable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecoverKeyProcess.class);
+
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
 
@@ -26,8 +30,14 @@ public class RecoverKeyProcess implements Runnable {
 
     private DlmsDevice device;
 
+    private String ipAddress;
+
     public void setDeviceIdentification(final String deviceIdentification) {
         this.deviceIdentification = deviceIdentification;
+    }
+
+    public void setIpAddress(final String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     @Override
@@ -35,11 +45,17 @@ public class RecoverKeyProcess implements Runnable {
         if (this.deviceIdentification == null) {
             throw new IllegalStateException("DeviceIdentification not set.");
         }
+        if (this.ipAddress == null) {
+            throw new IllegalStateException("IP address not set.");
+        }
+
+        LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
 
         this.device = this.dlmsDeviceRepository.findByDeviceIdentification(this.deviceIdentification);
         if (this.device == null) {
             throw new IllegalArgumentException("Device " + this.deviceIdentification + " not found.");
         }
+        this.device.setIpAddress(this.ipAddress);
 
         if (this.device.getNewSecurityKeys().isEmpty()) {
             return;
@@ -56,6 +72,7 @@ public class RecoverKeyProcess implements Runnable {
             connection = this.createConnection();
             return true;
         } catch (final Exception e) {
+            LOGGER.warn("Connection exception: {}", e.getMessage(), e);
             return false;
         } finally {
             if (connection != null) {
@@ -95,6 +112,9 @@ public class RecoverKeyProcess implements Runnable {
                 .getKey());
         final byte[] encryptionKey = Hex.decode(this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey());
 
+        LOGGER.info("Keys: {} = {}", this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION).getKey(), this
+                .getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).getKey());
+
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
                 .getIpAddress())).useGmacAuthentication(authenticationKey, encryptionKey)
                 .enableEncryption(encryptionKey).responseTimeout(10000).logicalDeviceAddress(1).clientAccessPoint(1);
@@ -104,7 +124,6 @@ public class RecoverKeyProcess implements Runnable {
             tcpConnectionBuilder.challengeLength(challengeLength);
         }
 
-        // Store the connection to use as a 'connected' flag
         return tcpConnectionBuilder.buildLnConnection();
     }
 

@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -29,7 +29,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
 
 @Component()
 public class GetActualMeterReadsGasCommandExecutor extends
-AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
+        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -45,7 +45,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterRe
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReadsGas execute(final LnClientConnection conn, final DlmsDevice device,
+    public ActualMeterReadsGas execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
@@ -86,8 +86,8 @@ AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterRe
                     "No GetResult received while retrieving current MBUS master capture time.");
         }
 
-        if (getResultList.size() != 2) {
-            LOGGER.info("Expected 2 GetResult while retrieving current MBUS master capture time, got "
+        if (getResultList.size() != 3) {
+            LOGGER.info("Expected 3 GetResult while retrieving current MBUS master capture time, got "
                     + getResultList.size());
         }
     }

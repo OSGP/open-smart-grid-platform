@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.inject.Provider;
 import javax.naming.OperationNotSupportedException;
 
-import org.openmuc.jdlms.LnClientConnection;
+import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +34,7 @@ public class DlmsConnectionFactory {
      * @throws IOException
      * @throws OperationNotSupportedException
      */
-    public LnClientConnection getConnection(final DlmsDevice device) throws TechnicalException {
+    public ClientConnection getConnection(final DlmsDevice device) throws TechnicalException {
         if (device.isHls5Active()) {
             final Hls5Connector connector = this.hls5ConnectorProvider.get();
             connector.setDevice(device);

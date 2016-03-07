@@ -30,6 +30,7 @@ import org.osgp.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -46,10 +47,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class DlmsConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
-
-    private static final String PROPERTY_JDLMS_RESPONSE_TIMEOUT = "jdlms.response_timeout";
-    private static final String PROPERTY_JDLMS_LOGICAL_DEVICE_ADDRESS = "jdlms.logical_device_address";
-    private static final String PROPERTY_JDLMS_CLIENT_ACCESS_POINT = "jdlms.client_access_point";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConfig.class);
 
@@ -125,14 +122,15 @@ public class DlmsConfig {
 
     @Bean
     @Scope("prototype")
-    public Hls5Connector hls5Connector() {
-        return new Hls5Connector(Integer.parseInt(this.environment.getProperty(PROPERTY_JDLMS_RESPONSE_TIMEOUT)),
-                Integer.parseInt(this.environment.getProperty(PROPERTY_JDLMS_LOGICAL_DEVICE_ADDRESS)),
-                Integer.parseInt(this.environment.getProperty(PROPERTY_JDLMS_CLIENT_ACCESS_POINT)));
+    public Hls5Connector hls5Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+            @Value("${jdlms.client_access_point}") final int clientAccessPoint,
+            @Value("${key.recovery.delay}") final int recoverKeyDelay) {
+        return new Hls5Connector(responseTimeout, logicalDeviceAddress, clientAccessPoint, recoverKeyDelay);
     }
 
     @Bean
-    public ScheduledExecutorService scheduledExecutorService() {
-        return Executors.newScheduledThreadPool(5);
+    public ScheduledExecutorService scheduledExecutorService(@Value("${executor.scheduled.poolsize}") final int poolsize) {
+        return Executors.newScheduledThreadPool(poolsize);
     }
 }
