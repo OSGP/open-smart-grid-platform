@@ -1,7 +1,10 @@
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import javax.xml.namespace.QName;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ws.soap.SoapHeader;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -9,6 +12,8 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
+import com.alliander.osgp.shared.wsheaderattribute.CustomHeaderAttribute;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriority;
 
 abstract class SmartMeteringEndpoint {
 
@@ -48,4 +53,18 @@ abstract class SmartMeteringEndpoint {
             }
         }
     }
+
+    protected int getMessagePriority(final SoapHeader header) {
+
+        int messagePriority = MessagePriority.DEFAULT.getPriority();
+
+        final String messagePriorityString = header.getAttributeValue(new QName(CustomHeaderAttribute.MESSAGE_PRIORITY
+                .toString()));
+
+        if (messagePriorityString != null) {
+            messagePriority = Integer.parseInt(messagePriorityString);
+        }
+        return messagePriority;
+    }
+
 }

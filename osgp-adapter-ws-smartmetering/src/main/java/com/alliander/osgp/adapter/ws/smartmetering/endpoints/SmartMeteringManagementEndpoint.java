@@ -19,6 +19,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.SoapHeader;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
@@ -66,7 +67,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public FindEventsAsyncResponse findEventsRequest(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final FindEventsRequest request) throws OsgpException {
+            @RequestPayload final FindEventsRequest request, final SoapHeader header) throws OsgpException {
 
         LOGGER.info("Find events request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -82,7 +83,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
-                            com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class));
+                            com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class), this
+                            .getMessagePriority(header));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());

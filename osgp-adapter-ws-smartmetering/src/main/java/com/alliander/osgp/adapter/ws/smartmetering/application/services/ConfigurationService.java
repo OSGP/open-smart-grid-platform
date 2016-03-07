@@ -51,13 +51,16 @@ public class ConfigurationService {
      * @throws FunctionalException
      */
     public String requestSetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification, final AdministrativeStatusType requestData) throws FunctionalException {
-        return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData);
+            final String deviceIdentification, final AdministrativeStatusType requestData, final int messagePriority)
+                    throws FunctionalException {
+        return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData,
+                messagePriority);
     }
 
     public String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            @Identification final AdministrativeStatusType requestData) throws FunctionalException {
+            @Identification final AdministrativeStatusType requestData, final int messagePriority)
+            throws FunctionalException {
 
         LOGGER.info(
                 "enqueueSetAdministrativeStatus called with organisation {} and device {}, set administrative status to {}",
@@ -68,9 +71,10 @@ public class ConfigurationService {
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+                deviceIdentification, requestData);// ,
+        // requestData.getPriority()
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -81,12 +85,12 @@ public class ConfigurationService {
     }
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification) {
-        return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification);
+            final String deviceIdentification, final int messagePriority) {
+        return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification, messagePriority);
     }
 
     private String enqueueGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification) {
+            final String deviceIdentification, final int messagePriority) {
         LOGGER.debug("enqueueGetAdministrativeStatus called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
@@ -97,7 +101,7 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
                 deviceIdentification, AdministrativeStatusType.UNDEFINED);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -108,7 +112,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SpecialDaysRequest requestData) {
+            @Identification final String deviceIdentification, final SpecialDaysRequest requestData,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -120,7 +125,7 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.REQUEST_SPECIAL_DAYS, correlationUid, organisationIdentification,
                 deviceIdentification, requestData);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -131,7 +136,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData) {
+            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -143,7 +149,7 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.SET_CONFIGURATION_OBJECT, correlationUid, organisationIdentification,
                 deviceIdentification, requestData);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -154,7 +160,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm) {
+            @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSetPushSetupAlarmRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -166,7 +173,7 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.SET_PUSH_SETUP_ALARM, correlationUid, organisationIdentification,
                 deviceIdentification, pushSetupAlarm);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -177,7 +184,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetPushSetupSmsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PushSetupSms pushSetupSms) {
+            @Identification final String deviceIdentification, final PushSetupSms pushSetupSms,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSetPushSetupSmsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -189,7 +197,7 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.SET_PUSH_SETUP_SMS, correlationUid, organisationIdentification,
                 deviceIdentification, pushSetupSms);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -200,7 +208,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches) {
+            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -212,13 +221,14 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS, correlationUid, organisationIdentification,
                 deviceIdentification, alarmSwitches);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
 
     public String enqueueSetEncryptionKeyExchangeOnGMeterRequest(
-            @Identification final String organisationIdentification, @Identification final String deviceIdentification) {
+            @Identification final String organisationIdentification, @Identification final String deviceIdentification,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSetEncryptionKeyExchangeOnGMeterRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -230,13 +240,14 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, correlationUid,
                 organisationIdentification, deviceIdentification);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar) {
+            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -248,7 +259,7 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR, correlationUid, organisationIdentification,
                 deviceIdentification, activityCalendar);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -259,7 +270,7 @@ public class ConfigurationService {
     }
 
     public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final KeySet keySet) {
+            @Identification final String deviceIdentification, final KeySet keySet, final int messagePriority) {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
@@ -267,7 +278,7 @@ public class ConfigurationService {
                 SmartMeteringRequestMessageType.REPLACE_KEYS, correlationUid, organisationIdentification,
                 deviceIdentification, keySet);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }

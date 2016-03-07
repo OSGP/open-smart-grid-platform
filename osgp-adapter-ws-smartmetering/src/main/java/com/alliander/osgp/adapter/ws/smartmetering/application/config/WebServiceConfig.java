@@ -27,6 +27,7 @@ import org.springframework.ws.server.endpoint.adapter.method.MethodArgumentResol
 import org.springframework.ws.server.endpoint.adapter.method.MethodReturnValueHandler;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.soap.security.support.KeyStoreFactoryBean;
+import org.springframework.ws.soap.server.endpoint.adapter.method.SoapMethodArgumentResolver;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgumentResolver;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
@@ -279,6 +280,7 @@ public class WebServiceConfig {
         methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringConfigurationMarshallingPayloadMethodProcessor());
+        methodArgumentResolvers.add(new SoapMethodArgumentResolver());
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));

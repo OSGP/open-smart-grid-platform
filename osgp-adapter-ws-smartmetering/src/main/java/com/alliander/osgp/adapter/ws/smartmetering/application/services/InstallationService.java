@@ -39,7 +39,8 @@ public class InstallationService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SmartMeteringDevice device) {
+            @Identification final String deviceIdentification, final SmartMeteringDevice device,
+            final int messagePriority) {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -53,7 +54,7 @@ public class InstallationService {
                 SmartMeteringRequestMessageType.ADD_METER, correlationUid, organisationIdentification,
                 deviceIdentification, device);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }

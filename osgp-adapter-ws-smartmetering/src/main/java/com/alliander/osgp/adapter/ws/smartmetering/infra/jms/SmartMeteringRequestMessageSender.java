@@ -45,7 +45,7 @@ public class SmartMeteringRequestMessageSender {
      * @param requestMessage
      *            The SmartMeteringRequestMessage request message to send.
      */
-    public void send(final SmartMeteringRequestMessage requestMessage) {
+    public void send(final SmartMeteringRequestMessage requestMessage, final int messagePriority) {
         LOGGER.debug("Sending smart metering request message to the queue");
 
         if (requestMessage.getMessageType() == null) {
@@ -65,7 +65,7 @@ public class SmartMeteringRequestMessageSender {
             return;
         }
 
-        this.sendMessage(requestMessage);
+        this.sendMessage(requestMessage, messagePriority);
     }
 
     /**
@@ -75,7 +75,7 @@ public class SmartMeteringRequestMessageSender {
      * @param requestMessage
      *            The SmartMeteringRequestMessage request message to send.
      */
-    private void sendMessage(final SmartMeteringRequestMessage requestMessage) {
+    private void sendMessage(final SmartMeteringRequestMessage requestMessage, final int messagePriority) {
         LOGGER.info("Sending message to the smart metering requests queue");
 
         this.smartMeteringRequestsJmsTemplate.send(new MessageCreator() {
@@ -89,6 +89,7 @@ public class SmartMeteringRequestMessageSender {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
+                objectMessage.setJMSPriority(messagePriority);
                 return objectMessage;
             }
         });

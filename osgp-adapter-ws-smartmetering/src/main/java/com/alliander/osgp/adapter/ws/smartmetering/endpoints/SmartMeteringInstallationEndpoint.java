@@ -15,6 +15,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.SoapHeader;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
@@ -55,7 +56,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
     public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceRequest request) throws OsgpException {
+            @RequestPayload final AddDeviceRequest request, final SoapHeader header) throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
@@ -66,7 +67,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
                     SmartMeteringDevice.class);
 
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
-                    organisationIdentification, device.getDeviceIdentification(), device);
+                    organisationIdentification, device.getDeviceIdentification(), device,
+                    this.getMessagePriority(header));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());

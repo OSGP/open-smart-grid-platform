@@ -46,7 +46,8 @@ public class MonitoringService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData) {
+            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
+            final int messagePriority) {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -60,7 +61,7 @@ public class MonitoringService {
                 SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA, correlationUid,
                 organisationIdentification, deviceIdentification, requestData);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -76,7 +77,8 @@ public class MonitoringService {
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData) {
+            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -88,7 +90,7 @@ public class MonitoringService {
                 SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA, correlationUid, organisationIdentification,
                 deviceIdentification, requestData);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -104,7 +106,8 @@ public class MonitoringService {
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData) {
+            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueReadAlarmRegisterRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -116,7 +119,7 @@ public class MonitoringService {
                 SmartMeteringRequestMessageType.READ_ALARM_REGISTER, correlationUid, organisationIdentification,
                 deviceIdentification, requestData);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }

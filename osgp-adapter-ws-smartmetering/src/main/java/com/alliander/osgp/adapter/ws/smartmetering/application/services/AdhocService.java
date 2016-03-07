@@ -40,7 +40,8 @@ public class AdhocService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest) {
+            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -52,7 +53,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
                 deviceIdentification, synchronizeTimeRequest);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -62,7 +63,8 @@ public class AdhocService {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 
-    public String enqueueSendWakeUpSmsRequest(final String organisationIdentification, final String deviceIdentification) {
+    public String enqueueSendWakeUpSmsRequest(final String organisationIdentification,
+            final String deviceIdentification, final int messagePriority) {
 
         LOGGER.debug("enqueueSendWakeUpSmsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -75,7 +77,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.SEND_WAKEUP_SMS, correlationUid, organisationIdentification,
                 deviceIdentification, smsDetails);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -86,7 +88,7 @@ public class AdhocService {
     }
 
     public String enqueueGetSmsDetailsRequest(final String organisationIdentification,
-            final String deviceIdentification, final SmsDetails smsDetails) {
+            final String deviceIdentification, final SmsDetails smsDetails, final int messagePriority) {
 
         LOGGER.debug("enqueueGetSmsDetailsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -98,7 +100,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_SMS_DETAILS, correlationUid, organisationIdentification,
                 deviceIdentification, smsDetails);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
@@ -109,7 +111,8 @@ public class AdhocService {
     }
 
     public String enqueueRetrieveConfigurationObjectsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final RetrieveConfigurationObjectsRequest request) {
+            @Identification final String deviceIdentification, final RetrieveConfigurationObjectsRequest request,
+            final int messagePriority) {
 
         LOGGER.debug("enqueueRetrieveConfigurationObjectsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -121,7 +124,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS, correlationUid, organisationIdentification,
                 deviceIdentification, request);
 
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }

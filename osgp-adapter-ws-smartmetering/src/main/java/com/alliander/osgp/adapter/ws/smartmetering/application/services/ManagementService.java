@@ -70,7 +70,7 @@ public class ManagementService {
     }
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<FindEventsQuery> findEventsQueryList) throws FunctionalException {
+            final List<FindEventsQuery> findEventsQueryList, final int messagePriority) throws FunctionalException {
 
         LOGGER.info("findEvents called with organisation {}", organisationIdentification);
 
@@ -88,7 +88,7 @@ public class ManagementService {
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
                 SmartMeteringRequestMessageType.FIND_EVENTS, correlationUid, organisationIdentification,
                 deviceIdentification, new FindEventsQueryMessageDataContainer(findEventsQueryList));
-        this.smartMeteringRequestMessageSender.send(message);
+        this.smartMeteringRequestMessageSender.send(message, messagePriority);
 
         return correlationUid;
     }
