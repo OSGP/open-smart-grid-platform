@@ -80,7 +80,11 @@ public enum DlmsUnit {
     /**
      * Joule
      */
-    J(25);
+    J(25),
+    /**
+     * 0 is interpreted as "unit is not defined" (not part of dlms standard)
+     */
+    UNDEFINED(0);
 
     private final int dlmsEnum;
 

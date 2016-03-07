@@ -38,7 +38,7 @@ public abstract class BaseResponseMessageFinder {
     public ResponseMessage findMessage(final String correlationUid) throws OsgpException {
         LOGGER.info("Trying to find message with correlationUID: {}", correlationUid);
         final ObjectMessage om = this.receiveObjectMessage(correlationUid);
-        ResponseMessage responseJmsMessage = null;
+        ResponseMessage responseJmsMessage;
 
         if (om != null) {
             LOGGER.info("Message with correlationUID: {} has been found, trying to read message...", correlationUid);
