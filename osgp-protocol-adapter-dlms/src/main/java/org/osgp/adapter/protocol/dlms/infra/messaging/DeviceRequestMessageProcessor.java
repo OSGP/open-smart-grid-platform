@@ -125,7 +125,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response);
+                    response, message.getJMSPriority());
         } catch (final ConnectionException exception) {
             // Retry / redeliver by throwing RuntimeException.
             LOGGER.info("ConnectionException occurred, JMS will catch this exception.");
@@ -138,7 +138,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             final OsgpException ex = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, this.responseMessageSender,
-                    message.getObject());
+                    message.getObject(), message.getJMSPriority());
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -169,13 +169,24 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject,
+            final int messagePriority) {
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(messageMetadata.getDomain(),
-                messageMetadata.getDomainVersion(), messageMetadata.getMessageType(),
-                messageMetadata.getCorrelationUid(), messageMetadata.getOrganisationIdentification(),
-                messageMetadata.getDeviceIdentification(), result, osgpException, responseObject,
-                messageMetadata.getRetryCount());
+        // @formatter:off
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+        .domain(messageMetadata.getDomain())
+        .domainVersion(messageMetadata.getDomainVersion())
+        .messageType(messageMetadata.getMessageType())
+        .correlationUid(messageMetadata.getCorrelationUid())
+        .organisationIdentification(messageMetadata.getOrganisationIdentification())
+        .deviceIdentification(messageMetadata.getDeviceIdentification())
+        .result(result)
+        .osgpException(osgpException)
+        .dataObject(responseObject)
+        .retryCount(messageMetadata.getRetryCount())
+        .messagePriority(messagePriority)
+        .build();
+        // @formatter:on
 
         responseMessageSender.send(responseMessage);
     }
