@@ -32,12 +32,13 @@ public class GetSmsDetailsRequestMessageProcessor extends WebServiceRequestMessa
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final SmsDetails smsDetails = (SmsDetails) dataObject;
 
         this.adhocService.getSmsDetails(organisationIdentification, deviceIdentification, correlationUid, smsDetails,
-                messageType);
+                messageType, messagePriority);
     }
 
 }

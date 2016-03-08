@@ -30,18 +30,19 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
      */
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final AlarmNotifications alarmNotifications = (AlarmNotifications) dataObject;
 
         this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
-                correlationUid, alarmNotifications, messageType);
+                correlationUid, alarmNotifications, messageType, messagePriority);
     }
 }

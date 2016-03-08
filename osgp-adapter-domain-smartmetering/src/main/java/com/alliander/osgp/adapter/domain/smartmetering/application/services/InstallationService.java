@@ -61,15 +61,14 @@ public class InstallationService {
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceValueObject,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
 
-        SmartMeter device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
+        SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (device == null) {
 
             /*
@@ -101,7 +100,7 @@ public class InstallationService {
                         com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDeviceDto), messageType);
+                deviceIdentification, smartMeteringDeviceDto), messageType, messagePriority);
     }
 
     public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,

@@ -33,11 +33,12 @@ public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequest
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final PeriodicMeterReadsQuery periodicMeterReadsRequest = (PeriodicMeterReadsQuery) dataObject;
 
         this.monitoringService.requestPeriodicMeterReads(organisationIdentification, deviceIdentification,
-                correlationUid, periodicMeterReadsRequest, messageType);
+                correlationUid, periodicMeterReadsRequest, messageType, messagePriority);
     }
 }

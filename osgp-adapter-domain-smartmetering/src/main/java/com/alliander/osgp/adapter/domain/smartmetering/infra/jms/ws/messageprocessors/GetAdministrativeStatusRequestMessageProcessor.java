@@ -30,12 +30,13 @@ public class GetAdministrativeStatusRequestMessageProcessor extends WebServiceRe
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) dataObject;
 
         this.configurationService.getAdministrativeStatus(organisationIdentification, deviceIdentification,
-                correlationUid, administrativeStatusType, messageType);
+                correlationUid, administrativeStatusType, messageType, messagePriority);
     }
 
 }

@@ -59,7 +59,7 @@ public class AdhocService {
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -70,7 +70,8 @@ public class AdhocService {
                 synchronizeTimeRequestValueObject.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto), messageType,
+                messagePriority);
     }
 
     public void handleSynchronizeTimeResponse(final String deviceIdentification,
@@ -90,8 +91,8 @@ public class AdhocService {
     }
 
     public void sendWakeupSms(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-            throws FunctionalException {
+            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -102,7 +103,7 @@ public class AdhocService {
                 smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType, messagePriority);
 
     }
 
@@ -126,8 +127,8 @@ public class AdhocService {
     }
 
     public void getSmsDetails(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType)
-                    throws FunctionalException {
+            final String correlationUid, final SmsDetails smsDetailsValueObject, final String messageType,
+            final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("retrieve sms details request for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -138,7 +139,7 @@ public class AdhocService {
                 smsDetailsValueObject, com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), smsDetailsDto), messageType, messagePriority);
 
     }
 
@@ -166,7 +167,7 @@ public class AdhocService {
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest request,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.debug("retrieveConfigurationObjects for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -177,7 +178,7 @@ public class AdhocService {
                 request.getDeviceIdentification());
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevice.getIpAddress(), requestDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), requestDto), messageType, messagePriority);
 
     }
 

@@ -52,22 +52,22 @@ public class ManagementService {
 
     public void findEvents(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid, final String messageType,
-            final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) throws FunctionalException {
+            final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer, final int messagePriority)
+                    throws FunctionalException {
 
         LOGGER.info("findEvents for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final SmartMeter smartMeter = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceIdentification);
 
         LOGGER.info("Sending request message to core.");
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeter.getIpAddress(), this.managementMapper.map(
                         findEventsQueryMessageDataContainer,
                         com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer.class));
-        this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
+        this.osgpCoreRequestMessageSender.send(requestMessage, messageType, messagePriority);
     }
 
     public void handleFindEventsResponse(

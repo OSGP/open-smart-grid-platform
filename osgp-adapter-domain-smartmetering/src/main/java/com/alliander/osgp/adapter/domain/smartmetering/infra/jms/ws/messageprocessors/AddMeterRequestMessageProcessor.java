@@ -33,11 +33,12 @@ public class AddMeterRequestMessageProcessor extends WebServiceRequestMessagePro
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) dataObject;
 
         this.installationService.addMeter(organisationIdentification, deviceIdentification, correlationUid,
-                smartMeteringDevice, messageType);
+                smartMeteringDevice, messageType, messagePriority);
     }
 }

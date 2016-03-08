@@ -32,11 +32,12 @@ public class SetPushSetupAlarmRequestMessageProcessor extends WebServiceRequestM
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final PushSetupAlarm pushSetupAlarm = (PushSetupAlarm) dataObject;
 
         this.configurationService.setPushSetupAlarm(organisationIdentification, deviceIdentification, correlationUid,
-                pushSetupAlarm, messageType);
+                pushSetupAlarm, messageType, messagePriority);
     }
 }

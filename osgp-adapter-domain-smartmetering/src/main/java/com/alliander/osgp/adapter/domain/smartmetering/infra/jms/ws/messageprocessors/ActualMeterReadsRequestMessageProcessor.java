@@ -30,11 +30,12 @@ public class ActualMeterReadsRequestMessageProcessor extends WebServiceRequestMe
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final ActualMeterReadsQuery actualMeterReadsRequest = (ActualMeterReadsQuery) dataObject;
 
         this.monitoringService.requestActualMeterReads(organisationIdentification, deviceIdentification,
-                correlationUid, actualMeterReadsRequest, messageType);
+                correlationUid, actualMeterReadsRequest, messageType, messagePriority);
     }
 }

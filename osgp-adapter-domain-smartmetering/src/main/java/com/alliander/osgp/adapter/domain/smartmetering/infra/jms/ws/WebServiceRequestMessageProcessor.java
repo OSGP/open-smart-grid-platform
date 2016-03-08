@@ -91,7 +91,8 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
     }
 
     protected abstract void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException;
+            final String correlationUid, final Object dataObject, final String messageType, int messagePriority)
+            throws FunctionalException;
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
@@ -120,7 +121,7 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
         try {
             LOGGER.info("Calling application service function: {}", messageType);
             this.handleMessage(organisationIdentification, deviceIdentification, correlationUid, dataObject,
-                    messageType);
+                    messageType, message.getJMSPriority());
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);

@@ -67,7 +67,7 @@ public class MonitoringService {
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery periodicMeterReadsValueQuery,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.info("requestPeriodicMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -107,13 +107,13 @@ public class MonitoringService {
             }
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                     gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(), periodicMeterReadsQuery),
-                    messageType);
+                    messageType, messagePriority);
         } else {
 
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(correlationUid, organisationIdentification, deviceIdentification, smartMeter
                             .getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
-                            PeriodicMeterReadsQuery.class)), messageType);
+                            PeriodicMeterReadsQuery.class)), messageType, messagePriority);
         }
     }
 
@@ -176,7 +176,7 @@ public class MonitoringService {
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery actualMeterReadsQuery,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -210,10 +210,11 @@ public class MonitoringService {
             }
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                     gatewayDevice.getDeviceIdentification(), gatewayDevice.getIpAddress(), new ActualMeterReadsQuery(
-                            Channel.fromNumber(smartMeter.getChannel()))), messageType);
+                            Channel.fromNumber(smartMeter.getChannel()))), messageType, messagePriority);
         } else {
             this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                    deviceIdentification, smartMeter.getIpAddress(), new ActualMeterReadsQuery()), messageType);
+                    deviceIdentification, smartMeter.getIpAddress(), new ActualMeterReadsQuery()), messageType,
+                    messagePriority);
         }
     }
 
@@ -262,7 +263,7 @@ public class MonitoringService {
             @Identification final String deviceIdentification,
             final String correlationUid,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest readAlarmRegisterRequestValueObject,
-            final String messageType) throws FunctionalException {
+            final String messageType, final int messagePriority) throws FunctionalException {
 
         LOGGER.info("requestReadAlarmRegister for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -274,7 +275,8 @@ public class MonitoringService {
                         com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDevice.getIpAddress(), readAlarmRegisterRequestDto), messageType);
+                deviceIdentification, smartMeteringDevice.getIpAddress(), readAlarmRegisterRequestDto), messageType,
+                messagePriority);
     }
 
     public void handleReadAlarmRegisterResponse(@Identification final String deviceIdentification,

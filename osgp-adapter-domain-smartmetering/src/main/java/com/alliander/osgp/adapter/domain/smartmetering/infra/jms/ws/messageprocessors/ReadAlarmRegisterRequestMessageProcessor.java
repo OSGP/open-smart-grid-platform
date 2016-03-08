@@ -30,11 +30,12 @@ public class ReadAlarmRegisterRequestMessageProcessor extends WebServiceRequestM
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final ReadAlarmRegisterRequest readAlarmRegisterRequest = (ReadAlarmRegisterRequest) dataObject;
 
         this.monitoringService.requestReadAlarmRegister(organisationIdentification, deviceIdentification,
-                correlationUid, readAlarmRegisterRequest, messageType);
+                correlationUid, readAlarmRegisterRequest, messageType, messagePriority);
     }
 }

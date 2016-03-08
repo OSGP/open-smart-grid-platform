@@ -32,11 +32,12 @@ public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMes
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) dataObject;
 
         this.adhocService.synchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
-                synchronizeTimeRequest, messageType);
+                synchronizeTimeRequest, messageType, messagePriority);
     }
 }

@@ -32,11 +32,12 @@ public class SetConfigurationObjectRequestMessageProcessor extends WebServiceReq
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) dataObject;
 
         this.configurationService.setConfigurationObject(organisationIdentification, deviceIdentification,
-                correlationUid, setConfigurationObjectRequest, messageType);
+                correlationUid, setConfigurationObjectRequest, messageType, messagePriority);
     }
 }

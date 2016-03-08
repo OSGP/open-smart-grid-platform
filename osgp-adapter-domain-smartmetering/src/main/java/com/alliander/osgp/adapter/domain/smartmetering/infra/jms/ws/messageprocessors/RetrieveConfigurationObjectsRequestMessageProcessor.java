@@ -31,12 +31,13 @@ public class RetrieveConfigurationObjectsRequestMessageProcessor extends WebServ
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final RetrieveConfigurationObjectsRequest request = (RetrieveConfigurationObjectsRequest) dataObject;
 
         this.adhocService.retrieveConfigurationObjects(organisationIdentification, deviceIdentification,
-                correlationUid, request, messageType);
+                correlationUid, request, messageType, messagePriority);
     }
 
 }

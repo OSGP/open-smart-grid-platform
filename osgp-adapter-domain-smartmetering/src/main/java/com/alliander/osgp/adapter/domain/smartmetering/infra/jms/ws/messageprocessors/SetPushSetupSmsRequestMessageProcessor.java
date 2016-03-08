@@ -32,11 +32,12 @@ public class SetPushSetupSmsRequestMessageProcessor extends WebServiceRequestMes
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         final PushSetupSms pushSetupSms = (PushSetupSms) dataObject;
 
         this.configurationService.setPushSetupSms(organisationIdentification, deviceIdentification, correlationUid,
-                pushSetupSms, messageType);
+                pushSetupSms, messageType, messagePriority);
     }
 }

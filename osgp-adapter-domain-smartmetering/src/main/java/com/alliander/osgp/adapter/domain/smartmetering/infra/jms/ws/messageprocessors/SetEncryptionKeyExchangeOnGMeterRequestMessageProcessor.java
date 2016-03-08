@@ -29,9 +29,10 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends Web
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         this.configurationService.setEncryptionKeyExchangeOnGMeter(organisationIdentification, deviceIdentification,
-                correlationUid, messageType);
+                correlationUid, messageType, messagePriority);
     }
 }
