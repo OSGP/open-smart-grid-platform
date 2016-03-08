@@ -3,7 +3,6 @@ package org.osgp.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -64,14 +63,14 @@ public class Hls5Connector {
 
         try {
             final ClientConnection connection = this.createConnection();
-            this.removeInvalidKeys();
+            this.discardInvalidKeys();
             return connection;
         } catch (final UnknownHostException e) {
             // Unknown IP, unrecoverable.
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "The IP address is not found: "
                     + this.device.getIpAddress());
         } catch (final IOException e) {
-            if (!this.device.getNewSecurityKeys().isEmpty()) {
+            if (this.device.hasNewSecurityKey()) {
                 // Queue key recovery process.
                 this.recoverKeyProcess.setDeviceIdentification(this.device.getDeviceIdentification());
                 this.recoverKeyProcess.setIpAddress(this.device.getIpAddress());
@@ -116,12 +115,9 @@ public class Hls5Connector {
         return tcpConnectionBuilder.buildLnConnection();
     }
 
-    private void removeInvalidKeys() {
-        final List<SecurityKey> keys = this.device.getNewSecurityKeys();
-        if (!keys.isEmpty()) {
-            this.device.getSecurityKeys().removeAll(keys);
-            this.device = this.dlmsDeviceRepository.save(this.device);
-        }
+    private void discardInvalidKeys() {
+        this.device.discardInvalidKeys();
+        this.device = this.dlmsDeviceRepository.save(this.device);
     }
 
     /**

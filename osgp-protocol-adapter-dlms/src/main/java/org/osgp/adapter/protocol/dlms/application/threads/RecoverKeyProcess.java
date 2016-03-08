@@ -2,7 +2,6 @@ package org.osgp.adapter.protocol.dlms.application.threads;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Date;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.LnClientConnection;
@@ -42,27 +41,34 @@ public class RecoverKeyProcess implements Runnable {
 
     @Override
     public void run() {
-        if (this.deviceIdentification == null) {
-            throw new IllegalStateException("DeviceIdentification not set.");
-        }
-        if (this.ipAddress == null) {
-            throw new IllegalStateException("IP address not set.");
-        }
+        this.checkState();
 
         LOGGER.info("Attempting key recovery for device {}", this.deviceIdentification);
 
+        this.initDevice();
+        if (!this.device.hasNewSecurityKey()) {
+            return;
+        }
+
+        if (this.canConnect()) {
+            this.promoteInvalidKey();
+        }
+    }
+
+    private void initDevice() {
         this.device = this.dlmsDeviceRepository.findByDeviceIdentification(this.deviceIdentification);
         if (this.device == null) {
             throw new IllegalArgumentException("Device " + this.deviceIdentification + " not found.");
         }
         this.device.setIpAddress(this.ipAddress);
+    }
 
-        if (this.device.getNewSecurityKeys().isEmpty()) {
-            return;
+    private void checkState() {
+        if (this.deviceIdentification == null) {
+            throw new IllegalStateException("DeviceIdentification not set.");
         }
-
-        if (this.canConnect()) {
-            this.makeKeysValid();
+        if (this.ipAddress == null) {
+            throw new IllegalStateException("IP address not set.");
         }
     }
 
@@ -81,21 +87,8 @@ public class RecoverKeyProcess implements Runnable {
         }
     }
 
-    private void makeKeysValid() {
-        final Date now = new Date();
-
-        final SecurityKey auth = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
-        if (auth.getValidFrom() == null) {
-            this.device.getValidSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION).setValidTo(now);
-            auth.setValidFrom(now);
-        }
-
-        final SecurityKey enc = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
-        if (enc.getValidFrom() == null) {
-            this.device.getValidSecurityKey(SecurityKeyType.E_METER_ENCRYPTION).setValidTo(now);
-            enc.setValidFrom(now);
-        }
-
+    private void promoteInvalidKey() {
+        this.device.promoteInvalidKey();
         this.dlmsDeviceRepository.save(this.device);
     }
 
