@@ -10,6 +10,7 @@ package com.alliander.osgp.shared.infra.jms;
 import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriority;
 
 public class ResponseMessage implements Serializable {
 
@@ -24,21 +25,40 @@ public class ResponseMessage implements Serializable {
     private final ResponseMessageResultType result;
     private final OsgpException osgpException;
     private final Serializable dataObject;
+    private int messagePriority;
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
-            final OsgpException osgpException, final Serializable dataObject) {
+            final OsgpException osgpException, final Serializable dataObject, final int messagePriority) {
         this.correlationUid = correlationUid;
         this.organisationIdentification = organisationIdentification;
         this.deviceIdentification = deviceIdentification;
         this.result = result;
         this.osgpException = osgpException;
         this.dataObject = dataObject;
+        this.messagePriority = messagePriority;
+    }
+
+    // // even uit omdat ik wil zien wie er om vallen en dus een priority nodi
+    // // ghebbne
+    public ResponseMessage(final String correlationUid, final String organisationIdentification,
+            final String deviceIdentification, final ResponseMessageResultType result,
+            final OsgpException osgpException, final Serializable dataObject) {
+        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
+                MessagePriority.DEFAULT.getPriority());
     }
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result, final OsgpException osgpException) {
-        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null);
+        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
+                MessagePriority.DEFAULT.getPriority());
+    }
+
+    public ResponseMessage(final String correlationUid, final String organisationIdentification,
+            final String deviceIdentification, final ResponseMessageResultType result,
+            final OsgpException osgpException, final int messagePriority) {
+        this(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, null,
+                messagePriority);
     }
 
     public String getCorrelationUid() {
@@ -63,5 +83,9 @@ public class ResponseMessage implements Serializable {
 
     public Serializable getDataObject() {
         return this.dataObject;
+    }
+
+    public int getMessagePriority() {
+        return this.messagePriority;
     }
 }
