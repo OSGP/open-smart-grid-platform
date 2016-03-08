@@ -7,19 +7,23 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import java.nio.ByteBuffer;
+
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDay;
 
-public class SpecialDayConverter extends
-CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDay, SpecialDay> {
+public class CosemDateConverter extends CustomConverter<byte[], CosemDate> {
 
     @Override
-    public SpecialDay convert(final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDay source,
-            final Type<? extends SpecialDay> destinationType) {
-        return new SpecialDay(this.mapperFacade.map(source.getSpecialDayDate(), CosemDate.class), source.getDayId());
+    public CosemDate convert(final byte[] source, final Type<? extends CosemDate> destinationType) {
+        final ByteBuffer bb = ByteBuffer.wrap(source);
+        final int year = bb.getShort() & 0xFFFF;
+        final int month = bb.get() & 0xFF;
+        final int day = bb.get() & 0xFF;
+        final int weekDay = bb.get() & 0xFF;
+        return new CosemDate(year, month, day, weekDay);
     }
 
 }
