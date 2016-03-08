@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
+import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
@@ -16,11 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
 @Component
 @Scope("prototype")
 public class RecoverKeyProcess implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RecoverKeyProcess.class);
+
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     @Autowired
     private DlmsDeviceRepository dlmsDeviceRepository;
@@ -56,7 +63,13 @@ public class RecoverKeyProcess implements Runnable {
     }
 
     private void initDevice() {
-        this.device = this.dlmsDeviceRepository.findByDeviceIdentification(this.deviceIdentification);
+        try {
+            this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
+        } catch (FunctionalException | SessionProviderException e) {
+            // Thread can not recover from these exceptions.
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
         if (this.device == null) {
             throw new IllegalArgumentException("Device " + this.deviceIdentification + " not found.");
         }

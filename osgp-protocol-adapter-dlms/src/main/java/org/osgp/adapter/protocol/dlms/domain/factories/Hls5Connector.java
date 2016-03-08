@@ -3,51 +3,42 @@ package org.osgp.adapter.protocol.dlms.domain.factories;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
+import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcesInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
-@Component
-@Scope("prototype")
 public class Hls5Connector {
 
     private final int responseTimeout;
+
     private final int logicalDeviceAddress;
+
     private final int clientAccessPoint;
-    private final int recoverKeyDelay;
 
-    @Autowired
-    private RecoverKeyProcess recoverKeyProcess;
+    private final RecoverKeyProcesInitiator recoverKeyProcessInitiator;
 
-    @Autowired
-    private DlmsDeviceRepository dlmsDeviceRepository;
-
-    @Autowired
-    private ScheduledExecutorService executorService;
+    private final DlmsDeviceRepository dlmsDeviceRepository;
 
     private DlmsDevice device;
 
-    public Hls5Connector(final int responseTimeout, final int logicalDeviceAddress, final int clientAccessPoint,
-            final int recoverKeyDelay) {
+    public Hls5Connector(final RecoverKeyProcesInitiator recoverKeyProcessInitiator,
+            final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
+            final int clientAccessPoint) {
+        this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
+        this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
-        this.recoverKeyDelay = recoverKeyDelay;
     }
 
     public void setDevice(final DlmsDevice device) {
@@ -72,9 +63,8 @@ public class Hls5Connector {
         } catch (final IOException e) {
             if (this.device.hasNewSecurityKey()) {
                 // Queue key recovery process.
-                this.recoverKeyProcess.setDeviceIdentification(this.device.getDeviceIdentification());
-                this.recoverKeyProcess.setIpAddress(this.device.getIpAddress());
-                this.executorService.schedule(this.recoverKeyProcess, this.recoverKeyDelay, TimeUnit.MILLISECONDS);
+                this.recoverKeyProcessInitiator.initiate(this.device.getDeviceIdentification(),
+                        this.device.getIpAddress());
             }
             throw new ConnectionException(e.getMessage(), e);
         }

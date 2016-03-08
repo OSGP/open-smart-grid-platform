@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.annotation.Resource;
+import javax.inject.Provider;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
@@ -24,12 +25,16 @@ import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
+import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcesInitiator;
+import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
 import org.osgp.adapter.protocol.dlms.domain.factories.Hls5Connector;
+import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsChannelHandlerServer;
 import org.osgp.adapter.protocol.dlms.infra.networking.DlmsPushNotificationDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -122,11 +127,22 @@ public class DlmsConfig {
 
     @Bean
     @Scope("prototype")
-    public Hls5Connector hls5Connector(@Value("${jdlms.response_timeout}") final int responseTimeout,
+    @Autowired
+    public Hls5Connector hls5Connector(final RecoverKeyProcesInitiator recoverKeyProcessInitiator,
+            final DlmsDeviceRepository dlmsDeviceRepository,
+            @Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-            @Value("${jdlms.client_access_point}") final int clientAccessPoint,
+            @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
+        return new Hls5Connector(recoverKeyProcessInitiator, dlmsDeviceRepository, responseTimeout,
+                logicalDeviceAddress, clientAccessPoint);
+    }
+
+    @Bean
+    @Autowired
+    public RecoverKeyProcesInitiator recoverKeyProcesInitiator(final ScheduledExecutorService executorService,
+            final Provider<RecoverKeyProcess> recoverKeyProcessProvider,
             @Value("${key.recovery.delay}") final int recoverKeyDelay) {
-        return new Hls5Connector(responseTimeout, logicalDeviceAddress, clientAccessPoint, recoverKeyDelay);
+        return new RecoverKeyProcesInitiator(executorService, recoverKeyProcessProvider, recoverKeyDelay);
     }
 
     @Bean
