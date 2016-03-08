@@ -42,6 +42,7 @@ public class SetActivityCalendarResponseMessageProcessor extends OsgpCoreRespons
         final String resultString = (String) responseMessage.getDataObject();
 
         this.configurationService.handleSetActivityCalendarResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException, resultString);
+                correlationUid, messageType, responseMessage.getResult(), osgpException, resultString,
+                responseMessage.getMessagePriority());
     }
 }

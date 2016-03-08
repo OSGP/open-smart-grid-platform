@@ -146,11 +146,23 @@ public class DeviceResponseMessageService {
             throws JMSException {
         final Device device = this.deviceRepository.findByDeviceIdentification(message.getDeviceIdentification());
 
-        final Serializable messageData = (Serializable) message.getDataObject();
+        final Serializable messageData = message.getDataObject();
 
-        return new ProtocolRequestMessage(message.getDomain(), message.getDomainVersion(), message.getMessageType(),
-                message.getCorrelationUid(), message.getOrganisationIdentification(),
-                message.getDeviceIdentification(), device.getIpAddress(), messageData, message.isScheduled(),
-                message.getRetryCount() + 1);
+        // @formatter:off
+        return new ProtocolRequestMessage.Builder()
+        .domain(message.getDomain())
+        .domainVersion(message.getDomainVersion())
+        .messageType(message.getMessageType())
+        .correlationUid(message.getCorrelationUid())
+        .organisationIdentification(message.getOrganisationIdentification())
+        .deviceIdentification(message.getDeviceIdentification())
+        .ipAddress(device.getIpAddress())
+        .request(messageData)
+        .scheduled(message.isScheduled())
+        .retryCount(message.getRetryCount() + 1)
+        .messagePriority(message.getMessagePriority())
+        .build();
+        // @formatter:on
+
     }
 }

@@ -45,7 +45,8 @@ public class GetSmsDetailsResponseMessageProcessor extends OsgpCoreResponseMessa
         final SmsDetails smsDetails = (SmsDetails) responseMessage.getDataObject();
 
         this.adhocService.handleGetSmsDetailsResponse(deviceIdentification, organisationIdentification, correlationUid,
-                messageType, responseMessage.getResult(), osgpException, smsDetails);
+                messageType, responseMessage.getResult(), osgpException, smsDetails,
+                responseMessage.getMessagePriority());
     }
 
 }

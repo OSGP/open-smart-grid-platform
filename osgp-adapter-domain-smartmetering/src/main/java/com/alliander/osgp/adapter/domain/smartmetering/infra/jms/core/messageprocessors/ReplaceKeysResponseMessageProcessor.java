@@ -38,6 +38,7 @@ public class ReplaceKeysResponseMessageProcessor extends OsgpCoreResponseMessage
             final OsgpException osgpException) {
 
         this.configurationService.handleReplaceKeysResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+                correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

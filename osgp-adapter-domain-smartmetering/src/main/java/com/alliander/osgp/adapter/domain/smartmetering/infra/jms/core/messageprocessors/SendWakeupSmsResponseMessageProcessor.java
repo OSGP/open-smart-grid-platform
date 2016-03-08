@@ -45,7 +45,8 @@ public class SendWakeupSmsResponseMessageProcessor extends OsgpCoreResponseMessa
         final SmsDetails smsDetails = (SmsDetails) responseMessage.getDataObject();
 
         this.adhocService.handleSendWakeupSmsResponse(deviceIdentification, organisationIdentification, correlationUid,
-                messageType, responseMessage.getResult(), osgpException, smsDetails);
+                messageType, responseMessage.getResult(), osgpException, smsDetails,
+                responseMessage.getMessagePriority());
     }
 
 }

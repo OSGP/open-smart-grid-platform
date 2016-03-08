@@ -38,6 +38,7 @@ public class SetAdministrativeStatusResponseMessageProcessor extends OsgpCoreRes
             final OsgpException osgpException) {
 
         this.configurationService.handleSetAdministrativeStatusResponse(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException);
+                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

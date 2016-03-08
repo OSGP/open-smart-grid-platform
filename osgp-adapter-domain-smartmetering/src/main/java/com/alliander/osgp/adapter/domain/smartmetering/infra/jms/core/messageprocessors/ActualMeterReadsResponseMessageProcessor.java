@@ -44,11 +44,13 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
             final ActualMeterReads actualMeterReadsDto = (ActualMeterReads) responseMessage.getDataObject();
 
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessage.getResult(), osgpException, actualMeterReadsDto);
+                    correlationUid, messageType, responseMessage.getResult(), osgpException, actualMeterReadsDto,
+                    responseMessage.getMessagePriority());
         } else if (responseMessage.getDataObject() instanceof ActualMeterReadsGas) {
             final ActualMeterReadsGas meterReadsGas = (ActualMeterReadsGas) responseMessage.getDataObject();
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessage.getResult(), osgpException, meterReadsGas);
+                    correlationUid, messageType, responseMessage.getResult(), osgpException, meterReadsGas,
+                    responseMessage.getMessagePriority());
         }
     }
 }

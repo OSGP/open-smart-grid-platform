@@ -32,9 +32,11 @@ public class PushNotificationAlarmRequestMessageProcessor extends OsgpCoreReques
 
     @Override
     protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+            throws FunctionalException {
 
         this.notificationService.handlePushNotificationAlarm(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, (PushNotificationAlarm) ((RequestMessage) dataObject).getRequest());
+                correlationUid, messageType, (PushNotificationAlarm) ((RequestMessage) dataObject).getRequest(),
+                messagePriority);
     }
 }

@@ -41,6 +41,7 @@ public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessagePro
             final OsgpException osgpException) {
 
         this.installationService.handleAddMeterResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+                correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

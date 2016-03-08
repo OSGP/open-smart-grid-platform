@@ -41,6 +41,6 @@ public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResp
                 .getDataObject();
         this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
                 organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
-                administrativeStatusTypeDto);
+                administrativeStatusTypeDto, responseMessage.getMessagePriority());
     }
 }

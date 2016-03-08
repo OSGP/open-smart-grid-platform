@@ -41,6 +41,7 @@ public class SetPushSetupSmsResponseMessageProcessor extends OsgpCoreResponseMes
             final OsgpException osgpException) {
 
         this.configurationService.handleSetPushSetupSmsResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+                correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

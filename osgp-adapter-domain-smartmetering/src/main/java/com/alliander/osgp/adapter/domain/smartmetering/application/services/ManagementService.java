@@ -77,14 +77,16 @@ public class ManagementService {
             final String messageType,
             final ResponseMessageResultType responseMessageResultType,
             final OsgpException osgpException,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer eventMessageDataContainerDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer eventMessageDataContainerDto,
+            final int messagePriority) {
 
         final EventMessageDataContainer eventMessageDataContainer = this.managementMapper.map(
                 eventMessageDataContainerDto, EventMessageDataContainer.class);
 
         // Send the response containing the events to the webservice-adapter
         final ResponseMessage responseMessage = new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, responseMessageResultType, osgpException, eventMessageDataContainer);
+                deviceIdentification, responseMessageResultType, osgpException, eventMessageDataContainer,
+                messagePriority);
         this.webServiceResponseMessageSender.send(responseMessage, messageType);
     }
 }

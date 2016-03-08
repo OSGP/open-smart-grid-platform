@@ -41,6 +41,7 @@ public class SetAlarmNotificationsResponseMessageProcessor extends OsgpCoreRespo
             final OsgpException osgpException) {
 
         this.configurationService.handleSetAlarmNotificationsResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+                correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

@@ -42,6 +42,7 @@ public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResp
             final OsgpException osgpException) {
 
         this.configurationService.handleSetConfigurationObjectResponse(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException);
+                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

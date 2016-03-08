@@ -105,7 +105,7 @@ public class InstallationService {
 
     public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+            final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
 
@@ -116,6 +116,6 @@ public class InstallationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 }

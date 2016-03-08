@@ -25,7 +25,8 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
 /**
- * This class sends protocol request messages to the requests queue for the specific version of the protocol
+ * This class sends protocol request messages to the requests queue for the
+ * specific version of the protocol
  */
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
@@ -77,6 +78,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, requestMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, requestMessage.getRetryCount());
+                objectMessage.setJMSPriority(requestMessage.getMessagePriority());
                 return objectMessage;
             }
 

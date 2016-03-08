@@ -88,7 +88,8 @@ public abstract class OsgpCoreRequestMessageProcessor implements MessageProcesso
     }
 
     protected abstract void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException;
+            final String correlationUid, final Object dataObject, final String messageType, int messagePriority)
+                    throws FunctionalException;
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
@@ -117,10 +118,11 @@ public abstract class OsgpCoreRequestMessageProcessor implements MessageProcesso
         try {
             LOGGER.info("Calling application service function: {}", messageType);
             this.handleMessage(organisationIdentification, deviceIdentification, correlationUid, dataObject,
-                    messageType);
+                    messageType, message.getJMSPriority());
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
+                    message.getJMSPriority());
         }
     }
 
@@ -140,11 +142,12 @@ public abstract class OsgpCoreRequestMessageProcessor implements MessageProcesso
      *            The message type.
      */
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String messageType) {
+            final String deviceIdentification, final String messageType, final int messagePriority) {
         LOGGER.info("handling error: {} for message type: {}", e.getMessage(), messageType);
         final OsgpException osgpException = this.ensureOsgpException(e);
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, null), messageType);
+                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, null, messagePriority),
+                messageType);
     }
 
     private OsgpException ensureOsgpException(final Exception e) {

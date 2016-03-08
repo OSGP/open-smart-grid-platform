@@ -42,6 +42,7 @@ public class SpecialDaysResponseMessageProcessor extends OsgpCoreResponseMessage
             final OsgpException osgpException) {
 
         this.configurationService.handleSpecialDaysResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+                correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

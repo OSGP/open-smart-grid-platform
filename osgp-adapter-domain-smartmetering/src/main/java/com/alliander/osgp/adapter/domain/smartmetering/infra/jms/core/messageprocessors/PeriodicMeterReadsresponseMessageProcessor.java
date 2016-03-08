@@ -48,14 +48,14 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
 
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException,
-                    periodicMeterReadsContainer);
+                    periodicMeterReadsContainer, responseMessage.getMessagePriority());
         } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainerGas) {
             final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = (PeriodicMeterReadsContainerGas) responseMessage
                     .getDataObject();
 
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException,
-                    periodicMeterReadsContainerGas);
+                    periodicMeterReadsContainerGas, responseMessage.getMessagePriority());
         }
     }
 }

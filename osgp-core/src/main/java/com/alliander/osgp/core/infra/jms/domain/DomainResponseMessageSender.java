@@ -72,6 +72,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
                 if (message.getOsgpException() != null) {
                     objectMessage.setStringProperty(Constants.DESCRIPTION, message.getOsgpException().getMessage());
                 }
+                objectMessage.setJMSPriority(message.getMessagePriority());
                 return objectMessage;
             }
         });
@@ -81,14 +82,16 @@ public class DomainResponseMessageSender implements DomainResponseService {
         return new ResponseMessage(protocolResponseMessage.getCorrelationUid(),
                 protocolResponseMessage.getOrganisationIdentification(),
                 protocolResponseMessage.getDeviceIdentification(), protocolResponseMessage.getResult(),
-                protocolResponseMessage.getOsgpException(), protocolResponseMessage.getDataObject());
+                protocolResponseMessage.getOsgpException(), protocolResponseMessage.getDataObject(),
+                protocolResponseMessage.getMessagePriority());
     }
 
     private ResponseMessage createResponseMessage(final ProtocolRequestMessage protocolRequestMessage, final Exception e) {
         final OsgpException ex = this.ensureOsgpException(e);
         return new ResponseMessage(protocolRequestMessage.getCorrelationUid(),
                 protocolRequestMessage.getOrganisationIdentification(),
-                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, null);
+                protocolRequestMessage.getDeviceIdentification(), ResponseMessageResultType.NOT_OK, ex, null,
+                protocolRequestMessage.getMessagePriority());
     }
 
     private OsgpException ensureOsgpException(final Exception e) {

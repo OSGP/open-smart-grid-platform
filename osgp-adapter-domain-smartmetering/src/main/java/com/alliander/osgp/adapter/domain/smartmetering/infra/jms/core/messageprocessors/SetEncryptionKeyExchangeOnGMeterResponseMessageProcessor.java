@@ -41,6 +41,7 @@ public class SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor extends Os
             final OsgpException osgpException) {
 
         this.configurationService.handleSetEncryptionKeyExchangeOnGMeterResponse(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException);
+                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

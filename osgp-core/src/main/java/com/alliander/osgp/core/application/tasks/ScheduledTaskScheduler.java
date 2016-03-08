@@ -66,9 +66,21 @@ public class ScheduledTaskScheduler implements Runnable {
     private ProtocolRequestMessage createProtocolRequestMessage(final ScheduledTask scheduledTask) {
         final Device device = this.deviceRepository.findByDeviceIdentification(scheduledTask.getDeviceIdentification());
 
-        return new ProtocolRequestMessage(scheduledTask.getDomain(), scheduledTask.getDomainVersion(),
-                scheduledTask.getMessageType(), scheduledTask.getCorrelationId(),
-                scheduledTask.getOrganisationIdentification(), scheduledTask.getDeviceIdentification(), device
-                        .getNetworkAddress().getHostAddress(), scheduledTask.getMessageData(), true, 0);
+        // @formatter:off
+        return new ProtocolRequestMessage.Builder()
+        .domain(scheduledTask.getDomain())
+        .domainVersion(scheduledTask.getDomainVersion())
+        .messageType(scheduledTask.getMessageType())
+        .correlationUid(scheduledTask.getCorrelationId())
+        .organisationIdentification(scheduledTask.getOrganisationIdentification())
+        .deviceIdentification(scheduledTask.getDeviceIdentification())
+        .ipAddress(device.getNetworkAddress().getHostAddress())
+        .request(scheduledTask.getMessageData())
+        .scheduled(true)
+        .messagePriority(scheduledTask.getMessagePriority())
+        .build();
+        // @formatter:on
+
     }
+
 }

@@ -59,6 +59,9 @@ public class ScheduledTask extends AbstractEntity {
     @Column(name = "error_log", length = 255)
     private String errorLog;
 
+    @Column(name = "messagepriority")
+    private Integer messagePriority;
+
     @SuppressWarnings("unused")
     private ScheduledTask() {
 
@@ -66,7 +69,7 @@ public class ScheduledTask extends AbstractEntity {
 
     public ScheduledTask(final String domain, final String domainVersion, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final String messageType,
-            final Serializable messageData, final Timestamp scheduleTime) {
+            final Serializable messageData, final Timestamp scheduleTime, final Integer messagePriority) {
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.correlationUid = correlationUid;
@@ -76,6 +79,7 @@ public class ScheduledTask extends AbstractEntity {
         this.messageData = messageData;
         this.scheduledTime = (Timestamp) scheduleTime.clone();
         this.status = ScheduledTaskStatusType.NEW;
+        this.messagePriority = messagePriority;
     }
 
     public String getDomain() {
@@ -112,6 +116,10 @@ public class ScheduledTask extends AbstractEntity {
 
     public Serializable getMessageData() {
         return this.messageData;
+    }
+
+    public Integer getMessagePriority() {
+        return this.messagePriority;
     }
 
     public ScheduledTaskStatusType getStatus() {

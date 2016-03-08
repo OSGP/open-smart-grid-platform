@@ -149,7 +149,7 @@ public class ConfigurationService {
 
     public void handleSpecialDaysResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+            final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handleSpecialDaysresponse for MessageType: {}", messageType);
 
@@ -160,13 +160,13 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 
     public void setAlarmNotifications(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AlarmNotifications alarmNotifications, final String messageType, final int messagePriority)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setAlarmNotifications for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -186,7 +186,7 @@ public class ConfigurationService {
     public void setAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final AdministrativeStatusType administrativeStatusType, final String messageType, final int messagePriority)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info(
                 "Set Administrative Status for organisationIdentification: {} for deviceIdentification: {} to status: {}",
@@ -205,7 +205,7 @@ public class ConfigurationService {
 
     public void handleSetAdministrativeStatusResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handleSetAdministrativeStatusResponse for MessageType: {}, with result: {}", messageType,
                 deviceResult.toString());
@@ -217,7 +217,7 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 
     public void getAdministrativeStatus(final String organisationIdentification, final String deviceIdentification,
@@ -239,10 +239,15 @@ public class ConfigurationService {
 
     }
 
-    public void handleGetAdministrativeStatusResponse(final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto) {
+    public void handleGetAdministrativeStatusResponse(
+            final String deviceIdentification,
+            final String organisationIdentification,
+            final String correlationUid,
+            final String messageType,
+            final ResponseMessageResultType responseMessageResultType,
+            final OsgpException osgpException,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto,
+            final int messagePriority) {
 
         LOGGER.info("handleGetAdministrativeStatusResponse for MessageType: {}, with result: {}", messageType,
                 responseMessageResultType.toString());
@@ -257,13 +262,13 @@ public class ConfigurationService {
                 administrativeStatusTypeDto, AdministrativeStatusType.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, administrativeStatusType), messageType);
+                deviceIdentification, result, osgpException, administrativeStatusType, messagePriority), messageType);
     }
 
     public void setActivityCalendar(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final String correlationUid,
             final ActivityCalendar activityCalendar, final String messageType, final int messagePriority)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("set Activity Calendar for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
@@ -282,7 +287,7 @@ public class ConfigurationService {
 
     public void handleSetAlarmNotificationsResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handleSetAlarmNotificationsResponse for MessageType: {}", messageType);
 
@@ -293,12 +298,12 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 
     public void handleSetConfigurationObjectResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handle SetConfigurationObject response for MessageType: {}", messageType);
 
@@ -309,12 +314,12 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 
     public void handleSetPushSetupAlarmResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handleSetPushSetupAlarmResponse for MessageType: {}", messageType);
 
@@ -325,12 +330,12 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 
     public void handleSetPushSetupSmsResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handleSetPushSetupSmsResponse for MessageType: {}", messageType);
 
@@ -341,13 +346,13 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 
     public void handleSetActivityCalendarResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
-            final String resultString) {
+            final String resultString, final int messagePriority) {
         LOGGER.info("handleSetActivityCalendarResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = responseMessageResultType;
@@ -357,7 +362,7 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, resultString), messageType);
+                deviceIdentification, result, exception, resultString, messagePriority), messageType);
 
     }
 
@@ -392,7 +397,8 @@ public class ConfigurationService {
 
     public void handleSetEncryptionKeyExchangeOnGMeterResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException exception) {
+            final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
+            final int messagePriority) {
         LOGGER.info("handleSetEncryptionKeyExchangeOnGMeterResponse for MessageType: {}", messageType);
 
         ResponseMessageResultType result = responseMessageResultType;
@@ -402,7 +408,7 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception), messageType);
+                deviceIdentification, result, exception, messagePriority), messageType);
     }
 
     public void replaceKeys(@Identification final String organisationIdentification,
@@ -423,7 +429,7 @@ public class ConfigurationService {
 
     public void handleReplaceKeysResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+            final OsgpException exception, final int messagePriority) {
 
         LOGGER.info("handleReplaceKeysResponse for MessageType: {}", messageType);
 
@@ -434,6 +440,6 @@ public class ConfigurationService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 }

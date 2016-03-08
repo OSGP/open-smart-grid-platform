@@ -41,6 +41,7 @@ public class SetPushSetupAlarmResponseMessageProcessor extends OsgpCoreResponseM
             final OsgpException osgpException) {
 
         this.configurationService.handleSetPushSetupAlarmResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+                correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

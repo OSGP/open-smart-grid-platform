@@ -76,7 +76,7 @@ public class AdhocService {
 
     public void handleSynchronizeTimeResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final int messagePriority) {
 
         LOGGER.debug("handleSynchronizeTimeResponse for MessageType: {}", messageType);
 
@@ -87,7 +87,7 @@ public class AdhocService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+                deviceIdentification, result, exception, null, messagePriority), messageType);
     }
 
     public void sendWakeupSms(final String organisationIdentification, final String deviceIdentification,
@@ -110,7 +110,7 @@ public class AdhocService {
     public void handleSendWakeupSmsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType,
             final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto, final int messagePriority) {
 
         LOGGER.debug("handleSendWakeupSmsResponse for MessageType: {}", messageType);
 
@@ -123,7 +123,7 @@ public class AdhocService {
         final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, smsDetails), messageType);
+                deviceIdentification, result, exception, smsDetails, messagePriority), messageType);
     }
 
     public void getSmsDetails(final String organisationIdentification, final String deviceIdentification,
@@ -146,7 +146,7 @@ public class AdhocService {
     public void handleGetSmsDetailsResponse(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
             final OsgpException exception,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails smsDetailsDto, final int messagePriority) {
 
         LOGGER.debug("handleGetSmsDetailsResponse for MessageType: {}", messageType);
 
@@ -159,7 +159,7 @@ public class AdhocService {
         final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, smsDetails), messageType);
+                deviceIdentification, result, exception, smsDetails, messagePriority), messageType);
     }
 
     public void retrieveConfigurationObjects(
@@ -184,7 +184,8 @@ public class AdhocService {
 
     public void handleRetrieveConfigurationObjectsResponse(final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData) {
+            final ResponseMessageResultType deviceResult, final OsgpException exception, final String resultData,
+            final int messagePriority) {
 
         LOGGER.debug("handleRetrieveConfigurationObjectsResponse for MessageType: {}", messageType);
 
@@ -195,7 +196,7 @@ public class AdhocService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, resultData), messageType);
+                deviceIdentification, result, exception, resultData, messagePriority), messageType);
 
     }
 }

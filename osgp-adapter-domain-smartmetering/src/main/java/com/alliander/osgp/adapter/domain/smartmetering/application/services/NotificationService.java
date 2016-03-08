@@ -30,7 +30,8 @@ public class NotificationService {
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     public void handlePushNotificationAlarm(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final PushNotificationAlarm pushNotificationAlarm) {
+            final String correlationUid, final String messageType, final PushNotificationAlarm pushNotificationAlarm,
+            final int messagePriority) {
 
         LOGGER.info("handlePushNotificationAlarm for MessageType: {}", messageType);
 
@@ -43,7 +44,8 @@ public class NotificationService {
          * service, so it can be handled similar to response messages based on
          * earlier web service requests.
          */
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.OK, null, pushNotificationAlarmDomain), messageType);
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
+                        ResponseMessageResultType.OK, null, pushNotificationAlarmDomain, messagePriority), messageType);
     }
 }

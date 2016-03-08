@@ -73,7 +73,8 @@ public class DomainRequestMessageListener implements MessageListener {
         final Timestamp scheduleTimeStamp = new Timestamp(message.getLongProperty(Constants.SCHEDULE_TIME));
 
         return new ScheduledTask(this.domainInfo.getDomain(), this.domainInfo.getDomainVersion(), correlationUid,
-                organisationIdentification, deviceIdentification, messageType, messageData, scheduleTimeStamp);
+                organisationIdentification, deviceIdentification, messageType, messageData, scheduleTimeStamp,
+                message.getJMSPriority());
     }
 
     public ProtocolRequestMessage createProtocolRequestMessage(final Message message) throws JMSException {
@@ -84,7 +85,18 @@ public class DomainRequestMessageListener implements MessageListener {
         final String ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         final Serializable messageData = ((ObjectMessage) message).getObject();
 
-        return new ProtocolRequestMessage(this.domainInfo.getDomain(), this.domainInfo.getDomainVersion(), messageType,
-                correlationUid, organisationIdentification, deviceIdentification, ipAddress, messageData, 0);
+        // @formatter:off
+        return new ProtocolRequestMessage.Builder()
+        .domain(this.domainInfo.getDomain())
+        .domainVersion(this.domainInfo.getDomainVersion())
+        .messageType(messageType)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .ipAddress(ipAddress)
+        .request(messageData)
+        .messagePriority(message.getJMSPriority())
+        .build();
+        // @formatter:on
     }
 }

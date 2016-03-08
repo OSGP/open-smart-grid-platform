@@ -40,7 +40,7 @@ public class RetrieveConfigurationObjectsResponseMessageProcessor extends OsgpCo
             final OsgpException osgpException) {
         this.adhocService.handleRetrieveConfigurationObjectsResponse(deviceIdentification, organisationIdentification,
                 correlationUid, messageType, responseMessage.getResult(), osgpException,
-                (String) responseMessage.getDataObject());
+                (String) responseMessage.getDataObject(), responseMessage.getMessagePriority());
 
     }
 

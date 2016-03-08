@@ -42,6 +42,7 @@ public class SynchronizeTimeResponseMessageProcessor extends OsgpCoreResponseMes
             final OsgpException osgpException) {
 
         this.adhocService.handleSynchronizeTimeResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+                correlationUid, messageType, responseMessage.getResult(), osgpException,
+                responseMessage.getMessagePriority());
     }
 }

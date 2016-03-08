@@ -43,6 +43,7 @@ public class FindEventsResponseMessageProcessor extends OsgpCoreResponseMessageP
                 .getDataObject();
 
         this.managementService.handleFindEventsResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException, eventMessageDataContainer);
+                correlationUid, messageType, responseMessage.getResult(), osgpException, eventMessageDataContainer,
+                responseMessage.getMessagePriority());
     }
 }

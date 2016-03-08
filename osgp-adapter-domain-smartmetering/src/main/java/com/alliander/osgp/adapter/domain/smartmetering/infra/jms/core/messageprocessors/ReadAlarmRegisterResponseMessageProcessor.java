@@ -40,6 +40,7 @@ public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseM
         final AlarmRegister alarmRegisterDto = (AlarmRegister) responseMessage.getDataObject();
 
         this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException, alarmRegisterDto);
+                correlationUid, messageType, responseMessage.getResult(), osgpException, alarmRegisterDto,
+                responseMessage.getMessagePriority());
     }
 }
