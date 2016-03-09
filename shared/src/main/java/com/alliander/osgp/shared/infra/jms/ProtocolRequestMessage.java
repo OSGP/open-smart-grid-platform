@@ -24,7 +24,13 @@ public class ProtocolRequestMessage extends RequestMessage {
     private final int retryCount;
     private final int messagePriority;
 
-    // Constructor with no scheduled flag and no messagePriority
+    /**
+     * Constructor with no scheduled flag and no messagePriority
+     *
+     * @deprecated use the Builder in stead. Constructors have too a lot of
+     *             arguments of which some are optional
+     */
+    @Deprecated
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final String ipAddress, final Serializable request, final int retryCount) {
@@ -32,7 +38,13 @@ public class ProtocolRequestMessage extends RequestMessage {
                 ipAddress, request, false, retryCount);
     }
 
-    // Constructor with a scheduled flag, but with no messagePriority
+    /**
+     * Constructor with no scheduled flag and no messagePriority
+     *
+     * @deprecated use the Builder in stead. Constructors have too a lot of
+     *             arguments of which some are optional
+     */
+    @Deprecated
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final String ipAddress, final Serializable request, final boolean scheduled, final int retryCount) {
