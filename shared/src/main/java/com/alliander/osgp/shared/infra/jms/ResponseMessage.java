@@ -39,8 +39,6 @@ public class ResponseMessage implements Serializable {
         this.messagePriority = messagePriority;
     }
 
-    // // even uit omdat ik wil zien wie er om vallen en dus een priority nodi
-    // // ghebbne
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,
             final OsgpException osgpException, final Serializable dataObject) {

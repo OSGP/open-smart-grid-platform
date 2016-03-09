@@ -52,8 +52,10 @@ public class ProtocolRequestMessage extends RequestMessage {
                 ipAddress, request, scheduled, retryCount, MessagePriority.DEFAULT.getPriority());
     }
 
-    // Constructor with both a scheduled flag and a messagePriority. Only called
-    // from builder
+    /**
+     * Constructor with both a scheduled flag and a messagePriority. Only called
+     * from builder
+     */
     private ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final String ipAddress, final Serializable request, final boolean scheduled, final int retryCount,
