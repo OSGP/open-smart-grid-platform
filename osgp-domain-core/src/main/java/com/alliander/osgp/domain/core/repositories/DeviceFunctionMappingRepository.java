@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.repositories;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 public interface DeviceFunctionMappingRepository extends JpaRepository<DeviceAuthorization, Long> {
     @Query("select dfm.function from DeviceFunctionMapping dfm where dfm.functionGroup = ?1")
     List<DeviceFunction> findByDeviceFunctionGroup(DeviceFunctionGroup deviceFunctionGroup);
+
+    @Query("select distinct dfm.function from DeviceFunctionMapping dfm where dfm.functionGroup in (?1)")
+    List<DeviceFunction> findByDeviceFunctionGroups(Collection<DeviceFunctionGroup> deviceFunctionGroups);
 }
