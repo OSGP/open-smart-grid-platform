@@ -17,8 +17,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
@@ -35,6 +38,9 @@ import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidExceptio
 public class ConfigurationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationService.class);
+
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -59,6 +65,11 @@ public class ConfigurationService {
             @Identification final String deviceIdentification,
             @Identification final AdministrativeStatusType requestData) throws FunctionalException {
 
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_ADMINISTRATIVE_STATUS);
+
         LOGGER.info(
                 "enqueueSetAdministrativeStatus called with organisation {} and device {}, set administrative status to {}",
                 organisationIdentification, deviceIdentification, requestData);
@@ -81,12 +92,18 @@ public class ConfigurationService {
     }
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification) {
+            final String deviceIdentification) throws FunctionalException {
         return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification);
     }
 
     private String enqueueGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification) {
+            final String deviceIdentification) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_ADMINISTRATIVE_STATUS);
+
         LOGGER.debug("enqueueGetAdministrativeStatus called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
@@ -108,7 +125,13 @@ public class ConfigurationService {
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SpecialDaysRequest requestData) {
+            @Identification final String deviceIdentification, final SpecialDaysRequest requestData)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REQUEST_SPECIAL_DAYS);
 
         LOGGER.debug("enqueueSetSpecialDaysRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -131,7 +154,13 @@ public class ConfigurationService {
     }
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData) {
+            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_CONFIGURATION_OBJECT);
 
         LOGGER.debug("enqueueSetConfigurationObjectRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -154,7 +183,13 @@ public class ConfigurationService {
     }
 
     public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm) {
+            @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm)
+                    throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_PUSH_SETUP_ALARM);
 
         LOGGER.debug("enqueueSetPushSetupAlarmRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -177,7 +212,13 @@ public class ConfigurationService {
     }
 
     public String enqueueSetPushSetupSmsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PushSetupSms pushSetupSms) {
+            @Identification final String deviceIdentification, final PushSetupSms pushSetupSms)
+                    throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_PUSH_SETUP_SMS);
 
         LOGGER.debug("enqueueSetPushSetupSmsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -200,7 +241,13 @@ public class ConfigurationService {
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches) {
+            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
+                    throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_ALARM_NOTIFICATIONS);
 
         LOGGER.debug("enqueueSetAlarmNotificationsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -218,7 +265,13 @@ public class ConfigurationService {
     }
 
     public String enqueueSetEncryptionKeyExchangeOnGMeterRequest(
-            @Identification final String organisationIdentification, @Identification final String deviceIdentification) {
+            @Identification final String organisationIdentification, @Identification final String deviceIdentification)
+                    throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER);
 
         LOGGER.debug("enqueueSetEncryptionKeyExchangeOnGMeterRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -236,7 +289,13 @@ public class ConfigurationService {
     }
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar) {
+            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SET_ACTIVITY_CALENDAR);
 
         LOGGER.debug("enqueueSetActivityCalendarRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -259,7 +318,16 @@ public class ConfigurationService {
     }
 
     public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final KeySet keySet) {
+            @Identification final String deviceIdentification, final KeySet keySet) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REPLACE_KEYS);
+
+        LOGGER.debug("enqueueReplaceKeysRequest called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
