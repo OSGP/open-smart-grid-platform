@@ -10,26 +10,11 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 /**
  * Definitions of Logical Device, Logical Nodes and Attributes.
  */
-public class LogicalNodeAttributeDefinitons {
+public final class LogicalNodeAttributeDefinitons {
+
+    private static final int MAX_RELAY_INDEX = 4;
 
     public static final String LOGICAL_DEVICE = "SWDeviceGenericIO";
-
-    /**
-     * Logical Node for relay 1, XSWC1.
-     */
-    public static final String LOGICAL_NODE_XSWC1 = "/XSWI1";
-    /**
-     * Logical Node for relay 2, XSWC2.
-     */
-    public static final String LOGICAL_NODE_XSWC2 = "/XSWI2";
-    /**
-     * Logical Node for relay 3, XSWC2.
-     */
-    public static final String LOGICAL_NODE_XSWC3 = "/XSWI3";
-    /**
-     * Logical Node for relay 4, XSWC1.
-     */
-    public static final String LOGICAL_NODE_XSWC4 = "/XSWI4";
 
     /**
      * Property of Logical Node for relays, Pos.
@@ -48,5 +33,22 @@ public class LogicalNodeAttributeDefinitons {
 
     private LogicalNodeAttributeDefinitons() {
         // Private constructor to prevent instantiation of this class.
+    }
+
+    /*
+     * Prefix of the relays' Logical Node.
+     */
+    private static final String LOGICAL_NODE_RELAY_PREFIX = "/XSWC";
+
+    /**
+     * Returns the value of the Relay's logical node for the given index
+     */
+    public static final String getNodeNameForRelayIndex(final int index) {
+
+        if (index < 1 || index > MAX_RELAY_INDEX) {
+            throw new IllegalArgumentException("Invalid index value : " + index);
+        }
+
+        return LogicalNodeAttributeDefinitons.LOGICAL_NODE_RELAY_PREFIX + index;
     }
 }
