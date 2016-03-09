@@ -7,10 +7,16 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
+import java.math.BigDecimal;
+
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
@@ -24,7 +30,22 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseGasConverter());
         mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushNotificationsAlarmConverter());
-        mapperFactory.getConverterFactory().registerConverter(new EMeterValueConverter());
-        mapperFactory.getConverterFactory().registerConverter(new GMeterValueConverter());
+    }
+
+    /**
+     * helper method to construct a MeterValue, code in one place
+     *
+     * @param d
+     * @param osgpUnit
+     * @return
+     */
+    public static MeterValue eFromDouble(final Double d, final OsgpUnit osgpUnit) {
+        if (d == null || osgpUnit == null) {
+            return null;
+        }
+        final MeterValue m = new MeterValue();
+        m.setValue(BigDecimal.valueOf(d));
+        m.setUnit(OsgpUnitType.valueOf(osgpUnit.name()));
+        return m;
     }
 }
