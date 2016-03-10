@@ -100,6 +100,12 @@ public class Device extends AbstractEntity {
     @Column()
     private Integer eventNotifications;
 
+    /**
+     * Backing field
+     */
+    @Column()
+    private String protocol;
+
     @Column()
     @Enumerated(EnumType.ORDINAL)
     private LinkType preferredLinkType;
@@ -309,6 +315,14 @@ public class Device extends AbstractEntity {
 
     public void setRandomPlatform(final Integer randomPlatform) {
         this.randomPlatform = randomPlatform;
+    }
+
+    public String getProtocol() {
+        return this.protocol;
+    }
+
+    public void setProtocol(final String protocol) {
+        this.protocol = protocol;
     }
 
     public int doGetNextSequence() {

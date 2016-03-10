@@ -141,7 +141,14 @@ body {
 										<form:input path="deviceType" />
 									</div>
 								</div>
-
+								<div class="control-group">
+									<form:label path="protocol" class="control-label">
+										<spring:message code="entity.device.protocol" />
+									</form:label>
+									<div class="controls">
+										<form:input path="protocol" />
+									</div>
+								</div>
 								<div class="control-group">
 									<form:label path="actualLinkType" class="control-label">
 										<spring:message code="entity.device.actualLinkType" />
@@ -352,6 +359,7 @@ body {
                 request.deviceId = $('#deviceId').val();
                 request.deviceType = $('#deviceType').val();
                 request.hasSchedule = $('#hasSchedule').attr('checked') ? "on" : "off";
+                request.protocol = $('#protocol').val();
 
                 $.ajax({
                     type : 'POST',

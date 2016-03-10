@@ -104,6 +104,14 @@ body {
 										<form:input path="deviceType" />
 									</div>
 								</div>
+								<div class="control-group">
+									<form:label path="protocol" class="control-label">
+										<spring:message code="entity.device.protocol" />
+									</form:label>
+									<div class="controls">
+										<form:input path="protocol" />
+									</div>
+								</div>
 
 								<div class="row">
 									<div class="span4">
