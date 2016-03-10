@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
@@ -72,9 +73,13 @@ public class ManagementService {
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
             final List<FindEventsQuery> findEventsQueryList) throws FunctionalException {
 
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.FIND_EVENTS);
+
         LOGGER.info("findEvents called with organisation {}", organisationIdentification);
 
-        this.domainHelperService.findOrganisation(organisationIdentification);
         for (final FindEventsQuery findEventsQuery : findEventsQueryList) {
             if (!findEventsQuery.getFrom().isBefore(findEventsQuery.getUntil())) {
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
