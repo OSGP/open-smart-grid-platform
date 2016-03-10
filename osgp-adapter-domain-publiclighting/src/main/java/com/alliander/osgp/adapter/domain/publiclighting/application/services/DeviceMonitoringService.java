@@ -87,8 +87,12 @@ public class DeviceMonitoringService extends AbstractService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+            if (e instanceof OsgpException) {
+                osgpException = (OsgpException) e;
+            } else {
+                osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                        "Unexpected exception while retrieving response message", e);
+            }
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,

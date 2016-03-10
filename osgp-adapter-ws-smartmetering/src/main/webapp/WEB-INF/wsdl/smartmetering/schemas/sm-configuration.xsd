@@ -342,13 +342,7 @@
 
 	<xsd:complexType name="SpecialDay">
 		<xsd:sequence>
-			<xsd:element name="specialDayDate" minOccurs="1" maxOccurs="1">
-					<xsd:simpleType>
-						<xsd:restriction base="common:AlphaNumericType">
-							<xsd:length value="6" />
-						</xsd:restriction>
-					</xsd:simpleType>
-			</xsd:element>
+            <xsd:element name="specialDayDate" minOccurs="1" maxOccurs="1" type="common:CosemDateType"/>
 			<xsd:element minOccurs="1" maxOccurs="1" name="dayId" type="xsd:int" />
 		</xsd:sequence>
 	</xsd:complexType>

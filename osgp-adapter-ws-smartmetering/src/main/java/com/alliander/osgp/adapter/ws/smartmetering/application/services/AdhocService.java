@@ -17,11 +17,15 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 
 @Service(value = "wsSmartMeteringAdhocService")
@@ -29,6 +33,9 @@ import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidExceptio
 public class AdhocService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AdhocService.class);
+
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -41,7 +48,12 @@ public class AdhocService {
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest,
-            final int messagePriority) {
+            final int messagePriority) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SYNCHRONIZE_TIME);
 
         LOGGER.debug("enqueueSynchronizeTimeRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -70,7 +82,12 @@ public class AdhocService {
     }
 
     public String enqueueSendWakeUpSmsRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority) {
+            final String deviceIdentification, final int messagePriority) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.SEND_WAKEUP_SMS);
 
         LOGGER.debug("enqueueSendWakeUpSmsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -100,7 +117,13 @@ public class AdhocService {
     }
 
     public String enqueueGetSmsDetailsRequest(final String organisationIdentification,
-            final String deviceIdentification, final SmsDetails smsDetails, final int messagePriority) {
+            final String deviceIdentification, final SmsDetails smsDetails, final int messagePriority)
+            throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_SMS_DETAILS);
 
         LOGGER.debug("enqueueGetSmsDetailsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -130,7 +153,12 @@ public class AdhocService {
 
     public String enqueueRetrieveConfigurationObjectsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final RetrieveConfigurationObjectsRequest request,
-            final int messagePriority) {
+            final int messagePriority) throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_CONFIGURATION_OBJECTS);
 
         LOGGER.debug("enqueueRetrieveConfigurationObjectsRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);

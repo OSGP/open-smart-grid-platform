@@ -38,5 +38,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ActivityCalendarConverter());
         mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusConverter());
         mapperFactory.getConverterFactory().registerConverter(new KeySetConverter());
+        mapperFactory.getConverterFactory().registerConverter(new SpecialDaysDataConverter());
+        mapperFactory.getConverterFactory().registerConverter(new SpecialDayConverter());
     }
 }
