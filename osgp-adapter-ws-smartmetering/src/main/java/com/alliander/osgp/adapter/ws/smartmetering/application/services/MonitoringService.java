@@ -17,8 +17,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
@@ -29,12 +32,16 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "wsSmartMeteringMonitoringService")
 @Validated
 public class MonitoringService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringService.class);
+
+    @Autowired
+    private DomainHelperService domainHelperService;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -46,9 +53,13 @@ public class MonitoringService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData) {
+            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData)
+                    throws FunctionalException {
 
-        // TODO: bypassing authorization logic for now, needs to be fixed.
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REQUEST_PERIODIC_METER_DATA);
 
         LOGGER.debug("enqueuePeriodicMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -76,7 +87,13 @@ public class MonitoringService {
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData) {
+            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData)
+                    throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.REQUEST_ACTUAL_METER_DATA);
 
         LOGGER.debug("enqueueActualMeterReadsRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
@@ -104,7 +121,13 @@ public class MonitoringService {
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData) {
+            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData)
+                    throws FunctionalException {
+
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.READ_ALARM_REGISTER);
 
         LOGGER.debug("enqueueReadAlarmRegisterRequestData called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
