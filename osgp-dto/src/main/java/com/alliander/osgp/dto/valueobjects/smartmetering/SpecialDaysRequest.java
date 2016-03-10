@@ -13,23 +13,21 @@ public class SpecialDaysRequest implements Serializable {
 
     private static final long serialVersionUID = 5377631203726277887L;
 
-    private String deviceIdentification;
+    private final String deviceIdentification;
 
-    private SpecialDaysRequestData specialDaysRequestData;
+    private final SpecialDaysRequestData specialDaysRequestData;
 
-    public String getDeviceIdentification() {
-        return deviceIdentification;
+    public SpecialDaysRequest(final String deviceIdentification, final SpecialDaysRequestData specialDaysRequestData) {
+        super();
+        this.deviceIdentification = deviceIdentification;
+        this.specialDaysRequestData = specialDaysRequestData;
     }
 
-    public void setDeviceIdentification(String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 
     public SpecialDaysRequestData getSpecialDaysRequestData() {
-        return specialDaysRequestData;
-    }
-
-    public void setSpecialDaysRequestData(SpecialDaysRequestData specialDaysRequestData) {
-        this.specialDaysRequestData = specialDaysRequestData;
+        return this.specialDaysRequestData;
     }
 }
