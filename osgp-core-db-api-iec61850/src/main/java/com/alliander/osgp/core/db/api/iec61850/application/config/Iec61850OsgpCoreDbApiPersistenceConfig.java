@@ -25,12 +25,12 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.core.db.api.iec61850.exceptions.CoreDbApiException;
-import com.alliander.osgp.core.db.api.iec61850.repositories.DeviceDataRepository;
+import com.alliander.osgp.core.db.api.iec61850.exceptions.Iec61850CoreDbApiException;
+import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "iec61850OsgpCoreDbApiEntityManagerFactory", basePackageClasses = { DeviceDataRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "iec61850OsgpCoreDbApiEntityManagerFactory", basePackageClasses = { SsldDataRepository.class })
 @Configuration
 @EnableTransactionManagement()
 @PropertySource("file:${osp/osgpCoreDbApiIec61850/config}")
@@ -95,7 +95,7 @@ public class Iec61850OsgpCoreDbApiPersistenceConfig {
      *             when class not found
      */
     @Bean
-    public JpaTransactionManager iec61850OsgpCoreDbApiTransactionManager() throws CoreDbApiException {
+    public JpaTransactionManager iec61850OsgpCoreDbApiTransactionManager() throws Iec61850CoreDbApiException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
@@ -104,7 +104,7 @@ public class Iec61850OsgpCoreDbApiPersistenceConfig {
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
-            throw new CoreDbApiException(msg, e);
+            throw new Iec61850CoreDbApiException(msg, e);
         }
 
         return transactionManager;

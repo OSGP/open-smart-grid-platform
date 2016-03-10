@@ -24,9 +24,14 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
-import com.alliander.osgp.core.db.api.iec61850.application.services.DeviceDataService;
-import com.alliander.osgp.core.db.api.iec61850.entities.Device;
+import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataService;
+import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
+import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
+import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
 import com.alliander.osgp.dto.valueobjects.LightValue;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Component
 public class Iec61850DeviceService implements DeviceService {
@@ -37,7 +42,7 @@ public class Iec61850DeviceService implements DeviceService {
     private Iec61850DeviceConnectionService iec61850DeviceConnectionService;
 
     @Autowired
-    private DeviceDataService deviceDataService;
+    private SsldDataService ssldDataService;
 
     /*
      * (non-Javadoc)
@@ -123,14 +128,32 @@ public class Iec61850DeviceService implements DeviceService {
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
             for (final LightValue lightValue : deviceRequest.getLightValuesContainer().getLightValues()) {
-                // TODO check which relays have to be switched
 
-                final Device device = this.deviceDataService.findDevice(deviceRequest.getDeviceIdentification());
+                final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-                this.switchLightRelay(lightValue.getIndex(), lightValue.isOn(), serverModel, clientAssociation);
+                // for index 0, only devices LIGHT RelaytTypes have to be
+                // switched
+                if (lightValue.getIndex() == 0) {
+                    for (final DeviceOutputSetting deviceOutputSetting : ssld.findByRelayType(RelayType.LIGHT)) {
+                        this.switchLightRelay(deviceOutputSetting.getInternalId(), lightValue.isOn(), serverModel,
+                                clientAssociation);
+                    }
+                } else {
+
+                    final DeviceOutputSetting deviceOutputSetting = ssld.getDeviceOutputSettingForIndex(lightValue
+                            .getIndex());
+
+                    if (deviceOutputSetting == null || !RelayType.LIGHT.equals(deviceOutputSetting.getRelayType())) {
+                        throw new FunctionalException(FunctionalExceptionType.LIGHT_SWITCHING_NOT_ALLOWED_FOR_RELAY,
+                                ComponentType.PROTOCOL_IEC61850);
+                    }
+
+                    this.switchLightRelay(deviceOutputSetting.getInternalId(), lightValue.isOn(), serverModel,
+                            clientAssociation);
+                }
             }
         } catch (final Exception e) {
-            LOGGER.error("Unexpected excpetion during writeDataValue", e);
+            LOGGER.error("Unexpected exception during writeDataValue", e);
         }
     }
 

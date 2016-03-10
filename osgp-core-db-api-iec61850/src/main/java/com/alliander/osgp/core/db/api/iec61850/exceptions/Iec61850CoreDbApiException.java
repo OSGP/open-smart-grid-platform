@@ -7,18 +7,18 @@
  */
 package com.alliander.osgp.core.db.api.iec61850.exceptions;
 
-public class CoreDbApiException extends Exception {
+public class Iec61850CoreDbApiException extends Exception {
 
     /**
      * Serial Version UID.
      */
     private static final long serialVersionUID = -589626721908058277L;
 
-    public CoreDbApiException(final String message) {
+    public Iec61850CoreDbApiException(final String message) {
         super(message);
     }
 
-    public CoreDbApiException(final String message, final Throwable throwable) {
+    public Iec61850CoreDbApiException(final String message, final Throwable throwable) {
         super(message, throwable);
     }
 }

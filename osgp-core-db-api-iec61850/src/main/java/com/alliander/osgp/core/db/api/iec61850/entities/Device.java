@@ -7,33 +7,75 @@
  */
 package com.alliander.osgp.core.db.api.iec61850.entities;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Version;
 
-import com.alliander.osgp.shared.domain.entities.AbstractEntity;
-
+/**
+ * Entity class which is the base for all smart devices. Other smart device
+ * entities should inherit from this class. See {@link Ssld} /
+ * {@link SmartMeter} as examples.
+ */
 @Entity
-public class Device extends AbstractEntity {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Device implements Serializable {
 
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = -4272375057090210869L;
+    private static final long serialVersionUID = -4119222173415540822L;
 
+    /**
+     * Primary key.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected Long id;
+
+    /**
+     * Creation time of this entity. This field is set by { @see
+     * this.prePersist() }.
+     */
+    @Column(nullable = false)
+    protected Date creationTime = new Date();
+
+    /**
+     * Modification time of this entity. This field is set by { @see
+     * this.preUpdate() }.
+     */
+    @Column(nullable = false)
+    protected Date modificationTime = new Date();
+
+    /**
+     * Version of this entity.
+     */
+    @Version
+    private Long version = -1L;
+
+    /**
+     * Device identification of a device. This is the main value used to find a
+     * device.
+     */
     @Column(unique = true, nullable = false, length = 40)
-    private String deviceIdentification;
+    protected String deviceIdentification;
 
-    @Column
-    private Float gpsLatitude;
-    @Column
-    private Float gpsLongitude;
-
-    @ManyToOne
-    @JoinTable(name = "device_authorization", joinColumns = @JoinColumn(name = "device"), inverseJoinColumns = @JoinColumn(name = "organisation"))
-    private Organisation organisation;
+    /**
+     * Indicates the type of the device. Example { @see Ssld.SSLD_TYPE }
+     */
+    @Column()
+    protected String deviceType;
 
     public Device() {
         // Default constructor
@@ -43,32 +85,79 @@ public class Device extends AbstractEntity {
         this.deviceIdentification = deviceIdentification;
     }
 
-    public Device(final String deviceIdentification, final Organisation organisation) {
+    public Device(final String deviceIdentification, final String alias, final String containerCity,
+            final String containerPostalCode, final String containerStreet, final String containerNumber,
+            final String containerMunicipality, final Float gpsLatitude, final Float gpsLongitude) {
         this.deviceIdentification = deviceIdentification;
-        this.organisation = organisation;
     }
 
-    public Device(final String deviceIdentification, final Organisation organisation, final Float gpsLatitude,
-            final Float gpsLongitude) {
-        this.deviceIdentification = deviceIdentification;
-        this.organisation = organisation;
-        this.gpsLatitude = gpsLatitude;
-        this.gpsLongitude = gpsLongitude;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final Device device = (Device) o;
+        return Objects.equals(this.deviceIdentification, device.deviceIdentification);
+    }
+
+    public final Date getCreationTime() {
+        return (Date) this.creationTime.clone();
     }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
 
-    public Float getGpsLatitude() {
-        return this.gpsLatitude;
+    public final Long getId() {
+        return this.id;
     }
 
-    public Float getGpsLongitude() {
-        return this.gpsLongitude;
+    public final Date getModificationTime() {
+        return (Date) this.modificationTime.clone();
     }
 
-    public Organisation getOrganisation() {
-        return this.organisation;
+    public final Long getVersion() {
+        return this.version;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.deviceIdentification);
+    }
+
+    /**
+     * Method for actions to be taken before inserting.
+     */
+    @PrePersist
+    private void prePersist() {
+        final Date now = new Date();
+        this.creationTime = now;
+        this.modificationTime = now;
+    }
+
+    /**
+     * Method for actions to be taken before updating.
+     */
+    @PreUpdate
+    private void preUpdate() {
+        this.modificationTime = new Date();
+    }
+
+    public void setVersion(final Long newVersion) {
+        this.version = newVersion;
+    }
+
+    /**
+     * This setter is only needed for testing. Don't use this in production
+     * code.
+     *
+     * @param id
+     *            The id.
+     */
+    public void setId(final Long id) {
+        this.id = id;
     }
 }
