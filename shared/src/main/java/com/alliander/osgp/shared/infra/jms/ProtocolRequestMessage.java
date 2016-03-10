@@ -9,7 +9,7 @@ package com.alliander.osgp.shared.infra.jms;
 
 import java.io.Serializable;
 
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriority;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class ProtocolRequestMessage extends RequestMessage {
 
@@ -49,7 +49,7 @@ public class ProtocolRequestMessage extends RequestMessage {
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final String ipAddress, final Serializable request, final boolean scheduled, final int retryCount) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ipAddress, request, scheduled, retryCount, MessagePriority.DEFAULT.getPriority());
+                ipAddress, request, scheduled, retryCount, MessagePriorityEnum.DEFAULT.getPriority());
     }
 
     /**

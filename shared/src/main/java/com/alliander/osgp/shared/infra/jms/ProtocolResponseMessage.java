@@ -10,7 +10,7 @@ package com.alliander.osgp.shared.infra.jms;
 import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriority;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class ProtocolResponseMessage extends ResponseMessage {
 
@@ -24,42 +24,55 @@ public class ProtocolResponseMessage extends ResponseMessage {
     private final String messageType;
     private final boolean scheduled;
     private int retryCount;
+    private int messagePriority;
 
-    // retryCount and no scheduling
+    /**
+     * @deprecated Use builder in stead
+     */
+    @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final int retryCount) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, false, retryCount, MessagePriority.DEFAULT.getPriority());
+                result, osgpException, dataObject, false, retryCount, MessagePriorityEnum.DEFAULT.getPriority());
 
     }
 
-    // no scheduled and no retryCount
+    /**
+     * @deprecated Use builder in stead
+     */
+    @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, false, 0, MessagePriority.DEFAULT.getPriority());
+                result, osgpException, dataObject, false, 0, MessagePriorityEnum.DEFAULT.getPriority());
     }
 
-    // scheduled and no retry
+    /**
+     * @deprecated Use builder in stead
+     */
+    @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, scheduled, 0, MessagePriority.DEFAULT.getPriority());
+                result, osgpException, dataObject, scheduled, 0, MessagePriorityEnum.DEFAULT.getPriority());
 
     }
 
-    // scheduled and retryCount
+    /**
+     * @deprecated Use builder in stead
+     */
+    @Deprecated
     public ProtocolResponseMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled, final int retryCount) {
         this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                result, osgpException, dataObject, scheduled, retryCount, MessagePriority.DEFAULT.getPriority());
+                result, osgpException, dataObject, scheduled, retryCount, MessagePriorityEnum.DEFAULT.getPriority());
     }
 
     // scheduled and retryCount and messagePriority
@@ -67,13 +80,13 @@ public class ProtocolResponseMessage extends ResponseMessage {
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled, final int retryCount, final int messagePriority) {
-        super(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
-                messagePriority);
+        super(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject);
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.messageType = messageType;
         this.scheduled = scheduled;
         this.retryCount = retryCount;
+        this.messagePriority = messagePriority;
     }
 
     public static class Builder {
@@ -176,6 +189,10 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public boolean isScheduled() {
         return this.scheduled;
+    }
+
+    public int getMessagePriority() {
+        return this.messagePriority;
     }
 
 }
