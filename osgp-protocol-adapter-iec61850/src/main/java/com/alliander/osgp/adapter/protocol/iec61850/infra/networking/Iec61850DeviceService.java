@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
+import com.alliander.osgp.core.db.api.iec61850.application.services.DeviceDataService;
+import com.alliander.osgp.core.db.api.iec61850.entities.Device;
 import com.alliander.osgp.dto.valueobjects.LightValue;
 
 @Component
@@ -33,6 +35,9 @@ public class Iec61850DeviceService implements DeviceService {
 
     @Autowired
     private Iec61850DeviceConnectionService iec61850DeviceConnectionService;
+
+    @Autowired
+    private DeviceDataService deviceDataService;
 
     /*
      * (non-Javadoc)
@@ -119,6 +124,9 @@ public class Iec61850DeviceService implements DeviceService {
 
             for (final LightValue lightValue : deviceRequest.getLightValuesContainer().getLightValues()) {
                 // TODO check which relays have to be switched
+
+                final Device device = this.deviceDataService.findDevice(deviceRequest.getDeviceIdentification());
+
                 this.switchLightRelay(lightValue.getIndex(), lightValue.isOn(), serverModel, clientAssociation);
             }
         } catch (final Exception e) {

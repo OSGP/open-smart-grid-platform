@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.core.db.api.application.config.OsgpCoreDbApiPersistenceConfig;
+import com.alliander.osgp.core.db.api.iec61850.application.config.Iec61850OsgpCoreDbApiPersistenceConfig;
 
 /**
  * An application context Java configuration class. The usage of Java
@@ -22,7 +22,7 @@ import com.alliander.osgp.core.db.api.application.config.OsgpCoreDbApiPersistenc
 @Configuration
 @ComponentScan(basePackages = { "com.alliander.osgp.adapter.protocol.iec61850", "com.alliander.osgp.core.db.api" })
 @EnableTransactionManagement()
-@Import({ MessagingConfig.class, OsgpCoreDbApiPersistenceConfig.class, Iec61850Config.class })
+@Import({ MessagingConfig.class, Iec61850OsgpCoreDbApiPersistenceConfig.class, Iec61850Config.class })
 @PropertySource("file:${osp/osgpAdapterProtocolIec61850/config}")
 public class ApplicationContext {
 
