@@ -21,6 +21,8 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.EmptyDev
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.networking.DeviceService;
 import com.alliander.osgp.adapter.protocol.oslp.elster.services.DeviceResponseService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
@@ -146,6 +148,20 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
         LOGGER.error("Error while processing message", e);
         final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+
+        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
+                messageType, correlationUid, organisationIdentification, deviceIdentification,
+                ResponseMessageResultType.NOT_OK, ex, null);
+
+        this.responseMessageSender.send(protocolResponseMessage);
+    }
+
+    protected void handleExpectedError(final Exception e, final String correlationUid,
+            final String organisationIdentification, final String deviceIdentification, final String domain,
+            final String domainVersion, final String messageType) {
+        LOGGER.error("Expected error while processing message", e);
+        final OsgpException ex = new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                ComponentType.PROTOCOL_OSLP, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
