@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.eFromDouble;
+import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.getMeterValue;
 
 import java.util.GregorianCalendar;
 
@@ -57,7 +57,7 @@ CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartm
             convertedDate = null;
         }
 
-        destination.setConsumption(eFromDouble(source.getConsumption(), source.getOsgpUnit()));
+        destination.setConsumption(getMeterValue(source.getConsumption(), source.getOsgpUnit()));
 
         return destination;
     }

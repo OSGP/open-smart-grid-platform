@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.eFromDouble;
+import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.getMeterValue;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -65,12 +65,12 @@ public class PeriodicMeterReadsResponseConverter
                 AmrProfileStatusCode.class);
 
         meterReads.setLogTime(convertedDate);
-        meterReads.setActiveEnergyImport(eFromDouble(source.getActiveEnergyImport(), osgpUnit));
-        meterReads.setActiveEnergyExport(eFromDouble(source.getActiveEnergyExport(), osgpUnit));
-        meterReads.setActiveEnergyImportTariffOne(eFromDouble(source.getActiveEnergyImportTariffOne(), osgpUnit));
-        meterReads.setActiveEnergyImportTariffTwo(eFromDouble(source.getActiveEnergyImportTariffTwo(), osgpUnit));
-        meterReads.setActiveEnergyExportTariffOne(eFromDouble(source.getActiveEnergyExportTariffOne(), osgpUnit));
-        meterReads.setActiveEnergyExportTariffTwo(eFromDouble(source.getActiveEnergyExportTariffTwo(), osgpUnit));
+        meterReads.setActiveEnergyImport(getMeterValue(source.getActiveEnergyImport(), osgpUnit));
+        meterReads.setActiveEnergyExport(getMeterValue(source.getActiveEnergyExport(), osgpUnit));
+        meterReads.setActiveEnergyImportTariffOne(getMeterValue(source.getActiveEnergyImportTariffOne(), osgpUnit));
+        meterReads.setActiveEnergyImportTariffTwo(getMeterValue(source.getActiveEnergyImportTariffTwo(), osgpUnit));
+        meterReads.setActiveEnergyExportTariffOne(getMeterValue(source.getActiveEnergyExportTariffOne(), osgpUnit));
+        meterReads.setActiveEnergyExportTariffTwo(getMeterValue(source.getActiveEnergyExportTariffTwo(), osgpUnit));
         meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
         return meterReads;
     }

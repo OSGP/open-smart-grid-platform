@@ -39,7 +39,7 @@ public class MonitoringMapper extends ConfigurableMapper {
      * @param osgpUnit
      * @return
      */
-    public static MeterValue eFromDouble(final Double d, final OsgpUnit osgpUnit) {
+    public static MeterValue getMeterValue(final Double d, final OsgpUnit osgpUnit) {
         if (d == null || osgpUnit == null) {
             return null;
         }

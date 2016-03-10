@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.eFromDouble;
+import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.getMeterValue;
 
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -64,7 +64,7 @@ public class PeriodicMeterReadsResponseGasConverter
                 AmrProfileStatusCode.class);
 
         meterReads.setLogTime(convertedDate);
-        meterReads.setConsumption(eFromDouble(source.getConsumption(), osgpUnit));
+        meterReads.setConsumption(getMeterValue(source.getConsumption(), osgpUnit));
         c.setTime(source.getCaptureTime());
         try {
             convertedDate = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
