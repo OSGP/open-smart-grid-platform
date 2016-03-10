@@ -8,5 +8,16 @@
 package com.alliander.osgp.shared.wsheaderattribute;
 
 public enum CustomHeaderAttribute {
-    MESSAGE_PRIORITY;
+    MESSAGE_PRIORITY("MessagePriority");
+
+    private String attributeName;
+
+    private CustomHeaderAttribute(final String attributeName) {
+        this.attributeName = attributeName;
+    }
+
+    public String getAttributeName() {
+        return this.attributeName;
+    }
+
 }

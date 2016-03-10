@@ -24,7 +24,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
     private final String messageType;
     private final boolean scheduled;
     private int retryCount;
-    private int messagePriority;
 
     /**
      * @deprecated Use builder in stead
@@ -80,13 +79,13 @@ public class ProtocolResponseMessage extends ResponseMessage {
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final ResponseMessageResultType result, final OsgpException osgpException, final Serializable dataObject,
             final boolean scheduled, final int retryCount, final int messagePriority) {
-        super(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject);
+        super(correlationUid, organisationIdentification, deviceIdentification, result, osgpException, dataObject,
+                messagePriority);
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.messageType = messageType;
         this.scheduled = scheduled;
         this.retryCount = retryCount;
-        this.messagePriority = messagePriority;
     }
 
     public static class Builder {
@@ -189,10 +188,6 @@ public class ProtocolResponseMessage extends ResponseMessage {
 
     public boolean isScheduled() {
         return this.scheduled;
-    }
-
-    public int getMessagePriority() {
-        return this.messagePriority;
     }
 
 }
