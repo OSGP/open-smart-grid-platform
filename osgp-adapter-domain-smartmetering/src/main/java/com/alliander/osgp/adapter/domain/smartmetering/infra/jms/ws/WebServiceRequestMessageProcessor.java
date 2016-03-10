@@ -101,6 +101,7 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
         String organisationIdentification = null;
         String deviceIdentification = null;
         Object dataObject = null;
+        final int messagePriority = message.getJMSPriority();
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -121,11 +122,11 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
         try {
             LOGGER.info("Calling application service function: {}", messageType);
             this.handleMessage(organisationIdentification, deviceIdentification, correlationUid, dataObject,
-                    messageType, message.getJMSPriority());
+                    messageType, messagePriority);
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    message.getJMSPriority());
+                    messagePriority);
         }
     }
 

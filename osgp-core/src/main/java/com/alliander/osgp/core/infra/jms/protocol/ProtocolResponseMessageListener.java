@@ -49,6 +49,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
             LOGGER.debug("DomainVersion             : [{}]", protocolResponseMessage.getDomainVersion());
             LOGGER.debug("Result                    : [{}]", protocolResponseMessage.getResult());
             LOGGER.debug("Description               : [{}]", protocolResponseMessage.getOsgpException());
+            LOGGER.debug("MessagePriority           : [{}]", protocolResponseMessage.getMessagePriority());
 
             this.deviceResponseMessageService.processMessage(protocolResponseMessage);
 
@@ -72,13 +73,28 @@ public class ProtocolResponseMessageListener implements MessageListener {
         final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(objectMessage
                 .getStringProperty(Constants.RESULT));
-        final Serializable dataObject = (Serializable) (responseMessage.getDataObject() == null ? null
-                : responseMessage.getDataObject());
+        final Serializable dataObject = responseMessage.getDataObject() == null ? null : responseMessage
+                .getDataObject();
         final boolean scheduled = objectMessage.propertyExists(Constants.IS_SCHEDULED) ? objectMessage
                 .getBooleanProperty(Constants.IS_SCHEDULED) : false;
         final int retryCount = objectMessage.getIntProperty(Constants.RETRY_COUNT);
-        return new ProtocolResponseMessage(domain, domainVersion, messageType, correlationUid,
-                organisationIdentification, deviceIdentification, responseMessageResultType, osgpException, dataObject,
-                scheduled, retryCount);
+        final int messagePriority = message.getJMSPriority();
+
+        // @formatter:off
+        return new ProtocolResponseMessage.Builder()
+        .domain(domain)
+        .domainVersion(domainVersion)
+        .messageType(messageType)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .result(responseMessageResultType)
+        .osgpException(osgpException)
+        .dataObject(dataObject)
+        .scheduled(scheduled)
+        .retryCount(retryCount)
+        .messagePriority(messagePriority)
+        .build();
+        // @formatter:on
     }
 }

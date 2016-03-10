@@ -14,8 +14,8 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import org.springframework.ws.soap.SoapHeader;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
@@ -48,6 +48,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Endpoint
 public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
@@ -69,24 +70,26 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public PeriodicMeterReadsAsyncResponse getPeriodicMeterReads(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final PeriodicMeterReadsRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final PeriodicMeterReadsRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.debug("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, this.getMessagePriority(header));
+                request, MessagePriorityEnum.getMessagePriority(messagePriority));
     }
 
     @PayloadRoot(localPart = "PeriodicMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
     public PeriodicMeterReadsGasAsyncResponse getPeriodicMeterReadsGas(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final PeriodicMeterReadsGasRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final PeriodicMeterReadsGasRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.debug("Incoming PeriodicMeterReadsGasRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsGasAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, this.getMessagePriority(header));
+                request, MessagePriorityEnum.getMessagePriority(messagePriority));
     }
 
     private AsyncResponse getPeriodicAsyncResponseForEandG(final String organisationIdentification,
@@ -174,28 +177,30 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public ActualMeterReadsAsyncResponse getActualMeterReads(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ActualMeterReadsRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final ActualMeterReadsRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
 
         LOGGER.debug("Incoming ActualMeterReadsRequest for meter: {}", deviceIdentification);
 
         return (ActualMeterReadsAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
-                deviceIdentification, false, this.getMessagePriority(header));
+                deviceIdentification, false, MessagePriorityEnum.getMessagePriority(messagePriority));
     }
 
     @PayloadRoot(localPart = "ActualMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
     @ResponsePayload
     public ActualMeterReadsGasAsyncResponse getActualMeterReadsGas(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ActualMeterReadsGasRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final ActualMeterReadsGasRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         final String deviceIdentification = request.getDeviceIdentification();
 
         LOGGER.debug("Incoming ActualMeterReadsGasRequest for meter: {}", deviceIdentification);
 
         return (ActualMeterReadsGasAsyncResponse) this.getActualAsyncResponseForEandG(organisationIdentification,
-                deviceIdentification, true, this.getMessagePriority(header));
+                deviceIdentification, true, MessagePriorityEnum.getMessagePriority(messagePriority));
     }
 
     private AsyncResponse getActualAsyncResponseForEandG(final String organisationIdentification,
@@ -273,7 +278,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public ReadAlarmRegisterAsyncResponse readAlarmRegister(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ReadAlarmRegisterRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final ReadAlarmRegisterRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.info("Incoming ReadAlarmRegisterRequest for meter: {}", request.getDeviceIdentification());
 
@@ -286,7 +292,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.monitoringService.enqueueReadAlarmRegisterRequestData(
                     organisationIdentification, request.getDeviceIdentification(), requestValueObject,
-                    this.getMessagePriority(header));
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);

@@ -49,11 +49,17 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
-                deviceIdentification, synchronizeTimeRequest);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SYNCHRONIZE_TIME)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(synchronizeTimeRequest)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -73,11 +79,17 @@ public class AdhocService {
                 deviceIdentification);
         final SmsDetails smsDetails = new SmsDetails(deviceIdentification, 0L, "", "", "");
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SEND_WAKEUP_SMS, correlationUid, organisationIdentification,
-                deviceIdentification, smsDetails);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SEND_WAKEUP_SMS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(smsDetails)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -96,11 +108,17 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_SMS_DETAILS, correlationUid, organisationIdentification,
-                deviceIdentification, smsDetails);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.GET_SMS_DETAILS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(smsDetails)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -120,11 +138,17 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS, correlationUid, organisationIdentification,
-                deviceIdentification, request);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(request)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }

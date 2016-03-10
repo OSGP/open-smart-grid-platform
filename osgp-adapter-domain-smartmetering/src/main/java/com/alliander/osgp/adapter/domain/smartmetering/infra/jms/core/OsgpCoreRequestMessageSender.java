@@ -31,6 +31,7 @@ public class OsgpCoreRequestMessageSender {
 
     public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority) {
 
+        this.osgpCoreRequestsJmsTemplate.setPriority(messagePriority);
         this.osgpCoreRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -45,7 +46,6 @@ public class OsgpCoreRequestMessageSender {
                         requestMessage.getDeviceIdentification());
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setObject(requestMessage.getRequest());
-                objectMessage.setJMSPriority(messagePriority);
 
                 return objectMessage;
             }

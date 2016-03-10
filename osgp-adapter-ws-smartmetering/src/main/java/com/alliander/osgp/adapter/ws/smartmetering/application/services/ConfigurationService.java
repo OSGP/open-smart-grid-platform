@@ -69,12 +69,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);// ,
-        // requestData.getPriority()
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(requestData)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -97,11 +102,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, AdministrativeStatusType.UNDEFINED);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(AdministrativeStatusType.UNDEFINED)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -121,11 +132,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_SPECIAL_DAYS, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.REQUEST_SPECIAL_DAYS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(requestData)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -145,11 +162,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_CONFIGURATION_OBJECT, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SET_CONFIGURATION_OBJECT)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(requestData)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -169,11 +192,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_PUSH_SETUP_ALARM, correlationUid, organisationIdentification,
-                deviceIdentification, pushSetupAlarm);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SET_PUSH_SETUP_ALARM)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(pushSetupAlarm)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -193,11 +222,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_PUSH_SETUP_SMS, correlationUid, organisationIdentification,
-                deviceIdentification, pushSetupSms);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SET_PUSH_SETUP_SMS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(pushSetupSms)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -217,11 +252,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS, correlationUid, organisationIdentification,
-                deviceIdentification, alarmSwitches);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(alarmSwitches)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -236,11 +277,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, correlationUid,
-                organisationIdentification, deviceIdentification);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -255,11 +301,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR, correlationUid, organisationIdentification,
-                deviceIdentification, activityCalendar);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(activityCalendar)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -274,11 +326,17 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REPLACE_KEYS, correlationUid, organisationIdentification,
-                deviceIdentification, keySet);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.REPLACE_KEYS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(keySet)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }

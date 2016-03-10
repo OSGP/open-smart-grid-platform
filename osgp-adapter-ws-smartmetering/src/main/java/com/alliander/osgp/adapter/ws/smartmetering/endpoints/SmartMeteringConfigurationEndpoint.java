@@ -16,8 +16,8 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
-import org.springframework.ws.soap.SoapHeader;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
@@ -72,6 +72,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponse
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 @Endpoint
 public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
@@ -92,7 +93,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetAdministrativeStatusAsyncResponse setAdministrativeStatus(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetAdministrativeStatusRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final SetAdministrativeStatusRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType dataRequest = this.configurationMapper
                 .map(request.getEnabled(),
@@ -100,7 +102,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final String correlationUid = this.configurationService.requestSetAdministrativeStatus(
                 organisationIdentification, request.getDeviceIdentification(), dataRequest,
-                this.getMessagePriority(header));
+                MessagePriorityEnum.getMessagePriority(messagePriority));
 
         final SetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
         .createSetAdministrativeStatusAsyncResponse();
@@ -136,10 +138,12 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public GetAdministrativeStatusAsyncResponse getAdministrativeStatus(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetAdministrativeStatusRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final GetAdministrativeStatusRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         final String correlationUid = this.configurationService.requestGetAdministrativeStatus(
-                organisationIdentification, request.getDeviceIdentification(), this.getMessagePriority(header));
+                organisationIdentification, request.getDeviceIdentification(),
+                MessagePriorityEnum.getMessagePriority(messagePriority));
 
         final GetAdministrativeStatusAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
                 .createGetAdministrativeStatusAsyncResponse();
@@ -178,7 +182,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetSpecialDaysAsyncResponse requestSpecialDaysData(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetSpecialDaysRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final SetSpecialDaysRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         final SetSpecialDaysAsyncResponse response = new SetSpecialDaysAsyncResponse();
 
@@ -187,7 +192,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final String correlationUid = this.configurationService.enqueueSetSpecialDaysRequest(
                 organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest,
-                this.getMessagePriority(header));
+                MessagePriorityEnum.getMessagePriority(messagePriority));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -221,7 +226,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetConfigurationObjectAsyncResponse setConfigurationObject(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetConfigurationObjectRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final SetConfigurationObjectRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         final SetConfigurationObjectAsyncResponse response = new SetConfigurationObjectAsyncResponse();
 
@@ -231,7 +237,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
         final String correlationUid = this.configurationService.enqueueSetConfigurationObjectRequest(
                 organisationIdentification, dataRequest.getDeviceIdentification(), dataRequest,
-                this.getMessagePriority(header));
+                MessagePriorityEnum.getMessagePriority(messagePriority));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -286,8 +292,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetEncryptionKeyExchangeOnGMeterAsyncResponse setEncryptionKeyExchangeOnGMeter(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request, final SoapHeader header)
-            throws OsgpException {
+            @RequestPayload final SetEncryptionKeyExchangeOnGMeterRequest request,
+            @MessagePriority final String messagePriority) throws OsgpException {
 
         LOGGER.info("Incoming SetEncryptionKeyExchangeOnGMeterRequest for meter: {}.",
                 request.getDeviceIdentification());
@@ -298,7 +304,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             final String deviceIdentification = request.getDeviceIdentification();
 
             final String correlationUid = this.configurationService.enqueueSetEncryptionKeyExchangeOnGMeterRequest(
-                    organisationIdentification, deviceIdentification, this.getMessagePriority(header));
+                    organisationIdentification, deviceIdentification,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -316,7 +323,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetPushSetupAlarmAsyncResponse setPushSetupAlarm(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetPushSetupAlarmRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final SetPushSetupAlarmRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.info("Incoming SetPushSetupAlarmRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -330,7 +338,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
 
         final String correlationUid = this.configurationService.enqueueSetPushSetupAlarmRequest(
-                organisationIdentification, deviceIdentification, pushSetupAlarm, this.getMessagePriority(header));
+                organisationIdentification, deviceIdentification, pushSetupAlarm,
+                MessagePriorityEnum.getMessagePriority(messagePriority));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(deviceIdentification);
@@ -367,7 +376,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetPushSetupSmsAsyncResponse setPushSetupSms(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetPushSetupSmsRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final SetPushSetupSmsRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.info("Incoming SetPushSetupSmsRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -381,7 +391,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms.class);
 
         final String correlationUid = this.configurationService.enqueueSetPushSetupSmsRequest(
-                organisationIdentification, deviceIdentification, pushSetupSms, this.getMessagePriority(header));
+                organisationIdentification, deviceIdentification, pushSetupSms,
+                MessagePriorityEnum.getMessagePriority(messagePriority));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(deviceIdentification);
@@ -418,7 +429,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetActivityCalendarAsyncResponse setActivityCalendar(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetActivityCalendarRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final SetActivityCalendarRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.info("Incoming SetActivityCalendarRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -431,9 +443,9 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
             final ActivityCalendar activityCalendar = this.configurationMapper.map(requestData.getActivityCalendar(),
                     ActivityCalendar.class);
 
-            final String correlationUid = this.configurationService
-                    .enqueueSetActivityCalendarRequest(organisationIdentification, deviceIdentification,
-                            activityCalendar, this.getMessagePriority(header));
+            final String correlationUid = this.configurationService.enqueueSetActivityCalendarRequest(
+                    organisationIdentification, deviceIdentification, activityCalendar,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -475,7 +487,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SetAlarmNotificationsAsyncResponse setAlarmNotifications(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SetAlarmNotificationsRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final SetAlarmNotificationsRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.info("Incoming SetAlarmNotificationsRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -490,7 +503,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.configurationService.enqueueSetAlarmNotificationsRequest(
                     organisationIdentification, deviceIdentification, alarmNotifications,
-                    this.getMessagePriority(header));
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             final AsyncResponse asyncResponse = new AsyncResponse();
             asyncResponse.setCorrelationUid(correlationUid);
@@ -531,7 +544,8 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     @PayloadRoot(localPart = "ReplaceKeysRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
     @ResponsePayload
     public ReplaceKeysAsyncResponse replaceKeys(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final ReplaceKeysRequest request, final SoapHeader header) throws OsgpException {
+            @RequestPayload final ReplaceKeysRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         ReplaceKeysAsyncResponse asyncResponse = null;
         try {
@@ -540,7 +554,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.configurationService.enqueueReplaceKeysRequest(
                     organisationIdentification, request.getDeviceIdentification(), keySet,
-                    this.getMessagePriority(header));
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ObjectFactory()
                     .createReplaceKeysAsyncResponse();

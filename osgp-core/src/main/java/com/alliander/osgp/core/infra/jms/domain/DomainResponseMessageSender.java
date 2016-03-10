@@ -58,6 +58,7 @@ public class DomainResponseMessageSender implements DomainResponseService {
 
     private void send(final ResponseMessage message, final String messageType, final JmsTemplate jmsTemplate) {
 
+        jmsTemplate.setPriority(message.getMessagePriority());
         jmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -72,7 +73,6 @@ public class DomainResponseMessageSender implements DomainResponseService {
                 if (message.getOsgpException() != null) {
                     objectMessage.setStringProperty(Constants.DESCRIPTION, message.getOsgpException().getMessage());
                 }
-                objectMessage.setJMSPriority(message.getMessagePriority());
                 return objectMessage;
             }
         });

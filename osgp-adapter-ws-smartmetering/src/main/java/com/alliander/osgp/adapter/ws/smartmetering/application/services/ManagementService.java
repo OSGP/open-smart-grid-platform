@@ -85,10 +85,18 @@ public class ManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.FIND_EVENTS, correlationUid, organisationIdentification,
-                deviceIdentification, new FindEventsQueryMessageDataContainer(findEventsQueryList));
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.FIND_EVENTS)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(new FindEventsQueryMessageDataContainer(findEventsQueryList))
+        .messagePriority(messagePriority)
+        .build();
+        // @formatter:on
+
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }

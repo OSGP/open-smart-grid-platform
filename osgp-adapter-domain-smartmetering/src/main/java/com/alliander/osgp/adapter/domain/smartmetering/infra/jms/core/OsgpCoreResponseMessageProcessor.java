@@ -107,6 +107,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
+        final int messagePriority = message.getJMSPriority();
 
         ResponseMessage responseMessage = null;
         ResponseMessageResultType responseMessageResultType = null;
@@ -130,6 +131,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
             LOGGER.debug("responseMessageResultType: {}", responseMessageResultType);
             LOGGER.debug("deviceIdentification: {}", deviceIdentification);
             LOGGER.debug("osgpException: {}", osgpException);
+            LOGGER.debug("messagePriority: {}", messagePriority);
             return;
         }
 
@@ -137,7 +139,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
 
             if (osgpException != null) {
                 this.handleError(osgpException, correlationUid, organisationIdentification, deviceIdentification,
-                        messageType, message.getJMSPriority());
+                        messageType, messagePriority);
             } else if (this.hasRegularResponseObject(responseMessage)) {
                 LOGGER.info("Calling application service function to handle response: {}", messageType);
 
@@ -151,12 +153,12 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
 
                 this.handleError(new TechnicalException(ComponentType.DOMAIN_SMART_METERING,
                         "Unexpected response data handling request.", null), correlationUid,
-                        organisationIdentification, deviceIdentification, messageType, message.getJMSPriority());
+                        organisationIdentification, deviceIdentification, messageType, messagePriority);
             }
 
         } catch (final Exception e) {
             this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    message.getJMSPriority());
+                    messagePriority);
         }
     }
 

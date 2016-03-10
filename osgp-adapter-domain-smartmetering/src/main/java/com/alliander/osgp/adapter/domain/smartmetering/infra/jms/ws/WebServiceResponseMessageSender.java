@@ -47,6 +47,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
             this.webServiceResponsesJmsTemplate.setTimeToLive(timeToLive);
         }
 
+        this.webServiceResponsesJmsTemplate.setPriority(responseMessage.getMessagePriority());
         this.webServiceResponsesJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -74,7 +75,6 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
 
                 }
                 objectMessage.setObject(responseMessage.getDataObject());
-                objectMessage.setJMSPriority(responseMessage.getMessagePriority());
                 return objectMessage;
             }
         });

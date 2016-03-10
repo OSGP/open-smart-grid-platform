@@ -50,11 +50,17 @@ public class InstallationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.ADD_METER, correlationUid, organisationIdentification,
-                deviceIdentification, device);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.ADD_METER)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(device)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }

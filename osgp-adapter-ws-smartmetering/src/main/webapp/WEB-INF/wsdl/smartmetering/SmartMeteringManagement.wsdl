@@ -24,6 +24,7 @@
 		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
 		<wsdl:part element="common:UserName" name="UserName" />
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
+		<wsdl:part element="common:MessagePriority" name="MessagePriority" />
 	</wsdl:message>
 	<wsdl:message name="FindEventsRequest">
 		<wsdl:part element="smman:FindEventsRequest" name="FindEventsRequest">
@@ -97,6 +98,7 @@
 				<soap:header message="tns:FindEventsHeader" part="OrganisationIdentification" use="literal" />
 				<soap:header message="tns:FindEventsHeader" part="UserName" use="literal" />
 				<soap:header message="tns:FindEventsHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:FindEventsHeader" part="MessagePriority" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="FindEventsAsyncResponse">

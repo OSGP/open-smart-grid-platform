@@ -57,11 +57,17 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA, correlationUid,
-                organisationIdentification, deviceIdentification, requestData);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(requestData)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -86,11 +92,17 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(requestData)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
@@ -115,11 +127,17 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.READ_ALARM_REGISTER, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .messageType(SmartMeteringRequestMessageType.READ_ALARM_REGISTER)
+        .correlationUid(correlationUid)
+        .organisationIdentification(organisationIdentification)
+        .deviceIdentification(deviceIdentification)
+        .request(requestData)
+        .messagePriority(messagePriority).build();
+        // @formatter:on
 
-        this.smartMeteringRequestMessageSender.send(message, messagePriority);
+        this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
