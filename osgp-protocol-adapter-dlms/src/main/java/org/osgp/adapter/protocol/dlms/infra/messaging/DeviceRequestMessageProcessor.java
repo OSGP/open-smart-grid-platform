@@ -125,7 +125,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response, message.getJMSPriority());
+                    response);
         } catch (final ConnectionException exception) {
             // Retry / redeliver by throwing RuntimeException.
             LOGGER.info("ConnectionException occurred, JMS will catch this exception.");
@@ -138,7 +138,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             final OsgpException ex = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, this.responseMessageSender,
-                    message.getObject(), message.getJMSPriority());
+                    message.getObject());
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -169,8 +169,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject,
-            final int messagePriority) {
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
         // @formatter:off
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
@@ -184,7 +183,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         .osgpException(osgpException)
         .dataObject(responseObject)
         .retryCount(messageMetadata.getRetryCount())
-        .messagePriority(messagePriority)
+        .messagePriority(messageMetadata.getMessagePriority())
         .build();
         // @formatter:on
 

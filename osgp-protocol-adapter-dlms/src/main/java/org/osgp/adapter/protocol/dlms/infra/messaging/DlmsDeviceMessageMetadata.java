@@ -20,6 +20,7 @@ public class DlmsDeviceMessageMetadata {
     private String deviceIdentification;
     private String ipAddress;
     private int retryCount;
+    private int messagePriority;
 
     @Override
     public String toString() {
@@ -44,6 +45,11 @@ public class DlmsDeviceMessageMetadata {
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+        this.messagePriority = message.getJMSPriority();
+    }
+
+    public int getMessagePriority() {
+        return this.messagePriority;
     }
 
     public String getCorrelationUid() {
