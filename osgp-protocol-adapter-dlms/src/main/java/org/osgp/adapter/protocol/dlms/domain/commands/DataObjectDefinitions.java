@@ -13,7 +13,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 
 /**
  * This class encapsulates the objects that are used by more than one class
- *
+ * 
  * @author Hannek Toebast
  *
  */
@@ -26,10 +26,6 @@ public class DataObjectDefinitions {
     private static final int CLASS_ID_DATA = 1;
     private static final byte[] OBIS_BYTES_AMR_PROFILE_STATUS = new byte[] { 0, 0, 96, 10, 2, (byte) 255 };
     private static final byte ATTRIBUTE_ID_VALUE = 2;
-
-    private DataObjectDefinitions() {
-        // empty private constructor
-    }
 
     public static DataObject getClockDefinition() {
         // {8,0-0:1.0.0.255,2,0} - Clock
