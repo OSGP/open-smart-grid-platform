@@ -15,12 +15,12 @@ public class PeriodicMeterReadsGas extends MeterReadsGas {
 
     final AmrProfileStatusCode amrProfileStatusCode;
 
-    public PeriodicMeterReadsGas(final Date logTime, final long consumption, final Date captureTime) {
+    public PeriodicMeterReadsGas(final Date logTime, final DlmsMeterValue consumption, final Date captureTime) {
         super(logTime, consumption, captureTime);
         this.amrProfileStatusCode = null;
     }
 
-    public PeriodicMeterReadsGas(final Date logTime, final long consumption, final Date captureTime,
+    public PeriodicMeterReadsGas(final Date logTime, final DlmsMeterValue consumption, final Date captureTime,
             final AmrProfileStatusCode amrProfileStatusCode) {
         super(logTime, consumption, captureTime);
         this.amrProfileStatusCode = amrProfileStatusCode;

@@ -33,7 +33,7 @@ public class PeriodicMeterReadsQuery implements Serializable, ChannelQuery {
     }
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate) {
-        this(periodType, beginDate, endDate, Channel.NONE);
+        this(periodType, beginDate, endDate, null);
     }
 
     public PeriodType getPeriodType() {
@@ -49,7 +49,7 @@ public class PeriodicMeterReadsQuery implements Serializable, ChannelQuery {
     }
 
     public boolean isGas() {
-        return this.channel != Channel.NONE;
+        return this.channel != null;
     }
 
     @Override
