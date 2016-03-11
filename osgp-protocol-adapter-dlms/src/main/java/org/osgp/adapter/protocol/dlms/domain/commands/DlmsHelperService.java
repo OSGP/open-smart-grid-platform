@@ -63,12 +63,6 @@ public class DlmsHelperService {
         TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(7, TransportServiceType.ZIG_BEE);
     }
 
-    private static final String YEAR_MILLENIAL_PART = "20";
-    private static final String LAST_DAY_OF_MONTH = "FE";
-    private static final String SECOND_LAST_DAY_OF_MONTH = "FD";
-    private static final String DAYLIGHT_SAVINGS_BEGIN = "FE";
-    private static final String DAYLIGHT_SAVINGS_END = "FD";
-    private static final String NOT_SPECIFIED = "FF";
     public static final int MILLISECONDS_PER_MINUTE = 60000;
 
     public List<GetResult> getWithList(final ClientConnection conn, final DlmsDevice device,
@@ -271,16 +265,6 @@ public class DlmsHelperService {
         return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(date, time, deviation, clockStatus);
     }
 
-    public DataObject dateAsDataObjectOctetString(final DateTime dateTime) {
-
-        final Integer h = dateTime.getHourOfDay();
-        final Integer m = dateTime.getMinuteOfHour();
-        final Integer s = dateTime.getSecondOfMinute();
-
-        final byte[] ba = new byte[] { h.byteValue(), m.byteValue(), s.byteValue(), (byte) 0 };
-        return DataObject.newOctetStringData(ba);
-    }
-
     public DataObject asDataObject(final DateTime dateTime) {
 
         final CosemDate cosemDate = new CosemDate(dateTime.getYear(), dateTime.getMonthOfYear(),
@@ -299,53 +283,11 @@ public class DlmsHelperService {
         return DataObject.newDateTimeData(cosemDateTime);
     }
 
-    /**
-     * The format of the date string is YYMMDD and if the year is unspecified
-     * the year positions should hold "FF" as value Also as the date string only
-     * holds the decade part of the year, the conversion uses the constant "20"
-     * as the centenial/millenial part of the year
-     *
-     * @param date
-     *            the date as String object
-     * @return DateObject as OctetString
-     */
-    public DataObject dateStringToOctetString(final String date) {
+    public DataObject asDataObject(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate date) {
 
-        final ByteBuffer bb = ByteBuffer.allocate(5);
-
-        final String year = date.substring(0, 2);
-        if (NOT_SPECIFIED.equalsIgnoreCase(year)) {
-            bb.putShort((short) 0xFFFF);
-        } else {
-            bb.putShort(Short.valueOf(YEAR_MILLENIAL_PART + year));
-        }
-
-        final String month = date.substring(2, 4);
-        if (NOT_SPECIFIED.equalsIgnoreCase(month)) {
-            bb.put((byte) 0xFF);
-        } else if (DAYLIGHT_SAVINGS_END.equalsIgnoreCase(month)) {
-            bb.put((byte) 0xFD);
-        } else if (DAYLIGHT_SAVINGS_BEGIN.equalsIgnoreCase(month)) {
-            bb.put((byte) 0xFD);
-        } else {
-            bb.put(Byte.parseByte(month));
-        }
-
-        final String dayOfMonth = date.substring(4);
-        if (NOT_SPECIFIED.equalsIgnoreCase(dayOfMonth)) {
-            bb.put((byte) 0xFF);
-        } else if (SECOND_LAST_DAY_OF_MONTH.equalsIgnoreCase(month)) {
-            bb.put((byte) 0xFD);
-        } else if (LAST_DAY_OF_MONTH.equalsIgnoreCase(month)) {
-            bb.put((byte) 0xFE);
-        } else {
-            bb.put(Byte.parseByte(dayOfMonth));
-        }
-
-        // leave day of week unspecified (0xFF)
-        bb.put((byte) 0xFF);
-
-        return DataObject.newOctetStringData(bb.array());
+        final CosemDate cosemDate = new CosemDate(date.getYear(), date.getMonth(), date.getDayOfMonth(),
+                date.getDayOfWeek());
+        return DataObject.newDateData(cosemDate);
     }
 
     public List<CosemObjectDefinition> readListOfObjectDefinition(final GetResult getResult, final String description)
