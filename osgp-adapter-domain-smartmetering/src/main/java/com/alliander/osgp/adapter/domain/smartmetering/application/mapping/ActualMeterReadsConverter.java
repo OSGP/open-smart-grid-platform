@@ -17,22 +17,21 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 
 @Component
 public class ActualMeterReadsConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads, ActualMeterReads> {
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads, ActualMeterReads> {
 
     @Autowired
     private StandardUnitConverter standardUnitConverter;
 
     @Override
-    public ActualMeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads source,
+    public ActualMeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads source,
             final Type<? extends ActualMeterReads> destinationType) {
-        return new ActualMeterReads(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
-                source.getActiveEnergyImport(), source), this.standardUnitConverter.calculateStandardizedValue(
-                        source.getActiveEnergyExport(), source), this.standardUnitConverter.calculateStandardizedValue(
-                                source.getActiveEnergyImportTariffOne(), source),
-                                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyImportTariffTwo(), source),
-                                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyExportTariffOne(), source),
-                                this.standardUnitConverter.calculateStandardizedValue(source.getActiveEnergyExportTariffTwo(), source),
-                                this.standardUnitConverter.toStandardUnit(source));
+        return new ActualMeterReads(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(source
+                .getActiveEnergyImport()), this.standardUnitConverter.calculateStandardizedValue(source
+                .getActiveEnergyExport()), this.standardUnitConverter.calculateStandardizedValue(source
+                .getActiveEnergyImportTariffOne()), this.standardUnitConverter.calculateStandardizedValue(source
+                .getActiveEnergyImportTariffTwo()), this.standardUnitConverter.calculateStandardizedValue(source
+                .getActiveEnergyExportTariffOne()), this.standardUnitConverter.calculateStandardizedValue(source
+                .getActiveEnergyExportTariffTwo()), this.standardUnitConverter.toStandardUnit(source));
     }
 
     @Override

@@ -18,9 +18,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnitResponse;
 
 /**
  * Calculate a meter value:
@@ -60,11 +60,12 @@ public class StandardUnitConverter {
      * @param scalerUnitResponse
      * @return
      */
-    public Double calculateStandardizedValue(final Long meterValue, final ScalerUnitResponse scalerUnitResponse) {
-        if (meterValue == null) {
+    public Double calculateStandardizedValue(final DlmsMeterValue dlmsMeterValue) {
+        if (dlmsMeterValue == null) {
             return null;
         }
-        final ScalerUnit scalerUnit = scalerUnitResponse.getScalerUnit();
+        final Long meterValue = dlmsMeterValue.getValue();
+        final ScalerUnit scalerUnit = dlmsMeterValue.getScalerUnit();
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
         final double power = scalerUnit.getScaler() == 0 ? 1 : Math.pow(10, scalerUnit.getScaler());
         final double calculated = round(meterValue * power * multiplier, this.fractionDigits);
@@ -86,8 +87,8 @@ public class StandardUnitConverter {
         }
     }
 
-    public OsgpUnit toStandardUnit(final ScalerUnitResponse scalerUnitResponse) {
-        switch (scalerUnitResponse.getScalerUnit().getDlmsUnit()) {
+    public OsgpUnit toStandardUnit(final ScalerUnit scalerUnit) {
+        switch (scalerUnit.getDlmsUnit()) {
         case WH:
             return OsgpUnit.KWH;
         case M3:
@@ -96,8 +97,8 @@ public class StandardUnitConverter {
         case UNDEFINED:
             return OsgpUnit.UNDEFINED;
         default:
-            throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", scalerUnitResponse
-                    .getScalerUnit().getDlmsUnit().name()));
+            throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", scalerUnit.getDlmsUnit()
+                    .name()));
         }
     }
 

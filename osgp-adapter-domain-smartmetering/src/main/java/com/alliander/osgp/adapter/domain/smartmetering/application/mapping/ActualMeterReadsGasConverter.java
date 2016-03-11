@@ -17,17 +17,16 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 
 @Component
 public class ActualMeterReadsGasConverter extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas, ActualMeterReadsGas> {
     @Autowired
     private StandardUnitConverter standardUnitConverter;
 
     @Override
-    public ActualMeterReadsGas convert(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas source,
+    public ActualMeterReadsGas convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas source,
             final Type<? extends ActualMeterReadsGas> destinationType) {
-        return new ActualMeterReadsGas(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
-                source.getConsumption(), source), source.getCaptureTime(),
-                this.standardUnitConverter.toStandardUnit(source));
+        return new ActualMeterReadsGas(source.getLogTime(),
+                this.standardUnitConverter.calculateStandardizedValue(source.getConsumption()),
+                source.getCaptureTime(), this.standardUnitConverter.toStandardUnit(source));
     }
 
     @Override
