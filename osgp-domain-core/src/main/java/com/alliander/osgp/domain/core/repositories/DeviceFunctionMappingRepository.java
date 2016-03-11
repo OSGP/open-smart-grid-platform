@@ -10,6 +10,7 @@ package com.alliander.osgp.domain.core.repositories;
 import java.util.Collection;
 import java.util.List;
 
+import org.hibernate.exception.SQLGrammarException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -23,6 +24,17 @@ public interface DeviceFunctionMappingRepository extends JpaRepository<DeviceAut
     @Query("select dfm.function from DeviceFunctionMapping dfm where dfm.functionGroup = ?1")
     List<DeviceFunction> findByDeviceFunctionGroup(DeviceFunctionGroup deviceFunctionGroup);
 
+    /**
+     * Returns the distinct device functions that belong with any of the given
+     * deviceFunctionGroups. Be ware of exceptions if deviceFunctionGroups is
+     * null or empty.
+     *
+     * @param deviceFunctionGroups
+     *            a collection containing at least one DeviceFunctionGroup.
+     * @return device functions with the given groups.
+     * @throws SQLGrammarException
+     *             if deviceFunctionGroups does not contain any elements.
+     */
     @Query("select distinct dfm.function from DeviceFunctionMapping dfm where dfm.functionGroup in (?1)")
     List<DeviceFunction> findByDeviceFunctionGroups(Collection<DeviceFunctionGroup> deviceFunctionGroups);
 }
