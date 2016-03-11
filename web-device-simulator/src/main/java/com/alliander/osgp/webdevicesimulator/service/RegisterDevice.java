@@ -32,6 +32,7 @@ import com.alliander.osgp.webdevicesimulator.domain.entities.Device;
 import com.alliander.osgp.webdevicesimulator.domain.entities.DeviceMessageStatus;
 import com.alliander.osgp.webdevicesimulator.domain.entities.OslpLogItem;
 import com.alliander.osgp.webdevicesimulator.domain.repositories.OslpLogItemRepository;
+import com.alliander.osgp.webdevicesimulator.domain.valueobjects.ProtocolType;
 import com.alliander.osgp.webdevicesimulator.exceptions.DeviceSimulatorException;
 import com.alliander.osgp.webdevicesimulator.service.OslpChannelHandler.OutOfSequenceEvent;
 import com.google.protobuf.ByteString;
@@ -58,6 +59,9 @@ public class RegisterDevice {
 
     @Resource
     private int oslpPortClient;
+
+    @Resource
+    private int oslpElsterPortClient;
 
     @Resource
     private String oslpSignatureProvider;
@@ -122,9 +126,18 @@ public class RegisterDevice {
                     olspRequest.getPayloadMessage());
             this.oslpLogItemRepository.save(logItem);
 
-            // Send registration message
-            final OslpEnvelope response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                    this.oslpPortClient), olspRequest, device.getDeviceIdentification());
+            OslpEnvelope response = null;
+            if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
+                // Send registration message
+                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
+                        this.oslpPortClient), olspRequest, device.getDeviceIdentification());
+
+            } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
+                // Send registration message
+                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
+                        this.oslpElsterPortClient), olspRequest, device.getDeviceIdentification());
+            }
+
             LOGGER.debug("Controller Received Send Register Device Command: " + response.getPayloadMessage().toString());
 
             // Write request log
@@ -189,9 +202,18 @@ public class RegisterDevice {
                                     .setRandomDevice(device.getRandomDevice())
                                     .setRandomPlatform(device.getRandomPlatform())).build()).build();
 
-            // Send registration confirm message
-            final OslpEnvelope response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                    this.oslpPortClient), olspRequest, device.getDeviceIdentification());
+            OslpEnvelope response = null;
+            if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
+                // Send registration message
+                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
+                        this.oslpPortClient), olspRequest, device.getDeviceIdentification());
+
+            } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
+                // Send registration message
+                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
+                        this.oslpElsterPortClient), olspRequest, device.getDeviceIdentification());
+            }
+
             LOGGER.debug("Controller Received Send Confirm Device Registration Command: "
                     + response.getPayloadMessage().toString());
 
@@ -281,9 +303,18 @@ public class RegisterDevice {
                     request.getPayloadMessage());
             this.oslpLogItemRepository.save(logItem);
 
-            // Send registration message
-            final OslpEnvelope response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
-                    this.oslpPortClient), request, device.getDeviceIdentification());
+            OslpEnvelope response = null;
+            if (device.getProtocol().equals(ProtocolType.OSLP.toString())) {
+                // Send registration message
+                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
+                        this.oslpPortClient), request, device.getDeviceIdentification());
+
+            } else if (device.getProtocol().equals(ProtocolType.OSLP_ELSTER.toString())) {
+                // Send registration message
+                response = this.oslpChannelHandler.send(new InetSocketAddress(this.oslpAddressServer,
+                        this.oslpElsterPortClient), request, device.getDeviceIdentification());
+            }
+
             LOGGER.debug("Controller Received Send Event Notification Command: "
                     + response.getPayloadMessage().toString());
 

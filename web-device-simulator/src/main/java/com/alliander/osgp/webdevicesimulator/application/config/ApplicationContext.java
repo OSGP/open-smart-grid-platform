@@ -101,9 +101,13 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_MESSAGESOURCE_USE_CODE_AS_DEFAULT_MESSAGE = "message.source.use.code.as.default.message";
 
     private static final String PROPERTY_NAME_OSLP_TIMEOUT_CONNECT = "oslp.timeout.connect";
+
     private static final String PROPERTY_NAME_OSLP_PORT_CLIENT = "oslp.port.client";
+    private static final String PROPERTY_NAME_OSLP_ELSTER_PORT_CLIENT = "oslp.elster.port.client";
     private static final String PROPERTY_NAME_OSLP_PORT_SERVER = "oslp.port.server";
+    private static final String PROPERTY_NAME_OSLP_ELSTER_PORT_SERVER = "oslp.elster.port.server";
     private static final String PROPERTY_NAME_OSLP_ADDRESS_CLIENT = "oslp.address.client";
+
     private static final String PROPERTY_NAME_OSLP_SECURITY_SIGNKEY_PATH = "oslp.security.signkey.path";
     private static final String PROPERTY_NAME_OSLP_SECURITY_VERIFYKEY_PATH = "oslp.security.verifykey.path";
     private static final String PROPERTY_NAME_OSLP_SECURITY_KEYTYPE = "oslp.security.keytype";
@@ -302,6 +306,32 @@ public class ApplicationContext {
         return bootstrap;
     }
 
+    @Bean(destroyMethod = "releaseExternalResources")
+    public ServerBootstrap serverBootstrapElster() {
+        final ChannelFactory factory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),
+                Executors.newCachedThreadPool());
+
+        final ServerBootstrap bootstrap = new ServerBootstrap(factory);
+
+        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+            @Override
+            public ChannelPipeline getPipeline() throws InvalidKeySpecException, NoSuchAlgorithmException, IOException,
+            NoSuchProviderException {
+                final ChannelPipeline pipeline = ApplicationContext.this.createPipeLine();
+                LOGGER.info("Created new server pipeline");
+
+                return pipeline;
+            }
+        });
+
+        bootstrap.setOption("child.tcpNoDelay", true);
+        bootstrap.setOption("child.keepAlive", false);
+
+        bootstrap.bind(new InetSocketAddress(this.oslpElsterPortServer()));
+
+        return bootstrap;
+    }
+
     private ChannelPipeline createPipeLine() throws NoSuchAlgorithmException, InvalidKeySpecException,
     NoSuchProviderException, IOException {
         final ChannelPipeline pipeline = Channels.pipeline();
@@ -369,8 +399,18 @@ public class ApplicationContext {
     }
 
     @Bean
+    public int oslpElsterPortClient() {
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_ELSTER_PORT_CLIENT));
+    }
+
+    @Bean
     public int oslpPortServer() {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_PORT_SERVER));
+    }
+
+    @Bean
+    public int oslpElsterPortServer() {
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_OSLP_ELSTER_PORT_SERVER));
     }
 
     @Bean
