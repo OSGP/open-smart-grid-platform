@@ -23,9 +23,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 
 /**
- * Entity class which is the base for all smart devices. Other smart device
- * entities should inherit from this class. See {@link Ssld} /
- * {@link SmartMeter} as examples.
+ * Stripped down version of the platform Device class
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

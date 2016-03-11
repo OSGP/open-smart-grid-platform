@@ -15,6 +15,9 @@ import javax.persistence.Embeddable;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayFunction;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
 
+/**
+ * Copy of the platform DeviceOutputSetting class
+ */
 @Embeddable
 public class DeviceOutputSetting implements Serializable {
 

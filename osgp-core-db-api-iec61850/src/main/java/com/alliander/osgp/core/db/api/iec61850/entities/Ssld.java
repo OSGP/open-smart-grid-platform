@@ -23,6 +23,9 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
 
+/**
+ * Copy of the platform Ssld class
+ */
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
 public class Ssld extends Device {
@@ -113,7 +116,7 @@ public class Ssld extends Device {
 
     /*
      * Create default configuration for a device (based on type).
-     *
+     * 
      * @return default configuration
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {
