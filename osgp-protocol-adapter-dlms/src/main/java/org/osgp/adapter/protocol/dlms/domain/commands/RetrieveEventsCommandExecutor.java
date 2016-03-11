@@ -43,8 +43,17 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
     private static final int CLASS_ID = 7;
     private static final int ATTRIBUTE_ID = 2;
 
+    private static final int CLASS_ID_CLOCK = 8;
+    private static final byte[] OBIS_BYTES_CLOCK = new byte[] { 0, 0, 1, 0, 0, (byte) 255 };
+    private static final byte ATTRIBUTE_ID_TIME = 2;
+
+    private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
+
     @Autowired
     DataObjectToEventListConverter dataObjectToEventListConverter;
+
+    @Autowired
+    private DlmsHelperService dlmsHelperService;
 
     // @formatter:off
     private static final EnumMap<EventLogCategory, ObisCode> EVENT_LOG_CATEGORY_OBISCODE_MAP = new EnumMap<>(
