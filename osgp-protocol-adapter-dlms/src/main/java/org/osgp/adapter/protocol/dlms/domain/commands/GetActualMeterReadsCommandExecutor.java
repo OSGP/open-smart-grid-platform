@@ -23,13 +23,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 
 @Component()
-public class GetActualMeterReadsCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReads> {
+public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, MeterReads> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -69,7 +68,7 @@ public class GetActualMeterReadsCommandExecutor extends
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReads execute(final ClientConnection conn, final DlmsDevice device,
+    public MeterReads execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isGas()) {
@@ -104,8 +103,8 @@ public class GetActualMeterReadsCommandExecutor extends
         final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(INDEX_SCALER_UNIT),
                 "Scaler and Unit");
 
-        return new ActualMeterReads(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
-                activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2, this.convert(scalerUnit));
+        return new MeterReads(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
+                activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2);
     }
 
     private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {

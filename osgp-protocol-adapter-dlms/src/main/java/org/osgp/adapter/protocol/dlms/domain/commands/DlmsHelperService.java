@@ -40,7 +40,9 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod;
 import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement;
@@ -80,6 +82,24 @@ public class DlmsHelperService {
 
     public DataObject getClockDefinition() {
         return DataObjectDefinitions.getClockDefinition();
+    }
+
+    public ScalerUnit convert(final DataObject dataObject) throws ProtocolAdapterException {
+        LOGGER.debug(this.getDebugInfo(dataObject));
+        if (!dataObject.isComplex()) {
+            throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit."
+                    + this.getDebugInfo(dataObject));
+        }
+        final List<DataObject> value = dataObject.value();
+        if (value.size() != 2) {
+            throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit."
+                    + this.getDebugInfo(dataObject));
+        }
+        final DataObject scaler = value.get(0);
+        final DataObject unit = value.get(1);
+
+        return new ScalerUnit(DlmsUnit.fromDlmsEnum(this.readLongNotNull(unit, "unit value").intValue()), this
+                .readLongNotNull(scaler, "scaler value").intValue());
     }
 
     public DataObject getAMRProfileDefinition() {

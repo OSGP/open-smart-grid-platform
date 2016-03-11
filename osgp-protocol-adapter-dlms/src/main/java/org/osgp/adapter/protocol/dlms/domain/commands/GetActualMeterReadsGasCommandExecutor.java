@@ -22,14 +22,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.Channel;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 
 @Component()
-public class GetActualMeterReadsGasCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
+public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, MeterReadsGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -45,7 +44,7 @@ public class GetActualMeterReadsGasCommandExecutor extends
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReadsGas execute(final ClientConnection conn, final DlmsDevice device,
+    public MeterReadsGas execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
@@ -76,7 +75,7 @@ public class GetActualMeterReadsGasCommandExecutor extends
         }
         final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(2), "Scaler and Unit");
 
-        return new ActualMeterReadsGas(new Date(), consumption, captureTime, this.convert(scalerUnit));
+        return new MeterReadsGas(new Date(), consumption, captureTime);
 
     }
 

@@ -44,8 +44,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 @Component()
-public class GetPeriodicMeterReadsGasCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+public class GetPeriodicMeterReadsGasCommandExecutor implements
+CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -250,7 +250,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(1), "Scaler and Unit");
 
-        return new PeriodicMeterReadsContainerGas(periodType, periodicMeterReads, this.convert(scalerUnit));
+        return new PeriodicMeterReadsContainerGas(periodType, periodicMeterReads);
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,

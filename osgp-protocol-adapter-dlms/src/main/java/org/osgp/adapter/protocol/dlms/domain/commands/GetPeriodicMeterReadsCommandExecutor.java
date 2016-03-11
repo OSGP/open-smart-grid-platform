@@ -40,8 +40,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsConta
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 @Component()
-public class GetPeriodicMeterReadsCommandExecutor extends
-AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+public class GetPeriodicMeterReadsCommandExecutor implements
+CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -127,7 +127,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
         }
         final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(1), "Scaler and Unit");
 
-        return new PeriodicMeterReadsContainer(periodType, periodicMeterReads, this.convert(scalerUnit));
+        return new PeriodicMeterReadsContainer(periodType, periodicMeterReads);
     }
 
     private void processNextPeriodicMeterReads(final PeriodType periodType, final DateTime beginDateTime,
