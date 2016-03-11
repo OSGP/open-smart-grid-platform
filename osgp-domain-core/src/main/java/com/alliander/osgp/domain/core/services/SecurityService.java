@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.services;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -93,15 +94,8 @@ public class SecurityService {
         final List<DeviceAuthorization> authorizations = this.deviceAuthorizationRepository
                 .findByOrganisationAndDevice(organisation, device);
 
-        final Set<DeviceFunctionGroup> authorizedFunctionGroups = EnumSet.noneOf(DeviceFunctionGroup.class);
-        for (final DeviceAuthorization authorization : authorizations) {
-            if (authorization.getFunctionGroup() != null) {
-                authorizedFunctionGroups.add(authorization.getFunctionGroup());
-            }
-        }
-        final List<DeviceFunction> authorizedDeviceFunctions = this.deviceFunctionMappingRepository
-                .findByDeviceFunctionGroups(authorizedFunctionGroups);
-        if (authorizedDeviceFunctions.contains(function)) {
+        final List<DeviceFunction> authorizedDeviceFunctions = this.getDeviceFunctionsForAuthorizations(authorizations);
+        if (authorizedDeviceFunctions != null && authorizedDeviceFunctions.contains(function)) {
             LOGGER.info(
                     "Organisation {} is allowed {} for device {}",
                     new Object[] { organisation.getOrganisationIdentification(), function,
@@ -114,5 +108,20 @@ public class SecurityService {
                 "Organisation {} is not allowed {} for device {}",
                 new Object[] { organisation.getOrganisationIdentification(), function, device.getDeviceIdentification() });
         throw new NotAuthorizedException(organisation.getOrganisationIdentification());
+    }
+
+    private List<DeviceFunction> getDeviceFunctionsForAuthorizations(final List<DeviceAuthorization> authorizations) {
+        if (authorizations == null || authorizations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final Set<DeviceFunctionGroup> authorizedFunctionGroups = EnumSet.noneOf(DeviceFunctionGroup.class);
+        for (final DeviceAuthorization authorization : authorizations) {
+            if (authorization.getFunctionGroup() != null) {
+                authorizedFunctionGroups.add(authorization.getFunctionGroup());
+            }
+        }
+
+        return this.deviceFunctionMappingRepository.findByDeviceFunctionGroups(authorizedFunctionGroups);
     }
 }
