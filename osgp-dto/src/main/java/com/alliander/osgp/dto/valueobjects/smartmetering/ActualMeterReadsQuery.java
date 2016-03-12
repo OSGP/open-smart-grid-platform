@@ -20,7 +20,7 @@ public class ActualMeterReadsQuery implements Serializable, ChannelQuery {
     private final Channel channel;
 
     public ActualMeterReadsQuery() {
-        this(Channel.NONE);
+        this(null);
     }
 
     public ActualMeterReadsQuery(final Channel channel) {
@@ -28,7 +28,7 @@ public class ActualMeterReadsQuery implements Serializable, ChannelQuery {
     }
 
     public boolean isGas() {
-        return this.channel != Channel.NONE;
+        return this.channel != null;
     }
 
     @Override
