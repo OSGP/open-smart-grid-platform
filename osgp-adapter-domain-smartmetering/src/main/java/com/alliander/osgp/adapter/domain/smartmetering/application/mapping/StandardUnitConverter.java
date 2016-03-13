@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
@@ -21,9 +22,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
  * Calculate a meter value:
  *
  * <pre>
- * - apply the scaler by multiplying by a power of 10
  * - determine the multiplier for the DlmsUnit
  * - apply the multiplier
+ * - determine the standardized unit
  * </pre>
  *
  */
@@ -33,22 +34,22 @@ public class StandardUnitConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(StandardUnitConverter.class);
 
     /**
-     * Return a meterValue in standardized unit and fraction digits. When the
-     * argument value is null, null is returned.
+     * Return a meterValue in standardized unit. When the argument value is
+     * null, null is returned.
      *
      * @param meterValue
-     * @param scalerUnitResponse
+     * @param dlmsMeterValue
      * @return
      */
-    public BigDecimal calculateStandardizedValue(final DlmsMeterValue dlmsMeterValue) {
-        if (dlmsMeterValue == null || dlmsMeterValue.getValue() == null) {
+    public OsgpMeterValue calculateStandardizedValue(final DlmsMeterValue dlmsMeterValue) {
+        if (dlmsMeterValue == null) {
             return null;
         }
         final BigDecimal multiplier = this.getMultiplierToOsgpUnit(dlmsMeterValue.getDlmsUnit(),
                 this.toStandardUnit(dlmsMeterValue.getDlmsUnit()));
         final BigDecimal calculated = dlmsMeterValue.getValue().multiply(multiplier);
         LOGGER.debug(String.format("calculated %s from %s", calculated, dlmsMeterValue));
-        return calculated;
+        return new OsgpMeterValue(calculated, this.toStandardUnit(dlmsMeterValue.getDlmsUnit()));
     }
 
     /**

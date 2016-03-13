@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import java.math.BigDecimal;
-
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 
@@ -16,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
@@ -39,13 +37,13 @@ public class MonitoringMapper extends ConfigurableMapper {
      * @param osgpUnit
      * @return
      */
-    public static MeterValue getMeterValue(final Double d, final OsgpUnit osgpUnit) {
-        if (d == null || osgpUnit == null) {
+    public static MeterValue getMeterValue(final OsgpMeterValue osgpMeterValue) {
+        if (osgpMeterValue == null) {
             return null;
         }
         final MeterValue m = new MeterValue();
-        m.setValue(BigDecimal.valueOf(d));
-        m.setUnit(OsgpUnitType.valueOf(osgpUnit.name()));
+        m.setValue(osgpMeterValue.getValue());
+        m.setUnit(OsgpUnitType.valueOf(osgpMeterValue.getOsgpUnit().name()));
         return m;
     }
 }

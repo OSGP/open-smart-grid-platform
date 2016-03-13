@@ -10,7 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class MeterReads implements Serializable {
+public class MeterReads implements Serializable {
     private static final long serialVersionUID = -297320204916085999L;
 
     private final Date logTime;
@@ -24,7 +24,7 @@ public abstract class MeterReads implements Serializable {
     // may be null
     private final OsgpMeterValue activeEnergyExportTariffTwo;
 
-    protected MeterReads(final Date logTime, final OsgpMeterValue activeEnergyImport,
+    public MeterReads(final Date logTime, final OsgpMeterValue activeEnergyImport,
             final OsgpMeterValue activeEnergyExport, final OsgpMeterValue activeEnergyImportTariffOne,
             final OsgpMeterValue activeEnergyImportTariffTwo, final OsgpMeterValue activeEnergyExportTariffOne,
             final OsgpMeterValue activeEnergyExportTariffTwo) {

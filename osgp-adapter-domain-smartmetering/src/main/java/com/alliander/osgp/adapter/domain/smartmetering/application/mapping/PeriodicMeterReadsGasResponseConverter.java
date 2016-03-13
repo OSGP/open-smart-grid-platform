@@ -22,8 +22,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
 @Component
 public class PeriodicMeterReadsGasResponseConverter
-extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas, PeriodicMeterReadsContainerGas> {
+        extends
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas, PeriodicMeterReadsContainerGas> {
 
     @Autowired
     private StandardUnitConverter standardUnitConverter;
@@ -47,7 +47,7 @@ CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterR
 
         return new PeriodicMeterReadsContainerGas(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), meterReadsGas, this.standardUnitConverter.toStandardUnit(source));
+                        .name()), meterReadsGas);
     }
 
     @Override

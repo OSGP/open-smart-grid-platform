@@ -23,20 +23,20 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 
 public class ActualMeterReadsGasConverter
-extends
-CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
+        extends
+        CustomConverter<MeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGasConverter.class);
 
     @Override
-    public ActualMeterReadsGasResponse convert(final ActualMeterReadsGas source,
+    public ActualMeterReadsGasResponse convert(final MeterReadsGas source,
             final Type<? extends ActualMeterReadsGasResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse destination = new ObjectFactory()
-        .createActualMeterReadsGasResponse();
+                .createActualMeterReadsGasResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -57,7 +57,7 @@ CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartm
             convertedDate = null;
         }
 
-        destination.setConsumption(getMeterValue(source.getConsumption(), source.getOsgpUnit()));
+        destination.setConsumption(getMeterValue(source.getConsumption()));
 
         return destination;
     }

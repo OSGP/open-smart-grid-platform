@@ -26,7 +26,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileS
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
 
 public class PeriodicMeterReadsResponseConverter
@@ -42,14 +41,13 @@ public class PeriodicMeterReadsResponseConverter
         final List<PeriodicMeterReads> periodicMeterReads = periodicMeterReadsResponse.getPeriodicMeterReads();
         for (final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads m : source
                 .getPeriodicMeterReads()) {
-            periodicMeterReads.add(this.convert(m, source.getOsgpUnit()));
+            periodicMeterReads.add(this.convert(m));
         }
         return periodicMeterReadsResponse;
     }
 
     private PeriodicMeterReads convert(
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads source,
-            final OsgpUnit osgpUnit) {
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads source) {
         final PeriodicMeterReads meterReads = new PeriodicMeterReads();
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -65,12 +63,12 @@ public class PeriodicMeterReadsResponseConverter
                 AmrProfileStatusCode.class);
 
         meterReads.setLogTime(convertedDate);
-        meterReads.setActiveEnergyImport(getMeterValue(source.getActiveEnergyImport(), osgpUnit));
-        meterReads.setActiveEnergyExport(getMeterValue(source.getActiveEnergyExport(), osgpUnit));
-        meterReads.setActiveEnergyImportTariffOne(getMeterValue(source.getActiveEnergyImportTariffOne(), osgpUnit));
-        meterReads.setActiveEnergyImportTariffTwo(getMeterValue(source.getActiveEnergyImportTariffTwo(), osgpUnit));
-        meterReads.setActiveEnergyExportTariffOne(getMeterValue(source.getActiveEnergyExportTariffOne(), osgpUnit));
-        meterReads.setActiveEnergyExportTariffTwo(getMeterValue(source.getActiveEnergyExportTariffTwo(), osgpUnit));
+        meterReads.setActiveEnergyImport(getMeterValue(source.getActiveEnergyImport()));
+        meterReads.setActiveEnergyExport(getMeterValue(source.getActiveEnergyExport()));
+        meterReads.setActiveEnergyImportTariffOne(getMeterValue(source.getActiveEnergyImportTariffOne()));
+        meterReads.setActiveEnergyImportTariffTwo(getMeterValue(source.getActiveEnergyImportTariffTwo()));
+        meterReads.setActiveEnergyExportTariffOne(getMeterValue(source.getActiveEnergyExportTariffOne()));
+        meterReads.setActiveEnergyExportTariffTwo(getMeterValue(source.getActiveEnergyExportTariffTwo()));
         meterReads.setAmrProfileStatusCode(amrProfileStatusCode);
         return meterReads;
     }

@@ -13,20 +13,19 @@ import ma.glasnost.orika.metadata.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 
 @Component
 public class ActualMeterReadsGasConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas, ActualMeterReadsGas> {
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas, MeterReadsGas> {
     @Autowired
     private StandardUnitConverter standardUnitConverter;
 
     @Override
-    public ActualMeterReadsGas convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas source,
-            final Type<? extends ActualMeterReadsGas> destinationType) {
-        return new ActualMeterReadsGas(source.getLogTime(),
-                this.standardUnitConverter.calculateStandardizedValue(source.getConsumption()),
-                source.getCaptureTime(), this.standardUnitConverter.toStandardUnit(source));
+    public MeterReadsGas convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas source,
+            final Type<? extends MeterReadsGas> destinationType) {
+        return new MeterReadsGas(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(source
+                .getConsumption()), source.getCaptureTime());
     }
 
     @Override

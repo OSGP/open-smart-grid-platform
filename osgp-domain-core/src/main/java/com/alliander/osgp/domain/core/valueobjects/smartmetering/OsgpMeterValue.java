@@ -22,7 +22,7 @@ public class OsgpMeterValue {
         return this.value;
     }
 
-    public OsgpUnit getDlmsUnit() {
+    public OsgpUnit getOsgpUnit() {
         return this.osgpUnit;
     }
 
