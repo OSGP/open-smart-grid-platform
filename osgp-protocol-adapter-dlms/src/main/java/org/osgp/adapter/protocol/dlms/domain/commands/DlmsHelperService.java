@@ -109,13 +109,18 @@ public class DlmsHelperService {
      *
      * @param value
      * @param dataObject
-     * @return
+     * @return the meter value with dlms unit or null when
+     *         {@link #readLong(GetResult, String)} is null
      * @throws ProtocolAdapterException
      */
     public DlmsMeterValue getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
             final String description) throws ProtocolAdapterException {
         LOGGER.debug(this.getDebugInfo(value.resultData()));
         LOGGER.debug(this.getDebugInfo(scalerUnit.resultData()));
+        final Long rawValue = this.readLong(value, description);
+        if (rawValue == null) {
+            return null;
+        }
 
         // determine scaler and unit
         final DataObject dataObject = this.readDataObject(scalerUnit, description);
@@ -132,9 +137,8 @@ public class DlmsHelperService {
         final DlmsUnit unit = DlmsUnit.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description).intValue());
 
         // determine value
-        final Long rawValue = this.readLong(value, description);
-        BigDecimal scaledValue = rawValue != null ? BigDecimal.valueOf(rawValue) : null;
-        if (scaler != 0 && scaledValue != null) {
+        BigDecimal scaledValue = BigDecimal.valueOf(rawValue);
+        if (scaler != 0) {
             scaledValue = scaledValue.multiply(BigDecimal.valueOf(Math.pow(10, scaler)));
         }
 
