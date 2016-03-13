@@ -3,29 +3,28 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.math.BigDecimal;
+
 import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ScalerUnit;
 
 public class StandardUnitCalulatorTest {
 
     @Test
     public void testCalculate() {
         final StandardUnitConverter calculator = new StandardUnitConverter();
-        ScalerUnit response = new ScalerUnit(DlmsUnit.WH, 0);
-        assertEquals(Double.valueOf(123.456d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
-        response = new ScalerUnit(DlmsUnit.WH, -2);
-        assertEquals(Double.valueOf(1.235d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
-        response = new ScalerUnit(DlmsUnit.M3, 2);
-        assertEquals(Double.valueOf(12345600d),
-                Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
-        response = new ScalerUnit(DlmsUnit.M3COR, -2);
-        assertEquals(Double.valueOf(1234.56d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
-        response = new ScalerUnit(DlmsUnit.A, 2);
+        DlmsMeterValue response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.WH);
+        assertEquals(BigDecimal.valueOf(123.456d), calculator.calculateStandardizedValue(response));
+        response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.M3);
+        assertEquals(BigDecimal.valueOf(123456d), calculator.calculateStandardizedValue(response));
+        response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.M3);
+        assertEquals(BigDecimal.valueOf(123456d), calculator.calculateStandardizedValue(response));
+        response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.A);
         try {
-            calculator.calculateStandardizedValue(123456l, response);
+            calculator.calculateStandardizedValue(response);
             fail("dlms unit A not supported, expected exception");
         } catch (final IllegalArgumentException ex) {
 
@@ -35,15 +34,11 @@ public class StandardUnitCalulatorTest {
     @Test
     public void testUnit() {
         final StandardUnitConverter calculator = new StandardUnitConverter();
-        ScalerUnit response = new ScalerUnit(DlmsUnit.WH, 0);
-        assertEquals(OsgpUnit.KWH, calculator.toStandardUnit(response));
-        response = new ScalerUnit(DlmsUnit.M3, 2);
-        assertEquals(OsgpUnit.M3, calculator.toStandardUnit(response));
-        response = new ScalerUnit(DlmsUnit.M3COR, 2);
-        assertEquals(OsgpUnit.M3, calculator.toStandardUnit(response));
-        response = new ScalerUnit(DlmsUnit.A, 2);
+        assertEquals(OsgpUnit.KWH, calculator.toStandardUnit(DlmsUnit.WH));
+        assertEquals(OsgpUnit.M3, calculator.toStandardUnit(DlmsUnit.M3));
+        assertEquals(OsgpUnit.M3, calculator.toStandardUnit(DlmsUnit.M3COR));
         try {
-            calculator.toStandardUnit(response);
+            calculator.toStandardUnit(DlmsUnit.A);
             fail("dlms unit A not supported, expected exception");
         } catch (final IllegalArgumentException ex) {
 
