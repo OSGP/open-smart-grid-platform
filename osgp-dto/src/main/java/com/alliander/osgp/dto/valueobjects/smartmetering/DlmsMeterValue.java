@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 /**
  * A metervalue with scaler applied together with its unit on the meter
- * 
+ *
  * @author dev
  *
  */
@@ -25,6 +25,11 @@ public class DlmsMeterValue {
 
     public DlmsUnit getDlmsUnit() {
         return this.dlmsUnit;
+    }
+
+    @Override
+    public String toString() {
+        return "DlmsMeterValue [value=" + this.value + ", dlmsUnit=" + this.dlmsUnit + "]";
     }
 
 }
