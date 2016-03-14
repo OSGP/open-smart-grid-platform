@@ -51,11 +51,13 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
 import com.alliander.osgp.domain.core.specifications.EventSpecifications;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.EventType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
@@ -107,6 +109,8 @@ public class RetrieveReceivedEventNotificationsSteps {
     private SsldRepository ssldRepositoryMock;
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
+    @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
 
     // === SET UP ===
 
@@ -157,6 +161,12 @@ public class RetrieveReceivedEventNotificationsSteps {
 
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
         .thenReturn(authorizations);
+
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.GET_EVENT_NOTIFICATIONS);
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                deviceFunctions);
     }
 
     @DomainStep("a received event notification (.*), (.*) and (.*) from (.*)")
@@ -354,8 +364,7 @@ public class RetrieveReceivedEventNotificationsSteps {
     }
 
     /**
-     * Verify that the page object has the correct total values for total
-     * entities and total pages.
+     * Verify that the page object has the correct total values for total entities and total pages.
      *
      * @param totalNofEventNotifications
      * @param totalNofPages
