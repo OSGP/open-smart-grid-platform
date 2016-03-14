@@ -1,3 +1,10 @@
+/**
+ * Copyright 2015 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
 import java.io.IOException;
@@ -7,17 +14,21 @@ import java.net.UnknownHostException;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcesInitiator;
+import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 public class Hls5Connector {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Hls5Connector.class);
 
     private final int responseTimeout;
 
@@ -25,13 +36,13 @@ public class Hls5Connector {
 
     private final int clientAccessPoint;
 
-    private final RecoverKeyProcesInitiator recoverKeyProcessInitiator;
+    private final RecoverKeyProcessInitiator recoverKeyProcessInitiator;
 
     private final DlmsDeviceRepository dlmsDeviceRepository;
 
     private DlmsDevice device;
 
-    public Hls5Connector(final RecoverKeyProcesInitiator recoverKeyProcessInitiator,
+    public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
             final int clientAccessPoint) {
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
@@ -57,6 +68,7 @@ public class Hls5Connector {
             this.discardInvalidKeys();
             return connection;
         } catch (final UnknownHostException e) {
+            LOGGER.warn("The IP address is not found: {}", this.device.getIpAddress(), e);
             // Unknown IP, unrecoverable.
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "The IP address is not found: "
                     + this.device.getIpAddress());
@@ -66,7 +78,7 @@ public class Hls5Connector {
                 this.recoverKeyProcessInitiator.initiate(this.device.getDeviceIdentification(),
                         this.device.getIpAddress());
             }
-            throw new ConnectionException(e.getMessage(), e);
+            throw new ConnectionException(e);
         }
     }
 

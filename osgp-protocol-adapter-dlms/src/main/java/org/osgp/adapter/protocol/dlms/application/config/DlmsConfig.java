@@ -25,8 +25,9 @@ import org.jboss.netty.handler.logging.LoggingHandler;
 import org.jboss.netty.logging.InternalLogLevel;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
-import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcesInitiator;
+import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcess;
+import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
 import org.osgp.adapter.protocol.dlms.domain.factories.Hls5Connector;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
@@ -128,7 +129,7 @@ public class DlmsConfig {
     @Bean
     @Scope("prototype")
     @Autowired
-    public Hls5Connector hls5Connector(final RecoverKeyProcesInitiator recoverKeyProcessInitiator,
+    public Hls5Connector hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
@@ -138,11 +139,23 @@ public class DlmsConfig {
     }
 
     @Bean
+    @Scope("prototype")
     @Autowired
-    public RecoverKeyProcesInitiator recoverKeyProcesInitiator(final ScheduledExecutorService executorService,
+    public RecoverKeyProcess recoverKeyProcess(final DomainHelperService domainHelperService,
+            final DlmsDeviceRepository dlmsDeviceRepository,
+            @Value("${jdlms.response_timeout}") final int responseTimeout,
+            @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
+            @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
+        return new RecoverKeyProcess(domainHelperService, dlmsDeviceRepository, responseTimeout, logicalDeviceAddress,
+                clientAccessPoint);
+    }
+
+    @Bean
+    @Autowired
+    public RecoverKeyProcessInitiator recoverKeyProcesInitiator(final ScheduledExecutorService executorService,
             final Provider<RecoverKeyProcess> recoverKeyProcessProvider,
             @Value("${key.recovery.delay}") final int recoverKeyDelay) {
-        return new RecoverKeyProcesInitiator(executorService, recoverKeyProcessProvider, recoverKeyDelay);
+        return new RecoverKeyProcessInitiator(executorService, recoverKeyProcessProvider, recoverKeyDelay);
     }
 
     @Bean
