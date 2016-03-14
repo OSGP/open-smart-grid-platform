@@ -63,9 +63,11 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatus;
 import com.alliander.osgp.domain.core.valueobjects.DeviceStatusMapped;
@@ -144,6 +146,8 @@ public class GetStatusSteps {
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
+    @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
@@ -238,7 +242,15 @@ public class GetStatusSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
+
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.GET_STATUS);
+        deviceFunctions.add(DeviceFunction.GET_LIGHT_STATUS);
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                deviceFunctions);
+
     }
 
     @DomainStep("the get status oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), and (.*)")
@@ -274,12 +286,12 @@ public class GetStatusSteps {
                 .setPreferredLinktype(
                         StringUtils.isBlank(preferredLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
                                 Oslp.LinkType.class, preferredLinkType))
-                                .setActualLinktype(
-                                        StringUtils.isBlank(actualLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
-                                                Oslp.LinkType.class, actualLinkType))
-                                                .setLightType(
-                                                        StringUtils.isBlank(lightType) ? Oslp.LightType.LT_NOT_SET : Enum.valueOf(Oslp.LightType.class,
-                                                                lightType)).setEventNotificationMask(mask).addValue(lightValueBuilder).build();
+                .setActualLinktype(
+                        StringUtils.isBlank(actualLinkType) ? Oslp.LinkType.LINK_NOT_SET : Enum.valueOf(
+                                Oslp.LinkType.class, actualLinkType))
+                .setLightType(
+                        StringUtils.isBlank(lightType) ? Oslp.LightType.LT_NOT_SET : Enum.valueOf(Oslp.LightType.class,
+                                lightType)).setEventNotificationMask(mask).addValue(lightValueBuilder).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetStatusResponse(getStatusResponse).build()).build();
@@ -683,10 +695,10 @@ public class GetStatusSteps {
                     if (StringUtils.isNotBlank(eventnotifications)) {
                         for (final String event : eventnotifications.split(",")) {
                             expectedEventNotificationTypes
-                            .add(Enum
-                                    .valueOf(
-                                            com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType.class,
-                                            event));
+                                    .add(Enum
+                                            .valueOf(
+                                                    com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType.class,
+                                                    event));
                         }
                     }
                     final HashSet<com.alliander.osgp.adapter.ws.schema.publiclighting.adhocmanagement.EventNotificationType> actualEventNotificationTypes = new HashSet<>(
