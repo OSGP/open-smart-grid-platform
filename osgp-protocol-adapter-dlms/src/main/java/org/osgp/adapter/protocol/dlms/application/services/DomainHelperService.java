@@ -68,7 +68,7 @@ public class DomainHelperService {
     }
 
     public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException,
-            ProtocolAdapterException {
+    ProtocolAdapterException {
         final String deviceIdentification = messageMetadata.getDeviceIdentification();
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
@@ -85,29 +85,28 @@ public class DomainHelperService {
             throws ProtocolAdapterException {
 
         if (dlmsDevice.isIpAddressIsStatic()) {
-            return dlmsDevice.getIpAddress();
+            return messageMetaDataIpAddress;
         } else {
-            return this.getDeviceIpAddressFromSessionProvider(dlmsDevice.getIccId(), dlmsDevice);
+            return this.getDeviceIpAddressFromSessionProvider(dlmsDevice);
         }
     }
 
-    private String getDeviceIpAddressFromSessionProvider(final String iccId, final DlmsDevice dlmsDevice)
-            throws ProtocolAdapterException {
+    private String getDeviceIpAddressFromSessionProvider(final DlmsDevice dlmsDevice) throws ProtocolAdapterException {
 
         final SessionProvider sessionProvider = this.sessionProviderService.getSessionProvider(dlmsDevice
                 .getCommunicationProvider());
-
+        String deviceIpAddress = null;
         try {
-            String deviceIpAddress = sessionProvider.getIpAddress(iccId);
+            deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
 
             // If the result is null then the meter is not in session (not
             // awake).
             // So wake up the meter and start polling for the session
             if (deviceIpAddress == null) {
-                this.jasperWirelessSmsClient.sendWakeUpSMS(iccId);
+                this.jasperWirelessSmsClient.sendWakeUpSMS(dlmsDevice.getIccId());
                 for (int i = 0; i < this.jasperGetSessionRetries; i++) {
                     Thread.sleep(this.jasperGetSessionSleepBetweenRetries);
-                    deviceIpAddress = sessionProvider.getIpAddress(iccId);
+                    deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
 
                     if (deviceIpAddress != null) {
                         return deviceIpAddress;
@@ -120,9 +119,12 @@ public class DomainHelperService {
         } catch (SessionProviderUnsupportedException | SessionProviderException e) {
             throw new ProtocolAdapterException("", e);
         }
-
-        throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
-                + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification() + " and iccId: "
-                + iccId);
+        if (deviceIpAddress == null || "".equals(deviceIpAddress)) {
+            throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
+                    + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
+                    + " and iccId: " + dlmsDevice.getIccId());
+        } else {
+            return deviceIpAddress;
+        }
     }
 }
