@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @author dev
  */
-public class ActualMeterReadsQuery implements Serializable, ChannelQuery {
+public class ActualMeterReadsQuery implements Serializable {
     private static final long serialVersionUID = 3751586818507193990L;
 
     private final Channel channel;
@@ -27,11 +27,10 @@ public class ActualMeterReadsQuery implements Serializable, ChannelQuery {
         this.channel = channel;
     }
 
-    public boolean isGas() {
+    public boolean isMbusQuery() {
         return this.channel != null;
     }
 
-    @Override
     public Channel getChannel() {
         return this.channel;
     }
