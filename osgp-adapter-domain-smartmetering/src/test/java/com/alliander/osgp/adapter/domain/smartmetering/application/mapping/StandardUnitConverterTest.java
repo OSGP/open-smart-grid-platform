@@ -11,17 +11,17 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 
-public class StandardUnitCalulatorTest {
+public class StandardUnitConverterTest {
 
     @Test
     public void testCalculate() {
         final StandardUnitConverter calculator = new StandardUnitConverter();
         DlmsMeterValue response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.WH);
-        assertEquals(BigDecimal.valueOf(123.456d), calculator.calculateStandardizedValue(response));
+        assertEquals(BigDecimal.valueOf(123.456d), calculator.calculateStandardizedValue(response).getValue());
         response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.M3);
-        assertEquals(BigDecimal.valueOf(123456d), calculator.calculateStandardizedValue(response));
+        assertEquals(BigDecimal.valueOf(123456d), calculator.calculateStandardizedValue(response).getValue());
         response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.M3);
-        assertEquals(BigDecimal.valueOf(123456d), calculator.calculateStandardizedValue(response));
+        assertEquals(BigDecimal.valueOf(123456d), calculator.calculateStandardizedValue(response).getValue());
         response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.A);
         try {
             calculator.calculateStandardizedValue(response);
