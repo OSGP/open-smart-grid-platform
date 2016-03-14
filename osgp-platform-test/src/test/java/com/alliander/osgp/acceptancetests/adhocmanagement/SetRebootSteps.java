@@ -60,8 +60,10 @@ import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
@@ -138,6 +140,8 @@ public class SetRebootSteps {
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
     @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
+    @Autowired
     private DeviceLogItemRepository deviceLogItemRepositoryMock;
     @Autowired
     private OslpDeviceRepository oslpDeviceRepositoryMock;
@@ -203,6 +207,13 @@ public class SetRebootSteps {
                 .withFunctionGroup(DeviceFunctionGroup.AD_HOC).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
                 .thenReturn(authorizations);
+
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.SET_REBOOT);
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                deviceFunctions);
+
     }
 
     @DomainStep("a get set reboot response request with correlationId (.*) and deviceId (.*)")

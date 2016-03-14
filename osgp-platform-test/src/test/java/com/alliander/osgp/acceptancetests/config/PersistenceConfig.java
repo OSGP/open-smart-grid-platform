@@ -20,6 +20,7 @@ import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.Writ
 import com.alliander.osgp.adapter.ws.shared.db.domain.repositories.writable.WritableSsldRepository;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
@@ -52,6 +53,12 @@ public class PersistenceConfig {
     }
 
     // OSGP CORE
+
+    @Bean
+    DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock() {
+        return mock(DeviceFunctionMappingRepository.class);
+    }
+
     @Bean
     public DeviceAuthorizationRepository deviceAuthorizationRepositoryMock() {
         return mock(DeviceAuthorizationRepository.class);

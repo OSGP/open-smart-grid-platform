@@ -67,9 +67,11 @@ import com.alliander.osgp.domain.core.entities.OrganisationBuilder;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.Message;
@@ -135,6 +137,8 @@ public class SetEventNotificationsSteps {
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
     private DeviceAuthorizationRepository authorizationRepositoryMock;
+    @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
     @Autowired
     private DeviceLogItemRepository logItemRepositoryMock;
 
@@ -214,6 +218,12 @@ public class SetEventNotificationsSteps {
                 this.organisation);
         when(this.authorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(
                 Arrays.asList(this.authorization));
+
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.SET_EVENT_NOTIFICATIONS);
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                deviceFunctions);
     }
 
     // === WHEN ===

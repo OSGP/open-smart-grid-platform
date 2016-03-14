@@ -69,9 +69,11 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.LinkType;
 import com.alliander.osgp.domain.core.valueobjects.LongTermIntervalType;
@@ -140,6 +142,8 @@ public class GetConfigurationDataSteps {
     private SsldRepository ssldRespositoryMock;
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
+    @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
@@ -221,6 +225,13 @@ public class GetConfigurationDataSteps {
                 .withFunctionGroup(DeviceFunctionGroup.CONFIGURATION).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
                 .thenReturn(authorizations);
+
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.GET_CONFIGURATION);
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                deviceFunctions);
+
     }
 
     @DomainStep("the get configuration oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")

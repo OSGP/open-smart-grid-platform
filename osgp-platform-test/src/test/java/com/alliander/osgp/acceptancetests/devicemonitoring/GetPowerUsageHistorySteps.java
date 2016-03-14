@@ -67,8 +67,10 @@ import com.alliander.osgp.domain.core.entities.DeviceAuthorizationBuilder;
 import com.alliander.osgp.domain.core.entities.DeviceBuilder;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
@@ -132,6 +134,8 @@ public class GetPowerUsageHistorySteps {
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
+    @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
     @Autowired
     private DeviceLogItemRepository deviceLogItemRepositoryMock;
 
@@ -216,7 +220,13 @@ public class GetPowerUsageHistorySteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.MONITORING).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-                .thenReturn(authorizations);
+        .thenReturn(authorizations);
+
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.GET_POWER_USAGE_HISTORY);
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                deviceFunctions);
     }
 
     @DomainStep("the get power usage history oslp message from the device contains (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*), (.*) and (.*)")
@@ -323,15 +333,15 @@ public class GetPowerUsageHistorySteps {
                 .newBuilder()
                 .addPowerUsageData(
                         PowerUsageData
-                                .newBuilder()
-                                .setMeterType(
-                                        puhMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType
-                                                .valueOf(puhMeterType.name()))
-                                .setRecordTime(recordTime)
-                                .setActualConsumedPower(puhActualConsumedPower)
-                                .setTotalConsumedEnergy(puhTotalConsumedEnergy)
-                                .setSsldData(
-                                        com.alliander.osgp.oslp.Oslp.SsldData
+                        .newBuilder()
+                        .setMeterType(
+                                puhMeterType == null ? null : com.alliander.osgp.oslp.Oslp.MeterType
+                                        .valueOf(puhMeterType.name()))
+                                        .setRecordTime(recordTime)
+                                        .setActualConsumedPower(puhActualConsumedPower)
+                                        .setTotalConsumedEnergy(puhTotalConsumedEnergy)
+                                        .setSsldData(
+                                                com.alliander.osgp.oslp.Oslp.SsldData
                                                 .newBuilder()
                                                 .setActualCurrent1(puhActualCurrent1)
                                                 .setActualCurrent2(puhActualCurrent2)
@@ -344,22 +354,22 @@ public class GetPowerUsageHistorySteps {
                                                 .setAveragePowerFactor3(puhAveragePowerFactor3)
                                                 .addRelayData(
                                                         com.alliander.osgp.oslp.Oslp.RelayData
-                                                                .newBuilder()
-                                                                .setIndex(
-                                                                        OslpUtils
-                                                                                .integerToByteString(relayData1IndexInt))
+                                                        .newBuilder()
+                                                        .setIndex(
+                                                                OslpUtils
+                                                                .integerToByteString(relayData1IndexInt))
                                                                 .setTotalLightingMinutes(relayData1LightingMinutesInt)
                                                                 .build())
-                                                .addRelayData(
-                                                        com.alliander.osgp.oslp.Oslp.RelayData
-                                                                .newBuilder()
-                                                                .setIndex(
-                                                                        OslpUtils
+                                                                .addRelayData(
+                                                                        com.alliander.osgp.oslp.Oslp.RelayData
+                                                                        .newBuilder()
+                                                                        .setIndex(
+                                                                                OslpUtils
                                                                                 .integerToByteString(relayData2IndexInt))
-                                                                .setTotalLightingMinutes(relayData2LightingMinutesInt)
-                                                                .build())).build())
+                                                                                .setTotalLightingMinutes(relayData2LightingMinutesInt)
+                                                                                .build())).build())
 
-                .setStatus(Status.OK).build();
+                                                                                .setStatus(Status.OK).build();
 
         this.oslpResponse = OslpTestUtils.createOslpEnvelopeBuilder().withDeviceId(Base64.decodeBase64(DEVICE_UID))
                 .withPayloadMessage(Message.newBuilder().setGetPowerUsageHistoryResponse(oslpResponse).build()).build();

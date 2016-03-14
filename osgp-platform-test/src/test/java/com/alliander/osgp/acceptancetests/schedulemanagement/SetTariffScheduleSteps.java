@@ -64,9 +64,11 @@ import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.SsldRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
@@ -130,6 +132,8 @@ public class SetTariffScheduleSteps {
     private SsldRepository ssldRepositoryMock;
     @Autowired
     private DeviceAuthorizationRepository deviceAuthorizationRepositoryMock;
+    @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
     @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
@@ -273,6 +277,12 @@ public class SetTariffScheduleSteps {
                 .withFunctionGroup(DeviceFunctionGroup.TARIFF_SCHEDULING).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
                 .thenReturn(authorizations);
+
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.SET_TARIFF_SCHEDULE);
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                deviceFunctions);
     }
 
     @DomainStep("a get set tariff schedule response request with correlationId (.*) and deviceId (.*)")
