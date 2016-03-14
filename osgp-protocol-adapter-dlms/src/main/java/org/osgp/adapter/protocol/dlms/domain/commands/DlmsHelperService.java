@@ -115,23 +115,26 @@ public class DlmsHelperService {
      */
     public DlmsMeterValue getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
             final String description) throws ProtocolAdapterException {
-        LOGGER.debug(this.getDebugInfo(value.resultData()));
-        LOGGER.debug(this.getDebugInfo(scalerUnit.resultData()));
+        return this.getScaledMeterValue(value.resultData(), scalerUnit.resultData(), description);
+    }
+
+    public DlmsMeterValue getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
+            final String description) throws ProtocolAdapterException {
+        LOGGER.debug(this.getDebugInfo(value));
+        LOGGER.debug(this.getDebugInfo(scalerUnitObject));
         final Long rawValue = this.readLong(value, description);
         if (rawValue == null) {
             return null;
         }
 
-        // determine scaler and unit
-        final DataObject dataObject = this.readDataObject(scalerUnit, description);
-        if (!dataObject.isComplex()) {
+        if (!scalerUnitObject.isComplex()) {
             throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit."
-                    + this.getDebugInfo(dataObject));
+                    + this.getDebugInfo(scalerUnitObject));
         }
-        final List<DataObject> dataObjects = dataObject.value();
+        final List<DataObject> dataObjects = scalerUnitObject.value();
         if (dataObjects.size() != 2) {
             throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit."
-                    + this.getDebugInfo(dataObject));
+                    + this.getDebugInfo(scalerUnitObject));
         }
         final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
         final DlmsUnit unit = DlmsUnit.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description).intValue());

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.Channel;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 
 @Component()
@@ -34,6 +35,7 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
 
     private static final int CLASS_ID_MBUS = 4;
     private static final byte ATTRIBUTE_ID_VALUE = 2;
+    private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
     private static final byte ATTRIBUTE_ID_TIME = 5;
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_1 = new ObisCode("0.1.24.2.1.255");
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_2 = new ObisCode("0.2.24.2.1.255");
@@ -59,12 +61,15 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
         final AttributeAddress mbusTime = new AttributeAddress(CLASS_ID_MBUS, obisCodeMbusMasterValue,
                 ATTRIBUTE_ID_TIME);
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, mbusValue, mbusTime,
-                this.getScalerUnitAttributeAddress(actualMeterReadsRequest));
+        final AttributeAddress scalerUnit = new AttributeAddress(CLASS_ID_MBUS,
+                this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_SCALER_UNIT);
 
-        checkResultList(getResultList);
+        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
+                "retrieve actual meter reads for mbus " + actualMeterReadsRequest.getChannel(), mbusValue, mbusTime,
+                scalerUnit);
 
-        final long consumption = this.dlmsHelperService.readLong(getResultList.get(0), "gas consumption");
+        final DlmsMeterValue consumption = this.dlmsHelperService.getScaledMeterValue(getResultList.get(0),
+                getResultList.get(2), "retrieve scaled value for mbus " + actualMeterReadsRequest.getChannel());
         final DataObject time = this.dlmsHelperService.readDataObject(getResultList.get(1), "captureTime gas");
         final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) time.value());
         final Date captureTime;
@@ -73,22 +78,9 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
         } else {
             throw new ProtocolAdapterException("Unexpected null/unspecified value for M-Bus Capture Time");
         }
-        final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(2), "Scaler and Unit");
 
         return new MeterReadsGas(new Date(), consumption, captureTime);
 
-    }
-
-    private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
-        if (getResultList.isEmpty()) {
-            throw new ProtocolAdapterException(
-                    "No GetResult received while retrieving current MBUS master capture time.");
-        }
-
-        if (getResultList.size() != 3) {
-            LOGGER.info("Expected 3 GetResult while retrieving current MBUS master capture time, got "
-                    + getResultList.size());
-        }
     }
 
     private ObisCode masterValueForChannel(final Channel channel) throws ProtocolAdapterException {
