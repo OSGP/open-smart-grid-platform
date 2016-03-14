@@ -96,9 +96,12 @@ import com.alliander.osgp.domain.core.exceptions.ArgumentNullOrEmptyException;
 import com.alliander.osgp.domain.core.exceptions.NotAuthorizedException;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.DeviceFunctionMappingRepository;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.EventRepository;
 import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunctionGroup;
 import com.alliander.osgp.logging.domain.repositories.DeviceLogItemRepository;
 import com.alliander.osgp.oslp.Oslp.LightType;
@@ -196,6 +199,8 @@ public class VerifyAuthorizeDeviceFunctionSteps {
     @Autowired
     private DeviceAuthorizationRepository authorizationRepositoryMock;
     @Autowired
+    private DeviceFunctionMappingRepository deviceFunctionMappingRepositoryMock;
+    @Autowired
     private OrganisationRepository organisationRepositoryMock;
     @Autowired
     private DeviceLogItemRepository logItemRepositoryMock;
@@ -239,20 +244,79 @@ public class VerifyAuthorizeDeviceFunctionSteps {
         this.organisation = new OrganisationBuilder().withOrganisationIdentification(organisationIdentification)
                 .withFunctionGroup(PlatformFunctionGroup.USER).build();
 
-        LOGGER.info("Device Functiongroup: {}",
-                com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.valueOf(group.toUpperCase()));
-        this.deviceAuthorization = new DeviceAuthorizationBuilder()
-        .withDevice(this.device)
-        .withOrganisation(this.organisation)
-        .withFunctionGroup(
-                com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup.valueOf(group.toUpperCase()))
-                .build();
+        final DeviceFunctionGroup deviceFunctionGroup = DeviceFunctionGroup.valueOf(group.toUpperCase());
+
+        LOGGER.info("Device Functiongroup: {}", deviceFunctionGroup);
+
+        this.deviceAuthorization = new DeviceAuthorizationBuilder().withDevice(this.device)
+                .withOrganisation(this.organisation).withFunctionGroup(deviceFunctionGroup).build();
 
         when(
                 this.organisationRepositoryMock.findByOrganisationIdentification(this.organisation
                         .getOrganisationIdentification())).thenReturn(this.organisation);
         when(this.authorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device)).thenReturn(
                 Arrays.asList(this.deviceAuthorization));
+
+        when(this.deviceFunctionMappingRepositoryMock.findByDeviceFunctionGroups(any(ArrayList.class))).thenReturn(
+                this.getDeviceFunctions(deviceFunctionGroup));
+
+    }
+
+    private List<DeviceFunction> getDeviceFunctions(final DeviceFunctionGroup deviceFunctionGroup) {
+        final List<DeviceFunction> deviceFunctions = new ArrayList<>();
+        deviceFunctions.add(DeviceFunction.GET_DEVICE_AUTHORIZATION);
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER) {
+            deviceFunctions.add(DeviceFunction.SET_DEVICE_AUTHORIZATION);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER || deviceFunctionGroup == DeviceFunctionGroup.AD_HOC) {
+            deviceFunctions.add(DeviceFunction.SET_LIGHT);
+            deviceFunctions.add(DeviceFunction.GET_STATUS);
+            deviceFunctions.add(DeviceFunction.GET_LIGHT_STATUS);
+            deviceFunctions.add(DeviceFunction.GET_TARIFF_STATUS);
+            deviceFunctions.add(DeviceFunction.RESUME_SCHEDULE);
+            deviceFunctions.add(DeviceFunction.SET_REBOOT);
+            deviceFunctions.add(DeviceFunction.SET_TRANSITION);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER || deviceFunctionGroup == DeviceFunctionGroup.INSTALLATION) {
+            deviceFunctions.add(DeviceFunction.START_SELF_TEST);
+            deviceFunctions.add(DeviceFunction.STOP_SELF_TEST);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER || deviceFunctionGroup == DeviceFunctionGroup.MANAGEMENT) {
+            deviceFunctions.add(DeviceFunction.SET_EVENT_NOTIFICATIONS);
+            deviceFunctions.add(DeviceFunction.GET_EVENT_NOTIFICATIONS);
+            deviceFunctions.add(DeviceFunction.REMOVE_DEVICE);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER
+                || deviceFunctionGroup == DeviceFunctionGroup.CONFIGURATION) {
+            deviceFunctions.add(DeviceFunction.SET_CONFIGURATION);
+            deviceFunctions.add(DeviceFunction.GET_CONFIGURATION);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER || deviceFunctionGroup == DeviceFunctionGroup.FIRMWARE) {
+            deviceFunctions.add(DeviceFunction.UPDATE_FIRMWARE);
+            deviceFunctions.add(DeviceFunction.GET_FIRMWARE_VERSION);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER || deviceFunctionGroup == DeviceFunctionGroup.MONITORING) {
+            deviceFunctions.add(DeviceFunction.GET_ACTUAL_POWER_USAGE);
+            deviceFunctions.add(DeviceFunction.GET_POWER_USAGE_HISTORY);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER || deviceFunctionGroup == DeviceFunctionGroup.SCHEDULING) {
+            deviceFunctions.add(DeviceFunction.SET_LIGHT_SCHEDULE);
+        }
+
+        if (deviceFunctionGroup == DeviceFunctionGroup.OWNER
+                || deviceFunctionGroup == DeviceFunctionGroup.TARIFF_SCHEDULING) {
+            deviceFunctions.add(DeviceFunction.SET_TARIFF_SCHEDULE);
+        }
+
+        return deviceFunctions;
     }
 
     @DomainStep("a different organisation (.*) who has no rights")
@@ -777,7 +841,8 @@ public class VerifyAuthorizeDeviceFunctionSteps {
                 new DeviceInstallationMapper());
         this.coreDeviceManagementEndpoint = new DeviceManagementEndpoint(this.deviceManagementService,
                 this.deviceManagementMapper);
-        this.coreFirmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService, new FirmwareManagementMapper());
+        this.coreFirmwareManagementEndpoint = new FirmwareManagementEndpoint(this.firmwareManagementService,
+                new FirmwareManagementMapper());
         this.lightDeviceMonitoringEndpoint = new DeviceMonitoringEndpoint(this.deviceMonitoringService,
                 new DeviceMonitoringMapper());
 
