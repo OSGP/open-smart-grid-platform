@@ -83,6 +83,7 @@
     <netty.version>3.9.4.Final</netty.version>
     <openmuc.jdlms.version>0.11.4</openmuc.jdlms.version>
     <javax.inject.version>1</javax.inject.version>
+    <license.maven.plugin>2.11</license.maven.plugin>
   </properties>
 
   <repositories>
@@ -407,6 +408,12 @@
         <version>${logback.ext.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${license.maven.plugin}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -446,6 +453,30 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jxr-plugin</artifactId>
           <version>${jxr.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>${license.maven.plugin}</version>
+          <configuration>
+            <header>${license.maven.plugin.location}</header>
+            <properties>
+              <owner>Mycila</owner>
+              <email>mathieu.carbou@gmail.com</email>
+            </properties>
+            <excludes>
+              <exclude>**/README.md</exclude>
+              <exclude>src/test/resources/**</exclude>
+              <exclude>src/main/resources/**</exclude>
+            </excludes>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
