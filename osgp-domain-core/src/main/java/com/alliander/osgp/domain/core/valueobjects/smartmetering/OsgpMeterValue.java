@@ -1,5 +1,6 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -7,7 +8,12 @@ import java.math.BigDecimal;
  *
  *
  */
-public class OsgpMeterValue {
+public class OsgpMeterValue implements Serializable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public OsgpMeterValue(final BigDecimal value, final OsgpUnit osgpUnit) {
         super();
