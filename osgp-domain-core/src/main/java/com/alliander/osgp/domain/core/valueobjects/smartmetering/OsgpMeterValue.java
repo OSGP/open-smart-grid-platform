@@ -10,13 +10,9 @@ import java.math.BigDecimal;
  */
 public class OsgpMeterValue implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public OsgpMeterValue(final BigDecimal value, final OsgpUnit osgpUnit) {
-        super();
         this.value = value;
         this.osgpUnit = osgpUnit;
     }
