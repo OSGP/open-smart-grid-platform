@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
@@ -38,15 +39,13 @@ public class GetSmsDetailsResponseMessageProcessor extends OsgpCoreResponseMessa
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         final SmsDetails smsDetails = (SmsDetails) responseMessage.getDataObject();
 
-        this.adhocService.handleGetSmsDetailsResponse(deviceIdentification, organisationIdentification, correlationUid,
-                messageType, responseMessage.getResult(), osgpException, smsDetails,
-                responseMessage.getMessagePriority());
+        this.adhocService.handleGetSmsDetailsResponse(deviceMessageMetadata, responseMessage.getResult(),
+                osgpException, smsDetails);
     }
 
 }

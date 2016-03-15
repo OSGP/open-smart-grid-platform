@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
@@ -31,13 +32,11 @@ public class SetConfigurationObjectRequestMessageProcessor extends WebServiceReq
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
         final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) dataObject;
 
-        this.configurationService.setConfigurationObject(organisationIdentification, deviceIdentification,
-                correlationUid, setConfigurationObjectRequest, messageType, messagePriority);
+        this.configurationService.setConfigurationObject(deviceMessageMetadata, setConfigurationObjectRequest);
     }
 }

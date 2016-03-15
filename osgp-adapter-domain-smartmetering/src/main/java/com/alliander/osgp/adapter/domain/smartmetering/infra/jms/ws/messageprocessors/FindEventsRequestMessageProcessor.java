@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ManagementService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
@@ -29,12 +30,10 @@ public class FindEventsRequestMessageProcessor extends WebServiceRequestMessageP
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
-                    throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final FindEventsQueryMessageDataContainer data = (FindEventsQueryMessageDataContainer) dataObject;
-        this.managementService.findEvents(organisationIdentification, deviceIdentification, correlationUid,
-                messageType, data, messagePriority);
+        this.managementService.findEvents(deviceMessageMetadata, data);
     }
 }

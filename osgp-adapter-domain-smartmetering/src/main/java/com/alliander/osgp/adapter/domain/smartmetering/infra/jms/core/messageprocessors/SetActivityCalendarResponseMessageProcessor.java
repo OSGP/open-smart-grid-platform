@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -35,14 +36,12 @@ public class SetActivityCalendarResponseMessageProcessor extends OsgpCoreRespons
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         final String resultString = (String) responseMessage.getDataObject();
 
-        this.configurationService.handleSetActivityCalendarResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException, resultString,
-                responseMessage.getMessagePriority());
+        this.configurationService.handleSetActivityCalendarResponse(deviceMessageMetadata, responseMessage.getResult(),
+                osgpException, resultString);
     }
 }

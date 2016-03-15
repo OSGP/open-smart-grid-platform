@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
@@ -30,19 +31,17 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)
      */
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
         final AlarmNotifications alarmNotifications = (AlarmNotifications) dataObject;
 
-        this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
-                correlationUid, alarmNotifications, messageType, messagePriority);
+        this.configurationService.setAlarmNotifications(deviceMessageMetadata, alarmNotifications);
     }
 }

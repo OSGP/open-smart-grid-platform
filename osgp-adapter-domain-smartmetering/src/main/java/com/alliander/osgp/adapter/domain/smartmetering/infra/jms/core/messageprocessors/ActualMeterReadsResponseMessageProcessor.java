@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
@@ -36,21 +37,18 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         if (responseMessage.getDataObject() instanceof ActualMeterReads) {
             final ActualMeterReads actualMeterReadsDto = (ActualMeterReads) responseMessage.getDataObject();
 
-            this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessage.getResult(), osgpException, actualMeterReadsDto,
-                    responseMessage.getMessagePriority());
+            this.monitoringService.handleActualMeterReadsResponse(deviceMessageMetadata, responseMessage.getResult(),
+                    osgpException, actualMeterReadsDto);
         } else if (responseMessage.getDataObject() instanceof ActualMeterReadsGas) {
             final ActualMeterReadsGas meterReadsGas = (ActualMeterReadsGas) responseMessage.getDataObject();
-            this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessage.getResult(), osgpException, meterReadsGas,
-                    responseMessage.getMessagePriority());
+            this.monitoringService.handleActualMeterReadsResponse(deviceMessageMetadata, responseMessage.getResult(),
+                    osgpException, meterReadsGas);
         }
     }
 }

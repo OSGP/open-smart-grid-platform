@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.NotificationMapper;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -29,11 +30,10 @@ public class NotificationService {
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-    public void handlePushNotificationAlarm(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final PushNotificationAlarm pushNotificationAlarm,
-            final int messagePriority) {
+    public void handlePushNotificationAlarm(final DeviceMessageMetadata deviceMessageMetadata,
+            final PushNotificationAlarm pushNotificationAlarm) {
 
-        LOGGER.info("handlePushNotificationAlarm for MessageType: {}", messageType);
+        LOGGER.info("handlePushNotificationAlarm for MessageType: {}", deviceMessageMetadata.getMessageType());
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm pushNotificationAlarmDomain = this.notificationMapper
                 .map(pushNotificationAlarm,
@@ -45,7 +45,9 @@ public class NotificationService {
          * earlier web service requests.
          */
         this.webServiceResponseMessageSender.send(
-                new ResponseMessage(correlationUid, organisationIdentification, deviceIdentification,
-                        ResponseMessageResultType.OK, null, pushNotificationAlarmDomain, messagePriority), messageType);
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
+                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                        ResponseMessageResultType.OK, null, pushNotificationAlarmDomain, deviceMessageMetadata
+                                .getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 }

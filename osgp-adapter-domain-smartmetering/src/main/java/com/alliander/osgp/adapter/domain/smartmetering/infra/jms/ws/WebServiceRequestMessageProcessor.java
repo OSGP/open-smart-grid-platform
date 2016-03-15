@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -90,43 +91,35 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
                 this.deviceFunction.name(), this);
     }
 
-    protected abstract void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, int messagePriority)
+    protected abstract void handleMessage(DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException;
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
         Object dataObject = null;
-        final int messagePriority = message.getJMSPriority();
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
+                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
+                message.getJMSType(), message.getJMSPriority());
 
         try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             dataObject = message.getObject();
-
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug("correlationUid: {}", deviceMessageMetadata.getCorrelationUid());
+            LOGGER.debug("messageType: {}", deviceMessageMetadata.getMessageType());
+            LOGGER.debug("organisationIdentification: {}", deviceMessageMetadata.getOrganisationIdentification());
+            LOGGER.debug("deviceIdentification: {}", deviceMessageMetadata.getDeviceIdentification());
             return;
         }
 
         try {
-            LOGGER.info("Calling application service function: {}", messageType);
-            this.handleMessage(organisationIdentification, deviceIdentification, correlationUid, dataObject,
-                    messageType, messagePriority);
+            LOGGER.info("Calling application service function: {}", deviceMessageMetadata.getMessageType());
+            this.handleMessage(deviceMessageMetadata, dataObject);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType,
-                    messagePriority);
+            this.handleError(e, deviceMessageMetadata);
         }
     }
 
@@ -135,23 +128,17 @@ public abstract class WebServiceRequestMessageProcessor implements MessageProces
      * containing the exception to the web-service-adapter.
      *
      * @param e
-     *            The exception.
-     * @param correlationUid
-     *            The correlation UID.
-     * @param organisationIdentification
-     *            The organisation identification.
-     * @param deviceIdentification
-     *            The device identification.
-     * @param messageType
-     *            The message type.
+     *            The exception
+     * @param deviceMessageMetadata
+     *            The {@link DeviceMessageMetadata}
      */
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String messageType, final int messagePriority) {
-        LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), messageType);
+    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
+        LOGGER.info("handeling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
         final OsgpException osgpException = this.ensureOsgpException(e);
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, null, messagePriority),
-                messageType);
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                ResponseMessageResultType.NOT_OK, osgpException, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
     }
 
     private OsgpException ensureOsgpException(final Exception e) {

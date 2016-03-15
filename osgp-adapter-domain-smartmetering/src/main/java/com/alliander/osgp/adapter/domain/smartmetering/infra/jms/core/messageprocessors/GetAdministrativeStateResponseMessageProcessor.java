@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
@@ -33,14 +34,12 @@ public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResp
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         final AdministrativeStatusType administrativeStatusTypeDto = (AdministrativeStatusType) responseMessage
                 .getDataObject();
-        this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
-                administrativeStatusTypeDto, responseMessage.getMessagePriority());
+        this.configurationService.handleGetAdministrativeStatusResponse(deviceMessageMetadata,
+                responseMessage.getResult(), osgpException, administrativeStatusTypeDto);
     }
 }

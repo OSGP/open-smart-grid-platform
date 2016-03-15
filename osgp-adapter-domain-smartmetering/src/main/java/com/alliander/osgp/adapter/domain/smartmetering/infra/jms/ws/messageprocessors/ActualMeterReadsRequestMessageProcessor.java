@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
@@ -29,13 +30,11 @@ public class ActualMeterReadsRequestMessageProcessor extends WebServiceRequestMe
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
         final ActualMeterReadsQuery actualMeterReadsRequest = (ActualMeterReadsQuery) dataObject;
 
-        this.monitoringService.requestActualMeterReads(organisationIdentification, deviceIdentification,
-                correlationUid, actualMeterReadsRequest, messageType, messagePriority);
+        this.monitoringService.requestActualMeterReads(deviceMessageMetadata, actualMeterReadsRequest);
     }
 }

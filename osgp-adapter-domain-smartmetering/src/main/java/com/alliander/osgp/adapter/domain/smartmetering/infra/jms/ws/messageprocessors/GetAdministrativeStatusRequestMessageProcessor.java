@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ConfigurationService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
@@ -29,14 +30,12 @@ public class GetAdministrativeStatusRequestMessageProcessor extends WebServiceRe
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
         final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) dataObject;
 
-        this.configurationService.getAdministrativeStatus(organisationIdentification, deviceIdentification,
-                correlationUid, administrativeStatusType, messageType, messagePriority);
+        this.configurationService.getAdministrativeStatus(deviceMessageMetadata, administrativeStatusType);
     }
 
 }

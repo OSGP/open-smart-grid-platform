@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.NotificationService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.OsgpCoreRequestMessageProcessor;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -31,12 +32,10 @@ public class PushNotificationAlarmRequestMessageProcessor extends OsgpCoreReques
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-        this.notificationService.handlePushNotificationAlarm(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, (PushNotificationAlarm) ((RequestMessage) dataObject).getRequest(),
-                messagePriority);
+        this.notificationService.handlePushNotificationAlarm(deviceMessageMetadata,
+                (PushNotificationAlarm) ((RequestMessage) dataObject).getRequest());
     }
 }

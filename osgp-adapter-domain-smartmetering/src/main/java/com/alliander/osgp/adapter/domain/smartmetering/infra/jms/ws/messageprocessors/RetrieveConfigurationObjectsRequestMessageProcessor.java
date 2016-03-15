@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
@@ -30,14 +31,12 @@ public class RetrieveConfigurationObjectsRequestMessageProcessor extends WebServ
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType, final int messagePriority)
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
         final RetrieveConfigurationObjectsRequest request = (RetrieveConfigurationObjectsRequest) dataObject;
 
-        this.adhocService.retrieveConfigurationObjects(organisationIdentification, deviceIdentification,
-                correlationUid, request, messageType, messagePriority);
+        this.adhocService.retrieveConfigurationObjects(deviceMessageMetadata, request);
     }
 
 }

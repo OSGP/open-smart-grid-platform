@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -35,12 +36,10 @@ public class RetrieveConfigurationObjectsResponseMessageProcessor extends OsgpCo
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
-        this.adhocService.handleRetrieveConfigurationObjectsResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException,
-                (String) responseMessage.getDataObject(), responseMessage.getMessagePriority());
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
+        this.adhocService.handleRetrieveConfigurationObjectsResponse(deviceMessageMetadata,
+                responseMessage.getResult(), osgpException, (String) responseMessage.getDataObject());
 
     }
 

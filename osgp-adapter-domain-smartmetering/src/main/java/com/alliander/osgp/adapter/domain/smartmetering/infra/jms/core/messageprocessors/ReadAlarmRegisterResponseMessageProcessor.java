@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
@@ -33,14 +34,12 @@ public class ReadAlarmRegisterResponseMessageProcessor extends OsgpCoreResponseM
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         final AlarmRegister alarmRegisterDto = (AlarmRegister) responseMessage.getDataObject();
 
-        this.monitoringService.handleReadAlarmRegisterResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException, alarmRegisterDto,
-                responseMessage.getMessagePriority());
+        this.monitoringService.handleReadAlarmRegisterResponse(deviceMessageMetadata, responseMessage.getResult(),
+                osgpException, alarmRegisterDto);
     }
 }

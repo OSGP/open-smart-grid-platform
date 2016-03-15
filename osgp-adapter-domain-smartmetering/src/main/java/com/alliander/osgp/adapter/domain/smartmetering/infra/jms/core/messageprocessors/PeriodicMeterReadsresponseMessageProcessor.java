@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
+import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.DeviceMessageMetadata;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -38,24 +39,21 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainer) {
             final PeriodicMeterReadsContainer periodicMeterReadsContainer = (PeriodicMeterReadsContainer) responseMessage
                     .getDataObject();
 
-            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessage.getResult(), osgpException,
-                    periodicMeterReadsContainer, responseMessage.getMessagePriority());
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceMessageMetadata, responseMessage.getResult(),
+                    osgpException, periodicMeterReadsContainer);
         } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadsContainerGas) {
             final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = (PeriodicMeterReadsContainerGas) responseMessage
                     .getDataObject();
 
-            this.monitoringService.handlePeriodicMeterReadsresponse(deviceIdentification, organisationIdentification,
-                    correlationUid, messageType, responseMessage.getResult(), osgpException,
-                    periodicMeterReadsContainerGas, responseMessage.getMessagePriority());
+            this.monitoringService.handlePeriodicMeterReadsresponse(deviceMessageMetadata, responseMessage.getResult(),
+                    osgpException, periodicMeterReadsContainerGas);
         }
     }
 }
