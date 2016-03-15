@@ -70,7 +70,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
         private Integer messagePriority;
 
         public Builder() {
-
+            // empty constructor
         }
 
         public Builder messageType(final SmartMeteringRequestMessageType messageType) {

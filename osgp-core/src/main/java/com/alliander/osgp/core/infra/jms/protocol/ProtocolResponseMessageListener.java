@@ -73,28 +73,27 @@ public class ProtocolResponseMessageListener implements MessageListener {
         final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(objectMessage
                 .getStringProperty(Constants.RESULT));
-        final Serializable dataObject = responseMessage.getDataObject() == null ? null : responseMessage
-                .getDataObject();
+        final Serializable dataObject = responseMessage.getDataObject();
         final boolean scheduled = objectMessage.propertyExists(Constants.IS_SCHEDULED) ? objectMessage
                 .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-        final int retryCount = objectMessage.getIntProperty(Constants.RETRY_COUNT);
-        final int messagePriority = message.getJMSPriority();
+                final int retryCount = objectMessage.getIntProperty(Constants.RETRY_COUNT);
+                final int messagePriority = message.getJMSPriority();
 
-        // @formatter:off
-        return new ProtocolResponseMessage.Builder()
-        .domain(domain)
-        .domainVersion(domainVersion)
-        .messageType(messageType)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
-        .result(responseMessageResultType)
-        .osgpException(osgpException)
-        .dataObject(dataObject)
-        .scheduled(scheduled)
-        .retryCount(retryCount)
-        .messagePriority(messagePriority)
-        .build();
-        // @formatter:on
+                // @formatter:off
+                return new ProtocolResponseMessage.Builder()
+                .domain(domain)
+                .domainVersion(domainVersion)
+                .messageType(messageType)
+                .correlationUid(correlationUid)
+                .organisationIdentification(organisationIdentification)
+                .deviceIdentification(deviceIdentification)
+                .result(responseMessageResultType)
+                .osgpException(osgpException)
+                .dataObject(dataObject)
+                .scheduled(scheduled)
+                .retryCount(retryCount)
+                .messagePriority(messagePriority)
+                .build();
+                // @formatter:on
     }
 }

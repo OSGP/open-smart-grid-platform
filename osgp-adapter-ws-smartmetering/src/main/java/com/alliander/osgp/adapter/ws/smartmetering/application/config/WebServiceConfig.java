@@ -284,7 +284,6 @@ public class WebServiceConfig {
         methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringConfigurationMarshallingPayloadMethodProcessor());
-        // methodArgumentResolvers.add(new SoapMethodArgumentResolver());
 
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(ORGANISATION_IDENTIFICATION_CONTEXT,
                 OrganisationIdentification.class));
