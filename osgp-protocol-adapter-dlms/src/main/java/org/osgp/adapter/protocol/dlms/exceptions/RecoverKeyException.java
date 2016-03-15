@@ -7,27 +7,29 @@
  */
 package org.osgp.adapter.protocol.dlms.exceptions;
 
-public class ConnectionException extends RuntimeException {
-    private static final long serialVersionUID = -4527258679522467801L;
+public class RecoverKeyException extends RuntimeException {
 
-    public ConnectionException() {
+    private static final long serialVersionUID = -837112027051155414L;
+
+    public RecoverKeyException() {
         super();
     }
 
-    public ConnectionException(final String message, final Throwable cause, final boolean enableSuppression,
+    public RecoverKeyException(final String message, final Throwable cause, final boolean enableSuppression,
             final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public ConnectionException(final String message, final Throwable cause) {
+    public RecoverKeyException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public ConnectionException(final String message) {
+    public RecoverKeyException(final String message) {
         super(message);
     }
 
-    public ConnectionException(final Throwable cause) {
+    public RecoverKeyException(final Throwable cause) {
         super(cause);
     }
+
 }

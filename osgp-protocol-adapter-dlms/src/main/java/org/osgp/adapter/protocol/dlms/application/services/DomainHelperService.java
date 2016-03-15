@@ -68,15 +68,19 @@ public class DomainHelperService {
     }
 
     public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws FunctionalException,
-    SessionProviderException {
-        final String deviceIdentification = messageMetadata.getDeviceIdentification();
+            SessionProviderException {
+        return this.findDlmsDevice(messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
+    }
+
+    public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
+            throws FunctionalException, SessionProviderException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, COMPONENT_TYPE,
                     new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification));
         }
 
-        dlmsDevice.setIpAddress(this.getDeviceIpAddress(dlmsDevice, messageMetadata.getIpAddress()));
+        dlmsDevice.setIpAddress(this.getDeviceIpAddress(dlmsDevice, ipAddress));
 
         return dlmsDevice;
     }

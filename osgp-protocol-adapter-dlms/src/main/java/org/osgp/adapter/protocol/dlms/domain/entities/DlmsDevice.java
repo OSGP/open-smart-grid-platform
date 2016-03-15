@@ -18,6 +18,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
 
 @Entity
@@ -49,8 +51,8 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean hls5Active;
 
-    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.MERGE, CascadeType.PERSIST,
-            CascadeType.REFRESH })
+    @OneToMany(mappedBy = "dlmsDevice", fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
     private List<SecurityKey> securityKeys = new ArrayList<>();
 
     @Column
@@ -225,9 +227,24 @@ public class DlmsDevice extends AbstractEntity {
         return null;
     }
 
-    public SecurityKey getNewSecurityKey(final SecurityKeyType securityKeyType) {
+    private List<SecurityKey> getNewSecurityKeys() {
+        final List<SecurityKey> keys = new ArrayList<>();
         for (final SecurityKey securityKey : this.securityKeys) {
-            if (securityKey.getSecurityKeyType().equals(securityKeyType) && securityKey.getValidFrom() == null) {
+            if (securityKey.getValidFrom() == null) {
+                keys.add(securityKey);
+            }
+        }
+        return keys;
+    }
+
+    public boolean hasNewSecurityKey() {
+        return !this.getNewSecurityKeys().isEmpty();
+    }
+
+    public SecurityKey getNewSecurityKey(final SecurityKeyType securityKeyType) {
+        final List<SecurityKey> keys = this.getNewSecurityKeys();
+        for (final SecurityKey securityKey : keys) {
+            if (securityKey.getSecurityKeyType().equals(securityKeyType)) {
                 return securityKey;
             }
         }
@@ -260,5 +277,44 @@ public class DlmsDevice extends AbstractEntity {
         final Date now = new Date();
         final Date validTo = securityKey.getValidTo();
         return validTo != null && validTo.before(now);
+    }
+
+    /**
+     * Removes keys that have never been valid. Caution: only execute this
+     * method when valid keys have been proven to work with the meter.
+     * Otherwise, these invalid keys could hold keys that are present on the
+     * meter
+     */
+    public void discardInvalidKeys() {
+        final List<SecurityKey> keys = this.getNewSecurityKeys();
+        if (!keys.isEmpty()) {
+            this.getSecurityKeys().removeAll(keys);
+        }
+    }
+
+    /**
+     * Promotes the existing invalid (or never valid) key to be a valid key, and
+     * makes the currently valid key a key of the past.
+     */
+    public void promoteInvalidKey() {
+        if (this.getNewSecurityKeys().size() > 1) {
+            throw new IllegalStateException("There may not be more than one new, never valid, security key.");
+        }
+
+        final SecurityKeyType[] keyTypes = new SecurityKeyType[] { SecurityKeyType.E_METER_AUTHENTICATION,
+                SecurityKeyType.E_METER_ENCRYPTION };
+
+        for (final SecurityKeyType keyType : keyTypes) {
+            final SecurityKey key = this.getNewSecurityKey(keyType);
+            if (key != null && key.getValidFrom() == null) {
+                this.promoteInvalidKey(key);
+            }
+        }
+    }
+
+    private void promoteInvalidKey(final SecurityKey promoteKey) {
+        final Date now = new Date();
+        this.getValidSecurityKey(promoteKey.getSecurityKeyType()).setValidTo(now);
+        promoteKey.setValidFrom(now);
     }
 }
