@@ -11,13 +11,9 @@ import java.math.BigDecimal;
  */
 public class DlmsMeterValue implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
 
     public DlmsMeterValue(final BigDecimal value, final DlmsUnit dlmsUnit) {
-        super();
         this.value = value;
         this.dlmsUnit = dlmsUnit;
     }
