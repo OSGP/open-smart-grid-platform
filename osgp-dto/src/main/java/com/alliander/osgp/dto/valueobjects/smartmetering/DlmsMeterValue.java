@@ -1,5 +1,6 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -8,7 +9,12 @@ import java.math.BigDecimal;
  * @author dev
  *
  */
-public class DlmsMeterValue {
+public class DlmsMeterValue implements Serializable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
     public DlmsMeterValue(final BigDecimal value, final DlmsUnit dlmsUnit) {
         super();
