@@ -42,7 +42,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
+        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -60,7 +60,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
     private static final ObisCode OBIS_CODE_MBUS_3_SCALER_UNIT = new ObisCode("0.3.24.2.1.255");
     private static final ObisCode OBIS_CODE_MBUS_4_SCALER_UNIT = new ObisCode("0.4.24.2.1.255");
     private static final int RESULT_INDEX_SCALER_UNIT = 1;
-    private static final int CLASS_ID_REGISTER = 3;
+    private static final int CLASS_ID_EXTENDED_REGISTER = 4;
 
     private static final int ACCESS_SELECTOR_RANGE_DESCRIPTOR = 1;
 
@@ -227,12 +227,14 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         /*
          * workaround for a problem when using with_list and retrieving a
          * profile buffer, this will be returned erroneously:
-         * 
+         *
          * 1 an empty list 2 the profile buffer 3 a null value 4 the scaler unit
          */
-        final List<GetResult> getResultList = this.dlmsHelperService
-                .getAndCheck(conn, device, "retrieve periodic meter reads for " + periodType + ", channel "
-                        + periodicMeterReadsQuery.getChannel(), profileBufferAndScalerUnit);
+        final List<GetResult> getResultList = new ArrayList<GetResult>(profileBufferAndScalerUnit.length);
+        for (final AttributeAddress address : profileBufferAndScalerUnit) {
+            getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
+                    + periodType + ", channel " + periodicMeterReadsQuery.getChannel(), address));
+        }
 
         final List<PeriodicMeterReadsGas> periodicMeterReads = new ArrayList<>();
 
@@ -296,7 +298,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsGas> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -317,7 +319,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).resultData(), "gasValue"), captureTime,
-                amrProfileStatusCode);
+                        amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -353,7 +355,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         final PeriodicMeterReadsGas nextPeriodicMeterReads = new PeriodicMeterReadsGas(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).resultData(), "gasValue"), captureTime,
-                        amrProfileStatusCode);
+                amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -407,7 +409,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
 
     private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodType periodType, final Channel channel,
             final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectiveAccessSupported)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         SelectiveAccessDescription access = null;
 
@@ -432,34 +434,28 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         default:
             throw new ProtocolAdapterException(String.format("periodtype %s not supported", periodType));
         }
-        profileBuffer.addAll(this.getScalerUnit(channel));
+        profileBuffer.add(this.getScalerUnit(channel));
         return profileBuffer.toArray(new AttributeAddress[profileBuffer.size()]);
     }
 
-    private List<AttributeAddress> getScalerUnit(final Channel channel) throws ProtocolAdapterException {
+    private AttributeAddress getScalerUnit(final Channel channel) throws ProtocolAdapterException {
 
-        final List<AttributeAddress> scalerUnit = new ArrayList<AttributeAddress>();
         switch (channel) {
         case ONE:
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MBUS_1_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            break;
+            return new AttributeAddress(CLASS_ID_EXTENDED_REGISTER, OBIS_CODE_MBUS_1_SCALER_UNIT,
+                    ATTRIBUTE_ID_SCALER_UNIT);
         case TWO:
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MBUS_2_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            break;
+            return new AttributeAddress(CLASS_ID_EXTENDED_REGISTER, OBIS_CODE_MBUS_2_SCALER_UNIT,
+                    ATTRIBUTE_ID_SCALER_UNIT);
         case THREE:
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MBUS_3_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            break;
+            return new AttributeAddress(CLASS_ID_EXTENDED_REGISTER, OBIS_CODE_MBUS_3_SCALER_UNIT,
+                    ATTRIBUTE_ID_SCALER_UNIT);
         case FOUR:
-            scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_MBUS_4_SCALER_UNIT,
-                    ATTRIBUTE_ID_SCALER_UNIT));
-            break;
+            return new AttributeAddress(CLASS_ID_EXTENDED_REGISTER, OBIS_CODE_MBUS_4_SCALER_UNIT,
+                    ATTRIBUTE_ID_SCALER_UNIT);
         default:
             throw new ProtocolAdapterException(String.format("channel %s not supported", channel));
         }
-        return scalerUnit;
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final Channel channel,
@@ -606,7 +602,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainerGas> {
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
                 DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                DataObject.newUInteger16Data(0))));
+                        DataObject.newUInteger16Data(0))));
     }
 
 }

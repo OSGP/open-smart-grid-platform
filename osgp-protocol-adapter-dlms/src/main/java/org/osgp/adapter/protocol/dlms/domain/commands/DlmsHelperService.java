@@ -68,6 +68,17 @@ public class DlmsHelperService {
 
     public static final int MILLISECONDS_PER_MINUTE = 60000;
 
+    /**
+     * get results from the meter and check if the number of results equals the
+     * number of attribute addresses provided.
+     * 
+     * @param conn
+     * @param device
+     * @param description
+     * @param params
+     * @return
+     * @throws ProtocolAdapterException
+     */
     public List<GetResult> getAndCheck(final ClientConnection conn, final DlmsDevice device, final String description,
             final AttributeAddress... params) throws ProtocolAdapterException {
         final List<GetResult> getResults = this.getWithList(conn, device, params);
@@ -82,7 +93,8 @@ public class DlmsHelperService {
         }
 
         if (getResultList.size() != expectedResults) {
-            LOGGER.info("Expected " + expectedResults + " GetResults: " + description + ", got " + getResultList.size());
+            throw new ProtocolAdapterException("Expected " + expectedResults + " GetResults: " + description + ", got "
+                    + getResultList.size());
         }
     }
 
