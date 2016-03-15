@@ -259,11 +259,12 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
                     throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
-        final DateTime bufferedDateTime = cosemDateTime.asDateTime();
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.readDateTime(clock, "Clock from " + periodType
+                + " buffer gas");
+        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
         if (bufferedDateTime == null) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime.toString()
+            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime
                     + "), because the date does not match the given period, since it is not fully specified: ["
                     + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
             return;
@@ -414,14 +415,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     }
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final Channel channel,
-            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectiveAccessSupported)
+            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported)
                     throws ProtocolAdapterException {
 
-        SelectiveAccessDescription access = null;
-
-        if (isSelectiveAccessSupported) {
-            access = this.getSelectiveAccessDescription(channel, periodType, beginDateTime, endDateTime);
-        }
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(channel, periodType,
+                beginDateTime, endDateTime, isSelectingValuesSupported);
 
         final AttributeAddress profileBuffer;
         switch (periodType) {
@@ -444,7 +442,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final Channel channel,
-            final PeriodType periodType, final DateTime beginDateTime, final DateTime endDateTime) {
+            final PeriodType periodType, final DateTime beginDateTime, final DateTime endDateTime,
+            final boolean isSelectingValuesSupported) {
 
         final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
 
@@ -459,6 +458,19 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         final DataObject toValue = this.dlmsHelperService.asDataObject(endDateTime);
 
         final List<DataObject> objectDefinitions = new ArrayList<>();
+        if (isSelectingValuesSupported) {
+            this.addSelectedValues(channel, periodType, objectDefinitions);
+        }
+        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
+
+        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
+                toValue, selectedValues));
+
+        return new SelectiveAccessDescription(accessSelector, accessParameter);
+    }
+
+    private void addSelectedValues(final Channel channel, final PeriodType periodType,
+            final List<DataObject> objectDefinitions) {
 
         switch (periodType) {
         case INTERVAL:
@@ -474,18 +486,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         default:
             throw new AssertionError("Unknown PeriodType: " + periodType);
         }
-
-        /*
-         * As long as specifying a subset of captured objects from the buffer
-         * through selectedValues does not work, retrieve all captured objects
-         * by setting selectedValues to an empty array.
-         */
-        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
-
-        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
-                toValue, selectedValues));
-
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
 
     private void addSelectedValuesForMonthly(final List<DataObject> objectDefinitions, final Channel channel) {
@@ -512,8 +512,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         objectDefinitions.add(this.dlmsHelperService.getClockDefinition());
 
-        this.addMBusMaterValue1(objectDefinitions, channel);
-        this.addMBusMaterValue1CaptureTime(objectDefinitions, channel);
+        this.addMBusMasterValue1(objectDefinitions, channel);
+        this.addMBusMasterValue1CaptureTime(objectDefinitions, channel);
     }
 
     private void addSelectedValuesForDaily(final List<DataObject> objectDefinitions, final Channel channel) {
@@ -543,8 +543,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
 
         objectDefinitions.add(this.dlmsHelperService.getAMRProfileDefinition());
 
-        this.addMBusMaterValue1(objectDefinitions, channel);
-        this.addMBusMaterValue1CaptureTime(objectDefinitions, channel);
+        this.addMBusMasterValue1(objectDefinitions, channel);
+        this.addMBusMasterValue1CaptureTime(objectDefinitions, channel);
     }
 
     /**
@@ -572,7 +572,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
         return amrProfileStatusCode;
     }
 
-    private void addMBusMaterValue1(final List<DataObject> objectDefinitions, final Channel channel) {
+    private void addMBusMasterValue1(final List<DataObject> objectDefinitions, final Channel channel) {
         // {4,0-x.24.2.1.255,2,0} - M-Bus Master Value 1 Channel x
         // where x is the channel
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
@@ -581,7 +581,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor extends
                         .newUInteger16Data(0))));
     }
 
-    private void addMBusMaterValue1CaptureTime(final List<DataObject> objectDefinitions, final Channel channel) {
+    private void addMBusMasterValue1CaptureTime(final List<DataObject> objectDefinitions, final Channel channel) {
         // {4,0-x.24.2.1.255,2,0} - M-Bus Master Value 1 Channel x
         // where x is the channel
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),

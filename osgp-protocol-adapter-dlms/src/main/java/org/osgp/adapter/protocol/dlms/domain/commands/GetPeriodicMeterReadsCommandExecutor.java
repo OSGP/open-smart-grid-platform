@@ -135,11 +135,12 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
             final List<DataObject> bufferedObjects) throws ProtocolAdapterException {
 
         final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
-        final DateTime bufferedDateTime = cosemDateTime.asDateTime();
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.readDateTime(clock, "Clock from " + periodType
+                + " buffer");
+        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
         if (bufferedDateTime == null) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime.toString()
+            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime
                     + "), because the date does not match the given period, since it is not fully specified: ["
                     + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
             return;
@@ -267,13 +268,10 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
     }
 
     private AttributeAddress getProfileBuffer(final PeriodType periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final boolean isSelectiveAccessSupported) throws ProtocolAdapterException {
+            final DateTime endDateTime, final boolean isSelectingValuesSupported) throws ProtocolAdapterException {
 
-        SelectiveAccessDescription access = null;
-
-        if (isSelectiveAccessSupported) {
-            access = this.getSelectiveAccessDescription(periodType, beginDateTime, endDateTime);
-        }
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
+                endDateTime, isSelectingValuesSupported);
 
         final AttributeAddress profileBuffer;
         switch (periodType) {
@@ -296,7 +294,7 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final PeriodType periodType,
-            final DateTime beginDateTime, final DateTime endDateTime) {
+            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported) {
 
         final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
 
@@ -316,6 +314,18 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
          * to retrieve from the buffer.
          */
         final List<DataObject> objectDefinitions = new ArrayList<>();
+        if (isSelectingValuesSupported) {
+            this.addSelectedValues(periodType, objectDefinitions);
+        }
+        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
+
+        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
+                toValue, selectedValues));
+
+        return new SelectiveAccessDescription(accessSelector, accessParameter);
+    }
+
+    private void addSelectedValues(final PeriodType periodType, final List<DataObject> objectDefinitions) {
 
         switch (periodType) {
         case INTERVAL:
@@ -331,13 +341,6 @@ AbstractMeterReadsScalerUnitCommandExecutor<PeriodicMeterReadsQuery, PeriodicMet
         default:
             throw new AssertionError("Unknown PeriodType: " + periodType);
         }
-
-        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
-
-        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
-                toValue, selectedValues));
-
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
 
     private void addSelectedValuesForDaily(final List<DataObject> objectDefinitions) {
