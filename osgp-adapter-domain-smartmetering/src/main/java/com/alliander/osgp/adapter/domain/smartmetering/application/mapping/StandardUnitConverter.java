@@ -69,6 +69,7 @@ public class StandardUnitConverter {
             default:
                 break;
             }
+            break;
         case M3:
         case M3COR:
         case UNDEFINED:
@@ -79,6 +80,9 @@ public class StandardUnitConverter {
             default:
                 break;
             }
+            break;
+        default:
+            break;
         }
         throw new IllegalArgumentException(String.format("calculating %s from %s not supported yet", osgpUnit.name(),
                 dlmsUnit.name()));
