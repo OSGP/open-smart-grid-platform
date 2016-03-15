@@ -158,7 +158,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="DeviceIdentification" type="common:Identification" />
-        <xsd:element name="Certification" type="tns:Certification" minOccurs="0" maxOccurs="1" />
+        <xsd:element name="Certification" type="tns:Certification" minOccurs="1" maxOccurs="1" />
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
