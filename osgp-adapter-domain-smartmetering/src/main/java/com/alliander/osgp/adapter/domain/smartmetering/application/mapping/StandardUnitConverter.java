@@ -66,6 +66,8 @@ public class StandardUnitConverter {
             switch (osgpUnit) {
             case KWH:
                 return BigDecimal.valueOf(0.001d);
+            default:
+                break;
             }
         case M3:
         case M3COR:
@@ -74,6 +76,8 @@ public class StandardUnitConverter {
             case M3:
             case UNDEFINED:
                 return BigDecimal.valueOf(1d);
+            default:
+                break;
             }
         }
         throw new IllegalArgumentException(String.format("calculating %s from %s not supported yet", osgpUnit.name(),
