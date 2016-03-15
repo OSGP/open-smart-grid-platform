@@ -43,7 +43,11 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(
                 this.applicationContext.getBean(PeriodicMeterReadsResponseConverter.class));
         mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(PeriodicMeterReadsConverter.class));
+        mapperFactory.getConverterFactory().registerConverter(
                 this.applicationContext.getBean(PeriodicMeterReadsGasResponseConverter.class));
+        mapperFactory.getConverterFactory().registerConverter(
+                this.applicationContext.getBean(PeriodicMeterReadsGasConverter.class));
 
         mapperFactory.getConverterFactory().registerConverter(
                 this.applicationContext.getBean(AmrProfileStatusCodeConverter.class));

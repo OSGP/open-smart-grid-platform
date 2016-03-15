@@ -12,10 +12,6 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
-
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
     @Override
@@ -28,22 +24,7 @@ public class MonitoringMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseGasConverter());
         mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushNotificationsAlarmConverter());
+        mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
     }
 
-    /**
-     * helper method to construct a MeterValue, code in one place
-     *
-     * @param d
-     * @param osgpUnit
-     * @return
-     */
-    public static MeterValue getMeterValue(final OsgpMeterValue osgpMeterValue) {
-        if (osgpMeterValue == null) {
-            return null;
-        }
-        final MeterValue m = new MeterValue();
-        m.setValue(osgpMeterValue.getValue());
-        m.setUnit(OsgpUnitType.valueOf(osgpMeterValue.getOsgpUnit().name()));
-        return m;
-    }
 }
