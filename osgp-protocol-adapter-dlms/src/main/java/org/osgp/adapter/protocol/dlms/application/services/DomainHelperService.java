@@ -16,6 +16,8 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DlmsDeviceMessageMetadata;
 import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,8 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Service(value = "dlmsDomainHelperService")
 public class DomainHelperService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DomainHelperService.class);
 
     private static final ComponentType COMPONENT_TYPE = ComponentType.PROTOCOL_DLMS;
 
@@ -64,14 +68,18 @@ public class DomainHelperService {
     }
 
     public DlmsDevice findDlmsDevice(final DlmsDeviceMessageMetadata messageMetadata) throws ProtocolAdapterException {
-        final String deviceIdentification = messageMetadata.getDeviceIdentification();
+        return this.findDlmsDevice(messageMetadata.getDeviceIdentification(), messageMetadata.getIpAddress());
+    }
+
+    public DlmsDevice findDlmsDevice(final String deviceIdentification, final String ipAddress)
+            throws ProtocolAdapterException {
         final DlmsDevice dlmsDevice = this.dlmsDeviceRepository.findByDeviceIdentification(deviceIdentification);
         if (dlmsDevice == null) {
             throw new ProtocolAdapterException("Unable to communicate with unknown device: " + deviceIdentification);
         }
 
         if (dlmsDevice.isIpAddressIsStatic()) {
-            dlmsDevice.setIpAddress(messageMetadata.getIpAddress());
+            dlmsDevice.setIpAddress(ipAddress);
         } else {
             dlmsDevice.setIpAddress(this.getDeviceIpAddressFromSessionProvider(dlmsDevice));
         }
@@ -108,11 +116,9 @@ public class DomainHelperService {
             throw new ProtocolAdapterException("", e);
         }
         if (deviceIpAddress == null || "".equals(deviceIpAddress)) {
-            throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
-                    + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
-                    + " and iccId: " + dlmsDevice.getIccId());
-        } else {
-            return deviceIpAddress;
+            LOGGER.error("Session provider: {} did not return an IP address for device: {} and iccId: {}",
+                    dlmsDevice.getCommunicationProvider(), dlmsDevice.getDeviceIdentification(), dlmsDevice.getIccId());
         }
+        return deviceIpAddress;
     }
 }
