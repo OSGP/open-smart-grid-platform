@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.getMeterValue;
-
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -22,12 +20,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 
 public class ActualMeterReadsConverter
-extends
-CustomConverter<MeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
+        extends
+        CustomConverter<MeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsConverter.class);
 
@@ -36,7 +36,7 @@ CustomConverter<MeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.m
             final Type<? extends ActualMeterReadsResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse destination = new ObjectFactory()
-        .createActualMeterReadsResponse();
+                .createActualMeterReadsResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -49,14 +49,18 @@ CustomConverter<MeterReads, com.alliander.osgp.adapter.ws.schema.smartmetering.m
         }
 
         destination.setLogTime(convertedDate);
-        destination.setActiveEnergyImport(getMeterValue(source.getActiveEnergyImport()));
-        destination.setActiveEnergyExport(getMeterValue(source.getActiveEnergyExport()));
-        destination.setActiveEnergyExportTariffOne(getMeterValue(source.getActiveEnergyExportTariffOne()));
-        destination.setActiveEnergyExportTariffTwo(getMeterValue(source.getActiveEnergyExportTariffTwo()));
-        destination.setActiveEnergyImportTariffOne(getMeterValue(source.getActiveEnergyImportTariffOne()));
-        destination.setActiveEnergyImportTariffTwo(getMeterValue(source.getActiveEnergyImportTariffTwo()));
+        destination.setActiveEnergyImport(this.getMeterValue(source.getActiveEnergyImport()));
+        destination.setActiveEnergyExport(this.getMeterValue(source.getActiveEnergyExport()));
+        destination.setActiveEnergyExportTariffOne(this.getMeterValue(source.getActiveEnergyExportTariffOne()));
+        destination.setActiveEnergyExportTariffTwo(this.getMeterValue(source.getActiveEnergyExportTariffTwo()));
+        destination.setActiveEnergyImportTariffOne(this.getMeterValue(source.getActiveEnergyImportTariffOne()));
+        destination.setActiveEnergyImportTariffTwo(this.getMeterValue(source.getActiveEnergyImportTariffTwo()));
 
         return destination;
+    }
+
+    private MeterValue getMeterValue(final OsgpMeterValue source) {
+        return this.mapperFacade.map(source, MeterValue.class);
     }
 
 }

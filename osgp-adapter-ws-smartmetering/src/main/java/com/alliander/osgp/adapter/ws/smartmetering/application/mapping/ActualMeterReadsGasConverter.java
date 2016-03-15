@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import static com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper.getMeterValue;
-
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -22,12 +20,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 
 public class ActualMeterReadsGasConverter
-        extends
-        CustomConverter<MeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
+extends
+CustomConverter<MeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGasConverter.class);
 
@@ -36,7 +36,7 @@ public class ActualMeterReadsGasConverter
             final Type<? extends ActualMeterReadsGasResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse destination = new ObjectFactory()
-                .createActualMeterReadsGasResponse();
+        .createActualMeterReadsGasResponse();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
@@ -57,9 +57,12 @@ public class ActualMeterReadsGasConverter
             convertedDate = null;
         }
 
-        destination.setConsumption(getMeterValue(source.getConsumption()));
+        destination.setConsumption(this.getMeterValue(source.getConsumption()));
 
         return destination;
     }
 
+    private MeterValue getMeterValue(final OsgpMeterValue source) {
+        return this.mapperFacade.map(source, MeterValue.class);
+    }
 }
