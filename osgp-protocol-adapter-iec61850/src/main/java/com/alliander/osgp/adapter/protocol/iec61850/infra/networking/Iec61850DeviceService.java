@@ -14,13 +14,17 @@ import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.ServerModel;
+import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataService;
@@ -45,7 +49,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #getStatus(com.alliander.osgp.adapter.protocol.iec61850.device.requests.
@@ -102,7 +106,6 @@ public class Iec61850DeviceService implements DeviceService {
             // }
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during getStatus", e);
-            // TODO throw exception?
 
         }
     }
@@ -111,11 +114,15 @@ public class Iec61850DeviceService implements DeviceService {
      * @see DeviceService#setLight(SetLightDeviceRequest)
      */
     @Override
-    public void setLight(final SetLightDeviceRequest deviceRequest) {
+    public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+
+        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid());
 
         try {
 
-            // Connect, get the ServerModel and ClientAssociation.
+            // Connect, get the ServerModel final and ClientAssociation.
             this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
                     deviceRequest.getDeviceIdentification());
 
@@ -152,12 +159,19 @@ public class Iec61850DeviceService implements DeviceService {
             }
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during writeDataValue", e);
-            // TODO throw exception?
+
+            deviceResponse.setStatus(DeviceMessageStatus.FAILURE);
+            deviceResponseHandler.handleException(e, deviceResponse);
+            return;
         }
+
+        deviceResponse.setStatus(DeviceMessageStatus.OK);
+        deviceResponseHandler.handleResponse(deviceResponse);
     }
 
     private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
-            final ServerModel serverModel, final ClientAssociation clientAssociation) throws ProtocolAdapterException {
+            final ServerModel serverModel, final ClientAssociation clientAssociation) throws ServiceError,
+            ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {

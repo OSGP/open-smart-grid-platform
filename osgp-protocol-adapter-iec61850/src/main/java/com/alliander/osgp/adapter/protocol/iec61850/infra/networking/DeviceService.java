@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 
@@ -98,12 +99,8 @@ public interface DeviceService {
      * Switches the light relays of the device given in the
      * {@link DeviceRequest}, according to the
      */
-    void setLight(SetLightDeviceRequest deviceRequest);
-    //
-    // void doSetLight(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
+    void setLight(SetLightDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+
     // // void setSchedule(SetScheduleDeviceRequest deviceRequest);
     //
     // void doSetSchedule(SetScheduleDeviceRequest deviceRequest,

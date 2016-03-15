@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging;
 
+import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -14,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceResponseService;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -23,6 +27,7 @@ import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.infra.jms.ResponseMessageSender;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -46,7 +51,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     @Autowired
     @Qualifier("iec61850DeviceRequestMessageProcessorMap")
-    protected MessageProcessorMap oslpRequestMessageProcessorMap;
+    protected MessageProcessorMap iec61850RequestMessageProcessorMap;
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
@@ -71,41 +76,35 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      */
     @PostConstruct
     public void init() {
-        this.oslpRequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
+        this.iec61850RequestMessageProcessorMap.addMessageProcessor(this.deviceRequestMessageType.ordinal(),
                 this.deviceRequestMessageType.name(), this);
     }
 
     // IDEA: change these two methods handleEmptyDeviceResponse and
     // handleScheduledEmptyDeviceResponse to have less double code
 
-    // protected void handleEmptyDeviceResponse(final DeviceResponse
-    // deviceResponse,
-    // final ResponseMessageSender responseMessageSender, final String domain,
-    // final String domainVersion,
-    // final String messageType, final int retryCount) {
-    //
-    // ResponseMessageResultType result = ResponseMessageResultType.OK;
-    // OsgpException ex = null;
-    //
-    // try {
-    // final EmptyDeviceResponse response = (EmptyDeviceResponse)
-    // deviceResponse;
-    // this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-    // } catch (final Exception e) {
-    // LOGGER.error("Device Response Exception", e);
-    // result = ResponseMessageResultType.NOT_OK;
-    // ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION,
-    // e);
-    // }
-    //
-    // final ProtocolResponseMessage responseMessage = new
-    // ProtocolResponseMessage(domain, domainVersion, messageType,
-    // deviceResponse.getCorrelationUid(),
-    // deviceResponse.getOrganisationIdentification(),
-    // deviceResponse.getDeviceIdentification(), result, ex, null, retryCount);
-    //
-    // responseMessageSender.send(responseMessage);
-    // }
+    protected void handleEmptyDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount) {
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException ex = null;
+
+        try {
+            final EmptyDeviceResponse response = (EmptyDeviceResponse) deviceResponse;
+            this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
+        } catch (final Exception e) {
+            LOGGER.error("Device Response Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+        }
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getDeviceIdentification(), result, ex, null, retryCount);
+
+        responseMessageSender.send(responseMessage);
+    }
 
     // protected void handleScheduledEmptyDeviceResponse(final DeviceResponse
     // deviceResponse,
@@ -163,27 +162,18 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         this.responseMessageSender.send(protocolResponseMessage);
     }
 
-    // public void handleUnableToConnectDeviceResponse(final DeviceResponse
-    // deviceResponse, final Throwable t,
-    // final Serializable messageData, final DeviceResponseMessageSender
-    // responseMessageSender,
-    // final DeviceResponse deviceResponse2, final String domain, final String
-    // domainVersion,
-    // final String messageType, final boolean isScheduled, final int
-    // retryCount) {
-    //
-    // final ResponseMessageResultType result =
-    // ResponseMessageResultType.NOT_OK;
-    // final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN,
-    // UNEXPECTED_EXCEPTION, t);
-    //
-    // final ProtocolResponseMessage responseMessage = new
-    // ProtocolResponseMessage(domain, domainVersion, messageType,
-    // deviceResponse.getCorrelationUid(),
-    // deviceResponse.getOrganisationIdentification(),
-    // deviceResponse.getDeviceIdentification(), result, ex, messageData,
-    // isScheduled, retryCount);
-    //
-    // this.responseMessageSender.send(responseMessage);
-    // }
+    public void handleUnableToConnectDeviceResponse(final DeviceResponse deviceResponse, final Throwable t,
+            final Serializable messageData, final DeviceResponseMessageSender responseMessageSender,
+            final DeviceResponse deviceResponse2, final String domain, final String domainVersion,
+            final String messageType, final boolean isScheduled, final int retryCount) {
+
+        final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
+        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, t);
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getDeviceIdentification(), result, ex, messageData, isScheduled, retryCount);
+
+        this.responseMessageSender.send(responseMessage);
+    }
 }

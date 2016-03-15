@@ -28,12 +28,12 @@ public class OsgpRequestMessageSender {
 
     @Autowired
     @Qualifier("osgpRequestsJmsTemplate")
-    private JmsTemplate osgpRequestsJmsTemplate;
+    private JmsTemplate iec61850RequestsJmsTemplate;
 
     public void send(final RequestMessage requestMessage, final String messageType) {
         LOGGER.info("Sending request message to OSGP.");
 
-        this.osgpRequestsJmsTemplate.send(new MessageCreator() {
+        this.iec61850RequestsJmsTemplate.send(new MessageCreator() {
 
             @Override
             public Message createMessage(final Session session) throws JMSException {
