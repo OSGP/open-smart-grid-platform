@@ -82,7 +82,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     public MeterReads execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsQuery) throws ProtocolAdapterException {
 
-        if (actualMeterReadsQuery != null && actualMeterReadsQuery.isGas()) {
+        if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {
             throw new IllegalArgumentException("ActualMeterReadsQuery object for energy reads should not be about gas.");
         }
 
