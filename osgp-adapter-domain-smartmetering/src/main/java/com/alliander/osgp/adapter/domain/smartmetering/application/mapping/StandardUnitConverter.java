@@ -55,7 +55,7 @@ public class StandardUnitConverter {
     /**
      * Return a meterValue in standardized unit and fraction digits. When the
      * argument value is null, null is returned.
-     * 
+     *
      * @param meterValue
      * @param scalerUnitResponse
      * @return
@@ -67,7 +67,7 @@ public class StandardUnitConverter {
         final ScalerUnit scalerUnit = scalerUnitResponse.getScalerUnit();
         final double multiplier = this.getMultiplierToOsgpUnit(scalerUnit.getDlmsUnit());
         final double power = scalerUnit.getScaler() == 0 ? 1 : Math.pow(10, scalerUnit.getScaler());
-        final double calculated = round((meterValue / power) * multiplier, this.fractionDigits);
+        final double calculated = round(meterValue * power * multiplier, this.fractionDigits);
         LOGGER.debug(String.format("calculated %s from %s using %s", calculated, meterValue, scalerUnit));
         return calculated;
     }
@@ -79,6 +79,7 @@ public class StandardUnitConverter {
             return 0.001d;
         case M3:
         case M3COR:
+        case UNDEFINED:
             return 1d;
         default:
             throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", dlmsUnit.name()));
@@ -92,6 +93,8 @@ public class StandardUnitConverter {
         case M3:
         case M3COR:
             return OsgpUnit.M3;
+        case UNDEFINED:
+            return OsgpUnit.UNDEFINED;
         default:
             throw new IllegalArgumentException(String.format("dlms unit %s not supported yet", scalerUnitResponse
                     .getScalerUnit().getDlmsUnit().name()));

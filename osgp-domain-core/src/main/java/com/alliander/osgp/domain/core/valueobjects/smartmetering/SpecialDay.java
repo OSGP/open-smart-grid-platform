@@ -13,23 +13,21 @@ public class SpecialDay implements Serializable {
 
     private static final long serialVersionUID = 8009905447322732462L;
 
-    protected String specialDayDate;
-    
-    protected int dayId;
+    private final CosemDate specialDayDate;
 
-    public String getSpecialDayDate() {
-        return specialDayDate;
+    private final int dayId;
+
+    public SpecialDay(final CosemDate specialDayDate, final int dayId) {
+        super();
+        this.specialDayDate = new CosemDate(specialDayDate);
+        this.dayId = dayId;
     }
 
-    public void setSpecialDayDate(String specialDayDate) {
-        this.specialDayDate = specialDayDate;
+    public CosemDate getSpecialDayDate() {
+        return new CosemDate(this.specialDayDate);
     }
 
     public int getDayId() {
-        return dayId;
-    }
-
-    public void setDayId(int dayId) {
-        this.dayId = dayId;
+        return this.dayId;
     }
 }

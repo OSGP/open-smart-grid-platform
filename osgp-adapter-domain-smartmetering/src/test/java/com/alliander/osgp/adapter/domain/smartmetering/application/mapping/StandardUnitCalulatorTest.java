@@ -27,7 +27,7 @@ public class StandardUnitCalulatorTest {
 
             @Override
             public ScalerUnit getScalerUnit() {
-                return new ScalerUnit(DlmsUnit.WH, 2);
+                return new ScalerUnit(DlmsUnit.WH, -2);
             }
         };
         assertEquals(Double.valueOf(1.235d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
@@ -38,12 +38,13 @@ public class StandardUnitCalulatorTest {
                 return new ScalerUnit(DlmsUnit.M3, 2);
             }
         };
-        assertEquals(Double.valueOf(1234.56d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
+        assertEquals(Double.valueOf(12345600d),
+                Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));
         response = new ScalerUnitResponse() {
 
             @Override
             public ScalerUnit getScalerUnit() {
-                return new ScalerUnit(DlmsUnit.M3COR, 2);
+                return new ScalerUnit(DlmsUnit.M3COR, -2);
             }
         };
         assertEquals(Double.valueOf(1234.56d), Double.valueOf(calculator.calculateStandardizedValue(123456l, response)));

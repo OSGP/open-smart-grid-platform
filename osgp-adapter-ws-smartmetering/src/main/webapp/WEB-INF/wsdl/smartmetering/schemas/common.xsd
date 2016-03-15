@@ -139,6 +139,9 @@
             <xsd:enumeration value="KWH" >
                 <xsd:annotation><xsd:documentation>kilo watt hour</xsd:documentation></xsd:annotation>
             </xsd:enumeration>
+            <xsd:enumeration value="UNDEFINED" >
+                <xsd:annotation><xsd:documentation>undefined unit</xsd:documentation></xsd:annotation>
+            </xsd:enumeration>
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -185,18 +188,30 @@
 	</xsd:element>
     
     <xsd:simpleType name="CosemDateType">
+        <xsd:annotation><xsd:documentation>
+        2 bytes for year (century byte and year byte, 0xFFFF = undefined).
+        1 for month, 0xFF (undefined), 0xFD (end daylight saving), 0xFE (begin daylight saving).
+        1 for day of month, 0xFF (undefined), 0xFD (2nd last day of month), 0xFE (last day of month).
+        1 for day of week, 1 is monday, 0xFF (undefined)</xsd:documentation></xsd:annotation>
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="5" />
         </xsd:restriction>
     </xsd:simpleType>
     
     <xsd:simpleType name="CosemTimeType">
+        <xsd:annotation><xsd:documentation>
+        1 byte for hour, minute, second and hundreds, 0xFF = undefined</xsd:documentation></xsd:annotation>
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="4" />
         </xsd:restriction>
     </xsd:simpleType>
     
     <xsd:simpleType name="CosemDateTimeType">
+        <xsd:annotation><xsd:documentation>
+        CosemDate followed by CosemTime followed by deviation and clock status.
+        deviation (minutes from GMT) high byte and low byte.
+        clock status: 0x80 (daylight savings active), 0x0 (no status) 
+        </xsd:documentation></xsd:annotation>
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="12" />
         </xsd:restriction>

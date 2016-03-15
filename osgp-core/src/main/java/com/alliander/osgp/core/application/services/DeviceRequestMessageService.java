@@ -64,15 +64,11 @@ public class DeviceRequestMessageService {
                         protocolInfo.getProtocolVersion());
             }
 
-            // TODO workaround for SSLD specific authorization
-            if (!message.getDomain().equals("SMART_METERING")) {
+            final Organisation organisation = this.domainHelperService.findOrganisation(message
+                    .getOrganisationIdentification());
 
-                final Organisation organisation = this.domainHelperService.findOrganisation(message
-                        .getOrganisationIdentification());
-
-                this.domainHelperService.isAllowed(organisation, device,
-                        Enum.valueOf(DeviceFunction.class, message.getMessageType()));
-            }
+            this.domainHelperService.isAllowed(organisation, device,
+                    Enum.valueOf(DeviceFunction.class, message.getMessageType()));
 
             this.protocolRequestService.send(message, protocolInfo);
 
