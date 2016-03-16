@@ -21,6 +21,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceReques
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
 import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainer;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -79,7 +81,8 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
         }
 
         final RequestMessageData requestMessageData = new RequestMessageData(lightValueMessageDataContainer, domain,
-                domainVersion, messageType, retryCount, isScheduled);
+                domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
+                deviceIdentification);
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
@@ -92,13 +95,20 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             }
 
             @Override
-            public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
-                PublicLightingSetLightRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-                        t, requestMessageData.getMessageData(),
-                        PublicLightingSetLightRequestMessageProcessor.this.responseMessageSender, deviceResponse,
-                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                        requestMessageData.getMessageType(), requestMessageData.isScheduled(),
-                        requestMessageData.getRetryCount());
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
+
+                if (expected) {
+                    PublicLightingSetLightRequestMessageProcessor.this.handleExpectedError(
+                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
+                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
+                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
+                } else {
+                    PublicLightingSetLightRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
+                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
+                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
+                }
             }
         };
 

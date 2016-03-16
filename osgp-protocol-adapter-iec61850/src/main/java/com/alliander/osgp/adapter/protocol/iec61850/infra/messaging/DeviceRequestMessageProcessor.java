@@ -96,7 +96,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+            ex = new TechnicalException(ComponentType.PROTOCOL_IEC61850, UNEXPECTED_EXCEPTION, e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
@@ -141,7 +141,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final String deviceIdentification, final String domain, final String domainVersion,
             final String messageType, final int retryCount) {
         LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_IEC61850, UNEXPECTED_EXCEPTION, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -153,7 +153,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion, final String messageType) {
         LOGGER.error("Error while processing message", e);
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, e);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_IEC61850, UNEXPECTED_EXCEPTION, e);
 
         final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
                 messageType, correlationUid, organisationIdentification, deviceIdentification,
@@ -162,18 +162,29 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         this.responseMessageSender.send(protocolResponseMessage);
     }
 
-    public void handleUnableToConnectDeviceResponse(final DeviceResponse deviceResponse, final Throwable t,
-            final Serializable messageData, final DeviceResponseMessageSender responseMessageSender,
-            final DeviceResponse deviceResponse2, final String domain, final String domainVersion,
-            final String messageType, final boolean isScheduled, final int retryCount) {
+    public void handleUnExpectedError(final DeviceResponse deviceResponse, final Throwable t,
+            final Serializable messageData, final String domain, final String domainVersion, final String messageType,
+            final boolean isScheduled, final int retryCount) {
 
         final ResponseMessageResultType result = ResponseMessageResultType.NOT_OK;
-        final OsgpException ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION, t);
+        final OsgpException ex = new TechnicalException(ComponentType.PROTOCOL_IEC61850, t.getMessage());
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getDeviceIdentification(), result, ex, messageData, isScheduled, retryCount);
 
         this.responseMessageSender.send(responseMessage);
+    }
+
+    protected void handleExpectedError(final OsgpException e, final String correlationUid,
+            final String organisationIdentification, final String deviceIdentification, final String domain,
+            final String domainVersion, final String messageType) {
+        LOGGER.error("Expected error while processing message", e);
+
+        final ProtocolResponseMessage protocolResponseMessage = new ProtocolResponseMessage(domain, domainVersion,
+                messageType, correlationUid, organisationIdentification, deviceIdentification,
+                ResponseMessageResultType.NOT_OK, e, null);
+
+        this.responseMessageSender.send(protocolResponseMessage);
     }
 }

@@ -20,15 +20,22 @@ public class RequestMessageData {
     final String messageType;
     final int retryCount;
     final boolean isScheduled;
+    final String correlationUid;
+    final String organisationIdentification;
+    final String deviceIdentification;
 
     public RequestMessageData(final Serializable messageData, final String domain, final String domainVersion,
-            final String messageType, final int retryCount, final boolean isScheduled) {
+            final String messageType, final int retryCount, final boolean isScheduled, final String correlationUid,
+            final String organisationIdentification, final String deviceIdentification) {
         this.messageData = messageData;
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.messageType = messageType;
         this.retryCount = retryCount;
         this.isScheduled = isScheduled;
+        this.correlationUid = correlationUid;
+        this.organisationIdentification = organisationIdentification;
+        this.deviceIdentification = deviceIdentification;
     }
 
     public Serializable getMessageData() {
@@ -53,6 +60,18 @@ public class RequestMessageData {
 
     public boolean isScheduled() {
         return this.isScheduled;
+    }
+
+    public String getCorrelationUid() {
+        return this.correlationUid;
+    }
+
+    public String getOrganisationIdentification() {
+        return this.organisationIdentification;
+    }
+
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 
 }

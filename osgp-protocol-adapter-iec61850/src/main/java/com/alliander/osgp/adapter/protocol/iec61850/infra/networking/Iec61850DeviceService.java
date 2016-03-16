@@ -14,7 +14,6 @@ import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ModelNode;
 import org.openmuc.openiec61850.ServerModel;
-import org.openmuc.openiec61850.ServiceError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +24,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataService;
@@ -157,11 +157,17 @@ public class Iec61850DeviceService implements DeviceService {
                             serverModel, clientAssociation);
                 }
             }
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            deviceResponse.setStatus(DeviceMessageStatus.FAILURE);
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during writeDataValue", e);
 
             deviceResponse.setStatus(DeviceMessageStatus.FAILURE);
-            deviceResponseHandler.handleException(e, deviceResponse);
+            deviceResponseHandler.handleException(e, deviceResponse, false);
             return;
         }
 
@@ -170,8 +176,8 @@ public class Iec61850DeviceService implements DeviceService {
     }
 
     private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
-            final ServerModel serverModel, final ClientAssociation clientAssociation) throws ServiceError,
-            ProtocolAdapterException {
+            final ServerModel serverModel, final ClientAssociation clientAssociation)
+            throws ConnectionFailureException, ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {

@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 
@@ -159,7 +160,8 @@ public class Iec61850DeviceConnectionService {
             function.apply();
         } catch (final ServiceError e) {
             if (retryCount > this.maxRetryCount) {
-                throw new ProtocolAdapterException("Could not send command after " + this.maxRetryCount + " attemps", e);
+                throw new ConnectionFailureException("Could not send command after " + this.maxRetryCount + " attemps",
+                        e);
             } else {
                 this.sendCommandWithRetry(function, retryCount + 1);
             }
