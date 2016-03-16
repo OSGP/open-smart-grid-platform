@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -171,19 +172,20 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
+                messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
+                messageMetadata.getMessagePriority());
+
         // @formatter:off
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
         .domain(messageMetadata.getDomain())
         .domainVersion(messageMetadata.getDomainVersion())
-        .messageType(messageMetadata.getMessageType())
-        .correlationUid(messageMetadata.getCorrelationUid())
-        .organisationIdentification(messageMetadata.getOrganisationIdentification())
-        .deviceIdentification(messageMetadata.getDeviceIdentification())
         .result(result)
         .osgpException(osgpException)
         .dataObject(responseObject)
         .retryCount(messageMetadata.getRetryCount())
-        .messagePriority(messageMetadata.getMessagePriority())
         .build();
         // @formatter:on
 
