@@ -23,6 +23,7 @@ import com.alliander.osgp.domain.core.entities.DomainInfo;
 import com.alliander.osgp.domain.core.entities.ScheduledTask;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
@@ -65,16 +66,17 @@ public class DomainRequestMessageListener implements MessageListener {
     }
 
     public ScheduledTask createScheduledTask(final Message message) throws JMSException {
-        final String correlationUid = message.getJMSCorrelationID();
-        final String organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        final String deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        final String messageType = message.getJMSType();
+
         final Serializable messageData = ((ObjectMessage) message).getObject();
         final Timestamp scheduleTimeStamp = new Timestamp(message.getLongProperty(Constants.SCHEDULE_TIME));
 
-        return new ScheduledTask(this.domainInfo.getDomain(), this.domainInfo.getDomainVersion(), correlationUid,
-                organisationIdentification, deviceIdentification, messageType, messageData, scheduleTimeStamp,
-                message.getJMSPriority());
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
+                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
+                message.getJMSType(), message.getJMSPriority());
+
+        return new ScheduledTask(deviceMessageMetadata, this.domainInfo.getDomain(),
+                this.domainInfo.getDomainVersion(), messageData, scheduleTimeStamp);
     }
 
     public ProtocolRequestMessage createProtocolRequestMessage(final Message message) throws JMSException {

@@ -19,6 +19,7 @@ import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 
 @Entity
 @Table(name = "scheduled_task")
@@ -67,20 +68,22 @@ public class ScheduledTask extends AbstractEntity {
 
     }
 
-    public ScheduledTask(final String domain, final String domainVersion, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final String messageType,
-            final Serializable messageData, final Timestamp scheduleTime, final Integer messagePriority) {
+    public ScheduledTask(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
+            final String domainVersion, final Serializable messageData, final Timestamp scheduledTime) {
+
+        this.correlationUid = deviceMessageMetadata.getCorrelationUid();
+        this.organisationIdentification = deviceMessageMetadata.getOrganisationIdentification();
+        this.deviceIdentification = deviceMessageMetadata.getDeviceIdentification();
+        this.messageType = deviceMessageMetadata.getMessageType();
+        this.messagePriority = deviceMessageMetadata.getMessagePriority();
         this.domain = domain;
         this.domainVersion = domainVersion;
-        this.correlationUid = correlationUid;
-        this.organisationIdentification = organisationIdentification;
-        this.deviceIdentification = deviceIdentification;
-        this.messageType = messageType;
         this.messageData = messageData;
-        this.scheduledTime = (Timestamp) scheduleTime.clone();
+        this.scheduledTime = (Timestamp) scheduledTime.clone();
         this.status = ScheduledTaskStatusType.NEW;
-        this.messagePriority = messagePriority;
     }
+
+    // public static
 
     public String getDomain() {
         return this.domain;
