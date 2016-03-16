@@ -36,20 +36,34 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
     @Override
     public Configuration convert(final Oslp.GetConfigurationResponse source,
             final Type<? extends Configuration> destinationType) {
-        final Configuration configuration = new Configuration(source.hasLightType() ? this.mapperFacade.map(
-                source.getLightType(), LightType.class) : null, source.hasDaliConfiguration() ? this.mapperFacade.map(
-                source.getDaliConfiguration(), DaliConfiguration.class) : null,
-                source.hasRelayConfiguration() ? this.mapperFacade.map(source.getRelayConfiguration(),
-                        RelayConfiguration.class) : null,
-                source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade.map(
-                        source.getShortTermHistoryIntervalMinutes(), Integer.class) : null,
-                source.hasPreferredLinkType() ? this.mapperFacade.map(source.getPreferredLinkType(), LinkType.class)
-                        : null, source.hasMeterType() ? this.mapperFacade.map(source.getMeterType(), MeterType.class)
-                        : null, source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
-                        source.getLongTermHistoryInterval(), Integer.class) : null,
-                source.hasLongTermHistoryIntervalType() ? this.mapperFacade.map(
-                        source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null);
 
+        // @formatter:off
+        // Convert the required values for the constructor of Configuration.
+        final LightType lightType = source.hasLightType() ? this.mapperFacade.map(source.getLightType(),
+                LightType.class) : null;
+        final DaliConfiguration daliConfiguration = source.hasDaliConfiguration() ? this.mapperFacade.map(
+                source.getDaliConfiguration(), DaliConfiguration.class) : null;
+        final Integer shortTermHistoryIntervalMinutes = source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade
+                .map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null;
+        final RelayConfiguration relayConfiguration = source.hasRelayConfiguration() ? this.mapperFacade.map(
+                source.getRelayConfiguration(), RelayConfiguration.class) : null;
+        final LinkType preferredLinkType = source.hasPreferredLinkType()
+                && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET) ? this.mapperFacade.map(
+                source.getPreferredLinkType(), LinkType.class) : null;
+        final MeterType meterType = source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET) ? this.mapperFacade
+                .map(source.getMeterType(), MeterType.class) : null;
+        final Integer longTermHistoryInterval = source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
+                source.getLongTermHistoryInterval(), Integer.class) : null;
+        final LongTermIntervalType longTermIntervalType = source.hasLongTermHistoryIntervalType()
+                && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET) ? this.mapperFacade
+                .map(source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null;
+
+        // Create an Configuration instance.
+        final Configuration configuration = new Configuration(lightType, daliConfiguration, relayConfiguration,
+                shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
+                longTermIntervalType);
+
+        // Set the optional values using the set() functions.
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         if (source.getDeviceFixIpValue() != null && !source.getDeviceFixIpValue().isEmpty()) {
             configuration.setDeviceFixIpValue(this.convertIpAddress(source.getDeviceFixIpValue()));
@@ -79,6 +93,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         configuration.setWinterTimeDetails(winterTimeDetails);
 
         return configuration;
+        // @formatter:on
     }
 
     private String convertIpAddress(final ByteString byteString) {

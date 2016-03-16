@@ -1475,41 +1475,82 @@ public class OslpDeviceService implements DeviceService {
             final Oslp.GetStatusResponse getStatusResponse = oslpResponse.getPayloadMessage().getGetStatusResponse();
             final Oslp.Status oslpStatus = getStatusResponse.getStatus();
             if (oslpStatus == Oslp.Status.OK) {
-                deviceStatus = new DeviceStatus(this.mapper.mapAsList(getStatusResponse.getValueList(),
-                        LightValue.class), this.mapper.map(getStatusResponse.getPreferredLinktype(), LinkType.class),
-                        this.mapper.map(getStatusResponse.getActualLinktype(), LinkType.class), this.mapper.map(
-                                getStatusResponse.getLightType(), LightType.class),
-                        getStatusResponse.getEventNotificationMask());
+                // Required properties.
+                final List<LightValue> lightValues = this.mapper.mapAsList(getStatusResponse.getValueList(),
+                        LightValue.class);
+                final LinkType preferredType = getStatusResponse.getPreferredLinktype().equals(
+                        Oslp.LinkType.LINK_NOT_SET) ? null : this.mapper.map(getStatusResponse.getPreferredLinktype(),
+                                LinkType.class);
+                final LinkType actualLinkType = getStatusResponse.getActualLinktype()
+                        .equals(Oslp.LinkType.LINK_NOT_SET) ? null : this.mapper.map(
+                                getStatusResponse.getActualLinktype(), LinkType.class);
+                final LightType lightType = getStatusResponse.getLightType().equals(Oslp.LightType.LT_NOT_SET) ? null
+                        : this.mapper.map(getStatusResponse.getLightType(), LightType.class);
+                final int eventNotificationMask = getStatusResponse.getEventNotificationMask();
 
-                // optional properties DeviceStatus
-                deviceStatus.setBootLoaderVersion(getStatusResponse.getBootLoaderVersion());
+                deviceStatus = new DeviceStatus(lightValues, preferredType, actualLinkType, lightType,
+                        eventNotificationMask);
+
+                // Optional properties.
+                if (getStatusResponse.hasBootLoaderVersion()) {
+                    deviceStatus.setBootLoaderVersion(getStatusResponse.getBootLoaderVersion());
+                }
                 if (getStatusResponse.getCurrentConfigurationBackUsed() != null
                         && getStatusResponse.getCurrentConfigurationBackUsed().toByteArray().length == 1) {
                     deviceStatus.setCurrentConfigurationBackUsed(this
                             .convertCurrentConfigurationBankUsed(getStatusResponse.getCurrentConfigurationBackUsed()));
                 }
-                deviceStatus.setCurrentIp(getStatusResponse.getCurrentIp());
-                deviceStatus.setCurrentTime(getStatusResponse.getCurrentTime());
-                deviceStatus.setDcOutputVoltageCurrent(getStatusResponse.getDcOutputVoltageCurrent());
-                deviceStatus.setDcOutputVoltageMaximum(getStatusResponse.getDcOutputVoltageMaximum());
-                deviceStatus.setEventNotificationsMask(getStatusResponse.getEventNotificationMask());
-                deviceStatus.setExternalFlashMemSize(getStatusResponse.getExternalFlashMemSize());
-                deviceStatus.setFirmwareVersion(getStatusResponse.getFirmwareVersion());
-                deviceStatus.setHardwareId(getStatusResponse.getHardwareId());
-                deviceStatus.setInternalFlashMemSize(getStatusResponse.getInternalFlashMemSize());
-                deviceStatus.setLastInternalTestResultCode(getStatusResponse.getLastInternalTestResultCode());
+                if (getStatusResponse.hasCurrentIp()) {
+                    deviceStatus.setCurrentIp(getStatusResponse.getCurrentIp());
+                }
+                if (getStatusResponse.hasCurrentTime()) {
+                    deviceStatus.setCurrentTime(getStatusResponse.getCurrentTime());
+                }
+                if (getStatusResponse.hasDcOutputVoltageCurrent()) {
+                    deviceStatus.setDcOutputVoltageCurrent(getStatusResponse.getDcOutputVoltageCurrent());
+                }
+                if (getStatusResponse.hasDcOutputVoltageMaximum()) {
+                    deviceStatus.setDcOutputVoltageMaximum(getStatusResponse.getDcOutputVoltageMaximum());
+                }
+                if (getStatusResponse.hasEventNotificationMask()) {
+                    deviceStatus.setEventNotificationsMask(getStatusResponse.getEventNotificationMask());
+                }
+                if (getStatusResponse.hasExternalFlashMemSize()) {
+                    deviceStatus.setExternalFlashMemSize(getStatusResponse.getExternalFlashMemSize());
+                }
+                if (getStatusResponse.hasFirmwareVersion()) {
+                    deviceStatus.setFirmwareVersion(getStatusResponse.getFirmwareVersion());
+                }
+                if (getStatusResponse.hasHardwareId()) {
+                    deviceStatus.setHardwareId(getStatusResponse.getHardwareId());
+                }
+                if (getStatusResponse.hasInternalFlashMemSize()) {
+                    deviceStatus.setInternalFlashMemSize(getStatusResponse.getInternalFlashMemSize());
+                }
+                if (getStatusResponse.hasLastInternalTestResultCode()) {
+                    deviceStatus.setLastInternalTestResultCode(getStatusResponse.getLastInternalTestResultCode());
+                }
                 if (getStatusResponse.getMacAddress() != null && !getStatusResponse.getMacAddress().isEmpty()) {
                     deviceStatus.setMacAddress(this.convertMacAddress(getStatusResponse.getMacAddress()));
                 }
-                deviceStatus.setMaximumOutputPowerOnDcOutput(getStatusResponse.getMaximumOutputPowerOnDcOutput());
-                deviceStatus.setName(getStatusResponse.getName());
-                deviceStatus.setNumberOfOutputs(getStatusResponse.getNumberOfOutputs());
-                if (getStatusResponse.getSerialNumber() != null && getStatusResponse.getSerialNumber().isEmpty()) {
+                if (getStatusResponse.hasMaximumOutputPowerOnDcOutput()) {
+                    deviceStatus.setMaximumOutputPowerOnDcOutput(getStatusResponse.getMaximumOutputPowerOnDcOutput());
+                }
+                if (getStatusResponse.hasName()) {
+                    deviceStatus.setName(getStatusResponse.getName());
+                }
+                if (getStatusResponse.hasNumberOfOutputs()) {
+                    deviceStatus.setNumberOfOutputs(getStatusResponse.getNumberOfOutputs());
+                }
+                if (getStatusResponse.hasSerialNumber()) {
                     deviceStatus.setSerialNumber(this.convertSerialNumber(getStatusResponse.getSerialNumber()));
                 }
-                deviceStatus.setStartupCounter(getStatusResponse.getStartupCounter());
+                if (getStatusResponse.hasStartupCounter()) {
+                    deviceStatus.setStartupCounter(getStatusResponse.getStartupCounter());
+                }
             } else {
                 // handle failure by throwing exceptions if needed
+                LOGGER.error("Unable to convert Oslp.GetStatusResponse");
             }
         }
 
@@ -1534,6 +1575,9 @@ public class OslpDeviceService implements DeviceService {
     }
 
     private String convertSerialNumber(final ByteString byteString) {
+        if (byteString == null) {
+            return null;
+        }
         final StringBuilder stringBuilder = new StringBuilder();
         for (final byte b : byteString.toByteArray()) {
             stringBuilder.append(b);

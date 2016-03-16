@@ -8,8 +8,7 @@
 package com.alliander.osgp.webdevicesimulator.domain.valueobjects;
 
 public enum ProtocolType {
-    OSLP("OSLP"),
-    OSLP_ELSTER("OSLP ELSTER");
+    OSLP("OSLP"), OSLP_ELSTER("OSLP_ELSTER");
 
     private final String value;
 
