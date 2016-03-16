@@ -9,13 +9,15 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.jms;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class SmartMeteringRequestMessage extends RequestMessage {
 
     private static final long serialVersionUID = 8978488633831083383L;
 
-    private final SmartMeteringRequestMessageType messageType;
+    private final String messageType;
     private final Integer messagePriority;
 
     /**
@@ -26,7 +28,8 @@ public class SmartMeteringRequestMessage extends RequestMessage {
     @Deprecated
     public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final Serializable request) {
-        this(messageType, correlationUid, organisationIdentification, deviceIdentification, null, request);
+        this(messageType.toString(), correlationUid, organisationIdentification, deviceIdentification, null, request,
+                MessagePriorityEnum.DEFAULT.getPriority());
     }
 
     /**
@@ -38,7 +41,8 @@ public class SmartMeteringRequestMessage extends RequestMessage {
     public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final String ipAddress,
             final Serializable request) {
-        this(messageType, correlationUid, organisationIdentification, deviceIdentification, ipAddress, request, null);
+        this(messageType.toString(), correlationUid, organisationIdentification, deviceIdentification, ipAddress,
+                request, MessagePriorityEnum.DEFAULT.getPriority());
     }
 
     /**
@@ -47,12 +51,13 @@ public class SmartMeteringRequestMessage extends RequestMessage {
      * @deprecated
      */
     @Deprecated
-    public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType setEncryptionKeyExchangeOnGMeter,
-            final String correlationUid, final String organisationIdentification, final String deviceIdentification) {
-        this(setEncryptionKeyExchangeOnGMeter, correlationUid, organisationIdentification, deviceIdentification, null);
+    public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
+            final String organisationIdentification, final String deviceIdentification) {
+        this(messageType.toString(), correlationUid, organisationIdentification, deviceIdentification, null, null,
+                MessagePriorityEnum.DEFAULT.getPriority());
     }
 
-    private SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
+    private SmartMeteringRequestMessage(final String messageType, final String correlationUid,
             final String organisationIdentification, final String deviceIdentification, final String ipAddress,
             final Serializable request, final Integer messagePriority) {
         super(correlationUid, organisationIdentification, deviceIdentification, ipAddress, request);
@@ -60,36 +65,25 @@ public class SmartMeteringRequestMessage extends RequestMessage {
         this.messagePriority = messagePriority;
     }
 
+    private SmartMeteringRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String ipAddress,
+            final Serializable request) {
+        super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
+                deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
+        this.messageType = deviceMessageMetadata.getMessageType();
+        this.messagePriority = deviceMessageMetadata.getMessagePriority();
+    }
+
     public static class Builder {
-        private SmartMeteringRequestMessageType messageType;
-        private String correlationUid;
-        private String organisationIdentification;
-        private String deviceIdentification;
+        private DeviceMessageMetadata deviceMessageMetadata;
         private String ipAddress;
         private Serializable request;
-        private Integer messagePriority;
 
         public Builder() {
             // empty constructor
         }
 
-        public Builder messageType(final SmartMeteringRequestMessageType messageType) {
-            this.messageType = messageType;
-            return this;
-        }
-
-        public Builder correlationUid(final String correlationUid) {
-            this.correlationUid = correlationUid;
-            return this;
-        }
-
-        public Builder organisationIdentification(final String organisationIdentification) {
-            this.organisationIdentification = organisationIdentification;
-            return this;
-        }
-
-        public Builder deviceIdentification(final String deviceIdentification) {
-            this.deviceIdentification = deviceIdentification;
+        public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
+            this.deviceMessageMetadata = deviceMessageMetadata;
             return this;
         }
 
@@ -103,15 +97,8 @@ public class SmartMeteringRequestMessage extends RequestMessage {
             return this;
         }
 
-        public Builder messagePriority(final Integer messagePriority) {
-            this.messagePriority = messagePriority;
-            return this;
-        }
-
         public SmartMeteringRequestMessage build() {
-            return new SmartMeteringRequestMessage(this.messageType, this.correlationUid,
-                    this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.request,
-                    this.messagePriority);
+            return new SmartMeteringRequestMessage(this.deviceMessageMetadata, this.ipAddress, this.request);
         }
     }
 
@@ -119,7 +106,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
         return this.messagePriority;
     }
 
-    public SmartMeteringRequestMessageType getMessageType() {
+    public String getMessageType() {
         return this.messageType;
     }
 }

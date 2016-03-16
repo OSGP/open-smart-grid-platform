@@ -33,6 +33,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificatio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringMonitoringService")
 @Validated
@@ -67,14 +68,15 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA.toString(), messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(requestData)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -107,14 +109,15 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA.toString(), messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(requestData)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -147,14 +150,15 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.READ_ALARM_REGISTER.toString(), messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.READ_ALARM_REGISTER)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(requestData)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);

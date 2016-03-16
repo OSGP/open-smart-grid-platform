@@ -68,7 +68,7 @@ public class ConfigurationService {
     public void requestSpecialDays(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -90,7 +90,7 @@ public class ConfigurationService {
     public void setConfigurationObject(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest setConfigurationObjectRequestValueObject)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -111,7 +111,7 @@ public class ConfigurationService {
 
     public void setPushSetupAlarm(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -131,7 +131,7 @@ public class ConfigurationService {
 
     public void setPushSetupSms(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("setPushSetupSms for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -264,8 +264,8 @@ public class ConfigurationService {
                 administrativeStatusTypeDto, AdministrativeStatusType.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getDeviceIdentification(), result,
-                osgpException, administrativeStatusType, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, osgpException, administrativeStatusType, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
     }
 
@@ -403,7 +403,7 @@ public class ConfigurationService {
                 new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                         .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
                         .getIpAddress(), new GMeterInfo(gasDevice.getChannel(), gasDevice.getDeviceIdentification())),
-                        deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority());
+                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority());
     }
 
     public void handleSetEncryptionKeyExchangeOnGMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,

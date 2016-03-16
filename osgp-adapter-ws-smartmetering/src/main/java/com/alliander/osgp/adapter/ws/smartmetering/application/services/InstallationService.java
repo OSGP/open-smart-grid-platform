@@ -21,6 +21,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringInstallationService")
 @Validated
@@ -50,14 +51,15 @@ public class InstallationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ADD_METER.toString(),
+                messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.ADD_METER)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(device)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);

@@ -27,6 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringAdhocService")
 @Validated
@@ -61,14 +62,15 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.SYNCHRONIZE_TIME)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(synchronizeTimeRequest)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -96,14 +98,15 @@ public class AdhocService {
                 deviceIdentification);
         final SmsDetails smsDetails = new SmsDetails(deviceIdentification, 0L, "", "", "");
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.SEND_WAKEUP_SMS.toString(),
+                messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.SEND_WAKEUP_SMS)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(smsDetails)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -118,7 +121,7 @@ public class AdhocService {
 
     public String enqueueGetSmsDetailsRequest(final String organisationIdentification,
             final String deviceIdentification, final SmsDetails smsDetails, final int messagePriority)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -131,14 +134,15 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.GET_SMS_DETAILS.toString(),
+                messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.GET_SMS_DETAILS)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(smsDetails)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -166,14 +170,15 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority);
+
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .messageType(SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
+        .deviceMessageMetadata(deviceMessageMetadata)
         .request(request)
-        .messagePriority(messagePriority).build();
+        .build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
