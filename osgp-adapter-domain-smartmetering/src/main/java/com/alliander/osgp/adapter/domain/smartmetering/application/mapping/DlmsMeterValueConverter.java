@@ -9,9 +9,11 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 
 import java.math.BigDecimal;
 
+import ma.glasnost.orika.CustomConverter;
+import ma.glasnost.orika.metadata.Type;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
@@ -19,37 +21,29 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 
 /**
- * Calculate a meter value:
+ * Calculate a osgp meter value:
  *
  * <pre>
- * - determine the multiplier for the DlmsUnit
+ * - determine the osgp unit
+ * - determine the multiplier for the conversion of DlmsUnit to OsgpUnit
  * - apply the multiplier
- * - determine the standardized unit
  * </pre>
  *
  */
-@Component(value = "standardUnitConverter")
-public class StandardUnitConverter {
+public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValue, OsgpMeterValue> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StandardUnitConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DlmsMeterValueConverter.class);
 
-    /**
-     * Return a meterValue in standardized unit. When the argument value is
-     * null, null is returned.
-     *
-     * @param meterValue
-     * @param dlmsMeterValue
-     * @return
-     */
-    public OsgpMeterValue calculateStandardizedValue(final DlmsMeterValue dlmsMeterValue) {
-        if (dlmsMeterValue == null) {
+    @Override
+    public OsgpMeterValue convert(final DlmsMeterValue source, final Type<? extends OsgpMeterValue> destinationType) {
+        if (source == null) {
             return null;
         }
-        final BigDecimal multiplier = this.getMultiplierToOsgpUnit(dlmsMeterValue.getDlmsUnit(),
-                this.toStandardUnit(dlmsMeterValue.getDlmsUnit()));
-        final BigDecimal calculated = dlmsMeterValue.getValue().multiply(multiplier);
-        LOGGER.debug(String.format("calculated %s from %s", calculated, dlmsMeterValue));
-        return new OsgpMeterValue(calculated, this.toStandardUnit(dlmsMeterValue.getDlmsUnit()));
+        final BigDecimal multiplier = this.getMultiplierToOsgpUnit(source.getDlmsUnit(),
+                this.toStandardUnit(source.getDlmsUnit()));
+        final BigDecimal calculated = source.getValue().multiply(multiplier);
+        LOGGER.debug(String.format("calculated %s from %s", calculated, source));
+        return new OsgpMeterValue(calculated, this.toStandardUnit(source.getDlmsUnit()));
     }
 
     /**
@@ -60,7 +54,7 @@ public class StandardUnitConverter {
      * @param dlmsUnit
      * @return
      */
-    public BigDecimal getMultiplierToOsgpUnit(final DlmsUnit dlmsUnit, final OsgpUnit osgpUnit) {
+    private BigDecimal getMultiplierToOsgpUnit(final DlmsUnit dlmsUnit, final OsgpUnit osgpUnit) {
         switch (dlmsUnit) {
         case WH:
             switch (osgpUnit) {
@@ -94,7 +88,7 @@ public class StandardUnitConverter {
      * @throws IllegalArgumentException
      *             when no osgp unit is found
      */
-    public OsgpUnit toStandardUnit(final DlmsUnit dlmsUnit) {
+    private OsgpUnit toStandardUnit(final DlmsUnit dlmsUnit) {
         switch (dlmsUnit) {
         case WH:
             return OsgpUnit.KWH;

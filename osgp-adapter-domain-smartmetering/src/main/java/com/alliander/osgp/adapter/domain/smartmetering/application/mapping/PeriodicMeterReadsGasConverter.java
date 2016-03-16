@@ -10,18 +10,14 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
 
-@Component
 public class PeriodicMeterReadsGasConverter
 extends
 CustomConverter<PeriodicMeterReadsGas, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> {
-    @Autowired
-    private StandardUnitConverter standardUnitConverter;
 
     @Override
     public com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas convert(
@@ -30,8 +26,11 @@ CustomConverter<PeriodicMeterReadsGas, com.alliander.osgp.domain.core.valueobjec
         final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(source.getAmrProfileStatusCode(),
                 AmrProfileStatusCode.class);
         return new com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas(source.getLogTime(),
-                this.standardUnitConverter.calculateStandardizedValue(source.getConsumption()),
-                source.getCaptureTime(), amrProfileStatusCode);
+                this.convert(source.getConsumption()), source.getCaptureTime(), amrProfileStatusCode);
+    }
+
+    private OsgpMeterValue convert(final DlmsMeterValue dlmsMeterValue) {
+        return this.mapperFacade.map(dlmsMeterValue, OsgpMeterValue.class);
     }
 
 }
