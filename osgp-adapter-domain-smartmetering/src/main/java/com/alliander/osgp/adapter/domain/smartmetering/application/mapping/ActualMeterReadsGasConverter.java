@@ -10,53 +10,20 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
-
-@Component
 public class ActualMeterReadsGasConverter extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas, ActualMeterReadsGas> {
-    @Autowired
-    private StandardUnitConverter standardUnitConverter;
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas, MeterReadsGas> {
 
     @Override
-    public ActualMeterReadsGas convert(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas source,
-            final Type<? extends ActualMeterReadsGas> destinationType) {
-        return new ActualMeterReadsGas(source.getLogTime(), this.standardUnitConverter.calculateStandardizedValue(
-                source.getConsumption(), source), source.getCaptureTime(),
-                this.standardUnitConverter.toStandardUnit(source));
+    public MeterReadsGas convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas source,
+            final Type<? extends MeterReadsGas> destinationType) {
+        return new MeterReadsGas(source.getLogTime(), this.convert(source.getConsumption()), source.getCaptureTime());
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((this.standardUnitConverter == null) ? 0 : this.standardUnitConverter.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        final ActualMeterReadsGasConverter other = (ActualMeterReadsGasConverter) obj;
-        if (this.standardUnitConverter == null) {
-            if (other.standardUnitConverter != null) {
-                return false;
-            }
-        } else if (!this.standardUnitConverter.equals(other.standardUnitConverter)) {
-            return false;
-        }
-        return true;
+    private OsgpMeterValue convert(final DlmsMeterValue dlmsMeterValue) {
+        return this.mapperFacade.map(dlmsMeterValue, OsgpMeterValue.class);
     }
 }

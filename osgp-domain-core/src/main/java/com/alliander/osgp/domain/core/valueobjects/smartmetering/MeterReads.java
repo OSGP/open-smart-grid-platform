@@ -10,23 +10,24 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class MeterReads implements Serializable {
+public class MeterReads implements Serializable {
     private static final long serialVersionUID = -297320204916085999L;
 
     private final Date logTime;
 
-    private final Double activeEnergyImport;
-    private final Double activeEnergyExport;
-    private final Double activeEnergyImportTariffOne;
+    private final OsgpMeterValue activeEnergyImport;
+    private final OsgpMeterValue activeEnergyExport;
+    private final OsgpMeterValue activeEnergyImportTariffOne;
     // may be null
-    private final Double activeEnergyImportTariffTwo;
-    private final Double activeEnergyExportTariffOne;
+    private final OsgpMeterValue activeEnergyImportTariffTwo;
+    private final OsgpMeterValue activeEnergyExportTariffOne;
     // may be null
-    private final Double activeEnergyExportTariffTwo;
+    private final OsgpMeterValue activeEnergyExportTariffTwo;
 
-    protected MeterReads(final Date logTime, final Double activeEnergyImport, final Double activeEnergyExport,
-            final Double activeEnergyImportTariffOne, final Double activeEnergyImportTariffTwo,
-            final Double activeEnergyExportTariffOne, final Double activeEnergyExportTariffTwo) {
+    public MeterReads(final Date logTime, final OsgpMeterValue activeEnergyImport,
+            final OsgpMeterValue activeEnergyExport, final OsgpMeterValue activeEnergyImportTariffOne,
+            final OsgpMeterValue activeEnergyImportTariffTwo, final OsgpMeterValue activeEnergyExportTariffOne,
+            final OsgpMeterValue activeEnergyExportTariffTwo) {
         super();
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
@@ -41,27 +42,27 @@ public abstract class MeterReads implements Serializable {
         return new Date(this.logTime.getTime());
     }
 
-    public Double getActiveEnergyImportTariffOne() {
+    public OsgpMeterValue getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
     }
 
-    public Double getActiveEnergyImportTariffTwo() {
+    public OsgpMeterValue getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
     }
 
-    public Double getActiveEnergyExportTariffOne() {
+    public OsgpMeterValue getActiveEnergyExportTariffOne() {
         return this.activeEnergyExportTariffOne;
     }
 
-    public Double getActiveEnergyExportTariffTwo() {
+    public OsgpMeterValue getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
     }
 
-    public Double getActiveEnergyImport() {
+    public OsgpMeterValue getActiveEnergyImport() {
         return this.activeEnergyImport;
     }
 
-    public Double getActiveEnergyExport() {
+    public OsgpMeterValue getActiveEnergyExport() {
         return this.activeEnergyExport;
     }
 
@@ -69,8 +70,9 @@ public abstract class MeterReads implements Serializable {
     public String toString() {
         return "MeterReads [logTime=" + this.logTime + ", activeEnergyImport=" + this.activeEnergyImport
                 + ", activeEnergyExport=" + this.activeEnergyExport + ", activeEnergyImportTariffOne="
-                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo=" + this.activeEnergyImportTariffTwo
-                + ", activeEnergyExportTariffOne=" + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
+                + this.activeEnergyImportTariffOne + ", activeEnergyImportTariffTwo="
+                + this.activeEnergyImportTariffTwo + ", activeEnergyExportTariffOne="
+                + this.activeEnergyExportTariffOne + ", activeEnergyExportTariffTwo="
                 + this.activeEnergyExportTariffTwo + "]";
     }
 }

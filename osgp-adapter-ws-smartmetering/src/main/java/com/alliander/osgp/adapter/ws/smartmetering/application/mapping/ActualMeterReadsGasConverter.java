@@ -20,18 +20,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.GMeterValue;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 
 public class ActualMeterReadsGasConverter
 extends
-CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
+CustomConverter<MeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReadsGasConverter.class);
 
     @Override
-    public ActualMeterReadsGasResponse convert(final ActualMeterReadsGas source,
+    public ActualMeterReadsGasResponse convert(final MeterReadsGas source,
             final Type<? extends ActualMeterReadsGasResponse> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse destination = new ObjectFactory()
@@ -56,14 +57,12 @@ CustomConverter<ActualMeterReadsGas, com.alliander.osgp.adapter.ws.schema.smartm
             convertedDate = null;
         }
 
-        destination.setConsumption(this.mapperFacade.map(source.getConsumption(), GMeterValue.class));
-        if (destination.getConsumption() != null
-                && !destination.getConsumption().getUnit().value().equals(source.getOsgpUnit().name())) {
-            throw new IllegalStateException(String.format("unit %s in destionation differs from unit %s in source",
-                    destination.getConsumption().getUnit(), source.getOsgpUnit()));
-        }
+        destination.setConsumption(this.getMeterValue(source.getConsumption()));
 
         return destination;
     }
 
+    private MeterValue getMeterValue(final OsgpMeterValue source) {
+        return this.mapperFacade.map(source, MeterValue.class);
+    }
 }

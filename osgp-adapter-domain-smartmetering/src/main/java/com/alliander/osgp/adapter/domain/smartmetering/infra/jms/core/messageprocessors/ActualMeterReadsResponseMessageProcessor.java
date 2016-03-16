@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReads;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -32,7 +31,7 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
         final Object dataObject = responseMessage.getDataObject();
-        return dataObject instanceof ActualMeterReads || dataObject instanceof MeterReadsGas;
+        return dataObject instanceof MeterReads || dataObject instanceof MeterReadsGas;
     }
 
     @Override
@@ -40,13 +39,13 @@ public class ActualMeterReadsResponseMessageProcessor extends OsgpCoreResponseMe
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
 
-        if (responseMessage.getDataObject() instanceof ActualMeterReads) {
-            final ActualMeterReads actualMeterReadsDto = (ActualMeterReads) responseMessage.getDataObject();
+        if (responseMessage.getDataObject() instanceof MeterReads) {
+            final MeterReads actualMeterReadsDto = (MeterReads) responseMessage.getDataObject();
 
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException, actualMeterReadsDto);
-        } else if (responseMessage.getDataObject() instanceof ActualMeterReadsGas) {
-            final ActualMeterReadsGas meterReadsGas = (ActualMeterReadsGas) responseMessage.getDataObject();
+        } else if (responseMessage.getDataObject() instanceof MeterReadsGas) {
+            final MeterReadsGas meterReadsGas = (MeterReadsGas) responseMessage.getDataObject();
             this.monitoringService.handleActualMeterReadsResponse(deviceIdentification, organisationIdentification,
                     correlationUid, messageType, responseMessage.getResult(), osgpException, meterReadsGas);
         }
