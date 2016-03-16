@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +41,8 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod;
 import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceType;
@@ -65,6 +68,36 @@ public class DlmsHelperService {
 
     public static final int MILLISECONDS_PER_MINUTE = 60000;
 
+    /**
+     * get results from the meter and check if the number of results equals the
+     * number of attribute addresses provided.
+     *
+     * @param conn
+     * @param device
+     * @param description
+     * @param params
+     * @return
+     * @throws ProtocolAdapterException
+     */
+    public List<GetResult> getAndCheck(final ClientConnection conn, final DlmsDevice device, final String description,
+            final AttributeAddress... params) throws ProtocolAdapterException {
+        final List<GetResult> getResults = this.getWithList(conn, device, params);
+        this.checkResultList(getResults, params.length, description);
+        return getResults;
+    }
+
+    public void checkResultList(final List<GetResult> getResultList, final int expectedResults, final String description)
+            throws ProtocolAdapterException {
+        if (getResultList.isEmpty()) {
+            throw new ProtocolAdapterException("No GetResult received: " + description);
+        }
+
+        if (getResultList.size() != expectedResults) {
+            throw new ProtocolAdapterException("Expected " + expectedResults + " GetResults: " + description + ", got "
+                    + getResultList.size());
+        }
+    }
+
     public List<GetResult> getWithList(final ClientConnection conn, final DlmsDevice device,
             final AttributeAddress... params) throws ProtocolAdapterException {
         try {
@@ -80,6 +113,51 @@ public class DlmsHelperService {
 
     public DataObject getClockDefinition() {
         return DataObjectDefinitions.getClockDefinition();
+    }
+
+    /**
+     * create a dlms meter value, apply the scaler and determine the unit on the
+     * meter.
+     *
+     * @param value
+     * @param dataObject
+     * @return the meter value with dlms unit or null when
+     *         {@link #readLong(GetResult, String)} is null
+     * @throws ProtocolAdapterException
+     */
+    public DlmsMeterValue getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
+            final String description) throws ProtocolAdapterException {
+        return this.getScaledMeterValue(value.resultData(), scalerUnit.resultData(), description);
+    }
+
+    public DlmsMeterValue getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
+            final String description) throws ProtocolAdapterException {
+        LOGGER.debug(this.getDebugInfo(value));
+        LOGGER.debug(this.getDebugInfo(scalerUnitObject));
+        final Long rawValue = this.readLong(value, description);
+        if (rawValue == null) {
+            return null;
+        }
+
+        if (!scalerUnitObject.isComplex()) {
+            throw new ProtocolAdapterException("complex data (structure) expected while retrieving scaler and unit."
+                    + this.getDebugInfo(scalerUnitObject));
+        }
+        final List<DataObject> dataObjects = scalerUnitObject.value();
+        if (dataObjects.size() != 2) {
+            throw new ProtocolAdapterException("expected 2 values while retrieving scaler and unit."
+                    + this.getDebugInfo(scalerUnitObject));
+        }
+        final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
+        final DlmsUnit unit = DlmsUnit.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description).intValue());
+
+        // determine value
+        BigDecimal scaledValue = BigDecimal.valueOf(rawValue);
+        if (scaler != 0) {
+            scaledValue = scaledValue.multiply(BigDecimal.valueOf(Math.pow(10, scaler)));
+        }
+
+        return new DlmsMeterValue(scaledValue, unit);
     }
 
     public DataObject getAMRProfileDefinition() {
@@ -205,7 +283,8 @@ public class DlmsHelperService {
         }
 
         final int year = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.YEAR);
-        final int month = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MONTH);
+        // valueFor makes the month start at 0, cosemdate month starts at 1
+        final int month = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MONTH) + 1;
         final int dayOfMonth = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_MONTH);
         final int dayOfWeek = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_WEEK);
         final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate(
@@ -449,7 +528,7 @@ public class DlmsHelperService {
         final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime startTime = this.readCosemDateTime(
                 elements.get(0), "Start Time from " + description);
         final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime endTime = this.readCosemDateTime(
-                elements.get(0), "End Time from " + description);
+                elements.get(1), "End Time from " + description);
 
         return new WindowElement(startTime, endTime);
     }
@@ -465,7 +544,7 @@ public class DlmsHelperService {
         final String rawValueClass = this.getRawValueClassForDebugInfo(dataObject);
 
         return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
-        + objectText;
+                + objectText;
     }
 
     private String getObjectTextForDebugInfo(final DataObject dataObject) {
@@ -582,8 +661,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -609,10 +688,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-                .append(clockStatus);
+        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+        .append(clockStatus);
 
         return sb.toString();
     }
@@ -623,7 +702,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-        .append(", bits=").append(stringValue);
+                .append(", bits=").append(stringValue);
 
         return sb.toString();
     }
