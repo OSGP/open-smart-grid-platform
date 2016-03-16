@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 /**
  * A metervalue with scaler applied together with its unit on the meter
  *
- * @author dev
  *
  */
 public class DlmsMeterValue implements Serializable {
