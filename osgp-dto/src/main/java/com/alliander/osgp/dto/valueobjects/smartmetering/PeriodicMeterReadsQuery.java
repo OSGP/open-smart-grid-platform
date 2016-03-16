@@ -15,7 +15,7 @@ import java.util.Date;
  *
  * @author dev
  */
-public class PeriodicMeterReadsQuery implements Serializable, ChannelQuery {
+public class PeriodicMeterReadsQuery implements Serializable {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
@@ -33,7 +33,7 @@ public class PeriodicMeterReadsQuery implements Serializable, ChannelQuery {
     }
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate) {
-        this(periodType, beginDate, endDate, Channel.NONE);
+        this(periodType, beginDate, endDate, null);
     }
 
     public PeriodType getPeriodType() {
@@ -48,11 +48,10 @@ public class PeriodicMeterReadsQuery implements Serializable, ChannelQuery {
         return new Date(this.endDate.getTime());
     }
 
-    public boolean isGas() {
-        return this.channel != Channel.NONE;
+    public boolean isMbusQuery() {
+        return this.channel != null;
     }
 
-    @Override
     public Channel getChannel() {
         return this.channel;
     }
