@@ -226,9 +226,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
 
         /*
          * workaround for a problem when using with_list and retrieving a
-         * profile buffer, this will be returned erroneously:
-         *
-         * 1 an empty list 2 the profile buffer 3 a null value 4 the scaler unit
+         * profile buffer, this will be returned erroneously.
          */
         final List<GetResult> getResultList = new ArrayList<GetResult>(profileBufferAndScalerUnit.length);
         for (final AttributeAddress address : profileBufferAndScalerUnit) {

@@ -99,6 +99,10 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
         LOGGER.debug("Retrieving current billing period and profiles for period type: {}, from: {}, to: {}",
                 periodType, beginDateTime, endDateTime);
 
+        /*
+         * workaround for a problem when using with_list and retrieving a
+         * profile buffer, this will be returned erroneously.
+         */
         final List<GetResult> getResultList = new ArrayList<GetResult>(profileBufferAndScalerUnit.length);
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
             getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
