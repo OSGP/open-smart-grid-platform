@@ -14,7 +14,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -22,19 +21,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.Channel;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas;
 
 @Component()
-public class GetActualMeterReadsGasCommandExecutor extends
-        AbstractMeterReadsScalerUnitCommandExecutor<ActualMeterReadsQuery, ActualMeterReadsGas> {
+public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<ActualMeterReadsQuery, MeterReadsGas> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
     private static final int CLASS_ID_MBUS = 4;
     private static final byte ATTRIBUTE_ID_VALUE = 2;
+    private static final byte ATTRIBUTE_ID_SCALER_UNIT = 3;
     private static final byte ATTRIBUTE_ID_TIME = 5;
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_1 = new ObisCode("0.1.24.2.1.255");
     private static final ObisCode OBIS_CODE_MBUS_MASTER_VALUE_2 = new ObisCode("0.2.24.2.1.255");
@@ -45,7 +45,7 @@ public class GetActualMeterReadsGasCommandExecutor extends
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActualMeterReadsGas execute(final ClientConnection conn, final DlmsDevice device,
+    public MeterReadsGas execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
@@ -60,36 +60,26 @@ public class GetActualMeterReadsGasCommandExecutor extends
         final AttributeAddress mbusTime = new AttributeAddress(CLASS_ID_MBUS, obisCodeMbusMasterValue,
                 ATTRIBUTE_ID_TIME);
 
-        final List<GetResult> getResultList = this.dlmsHelperService.getWithList(conn, device, mbusValue, mbusTime,
-                this.getScalerUnitAttributeAddress(actualMeterReadsRequest));
+        final AttributeAddress scalerUnit = new AttributeAddress(CLASS_ID_MBUS,
+                this.masterValueForChannel(actualMeterReadsRequest.getChannel()), ATTRIBUTE_ID_SCALER_UNIT);
 
-        checkResultList(getResultList);
+        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
+                "retrieve actual meter reads for mbus " + actualMeterReadsRequest.getChannel(), mbusValue, mbusTime,
+                scalerUnit);
 
-        final long consumption = this.dlmsHelperService.readLong(getResultList.get(0), "gas consumption");
-        final DataObject time = this.dlmsHelperService.readDataObject(getResultList.get(1), "captureTime gas");
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) time.value());
+        final DlmsMeterValue consumption = this.dlmsHelperService.getScaledMeterValue(getResultList.get(0),
+                getResultList.get(2), "retrieve scaled value for mbus " + actualMeterReadsRequest.getChannel());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService
+                .readDateTime(getResultList.get(1), "captureTime gas");
         final Date captureTime;
         if (cosemDateTime.isDateTimeSpecified()) {
             captureTime = cosemDateTime.asDateTime().toDate();
         } else {
             throw new ProtocolAdapterException("Unexpected null/unspecified value for M-Bus Capture Time");
         }
-        final DataObject scalerUnit = this.dlmsHelperService.readDataObject(getResultList.get(2), "Scaler and Unit");
 
-        return new ActualMeterReadsGas(new Date(), consumption, captureTime, this.convert(scalerUnit));
+        return new MeterReadsGas(new Date(), consumption, captureTime);
 
-    }
-
-    private static void checkResultList(final List<GetResult> getResultList) throws ProtocolAdapterException {
-        if (getResultList.isEmpty()) {
-            throw new ProtocolAdapterException(
-                    "No GetResult received while retrieving current MBUS master capture time.");
-        }
-
-        if (getResultList.size() != 3) {
-            LOGGER.info("Expected 3 GetResult while retrieving current MBUS master capture time, got "
-                    + getResultList.size());
-        }
     }
 
     private ObisCode masterValueForChannel(final Channel channel) throws ProtocolAdapterException {
