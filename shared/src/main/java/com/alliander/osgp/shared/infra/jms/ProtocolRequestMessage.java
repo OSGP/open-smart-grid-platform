@@ -9,6 +9,7 @@ package com.alliander.osgp.shared.infra.jms;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class ProtocolRequestMessage extends RequestMessage {
@@ -22,7 +23,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     private final Serializable messageData;
     private final boolean scheduled;
     private final int retryCount;
-    private final int messagePriority;
+    private int messagePriority = MessagePriorityEnum.DEFAULT.getPriority();
 
     /**
      * Constructor with no scheduled flag and no messagePriority
@@ -48,47 +49,51 @@ public class ProtocolRequestMessage extends RequestMessage {
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final String ipAddress, final Serializable request, final boolean scheduled, final int retryCount) {
-        this(domain, domainVersion, messageType, correlationUid, organisationIdentification, deviceIdentification,
-                ipAddress, request, scheduled, retryCount, MessagePriorityEnum.DEFAULT.getPriority());
+        super(correlationUid, organisationIdentification, deviceIdentification, request);
+        this.domain = domain;
+        this.domainVersion = domainVersion;
+        this.messageType = messageType;
+        this.ipAddress = ipAddress;
+        this.messageData = request;
+        this.scheduled = scheduled;
+        this.retryCount = retryCount;
     }
 
     /**
      * Constructor with both a scheduled flag and a messagePriority. Only called
      * from builder
      */
-    private ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
-            final String correlationUid, final String organisationIdentification, final String deviceIdentification,
-            final String ipAddress, final Serializable request, final boolean scheduled, final int retryCount,
-            final int messagePriority) {
-        super(correlationUid, organisationIdentification, deviceIdentification, request);
+    private ProtocolRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
+            final String domainVersion, final String ipAddress, final Serializable request, final boolean scheduled,
+            final int retryCount) {
+        super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
+                deviceMessageMetadata.getDeviceIdentification(), request);
 
         this.domain = domain;
         this.domainVersion = domainVersion;
-        this.messageType = messageType;
         this.ipAddress = ipAddress;
-
         this.messageData = request;
         this.scheduled = scheduled;
         this.retryCount = retryCount;
 
-        this.messagePriority = messagePriority;
+        this.messageType = deviceMessageMetadata.getMessageType();
+        this.messagePriority = deviceMessageMetadata.getMessagePriority();
     }
 
     public static class Builder {
         private String domain;
         private String domainVersion;
-        private String messageType;
-
-        private String correlationUid;
-        private String organisationIdentification;
-        private String deviceIdentification;
-
         private String ipAddress;
         private Serializable request;
         private boolean scheduled;
         private int retryCount;
 
-        private int messagePriority;
+        private DeviceMessageMetadata deviceMessageMetadata;
+
+        public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
+            this.deviceMessageMetadata = deviceMessageMetadata;
+            return this;
+        }
 
         public Builder domain(final String domain) {
             this.domain = domain;
@@ -97,26 +102,6 @@ public class ProtocolRequestMessage extends RequestMessage {
 
         public Builder domainVersion(final String domainVersion) {
             this.domainVersion = domainVersion;
-            return this;
-        }
-
-        public Builder messageType(final String messageType) {
-            this.messageType = messageType;
-            return this;
-        }
-
-        public Builder correlationUid(final String correlationUid) {
-            this.correlationUid = correlationUid;
-            return this;
-        }
-
-        public Builder organisationIdentification(final String organisationIdentification) {
-            this.organisationIdentification = organisationIdentification;
-            return this;
-        }
-
-        public Builder deviceIdentification(final String deviceIdentification) {
-            this.deviceIdentification = deviceIdentification;
             return this;
         }
 
@@ -140,17 +125,10 @@ public class ProtocolRequestMessage extends RequestMessage {
             return this;
         }
 
-        public Builder messagePriority(final int messagePriority) {
-            this.messagePriority = messagePriority;
-            return this;
-        }
-
         public ProtocolRequestMessage build() {
-            return new ProtocolRequestMessage(this.domain, this.domainVersion, this.messageType, this.correlationUid,
-                    this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.request,
-                    this.scheduled, this.retryCount, this.messagePriority);
+            return new ProtocolRequestMessage(this.deviceMessageMetadata, this.domain, this.domainVersion,
+                    this.ipAddress, this.request, this.scheduled, this.retryCount);
         }
-
     }
 
     public String getDomain() {
