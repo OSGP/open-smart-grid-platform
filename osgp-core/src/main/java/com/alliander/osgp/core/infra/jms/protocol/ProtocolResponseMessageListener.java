@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.core.application.services.DeviceResponseMessageService;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -61,39 +62,32 @@ public class ProtocolResponseMessageListener implements MessageListener {
     private ProtocolResponseMessage createResponseMessage(final Message message) throws JMSException {
 
         final ResponseMessage responseMessage = (ResponseMessage) ((ObjectMessage) message).getObject();
-        final ObjectMessage objectMessage = (ObjectMessage) message;
         final OsgpException osgpException = responseMessage.getOsgpException() == null ? null : responseMessage
                 .getOsgpException();
-        final String correlationUid = objectMessage.getJMSCorrelationID();
-        final String messageType = objectMessage.getJMSType();
-        final String domain = objectMessage.getStringProperty(Constants.DOMAIN);
-        final String domainVersion = objectMessage.getStringProperty(Constants.DOMAIN_VERSION);
-        final String organisationIdentification = objectMessage
-                .getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        final String deviceIdentification = objectMessage.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(objectMessage
+        final String domain = message.getStringProperty(Constants.DOMAIN);
+        final String domainVersion = message.getStringProperty(Constants.DOMAIN_VERSION);
+        final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(message
                 .getStringProperty(Constants.RESULT));
         final Serializable dataObject = responseMessage.getDataObject();
-        final boolean scheduled = objectMessage.propertyExists(Constants.IS_SCHEDULED) ? objectMessage
-                .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-                final int retryCount = objectMessage.getIntProperty(Constants.RETRY_COUNT);
-                final int messagePriority = message.getJMSPriority();
+        final boolean scheduled = message.propertyExists(Constants.IS_SCHEDULED);
+        final int retryCount = message.getIntProperty(Constants.RETRY_COUNT);
 
-                // @formatter:off
-                return new ProtocolResponseMessage.Builder()
-                .domain(domain)
-                .domainVersion(domainVersion)
-                .messageType(messageType)
-                .correlationUid(correlationUid)
-                .organisationIdentification(organisationIdentification)
-                .deviceIdentification(deviceIdentification)
-                .result(responseMessageResultType)
-                .osgpException(osgpException)
-                .dataObject(dataObject)
-                .scheduled(scheduled)
-                .retryCount(retryCount)
-                .messagePriority(messagePriority)
-                .build();
-                // @formatter:on
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
+                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
+                message.getJMSType(), message.getJMSPriority());
+
+        // @formatter:off
+        return new ProtocolResponseMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .domain(domain)
+        .domainVersion(domainVersion)
+        .result(responseMessageResultType)
+        .osgpException(osgpException)
+        .dataObject(dataObject)
+        .scheduled(scheduled)
+        .retryCount(retryCount)
+        .build();
+        // @formatter:on
     }
 }

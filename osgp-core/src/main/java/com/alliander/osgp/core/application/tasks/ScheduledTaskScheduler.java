@@ -22,6 +22,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
 @Component
@@ -66,18 +67,18 @@ public class ScheduledTaskScheduler implements Runnable {
     private ProtocolRequestMessage createProtocolRequestMessage(final ScheduledTask scheduledTask) {
         final Device device = this.deviceRepository.findByDeviceIdentification(scheduledTask.getDeviceIdentification());
 
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                scheduledTask.getDeviceIdentification(), scheduledTask.getOrganisationIdentification(),
+                scheduledTask.getCorrelationId(), scheduledTask.getMessageType(), scheduledTask.getMessagePriority());
+
         // @formatter:off
         return new ProtocolRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
         .domain(scheduledTask.getDomain())
         .domainVersion(scheduledTask.getDomainVersion())
-        .messageType(scheduledTask.getMessageType())
-        .correlationUid(scheduledTask.getCorrelationId())
-        .organisationIdentification(scheduledTask.getOrganisationIdentification())
-        .deviceIdentification(scheduledTask.getDeviceIdentification())
         .ipAddress(device.getNetworkAddress().getHostAddress())
         .request(scheduledTask.getMessageData())
         .scheduled(true)
-        .messagePriority(scheduledTask.getMessagePriority())
         .build();
         // @formatter:on
 

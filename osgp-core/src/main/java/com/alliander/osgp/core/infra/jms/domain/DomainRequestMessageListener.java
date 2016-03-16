@@ -80,24 +80,22 @@ public class DomainRequestMessageListener implements MessageListener {
     }
 
     public ProtocolRequestMessage createProtocolRequestMessage(final Message message) throws JMSException {
-        final String correlationUid = message.getJMSCorrelationID();
-        final String organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        final String deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        final String messageType = message.getJMSType();
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
+                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
+                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
+                message.getJMSType(), message.getJMSPriority());
+
         final String ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         final Serializable messageData = ((ObjectMessage) message).getObject();
 
         // @formatter:off
         return new ProtocolRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
         .domain(this.domainInfo.getDomain())
         .domainVersion(this.domainInfo.getDomainVersion())
-        .messageType(messageType)
-        .correlationUid(correlationUid)
-        .organisationIdentification(organisationIdentification)
-        .deviceIdentification(deviceIdentification)
         .ipAddress(ipAddress)
         .request(messageData)
-        .messagePriority(message.getJMSPriority())
         .build();
         // @formatter:on
     }
