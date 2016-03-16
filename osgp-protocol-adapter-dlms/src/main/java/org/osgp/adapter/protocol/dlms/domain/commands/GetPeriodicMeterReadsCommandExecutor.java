@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -146,8 +146,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
             return;
         }
 
-        LOGGER.debug("Processing profile (" + periodType + ") objects captured at: {}",
-                this.dlmsHelperService.getDebugInfo(clock));
+        LOGGER.debug("Processing profile (" + periodType + ") objects captured at: {}", cosemDateTime);
 
         switch (periodType) {
         case INTERVAL:
@@ -167,7 +166,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
     private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -186,7 +185,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
     private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -237,7 +236,7 @@ public class GetPeriodicMeterReadsCommandExecutor implements
 
     private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         /*
          * Buffer indexes minus one, since Monthly captured objects don't
