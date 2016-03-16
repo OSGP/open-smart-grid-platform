@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
+        CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -128,8 +128,8 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
             final DateTime endDateTime, final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final List<GetResult> results) throws ProtocolAdapterException {
 
-        final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.readDateTime(
+                bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + periodType + " buffer");
         final DateTime bufferedDateTime = cosemDateTime.asDateTime();
         if (bufferedDateTime == null) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
@@ -167,7 +167,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -186,7 +186,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -237,7 +237,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         /*
          * Buffer indexes minus one, since Monthly captured objects don't

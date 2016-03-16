@@ -255,8 +255,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
             final List<DataObject> bufferedObjects, final Channel channel, final boolean isSelectiveAccessSupported,
             final List<GetResult> results) throws ProtocolAdapterException {
 
-        final DataObject clock = bufferedObjects.get(BUFFER_INDEX_CLOCK);
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) clock.value());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.readDateTime(
+                bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + periodType + " buffer");
         final DateTime bufferedDateTime = cosemDateTime.asDateTime();
         if (bufferedDateTime == null) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
@@ -304,10 +304,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         final DataObject gasValue = bufferedObjects.get(BUFFER_INDEX_MBUS_VALUE_INT);
         LOGGER.debug("gasValue: {}", this.dlmsHelperService.getDebugInfo(gasValue));
 
-        final DataObject gasCaptureTime = bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_INT);
-        LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
-
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.readCosemDateTime(
+                bufferedObjects.get(BUFFER_INDEX_MBUS_CAPTURETIME_INT), "Clock from mbus interval extended register");
         final Date captureTime;
         if (cosemDateTime.isDateTimeSpecified()) {
             captureTime = cosemDateTime.asDateTime().toDate();
@@ -343,7 +341,8 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         LOGGER.debug("gasValue: {}", this.dlmsHelperService.getDebugInfo(gasValue));
         LOGGER.debug("gasCaptureTime: {}", this.dlmsHelperService.getDebugInfo(gasCaptureTime));
 
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) gasCaptureTime.value());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService.readCosemDateTime(gasCaptureTime,
+                "Clock from daily mbus daily extended register");
         final Date captureTime;
         if (cosemDateTime.isDateTimeSpecified()) {
             captureTime = cosemDateTime.asDateTime().toDate();
