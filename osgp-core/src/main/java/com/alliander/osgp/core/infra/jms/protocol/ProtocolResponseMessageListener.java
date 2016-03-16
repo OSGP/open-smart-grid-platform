@@ -69,7 +69,10 @@ public class ProtocolResponseMessageListener implements MessageListener {
         final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(message
                 .getStringProperty(Constants.RESULT));
         final Serializable dataObject = responseMessage.getDataObject();
-        final boolean scheduled = message.propertyExists(Constants.IS_SCHEDULED);
+        boolean scheduled = false;
+        if (message.propertyExists(Constants.IS_SCHEDULED)) {
+            scheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
+        }
         final int retryCount = message.getIntProperty(Constants.RETRY_COUNT);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
