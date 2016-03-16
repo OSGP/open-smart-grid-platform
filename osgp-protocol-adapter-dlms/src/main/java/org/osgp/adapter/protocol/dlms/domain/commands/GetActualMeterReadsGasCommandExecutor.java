@@ -14,7 +14,6 @@ import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
-import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
@@ -70,8 +69,8 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
 
         final DlmsMeterValue consumption = this.dlmsHelperService.getScaledMeterValue(getResultList.get(0),
                 getResultList.get(2), "retrieve scaled value for mbus " + actualMeterReadsRequest.getChannel());
-        final DataObject time = this.dlmsHelperService.readDataObject(getResultList.get(1), "captureTime gas");
-        final CosemDateTime cosemDateTime = this.dlmsHelperService.fromDateTimeValue((byte[]) time.value());
+        final CosemDateTime cosemDateTime = this.dlmsHelperService
+                .readDateTime(getResultList.get(1), "captureTime gas");
         final Date captureTime;
         if (cosemDateTime.isDateTimeSpecified()) {
             captureTime = cosemDateTime.asDateTime().toDate();
