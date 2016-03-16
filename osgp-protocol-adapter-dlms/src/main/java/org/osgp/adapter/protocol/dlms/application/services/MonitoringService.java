@@ -56,7 +56,7 @@ public class MonitoringService {
             final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
-        if (periodicMeterReadsQuery.isGas()) {
+        if (periodicMeterReadsQuery.isMbusQuery()) {
             response = this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
         } else {
             response = this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQuery);
@@ -70,7 +70,7 @@ public class MonitoringService {
             final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
 
         Serializable response = null;
-        if (actualMeterReadsRequest.isGas()) {
+        if (actualMeterReadsRequest.isMbusQuery()) {
             response = this.actualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsRequest);
         } else {
             response = this.actualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsRequest);
