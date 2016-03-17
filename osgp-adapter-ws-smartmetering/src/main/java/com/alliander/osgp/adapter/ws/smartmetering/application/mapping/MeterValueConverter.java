@@ -23,7 +23,7 @@ public class MeterValueConverter extends CustomConverter<OsgpMeterValue, MeterVa
         }
         final MeterValue m = new MeterValue();
         m.setValue(source.getValue());
-        m.setUnit(OsgpUnitType.valueOf(source.getOsgpUnit().name()));
+        m.setUnit(OsgpUnitType.fromValue(source.getOsgpUnit().name()));
         return m;
     }
 
