@@ -168,24 +168,21 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected abstract Serializable handleMessage(ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException;
 
-    private void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
+    private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification(),
-                messageMetadata.getCorrelationUid(), messageMetadata.getMessageType(),
-                messageMetadata.getMessagePriority());
+        final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
 
         // @formatter:off
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
         .deviceMessageMetadata(deviceMessageMetadata)
-        .domain(messageMetadata.getDomain())
-        .domainVersion(messageMetadata.getDomainVersion())
+        .domain(dlmsDeviceMessageMetadata.getDomain())
+        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion())
         .result(result)
         .osgpException(osgpException)
         .dataObject(responseObject)
-        .retryCount(messageMetadata.getRetryCount())
+        .retryCount(dlmsDeviceMessageMetadata.getRetryCount())
         .build();
         // @formatter:on
 

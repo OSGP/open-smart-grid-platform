@@ -11,6 +11,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 /**
  * this class is a data container which contains attributes that can be set from
@@ -122,5 +123,12 @@ public class DlmsDeviceMessageMetadata {
 
     public void setRetryCount(final int retryCount) {
         this.retryCount = retryCount;
+    }
+
+    public DeviceMessageMetadata asDeviceMessageMetadata() {
+
+        return new DeviceMessageMetadata(this.getDeviceIdentification(), this.getOrganisationIdentification(),
+                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority());
+
     }
 }
