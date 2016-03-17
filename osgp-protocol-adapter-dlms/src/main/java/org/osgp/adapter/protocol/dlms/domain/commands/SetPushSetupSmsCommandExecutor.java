@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2015 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -27,7 +27,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
 
 @Component()
 public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
-        CommandExecutor<PushSetupSms, AccessResultCode> {
+CommandExecutor<PushSetupSms, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
