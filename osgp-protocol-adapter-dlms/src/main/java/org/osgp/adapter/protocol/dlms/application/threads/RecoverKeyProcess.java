@@ -13,17 +13,15 @@ import java.net.InetAddress;
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
+import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.exceptions.RecoverKeyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 public class RecoverKeyProcess implements Runnable {
 
@@ -82,7 +80,7 @@ public class RecoverKeyProcess implements Runnable {
     private void initDevice() {
         try {
             this.device = this.domainHelperService.findDlmsDevice(this.deviceIdentification, this.ipAddress);
-        } catch (FunctionalException | SessionProviderException e) {
+        } catch (final ProtocolAdapterException e) {
             // Thread can not recover from these exceptions.
             throw new RecoverKeyException(e.getMessage(), e);
         }
