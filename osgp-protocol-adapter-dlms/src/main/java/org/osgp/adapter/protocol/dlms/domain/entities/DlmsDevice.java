@@ -64,6 +64,9 @@ public class DlmsDevice extends AbstractEntity {
     @Column
     private boolean selectiveAccessSupported;
 
+    @Column
+    private boolean ipAddressIsStatic;
+
     @Transient
     private String ipAddress;
 
@@ -107,6 +110,14 @@ public class DlmsDevice extends AbstractEntity {
     @Override
     public int hashCode() {
         return 31 * (this.deviceIdentification != null ? this.deviceIdentification.hashCode() : 0);
+    }
+
+    public boolean isIpAddressIsStatic() {
+        return this.ipAddressIsStatic;
+    }
+
+    public void setIpAddressIsStatic(final boolean ipAddressIsStatic) {
+        this.ipAddressIsStatic = ipAddressIsStatic;
     }
 
     public String getCommunicationMethod() {
