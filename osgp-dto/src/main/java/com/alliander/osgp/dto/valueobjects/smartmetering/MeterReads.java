@@ -10,23 +10,24 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public abstract class MeterReads implements Serializable {
+public class MeterReads implements Serializable {
     private static final long serialVersionUID = -297320204916085999L;
 
     private final Date logTime;
 
-    private final Long activeEnergyImport;
-    private final Long activeEnergyExport;
-    private final Long activeEnergyImportTariffOne;
+    private final DlmsMeterValue activeEnergyImport;
+    private final DlmsMeterValue activeEnergyExport;
+    private final DlmsMeterValue activeEnergyImportTariffOne;
     // may be null
-    private final Long activeEnergyImportTariffTwo;
-    private final Long activeEnergyExportTariffOne;
+    private final DlmsMeterValue activeEnergyImportTariffTwo;
+    private final DlmsMeterValue activeEnergyExportTariffOne;
     // may be null
-    private final Long activeEnergyExportTariffTwo;
+    private final DlmsMeterValue activeEnergyExportTariffTwo;
 
-    protected MeterReads(final Date logTime, final Long activeEnergyImport, final Long activeEnergyExport,
-            final Long activeEnergyImportTariffOne, final Long activeEnergyImportTariffTwo,
-            final Long activeEnergyExportTariffOne, final Long activeEnergyExportTariffTwo) {
+    public MeterReads(final Date logTime, final DlmsMeterValue activeEnergyImport,
+            final DlmsMeterValue activeEnergyExport, final DlmsMeterValue activeEnergyImportTariffOne,
+            final DlmsMeterValue activeEnergyImportTariffTwo, final DlmsMeterValue activeEnergyExportTariffOne,
+            final DlmsMeterValue activeEnergyExportTariffTwo) {
         super();
         this.logTime = new Date(logTime.getTime());
         this.activeEnergyImportTariffOne = activeEnergyImportTariffOne;
@@ -41,27 +42,27 @@ public abstract class MeterReads implements Serializable {
         return new Date(this.logTime.getTime());
     }
 
-    public Long getActiveEnergyImportTariffOne() {
+    public DlmsMeterValue getActiveEnergyImportTariffOne() {
         return this.activeEnergyImportTariffOne;
     }
 
-    public Long getActiveEnergyImportTariffTwo() {
+    public DlmsMeterValue getActiveEnergyImportTariffTwo() {
         return this.activeEnergyImportTariffTwo;
     }
 
-    public Long getActiveEnergyExportTariffOne() {
+    public DlmsMeterValue getActiveEnergyExportTariffOne() {
         return this.activeEnergyExportTariffOne;
     }
 
-    public Long getActiveEnergyExportTariffTwo() {
+    public DlmsMeterValue getActiveEnergyExportTariffTwo() {
         return this.activeEnergyExportTariffTwo;
     }
 
-    public Long getActiveEnergyImport() {
+    public DlmsMeterValue getActiveEnergyImport() {
         return this.activeEnergyImport;
     }
 
-    public Long getActiveEnergyExport() {
+    public DlmsMeterValue getActiveEnergyExport() {
         return this.activeEnergyExport;
     }
 
