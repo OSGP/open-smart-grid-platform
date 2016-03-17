@@ -89,29 +89,33 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         // channel 1, 2, 3 and 4
 
         /*-
-         * When selective access IS used:
+         * When specific capture_objects are selected with selective access:
          *
          * {8,0-0:1.0.0.255,2,0};                                       position 0
+         *
+         * Value and capture time for one of the four channels will be selected,
+         * for which position 1 and 2 are used.
+         *
          * {4,0-1:24.2.1.255,2,0};   value channel 1                    position 1
          * {4,0-1:24.2.1.255,5,0};   value capture time channel 1       position 2
-         * {4,0-2:24.2.1.255,2,0};   value channel 2                    position 3
-         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2       position 4
-         * {4,0-3:24.2.1.255,2,0};   value channel 3                    position 5
-         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3       position 6
-         * {4,0-4:24.2.1.255,2,0};   value channel 4                    position 7
-         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4       position 8
+         * {4,0-2:24.2.1.255,2,0};   value channel 2                    position 1
+         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2       position 2
+         * {4,0-3:24.2.1.255,2,0};   value channel 3                    position 1
+         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3       position 2
+         * {4,0-4:24.2.1.255,2,0};   value channel 4                    position 1
+         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4       position 2
          */
         INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(1, 1);
         INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(1, 2);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(2, 3);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 4);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(3, 5);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 6);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(4, 7);
-        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 8);
+        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(2, 1);
+        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 2);
+        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(3, 1);
+        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 2);
+        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(4, 1);
+        INDEX_MONTHLY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 2);
 
         /*-
-         * When no selective access is used:
+         * When no specific capture_objects are selected with selective access:
          *
          * {8,0-0:1.0.0.255,2,0};                                    position 0
          * {3,1-0:1.8.1.255,2,0};                                    position 1
@@ -146,7 +150,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         // channel 1, 2, 3 and 4
 
         /*-
-         * When no selective access is used:
+         * When no specific capture_objects are selected with selective access:
          *
          * {8,0-0:1.0.0.255,2,0};                                    position 0
          * {1,0-0:96.10.2.255,2,0}                                   position 1
@@ -173,27 +177,31 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         INDEX_DAILY_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 13);
 
         /*-
-         * When selective access IS used:
+         * When specific capture_objects are selected with selective access:
          *
          * {8,0-0:1.0.0.255,2,0};                                    position 0
          * {1,0-0:96.10.2.255,2,0}                                   position 1
+         *
+         * Value and capture time for one of the four channels will be selected,
+         * for which position 2 and 3 are used.
+         *
          * {4,0-1:24.2.1.255,2,0};   value channel 1                 position 2
          * {4,0-1:24.2.1.255,5,0};   value capture time channel 1    position 3
-         * {4,0-2:24.2.1.255,2,0};   value channel 2                 position 4
-         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2    position 5
-         * {4,0-3:24.2.1.255,2,0};   value channel 3                 position 6
-         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3    position 7
-         * {4,0-4:24.2.1.255,2,0};   value channel 4                 position 8
-         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4    position 9
+         * {4,0-2:24.2.1.255,2,0};   value channel 2                 position 2
+         * {4,0-2:24.2.1.255,5,0};   value capture time channel 2    position 3
+         * {4,0-3:24.2.1.255,2,0};   value channel 3                 position 2
+         * {4,0-3:24.2.1.255,5,0};   value capture time channel 3    position 3
+         * {4,0-4:24.2.1.255,2,0};   value channel 4                 position 2
+         * {4,0-4:24.2.1.255,5,0};   value capture time channel 4    position 3
          */
         INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(1, 2);
         INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(1, 3);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(2, 4);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 5);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(3, 6);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 7);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(4, 8);
-        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 9);
+        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(2, 2);
+        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(2, 3);
+        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(3, 2);
+        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(3, 3);
+        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_MAP.put(4, 2);
+        INDEX_DAILY_SELECTIVE_ACCESS_MBUS_VALUE_CAPTURE_TIME_MAP.put(4, 3);
     }
 
     @Autowired
