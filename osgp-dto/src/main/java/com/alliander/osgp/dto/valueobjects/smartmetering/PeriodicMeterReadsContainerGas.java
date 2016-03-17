@@ -12,19 +12,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PeriodicMeterReadsContainerGas implements Serializable, ScalerUnitResponse {
+public class PeriodicMeterReadsContainerGas implements Serializable {
 
     private static final long serialVersionUID = -156966569210717654L;
 
     private final List<PeriodicMeterReadsGas> meterReadsGas;
     private final PeriodType periodType;
-    private final ScalerUnit scalerUnit;
 
-    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<PeriodicMeterReadsGas> meterReadsGas,
-            final ScalerUnit scalerUnit) {
+    public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<PeriodicMeterReadsGas> meterReadsGas) {
         this.meterReadsGas = new ArrayList<PeriodicMeterReadsGas>(meterReadsGas);
         this.periodType = periodType;
-        this.scalerUnit = new ScalerUnit(scalerUnit.getDlmsUnit(), scalerUnit.getScaler());
     }
 
     public List<PeriodicMeterReadsGas> getMeterReadsGas() {
@@ -33,11 +30,6 @@ public class PeriodicMeterReadsContainerGas implements Serializable, ScalerUnitR
 
     public PeriodType getPeriodType() {
         return this.periodType;
-    }
-
-    @Override
-    public ScalerUnit getScalerUnit() {
-        return new ScalerUnit(this.scalerUnit.getDlmsUnit(), this.scalerUnit.getScaler());
     }
 
 }

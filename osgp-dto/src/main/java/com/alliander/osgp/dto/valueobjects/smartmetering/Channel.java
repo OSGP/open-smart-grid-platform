@@ -7,14 +7,12 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-
 public enum Channel {
 
     ONE(1),
     TWO(2),
     THREE(3),
-    FOUR(4),
-    NONE(-1);
+    FOUR(4);
 
     private final int channelNumber;
 
