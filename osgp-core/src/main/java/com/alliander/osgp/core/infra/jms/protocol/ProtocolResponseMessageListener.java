@@ -75,10 +75,7 @@ public class ProtocolResponseMessageListener implements MessageListener {
         }
         final int retryCount = message.getIntProperty(Constants.RETRY_COUNT);
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
-                message.getJMSType(), message.getJMSPriority());
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
         // @formatter:off
         return new ProtocolResponseMessage.Builder()

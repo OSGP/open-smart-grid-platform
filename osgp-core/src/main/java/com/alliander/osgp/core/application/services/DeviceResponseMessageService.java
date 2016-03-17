@@ -148,9 +148,8 @@ public class DeviceResponseMessageService {
         final Device device = this.deviceRepository.findByDeviceIdentification(message.getDeviceIdentification());
 
         final Serializable messageData = message.getDataObject();
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                message.getDeviceIdentification(), message.getOrganisationIdentification(),
-                message.getCorrelationUid(), message.getMessageType(), message.getMessagePriority());
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
         // @formatter:off
         return new ProtocolRequestMessage.Builder()

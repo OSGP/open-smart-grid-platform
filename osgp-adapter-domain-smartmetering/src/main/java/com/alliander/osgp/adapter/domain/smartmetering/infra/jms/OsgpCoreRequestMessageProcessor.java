@@ -21,7 +21,6 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -95,19 +94,13 @@ public abstract class OsgpCoreRequestMessageProcessor implements MessageProcesso
     public void processMessage(final ObjectMessage message) throws JMSException {
         Object dataObject = null;
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
-                message.getJMSType(), message.getJMSPriority());
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
         try {
             dataObject = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", deviceMessageMetadata.getCorrelationUid());
-            LOGGER.debug("messageType: {}", deviceMessageMetadata.getMessageType());
-            LOGGER.debug("organisationIdentification: {}", deviceMessageMetadata.getOrganisationIdentification());
-            LOGGER.debug("deviceIdentification: {}", deviceMessageMetadata.getDeviceIdentification());
+            LOGGER.debug(deviceMessageMetadata.toString());
             return;
         }
 

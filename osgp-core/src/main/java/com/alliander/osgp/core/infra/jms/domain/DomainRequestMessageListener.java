@@ -70,10 +70,7 @@ public class DomainRequestMessageListener implements MessageListener {
         final Serializable messageData = ((ObjectMessage) message).getObject();
         final Timestamp scheduleTimeStamp = new Timestamp(message.getLongProperty(Constants.SCHEDULE_TIME));
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
-                message.getJMSType(), message.getJMSPriority());
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
         return new ScheduledTask(deviceMessageMetadata, this.domainInfo.getDomain(),
                 this.domainInfo.getDomainVersion(), messageData, scheduleTimeStamp);
@@ -81,11 +78,7 @@ public class DomainRequestMessageListener implements MessageListener {
 
     public ProtocolRequestMessage createProtocolRequestMessage(final Message message) throws JMSException {
 
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(
-                message.getStringProperty(Constants.DEVICE_IDENTIFICATION),
-                message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(),
-                message.getJMSType(), message.getJMSPriority());
-
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
         final String ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         final Serializable messageData = ((ObjectMessage) message).getObject();
 
