@@ -106,7 +106,7 @@ public class DomainHelperService {
                 deviceIpAddress = sessionProvider.getIpAddress(dlmsDevice.getIccId());
 
                 if (deviceIpAddress != null) {
-                    return deviceIpAddress;
+                    break;
                 }
             }
         } catch (final InterruptedException e) {
@@ -116,8 +116,10 @@ public class DomainHelperService {
             throw new ProtocolAdapterException("", e);
         }
         if (deviceIpAddress == null || "".equals(deviceIpAddress)) {
-            LOGGER.error("Session provider: {} did not return an IP address for device: {} and iccId: {}",
-                    dlmsDevice.getCommunicationProvider(), dlmsDevice.getDeviceIdentification(), dlmsDevice.getIccId());
+            throw new ProtocolAdapterException("Session provider: " + dlmsDevice.getCommunicationProvider()
+                    + " did not return an IP address for device: " + dlmsDevice.getDeviceIdentification()
+                    + "and iccId: " + dlmsDevice.getIccId());
+
         }
         return deviceIpAddress;
     }
