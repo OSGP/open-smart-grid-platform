@@ -115,12 +115,12 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="LogTime" type="xsd:dateTime" />
-				<xsd:element name="ActiveEnergyImport" type="tns:EMeterValue" />
-				<xsd:element name="ActiveEnergyExport" type="tns:EMeterValue" />
-				<xsd:element name="ActiveEnergyImportTariffOne" type="tns:EMeterValue" />
-				<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:EMeterValue" />
-				<xsd:element name="ActiveEnergyExportTariffOne" type="tns:EMeterValue" />
-				<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:EMeterValue" />
+				<xsd:element name="ActiveEnergyImport" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyExport" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+				<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
@@ -154,7 +154,7 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="LogTime" type="xsd:dateTime" />
-				<xsd:element name="Consumption" type="tns:GMeterValue" />
+				<xsd:element name="Consumption" type="tns:MeterValue" />
 				<xsd:element name="CaptureTime" type="xsd:dateTime" />
 			</xsd:sequence>
 		</xsd:complexType>
@@ -263,12 +263,12 @@
 	<xsd:complexType name="PeriodicMeterReads">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:dateTime" />
-			<xsd:element name="ActiveEnergyImport" type="tns:EMeterValue" minOccurs="0" />
-			<xsd:element name="ActiveEnergyExport" type="tns:EMeterValue" minOccurs="0" />
-			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:EMeterValue" minOccurs="0" />
-			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:EMeterValue" minOccurs="0" />
-			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:EMeterValue" minOccurs="0" />
-			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:EMeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyImport" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyExport" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" minOccurs="0" />
+			<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" minOccurs="0" />
 			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
@@ -276,35 +276,25 @@
 	<xsd:complexType name="PeriodicMeterReadsGas">
 		<xsd:sequence>
 			<xsd:element name="LogTime" type="xsd:dateTime" />
-			<xsd:element name="Consumption" type="tns:GMeterValue" />
+			<xsd:element name="Consumption" type="tns:MeterValue" />
 			<xsd:element name="CaptureTime" type="xsd:dateTime" />
 			<xsd:element name="AmrProfileStatusCode" type="tns:AmrProfileStatusCode" minOccurs="0" />
 		</xsd:sequence>
 	</xsd:complexType>
     
-	<xsd:simpleType name="MeterValue">
+	<xsd:simpleType name="Value">
 		<xsd:restriction base="xsd:decimal">
             <xsd:minInclusive value="0" />
             <xsd:maxInclusive value="9223372036854775807" />
-			<xsd:fractionDigits value="3" />
 		</xsd:restriction>
 	</xsd:simpleType>
     
-    <xsd:complexType name="EMeterValue">
+    <xsd:complexType name="MeterValue">
         <xsd:simpleContent>
-            <xsd:extension base="tns:MeterValue">
-                <xsd:attribute name="unit" type="common:OsgpUnitType" fixed="KWH" use="required"/>
+            <xsd:extension base="tns:Value">
+                <xsd:attribute name="unit" type="common:OsgpUnitType" use="required"/>
             </xsd:extension>
         </xsd:simpleContent>
     </xsd:complexType>
-
-    <xsd:complexType name="GMeterValue">
-        <xsd:simpleContent>
-            <xsd:extension base="tns:MeterValue">
-                <xsd:attribute name="unit" type="common:OsgpUnitType" fixed="M3"  use="required"/>
-            </xsd:extension>
-        </xsd:simpleContent>
-    </xsd:complexType>
-    
 
 </xsd:schema>
