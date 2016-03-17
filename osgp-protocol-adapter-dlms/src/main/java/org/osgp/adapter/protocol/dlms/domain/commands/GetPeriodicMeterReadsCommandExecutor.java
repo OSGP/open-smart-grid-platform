@@ -130,10 +130,10 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
         final CosemDateTime cosemDateTime = this.dlmsHelperService.readDateTime(
                 bufferedObjects.get(BUFFER_INDEX_CLOCK), "Clock from " + periodType + " buffer");
-        final DateTime bufferedDateTime = cosemDateTime.asDateTime();
+        final DateTime bufferedDateTime = cosemDateTime == null ? null : cosemDateTime.asDateTime();
         if (bufferedDateTime == null) {
             final DateTimeFormatter dtf = ISODateTimeFormat.dateTime();
-            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime.toString()
+            LOGGER.warn("Not using an object from capture buffer (clock=" + cosemDateTime
                     + "), because the date does not match the given period, since it is not fully specified: ["
                     + dtf.print(beginDateTime) + " .. " + dtf.print(endDateTime) + "].");
             return;
@@ -185,7 +185,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
 
     private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReads> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final AmrProfileStatusCode amrProfileStatusCode = this.readAmrProfileStatusCode(bufferedObjects
                 .get(BUFFER_INDEX_AMR_STATUS));
@@ -262,13 +262,10 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
     }
 
     private AttributeAddress[] getProfileBufferAndScalerUnit(final PeriodType periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final boolean isSelectiveAccessSupported) throws ProtocolAdapterException {
+            final DateTime endDateTime, final boolean isSelectingValuesSupported) throws ProtocolAdapterException {
 
-        SelectiveAccessDescription access = null;
-
-        if (isSelectiveAccessSupported) {
-            access = this.getSelectiveAccessDescription(periodType, beginDateTime, endDateTime);
-        }
+        final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
+                endDateTime, isSelectingValuesSupported);
 
         final List<AttributeAddress> profileBuffer = new ArrayList<AttributeAddress>();
         switch (periodType) {
@@ -319,7 +316,7 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
     }
 
     private SelectiveAccessDescription getSelectiveAccessDescription(final PeriodType periodType,
-            final DateTime beginDateTime, final DateTime endDateTime) {
+            final DateTime beginDateTime, final DateTime endDateTime, final boolean isSelectingValuesSupported) {
 
         final int accessSelector = ACCESS_SELECTOR_RANGE_DESCRIPTOR;
 
@@ -339,6 +336,18 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
          * to retrieve from the buffer.
          */
         final List<DataObject> objectDefinitions = new ArrayList<>();
+        if (isSelectingValuesSupported) {
+            this.addSelectedValues(periodType, objectDefinitions);
+        }
+        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
+
+        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
+                toValue, selectedValues));
+
+        return new SelectiveAccessDescription(accessSelector, accessParameter);
+    }
+
+    private void addSelectedValues(final PeriodType periodType, final List<DataObject> objectDefinitions) {
 
         switch (periodType) {
         case INTERVAL:
@@ -354,13 +363,6 @@ CommandExecutor<PeriodicMeterReadsQuery, PeriodicMeterReadsContainer> {
         default:
             throw new AssertionError("Unknown PeriodType: " + periodType);
         }
-
-        final DataObject selectedValues = DataObject.newArrayData(objectDefinitions);
-
-        final DataObject accessParameter = DataObject.newStructureData(Arrays.asList(clockDefinition, fromValue,
-                toValue, selectedValues));
-
-        return new SelectiveAccessDescription(accessSelector, accessParameter);
     }
 
     private void addSelectedValuesForDaily(final List<DataObject> objectDefinitions) {
