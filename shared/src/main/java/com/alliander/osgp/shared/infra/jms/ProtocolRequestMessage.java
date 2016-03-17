@@ -28,8 +28,7 @@ public class ProtocolRequestMessage extends RequestMessage {
     /**
      * Constructor with no scheduled flag and no messagePriority
      *
-     * @deprecated use the Builder in stead. Constructors have too a lot of
-     *             arguments of which some are optional
+     * @deprecated use the Builder in stead. Too many arguments in constructor
      */
     @Deprecated
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
@@ -40,10 +39,9 @@ public class ProtocolRequestMessage extends RequestMessage {
     }
 
     /**
-     * Constructor with no scheduled flag and no messagePriority
+     * Constructor with scheduled flag and no messagePriority
      *
-     * @deprecated use the Builder in stead. Constructors have too a lot of
-     *             arguments of which some are optional
+     * @deprecated use the Builder in stead. Too many arguments in constructor
      */
     @Deprecated
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
@@ -61,7 +59,7 @@ public class ProtocolRequestMessage extends RequestMessage {
 
     /**
      * Constructor with both a scheduled flag and a messagePriority. Only called
-     * from builder
+     * from Builder
      */
     private ProtocolRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
             final String domainVersion, final String ipAddress, final Serializable request, final boolean scheduled,

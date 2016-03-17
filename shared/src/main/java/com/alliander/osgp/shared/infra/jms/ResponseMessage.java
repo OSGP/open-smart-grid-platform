@@ -25,7 +25,7 @@ public class ResponseMessage implements Serializable {
     private final ResponseMessageResultType result;
     private final OsgpException osgpException;
     private final Serializable dataObject;
-    private int messagePriority;
+    private final int messagePriority;
 
     public ResponseMessage(final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final ResponseMessageResultType result,

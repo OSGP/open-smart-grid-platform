@@ -24,8 +24,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
     private final String domainVersion;
     private final String messageType;
     private final boolean scheduled;
-    private int retryCount;
-    private int messagePriority;
+    private final int retryCount;
 
     /**
      * @deprecated Use builder in stead
