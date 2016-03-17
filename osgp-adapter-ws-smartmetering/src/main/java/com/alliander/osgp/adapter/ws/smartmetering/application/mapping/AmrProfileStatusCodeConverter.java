@@ -14,8 +14,8 @@ import java.util.Set;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
 
 public class AmrProfileStatusCodeConverter
         extends
