@@ -9,6 +9,9 @@
  */
 package com.alliander.osgp.shared.infra.jms;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+
 public class DeviceMessageMetadata {
     private String deviceIdentification;
     private String organisationIdentification;
@@ -23,6 +26,23 @@ public class DeviceMessageMetadata {
         this.correlationUid = correlationUid;
         this.messageType = messageType;
         this.messagePriority = messagePriority;
+    }
+
+    public DeviceMessageMetadata(final Message message) throws JMSException {
+
+        this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
+        this.organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
+        this.correlationUid = message.getJMSCorrelationID();
+        this.messageType = message.getJMSType();
+        this.messagePriority = message.getJMSPriority();
+    }
+
+    public DeviceMessageMetadata(final ProtocolResponseMessage message) {
+        this.deviceIdentification = message.getDeviceIdentification();
+        this.organisationIdentification = message.getOrganisationIdentification();
+        this.correlationUid = message.getCorrelationUid();
+        this.messageType = message.getMessageType();
+        this.messagePriority = message.getMessagePriority();
     }
 
     public String getDeviceIdentification() {
@@ -43,6 +63,14 @@ public class DeviceMessageMetadata {
 
     public int getMessagePriority() {
         return this.messagePriority;
+    }
+
+    @Override
+    public String toString() {
+        return "DeviceMessageMetadata [deviceIdentification=" + this.deviceIdentification
+                + ", organisationIdentification=" + this.organisationIdentification + ", correlationUid="
+                + this.correlationUid + ", messageType=" + this.messageType + ", messagePriority="
+                + this.messagePriority + "]";
     }
 
 }
