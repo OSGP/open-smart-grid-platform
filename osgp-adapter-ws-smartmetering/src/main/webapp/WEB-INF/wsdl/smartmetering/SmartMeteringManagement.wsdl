@@ -98,7 +98,6 @@
 				<soap:header message="tns:FindEventsHeader" part="OrganisationIdentification" use="literal" />
 				<soap:header message="tns:FindEventsHeader" part="UserName" use="literal" />
 				<soap:header message="tns:FindEventsHeader" part="ApplicationName" use="literal" />
-				<soap:header message="tns:FindEventsHeader" part="MessagePriority" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="FindEventsAsyncResponse">
