@@ -10,7 +10,6 @@ package com.alliander.osgp.shared.infra.jms;
 import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class ProtocolResponseMessage extends ResponseMessage {

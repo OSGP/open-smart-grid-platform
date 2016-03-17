@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.shared.helperobjects;
+package com.alliander.osgp.shared.infra.jms;
 
 public class DeviceMessageMetadata {
     private String deviceIdentification;
