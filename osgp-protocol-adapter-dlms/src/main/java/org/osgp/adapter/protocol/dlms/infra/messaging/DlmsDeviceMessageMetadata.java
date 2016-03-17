@@ -11,6 +11,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 /**
  * this class is a data container which contains attributes that can be set from
@@ -27,13 +28,15 @@ public class DlmsDeviceMessageMetadata {
     private String deviceIdentification;
     private String ipAddress;
     private int retryCount;
+    private int messagePriority;
 
     @Override
     public String toString() {
         return String
-                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d]",
+                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d]",
                         this.correlationUid, this.domain, this.domainVersion, this.messageType,
-                        this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.retryCount);
+                        this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.retryCount,
+                        this.messagePriority);
     }
 
     /**
@@ -51,6 +54,11 @@ public class DlmsDeviceMessageMetadata {
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+        this.messagePriority = message.getJMSPriority();
+    }
+
+    public int getMessagePriority() {
+        return this.messagePriority;
     }
 
     public String getCorrelationUid() {
@@ -115,5 +123,12 @@ public class DlmsDeviceMessageMetadata {
 
     public void setRetryCount(final int retryCount) {
         this.retryCount = retryCount;
+    }
+
+    public DeviceMessageMetadata asDeviceMessageMetadata() {
+
+        return new DeviceMessageMetadata(this.getDeviceIdentification(), this.getOrganisationIdentification(),
+                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority());
+
     }
 }

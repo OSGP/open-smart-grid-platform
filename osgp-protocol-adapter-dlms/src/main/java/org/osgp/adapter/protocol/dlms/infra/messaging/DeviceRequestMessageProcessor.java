@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
@@ -167,15 +168,23 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     protected abstract Serializable handleMessage(ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException;
 
-    private void sendResponseMessage(final DlmsDeviceMessageMetadata messageMetadata,
+    private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,
             final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
 
-        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(messageMetadata.getDomain(),
-                messageMetadata.getDomainVersion(), messageMetadata.getMessageType(),
-                messageMetadata.getCorrelationUid(), messageMetadata.getOrganisationIdentification(),
-                messageMetadata.getDeviceIdentification(), result, osgpException, responseObject,
-                messageMetadata.getRetryCount());
+        final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
+
+        // @formatter:off
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .domain(dlmsDeviceMessageMetadata.getDomain())
+        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion())
+        .result(result)
+        .osgpException(osgpException)
+        .dataObject(responseObject)
+        .retryCount(dlmsDeviceMessageMetadata.getRetryCount())
+        .build();
+        // @formatter:on
 
         responseMessageSender.send(responseMessage);
     }
