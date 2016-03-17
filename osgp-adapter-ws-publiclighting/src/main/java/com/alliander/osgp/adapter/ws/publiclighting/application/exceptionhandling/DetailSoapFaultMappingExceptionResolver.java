@@ -20,6 +20,7 @@ import org.springframework.ws.soap.server.endpoint.SoapFaultMappingExceptionReso
 
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.FunctionalFault;
 import com.alliander.osgp.adapter.ws.schema.publiclighting.common.TechnicalFault;
+import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
@@ -40,10 +41,13 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
 
         FunctionalException fex = null;
         TechnicalException tex = null;
+        ConnectionFailureException cex = null;
         if (ex instanceof FunctionalException) {
             fex = (FunctionalException) ex;
         } else if (ex instanceof TechnicalException) {
             tex = (TechnicalException) ex;
+        } else if (ex instanceof ConnectionFailureException) {
+            cex = (ConnectionFailureException) ex;
         }
 
         if (fex != null) {
@@ -62,6 +66,14 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
             }
         }
 
+        if (cex != null) {
+            try {
+                this.marshalConnectionFailureException(cex, result);
+            } catch (final JAXBException e) {
+                LOGGER.error("Unable to marshal the Connection Failure Exception", e);
+            }
+        }
+
     }
 
     private void marshalFunctionalException(final FunctionalException fex, final Result result) throws JAXBException {
@@ -74,5 +86,12 @@ public class DetailSoapFaultMappingExceptionResolver extends SoapFaultMappingExc
         final JAXBContext context = JAXBContext.newInstance(TechnicalFault.class);
         final Marshaller marshaller = context.createMarshaller();
         marshaller.marshal(this.mapper.map(tex, TechnicalFault.class), result);
+    }
+
+    private void marshalConnectionFailureException(final ConnectionFailureException cex, final Result result)
+            throws JAXBException {
+        final JAXBContext context = JAXBContext.newInstance(TechnicalFault.class);
+        final Marshaller marshaller = context.createMarshaller();
+        marshaller.marshal(this.mapper.map(cex, TechnicalFault.class), result);
     }
 }
