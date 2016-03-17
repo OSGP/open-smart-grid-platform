@@ -16,6 +16,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
@@ -31,6 +32,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 // MethodConstraintViolationException is deprecated.
 // Will by replaced by equivalent functionality defined
@@ -55,7 +57,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
     public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceRequest request) throws OsgpException {
+            @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority)
+            throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
@@ -66,7 +69,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
                     SmartMeteringDevice.class);
 
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
-                    organisationIdentification, device.getDeviceIdentification(), device);
+                    organisationIdentification, device.getDeviceIdentification(), device,
+                    MessagePriorityEnum.getMessagePriority(messagePriority));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());

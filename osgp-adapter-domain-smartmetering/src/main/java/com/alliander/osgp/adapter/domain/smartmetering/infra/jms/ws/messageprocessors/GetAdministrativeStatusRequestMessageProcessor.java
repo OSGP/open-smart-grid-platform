@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringGetAdministrativeStatusRequestMessageProcessor")
 public class GetAdministrativeStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -29,13 +30,12 @@ public class GetAdministrativeStatusRequestMessageProcessor extends WebServiceRe
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) dataObject;
 
-        this.configurationService.getAdministrativeStatus(organisationIdentification, deviceIdentification,
-                correlationUid, administrativeStatusType, messageType);
+        this.configurationService.getAdministrativeStatus(deviceMessageMetadata, administrativeStatusType);
     }
 
 }

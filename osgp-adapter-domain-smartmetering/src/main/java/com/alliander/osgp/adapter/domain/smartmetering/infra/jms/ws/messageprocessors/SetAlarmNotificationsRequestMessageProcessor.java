@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringSetAlarmNotificationsRequestMessageProcessor")
 public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -36,12 +37,11 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
      * .jms.ObjectMessage)
      */
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final AlarmNotifications alarmNotifications = (AlarmNotifications) dataObject;
 
-        this.configurationService.setAlarmNotifications(organisationIdentification, deviceIdentification,
-                correlationUid, alarmNotifications, messageType);
+        this.configurationService.setAlarmNotifications(deviceMessageMetadata, alarmNotifications);
     }
 }

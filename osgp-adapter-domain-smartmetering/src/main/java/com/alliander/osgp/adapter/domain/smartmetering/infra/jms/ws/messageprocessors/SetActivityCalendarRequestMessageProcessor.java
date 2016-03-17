@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringSetActivityCalendarRequestMessageProcessor")
 public class SetActivityCalendarRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -29,12 +30,11 @@ public class SetActivityCalendarRequestMessageProcessor extends WebServiceReques
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final ActivityCalendar activityCalendar = (ActivityCalendar) dataObject;
 
-        this.configurationService.setActivityCalendar(organisationIdentification, deviceIdentification, correlationUid,
-                activityCalendar, messageType);
+        this.configurationService.setActivityCalendar(deviceMessageMetadata, activityCalendar);
     }
 }

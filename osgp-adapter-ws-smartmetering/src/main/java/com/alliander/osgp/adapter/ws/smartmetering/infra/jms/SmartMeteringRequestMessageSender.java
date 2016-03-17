@@ -78,6 +78,7 @@ public class SmartMeteringRequestMessageSender {
     private void sendMessage(final SmartMeteringRequestMessage requestMessage) {
         LOGGER.info("Sending message to the smart metering requests queue");
 
+        this.smartMeteringRequestsJmsTemplate.setPriority(requestMessage.getMessagePriority());
         this.smartMeteringRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override

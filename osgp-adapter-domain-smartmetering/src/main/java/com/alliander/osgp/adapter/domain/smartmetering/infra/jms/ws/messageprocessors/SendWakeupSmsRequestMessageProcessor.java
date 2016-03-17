@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringSendWakeupSMSRequestMessageProcessor")
 public class SendWakeupSmsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -31,13 +32,12 @@ public class SendWakeupSmsRequestMessageProcessor extends WebServiceRequestMessa
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final SmsDetails smsDetails = (SmsDetails) dataObject;
 
-        this.adhocService.sendWakeupSms(organisationIdentification, deviceIdentification, correlationUid, smsDetails,
-                messageType);
+        this.adhocService.sendWakeupSms(deviceMessageMetadata, smsDetails);
     }
 
 }

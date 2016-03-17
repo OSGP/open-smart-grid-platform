@@ -15,6 +15,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Component("domainSmartMeteringGetAdministrativeStateResponseMessageProcessor")
@@ -33,14 +34,12 @@ public class GetAdministrativeStateResponseMessageProcessor extends OsgpCoreResp
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         final AdministrativeStatusType administrativeStatusTypeDto = (AdministrativeStatusType) responseMessage
                 .getDataObject();
-        this.configurationService.handleGetAdministrativeStatusResponse(deviceIdentification,
-                organisationIdentification, correlationUid, messageType, responseMessage.getResult(), osgpException,
-                administrativeStatusTypeDto);
+        this.configurationService.handleGetAdministrativeStatusResponse(deviceMessageMetadata,
+                responseMessage.getResult(), osgpException, administrativeStatusTypeDto);
     }
 }
