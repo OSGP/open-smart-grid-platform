@@ -15,7 +15,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Conf
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRequestMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringSetEncryptionKeyExchangeOnGMeterRequestMessageProcessor")
 public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends WebServiceRequestMessageProcessor {

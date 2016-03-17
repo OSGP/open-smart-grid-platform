@@ -9,7 +9,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.infra.jms;
 
 import java.io.Serializable;
 
-import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.NotificationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
-import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 

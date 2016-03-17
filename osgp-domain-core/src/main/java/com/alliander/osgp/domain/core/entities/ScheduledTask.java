@@ -19,7 +19,7 @@ import org.hibernate.annotations.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 import com.alliander.osgp.shared.domain.entities.AbstractEntity;
-import com.alliander.osgp.shared.helperobjects.DeviceMessageMetadata;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Entity
 @Table(name = "scheduled_task")
