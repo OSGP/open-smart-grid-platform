@@ -14,7 +14,7 @@
 
   <artifactId>protocol-adapter-iec61850</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>3.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>protocol-adapter-iec61850</name>
   <!-- Description, Organization, Licenses, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
@@ -85,7 +85,7 @@
     <module>Shared/osgp-dto</module>
 
     <!-- Protocol Adapter IEC61850 -->
-    <module>osgp-core-db-api</module>
+    <module>osgp-core-db-api-iec61850</module>
     <module>osgp-protocol-adapter-iec61850</module>
   </modules>
 </project>

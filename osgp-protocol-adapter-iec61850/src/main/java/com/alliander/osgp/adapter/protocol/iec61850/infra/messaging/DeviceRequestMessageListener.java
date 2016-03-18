@@ -28,7 +28,7 @@ public class DeviceRequestMessageListener implements MessageListener {
 
     @Autowired
     @Qualifier("iec61850DeviceRequestMessageProcessorMap")
-    private MessageProcessorMap oslpRequestMessageProcessorMap;
+    private MessageProcessorMap iec61850RequestMessageProcessorMap;
 
     @Override
     public void onMessage(final Message message) {
@@ -37,7 +37,7 @@ public class DeviceRequestMessageListener implements MessageListener {
 
             final ObjectMessage objectMessage = (ObjectMessage) message;
 
-            final MessageProcessor processor = this.oslpRequestMessageProcessorMap.getMessageProcessor(objectMessage);
+            final MessageProcessor processor = this.iec61850RequestMessageProcessorMap.getMessageProcessor(objectMessage);
 
             processor.processMessage(objectMessage);
 

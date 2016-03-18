@@ -11,6 +11,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServiceError;
@@ -19,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 
 @Component
 public class Iec61850DeviceConnectionService {
@@ -30,6 +34,9 @@ public class Iec61850DeviceConnectionService {
 
     @Autowired
     private Iec61850Client iec61850Client;
+
+    @Resource
+    private int maxRetryCount;
 
     public void connect(final String ipAddress, final String deviceIdentification) {
         LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
@@ -126,6 +133,40 @@ public class Iec61850DeviceConnectionService {
         } catch (final UnknownHostException e) {
             LOGGER.error("Unexpected exception during convertIpAddress", e);
             return null;
+        }
+    }
+
+    /**
+     * Method that sends commands to the Device. Executes the apply method of
+     * the given {@link Function} with retries.
+     */
+    public void sendCommandWithRetry(final Function<Void> function) throws ProtocolAdapterException {
+        try {
+            function.apply();
+        } catch (final ServiceError e) {
+            // Service exception means we have to retry
+            this.sendCommandWithRetry(function, 0);
+        } catch (final Exception e) {
+            throw new ProtocolAdapterException("Could not execute command", e);
+        }
+    }
+
+    /*
+     * Basically the same as sendCommandWithRetry, but with a retry parameter
+     */
+    private void sendCommandWithRetry(final Function<Void> function, final int retryCount)
+            throws ProtocolAdapterException {
+        try {
+            function.apply();
+        } catch (final ServiceError e) {
+            if (retryCount > this.maxRetryCount) {
+                throw new ConnectionFailureException("Could not send command after " + this.maxRetryCount + " attemps",
+                        e);
+            } else {
+                this.sendCommandWithRetry(function, retryCount + 1);
+            }
+        } catch (final Exception e) {
+            throw new ProtocolAdapterException("Could not execute command", e);
         }
     }
 }

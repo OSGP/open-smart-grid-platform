@@ -1,11 +1,11 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.core.db.api.application.config;
+package com.alliander.osgp.core.db.api.iec61850.application.config;
 
 import java.util.Properties;
 
@@ -25,16 +25,16 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.alliander.osgp.core.db.api.exceptions.CoreDbApiException;
-import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
+import com.alliander.osgp.core.db.api.iec61850.exceptions.Iec61850CoreDbApiException;
+import com.alliander.osgp.core.db.api.iec61850.repositories.SsldDataRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-@EnableJpaRepositories(entityManagerFactoryRef = "osgpCoreDbApiEntityManagerFactory", basePackageClasses = { DeviceDataRepository.class })
+@EnableJpaRepositories(entityManagerFactoryRef = "iec61850OsgpCoreDbApiEntityManagerFactory", basePackageClasses = { SsldDataRepository.class })
 @Configuration
 @EnableTransactionManagement()
-@PropertySource("file:${osp/osgpCoreDbApi/config}")
-public class OsgpCoreDbApiPersistenceConfig {
+@PropertySource("file:${osp/osgpCoreDbApiIec61850/config}")
+public class Iec61850OsgpCoreDbApiPersistenceConfig {
 
     private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.api.driver";
     private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.api.password";
@@ -54,9 +54,9 @@ public class OsgpCoreDbApiPersistenceConfig {
     private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_VALUE = "api.hibernate.ejb.naming_strategy";
     private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL_VALUE = "api.hibernate.show_sql";
 
-    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "api.entitymanager.packages.to.scan";
+    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "api.entitymanager.packages.to.scan.iec61850";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OsgpCoreDbApiPersistenceConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Iec61850OsgpCoreDbApiPersistenceConfig.class);
 
     @Resource
     private Environment environment;
@@ -95,16 +95,16 @@ public class OsgpCoreDbApiPersistenceConfig {
      *             when class not found
      */
     @Bean
-    public JpaTransactionManager osgpCoreDbApiTransactionManager() throws CoreDbApiException {
+    public JpaTransactionManager iec61850OsgpCoreDbApiTransactionManager() throws Iec61850CoreDbApiException {
         final JpaTransactionManager transactionManager = new JpaTransactionManager();
 
         try {
-            transactionManager.setEntityManagerFactory(this.osgpCoreDbApiEntityManagerFactory().getObject());
+            transactionManager.setEntityManagerFactory(this.iec61850OsgpCoreDbApiEntityManagerFactory().getObject());
             transactionManager.setTransactionSynchronization(JpaTransactionManager.SYNCHRONIZATION_ALWAYS);
         } catch (final ClassNotFoundException e) {
             final String msg = "Error in creating transaction manager bean";
             LOGGER.error(msg, e);
-            throw new CoreDbApiException(msg, e);
+            throw new Iec61850CoreDbApiException(msg, e);
         }
 
         return transactionManager;
@@ -118,10 +118,11 @@ public class OsgpCoreDbApiPersistenceConfig {
      *             when class not found
      */
     @Bean
-    public LocalContainerEntityManagerFactoryBean osgpCoreDbApiEntityManagerFactory() throws ClassNotFoundException {
+    public LocalContainerEntityManagerFactoryBean iec61850OsgpCoreDbApiEntityManagerFactory()
+            throws ClassNotFoundException {
         final LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 
-        entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE_DB_API");
+        entityManagerFactoryBean.setPersistenceUnitName("OSGP_CORE_DB_API_IEC61850");
         entityManagerFactoryBean.setDataSource(this.getOsgpCoreDbApiDataSource());
         entityManagerFactoryBean.setPackagesToScan(this.environment
                 .getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));

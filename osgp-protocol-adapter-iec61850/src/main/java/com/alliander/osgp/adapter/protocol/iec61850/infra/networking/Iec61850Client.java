@@ -81,67 +81,71 @@ public class Iec61850Client implements ClientEventListener {
         LOGGER.info("Connected to device: {} !!!", deviceIdentification);
 
         // @formatter:off
-        //        ServerModel serverModel;
-        //        try {
-        //            // requestModel() will call all GetDirectory and GetDefinition ACSI
-        //            // services needed to get the complete
-        //            // server model
-        //            serverModel = association.retrieveModel();
-        //        } catch (final ServiceError e) {
-        //            LOGGER.error("Service Error requesting model.", e);
-        //            association.close();
-        //            return null;
-        //        } catch (final IOException e) {
-        //            LOGGER.error("Fatal IOException requesting model.", e);
-        //            return null;
-        //        }
+        // ServerModel serverModel;
+        // try {
+        // // requestModel() will call all GetDirectory and GetDefinition ACSI
+        // // services needed to get the complete
+        // // server model
+        // serverModel = association.retrieveModel();
+        // } catch (final ServiceError e) {
+        // LOGGER.error("Service Error requesting model.", e);
+        // association.close();
+        // return null;
+        // } catch (final IOException e) {
+        // LOGGER.error("Fatal IOException requesting model.", e);
+        // return null;
+        // }
         //
-        //        // instead of calling retrieveModel you could read the model directly
-        //        // from an SCL file:
-        //        // try {
-        //        // serverModel =
-        //        // association.getModelFromSclFile("../sampleServer/sampleModel.icd");
-        //        // } catch (SclParseException e1) {
-        //        // logger.error("Error parsing SCL file.", e1);
-        //        // return;
-        //        // }
-        //
-        //
-        //        // get the values of all data attributes in the model:
-        //        try {
-        //            association.getAllDataValues();
-        //        } catch (final IOException e) {
-        //            // TODO Auto-generated catch block
-        //            e.printStackTrace();
-        //        }
-        //
-        //        // example for writing a variable:
-        //        final FcModelNode modCtlModel = (FcModelNode) serverModel.findModelNode("ied1lDevice1/CSWI1.Mod.ctlModel",
-        //                Fc.CF);
-        //        association.setDataValues(modCtlModel);
-        //
-        //        // example for enabling reporting:
-        //        final Urcb urcb = serverModel.getUrcb("ied1lDevice1/LLN0.urcb1");
-        //        if (urcb == null) {
-        //            LOGGER.error("ReportControlBlock not found");
-        //        } else {
-        //            association.getRcbValues(urcb);
-        //            LOGGER.info("urcb name: " + urcb.getName());
-        //            LOGGER.info("RptId: " + urcb.getRptId());
-        //            LOGGER.info("RptEna: " + urcb.getRptEna().getValue());
-        //            association.reserveUrcb(urcb);
-        //            association.enableReporting(urcb);
-        //            association.startGi(urcb);
-        //            association.disableReporting(urcb);
-        //            association.cancelUrcbReservation(urcb);
-        //        }
+        // // instead of calling retrieveModel you could read the model directly
+        // // from an SCL file:
+        // // try {
+        // // serverModel =
+        // //
+        // association.getModelFromSclFile("../sampleServer/sampleModel.icd");
+        // // } catch (SclParseException e1) {
+        // // logger.error("Error parsing SCL file.", e1);
+        // // return;
+        // // }
         //
         //
-        //        // example for reading a variable:
-        //        final FcModelNode totW = (FcModelNode) serverModel.findModelNode("ied1lDevice1/MMXU1.TotW", Fc.MX);
-        //        final BdaFloat32 totWmag = (BdaFloat32) totW.getChild("mag").getChild("f");
-        //        final BdaTimestamp totWt = (BdaTimestamp) totW.getChild("t");
-        //        final BdaQuality totWq = (BdaQuality) totW.getChild("q");
+        // // get the values of all data attributes in the model:
+        // try {
+        // association.getAllDataValues();
+        // } catch (final IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+        //
+        // // example for writing a variable:
+        // final FcModelNode modCtlModel = (FcModelNode)
+        // serverModel.findModelNode("ied1lDevice1/CSWI1.Mod.ctlModel",
+        // Fc.CF);
+        // association.setDataValues(modCtlModel);
+        //
+        // // example for enabling reporting:
+        // final Urcb urcb = serverModel.getUrcb("ied1lDevice1/LLN0.urcb1");
+        // if (urcb == null) {
+        // LOGGER.error("ReportControlBlock not found");
+        // } else {
+        // association.getRcbValues(urcb);
+        // LOGGER.info("urcb name: " + urcb.getName());
+        // LOGGER.info("RptId: " + urcb.getRptId());
+        // LOGGER.info("RptEna: " + urcb.getRptEna().getValue());
+        // association.reserveUrcb(urcb);
+        // association.enableReporting(urcb);
+        // association.startGi(urcb);
+        // association.disableReporting(urcb);
+        // association.cancelUrcbReservation(urcb);
+        // }
+        //
+        //
+        // // example for reading a variable:
+        // final FcModelNode totW = (FcModelNode)
+        // serverModel.findModelNode("ied1lDevice1/MMXU1.TotW", Fc.MX);
+        // final BdaFloat32 totWmag = (BdaFloat32)
+        // totW.getChild("mag").getChild("f");
+        // final BdaTimestamp totWt = (BdaTimestamp) totW.getChild("t");
+        // final BdaQuality totWq = (BdaQuality) totW.getChild("q");
         // @formatter:on
 
         return association;
@@ -238,7 +242,8 @@ public class Iec61850Client implements ClientEventListener {
         // totWt.getDate(), totWq.getValue());
 
         final String xswc1PositionStateObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                + LogicalNodeAttributeDefinitons.LOGICAL_NODE_XSWC1 + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
+                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(1)
+                + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
         final FcModelNode switchPositonState = (FcModelNode) serverModel.findModelNode(
                 xswc1PositionStateObjectReference, Fc.ST);
         final BdaBoolean state = (BdaBoolean) switchPositonState
@@ -263,7 +268,8 @@ public class Iec61850Client implements ClientEventListener {
         LOGGER.info("writeDataValue for logicalNodeProperty: {}", logicalNodeProperty);
 
         final String xswc1PositionOperationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                + LogicalNodeAttributeDefinitons.LOGICAL_NODE_XSWC1 + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
+                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(1)
+                + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
 
         LOGGER.info("xswc1PositionOperationObjectReference: {}", xswc1PositionOperationObjectReference);
 

@@ -5,12 +5,12 @@
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
-package com.alliander.osgp.adapter.protocol.iec61850.device;
+package com.alliander.osgp.core.db.api.iec61850valueobjects;
 
-public interface DeviceResponseHandler {
-
-    void handleResponse(DeviceResponse deviceResponse);
-
-    void handleException(Throwable t, DeviceResponse deviceResponse, boolean expected);
-
+public enum RelayFunction {
+    BURNER,
+    EVENING_MORNING,
+    TARIFF,
+    SPECIAL,
+    NOT_CONNECTED
 }
