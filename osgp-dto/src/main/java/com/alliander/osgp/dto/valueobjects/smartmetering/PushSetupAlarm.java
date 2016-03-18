@@ -7,10 +7,9 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class PushSetupAlarm extends AbstractPushSetup implements Serializable {
+public class PushSetupAlarm extends AbstractPushSetup {
 
     private static final long serialVersionUID = -3541154908239512383L;
 

@@ -7,10 +7,12 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-class AbstractPushSetup {
+class AbstractPushSetup implements Serializable {
+    private static final long serialVersionUID = -1080411684155651756L;
     private static final char TAB_CHAR = '\t';
 
     private final CosemObisCode logicalName;
