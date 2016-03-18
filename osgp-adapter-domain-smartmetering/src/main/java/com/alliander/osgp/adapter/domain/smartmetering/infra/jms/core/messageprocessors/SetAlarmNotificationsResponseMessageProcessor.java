@@ -14,6 +14,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.services.Conf
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 /**
@@ -36,11 +37,10 @@ public class SetAlarmNotificationsResponseMessageProcessor extends OsgpCoreRespo
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        this.configurationService.handleSetAlarmNotificationsResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException);
+        this.configurationService.handleSetAlarmNotificationsResponse(deviceMessageMetadata,
+                responseMessage.getResult(), osgpException);
     }
 }

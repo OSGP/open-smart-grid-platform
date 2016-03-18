@@ -15,15 +15,15 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
 
 public class ActualMeterReadsConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads, MeterReads> {
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads, MeterReads> {
 
     @Override
     public MeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReads source,
             final Type<? extends MeterReads> destinationType) {
         return new MeterReads(source.getLogTime(), this.convert(source.getActiveEnergyImport()), this.convert(source
                 .getActiveEnergyExport()), this.convert(source.getActiveEnergyImportTariffOne()), this.convert(source
-                .getActiveEnergyImportTariffTwo()), this.convert(source.getActiveEnergyExportTariffOne()),
-                this.convert(source.getActiveEnergyExportTariffTwo()));
+                        .getActiveEnergyImportTariffTwo()), this.convert(source.getActiveEnergyExportTariffOne()),
+                        this.convert(source.getActiveEnergyExportTariffTwo()));
     }
 
     private OsgpMeterValue convert(final DlmsMeterValue dlmsMeterValue) {

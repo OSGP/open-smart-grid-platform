@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws;
 
-import java.io.Serializable;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
@@ -49,6 +47,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
             this.webServiceResponsesJmsTemplate.setTimeToLive(timeToLive);
         }
 
+        this.webServiceResponsesJmsTemplate.setPriority(responseMessage.getMessagePriority());
         this.webServiceResponsesJmsTemplate.send(new MessageCreator() {
 
             @Override
@@ -75,7 +74,7 @@ public class WebServiceResponseMessageSender implements NotificationResponseMess
                     objectMessage.setStringProperty(Constants.DESCRIPTION, description);
 
                 }
-                objectMessage.setObject((Serializable) responseMessage.getDataObject());
+                objectMessage.setObject(responseMessage.getDataObject());
                 return objectMessage;
             }
         });

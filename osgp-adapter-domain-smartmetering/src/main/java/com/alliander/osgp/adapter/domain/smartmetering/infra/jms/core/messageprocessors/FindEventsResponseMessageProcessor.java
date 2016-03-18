@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
 @Component("domainSmartMeteringFindEventsResponseMessageProcessor")
@@ -35,14 +36,13 @@ public class FindEventsResponseMessageProcessor extends OsgpCoreResponseMessageP
     }
 
     @Override
-    protected void handleMessage(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessage responseMessage,
-            final OsgpException osgpException) {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessage responseMessage, final OsgpException osgpException) {
 
         final EventMessageDataContainer eventMessageDataContainer = (EventMessageDataContainer) responseMessage
                 .getDataObject();
 
-        this.managementService.handleFindEventsResponse(deviceIdentification, organisationIdentification,
-                correlationUid, messageType, responseMessage.getResult(), osgpException, eventMessageDataContainer);
+        this.managementService.handleFindEventsResponse(deviceMessageMetadata, responseMessage.getResult(),
+                osgpException, eventMessageDataContainer);
     }
 }

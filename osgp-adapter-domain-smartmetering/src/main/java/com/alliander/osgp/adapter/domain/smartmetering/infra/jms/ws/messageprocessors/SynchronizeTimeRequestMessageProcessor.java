@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringSynchronizeTimeRequestMessageProcessor")
 public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -31,12 +32,11 @@ public class SynchronizeTimeRequestMessageProcessor extends WebServiceRequestMes
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) dataObject;
 
-        this.adhocService.synchronizeTime(organisationIdentification, deviceIdentification, correlationUid,
-                synchronizeTimeRequest, messageType);
+        this.adhocService.synchronizeTime(deviceMessageMetadata, synchronizeTimeRequest);
     }
 }

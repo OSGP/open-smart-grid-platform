@@ -29,8 +29,9 @@ public class OsgpCoreRequestMessageSender {
     @Qualifier("domainSmartMeteringOutgoingOsgpCoreRequestsJmsTemplate")
     private JmsTemplate osgpCoreRequestsJmsTemplate;
 
-    public void send(final RequestMessage requestMessage, final String messageType) {
+    public void send(final RequestMessage requestMessage, final String messageType, final int messagePriority) {
 
+        this.osgpCoreRequestsJmsTemplate.setPriority(messagePriority);
         this.osgpCoreRequestsJmsTemplate.send(new MessageCreator() {
 
             @Override

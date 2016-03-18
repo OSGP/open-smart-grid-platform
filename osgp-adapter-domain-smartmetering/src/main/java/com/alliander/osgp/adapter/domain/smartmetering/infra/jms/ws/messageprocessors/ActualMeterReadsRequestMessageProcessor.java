@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringActualMeterReadsRequestMessageProcessor")
 public class ActualMeterReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -29,12 +30,11 @@ public class ActualMeterReadsRequestMessageProcessor extends WebServiceRequestMe
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final ActualMeterReadsQuery actualMeterReadsRequest = (ActualMeterReadsQuery) dataObject;
 
-        this.monitoringService.requestActualMeterReads(organisationIdentification, deviceIdentification,
-                correlationUid, actualMeterReadsRequest, messageType);
+        this.monitoringService.requestActualMeterReads(deviceMessageMetadata, actualMeterReadsRequest);
     }
 }

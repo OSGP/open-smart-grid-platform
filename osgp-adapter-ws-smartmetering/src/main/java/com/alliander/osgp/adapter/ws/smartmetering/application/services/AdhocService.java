@@ -27,6 +27,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringAdhocService")
 @Validated
@@ -47,8 +48,8 @@ public class AdhocService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -61,9 +62,16 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME, correlationUid, organisationIdentification,
-                deviceIdentification, synchronizeTimeRequest);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(synchronizeTimeRequest)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -75,8 +83,8 @@ public class AdhocService {
         return this.meterResponseDataService.dequeue(correlationUid);
     }
 
-    public String enqueueSendWakeUpSmsRequest(final String organisationIdentification, final String deviceIdentification)
-            throws FunctionalException {
+    public String enqueueSendWakeUpSmsRequest(final String organisationIdentification,
+            final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -90,9 +98,16 @@ public class AdhocService {
                 deviceIdentification);
         final SmsDetails smsDetails = new SmsDetails(deviceIdentification, 0L, "", "", "");
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SEND_WAKEUP_SMS, correlationUid, organisationIdentification,
-                deviceIdentification, smsDetails);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.SEND_WAKEUP_SMS.toString(),
+                messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(smsDetails)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -105,7 +120,8 @@ public class AdhocService {
     }
 
     public String enqueueGetSmsDetailsRequest(final String organisationIdentification,
-            final String deviceIdentification, final SmsDetails smsDetails) throws FunctionalException {
+            final String deviceIdentification, final SmsDetails smsDetails, final int messagePriority)
+                    throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -118,9 +134,16 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_SMS_DETAILS, correlationUid, organisationIdentification,
-                deviceIdentification, smsDetails);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.GET_SMS_DETAILS.toString(),
+                messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(smsDetails)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -133,8 +156,8 @@ public class AdhocService {
     }
 
     public String enqueueRetrieveConfigurationObjectsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final RetrieveConfigurationObjectsRequest request)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final RetrieveConfigurationObjectsRequest request,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -147,9 +170,16 @@ public class AdhocService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS, correlationUid, organisationIdentification,
-                deviceIdentification, request);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(request)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 

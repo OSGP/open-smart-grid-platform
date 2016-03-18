@@ -33,6 +33,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificatio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringMonitoringService")
 @Validated
@@ -53,8 +54,8 @@ public class MonitoringService {
     private MeterResponseDataService meterResponseDataService;
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -67,9 +68,16 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA, correlationUid,
-                organisationIdentification, deviceIdentification, requestData);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.REQUEST_PERIODIC_METER_DATA.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(requestData)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -87,8 +95,8 @@ public class MonitoringService {
     }
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -101,9 +109,16 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.REQUEST_ACTUAL_METER_DATA.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(requestData)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -121,8 +136,8 @@ public class MonitoringService {
     }
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -135,9 +150,16 @@ public class MonitoringService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.READ_ALARM_REGISTER, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.READ_ALARM_REGISTER.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(requestData)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 

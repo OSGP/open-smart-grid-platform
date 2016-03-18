@@ -21,11 +21,11 @@ import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
-import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -57,19 +57,17 @@ public class InstallationService {
     }
 
     public void addMeter(
-            @Identification final String organisationIdentification,
-            @Identification final String deviceIdentification,
-            final String correlationUid,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceValueObject,
-            final String messageType) throws FunctionalException {
+            final DeviceMessageMetadata deviceMessageMetadata,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceValueObject)
+            throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         // TODO: bypassing authorization, this should be fixed.
 
-        SmartMeter device = this.smartMeteringDeviceRepository
-                .findByDeviceIdentification(deviceIdentification);
+        SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceMessageMetadata
+                .getDeviceIdentification());
         if (device == null) {
 
             /*
@@ -100,15 +98,16 @@ public class InstallationService {
                 .map(smartMeteringDeviceValueObject,
                         com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
 
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeteringDeviceDto), messageType);
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDeviceDto), deviceMessageMetadata.getMessageType(), deviceMessageMetadata
+                .getMessagePriority());
     }
 
-    public void handleAddMeterResponse(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final ResponseMessageResultType deviceResult,
-            final OsgpException exception) {
+    public void handleAddMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
-        LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", messageType);
+        LOGGER.info("handleDefaultDeviceResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
         ResponseMessageResultType result = deviceResult;
         if (exception != null) {
@@ -116,7 +115,9 @@ public class InstallationService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, exception, null), messageType);
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, null, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
+                .getMessageType());
     }
 }

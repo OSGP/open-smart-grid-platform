@@ -21,7 +21,7 @@ import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.infra.jms.Constants;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -87,40 +87,29 @@ public abstract class OsgpCoreRequestMessageProcessor implements MessageProcesso
                 this.deviceFunction.name(), this);
     }
 
-    protected abstract void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException;
+    protected abstract void handleMessage(DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException;
 
     @Override
     public void processMessage(final ObjectMessage message) throws JMSException {
-        String correlationUid = null;
-        String messageType = null;
-        String organisationIdentification = null;
-        String deviceIdentification = null;
         Object dataObject = null;
 
-        try {
-            correlationUid = message.getJMSCorrelationID();
-            messageType = message.getJMSType();
-            organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-            deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            dataObject = message.getObject();
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
+        try {
+            dataObject = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
-            LOGGER.debug("correlationUid: {}", correlationUid);
-            LOGGER.debug("messageType: {}", messageType);
-            LOGGER.debug("organisationIdentification: {}", organisationIdentification);
-            LOGGER.debug("deviceIdentification: {}", deviceIdentification);
+            LOGGER.debug(deviceMessageMetadata.toString());
             return;
         }
 
         try {
-            LOGGER.info("Calling application service function: {}", messageType);
-            this.handleMessage(organisationIdentification, deviceIdentification, correlationUid, dataObject,
-                    messageType);
+            LOGGER.info("Calling application service function: {}", deviceMessageMetadata.getMessageType());
+            this.handleMessage(deviceMessageMetadata, dataObject);
 
         } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, messageType);
+            this.handleError(e, deviceMessageMetadata);
         }
     }
 
@@ -130,21 +119,16 @@ public abstract class OsgpCoreRequestMessageProcessor implements MessageProcesso
      *
      * @param e
      *            The exception.
-     * @param correlationUid
-     *            The correlation UID.
-     * @param organisationIdentification
-     *            The organisation identification.
-     * @param deviceIdentification
-     *            The device identification.
-     * @param messageType
-     *            The message type.
+     * @param deviceMessageMetadata
+     *            the {@link DeviceMessageMetadata}
      */
-    protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
-            final String deviceIdentification, final String messageType) {
-        LOGGER.info("handling error: {} for message type: {}", e.getMessage(), messageType);
+    protected void handleError(final Exception e, final DeviceMessageMetadata deviceMessageMetadata) {
+        LOGGER.info("handling error: {} for message type: {}", e.getMessage(), deviceMessageMetadata.getMessageType());
         final OsgpException osgpException = this.ensureOsgpException(e);
-        this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, ResponseMessageResultType.NOT_OK, osgpException, null), messageType);
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                ResponseMessageResultType.NOT_OK, osgpException, null, deviceMessageMetadata.getMessagePriority()),
+                deviceMessageMetadata.getMessageType());
     }
 
     private OsgpException ensureOsgpException(final Exception e) {

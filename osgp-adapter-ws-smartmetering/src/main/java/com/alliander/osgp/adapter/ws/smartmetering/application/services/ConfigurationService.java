@@ -32,6 +32,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfiguratio
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringConfigurationService")
 @Validated
@@ -57,13 +58,16 @@ public class ConfigurationService {
      * @throws FunctionalException
      */
     public String requestSetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification, final AdministrativeStatusType requestData) throws FunctionalException {
-        return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData);
+            final String deviceIdentification, final AdministrativeStatusType requestData, final int messagePriority)
+            throws FunctionalException {
+        return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData,
+                messagePriority);
     }
 
     public String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
-            @Identification final AdministrativeStatusType requestData) throws FunctionalException {
+            @Identification final AdministrativeStatusType requestData, final int messagePriority)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -77,9 +81,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_ADMINISTRATIVE_STATUS.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(requestData)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -92,12 +103,12 @@ public class ConfigurationService {
     }
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification) throws FunctionalException {
-        return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification);
+            final String deviceIdentification, final int messagePriority) throws FunctionalException {
+        return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification, messagePriority);
     }
 
     private String enqueueGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification) throws FunctionalException {
+            final String deviceIdentification, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -110,9 +121,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS, correlationUid, organisationIdentification,
-                deviceIdentification, AdministrativeStatusType.UNDEFINED);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_ADMINISTRATIVE_STATUS.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(AdministrativeStatusType.UNDEFINED)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -125,8 +143,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SpecialDaysRequest requestData)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SpecialDaysRequest requestData,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -139,9 +157,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REQUEST_SPECIAL_DAYS, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.REQUEST_SPECIAL_DAYS.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(requestData)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -154,8 +179,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -168,9 +193,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_CONFIGURATION_OBJECT, correlationUid, organisationIdentification,
-                deviceIdentification, requestData);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_CONFIGURATION_OBJECT.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(requestData)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -183,8 +215,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -197,9 +229,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_PUSH_SETUP_ALARM, correlationUid, organisationIdentification,
-                deviceIdentification, pushSetupAlarm);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_PUSH_SETUP_ALARM.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(pushSetupAlarm)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -212,8 +251,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetPushSetupSmsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final PushSetupSms pushSetupSms)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final PushSetupSms pushSetupSms,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -226,9 +265,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_PUSH_SETUP_SMS, correlationUid, organisationIdentification,
-                deviceIdentification, pushSetupSms);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_PUSH_SETUP_SMS.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(pushSetupSms)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -241,8 +287,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -255,9 +301,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS, correlationUid, organisationIdentification,
-                deviceIdentification, alarmSwitches);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_ALARM_NOTIFICATIONS.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(alarmSwitches)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -265,8 +318,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetEncryptionKeyExchangeOnGMeterRequest(
-            @Identification final String organisationIdentification, @Identification final String deviceIdentification)
-                    throws FunctionalException {
+            @Identification final String organisationIdentification, @Identification final String deviceIdentification,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -279,9 +332,15 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER, correlationUid,
-                organisationIdentification, deviceIdentification);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_ENCRYPTION_KEY_EXCHANGE_ON_G_METER.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -289,8 +348,8 @@ public class ConfigurationService {
     }
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar)
-            throws FunctionalException {
+            @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
+            final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -303,9 +362,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR, correlationUid, organisationIdentification,
-                deviceIdentification, activityCalendar);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.SET_ACTIVITY_CALENDAR.toString(), messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(activityCalendar)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -318,7 +384,8 @@ public class ConfigurationService {
     }
 
     public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final KeySet keySet) throws FunctionalException {
+            @Identification final String deviceIdentification, final KeySet keySet, final int messagePriority)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -331,9 +398,16 @@ public class ConfigurationService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.REPLACE_KEYS, correlationUid, organisationIdentification,
-                deviceIdentification, keySet);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.REPLACE_KEYS.toString(),
+                messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(keySet)
+        .build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 

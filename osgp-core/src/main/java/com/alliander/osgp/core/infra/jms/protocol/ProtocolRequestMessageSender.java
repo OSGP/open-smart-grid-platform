@@ -25,7 +25,8 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
 /**
- * This class sends protocol request messages to the requests queue for the specific version of the protocol
+ * This class sends protocol request messages to the requests queue for the
+ * specific version of the protocol
  */
 public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
@@ -61,6 +62,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
             isCustomTimeToLiveSet = true;
         }
 
+        jmsTemplate.setPriority(requestMessage.getMessagePriority());
         jmsTemplate.send(new MessageCreator() {
 
             @Override

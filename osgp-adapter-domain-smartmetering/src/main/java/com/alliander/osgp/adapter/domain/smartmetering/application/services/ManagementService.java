@@ -18,11 +18,11 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Manag
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
-import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -50,31 +50,28 @@ public class ManagementService {
         // Parameterless constructor required for transactions...
     }
 
-    public void findEvents(@Identification final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String messageType,
+    public void findEvents(final DeviceMessageMetadata deviceMessageMetadata,
             final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer) throws FunctionalException {
 
         LOGGER.info("findEvents for organisationIdentification: {} for deviceIdentification: {}",
-                organisationIdentification, deviceIdentification);
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final SmartMeter smartMeter = this.domainHelperService
-                .findSmartMeter(deviceIdentification);
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
+                .getDeviceIdentification());
 
         LOGGER.info("Sending request message to core.");
-        final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
-                deviceIdentification, smartMeter.getIpAddress(), this.managementMapper.map(
-                        findEventsQueryMessageDataContainer,
+        final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeter.getIpAddress(), this.managementMapper.map(findEventsQueryMessageDataContainer,
                         com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer.class));
-        this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
+        this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority());
     }
 
     public void handleFindEventsResponse(
-            final String deviceIdentification,
-            final String organisationIdentification,
-            final String correlationUid,
-            final String messageType,
+            final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType,
             final OsgpException osgpException,
             final com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer eventMessageDataContainerDto) {
@@ -83,8 +80,10 @@ public class ManagementService {
                 eventMessageDataContainerDto, EventMessageDataContainer.class);
 
         // Send the response containing the events to the webservice-adapter
-        final ResponseMessage responseMessage = new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, responseMessageResultType, osgpException, eventMessageDataContainer);
-        this.webServiceResponseMessageSender.send(responseMessage, messageType);
+        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                responseMessageResultType, osgpException, eventMessageDataContainer,
+                deviceMessageMetadata.getMessagePriority());
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }

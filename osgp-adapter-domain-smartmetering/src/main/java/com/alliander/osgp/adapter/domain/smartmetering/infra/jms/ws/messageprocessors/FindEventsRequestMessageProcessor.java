@@ -16,6 +16,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringFindEventsRequestMessageProcessor")
 public class FindEventsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -29,11 +30,10 @@ public class FindEventsRequestMessageProcessor extends WebServiceRequestMessageP
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final FindEventsQueryMessageDataContainer data = (FindEventsQueryMessageDataContainer) dataObject;
-        this.managementService.findEvents(organisationIdentification, deviceIdentification, correlationUid,
-                messageType, data);
+        this.managementService.findEvents(deviceMessageMetadata, data);
     }
 }

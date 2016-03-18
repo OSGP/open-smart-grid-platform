@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringSetPushSetupAlarmRequestMessageProcessor")
 public class SetPushSetupAlarmRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -31,12 +32,11 @@ public class SetPushSetupAlarmRequestMessageProcessor extends WebServiceRequestM
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final PushSetupAlarm pushSetupAlarm = (PushSetupAlarm) dataObject;
 
-        this.configurationService.setPushSetupAlarm(organisationIdentification, deviceIdentification, correlationUid,
-                pushSetupAlarm, messageType);
+        this.configurationService.setPushSetupAlarm(deviceMessageMetadata, pushSetupAlarm);
     }
 }

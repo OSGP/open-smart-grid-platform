@@ -41,6 +41,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringManagementService")
 @Transactional(value = "transactionManager")
@@ -71,7 +72,7 @@ public class ManagementService {
     }
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<FindEventsQuery> findEventsQueryList) throws FunctionalException {
+            final List<FindEventsQuery> findEventsQueryList, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -90,9 +91,17 @@ public class ManagementService {
         final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
                 deviceIdentification);
 
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage(
-                SmartMeteringRequestMessageType.FIND_EVENTS, correlationUid, organisationIdentification,
-                deviceIdentification, new FindEventsQueryMessageDataContainer(findEventsQueryList));
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.FIND_EVENTS.toString(),
+                messagePriority);
+
+        // @formatter:off
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .request(new FindEventsQueryMessageDataContainer(findEventsQueryList))
+        .build();
+        // @formatter:on
+
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
