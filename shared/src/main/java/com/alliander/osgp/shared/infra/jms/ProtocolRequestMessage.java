@@ -18,7 +18,6 @@ public class ProtocolRequestMessage extends RequestMessage {
     private final String domain;
     private final String domainVersion;
     private final String messageType;
-    private final String ipAddress;
     private final Serializable messageData;
     private final boolean scheduled;
     private final int retryCount;
@@ -46,11 +45,10 @@ public class ProtocolRequestMessage extends RequestMessage {
     public ProtocolRequestMessage(final String domain, final String domainVersion, final String messageType,
             final String correlationUid, final String organisationIdentification, final String deviceIdentification,
             final String ipAddress, final Serializable request, final boolean scheduled, final int retryCount) {
-        super(correlationUid, organisationIdentification, deviceIdentification, request);
+        super(correlationUid, organisationIdentification, deviceIdentification, ipAddress, request);
         this.domain = domain;
         this.domainVersion = domainVersion;
         this.messageType = messageType;
-        this.ipAddress = ipAddress;
         this.messageData = request;
         this.scheduled = scheduled;
         this.retryCount = retryCount;
@@ -64,11 +62,10 @@ public class ProtocolRequestMessage extends RequestMessage {
             final String domainVersion, final String ipAddress, final Serializable request, final boolean scheduled,
             final int retryCount) {
         super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
-                deviceMessageMetadata.getDeviceIdentification(), request);
+                deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
 
         this.domain = domain;
         this.domainVersion = domainVersion;
-        this.ipAddress = ipAddress;
         this.messageData = request;
         this.scheduled = scheduled;
         this.retryCount = retryCount;
@@ -142,11 +139,6 @@ public class ProtocolRequestMessage extends RequestMessage {
 
     public String getMessageType() {
         return this.messageType;
-    }
-
-    @Override
-    public String getIpAddress() {
-        return this.ipAddress;
     }
 
     public Serializable getMessageData() {
