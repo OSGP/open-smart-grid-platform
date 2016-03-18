@@ -25,14 +25,9 @@ public interface DeviceService {
     // void doGetFirmwareVersion(DeviceRequest deviceRequest,
     // DeviceResponseHandler deviceResponseHandler, String ipAddress)
     // throws IOException;
-    //
-    void getStatus(GetStatusDeviceRequest deviceRequest);
 
-    //
-    // void doGetStatus(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
+    void getStatus(GetStatusDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler);
+
     // // void setReboot(DeviceRequest deviceRequest);
     //
     // void doSetReboot(DeviceRequest deviceRequest, DeviceResponseHandler

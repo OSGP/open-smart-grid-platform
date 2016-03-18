@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -24,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
@@ -31,6 +35,7 @@ import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataServ
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.dto.valueobjects.LightValue;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -49,14 +54,18 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #getStatus(com.alliander.osgp.adapter.protocol.iec61850.device.requests.
      * GetStatusDeviceRequest)
      */
     @Override
-    public void getStatus(final GetStatusDeviceRequest deviceRequest) {
+    public void getStatus(final GetStatusDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+
+        final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid());
 
         try {
 
@@ -65,19 +74,20 @@ public class Iec61850DeviceService implements DeviceService {
             final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
                     .getDeviceIdentification());
 
-            final String xswc1PositionStateObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                    + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(1)
-                    + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-            LOGGER.info("xswc1PositionStateObjectReference: {}", xswc1PositionStateObjectReference);
+            // getting the light relay values
 
-            final FcModelNode switchPositonState = (FcModelNode) serverModel.findModelNode(
-                    xswc1PositionStateObjectReference, Fc.ST);
+            final List<LightValue> lightValues = new ArrayList<>();
 
-            LOGGER.info("FcModelNode: {}", switchPositonState);
+            for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+                final boolean on = this.getRelayStatus(deviceOutputSetting.getInternalId(), serverModel);
+                lightValues.add(new LightValue(deviceOutputSetting.getInternalId(), on, null));
+            }
 
-            final BdaBoolean state = (BdaBoolean) switchPositonState.getChild("stVal");
-            LOGGER.info("state: {}", state);
+            final DeviceStatus deviceStatus = new DeviceStatus(lightValues, null, null, null, 0);
+
+            deviceResponse.setDeviceStatus(deviceStatus);
 
             // GET STATUS OLD IMPL
 
@@ -106,8 +116,11 @@ public class Iec61850DeviceService implements DeviceService {
             // }
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during getStatus", e);
+            deviceResponseHandler.handleException(e, deviceResponse, true);
 
         }
+
+        deviceResponseHandler.handleResponse(deviceResponse);
     }
 
     /**
@@ -180,9 +193,30 @@ public class Iec61850DeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
+    /**
+     * Returns true if the relay is on
+     */
+    private boolean getRelayStatus(final int index, final ServerModel serverModel) {
+
+        final String xswc1PositionStateObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(index)
+                + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
+
+        LOGGER.info("xswc1PositionStateObjectReference: {}", xswc1PositionStateObjectReference);
+
+        final FcModelNode switchPositonState = (FcModelNode) serverModel.findModelNode(
+                xswc1PositionStateObjectReference, Fc.ST);
+
+        LOGGER.info("FcModelNode: {}", switchPositonState);
+
+        final BdaBoolean state = (BdaBoolean) switchPositonState.getChild("stVal");
+
+        return state.getValue();
+    }
+
     private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
             final ServerModel serverModel, final ClientAssociation clientAssociation)
-            throws ConnectionFailureException, ProtocolAdapterException {
+                    throws ConnectionFailureException, ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {

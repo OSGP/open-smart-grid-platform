@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceResponseService;
+import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -102,6 +104,31 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getDeviceIdentification(), result, ex, null, retryCount);
+
+        responseMessageSender.send(responseMessage);
+    }
+
+    protected void handleGetStatusDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount) {
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException osgpException = null;
+        DeviceStatus status = null;
+
+        try {
+            final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;
+            status = response.getDeviceStatus();
+        } catch (final Exception e) {
+            LOGGER.error("Device Response Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+        }
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getDeviceIdentification(), result, osgpException, status, retryCount);
 
         responseMessageSender.send(responseMessage);
     }

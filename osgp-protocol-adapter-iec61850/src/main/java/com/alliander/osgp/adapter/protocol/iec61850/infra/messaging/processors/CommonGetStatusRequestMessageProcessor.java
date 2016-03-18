@@ -14,9 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -70,109 +75,45 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
             return;
         }
 
+        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
+                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                CommonGetStatusRequestMessageProcessor.this.handleGetStatusDeviceResponse(deviceResponse,
+                        CommonGetStatusRequestMessageProcessor.this.responseMessageSender,
+                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
+                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
+            }
+
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
+                if (expected) {
+                    CommonGetStatusRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
+                            ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
+                            requestMessageData.getOrganisationIdentification(), requestMessageData
+                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                    .getDomainVersion(), requestMessageData.getMessageType());
+                } else {
+                    CommonGetStatusRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
+                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
+                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
+                }
+            }
+
+        };
 
         final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
                 deviceIdentification, correlationUid, null, domain, domainVersion, messageType, ipAddress, retryCount,
                 isScheduled);
 
-        this.deviceService.getStatus(deviceRequest);
+        this.deviceService.getStatus(deviceRequest, deviceResponseHandler);
 
-        // try {
-        // sampleClient.connect(new String[] { "127.0.0.1", "10002" });
-        // } catch (final ServiceError e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch (final IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
     }
 
-    // @Override
-    // public void processSignedOslpEnvelope(final String deviceIdentification,
-    // final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
-    //
-    // final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
-    // signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
-    // final OslpEnvelope oslpEnvelope =
-    // signedOslpEnvelopeDto.getOslpEnvelope();
-    // final String correlationUid =
-    // unsignedOslpEnvelopeDto.getCorrelationUid();
-    // final String organisationIdentification =
-    // unsignedOslpEnvelopeDto.getOrganisationIdentification();
-    // final String domain = unsignedOslpEnvelopeDto.getDomain();
-    // final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
-    // final String messageType = unsignedOslpEnvelopeDto.getMessageType();
-    // final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
-    // final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
-    // final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-    //
-    // final DeviceResponseHandler deviceResponseHandler = new
-    // DeviceResponseHandler() {
-    //
-    // @Override
-    // public void handleResponse(final DeviceResponse deviceResponse) {
-    // CommonGetStatusRequestMessageProcessor.this.handleGetStatusDeviceResponse(deviceResponse,
-    // CommonGetStatusRequestMessageProcessor.this.responseMessageSender,
-    // domain, domainVersion,
-    // messageType, retryCount);
-    // }
-    //
-    // @Override
-    // public void handleException(final Throwable t, final DeviceResponse
-    // deviceResponse) {
-    // CommonGetStatusRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-    // t,
-    // null, CommonGetStatusRequestMessageProcessor.this.responseMessageSender,
-    // deviceResponse,
-    // domain, domainVersion, messageType, isScheduled, retryCount);
-    // }
-    //
-    // };
-    //
-    // final GetStatusDeviceRequest deviceRequest = new
-    // GetStatusDeviceRequest(organisationIdentification,
-    // deviceIdentification, correlationUid, null);
-    //
-    // try {
-    // this.deviceService.doGetStatus(oslpEnvelope, deviceRequest,
-    // deviceResponseHandler, ipAddress);
-    // } catch (final IOException e) {
-    // this.handleError(e, correlationUid, organisationIdentification,
-    // deviceIdentification, domain,
-    // domainVersion, messageType, retryCount);
-    // }
-    // }
-
-    // private void handleGetStatusDeviceResponse(final DeviceResponse
-    // deviceResponse,
-    // final ResponseMessageSender responseMessageSender, final String domain,
-    // final String domainVersion,
-    // final String messageType, final int retryCount) {
-    //
-    // ResponseMessageResultType result = ResponseMessageResultType.OK;
-    // OsgpException osgpException = null;
-    // DeviceStatus status = null;
-    //
-    // try {
-    // final GetStatusDeviceResponse response = (GetStatusDeviceResponse)
-    // deviceResponse;
-    // status = response.getDeviceStatus();
-    // } catch (final Exception e) {
-    // LOGGER.error("Device Response Exception", e);
-    // result = ResponseMessageResultType.NOT_OK;
-    // osgpException = new TechnicalException(ComponentType.UNKNOWN,
-    // "Unexpected exception while retrieving response message", e);
-    // }
-    //
-    // final ProtocolResponseMessage responseMessage = new
-    // ProtocolResponseMessage(domain, domainVersion, messageType,
-    // deviceResponse.getCorrelationUid(),
-    // deviceResponse.getOrganisationIdentification(),
-    // deviceResponse.getDeviceIdentification(), result, osgpException, status,
-    // retryCount);
-    //
-    // responseMessageSender.send(responseMessage);
-    // }
 }

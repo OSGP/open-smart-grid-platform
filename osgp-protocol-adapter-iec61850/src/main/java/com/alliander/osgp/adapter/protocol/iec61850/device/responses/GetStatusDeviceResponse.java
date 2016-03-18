@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -15,12 +15,15 @@ public class GetStatusDeviceResponse extends DeviceResponse {
     private DeviceStatus deviceStatus;
 
     public GetStatusDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DeviceStatus deviceStatus) {
+            final String correlationUid) {
         super(organisationIdentification, deviceIdentification, correlationUid);
-        this.deviceStatus = deviceStatus;
     }
 
     public DeviceStatus getDeviceStatus() {
         return this.deviceStatus;
+    }
+
+    public void setDeviceStatus(final DeviceStatus deviceStatus) {
+        this.deviceStatus = deviceStatus;
     }
 }
