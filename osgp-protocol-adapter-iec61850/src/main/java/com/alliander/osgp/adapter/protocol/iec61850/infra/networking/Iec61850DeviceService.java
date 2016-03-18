@@ -116,10 +116,6 @@ public class Iec61850DeviceService implements DeviceService {
     @Override
     public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
-        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
-                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
-                deviceRequest.getCorrelationUid());
-
         try {
 
             // Connect, get the ServerModel final and ClientAssociation.
@@ -160,18 +156,27 @@ public class Iec61850DeviceService implements DeviceService {
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
-            deviceResponse.setStatus(DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
             deviceResponseHandler.handleException(se, deviceResponse, true);
             return;
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during writeDataValue", e);
 
-            deviceResponse.setStatus(DeviceMessageStatus.FAILURE);
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
             deviceResponseHandler.handleException(e, deviceResponse, false);
             return;
         }
 
-        deviceResponse.setStatus(DeviceMessageStatus.OK);
+        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
