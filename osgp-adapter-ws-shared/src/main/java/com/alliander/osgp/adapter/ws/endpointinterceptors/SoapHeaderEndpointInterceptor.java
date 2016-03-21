@@ -7,14 +7,11 @@
  */
 package com.alliander.osgp.adapter.ws.endpointinterceptors;
 
-import java.util.Iterator;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.server.EndpointInterceptor;
 import org.springframework.ws.soap.SoapHeader;
-import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.SoapMessage;
 
 import com.alliander.osgp.domain.core.exceptions.EmptyApplicationNameSoapHeaderException;
@@ -45,10 +42,12 @@ public class SoapHeaderEndpointInterceptor implements EndpointInterceptor {
         final SoapHeader soapHeader = request.getSoapHeader();
 
         // Try to get the values from the Soap Header.
-        final String organisationIdentification = this.getHeaderValue(soapHeader,
+        final String organisationIdentification = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader,
                 this.organisationIdentificationHeaderName);
-        final String userName = this.getHeaderValue(soapHeader, this.USER_NAME_HEADER_NAME);
-        final String applicationName = this.getHeaderValue(soapHeader, this.APPLICTION_NAME_HEADER_NAME);
+        final String userName = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader,
+                this.USER_NAME_HEADER_NAME);
+        final String applicationName = SoapHeaderEndpointInterceptorHelper.getHeaderValue(soapHeader,
+                this.APPLICTION_NAME_HEADER_NAME);
 
         // Check if the values are empty, if so, throw exception.
         if (StringUtils.isEmpty(organisationIdentification)) {
@@ -69,22 +68,6 @@ public class SoapHeaderEndpointInterceptor implements EndpointInterceptor {
 
         // Return true so the interceptor chain will continue.
         return true;
-    }
-
-    private String getHeaderValue(final SoapHeader soapHeader, final String valueName) {
-        String value = "";
-        final Iterator<SoapHeaderElement> iterator = soapHeader.examineAllHeaderElements();
-
-        while (iterator.hasNext()) {
-            final SoapHeaderElement element = iterator.next();
-
-            if (element.getName().getLocalPart().equals(valueName)) {
-                value = element.getText();
-                break;
-            }
-        }
-
-        return value;
     }
 
     @Override

@@ -15,5 +15,6 @@ public class SoapFaultMapper extends ConfigurableMapper {
     protected void configure(final MapperFactory factory) {
         factory.getConverterFactory().registerConverter(new FunctionalExceptionConverter());
         factory.getConverterFactory().registerConverter(new TechnicalExceptionConverter());
+        factory.getConverterFactory().registerConverter(new ConnectionFailureExceptionConverter());
     }
 }

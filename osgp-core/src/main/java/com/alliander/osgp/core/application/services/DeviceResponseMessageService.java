@@ -25,6 +25,7 @@ import com.alliander.osgp.domain.core.repositories.ScheduledTaskRepository;
 import com.alliander.osgp.domain.core.valueobjects.ScheduledTaskStatusType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
@@ -146,11 +147,21 @@ public class DeviceResponseMessageService {
             throws JMSException {
         final Device device = this.deviceRepository.findByDeviceIdentification(message.getDeviceIdentification());
 
-        final Serializable messageData = (Serializable) message.getDataObject();
+        final Serializable messageData = message.getDataObject();
 
-        return new ProtocolRequestMessage(message.getDomain(), message.getDomainVersion(), message.getMessageType(),
-                message.getCorrelationUid(), message.getOrganisationIdentification(),
-                message.getDeviceIdentification(), device.getIpAddress(), messageData, message.isScheduled(),
-                message.getRetryCount() + 1);
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+
+        // @formatter:off
+        return new ProtocolRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata)
+        .domain(message.getDomain())
+        .domainVersion(message.getDomainVersion())
+        .ipAddress(device.getIpAddress())
+        .request(messageData)
+        .scheduled(message.isScheduled())
+        .retryCount(message.getRetryCount() + 1)
+        .build();
+        // @formatter:on
+
     }
 }

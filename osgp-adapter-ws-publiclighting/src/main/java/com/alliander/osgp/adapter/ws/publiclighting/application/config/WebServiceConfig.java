@@ -198,6 +198,9 @@ public class WebServiceConfig {
 
         final Properties props = new Properties();
         props.put("com.alliander.osgp.shared.exceptionhandling.FunctionalException", "SERVER");
+        props.put("com.alliander.osgp.shared.exceptionhandling.TechnicalException", "SERVER");
+        props.put("com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException", "SERVER");
+
         exceptionResolver.setExceptionMappings(props);
         return exceptionResolver;
     }

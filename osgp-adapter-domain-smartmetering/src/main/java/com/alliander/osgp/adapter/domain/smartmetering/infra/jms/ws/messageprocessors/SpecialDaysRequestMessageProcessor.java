@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Component("domainSmartmeteringSpecialDaysRequestMessageProcessor")
 public class SpecialDaysRequestMessageProcessor extends WebServiceRequestMessageProcessor {
@@ -31,12 +32,11 @@ public class SpecialDaysRequestMessageProcessor extends WebServiceRequestMessage
     }
 
     @Override
-    protected void handleMessage(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Object dataObject, final String messageType) throws FunctionalException {
+    protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
+            throws FunctionalException {
 
         final SpecialDaysRequest specialDaysRequest = (SpecialDaysRequest) dataObject;
 
-        this.configurationService.requestSpecialDays(organisationIdentification, deviceIdentification, correlationUid,
-                specialDaysRequest, messageType);
+        this.configurationService.requestSpecialDays(deviceMessageMetadata, specialDaysRequest);
     }
 }

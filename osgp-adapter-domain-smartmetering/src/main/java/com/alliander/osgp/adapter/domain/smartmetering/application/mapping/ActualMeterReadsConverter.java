@@ -15,7 +15,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 
 public class ActualMeterReadsConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto, MeterReads> {
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto, MeterReads> {
 
     @Override
     public MeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto source,
