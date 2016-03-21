@@ -33,6 +33,7 @@ public enum FunctionalExceptionType {
     ARGUMENT_NULL(403, "Argument null."),
     JMS_TEMPLATE_NULL(404, "JSM template was null. Restart server."),
     UNKNOWN_CORRELATION_UID(405, "No results found for the given correlation uid."),
+    LIGHT_SWITCHING_NOT_ALLOWED_FOR_RELAY(406, "This relay is not configured for light switching"),
 
     // Manufacturer exceptions
     UNKNOWN_MANUFACTURER(501, "Manufacturer does not exist."),

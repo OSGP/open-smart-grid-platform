@@ -24,6 +24,7 @@ public enum ComponentType {
     OSGP_CORE("Osgp Core"),
     PROTOCOL_OSLP("Osgp Protocol Adapter OSLP"),
     PROTOCOL_DLMS("Osgp Protocol Adapter DLMS"),
+    PROTOCOL_IEC61850("Osgp Protocol Adapter IEC61850"),
 
     UNKNOWN("Unknown");
 
