@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
@@ -42,7 +42,7 @@ public class GetSmsDetailsResponseMessageProcessor extends OsgpCoreResponseMessa
             final String correlationUid, final String messageType, final ResponseMessage responseMessage,
             final OsgpException osgpException) {
 
-        final SmsDetails smsDetails = (SmsDetails) responseMessage.getDataObject();
+        final SmsDetailsDto smsDetails = (SmsDetailsDto) responseMessage.getDataObject();
 
         this.adhocService.handleGetSmsDetailsResponse(deviceIdentification, organisationIdentification, correlationUid,
                 messageType, responseMessage.getResult(), osgpException, smsDetails);

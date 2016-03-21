@@ -12,16 +12,16 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReads;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsDto;
 
 public class PeriodicMeterReadsConverter
 extends
-CustomConverter<PeriodicMeterReads, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> {
+CustomConverter<PeriodicMeterReadsDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> {
 
     @Override
     public com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads convert(
-            final PeriodicMeterReads pmr,
+            final PeriodicMeterReadsDto pmr,
             final Type<? extends com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads> destinationType) {
         final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(pmr.getAmrProfileStatusCode(),
                 AmrProfileStatusCode.class);
@@ -32,7 +32,7 @@ CustomConverter<PeriodicMeterReads, com.alliander.osgp.domain.core.valueobjects.
                 amrProfileStatusCode);
     }
 
-    private OsgpMeterValue convert(final DlmsMeterValue dlmsMeterValue) {
+    private OsgpMeterValue convert(final DlmsMeterValueDto dlmsMeterValue) {
         return this.mapperFacade.map(dlmsMeterValue, OsgpMeterValue.class);
     }
 

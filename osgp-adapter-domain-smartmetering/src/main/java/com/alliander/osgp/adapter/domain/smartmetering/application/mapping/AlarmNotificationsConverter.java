@@ -19,11 +19,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
 public class AlarmNotificationsConverter
 extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications, AlarmNotifications> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto, AlarmNotifications> {
 
     @Override
     public AlarmNotifications convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications source,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto source,
             final Type<AlarmNotifications> destinationType) {
         if (source == null) {
             return null;
@@ -31,9 +31,9 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNo
 
         final Set<AlarmNotification> alarmNotifications = new TreeSet<AlarmNotification>();
 
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification> sourceNotifications = source
+        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto> sourceNotifications = source
                 .getAlarmNotifications();
-        for (final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification sourceNotification : sourceNotifications) {
+        for (final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto sourceNotification : sourceNotifications) {
             final AlarmType alarmType = AlarmType.valueOf(sourceNotification.getAlarmType().name());
             final boolean enabled = sourceNotification.isEnabled();
             final AlarmNotification alarmNotification = new AlarmNotification(alarmType, enabled);
@@ -44,26 +44,26 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNo
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications convertFrom(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto convertFrom(
             final AlarmNotifications source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification> alarmNotifications = new TreeSet<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification>();
+        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto> alarmNotifications = new TreeSet<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto>();
 
         final Set<AlarmNotification> sourceNotifications = source.getAlarmNotifications();
 
         for (final AlarmNotification sourceNotification : sourceNotifications) {
-            final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType alarmType = com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto alarmType = com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto
                     .valueOf(sourceNotification.getAlarmType().name());
             final boolean enabled = sourceNotification.isEnabled();
-            final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification alarmNotification = new com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification(
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto alarmNotification = new com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto(
                     alarmType, enabled);
             alarmNotifications.add(alarmNotification);
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications(alarmNotifications);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto(alarmNotifications);
     }
 }

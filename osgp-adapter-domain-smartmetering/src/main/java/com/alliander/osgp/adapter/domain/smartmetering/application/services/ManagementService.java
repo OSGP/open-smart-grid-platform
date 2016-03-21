@@ -66,7 +66,7 @@ public class ManagementService {
         final RequestMessage requestMessage = new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, smartMeter.getIpAddress(), this.managementMapper.map(
                         findEventsQueryMessageDataContainer,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer.class));
+                        com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainerDto.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, messageType);
     }
 
@@ -77,7 +77,7 @@ public class ManagementService {
             final String messageType,
             final ResponseMessageResultType responseMessageResultType,
             final OsgpException osgpException,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer eventMessageDataContainerDto) {
+            final com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto eventMessageDataContainerDto) {
 
         final EventMessageDataContainer eventMessageDataContainer = this.managementMapper.map(
                 eventMessageDataContainerDto, EventMessageDataContainer.class);

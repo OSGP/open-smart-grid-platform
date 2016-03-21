@@ -14,11 +14,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 
 public class AdministrativeStatusConverter
 extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType, AdministrativeStatusType> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto, AdministrativeStatusType> {
 
     @Override
     public AdministrativeStatusType convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType source,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto source,
             final Type<AdministrativeStatusType> destinationType) {
 
         if (source == null) {
@@ -29,15 +29,15 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Adminis
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType convertFrom(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto convertFrom(
             final AdministrativeStatusType source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto> destinationType) {
 
         if (source == null) {
             return null;
         }
 
-        return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.valueOf(source.name());
+        return com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto.valueOf(source.name());
     }
 
 }

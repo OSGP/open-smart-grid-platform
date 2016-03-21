@@ -17,7 +17,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObjectDefi
 
 public class CosemObjectDefinitionConverter
 extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition, CosemObjectDefinition> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto, CosemObjectDefinition> {
 
     private final ConfigurationMapper mapper;
 
@@ -51,7 +51,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemOb
 
     @Override
     public CosemObjectDefinition convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition source,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto source,
             final Type<CosemObjectDefinition> destinationType) {
         if (source == null) {
             return null;
@@ -63,16 +63,16 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemOb
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition convertFrom(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto convertFrom(
             final CosemObjectDefinition source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode logicalName = this.mapper.map(
-                source.getLogicalName(), com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode.class);
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition(source.getClassId(),
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto logicalName = this.mapper.map(
+                source.getLogicalName(), com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto.class);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto(source.getClassId(),
                 logicalName, source.getAttributeIndex(), source.getDataIndex());
     }
 }

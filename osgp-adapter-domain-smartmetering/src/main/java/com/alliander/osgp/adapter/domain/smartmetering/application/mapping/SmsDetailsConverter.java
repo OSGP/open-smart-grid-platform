@@ -13,10 +13,10 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 
 public class SmsDetailsConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails, SmsDetails> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto, SmsDetails> {
 
     @Override
-    public SmsDetails convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails source,
+    public SmsDetails convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto source,
             final Type<SmsDetails> destinationType) {
 
         if (source == null) {
@@ -27,13 +27,13 @@ public class SmsDetailsConverter extends
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails convertFrom(final SmsDetails source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto convertFrom(final SmsDetails source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto> destinationType) {
 
         if (source == null) {
             return null;
         }
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails(source.getDeviceIdentification(),
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto(source.getDeviceIdentification(),
                 source.getSmsMsgId(), source.getStatus(), source.getSmsMsgAttemptStatus(), source.getMsgType());
     }
 

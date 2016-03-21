@@ -14,10 +14,10 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventLogCategor
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
 
 public class FindEventsQueryConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery, FindEventsQuery> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto, FindEventsQuery> {
 
     @Override
-    public FindEventsQuery convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery source,
+    public FindEventsQuery convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto source,
             final Type<FindEventsQuery> destinationType) {
         if (source == null) {
             return null;
@@ -29,16 +29,16 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.FindEve
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery convertFrom(final FindEventsQuery source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto convertFrom(final FindEventsQuery source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory eventLogCategory = com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory
+        final com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto eventLogCategory = com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto
                 .valueOf(source.getEventLogCategory().toString());
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery(eventLogCategory,
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto(eventLogCategory,
                 source.getFrom(), source.getUntil());
     }
 

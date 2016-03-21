@@ -17,14 +17,14 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 @Component
 public class PeriodicMeterReadsRequestConverter
         extends
-        CustomConverter<PeriodicMeterReadsQuery, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> {
+        CustomConverter<PeriodicMeterReadsQuery, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto> {
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery convert(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto convert(
             final PeriodicMeterReadsQuery source,
-            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery> destinationType) {
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery(
-                com.alliander.osgp.dto.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType().name()),
+            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto> destinationType) {
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto(
+                com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto.valueOf(source.getPeriodType().name()),
                 source.getBeginDate(), source.getEndDate());
     }
 

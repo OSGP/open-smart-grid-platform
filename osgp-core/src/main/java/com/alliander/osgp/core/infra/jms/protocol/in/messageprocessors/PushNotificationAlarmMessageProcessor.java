@@ -30,7 +30,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -76,7 +76,7 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
         final Object dataObject = requestMessage.getRequest();
 
         try {
-            final PushNotificationAlarm pushNotificationAlarm = (PushNotificationAlarm) dataObject;
+            final PushNotificationAlarmDto pushNotificationAlarm = (PushNotificationAlarmDto) dataObject;
 
             this.storeAlarmAsEvent(pushNotificationAlarm);
 
@@ -120,7 +120,7 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
         }
     }
 
-    private void storeAlarmAsEvent(final PushNotificationAlarm pushNotificationAlarm) {
+    private void storeAlarmAsEvent(final PushNotificationAlarmDto pushNotificationAlarm) {
         try {
             this.eventNotificationMessageService.handleEvent(pushNotificationAlarm.getDeviceIdentification(),
                     com.alliander.osgp.domain.core.valueobjects.EventType.ALARM_NOTIFICATION, pushNotificationAlarm

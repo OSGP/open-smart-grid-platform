@@ -13,10 +13,10 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 
 public class EventsConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Event, Event> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.EventDto, Event> {
 
     @Override
-    public Event convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.Event source,
+    public Event convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.EventDto source,
             final Type<Event> destinationType) {
         if (source == null) {
             return null;
@@ -26,13 +26,13 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.Event, 
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.Event convertFrom(final Event source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.Event> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.EventDto convertFrom(final Event source,
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.EventDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.Event(source.getTimestamp(),
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.EventDto(source.getTimestamp(),
                 source.getEventCode(), source.getEventCounter());
     }
 }

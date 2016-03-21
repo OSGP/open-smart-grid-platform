@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.NotificationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
@@ -30,7 +30,7 @@ public class NotificationService {
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
     public void handlePushNotificationAlarm(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final PushNotificationAlarm pushNotificationAlarm) {
+            final String correlationUid, final String messageType, final PushNotificationAlarmDto pushNotificationAlarm) {
 
         LOGGER.info("handlePushNotificationAlarm for MessageType: {}", messageType);
 

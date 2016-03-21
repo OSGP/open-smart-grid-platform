@@ -12,18 +12,18 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 
 public class ActualMeterReadsGasConverter extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas, MeterReadsGas> {
+        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasDto, MeterReadsGas> {
 
     @Override
-    public MeterReadsGas convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGas source,
+    public MeterReadsGas convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasDto source,
             final Type<? extends MeterReadsGas> destinationType) {
         return new MeterReadsGas(source.getLogTime(), this.convert(source.getConsumption()), source.getCaptureTime());
     }
 
-    private OsgpMeterValue convert(final DlmsMeterValue dlmsMeterValue) {
+    private OsgpMeterValue convert(final DlmsMeterValueDto dlmsMeterValue) {
         return this.mapperFacade.map(dlmsMeterValue, OsgpMeterValue.class);
     }
 }

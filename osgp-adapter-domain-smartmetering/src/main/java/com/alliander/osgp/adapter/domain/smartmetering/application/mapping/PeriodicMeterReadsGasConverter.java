@@ -12,16 +12,16 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasDto;
 
 public class PeriodicMeterReadsGasConverter
 extends
-CustomConverter<PeriodicMeterReadsGas, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> {
+CustomConverter<PeriodicMeterReadsGasDto, com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> {
 
     @Override
     public com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas convert(
-            final PeriodicMeterReadsGas source,
+            final PeriodicMeterReadsGasDto source,
             final Type<? extends com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas> destinationType) {
         final AmrProfileStatusCode amrProfileStatusCode = this.mapperFacade.map(source.getAmrProfileStatusCode(),
                 AmrProfileStatusCode.class);
@@ -29,7 +29,7 @@ CustomConverter<PeriodicMeterReadsGas, com.alliander.osgp.domain.core.valueobjec
                 this.convert(source.getConsumption()), source.getCaptureTime(), amrProfileStatusCode);
     }
 
-    private OsgpMeterValue convert(final DlmsMeterValue dlmsMeterValue) {
+    private OsgpMeterValue convert(final DlmsMeterValueDto dlmsMeterValue) {
         return this.mapperFacade.map(dlmsMeterValue, OsgpMeterValue.class);
     }
 

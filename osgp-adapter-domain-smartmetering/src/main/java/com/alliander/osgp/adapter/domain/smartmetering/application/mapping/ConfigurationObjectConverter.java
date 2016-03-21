@@ -21,11 +21,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.GprsOperationMo
 
 public class ConfigurationObjectConverter
         extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject, ConfigurationObject> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto, ConfigurationObject> {
 
     @Override
     public ConfigurationObject convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject source,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto source,
             final Type<ConfigurationObject> destinationType) {
         if (source == null) {
             return null;
@@ -35,9 +35,9 @@ public class ConfigurationObjectConverter
                 .name());
 
         final List<ConfigurationFlag> configurationFlagList = new ArrayList<>();
-        final List<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag> flags = source
+        final List<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto> flags = source
                 .getConfigurationFlags().getConfigurationFlag();
-        for (final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag flag : flags) {
+        for (final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto flag : flags) {
             final ConfigurationFlagType configurationFlagType = ConfigurationFlagType.valueOf(flag
                     .getConfigurationFlagType().name());
             final boolean enabled = flag.isEnabled();
@@ -50,30 +50,30 @@ public class ConfigurationObjectConverter
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject convertFrom(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto convertFrom(
             final ConfigurationObject source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject> destinationType) {
+            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType gprsOperationMode = com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType
+        final com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto gprsOperationMode = com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto
                 .valueOf(source.getGprsOperationMode().name());
 
-        final List<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag> configurationFlagList = new ArrayList<>();
+        final List<com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto> configurationFlagList = new ArrayList<>();
         final List<ConfigurationFlag> flags = source.getConfigurationFlags().getConfigurationFlag();
         for (final ConfigurationFlag flag : flags) {
-            final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagType configurationFlagType = com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagType
+            final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto configurationFlagType = com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto
                     .valueOf(flag.getConfigurationFlagType().name());
             final boolean enabled = flag.isEnabled();
-            final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag configurationFlag = new com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag(
+            final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto configurationFlag = new com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto(
                     configurationFlagType, enabled);
             configurationFlagList.add(configurationFlag);
         }
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags configurationFlags = new com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto configurationFlags = new com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto(
                 configurationFlagList);
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject(gprsOperationMode,
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto(gprsOperationMode,
                 configurationFlags);
     }
 }

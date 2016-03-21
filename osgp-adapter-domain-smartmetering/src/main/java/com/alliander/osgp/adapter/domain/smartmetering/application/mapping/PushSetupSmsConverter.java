@@ -15,32 +15,32 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
 
 public class PushSetupSmsConverter extends
-        CustomConverter<PushSetupSms, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms> {
+        CustomConverter<PushSetupSms, com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> {
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms convert(final PushSetupSms source,
-            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto convert(final PushSetupSms source,
+            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms.Builder builder = new com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms.Builder();
+        final com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto.Builder builder = new com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto.Builder();
 
         builder.logicalName(this.mapperFacade.map(source.getLogicalName(),
-                com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode.class));
+                com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto.class));
         if (source.hasPushObjectList()) {
-            final List<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition> pushObjectList = this.mapperFacade
+            final List<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto> pushObjectList = this.mapperFacade
                     .mapAsList(source.getPushObjectList(),
-                            com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition.class);
+                            com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto.class);
 
             builder.pushObjectList(pushObjectList);
         }
         builder.sendDestinationAndMethod(this.mapperFacade.map(source.getSendDestinationAndMethod(),
-                com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod.class));
+                com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto.class));
         if (source.hasCommunicationWindow()) {
-            final List<com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement> communicationWindow = this.mapperFacade
+            final List<com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto> communicationWindow = this.mapperFacade
                     .mapAsList(source.getCommunicationWindow(),
-                            com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement.class);
+                            com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto.class);
 
             builder.communicationWindow(communicationWindow);
         }

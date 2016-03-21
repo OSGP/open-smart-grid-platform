@@ -17,11 +17,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 @Component
 public class PeriodicMeterReadsGasResponseConverter
 extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas, PeriodicMeterReadsContainerGas> {
+CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto, PeriodicMeterReadsContainerGas> {
 
     @Override
     public PeriodicMeterReadsContainerGas convert(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGas source,
+            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto source,
             final Type<? extends PeriodicMeterReadsContainerGas> destinationType) {
         return new PeriodicMeterReadsContainerGas(
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
