@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
-import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfileDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfileDto;
 
 @Component()
-public class SetActivityCalendarCommandExecutor implements CommandExecutor<ActivityCalendar, AccessResultCode> {
+public class SetActivityCalendarCommandExecutor implements CommandExecutor<ActivityCalendarDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarCommandExecutor.class);
 
@@ -54,15 +54,15 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
-            final ActivityCalendar activityCalendar) throws ProtocolAdapterException {
+            final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
         LOGGER.debug("SetActivityCalendarCommandExecutor.execute {} called", activityCalendar.getCalendarName());
 
         final SetParameter calendarNameParameter = this.getCalendarNameParameter(activityCalendar);
-        final List<SeasonProfile> seasonProfileList = activityCalendar.getSeasonProfileList();
+        final List<SeasonProfileDto> seasonProfileList = activityCalendar.getSeasonProfileList();
         final SetParameter seasonProfileParameter = this.getSeasonProfileParameter(seasonProfileList);
-        final Set<WeekProfile> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
+        final Set<WeekProfileDto> weekProfileSet = this.getWeekProfileSet(seasonProfileList);
         final SetParameter weekProfileTableParameter = this.getWeekProfileTableParameter(weekProfileSet);
-        final Set<DayProfile> dayProfileSet = this.getDayProfileSet(weekProfileSet);
+        final Set<DayProfileDto> dayProfileSet = this.getDayProfileSet(weekProfileSet);
         final SetParameter dayProfileTablePassive = this.getDayProfileTablePassive(dayProfileSet);
 
         final Map<String, AccessResultCode> allAccessResultCodeMap = new HashMap<>();
@@ -124,14 +124,14 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         throw new ProtocolAdapterException("SetActivityCalendar: Requests failed for: " + keyValues);
     }
 
-    private SetParameter getCalendarNameParameter(final ActivityCalendar activityCalendar) {
+    private SetParameter getCalendarNameParameter(final ActivityCalendarDto activityCalendar) {
         final AttributeAddress calendarNamePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_CALENDAR_NAME_PASSIVE);
         final DataObject value = DataObject.newOctetStringData(activityCalendar.getCalendarName().getBytes());
         return new SetParameter(calendarNamePassive, value);
     }
 
-    private SetParameter getDayProfileTablePassive(final Set<DayProfile> dayProfileSet) {
+    private SetParameter getDayProfileTablePassive(final Set<DayProfileDto> dayProfileSet) {
         final AttributeAddress dayProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_DAY_PROFILE_TABLE_PASSIVE);
         final DataObject dayArray = DataObject.newArrayData(this.configurationMapper.mapAsList(dayProfileSet,
@@ -148,17 +148,17 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
      * @param weekProfileSet
      * @return
      */
-    private Set<DayProfile> getDayProfileSet(final Set<WeekProfile> weekProfileSet) {
-        final Set<DayProfile> dayProfileHashSet = new HashSet<>();
+    private Set<DayProfileDto> getDayProfileSet(final Set<WeekProfileDto> weekProfileSet) {
+        final Set<DayProfileDto> dayProfileHashSet = new HashSet<>();
 
-        for (final WeekProfile weekProfile : weekProfileSet) {
+        for (final WeekProfileDto weekProfile : weekProfileSet) {
             dayProfileHashSet.addAll(weekProfile.getAllDaysAsList());
         }
 
         return dayProfileHashSet;
     }
 
-    private SetParameter getWeekProfileTableParameter(final Set<WeekProfile> weekProfileSet) {
+    private SetParameter getWeekProfileTableParameter(final Set<WeekProfileDto> weekProfileSet) {
 
         final AttributeAddress weekProfileTablePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_WEEK_PROFILE_TABLE_PASSIVE);
@@ -170,18 +170,18 @@ public class SetActivityCalendarCommandExecutor implements CommandExecutor<Activ
         return new SetParameter(weekProfileTablePassive, weekArray);
     }
 
-    private Set<WeekProfile> getWeekProfileSet(final List<SeasonProfile> seasonProfileList) {
+    private Set<WeekProfileDto> getWeekProfileSet(final List<SeasonProfileDto> seasonProfileList) {
         // Use HashSet to ensure that unique WeekProfiles are returned. For
         // there can be duplicates.
-        final Set<WeekProfile> weekProfileSet = new HashSet<>();
+        final Set<WeekProfileDto> weekProfileSet = new HashSet<>();
 
-        for (final SeasonProfile seasonProfile : seasonProfileList) {
+        for (final SeasonProfileDto seasonProfile : seasonProfileList) {
             weekProfileSet.add(seasonProfile.getWeekProfile());
         }
         return weekProfileSet;
     }
 
-    private SetParameter getSeasonProfileParameter(final List<SeasonProfile> seasonProfileList) {
+    private SetParameter getSeasonProfileParameter(final List<SeasonProfileDto> seasonProfileList) {
 
         final AttributeAddress seasonProfilePassive = new AttributeAddress(CLASS_ID, OBIS_CODE,
                 ATTRIBUTE_ID_SEASON_PROFILE_PASSIVE);

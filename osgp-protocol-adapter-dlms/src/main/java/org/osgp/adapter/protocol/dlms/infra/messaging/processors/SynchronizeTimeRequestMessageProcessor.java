@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +38,7 @@ public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessage
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final SynchronizeTimeRequest synchronizeTimeRequest = (SynchronizeTimeRequest) requestObject;
+        final SynchronizeTimeRequestDto synchronizeTimeRequest = (SynchronizeTimeRequestDto) requestObject;
         this.adhocService.synchronizeTime(conn, device, synchronizeTimeRequest);
         return null;
     }

@@ -20,9 +20,9 @@ import org.osgp.adapter.protocol.dlms.infra.ws.JasperWirelessSmsClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetails;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.jasperwireless.api.ws.service.GetSMSDetailsResponse;
@@ -51,35 +51,35 @@ public class AdhocService {
     // === REQUEST Synchronize Time DATA ===
 
     public void synchronizeTime(final ClientConnection conn, final DlmsDevice device,
-            final SynchronizeTimeRequest synchronizeTimeRequest) throws ProtocolAdapterException {
+            final SynchronizeTimeRequestDto synchronizeTimeRequest) throws ProtocolAdapterException {
         this.synchronizeTimeCommandExecutor.execute(conn, device, null);
     }
 
     // === REQUEST Send Wakeup SMS ===
 
-    public SmsDetails sendWakeUpSms(final ClientConnection conn, final DlmsDevice device) throws OsgpException {
+    public SmsDetailsDto sendWakeUpSms(final ClientConnection conn, final DlmsDevice device) throws OsgpException {
 
         if (!COMMUNICATION_METHOD_GPRS.equals(device.getCommunicationMethod())) {
             throw new OsgpException(ComponentType.PROTOCOL_DLMS, "Device communication method is not GPRS");
         }
 
         final SendSMSResponse response = this.smsClient.sendWakeUpSMS(device.getIccId());
-        return new SmsDetails(device.getDeviceIdentification(), response.getSmsMsgId(), null, null, null);
+        return new SmsDetailsDto(device.getDeviceIdentification(), response.getSmsMsgId(), null, null, null);
     }
 
     // === REQUEST Get SMS Details ===
 
-    public SmsDetails getSmsDetails(final ClientConnection conn, final DlmsDevice device,
-            final SmsDetails smsDetailsRequest) throws OsgpException {
+    public SmsDetailsDto getSmsDetails(final ClientConnection conn, final DlmsDevice device,
+            final SmsDetailsDto smsDetailsRequest) throws OsgpException {
 
         final GetSMSDetailsResponse response = this.smsClient.getSMSDetails(smsDetailsRequest.getSmsMsgId(),
                 device.getIccId());
 
-        SmsDetails smsDetailsResponse = null;
+        SmsDetailsDto smsDetailsResponse = null;
         final List<SmsMessageType> smsMessagesTypes = response.getSmsMessages().getSmsMessage();
         for (final SmsMessageType smsMessageType : smsMessagesTypes) {
             if (smsMessageType.getSmsMsgId() == smsDetailsRequest.getSmsMsgId().longValue()) {
-                smsDetailsResponse = new SmsDetails(device.getDeviceIdentification(), smsMessageType.getSmsMsgId(),
+                smsDetailsResponse = new SmsDetailsDto(device.getDeviceIdentification(), smsMessageType.getSmsMsgId(),
                         smsMessageType.getStatus(), smsMessageType.getSmsMsgAttemptStatus(),
                         smsMessageType.getMsgType());
             }
@@ -89,7 +89,7 @@ public class AdhocService {
     }
 
     public Serializable retrieveConfigurationObjects(final ClientConnection conn, final DlmsDevice device,
-            final RetrieveConfigurationObjectsRequest request) throws ProtocolAdapterException {
+            final RetrieveConfigurationObjectsRequestDto request) throws ProtocolAdapterException {
 
         return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
     }

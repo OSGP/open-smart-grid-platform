@@ -39,31 +39,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode;
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinition;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MessageType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod;
-import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto;
 
 @Service(value = "dlmsHelperService")
 public class DlmsHelperService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsHelperService.class);
 
-    private static final Map<Integer, TransportServiceType> TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE = new TreeMap<>();
+    private static final Map<Integer, TransportServiceTypeDto> TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE = new TreeMap<>();
 
     static {
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(0, TransportServiceType.TCP);
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(1, TransportServiceType.UDP);
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(2, TransportServiceType.FTP);
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(3, TransportServiceType.SMTP);
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(4, TransportServiceType.SMS);
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(5, TransportServiceType.HDLC);
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(6, TransportServiceType.M_BUS);
-        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(7, TransportServiceType.ZIG_BEE);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(0, TransportServiceTypeDto.TCP);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(1, TransportServiceTypeDto.UDP);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(2, TransportServiceTypeDto.FTP);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(3, TransportServiceTypeDto.SMTP);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(4, TransportServiceTypeDto.SMS);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(5, TransportServiceTypeDto.HDLC);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(6, TransportServiceTypeDto.M_BUS);
+        TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.put(7, TransportServiceTypeDto.ZIG_BEE);
     }
 
     public static final int MILLISECONDS_PER_MINUTE = 60000;
@@ -125,12 +125,12 @@ public class DlmsHelperService {
      *         {@link #readLong(GetResult, String)} is null
      * @throws ProtocolAdapterException
      */
-    public DlmsMeterValue getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
+    public DlmsMeterValueDto getScaledMeterValue(final GetResult value, final GetResult scalerUnit,
             final String description) throws ProtocolAdapterException {
         return this.getScaledMeterValue(value.resultData(), scalerUnit.resultData(), description);
     }
 
-    public DlmsMeterValue getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
+    public DlmsMeterValueDto getScaledMeterValue(final DataObject value, final DataObject scalerUnitObject,
             final String description) throws ProtocolAdapterException {
         LOGGER.debug(this.getDebugInfo(value));
         LOGGER.debug(this.getDebugInfo(scalerUnitObject));
@@ -149,7 +149,7 @@ public class DlmsHelperService {
                     + this.getDebugInfo(scalerUnitObject));
         }
         final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
-        final DlmsUnit unit = DlmsUnit.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description).intValue());
+        final DlmsUnitDto unit = DlmsUnitDto.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description).intValue());
 
         // determine value
         BigDecimal scaledValue = BigDecimal.valueOf(rawValue);
@@ -157,7 +157,7 @@ public class DlmsHelperService {
             scaledValue = scaledValue.multiply(BigDecimal.valueOf(Math.pow(10, scaler)));
         }
 
-        return new DlmsMeterValue(scaledValue, unit);
+        return new DlmsMeterValueDto(scaledValue, unit);
     }
 
     public DataObject getAMRProfileDefinition() {
@@ -236,13 +236,13 @@ public class DlmsHelperService {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime readDateTime(final GetResult getResult,
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto readDateTime(final GetResult getResult,
             final String description) throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return this.readDateTime(getResult.resultData(), description);
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime readDateTime(final DataObject resultData,
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto readDateTime(final DataObject resultData,
             final String description) throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
@@ -259,7 +259,7 @@ public class DlmsHelperService {
         }
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime readCosemDateTime(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto readCosemDateTime(
             final DataObject resultData, final String description) throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
@@ -276,7 +276,7 @@ public class DlmsHelperService {
         return this.getDtoDateTimeForJdlmsDateTime(jdlmsCosemDateTime);
     }
 
-    private com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime getDtoDateTimeForJdlmsDateTime(
+    private com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto getDtoDateTimeForJdlmsDateTime(
             final CosemDateTime jdlmsCosemDateTime) {
         if (jdlmsCosemDateTime == null) {
             return null;
@@ -287,28 +287,28 @@ public class DlmsHelperService {
         final int month = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MONTH) + 1;
         final int dayOfMonth = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_MONTH);
         final int dayOfWeek = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_WEEK);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto(
                 year, month, dayOfMonth, dayOfWeek);
 
         final int hour = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HOUR);
         final int minute = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MINUTE);
         final int second = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.SECOND);
         final int hundredths = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HUNDREDTHS);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto(
                 hour, minute, second, hundredths);
 
         final int deviation = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DEVIATION);
 
         final int clockStatusValue = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.CLOCK_STATUS);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto(
                 clockStatusValue);
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(date, time, deviation, clockStatus);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto(date, time, deviation, clockStatus);
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime convertDataObjectToDateTime(
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto convertDataObjectToDateTime(
             final DataObject object) throws ProtocolAdapterException {
-        com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime dateTime = null;
+        com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto dateTime = null;
         if (object.isByteArray()) {
             dateTime = this.fromDateTimeValue((byte[]) object.value());
         } else if (object.isCosemDateFormat()) {
@@ -319,7 +319,7 @@ public class DlmsHelperService {
         return dateTime;
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime fromDateTimeValue(final byte[] dateTimeValue)
+    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue)
             throws ProtocolAdapterException {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
@@ -335,13 +335,13 @@ public class DlmsHelperService {
         final int deviation = bb.getShort();
         final byte clockStatusValue = bb.get();
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto(
                 year, monthOfYear, dayOfMonth, dayOfWeek);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto(
                 hourOfDay, minuteOfHour, secondOfMinute, hundredthsOfSecond);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto(
                 clockStatusValue);
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(date, time, deviation, clockStatus);
+        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto(date, time, deviation, clockStatus);
     }
 
     public DataObject asDataObject(final DateTime dateTime) {
@@ -362,26 +362,26 @@ public class DlmsHelperService {
         return DataObject.newDateTimeData(cosemDateTime);
     }
 
-    public DataObject asDataObject(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate date) {
+    public DataObject asDataObject(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto date) {
 
         final CosemDate cosemDate = new CosemDate(date.getYear(), date.getMonth(), date.getDayOfMonth(),
                 date.getDayOfWeek());
         return DataObject.newDateData(cosemDate);
     }
 
-    public List<CosemObjectDefinition> readListOfObjectDefinition(final GetResult getResult, final String description)
+    public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return this.readListOfObjectDefinition(getResult.resultData(), description);
     }
 
-    public List<CosemObjectDefinition> readListOfObjectDefinition(final DataObject resultData, final String description)
+    public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final List<DataObject> listOfObjectDefinition = this.readList(resultData, description);
         if (listOfObjectDefinition == null) {
             return Collections.emptyList();
         }
-        final List<CosemObjectDefinition> objectDefinitionList = new ArrayList<>();
+        final List<CosemObjectDefinitionDto> objectDefinitionList = new ArrayList<>();
         for (final DataObject objectDefinitionObject : listOfObjectDefinition) {
             objectDefinitionList.add(this.readObjectDefinition(objectDefinitionObject, "Object Definition from "
                     + description));
@@ -389,7 +389,7 @@ public class DlmsHelperService {
         return objectDefinitionList;
     }
 
-    public CosemObjectDefinition readObjectDefinition(final DataObject resultData, final String description)
+    public CosemObjectDefinitionDto readObjectDefinition(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final List<DataObject> objectDefinitionElements = this.readList(resultData, description);
         if (objectDefinitionElements == null) {
@@ -401,55 +401,55 @@ public class DlmsHelperService {
                     + objectDefinitionElements.size());
         }
         final Long classId = this.readLongNotNull(objectDefinitionElements.get(0), "Class ID from " + description);
-        final CosemObisCode logicalName = this.readLogicalName(objectDefinitionElements.get(1), "Logical Name from "
+        final CosemObisCodeDto logicalName = this.readLogicalName(objectDefinitionElements.get(1), "Logical Name from "
                 + description);
         final Long attributeIndex = this.readLongNotNull(objectDefinitionElements.get(2), "Attribute Index from "
                 + description);
         final Long dataIndex = this.readLongNotNull(objectDefinitionElements.get(0), "Data Index from " + description);
 
-        return new CosemObjectDefinition(classId.intValue(), logicalName, attributeIndex.intValue(),
+        return new CosemObjectDefinitionDto(classId.intValue(), logicalName, attributeIndex.intValue(),
                 dataIndex.intValue());
     }
 
-    public CosemObisCode readLogicalName(final DataObject resultData, final String description)
+    public CosemObisCodeDto readLogicalName(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final byte[] bytes = this.readByteArray(resultData, description, "Logical Name");
         if (bytes == null) {
             return null;
         }
-        return new CosemObisCode(bytes);
+        return new CosemObisCodeDto(bytes);
     }
 
-    public SendDestinationAndMethod readSendDestinationAndMethod(final GetResult getResult, final String description)
+    public SendDestinationAndMethodDto readSendDestinationAndMethod(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return this.readSendDestinationAndMethod(getResult.resultData(), description);
     }
 
-    public SendDestinationAndMethod readSendDestinationAndMethod(final DataObject resultData, final String description)
+    public SendDestinationAndMethodDto readSendDestinationAndMethod(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final List<DataObject> sendDestinationAndMethodElements = this.readList(resultData, description);
         if (sendDestinationAndMethodElements == null) {
             return null;
         }
-        final TransportServiceType transportService = this.readTransportServiceType(
+        final TransportServiceTypeDto transportService = this.readTransportServiceType(
                 sendDestinationAndMethodElements.get(0), "Transport Service from " + description);
         final String destination = this.readString(sendDestinationAndMethodElements.get(1), "Destination from "
                 + description);
-        final MessageType message = this.readMessageType(sendDestinationAndMethodElements.get(2), "Message from "
+        final MessageTypeDto message = this.readMessageType(sendDestinationAndMethodElements.get(2), "Message from "
                 + description);
 
-        return new SendDestinationAndMethod(transportService, destination, message);
+        return new SendDestinationAndMethodDto(transportService, destination, message);
     }
 
-    public TransportServiceType readTransportServiceType(final DataObject resultData, final String description)
+    public TransportServiceTypeDto readTransportServiceType(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final Number number = this.readNumber(resultData, description, "Enum");
         if (number == null) {
             return null;
         }
         final int enumValue = number.intValue();
-        final TransportServiceType transportService = this.getTransportServiceTypeForEnumValue(enumValue);
+        final TransportServiceTypeDto transportService = this.getTransportServiceTypeForEnumValue(enumValue);
         if (transportService == null) {
             LOGGER.error("Unexpected Enum value for TransportServiceType: {}", enumValue);
             throw new ProtocolAdapterException("Unknown Enum value for TransportServiceType: " + enumValue);
@@ -457,58 +457,58 @@ public class DlmsHelperService {
         return transportService;
     }
 
-    private TransportServiceType getTransportServiceTypeForEnumValue(final int enumValue) {
+    private TransportServiceTypeDto getTransportServiceTypeForEnumValue(final int enumValue) {
         if (enumValue >= 200 && enumValue <= 255) {
-            return TransportServiceType.MANUFACTURER_SPECIFIC;
+            return TransportServiceTypeDto.MANUFACTURER_SPECIFIC;
         }
         return TRANSPORT_SERVICE_TYPE_PER_ENUM_VALUE.get(enumValue);
     }
 
-    public MessageType readMessageType(final DataObject resultData, final String description)
+    public MessageTypeDto readMessageType(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final Number number = this.readNumber(resultData, description, "Enum");
         if (number == null) {
             return null;
         }
-        final MessageType message;
+        final MessageTypeDto message;
         final int enumValue = number.intValue();
         switch (enumValue) {
         case 0:
-            message = MessageType.A_XDR_ENCODED_X_DLMS_APDU;
+            message = MessageTypeDto.A_XDR_ENCODED_X_DLMS_APDU;
             break;
         case 1:
-            message = MessageType.XML_ENCODED_X_DLMS_APDU;
+            message = MessageTypeDto.XML_ENCODED_X_DLMS_APDU;
             break;
         default:
             if (enumValue < 128 || enumValue > 255) {
                 LOGGER.error("Unexpected Enum value for MessageType: {}", enumValue);
                 throw new ProtocolAdapterException("Unknown Enum value for MessageType: " + enumValue);
             }
-            message = MessageType.MANUFACTURER_SPECIFIC;
+            message = MessageTypeDto.MANUFACTURER_SPECIFIC;
         }
         return message;
     }
 
-    public List<WindowElement> readListOfWindowElement(final GetResult getResult, final String description)
+    public List<WindowElementDto> readListOfWindowElement(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return this.readListOfWindowElement(getResult.resultData(), description);
     }
 
-    public List<WindowElement> readListOfWindowElement(final DataObject resultData, final String description)
+    public List<WindowElementDto> readListOfWindowElement(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final List<DataObject> listOfWindowElement = this.readList(resultData, description);
         if (listOfWindowElement == null) {
             return Collections.emptyList();
         }
-        final List<WindowElement> windowElementList = new ArrayList<>();
+        final List<WindowElementDto> windowElementList = new ArrayList<>();
         for (final DataObject windowElementObject : listOfWindowElement) {
             windowElementList.add(this.readWindowElement(windowElementObject, "Window Element from " + description));
         }
         return windowElementList;
     }
 
-    public WindowElement readWindowElement(final DataObject resultData, final String description)
+    public WindowElementDto readWindowElement(final DataObject resultData, final String description)
             throws ProtocolAdapterException {
         final List<DataObject> windowElementElements = this.readList(resultData, description);
         if (windowElementElements == null) {
@@ -517,7 +517,7 @@ public class DlmsHelperService {
         return this.buildWindowElementFromDataObjects(windowElementElements, description);
     }
 
-    private WindowElement buildWindowElementFromDataObjects(final List<DataObject> elements, final String description)
+    private WindowElementDto buildWindowElementFromDataObjects(final List<DataObject> elements, final String description)
             throws ProtocolAdapterException {
         if (elements.size() != 2) {
             LOGGER.error("Unexpected number of ResultData elements for WindowElement value: {}", elements.size());
@@ -525,12 +525,12 @@ public class DlmsHelperService {
                     + elements.size());
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime startTime = this.readCosemDateTime(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto startTime = this.readCosemDateTime(
                 elements.get(0), "Start Time from " + description);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime endTime = this.readCosemDateTime(
+        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto endTime = this.readCosemDateTime(
                 elements.get(1), "End Time from " + description);
 
-        return new WindowElement(startTime, endTime);
+        return new WindowElementDto(startTime, endTime);
     }
 
     public String getDebugInfo(final DataObject dataObject) {

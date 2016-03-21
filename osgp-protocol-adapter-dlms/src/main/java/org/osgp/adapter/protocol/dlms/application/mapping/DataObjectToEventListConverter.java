@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.Event;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategory;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto;
 
 @Component(value = "dataObjectToEventListConverter")
 public class DataObjectToEventListConverter {
@@ -30,9 +30,9 @@ public class DataObjectToEventListConverter {
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
-    public List<Event> convert(final DataObject source, final EventLogCategory eventLogCategory)
+    public List<EventDto> convert(final DataObject source, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {
-        final List<Event> eventList = new ArrayList<>();
+        final List<EventDto> eventList = new ArrayList<>();
         if (source == null) {
             throw new ProtocolAdapterException("DataObject should not be null");
         }
@@ -46,7 +46,7 @@ public class DataObjectToEventListConverter {
 
     }
 
-    private Event getEvent(final DataObject eventDataObject, final EventLogCategory eventLogCategory)
+    private EventDto getEvent(final DataObject eventDataObject, final EventLogCategoryDto eventLogCategory)
             throws ProtocolAdapterException {
 
         final List<DataObject> eventData = eventDataObject.value();
@@ -80,6 +80,6 @@ public class DataObjectToEventListConverter {
 
         LOGGER.info("Event time is {}, event code is {} and event counter is {}", dateTime, code, eventCounter);
 
-        return new Event(dateTime, code.intValue(), eventCounter);
+        return new EventDto(dateTime, code.intValue(), eventCounter);
     }
 }

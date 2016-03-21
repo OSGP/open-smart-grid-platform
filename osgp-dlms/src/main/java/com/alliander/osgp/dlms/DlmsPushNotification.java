@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.apache.cxf.common.util.StringUtils;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class DlmsPushNotification implements Serializable {
 
@@ -25,7 +25,7 @@ public class DlmsPushNotification implements Serializable {
 
         private String equipmentIdentifier;
         private String triggerType;
-        private EnumSet<AlarmType> alarms;
+        private EnumSet<AlarmTypeDto> alarms;
         private ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         public Builder appendByte(final byte b) {
@@ -52,9 +52,9 @@ public class DlmsPushNotification implements Serializable {
             return this;
         }
 
-        public Builder withAlarms(final Set<AlarmType> alarms) {
+        public Builder withAlarms(final Set<AlarmTypeDto> alarms) {
             if (alarms == null || alarms.isEmpty()) {
-                this.alarms = EnumSet.noneOf(AlarmType.class);
+                this.alarms = EnumSet.noneOf(AlarmTypeDto.class);
             } else {
                 this.alarms = EnumSet.copyOf(alarms);
             }
@@ -69,11 +69,11 @@ public class DlmsPushNotification implements Serializable {
 
     private final String equipmentIdentifier;
     private final String triggerType;
-    private final EnumSet<AlarmType> alarms;
+    private final EnumSet<AlarmTypeDto> alarms;
     private final byte[] bytes;
 
     private DlmsPushNotification(final byte[] bytes, final String equipmentIdentifier, final String triggerType,
-            final Set<AlarmType> alarms) {
+            final Set<AlarmTypeDto> alarms) {
         if (bytes == null) {
             this.bytes = new byte[0];
         } else {
@@ -82,7 +82,7 @@ public class DlmsPushNotification implements Serializable {
         this.equipmentIdentifier = equipmentIdentifier;
         this.triggerType = triggerType;
         if (alarms == null || alarms.isEmpty()) {
-            this.alarms = EnumSet.noneOf(AlarmType.class);
+            this.alarms = EnumSet.noneOf(AlarmTypeDto.class);
         } else {
             this.alarms = EnumSet.copyOf(alarms);
         }
@@ -115,7 +115,7 @@ public class DlmsPushNotification implements Serializable {
         return this.triggerType;
     }
 
-    public Set<AlarmType> getAlarms() {
+    public Set<AlarmTypeDto> getAlarms() {
         return EnumSet.copyOf(this.alarms);
     }
 }

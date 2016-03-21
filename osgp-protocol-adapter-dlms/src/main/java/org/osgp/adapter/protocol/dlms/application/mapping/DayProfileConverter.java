@@ -16,13 +16,13 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.openmuc.jdlms.datatypes.DataObject;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfile;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileAction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DayProfileActionDto;
 
-public class DayProfileConverter extends CustomConverter<DayProfile, DataObject> {
+public class DayProfileConverter extends CustomConverter<DayProfileDto, DataObject> {
 
-    private List<DataObject> getDayObjectElements(final DayProfile dayProfile) {
+    private List<DataObject> getDayObjectElements(final DayProfileDto dayProfile) {
         final List<DataObject> dayObjectElements = new ArrayList<>();
 
         final DataObject dayId = DataObject.newUInteger8Data(dayProfile.getDayId().shortValue());
@@ -33,9 +33,9 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
         return dayObjectElements;
     }
 
-    private List<DataObject> getDayActionObjectList(final List<DayProfileAction> dayProfileActionList) {
+    private List<DataObject> getDayActionObjectList(final List<DayProfileActionDto> dayProfileActionList) {
         final List<DataObject> dayActionObjectList = new ArrayList<>();
-        for (final DayProfileAction dayProfileAction : dayProfileActionList) {
+        for (final DayProfileActionDto dayProfileAction : dayProfileActionList) {
 
             final DataObject dayObject = DataObject.newStructureData(this.getDayActionObjectElements(dayProfileAction));
             dayActionObjectList.add(dayObject);
@@ -44,7 +44,7 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
         return dayActionObjectList;
     }
 
-    private List<DataObject> getDayActionObjectElements(final DayProfileAction dayProfileAction) {
+    private List<DataObject> getDayActionObjectElements(final DayProfileActionDto dayProfileAction) {
         final List<DataObject> dayActionObjectElements = new ArrayList<>();
 
         final DataObject startTimeObject = this.timeAsDataObjectOctetString(dayProfileAction.getStartTime());
@@ -58,7 +58,7 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
         return dayActionObjectElements;
     }
 
-    public DataObject timeAsDataObjectOctetString(final CosemTime time) {
+    public DataObject timeAsDataObjectOctetString(final CosemTimeDto time) {
 
         final Integer h = time.getHour();
         final Integer m = time.getMinute();
@@ -70,7 +70,7 @@ public class DayProfileConverter extends CustomConverter<DayProfile, DataObject>
     }
 
     @Override
-    public DataObject convert(final DayProfile source, final Type<? extends DataObject> destinationType) {
+    public DataObject convert(final DayProfileDto source, final Type<? extends DataObject> destinationType) {
         if (source == null) {
             return null;
         }

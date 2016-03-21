@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +38,7 @@ public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends Dev
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final GMeterInfo gMeterInfo = (GMeterInfo) requestObject;
+        final GMeterInfoDto gMeterInfo = (GMeterInfoDto) requestObject;
         return this.configurationService.setEncryptionKeyExchangeOnGMeter(conn, device, gMeterInfo);
     }
 }

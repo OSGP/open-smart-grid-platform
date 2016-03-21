@@ -36,21 +36,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.KeySet;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "dlmsConfigurationService")
@@ -105,16 +105,16 @@ public class ConfigurationService {
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     public void requestSpecialDays(final ClientConnection conn, final DlmsDevice device,
-            final SpecialDaysRequest specialDaysRequest) throws ProtocolAdapterException {
+            final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
 
         // The Special days towards the Smart Meter
-        final SpecialDaysRequestData specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
+        final SpecialDaysRequestDataDto specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
 
         LOGGER.info(VISUAL_SEPARATOR);
         LOGGER.info("********** Set Special Days: 0-0:11.0.0.255 **********");
         LOGGER.info(VISUAL_SEPARATOR);
-        final List<SpecialDay> specialDays = specialDaysRequestData.getSpecialDays();
-        for (final SpecialDay specialDay : specialDays) {
+        final List<SpecialDayDto> specialDays = specialDaysRequestData.getSpecialDays();
+        for (final SpecialDayDto specialDay : specialDays) {
             LOGGER.info("Date :{}, dayId : {} ", specialDay.getSpecialDayDate(), specialDay.getDayId());
         }
         LOGGER.info(VISUAL_SEPARATOR);
@@ -128,14 +128,14 @@ public class ConfigurationService {
     // === REQUEST Configuration Object DATA ===
 
     public void requestSetConfiguration(final ClientConnection conn, final DlmsDevice device,
-            final SetConfigurationObjectRequest setConfigurationObjectRequest) throws ProtocolAdapterException {
+            final SetConfigurationObjectRequestDto setConfigurationObjectRequest) throws ProtocolAdapterException {
 
         // Configuration Object towards the Smart Meter
-        final ConfigurationObject configurationObject = setConfigurationObjectRequest
+        final ConfigurationObjectDto configurationObject = setConfigurationObjectRequest
                 .getSetConfigurationObjectRequestData().getConfigurationObject();
 
-        final GprsOperationModeType gprsOperationModeType = configurationObject.getGprsOperationMode();
-        final ConfigurationFlags configurationFlags = configurationObject.getConfigurationFlags();
+        final GprsOperationModeTypeDto gprsOperationModeType = configurationObject.getGprsOperationMode();
+        final ConfigurationFlagsDto configurationFlags = configurationObject.getConfigurationFlags();
 
         LOGGER.info(VISUAL_SEPARATOR);
         LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
@@ -143,7 +143,7 @@ public class ConfigurationService {
         LOGGER.info("Operation mode:{} ", gprsOperationModeType.value());
         LOGGER.info("Flags:");
 
-        for (final ConfigurationFlag configurationFlag : configurationFlags.getConfigurationFlag()) {
+        for (final ConfigurationFlagDto configurationFlag : configurationFlags.getConfigurationFlag()) {
             LOGGER.info("Flag : {}, enabled = {}", configurationFlag.getConfigurationFlagType().toString(),
                     configurationFlag.isEnabled());
         }
@@ -158,7 +158,7 @@ public class ConfigurationService {
     }
 
     public void requestSetAdministrativeStatus(final ClientConnection conn, final DlmsDevice device,
-            final AdministrativeStatusType administrativeStatusType) throws ProtocolAdapterException {
+            final AdministrativeStatusTypeDto administrativeStatusType) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Administrative Status is: {}", device);
 
@@ -171,7 +171,7 @@ public class ConfigurationService {
     }
 
     public void setAlarmNotifications(final ClientConnection conn, final DlmsDevice device,
-            final AlarmNotifications alarmNotifications) throws ProtocolAdapterException {
+            final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
         LOGGER.info("Alarm Notifications to set on the device: {}", alarmNotifications);
 
@@ -183,14 +183,14 @@ public class ConfigurationService {
         }
     }
 
-    public AdministrativeStatusType requestGetAdministrativeStatus(final ClientConnection conn, final DlmsDevice device)
+    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final ClientConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
         return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null);
     }
 
     public String setEncryptionKeyExchangeOnGMeter(final ClientConnection conn, final DlmsDevice device,
-            final GMeterInfo gMeterInfo) throws ProtocolAdapterException {
+            final GMeterInfoDto gMeterInfo) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Set Encryption Key Exchange On G-Meter is: {}", device);
 
@@ -212,7 +212,7 @@ public class ConfigurationService {
     }
 
     public String setActivityCalendar(final ClientConnection conn, final DlmsDevice device,
-            final ActivityCalendar activityCalendar) throws ProtocolAdapterException {
+            final ActivityCalendarDto activityCalendar) throws ProtocolAdapterException {
 
         LOGGER.info("Device for Activity Calendar is: {}", device);
 
@@ -231,7 +231,7 @@ public class ConfigurationService {
     }
 
     public void setPushSetupAlarm(final ClientConnection conn, final DlmsDevice device,
-            final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
+            final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
 
         LOGGER.info("Push Setup Alarm to set on the device: {}", pushSetupAlarm);
 
@@ -244,7 +244,7 @@ public class ConfigurationService {
         }
     }
 
-    public void setPushSetupSms(final ClientConnection conn, final DlmsDevice device, final PushSetupSms pushSetupSms)
+    public void setPushSetupSms(final ClientConnection conn, final DlmsDevice device, final PushSetupSmsDto pushSetupSms)
             throws ProtocolAdapterException {
 
         LOGGER.info("Push Setup Sms to set on the device: {}", pushSetupSms);
@@ -265,13 +265,13 @@ public class ConfigurationService {
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
-    public void replaceKeys(final ClientConnection conn, final DlmsDevice device, final KeySet keySet)
+    public void replaceKeys(final ClientConnection conn, final DlmsDevice device, final KeySetDto keySet)
             throws ProtocolAdapterException {
 
         this.replaceKeySet(conn, device, keySet);
     }
 
-    private void replaceKeySet(final ClientConnection conn, final DlmsDevice device, final KeySet keySet)
+    private void replaceKeySet(final ClientConnection conn, final DlmsDevice device, final KeySetDto keySet)
             throws ProtocolAdapterException {
 
         try {

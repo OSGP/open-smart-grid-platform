@@ -23,18 +23,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 
 @Component()
 public class SetPushSetupAlarmCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupAlarm, AccessResultCode> {
+CommandExecutor<PushSetupAlarmDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
-            final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
+            final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupAlarm);
 
@@ -52,7 +52,7 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
         }
     }
 
-    private SetParameter getSetParameter(final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
+    private SetParameter getSetParameter(final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
 
         this.checkPushSetupAlarm(pushSetupAlarm);
 
@@ -62,7 +62,7 @@ CommandExecutor<PushSetupAlarm, AccessResultCode> {
         return new SetParameter(sendDestinationAndMethodAddress, value);
     }
 
-    private void checkPushSetupAlarm(final PushSetupAlarm pushSetupAlarm) throws ProtocolAdapterException {
+    private void checkPushSetupAlarm(final PushSetupAlarmDto pushSetupAlarm) throws ProtocolAdapterException {
         if (!pushSetupAlarm.hasSendDestinationAndMethod()) {
             LOGGER.error("Send Destination and Method of the Push Setup Alarm is expected to be set.");
             throw new ProtocolAdapterException("Error setting Alarm push setup data. No destination and method data");
