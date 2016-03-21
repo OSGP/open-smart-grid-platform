@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 CONTENT_FILE=FitNesseRoot/content.txt
 DEFINE_STRING="!define"
@@ -14,7 +14,7 @@ function getVersionFromPom
   POM=$1
 
   if [ ! -f $POM ]; then
-    echo "POM $POM does not exist"
+    echo "POM $POM does not exist, make sure to update submodule first"
     exit 1
   fi
 
@@ -73,6 +73,9 @@ AddOrReplaceVal $PLATFORM_VAR $PLATFORM_VAL
 PROTOCOL_ADAPTER_OSLP_VAR="PROTOCOL_ADAPTER_OSLP_VERSION"
 PROTOCOL_ADAPTER_OSLP_VAL=`getVersionFromPom ../Protocol-Adapter-OSLP/pom.xml`
 AddOrReplaceVal $PROTOCOL_ADAPTER_OSLP_VAR $PROTOCOL_ADAPTER_OSLP_VAL
+
+GENERIC_VAL=$SHARED_VAL
+AddOrReplaceVal $GENERIC_VERSION $GENERIC_VAL
 
 echo ""
 echo "Printing current values $CONTENT_FILE"
