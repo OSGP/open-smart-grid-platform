@@ -86,10 +86,29 @@ public class DlmsHelperService {
         return getResults;
     }
 
+    /**
+     * Check if the number of result matches the number of expected results,
+     * when there is only one result the {@link AccessResultCode} of that result
+     * is checked.
+     *
+     * @param getResultList
+     *            the list of results to be checked, when null a
+     *            nullpointerexception is thrown
+     * @param expectedResults
+     *            the number of results expected
+     * @param description
+     *            a description that will be used in exceptions thrown, may be
+     *            null
+     * @throws ProtocolAdapterException
+     *             when the number of results does not match the expected number
+     *             or when the one and only result is erroneous.
+     */
     public void checkResultList(final List<GetResult> getResultList, final int expectedResults, final String description)
             throws ProtocolAdapterException {
         if (getResultList.isEmpty()) {
             throw new ProtocolAdapterException("No GetResult received: " + description);
+        } else if (getResultList.size() == 1 && AccessResultCode.SUCCESS != getResultList.get(0).resultCode()) {
+            throw new ProtocolAdapterException(getResultList.get(0).resultCode().name());
         }
 
         if (getResultList.size() != expectedResults) {
