@@ -20,6 +20,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -65,16 +67,14 @@ public class ManagementService {
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeter.getIpAddress(), this.managementMapper.map(findEventsQueryMessageDataContainer,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainerDto.class));
+                        FindEventsQueryMessageDataContainerDto.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority());
     }
 
-    public void handleFindEventsResponse(
-            final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType responseMessageResultType,
-            final OsgpException osgpException,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto eventMessageDataContainerDto) {
+    public void handleFindEventsResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
+            final EventMessageDataContainerDto eventMessageDataContainerDto) {
 
         final EventMessageDataContainer eventMessageDataContainer = this.managementMapper.map(
                 eventMessageDataContainerDto, EventMessageDataContainer.class);

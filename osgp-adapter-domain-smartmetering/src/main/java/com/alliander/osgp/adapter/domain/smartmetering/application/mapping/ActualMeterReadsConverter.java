@@ -13,17 +13,16 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto;
 
-public class ActualMeterReadsConverter extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto, MeterReads> {
+public class ActualMeterReadsConverter extends CustomConverter<MeterReadsDto, MeterReads> {
 
     @Override
-    public MeterReads convert(final com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto source,
-            final Type<? extends MeterReads> destinationType) {
+    public MeterReads convert(final MeterReadsDto source, final Type<? extends MeterReads> destinationType) {
         return new MeterReads(source.getLogTime(), this.convert(source.getActiveEnergyImport()), this.convert(source
                 .getActiveEnergyExport()), this.convert(source.getActiveEnergyImportTariffOne()), this.convert(source
-                .getActiveEnergyImportTariffTwo()), this.convert(source.getActiveEnergyExportTariffOne()),
-                this.convert(source.getActiveEnergyExportTariffTwo()));
+                        .getActiveEnergyImportTariffTwo()), this.convert(source.getActiveEnergyExportTariffOne()),
+                        this.convert(source.getActiveEnergyExportTariffTwo()));
     }
 
     private OsgpMeterValue convert(final DlmsMeterValueDto dlmsMeterValue) {

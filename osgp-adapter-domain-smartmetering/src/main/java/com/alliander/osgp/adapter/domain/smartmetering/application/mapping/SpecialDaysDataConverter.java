@@ -14,17 +14,16 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
-public class SpecialDaysDataConverter
-        extends
-        CustomConverter<SpecialDaysRequestData, com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto> {
+public class SpecialDaysDataConverter extends CustomConverter<SpecialDaysRequestData, SpecialDaysRequestDataDto> {
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto convert(
-            final SpecialDaysRequestData source,
-            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto> destinationType) {
-        final List<SpecialDayDto> specialDays = this.mapperFacade.mapAsList(source.getSpecialDays(), SpecialDayDto.class);
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto(specialDays);
+    public SpecialDaysRequestDataDto convert(final SpecialDaysRequestData source,
+            final Type<? extends SpecialDaysRequestDataDto> destinationType) {
+        final List<SpecialDayDto> specialDays = this.mapperFacade.mapAsList(source.getSpecialDays(),
+                SpecialDayDto.class);
+        return new SpecialDaysRequestDataDto(specialDays);
     }
 
 }

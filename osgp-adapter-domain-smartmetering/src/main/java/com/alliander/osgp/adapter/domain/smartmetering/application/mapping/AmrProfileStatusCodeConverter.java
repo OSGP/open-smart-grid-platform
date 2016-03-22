@@ -17,21 +17,20 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 
 @Component
-public class AmrProfileStatusCodeConverter
-        extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto, AmrProfileStatusCode> {
+public class AmrProfileStatusCodeConverter extends
+BidirectionalConverter<AmrProfileStatusCodeDto, AmrProfileStatusCode> {
 
     @Override
-    public AmrProfileStatusCode convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto source,
+    public AmrProfileStatusCode convertTo(final AmrProfileStatusCodeDto source,
             final Type<AmrProfileStatusCode> destinationType) {
 
         final Set<AmrProfileStatusCodeFlag> resultStatusCodeFlags = new HashSet<>();
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto> sourceStatusCodeFlags = source
-                .getAmrProfileStatusCodeFlags();
-        for (final com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto sourceStatusCodeFlag : sourceStatusCodeFlags) {
+        final Set<AmrProfileStatusCodeFlagDto> sourceStatusCodeFlags = source.getAmrProfileStatusCodeFlags();
+        for (final AmrProfileStatusCodeFlagDto sourceStatusCodeFlag : sourceStatusCodeFlags) {
             resultStatusCodeFlags.add(AmrProfileStatusCodeFlag.valueOf(sourceStatusCodeFlag.value()));
         }
 
@@ -39,18 +38,16 @@ public class AmrProfileStatusCodeConverter
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto convertFrom(
-            final AmrProfileStatusCode source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto> destinationType) {
+    public AmrProfileStatusCodeDto convertFrom(final AmrProfileStatusCode source,
+            final Type<AmrProfileStatusCodeDto> destinationType) {
 
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto> resultStatusCodeFlags = new HashSet<>();
+        final Set<AmrProfileStatusCodeFlagDto> resultStatusCodeFlags = new HashSet<>();
         final Set<AmrProfileStatusCodeFlag> sourceStatusCodeFlags = source.getAmrProfileStatusCodeFlags();
         for (final AmrProfileStatusCodeFlag sourceStatusCodeFlag : sourceStatusCodeFlags) {
-            resultStatusCodeFlags.add(com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto
-                    .valueOf(sourceStatusCodeFlag.value()));
+            resultStatusCodeFlags.add(AmrProfileStatusCodeFlagDto.valueOf(sourceStatusCodeFlag.value()));
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeDto(resultStatusCodeFlags);
+        return new AmrProfileStatusCodeDto(resultStatusCodeFlags);
     }
 
 }

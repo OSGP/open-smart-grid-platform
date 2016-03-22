@@ -15,14 +15,14 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 
-public class PushNotificationAlarmConverter
-        extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto, PushNotificationAlarm> {
+public class PushNotificationAlarmConverter extends
+        BidirectionalConverter<PushNotificationAlarmDto, PushNotificationAlarm> {
 
     @Override
-    public PushNotificationAlarm convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto source,
+    public PushNotificationAlarm convertTo(final PushNotificationAlarmDto source,
             final Type<PushNotificationAlarm> destinationType) {
         if (source == null) {
             return null;
@@ -30,8 +30,8 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PushNot
 
         final Set<AlarmType> alarms = EnumSet.noneOf(AlarmType.class);
 
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto> sourceAlarms = source.getAlarms();
-        for (final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto sourceAlarm : sourceAlarms) {
+        final Set<AlarmTypeDto> sourceAlarms = source.getAlarms();
+        for (final AlarmTypeDto sourceAlarm : sourceAlarms) {
             alarms.add(AlarmType.valueOf(sourceAlarm.name()));
         }
 
@@ -39,22 +39,19 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PushNot
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto convertFrom(
-            final PushNotificationAlarm source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto> destinationType) {
+    public PushNotificationAlarmDto convertFrom(final PushNotificationAlarm source,
+            final Type<PushNotificationAlarmDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto> alarms = EnumSet
-                .noneOf(com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto.class);
+        final Set<AlarmTypeDto> alarms = EnumSet.noneOf(AlarmTypeDto.class);
 
         final Set<AlarmType> sourceAlarms = source.getAlarms();
         for (final AlarmType sourceAlarm : sourceAlarms) {
-            alarms.add(com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto.valueOf(sourceAlarm.name()));
+            alarms.add(AlarmTypeDto.valueOf(sourceAlarm.name()));
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto(
-                source.getDeviceIdentification(), alarms);
+        return new PushNotificationAlarmDto(source.getDeviceIdentification(), alarms);
     }
 }

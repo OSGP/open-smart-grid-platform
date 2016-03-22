@@ -30,7 +30,7 @@ public class NotificationService {
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
-      public void handlePushNotificationAlarm(final DeviceMessageMetadata deviceMessageMetadata,
+    public void handlePushNotificationAlarm(final DeviceMessageMetadata deviceMessageMetadata,
             final PushNotificationAlarmDto pushNotificationAlarm) {
 
         LOGGER.info("handlePushNotificationAlarm for MessageType: {}", deviceMessageMetadata.getMessageType());
@@ -48,6 +48,6 @@ public class NotificationService {
                 new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                         ResponseMessageResultType.OK, null, pushNotificationAlarmDomain, deviceMessageMetadata
-                        .getMessagePriority()), deviceMessageMetadata.getMessageType());
+                                .getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 }

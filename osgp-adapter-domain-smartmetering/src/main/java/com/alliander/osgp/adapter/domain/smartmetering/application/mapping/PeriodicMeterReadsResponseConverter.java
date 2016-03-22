@@ -12,21 +12,20 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerDto;
 
 @Component
-public class PeriodicMeterReadsResponseConverter
-        extends
-        CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerDto, PeriodicMeterReadContainer> {
+public class PeriodicMeterReadsResponseConverter extends
+CustomConverter<PeriodicMeterReadsContainerDto, PeriodicMeterReadContainer> {
 
     @Override
     public PeriodicMeterReadContainer convert(final PeriodicMeterReadsContainerDto source,
             final Type<? extends PeriodicMeterReadContainer> destinationType) {
-        return new PeriodicMeterReadContainer(
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), this.mapperFacade.mapAsList(source.getMeterReads(),
-                                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReads.class));
+        return new PeriodicMeterReadContainer(PeriodType.valueOf(source.getPeriodType().name()),
+                this.mapperFacade.mapAsList(source.getMeterReads(), PeriodicMeterReads.class));
     }
 
 }

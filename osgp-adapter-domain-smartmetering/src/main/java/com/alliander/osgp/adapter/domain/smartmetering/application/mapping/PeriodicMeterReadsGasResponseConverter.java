@@ -12,21 +12,20 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto;
 
 @Component
-public class PeriodicMeterReadsGasResponseConverter
-extends
-CustomConverter<com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto, PeriodicMeterReadsContainerGas> {
+public class PeriodicMeterReadsGasResponseConverter extends
+CustomConverter<PeriodicMeterReadsContainerGasDto, PeriodicMeterReadsContainerGas> {
 
     @Override
-    public PeriodicMeterReadsContainerGas convert(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto source,
+    public PeriodicMeterReadsContainerGas convert(final PeriodicMeterReadsContainerGasDto source,
             final Type<? extends PeriodicMeterReadsContainerGas> destinationType) {
-        return new PeriodicMeterReadsContainerGas(
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source.getPeriodType()
-                        .name()), this.mapperFacade.mapAsList(source.getMeterReadsGas(),
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGas.class));
+        return new PeriodicMeterReadsContainerGas(PeriodType.valueOf(source.getPeriodType().name()),
+                this.mapperFacade.mapAsList(source.getMeterReadsGas(), PeriodicMeterReadsGas.class));
     }
 
 }

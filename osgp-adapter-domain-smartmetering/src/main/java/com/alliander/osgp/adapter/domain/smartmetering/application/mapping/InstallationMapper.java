@@ -13,6 +13,8 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
 @Component(value = "installationMapper")
 public class InstallationMapper extends ConfigurableMapper {
@@ -20,15 +22,9 @@ public class InstallationMapper extends ConfigurableMapper {
     public void configure(final MapperFactory mapperFactory) {
 
         // domain value object -> SmartMeteringDevice entity class
-        mapperFactory
-                .classMap(SmartMeter.class,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class)
-                .byDefault().register();
+        mapperFactory.classMap(SmartMeter.class, SmartMeteringDevice.class).byDefault().register();
 
         // domain value object -> dto value object
-        mapperFactory
-                .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto.class).byDefault()
-                .register();
+        mapperFactory.classMap(SmartMeteringDevice.class, SmartMeteringDeviceDto.class).byDefault().register();
     }
 }

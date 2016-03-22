@@ -17,23 +17,22 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 @Component
-public class AlarmRegisterConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto, AlarmRegister> {
+public class AlarmRegisterConverter extends BidirectionalConverter<AlarmRegisterDto, AlarmRegister> {
 
     @Override
-    public AlarmRegister convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto source,
-            final Type<AlarmRegister> destinationType) {
+    public AlarmRegister convertTo(final AlarmRegisterDto source, final Type<AlarmRegister> destinationType) {
         if (source == null) {
             return null;
         }
 
         final Set<AlarmType> alarmTypes = new TreeSet<AlarmType>();
 
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto> sourceAlarmTypes = source
-                .getAlarmTypes();
-        for (final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto sourceAlarmType : sourceAlarmTypes) {
+        final Set<AlarmTypeDto> sourceAlarmTypes = source.getAlarmTypes();
+        for (final AlarmTypeDto sourceAlarmType : sourceAlarmTypes) {
             alarmTypes.add(AlarmType.valueOf(sourceAlarmType.name()));
         }
 
@@ -41,20 +40,19 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRe
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto convertFrom(final AlarmRegister source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto> destinationType) {
+    public AlarmRegisterDto convertFrom(final AlarmRegister source, final Type<AlarmRegisterDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final Set<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto> alarmTypes = new TreeSet<com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto>();
+        final Set<AlarmTypeDto> alarmTypes = new TreeSet<AlarmTypeDto>();
 
         final Set<AlarmType> sourceAlarmTypes = source.getAlarmTypes();
 
         for (final AlarmType sourceAlarmType : sourceAlarmTypes) {
-            alarmTypes.add(com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto.valueOf(sourceAlarmType.name()));
+            alarmTypes.add(AlarmTypeDto.valueOf(sourceAlarmType.name()));
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto(alarmTypes);
+        return new AlarmRegisterDto(alarmTypes);
     }
 }

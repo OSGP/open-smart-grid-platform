@@ -13,18 +13,17 @@ import ma.glasnost.orika.metadata.Type;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 
 @Component
-public class PeriodicMeterReadsRequestConverter
-        extends
-        CustomConverter<PeriodicMeterReadsQuery, com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto> {
+public class PeriodicMeterReadsRequestConverter extends
+CustomConverter<PeriodicMeterReadsQuery, PeriodicMeterReadsQueryDto> {
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto convert(
-            final PeriodicMeterReadsQuery source,
-            final Type<? extends com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto> destinationType) {
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto(
-                com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto.valueOf(source.getPeriodType().name()),
+    public PeriodicMeterReadsQueryDto convert(final PeriodicMeterReadsQuery source,
+            final Type<? extends PeriodicMeterReadsQueryDto> destinationType) {
+        return new PeriodicMeterReadsQueryDto(PeriodTypeDto.valueOf(source.getPeriodType().name()),
                 source.getBeginDate(), source.getEndDate());
     }
 
