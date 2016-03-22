@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dlms.DlmsPushNotification;
 import com.alliander.osgp.dto.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarm;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSms;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSmsDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 public class DlmsChannelHandlerServer extends DlmsChannelHandler {
@@ -66,7 +66,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
             final String deviceIdentification, final String ipAddress) {
         this.logMessage(message);
 
-        final PushNotificationAlarm pushNotificationAlarm = new PushNotificationAlarm(deviceIdentification,
+        final PushNotificationAlarmDto pushNotificationAlarm = new PushNotificationAlarmDto(deviceIdentification,
                 message.getAlarms());
 
         final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
@@ -80,7 +80,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
             final String deviceIdentification, final String ipAddress) {
         this.logMessage(message);
 
-        final PushNotificationSms pushNotificationSms = new PushNotificationSms(deviceIdentification, ipAddress);
+        final PushNotificationSmsDto pushNotificationSms = new PushNotificationSmsDto(deviceIdentification, ipAddress);
 
         final RequestMessage requestMessage = new RequestMessage(correlationId, "no-organisation",
                 deviceIdentification, ipAddress, pushNotificationSms);

@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component("dlmsReadAlarmRegisterRequestMessageProcessor")
@@ -36,7 +36,7 @@ public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessa
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        final ReadAlarmRegisterRequest readAlarmRegisterRequest = (ReadAlarmRegisterRequest) requestObject;
+        final ReadAlarmRegisterRequestDto readAlarmRegisterRequest = (ReadAlarmRegisterRequestDto) requestObject;
         return this.monitoringService.requestReadAlarmRegister(conn, device, readAlarmRegisterRequest);
     }
 }

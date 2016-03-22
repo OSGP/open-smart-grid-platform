@@ -18,7 +18,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -37,7 +37,7 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException {
-        final SmartMeteringDevice smartMeteringDevice = (SmartMeteringDevice) requestObject;
+        final SmartMeteringDeviceDto smartMeteringDevice = (SmartMeteringDeviceDto) requestObject;
         this.installationService.addMeter(smartMeteringDevice);
 
         // No return object.

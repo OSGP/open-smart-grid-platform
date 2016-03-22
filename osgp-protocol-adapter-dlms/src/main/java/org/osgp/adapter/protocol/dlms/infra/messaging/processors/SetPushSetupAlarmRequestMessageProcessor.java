@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +38,7 @@ public class SetPushSetupAlarmRequestMessageProcessor extends DeviceRequestMessa
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final PushSetupAlarm pushSetupAlarm = (PushSetupAlarm) requestObject;
+        final PushSetupAlarmDto pushSetupAlarm = (PushSetupAlarmDto) requestObject;
         this.configurationService.setPushSetupAlarm(conn, device, pushSetupAlarm);
         return null;
     }

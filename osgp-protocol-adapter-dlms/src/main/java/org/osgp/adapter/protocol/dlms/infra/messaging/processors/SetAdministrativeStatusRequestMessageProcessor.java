@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +38,7 @@ public class SetAdministrativeStatusRequestMessageProcessor extends DeviceReques
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final AdministrativeStatusType administrativeStatusType = (AdministrativeStatusType) requestObject;
+        final AdministrativeStatusTypeDto administrativeStatusType = (AdministrativeStatusTypeDto) requestObject;
 
         this.configurationService.requestSetAdministrativeStatus(conn, device, administrativeStatusType);
         return null;

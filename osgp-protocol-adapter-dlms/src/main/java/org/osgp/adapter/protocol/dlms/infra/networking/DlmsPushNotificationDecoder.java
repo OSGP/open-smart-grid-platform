@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.dlms.DlmsPushNotification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotificationDecoder.DecodingState> {
 
@@ -190,7 +190,7 @@ public class DlmsPushNotificationDecoder extends ReplayingDecoder<DlmsPushNotifi
         }
         this.builder.withTriggerType(PUSH_ALARM_TRIGGER);
         final AlarmHelperService alarmHelperService = new AlarmHelperService();
-        final Set<AlarmType> alarms = alarmHelperService.toAlarmTypes(registerValue);
+        final Set<AlarmTypeDto> alarms = alarmHelperService.toAlarmTypes(registerValue);
         this.builder.withAlarms(alarms);
     }
 

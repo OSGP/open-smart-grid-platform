@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Component
-public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAlarmRegisterRequest, AlarmRegister> {
+public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAlarmRegisterRequestDto, AlarmRegisterDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
@@ -42,13 +42,13 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     private AlarmHelperService alarmHelperService;
 
     @Override
-    public AlarmRegister execute(final ClientConnection conn, final DlmsDevice device,
-            final ReadAlarmRegisterRequest object) throws ProtocolAdapterException {
+    public AlarmRegisterDto execute(final ClientConnection conn, final DlmsDevice device,
+            final ReadAlarmRegisterRequestDto object) throws ProtocolAdapterException {
 
-        return new AlarmRegister(this.retrieveAlarmRegister(conn));
+        return new AlarmRegisterDto(this.retrieveAlarmRegister(conn));
     }
 
-    private Set<AlarmType> retrieveAlarmRegister(final ClientConnection conn) throws ProtocolAdapterException {
+    private Set<AlarmTypeDto> retrieveAlarmRegister(final ClientConnection conn) throws ProtocolAdapterException {
 
         final AttributeAddress alarmRegisterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 

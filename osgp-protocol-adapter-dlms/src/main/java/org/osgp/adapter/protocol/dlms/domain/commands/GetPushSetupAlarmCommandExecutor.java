@@ -20,12 +20,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 
 @Component()
 public class GetPushSetupAlarmCommandExecutor extends GetPushSetupCommandExecutor implements
-CommandExecutor<Void, PushSetupAlarm> {
+CommandExecutor<Void, PushSetupAlarmDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPushSetupAlarmCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
@@ -42,7 +42,7 @@ CommandExecutor<Void, PushSetupAlarm> {
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public PushSetupAlarm execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
+    public PushSetupAlarmDto execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         LOGGER.info("Retrieving Push Setup Alarm");
@@ -51,8 +51,8 @@ CommandExecutor<Void, PushSetupAlarm> {
 
         GetPushSetupCommandExecutor.checkResultList(getResultList, ATTRIBUTE_ADDRESSES);
 
-        final PushSetupAlarm.Builder pushSetupAlarmBuilder = new PushSetupAlarm.Builder();
-        pushSetupAlarmBuilder.logicalName(new CosemObisCode(OBIS_CODE.bytes()));
+        final PushSetupAlarmDto.Builder pushSetupAlarmBuilder = new PushSetupAlarmDto.Builder();
+        pushSetupAlarmBuilder.logicalName(new CosemObisCodeDto(OBIS_CODE.bytes()));
 
         pushSetupAlarmBuilder.pushObjectList(this.dlmsHelperService.readListOfObjectDefinition(
                 getResultList.get(INDEX_PUSH_OBJECT_LIST), "Push Object List"));

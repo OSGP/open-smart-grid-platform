@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +38,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestM
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final AlarmNotifications alarmNotifications = (AlarmNotifications) requestObject;
+        final AlarmNotificationsDto alarmNotifications = (AlarmNotificationsDto) requestObject;
 
         this.configurationService.setAlarmNotifications(conn, device, alarmNotifications);
 

@@ -17,12 +17,12 @@ import ma.glasnost.orika.metadata.Type;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.DataObject;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfile;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SeasonProfileDto;
 
-public class SeasonProfileConverter extends CustomConverter<SeasonProfile, DataObject> {
+public class SeasonProfileConverter extends CustomConverter<SeasonProfileDto, DataObject> {
 
     @Override
-    public DataObject convert(final SeasonProfile source, final Type<? extends DataObject> destinationType) {
+    public DataObject convert(final SeasonProfileDto source, final Type<? extends DataObject> destinationType) {
         if (source == null) {
             return null;
         }

@@ -14,37 +14,37 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFlagDto;
 
 @Service("amrProfileStatusCodeHelperService")
 public class AmrProfileStatusCodeHelperService {
     private static final int NUMBER_OF_BITS_IN_REGISTER = 8;
 
-    private static final ByteRegisterConverter<AmrProfileStatusCodeFlag> BYTE_REGISTER_CONVERTER;
+    private static final ByteRegisterConverter<AmrProfileStatusCodeFlagDto> BYTE_REGISTER_CONVERTER;
 
     static {
-        final Map<AmrProfileStatusCodeFlag, Integer> map = new EnumMap<>(AmrProfileStatusCodeFlag.class);
+        final Map<AmrProfileStatusCodeFlagDto, Integer> map = new EnumMap<>(AmrProfileStatusCodeFlagDto.class);
 
-        map.put(AmrProfileStatusCodeFlag.CRITICAL_ERROR, 0);
-        map.put(AmrProfileStatusCodeFlag.CLOCK_INVALID, 1);
-        map.put(AmrProfileStatusCodeFlag.DATA_NOT_VALID, 2);
-        map.put(AmrProfileStatusCodeFlag.DAYLIGHT_SAVING, 3);
-        map.put(AmrProfileStatusCodeFlag.CLOCK_ADJUSTED, 5);
-        map.put(AmrProfileStatusCodeFlag.POWER_DOWN, 7);
+        map.put(AmrProfileStatusCodeFlagDto.CRITICAL_ERROR, 0);
+        map.put(AmrProfileStatusCodeFlagDto.CLOCK_INVALID, 1);
+        map.put(AmrProfileStatusCodeFlagDto.DATA_NOT_VALID, 2);
+        map.put(AmrProfileStatusCodeFlagDto.DAYLIGHT_SAVING, 3);
+        map.put(AmrProfileStatusCodeFlagDto.CLOCK_ADJUSTED, 5);
+        map.put(AmrProfileStatusCodeFlagDto.POWER_DOWN, 7);
 
-        BYTE_REGISTER_CONVERTER = new ByteRegisterConverter<AmrProfileStatusCodeFlag>(Collections.unmodifiableMap(map),
+        BYTE_REGISTER_CONVERTER = new ByteRegisterConverter<AmrProfileStatusCodeFlagDto>(Collections.unmodifiableMap(map),
                 NUMBER_OF_BITS_IN_REGISTER);
     }
 
-    public Integer toBitPosition(final AmrProfileStatusCodeFlag amrProfileStatus) {
+    public Integer toBitPosition(final AmrProfileStatusCodeFlagDto amrProfileStatus) {
         return BYTE_REGISTER_CONVERTER.toBitPosition(amrProfileStatus);
     }
 
-    public Set<AmrProfileStatusCodeFlag> toAmrProfileStatusCodeFlags(final Number registerValue) {
+    public Set<AmrProfileStatusCodeFlagDto> toAmrProfileStatusCodeFlags(final Number registerValue) {
         return BYTE_REGISTER_CONVERTER.toTypes(registerValue.longValue());
     }
 
-    public Short toValue(final Set<AmrProfileStatusCodeFlag> amrProfileStatusCodeFlags) {
+    public Short toValue(final Set<AmrProfileStatusCodeFlagDto> amrProfileStatusCodeFlags) {
         return BYTE_REGISTER_CONVERTER.toLongValue(amrProfileStatusCodeFlags).shortValue();
     }
 }
