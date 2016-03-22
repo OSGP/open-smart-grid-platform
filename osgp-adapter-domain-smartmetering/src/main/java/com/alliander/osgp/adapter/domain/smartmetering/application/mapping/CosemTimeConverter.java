@@ -11,13 +11,12 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemTime;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 
-public class CosemTimeConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime, CosemTime> {
+public class CosemTimeConverter extends BidirectionalConverter<CosemTimeDto, CosemTime> {
 
     @Override
-    public CosemTime convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime source,
-            final Type<CosemTime> destinationType) {
+    public CosemTime convertTo(final CosemTimeDto source, final Type<CosemTime> destinationType) {
         if (source == null) {
             return null;
         }
@@ -26,13 +25,11 @@ public class CosemTimeConverter extends
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime convertFrom(final CosemTime source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime> destinationType) {
+    public CosemTimeDto convertFrom(final CosemTime source, final Type<CosemTimeDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime(source.getHour(), source.getMinute(),
-                source.getSecond(), source.getHundredths());
+        return new CosemTimeDto(source.getHour(), source.getMinute(), source.getSecond(), source.getHundredths());
     }
 }

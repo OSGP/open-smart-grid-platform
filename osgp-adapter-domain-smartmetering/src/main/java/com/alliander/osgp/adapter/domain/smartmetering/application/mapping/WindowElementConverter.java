@@ -14,9 +14,10 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WindowElement;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.WindowElementDto;
 
-public class WindowElementConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement, WindowElement> {
+public class WindowElementConverter extends BidirectionalConverter<WindowElementDto, WindowElement> {
 
     private final ConfigurationMapper mapper;
 
@@ -49,8 +50,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.WindowE
     }
 
     @Override
-    public WindowElement convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement source,
-            final Type<WindowElement> destinationType) {
+    public WindowElement convertTo(final WindowElementDto source, final Type<WindowElement> destinationType) {
         if (source == null) {
             return null;
         }
@@ -60,15 +60,12 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.WindowE
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement convertFrom(final WindowElement source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement> destinationType) {
+    public WindowElementDto convertFrom(final WindowElement source, final Type<WindowElementDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.WindowElement(this.mapper.map(
-                source.getStartTime(), com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime.class),
-                this.mapper.map(source.getEndTime(),
-                        com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime.class));
+        return new WindowElementDto(this.mapper.map(source.getStartTime(), CosemDateTimeDto.class), this.mapper.map(
+                source.getEndTime(), CosemDateTimeDto.class));
     }
 }

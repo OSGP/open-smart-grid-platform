@@ -11,13 +11,12 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemObisCode;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 
-public class CosemObisCodeConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode, CosemObisCode> {
+public class CosemObisCodeConverter extends BidirectionalConverter<CosemObisCodeDto, CosemObisCode> {
 
     @Override
-    public CosemObisCode convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode source,
-            final Type<CosemObisCode> destinationType) {
+    public CosemObisCode convertTo(final CosemObisCodeDto source, final Type<CosemObisCode> destinationType) {
         if (source == null) {
             return null;
         }
@@ -27,13 +26,12 @@ public class CosemObisCodeConverter extends
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode convertFrom(final CosemObisCode source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode> destinationType) {
+    public CosemObisCodeDto convertFrom(final CosemObisCode source, final Type<CosemObisCodeDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCode(source.getA(), source.getB(),
-                source.getC(), source.getD(), source.getE(), source.getF());
+        return new CosemObisCodeDto(source.getA(), source.getB(), source.getC(), source.getD(), source.getE(),
+                source.getF());
     }
 }

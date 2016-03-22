@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.ManagementService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -32,14 +32,14 @@ public class FindEventsResponseMessageProcessor extends OsgpCoreResponseMessageP
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof EventMessageDataContainer;
+        return responseMessage.getDataObject() instanceof EventMessageDataContainerDto;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        final EventMessageDataContainer eventMessageDataContainer = (EventMessageDataContainer) responseMessage
+        final EventMessageDataContainerDto eventMessageDataContainer = (EventMessageDataContainerDto) responseMessage
                 .getDataObject();
 
         this.managementService.handleFindEventsResponse(deviceMessageMetadata, responseMessage.getResult(),

@@ -11,13 +11,12 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
 
-public class CosemDateConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate, CosemDate> {
+public class CosemDateConverter extends BidirectionalConverter<CosemDateDto, CosemDate> {
 
     @Override
-    public CosemDate convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate source,
-            final Type<CosemDate> destinationType) {
+    public CosemDate convertTo(final CosemDateDto source, final Type<CosemDate> destinationType) {
         if (source == null) {
             return null;
         }
@@ -26,13 +25,11 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDa
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate convertFrom(final CosemDate source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate> destinationType) {
+    public CosemDateDto convertFrom(final CosemDate source, final Type<CosemDateDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate(source.getYear(), source.getMonth(),
-                source.getDayOfMonth(), source.getDayOfWeek());
+        return new CosemDateDto(source.getYear(), source.getMonth(), source.getDayOfMonth(), source.getDayOfWeek());
     }
 }

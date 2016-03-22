@@ -13,14 +13,15 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MessageType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SendDestinationAndMethod;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.TransportServiceType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethodDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceTypeDto;
 
-public class SendDestinationAndMethodConverter
-extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod, SendDestinationAndMethod> {
+public class SendDestinationAndMethodConverter extends
+        BidirectionalConverter<SendDestinationAndMethodDto, SendDestinationAndMethod> {
 
     @Override
-    public SendDestinationAndMethod convertTo(
-            final com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod source,
+    public SendDestinationAndMethod convertTo(final SendDestinationAndMethodDto source,
             final Type<SendDestinationAndMethod> destinationType) {
         if (source == null) {
             return null;
@@ -32,18 +33,15 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.SendDes
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod convertFrom(
-            final SendDestinationAndMethod source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod> destinationType) {
+    public SendDestinationAndMethodDto convertFrom(final SendDestinationAndMethod source,
+            final Type<SendDestinationAndMethodDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceType transportService = com.alliander.osgp.dto.valueobjects.smartmetering.TransportServiceType
-                .valueOf(source.getTransportService().name());
-        final com.alliander.osgp.dto.valueobjects.smartmetering.MessageType message = com.alliander.osgp.dto.valueobjects.smartmetering.MessageType
-                .valueOf(source.getMessage().name());
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.SendDestinationAndMethod(transportService,
-                source.getDestination(), message);
+        final TransportServiceTypeDto transportService = TransportServiceTypeDto.valueOf(source.getTransportService()
+                .name());
+        final MessageTypeDto message = MessageTypeDto.valueOf(source.getMessage().name());
+        return new SendDestinationAndMethodDto(transportService, source.getDestination(), message);
     }
 }

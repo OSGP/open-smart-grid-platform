@@ -16,27 +16,27 @@ import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
 
 public class DlmsMeterValueConverterTest {
 
     @Test
     public void testCalculate() {
         final MonitoringMapper calculator = new MonitoringMapper();
-        DlmsMeterValue response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.WH);
+        DlmsMeterValueDto response = new DlmsMeterValueDto(BigDecimal.valueOf(123456), DlmsUnitDto.WH);
         assertEquals(BigDecimal.valueOf(123.456d), calculator.map(response, OsgpMeterValue.class).getValue());
         assertEquals(OsgpUnit.KWH, calculator.map(response, OsgpMeterValue.class).getOsgpUnit());
 
-        response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.M3);
+        response = new DlmsMeterValueDto(BigDecimal.valueOf(123456), DlmsUnitDto.M3);
         assertEquals(BigDecimal.valueOf(123456d), calculator.map(response, OsgpMeterValue.class).getValue());
         assertEquals(OsgpUnit.M3, calculator.map(response, OsgpMeterValue.class).getOsgpUnit());
 
-        response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.M3COR);
+        response = new DlmsMeterValueDto(BigDecimal.valueOf(123456), DlmsUnitDto.M3COR);
         assertEquals(BigDecimal.valueOf(123456d), calculator.map(response, OsgpMeterValue.class).getValue());
         assertEquals(OsgpUnit.M3, calculator.map(response, OsgpMeterValue.class).getOsgpUnit());
 
-        response = new DlmsMeterValue(BigDecimal.valueOf(123456), DlmsUnit.A);
+        response = new DlmsMeterValueDto(BigDecimal.valueOf(123456), DlmsUnitDto.A);
         try {
             calculator.map(response, OsgpMeterValue.class);
             fail("dlms unit A not supported, expected IllegalArgumentException");
