@@ -39,8 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObisCodeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemObjectDefinitionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MessageTypeDto;
@@ -168,7 +172,8 @@ public class DlmsHelperService {
                     + this.getDebugInfo(scalerUnitObject));
         }
         final int scaler = this.readLongNotNull(dataObjects.get(0), description).intValue();
-        final DlmsUnitDto unit = DlmsUnitDto.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description).intValue());
+        final DlmsUnitDto unit = DlmsUnitDto.fromDlmsEnum(this.readLongNotNull(dataObjects.get(1), description)
+                .intValue());
 
         // determine value
         BigDecimal scaledValue = BigDecimal.valueOf(rawValue);
@@ -255,14 +260,14 @@ public class DlmsHelperService {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto readDateTime(final GetResult getResult,
-            final String description) throws ProtocolAdapterException {
+    public CosemDateTimeDto readDateTime(final GetResult getResult, final String description)
+            throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);
         return this.readDateTime(getResult.resultData(), description);
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto readDateTime(final DataObject resultData,
-            final String description) throws ProtocolAdapterException {
+    public CosemDateTimeDto readDateTime(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
             return null;
@@ -278,8 +283,8 @@ public class DlmsHelperService {
         }
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto readCosemDateTime(
-            final DataObject resultData, final String description) throws ProtocolAdapterException {
+    public CosemDateTimeDto readCosemDateTime(final DataObject resultData, final String description)
+            throws ProtocolAdapterException {
         this.logDebugResultData(resultData, description);
         if (resultData == null || resultData.isNull()) {
             return null;
@@ -295,8 +300,7 @@ public class DlmsHelperService {
         return this.getDtoDateTimeForJdlmsDateTime(jdlmsCosemDateTime);
     }
 
-    private com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto getDtoDateTimeForJdlmsDateTime(
-            final CosemDateTime jdlmsCosemDateTime) {
+    private CosemDateTimeDto getDtoDateTimeForJdlmsDateTime(final CosemDateTime jdlmsCosemDateTime) {
         if (jdlmsCosemDateTime == null) {
             return null;
         }
@@ -306,28 +310,24 @@ public class DlmsHelperService {
         final int month = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MONTH) + 1;
         final int dayOfMonth = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_MONTH);
         final int dayOfWeek = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_WEEK);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto(
-                year, month, dayOfMonth, dayOfWeek);
+        final CosemDateDto date = new CosemDateDto(year, month, dayOfMonth, dayOfWeek);
 
         final int hour = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HOUR);
         final int minute = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MINUTE);
         final int second = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.SECOND);
         final int hundredths = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HUNDREDTHS);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto(
-                hour, minute, second, hundredths);
+        final CosemTimeDto time = new CosemTimeDto(hour, minute, second, hundredths);
 
         final int deviation = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DEVIATION);
 
         final int clockStatusValue = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.CLOCK_STATUS);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto(
-                clockStatusValue);
+        final ClockStatusDto clockStatus = new ClockStatusDto(clockStatusValue);
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto(date, time, deviation, clockStatus);
+        return new CosemDateTimeDto(date, time, deviation, clockStatus);
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto convertDataObjectToDateTime(
-            final DataObject object) throws ProtocolAdapterException {
-        com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto dateTime = null;
+    public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
+        CosemDateTimeDto dateTime = null;
         if (object.isByteArray()) {
             dateTime = this.fromDateTimeValue((byte[]) object.value());
         } else if (object.isCosemDateFormat()) {
@@ -338,8 +338,7 @@ public class DlmsHelperService {
         return dateTime;
     }
 
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue)
-            throws ProtocolAdapterException {
+    public CosemDateTimeDto fromDateTimeValue(final byte[] dateTimeValue) throws ProtocolAdapterException {
 
         final ByteBuffer bb = ByteBuffer.wrap(dateTimeValue);
 
@@ -354,13 +353,10 @@ public class DlmsHelperService {
         final int deviation = bb.getShort();
         final byte clockStatusValue = bb.get();
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto date = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto(
-                year, monthOfYear, dayOfMonth, dayOfWeek);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto time = new com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto(
-                hourOfDay, minuteOfHour, secondOfMinute, hundredthsOfSecond);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto(
-                clockStatusValue);
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto(date, time, deviation, clockStatus);
+        final CosemDateDto date = new CosemDateDto(year, monthOfYear, dayOfMonth, dayOfWeek);
+        final CosemTimeDto time = new CosemTimeDto(hourOfDay, minuteOfHour, secondOfMinute, hundredthsOfSecond);
+        final ClockStatusDto clockStatus = new ClockStatusDto(clockStatusValue);
+        return new CosemDateTimeDto(date, time, deviation, clockStatus);
     }
 
     public DataObject asDataObject(final DateTime dateTime) {
@@ -381,7 +377,7 @@ public class DlmsHelperService {
         return DataObject.newDateTimeData(cosemDateTime);
     }
 
-    public DataObject asDataObject(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto date) {
+    public DataObject asDataObject(final CosemDateDto date) {
 
         final CosemDate cosemDate = new CosemDate(date.getYear(), date.getMonth(), date.getDayOfMonth(),
                 date.getDayOfWeek());
@@ -394,8 +390,8 @@ public class DlmsHelperService {
         return this.readListOfObjectDefinition(getResult.resultData(), description);
     }
 
-    public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final DataObject resultData, final String description)
-            throws ProtocolAdapterException {
+    public List<CosemObjectDefinitionDto> readListOfObjectDefinition(final DataObject resultData,
+            final String description) throws ProtocolAdapterException {
         final List<DataObject> listOfObjectDefinition = this.readList(resultData, description);
         if (listOfObjectDefinition == null) {
             return Collections.emptyList();
@@ -445,8 +441,8 @@ public class DlmsHelperService {
         return this.readSendDestinationAndMethod(getResult.resultData(), description);
     }
 
-    public SendDestinationAndMethodDto readSendDestinationAndMethod(final DataObject resultData, final String description)
-            throws ProtocolAdapterException {
+    public SendDestinationAndMethodDto readSendDestinationAndMethod(final DataObject resultData,
+            final String description) throws ProtocolAdapterException {
         final List<DataObject> sendDestinationAndMethodElements = this.readList(resultData, description);
         if (sendDestinationAndMethodElements == null) {
             return null;
@@ -544,10 +540,8 @@ public class DlmsHelperService {
                     + elements.size());
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto startTime = this.readCosemDateTime(
-                elements.get(0), "Start Time from " + description);
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto endTime = this.readCosemDateTime(
-                elements.get(1), "End Time from " + description);
+        final CosemDateTimeDto startTime = this.readCosemDateTime(elements.get(0), "Start Time from " + description);
+        final CosemDateTimeDto endTime = this.readCosemDateTime(elements.get(1), "End Time from " + description);
 
         return new WindowElementDto(startTime, endTime);
     }
@@ -563,7 +557,7 @@ public class DlmsHelperService {
         final String rawValueClass = this.getRawValueClassForDebugInfo(dataObject);
 
         return "DataObject: Choice=" + choiceText + ", ResultData is" + dataType + ", value=[" + rawValueClass + "]: "
-                + objectText;
+        + objectText;
     }
 
     private String getObjectTextForDebugInfo(final DataObject dataObject) {
@@ -680,8 +674,8 @@ public class DlmsHelperService {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("logical name: ").append(logicalNameValue[0] & 0xFF).append('-').append(logicalNameValue[1] & 0xFF)
-        .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
-        .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
+                .append(':').append(logicalNameValue[2] & 0xFF).append('.').append(logicalNameValue[3] & 0xFF)
+                .append('.').append(logicalNameValue[4] & 0xFF).append('.').append(logicalNameValue[5] & 0xFF);
 
         return sb.toString();
     }
@@ -707,10 +701,10 @@ public class DlmsHelperService {
         final int clockStatus = bb.get();
 
         sb.append("year=").append(year).append(", month=").append(monthOfYear).append(", day=").append(dayOfMonth)
-        .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
-        .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
-        .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
-        .append(clockStatus);
+                .append(", weekday=").append(dayOfWeek).append(", hour=").append(hourOfDay).append(", minute=")
+                .append(minuteOfHour).append(", second=").append(secondOfMinute).append(", hundredths=")
+                .append(hundredthsOfSecond).append(", deviation=").append(deviation).append(", clockstatus=")
+                .append(clockStatus);
 
         return sb.toString();
     }
@@ -721,7 +715,7 @@ public class DlmsHelperService {
 
         final StringBuilder sb = new StringBuilder();
         sb.append("number of bytes=").append(bitStringValue.length).append(", value=").append(bigValue)
-                .append(", bits=").append(stringValue);
+        .append(", bits=").append(stringValue);
 
         return sb.toString();
     }

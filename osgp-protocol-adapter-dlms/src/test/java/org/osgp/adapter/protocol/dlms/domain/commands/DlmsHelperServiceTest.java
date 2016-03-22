@@ -24,6 +24,7 @@ import org.openmuc.jdlms.datatypes.DataObject;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 
 public class DlmsHelperServiceTest {
@@ -76,8 +77,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testFromByteArraySummerTime() throws Exception {
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto cosemDateTime = this.dlmsHelperService
-                .fromDateTimeValue(this.byteArraySummerTime());
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.fromDateTimeValue(this.byteArraySummerTime());
 
         assertTrue(cosemDateTime.isDateTimeSpecified());
 
@@ -89,8 +89,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testFromByteArrayWinterTime() throws Exception {
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto cosemDateTime = this.dlmsHelperService
-                .fromDateTimeValue(this.byteArrayWinterTime());
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.fromDateTimeValue(this.byteArrayWinterTime());
 
         assertTrue(cosemDateTime.isDateTimeSpecified());
 
@@ -102,7 +101,7 @@ public class DlmsHelperServiceTest {
     @Test
     public void testFromByteArrayUnspecifiedTime() throws Exception {
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto cosemDateTime = this.dlmsHelperService
+        final CosemDateTimeDto cosemDateTime = this.dlmsHelperService
                 .fromDateTimeValue(this.byteArrayUnspecifiedTime());
 
         assertFalse(cosemDateTime.isDateTimeSpecified());
@@ -177,7 +176,7 @@ public class DlmsHelperServiceTest {
         bb.put((byte) CosemTimeDto.MINUTE_NOT_SPECIFIED);
         bb.put((byte) CosemTimeDto.SECOND_NOT_SPECIFIED);
         bb.put((byte) CosemTimeDto.HUNDREDTHS_NOT_SPECIFIED);
-        bb.putShort((short) com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto.DEVIATION_NOT_SPECIFIED);
+        bb.putShort((short) CosemDateTimeDto.DEVIATION_NOT_SPECIFIED);
         bb.put((byte) ClockStatusDto.STATUS_NOT_SPECIFIED);
 
         return bb.array();
