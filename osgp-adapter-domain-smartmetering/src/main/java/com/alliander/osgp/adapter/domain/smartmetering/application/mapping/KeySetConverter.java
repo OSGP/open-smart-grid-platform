@@ -11,13 +11,12 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
+import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 
-public class KeySetConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.KeySet, KeySet> {
+public class KeySetConverter extends BidirectionalConverter<KeySetDto, KeySet> {
 
     @Override
-    public KeySet convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.KeySet source,
-            final Type<KeySet> destinationType) {
+    public KeySet convertTo(final KeySetDto source, final Type<KeySet> destinationType) {
         if (source == null) {
             return null;
         }
@@ -26,13 +25,11 @@ public class KeySetConverter extends
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.KeySet convertFrom(final KeySet source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.KeySet> destinationType) {
+    public KeySetDto convertFrom(final KeySet source, final Type<KeySetDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.KeySet(source.getAuthenticationKey(),
-                source.getEncryptionKey());
+        return new KeySetDto(source.getAuthenticationKey(), source.getEncryptionKey());
     }
 }

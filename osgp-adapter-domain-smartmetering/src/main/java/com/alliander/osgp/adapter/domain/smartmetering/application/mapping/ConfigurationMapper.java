@@ -12,6 +12,9 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
 
@@ -19,10 +22,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
     public void configure(final MapperFactory mapperFactory) {
 
         // domain value object -> dto value object
-        mapperFactory
-        .classMap(com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class,
-                com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
-                .register();
+        mapperFactory.classMap(SpecialDaysRequest.class, SpecialDaysRequestDto.class).byDefault().register();
 
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());

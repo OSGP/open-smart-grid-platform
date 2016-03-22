@@ -21,6 +21,7 @@ import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -59,7 +60,7 @@ public class InstallationService {
     public void addMeter(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceValueObject)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -94,9 +95,8 @@ public class InstallationService {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceDto = this.installationMapper
-                .map(smartMeteringDeviceValueObject,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice.class);
+        final SmartMeteringDeviceDto smartMeteringDeviceDto = this.installationMapper.map(
+                smartMeteringDeviceValueObject, SmartMeteringDeviceDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),

@@ -27,7 +27,7 @@ import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.repositories.DomainInfoRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSms;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSmsDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -69,7 +69,7 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         final Object dataObject = requestMessage.getRequest();
 
         try {
-            final PushNotificationSms pushNotificationSms = (PushNotificationSms) dataObject;
+            final PushNotificationSmsDto pushNotificationSms = (PushNotificationSmsDto) dataObject;
 
             this.storeSmsAsEvent(pushNotificationSms);
 
@@ -102,7 +102,7 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
         }
     }
 
-    private void storeSmsAsEvent(final PushNotificationSms pushNotificationSms) {
+    private void storeSmsAsEvent(final PushNotificationSmsDto pushNotificationSms) {
         try {
             this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
                     com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms

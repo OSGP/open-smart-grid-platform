@@ -25,11 +25,15 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalenda
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfo;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarm;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -68,7 +72,7 @@ public class ConfigurationService {
     public void requestSpecialDays(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("requestSpecialDays for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -78,8 +82,8 @@ public class ConfigurationService {
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
-        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequest.class);
+        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -90,7 +94,7 @@ public class ConfigurationService {
     public void setConfigurationObject(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest setConfigurationObjectRequestValueObject)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("setConfigurationObject for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -100,8 +104,8 @@ public class ConfigurationService {
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
-        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -111,7 +115,7 @@ public class ConfigurationService {
 
     public void setPushSetupAlarm(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarm)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("setPushSetupAlarm for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -121,7 +125,8 @@ public class ConfigurationService {
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
-        final PushSetupAlarm pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm, PushSetupAlarm.class);
+        final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
+                PushSetupAlarmDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -131,7 +136,7 @@ public class ConfigurationService {
 
     public void setPushSetupSms(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSms)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("setPushSetupSms for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -141,7 +146,7 @@ public class ConfigurationService {
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
-        final PushSetupSms pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSms.class);
+        final PushSetupSmsDto pushSetupSmsDto = this.configurationMapper.map(pushSetupSms, PushSetupSmsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -177,8 +182,8 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications alarmNotificationsDto = this.configurationMapper
-                .map(alarmNotifications, com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications.class);
+        final AlarmNotificationsDto alarmNotificationsDto = this.configurationMapper.map(alarmNotifications,
+                AlarmNotificationsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -197,9 +202,8 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto = this.configurationMapper
-                .map(administrativeStatusType,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class);
+        final AdministrativeStatusTypeDto administrativeStatusTypeDto = this.configurationMapper.map(
+                administrativeStatusType, AdministrativeStatusTypeDto.class);
 
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -241,7 +245,7 @@ public class ConfigurationService {
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), this.configurationMapper.map(administrativeStatusType,
-                        com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType.class));
+                        AdministrativeStatusTypeDto.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority());
 
@@ -249,7 +253,7 @@ public class ConfigurationService {
 
     public void handleGetAdministrativeStatusResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType administrativeStatusTypeDto) {
+            final AdministrativeStatusTypeDto administrativeStatusTypeDto) {
 
         LOGGER.info("handleGetAdministrativeStatusResponse for MessageType: {}, with result: {}",
                 deviceMessageMetadata.getMessageType(), responseMessageResultType.toString());
@@ -280,8 +284,8 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar activityCalendarDto = this.configurationMapper
-                .map(activityCalendar, com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar.class);
+        final ActivityCalendarDto activityCalendarDto = this.configurationMapper.map(activityCalendar,
+                ActivityCalendarDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -399,11 +403,11 @@ public class ConfigurationService {
                             "Meter for gas reads should have an energy meter as gateway device."));
         }
 
-        this.osgpCoreRequestMessageSender.send(
-                new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
+        this.osgpCoreRequestMessageSender
+                .send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                         .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
-                        .getIpAddress(), new GMeterInfo(gasDevice.getChannel(), gasDevice.getDeviceIdentification())),
-                deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority());
+                        .getIpAddress(), new GMeterInfoDto(gasDevice.getChannel(), gasDevice.getDeviceIdentification())),
+                        deviceMessageMetadata.getMessageType(), deviceMessageMetadata.getMessagePriority());
     }
 
     public void handleSetEncryptionKeyExchangeOnGMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -431,8 +435,7 @@ public class ConfigurationService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.KeySet keySetDto = this.configurationMapper.map(keySet,
-                com.alliander.osgp.dto.valueobjects.smartmetering.KeySet.class);
+        final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),

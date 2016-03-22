@@ -16,9 +16,12 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemTime;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatusDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.CosemTimeDto;
 
-public class CosemDateTimeConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime, CosemDateTime> {
+public class CosemDateTimeConverter extends BidirectionalConverter<CosemDateTimeDto, CosemDateTime> {
 
     private final ConfigurationMapper mapper;
 
@@ -51,8 +54,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDa
     }
 
     @Override
-    public CosemDateTime convertTo(final com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime source,
-            final Type<CosemDateTime> destinationType) {
+    public CosemDateTime convertTo(final CosemDateTimeDto source, final Type<CosemDateTime> destinationType) {
         if (source == null) {
             return null;
         }
@@ -64,17 +66,14 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDa
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime convertFrom(final CosemDateTime source,
-            final Type<com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime> destinationType) {
+    public CosemDateTimeDto convertFrom(final CosemDateTime source, final Type<CosemDateTimeDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        final com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus clockStatus = new com.alliander.osgp.dto.valueobjects.smartmetering.ClockStatus(
-                source.getClockStatus().getStatus());
+        final ClockStatusDto clockStatus = new ClockStatusDto(source.getClockStatus().getStatus());
 
-        return new com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTime(this.mapper.map(source.getDate(),
-                com.alliander.osgp.dto.valueobjects.smartmetering.CosemDate.class), this.mapper.map(source.getTime(),
-                com.alliander.osgp.dto.valueobjects.smartmetering.CosemTime.class), source.getDeviation(), clockStatus);
+        return new CosemDateTimeDto(this.mapper.map(source.getDate(), CosemDateDto.class), this.mapper.map(
+                source.getTime(), CosemTimeDto.class), source.getDeviation(), clockStatus);
     }
 }

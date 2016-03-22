@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValue;
-import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnitDto;
 
 /**
  * Calculate a osgp meter value:
@@ -30,12 +30,12 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsUnit;
  * </pre>
  *
  */
-public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValue, OsgpMeterValue> {
+public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, OsgpMeterValue> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsMeterValueConverter.class);
 
     @Override
-    public OsgpMeterValue convert(final DlmsMeterValue source, final Type<? extends OsgpMeterValue> destinationType) {
+    public OsgpMeterValue convert(final DlmsMeterValueDto source, final Type<? extends OsgpMeterValue> destinationType) {
         if (source == null) {
             return null;
         }
@@ -54,7 +54,7 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValue, Osg
      * @param dlmsUnit
      * @return
      */
-    private BigDecimal getMultiplierToOsgpUnit(final DlmsUnit dlmsUnit, final OsgpUnit osgpUnit) {
+    private BigDecimal getMultiplierToOsgpUnit(final DlmsUnitDto dlmsUnit, final OsgpUnit osgpUnit) {
         switch (dlmsUnit) {
         case WH:
             switch (osgpUnit) {
@@ -88,7 +88,7 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValue, Osg
      * @throws IllegalArgumentException
      *             when no osgp unit is found
      */
-    private OsgpUnit toStandardUnit(final DlmsUnit dlmsUnit) {
+    private OsgpUnit toStandardUnit(final DlmsUnitDto dlmsUnit) {
         switch (dlmsUnit) {
         case WH:
             return OsgpUnit.KWH;
