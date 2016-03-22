@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component("dlmsActualMeterReadsRequestMessageProcessor")
@@ -36,7 +36,7 @@ public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessag
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        final ActualMeterReadsQuery actualMeterReadsRequest = (ActualMeterReadsQuery) requestObject;
+        final ActualMeterReadsQueryDto actualMeterReadsRequest = (ActualMeterReadsQueryDto) requestObject;
         return this.monitoringService.requestActualMeterReads(conn, device, actualMeterReadsRequest);
     }
 }

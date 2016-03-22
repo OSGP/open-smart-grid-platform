@@ -23,10 +23,10 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDay;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 
 @Component()
-public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<SpecialDay>, AccessResultCode> {
+public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<SpecialDayDto>, AccessResultCode> {
 
     private static final int CLASS_ID = 11;
     private static final ObisCode OBIS_CODE = new ObisCode("0.0.11.0.0.255");
@@ -37,11 +37,11 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
-            final List<SpecialDay> specialDays) throws ProtocolAdapterException {
+            final List<SpecialDayDto> specialDays) throws ProtocolAdapterException {
 
         final List<DataObject> specialDayEntries = new ArrayList<DataObject>();
         int i = 0;
-        for (final SpecialDay specialDay : specialDays) {
+        for (final SpecialDayDto specialDay : specialDays) {
 
             final List<DataObject> specDayEntry = new ArrayList<DataObject>();
             specDayEntry.add(DataObject.newUInteger16Data(i));

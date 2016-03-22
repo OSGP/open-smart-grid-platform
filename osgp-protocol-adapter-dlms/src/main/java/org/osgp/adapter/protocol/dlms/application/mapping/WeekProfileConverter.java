@@ -16,12 +16,12 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.openmuc.jdlms.datatypes.DataObject;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfile;
+import com.alliander.osgp.dto.valueobjects.smartmetering.WeekProfileDto;
 
-public class WeekProfileConverter extends CustomConverter<WeekProfile, DataObject> {
+public class WeekProfileConverter extends CustomConverter<WeekProfileDto, DataObject> {
 
     @Override
-    public DataObject convert(final WeekProfile source, final Type<? extends DataObject> destinationType) {
+    public DataObject convert(final WeekProfileDto source, final Type<? extends DataObject> destinationType) {
         if (source == null) {
             return null;
         }

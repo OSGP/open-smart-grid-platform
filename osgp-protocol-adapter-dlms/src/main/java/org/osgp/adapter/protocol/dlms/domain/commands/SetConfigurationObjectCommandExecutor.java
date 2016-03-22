@@ -30,14 +30,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
 @Component()
-public class SetConfigurationObjectCommandExecutor implements CommandExecutor<ConfigurationObject, AccessResultCode> {
+public class SetConfigurationObjectCommandExecutor implements CommandExecutor<ConfigurationObjectDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectCommandExecutor.class);
 
@@ -45,15 +45,15 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    private static final List<ConfigurationFlagType> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<ConfigurationFlagType>();
+    private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<ConfigurationFlagTypeDto>();
     static {
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.PO_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_3_ON_P_3_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_4_ON_P_3_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_5_ON_P_3_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_3_ON_PO_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_4_ON_PO_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_5_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_4_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_3_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_4_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE);
     }
 
     @Autowired
@@ -64,10 +64,10 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
-            final ConfigurationObject configurationObject) throws ProtocolAdapterException {
+            final ConfigurationObjectDto configurationObject) throws ProtocolAdapterException {
 
         try {
-            final ConfigurationObject configurationObjectOnDevice = this.retrieveConfigurationObject(conn);
+            final ConfigurationObjectDto configurationObjectOnDevice = this.retrieveConfigurationObject(conn);
 
             final SetParameter setParameter = this.buildSetParameter(configurationObject, configurationObjectOnDevice);
 
@@ -77,8 +77,8 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         }
     }
 
-    private SetParameter buildSetParameter(final ConfigurationObject configurationObject,
-            final ConfigurationObject configurationObjectOnDevice) {
+    private SetParameter buildSetParameter(final ConfigurationObjectDto configurationObject,
+            final ConfigurationObjectDto configurationObjectOnDevice) {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
         final DataObject complexData = this.buildSetParameterData(configurationObject, configurationObjectOnDevice);
@@ -87,13 +87,13 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return new SetParameter(configurationObjectValue, complexData);
     }
 
-    private DataObject buildSetParameterData(final ConfigurationObject configurationObject,
-            final ConfigurationObject configurationObjectOnDevice) {
+    private DataObject buildSetParameterData(final ConfigurationObjectDto configurationObject,
+            final ConfigurationObjectDto configurationObjectOnDevice) {
 
         final List<DataObject> linkedList = new LinkedList<DataObject>();
-        if (GprsOperationModeType.ALWAYS_ON.equals(configurationObject.getGprsOperationMode())) {
+        if (GprsOperationModeTypeDto.ALWAYS_ON.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(1));
-        } else if (GprsOperationModeType.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
+        } else if (GprsOperationModeTypeDto.TRIGGERED.equals(configurationObject.getGprsOperationMode())) {
             linkedList.add(DataObject.newEnumerateData(0));
         } else {
             // copy from meter if there is a set gprsoperationmode
@@ -116,9 +116,9 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
      * meter (2) flag settings not present in the request are copied from the
      * flag settings on the meter
      */
-    private BitString getMergedFlags(final ConfigurationObject configurationObject,
-            final ConfigurationObject configurationObjectOnDevice) {
-        final List<ConfigurationFlag> configurationFlags = this.getNewFlags(configurationObject);
+    private BitString getMergedFlags(final ConfigurationObjectDto configurationObject,
+            final ConfigurationObjectDto configurationObjectOnDevice) {
+        final List<ConfigurationFlagDto> configurationFlags = this.getNewFlags(configurationObject);
         this.mergeOldFlags(configurationObjectOnDevice, configurationFlags);
 
         final byte[] newConfigurationObjectFlagsByteArray = this.configurationObjectHelperService
@@ -127,12 +127,12 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return new BitString(newConfigurationObjectFlagsByteArray, 16);
     }
 
-    private void mergeOldFlags(final ConfigurationObject configurationObjectOnDevice,
-            final List<ConfigurationFlag> configurationFlags) {
+    private void mergeOldFlags(final ConfigurationObjectDto configurationObjectOnDevice,
+            final List<ConfigurationFlagDto> configurationFlags) {
         if (configurationObjectOnDevice != null) {
-            for (final ConfigurationFlag configurationFlagOnDevice : configurationObjectOnDevice
+            for (final ConfigurationFlagDto configurationFlagOnDevice : configurationObjectOnDevice
                     .getConfigurationFlags().getConfigurationFlag()) {
-                final ConfigurationFlag configurationFlag = this.getConfigurationFlag(configurationFlags,
+                final ConfigurationFlagDto configurationFlag = this.getConfigurationFlag(configurationFlags,
                         configurationFlagOnDevice.getConfigurationFlagType());
                 if (configurationFlag == null) {
                     configurationFlags.add(configurationFlagOnDevice);
@@ -141,9 +141,9 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         }
     }
 
-    private List<ConfigurationFlag> getNewFlags(final ConfigurationObject configurationObject) {
-        final List<ConfigurationFlag> configurationFlags = new ArrayList<ConfigurationFlag>();
-        for (final ConfigurationFlag configurationFlag : configurationObject.getConfigurationFlags()
+    private List<ConfigurationFlagDto> getNewFlags(final ConfigurationObjectDto configurationObject) {
+        final List<ConfigurationFlagDto> configurationFlags = new ArrayList<ConfigurationFlagDto>();
+        for (final ConfigurationFlagDto configurationFlag : configurationObject.getConfigurationFlags()
                 .getConfigurationFlag()) {
             if (!this.isForbidden(configurationFlag.getConfigurationFlagType())) {
                 configurationFlags.add(configurationFlag);
@@ -160,8 +160,8 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
      *            the flag to check
      * @return true if the flag is forbidden, else false
      */
-    private boolean isForbidden(final ConfigurationFlagType configurationFlagType) {
-        for (final ConfigurationFlagType forbiddenFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
+    private boolean isForbidden(final ConfigurationFlagTypeDto configurationFlagType) {
+        for (final ConfigurationFlagTypeDto forbiddenFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
             if (forbiddenFlagType.equals(configurationFlagType)) {
                 return true;
             }
@@ -169,9 +169,9 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return false;
     }
 
-    private ConfigurationFlag getConfigurationFlag(final Collection<ConfigurationFlag> flags,
-            final ConfigurationFlagType flagType) {
-        for (final ConfigurationFlag configurationFlag : flags) {
+    private ConfigurationFlagDto getConfigurationFlag(final Collection<ConfigurationFlagDto> flags,
+            final ConfigurationFlagTypeDto flagType) {
+        for (final ConfigurationFlagDto configurationFlag : flags) {
             if (configurationFlag.getConfigurationFlagType().equals(flagType)) {
                 return configurationFlag;
             }
@@ -179,7 +179,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return null;
     }
 
-    private ConfigurationObject retrieveConfigurationObject(final ClientConnection conn) throws IOException,
+    private ConfigurationObjectDto retrieveConfigurationObject(final ClientConnection conn) throws IOException,
     TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress configurationObjectValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -207,7 +207,7 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         return this.getConfigurationObject(getResultList);
     }
 
-    private ConfigurationObject getConfigurationObject(final List<GetResult> resultList)
+    private ConfigurationObjectDto getConfigurationObject(final List<GetResult> resultList)
             throws ProtocolAdapterException {
 
         final DataObject resultData = resultList.get(0).resultData();
@@ -225,11 +225,11 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
             throw new ProtocolAdapterException(
                     "Expected Gprs operation mode data in result while retrieving current configuration object, but got nothing");
         }
-        GprsOperationModeType gprsOperationMode = null;
+        GprsOperationModeTypeDto gprsOperationMode = null;
         if (((Number) gprsOperationModeData.value()).longValue() == 1) {
-            gprsOperationMode = GprsOperationModeType.ALWAYS_ON;
+            gprsOperationMode = GprsOperationModeTypeDto.ALWAYS_ON;
         } else if (((Number) gprsOperationModeData.value()).longValue() == 2) {
-            gprsOperationMode = GprsOperationModeType.TRIGGERED;
+            gprsOperationMode = GprsOperationModeTypeDto.TRIGGERED;
         }
 
         final DataObject flagsData = linkedList.get(1);
@@ -243,9 +243,9 @@ public class SetConfigurationObjectCommandExecutor implements CommandExecutor<Co
         }
         final byte[] flagByteArray = ((BitString) flagsData.value()).bitString();
 
-        final List<ConfigurationFlag> listConfigurationFlag = this.configurationObjectHelperService
+        final List<ConfigurationFlagDto> listConfigurationFlag = this.configurationObjectHelperService
                 .toConfigurationFlags(flagByteArray);
 
-        return new ConfigurationObject(gprsOperationMode, new ConfigurationFlags(listConfigurationFlag));
+        return new ConfigurationObjectDto(gprsOperationMode, new ConfigurationFlagsDto(listConfigurationFlag));
     }
 }

@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +38,7 @@ public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProc
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final SpecialDaysRequest specialDaysRequest = (SpecialDaysRequest) requestObject;
+        final SpecialDaysRequestDto specialDaysRequest = (SpecialDaysRequestDto) requestObject;
 
         this.configurationService.requestSpecialDays(conn, device, specialDaysRequest);
         return null;

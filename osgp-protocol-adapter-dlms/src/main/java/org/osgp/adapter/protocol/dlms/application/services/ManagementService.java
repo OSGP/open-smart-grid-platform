@@ -20,10 +20,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.Event;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainerDto;
 
 @Service(value = "dlmsManagementService")
 public class ManagementService {
@@ -41,15 +41,15 @@ public class ManagementService {
 
     // === FIND EVENTS ===
 
-    public EventMessageDataContainer findEvents(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsQueryMessageDataContainer findEventsQueryMessageDataContainer)
+    public EventMessageDataContainerDto findEvents(final ClientConnection conn, final DlmsDevice device,
+            final FindEventsQueryMessageDataContainerDto findEventsQueryMessageDataContainer)
             throws ProtocolAdapterException {
 
-        final List<Event> events = new ArrayList<>();
+        final List<EventDto> events = new ArrayList<>();
 
         LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
-        for (final FindEventsQuery findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
+        for (final FindEventsQueryDto findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
             LOGGER.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
                     findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                     findEventsQuery.getUntil());
@@ -57,7 +57,7 @@ public class ManagementService {
             events.addAll(this.retrieveEventsCommandExecutor.execute(conn, device, findEventsQuery));
         }
 
-        return new EventMessageDataContainer(events);
+        return new EventMessageDataContainerDto(events);
     }
 
 }

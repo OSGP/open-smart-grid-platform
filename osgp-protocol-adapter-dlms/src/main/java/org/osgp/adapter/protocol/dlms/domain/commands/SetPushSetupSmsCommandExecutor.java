@@ -23,18 +23,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSms;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 
 @Component()
 public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupSms, AccessResultCode> {
+CommandExecutor<PushSetupSmsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
-            final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
+            final PushSetupSmsDto pushSetupSms) throws ProtocolAdapterException {
 
         final SetParameter setParameterSendDestinationAndMethod = this.getSetParameter(pushSetupSms);
 
@@ -51,7 +51,7 @@ CommandExecutor<PushSetupSms, AccessResultCode> {
         }
     }
 
-    private SetParameter getSetParameter(final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
+    private SetParameter getSetParameter(final PushSetupSmsDto pushSetupSms) throws ProtocolAdapterException {
 
         this.checkPushSetupSms(pushSetupSms);
 
@@ -62,7 +62,7 @@ CommandExecutor<PushSetupSms, AccessResultCode> {
 
     }
 
-    private void checkPushSetupSms(final PushSetupSms pushSetupSms) throws ProtocolAdapterException {
+    private void checkPushSetupSms(final PushSetupSmsDto pushSetupSms) throws ProtocolAdapterException {
         if (!pushSetupSms.hasSendDestinationAndMethod()) {
             LOGGER.error("Send Destination and Method of the Push Setup Sms is expected to be set.");
             throw new ProtocolAdapterException("Error setting Sms push setup data. No destination and method data");

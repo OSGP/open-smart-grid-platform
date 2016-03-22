@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
 @Component()
-public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<Void, AdministrativeStatusType> {
+public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<Void, AdministrativeStatusTypeDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusCommandExecutor.class);
 
@@ -40,7 +40,7 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
     private ConfigurationMapper configurationMapper;
 
     @Override
-    public AdministrativeStatusType execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
+    public AdministrativeStatusTypeDto execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         final AttributeAddress getParameter = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -70,6 +70,6 @@ public class GetAdministrativeStatusCommandExecutor implements CommandExecutor<V
             throw new ProtocolAdapterException("Received unexpected result data.");
         }
 
-        return this.configurationMapper.map((Integer) dataObject.value(), AdministrativeStatusType.class);
+        return this.configurationMapper.map((Integer) dataObject.value(), AdministrativeStatusTypeDto.class);
     }
 }

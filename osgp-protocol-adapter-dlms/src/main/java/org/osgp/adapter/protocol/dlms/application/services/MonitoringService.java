@@ -21,10 +21,10 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegister;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Service(value = "dlmsDeviceMonitoringService")
 public class MonitoringService {
@@ -53,7 +53,7 @@ public class MonitoringService {
     // === REQUEST PERIODIC METER DATA ===
 
     public Serializable requestPeriodicMeterReads(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQuery periodicMeterReadsQuery) throws ProtocolAdapterException {
+            final PeriodicMeterReadsQueryDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
         if (periodicMeterReadsQuery.isMbusQuery()) {
@@ -67,7 +67,7 @@ public class MonitoringService {
     }
 
     public Serializable requestActualMeterReads(final ClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsQuery actualMeterReadsRequest) throws ProtocolAdapterException {
+            final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
         Serializable response = null;
         if (actualMeterReadsRequest.isMbusQuery()) {
@@ -79,8 +79,8 @@ public class MonitoringService {
         return response;
     }
 
-    public AlarmRegister requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
-            final ReadAlarmRegisterRequest readAlarmRegisterRequest) throws ProtocolAdapterException {
+    public AlarmRegisterDto requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
+            final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
     }

@@ -31,12 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotification;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotifications;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 
 @Component()
-public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<AlarmNotifications, AccessResultCode> {
+public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<AlarmNotificationsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsCommandExecutor.class);
 
@@ -55,41 +55,41 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
      * object are not used according to the DSMR documentation, the practical
      * meaningful most significant bit is bit 27.
      */
-    private static final Map<AlarmType, Integer> alarmRegisterBitIndexPerAlarmType;
+    private static final Map<AlarmTypeDto, Integer> alarmRegisterBitIndexPerAlarmType;
 
     static {
-        final Map<AlarmType, Integer> map = new EnumMap<>(AlarmType.class);
+        final Map<AlarmTypeDto, Integer> map = new EnumMap<>(AlarmTypeDto.class);
 
         // Bits for group: Other Alarms
-        map.put(AlarmType.CLOCK_INVALID, 0);
-        map.put(AlarmType.REPLACE_BATTERY, 1);
-        map.put(AlarmType.POWER_UP, 2);
+        map.put(AlarmTypeDto.CLOCK_INVALID, 0);
+        map.put(AlarmTypeDto.REPLACE_BATTERY, 1);
+        map.put(AlarmTypeDto.POWER_UP, 2);
         // bits 3 to 7 are not used
 
         // Bits for group: Critical Alarms
-        map.put(AlarmType.PROGRAM_MEMORY_ERROR, 8);
-        map.put(AlarmType.RAM_ERROR, 9);
-        map.put(AlarmType.NV_MEMORY_ERROR, 10);
-        map.put(AlarmType.MEASUREMENT_SYSTEM_ERROR, 11);
-        map.put(AlarmType.WATCHDOG_ERROR, 12);
-        map.put(AlarmType.FRAUD_ATTEMPT, 13);
+        map.put(AlarmTypeDto.PROGRAM_MEMORY_ERROR, 8);
+        map.put(AlarmTypeDto.RAM_ERROR, 9);
+        map.put(AlarmTypeDto.NV_MEMORY_ERROR, 10);
+        map.put(AlarmTypeDto.MEASUREMENT_SYSTEM_ERROR, 11);
+        map.put(AlarmTypeDto.WATCHDOG_ERROR, 12);
+        map.put(AlarmTypeDto.FRAUD_ATTEMPT, 13);
         // bits 14 and 15 are not used
 
         // Bits for group: M-Bus Alarms
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_1, 16);
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_2, 17);
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_3, 18);
-        map.put(AlarmType.COMMUNICATION_ERROR_M_BUS_CHANNEL_4, 19);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_1, 20);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_2, 21);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_3, 22);
-        map.put(AlarmType.FRAUD_ATTEMPT_M_BUS_CHANNEL_4, 23);
+        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_1, 16);
+        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_2, 17);
+        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_3, 18);
+        map.put(AlarmTypeDto.COMMUNICATION_ERROR_M_BUS_CHANNEL_4, 19);
+        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_1, 20);
+        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_2, 21);
+        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_3, 22);
+        map.put(AlarmTypeDto.FRAUD_ATTEMPT_M_BUS_CHANNEL_4, 23);
 
         // Bits for group: Reserved
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1, 24);
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2, 25);
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3, 26);
-        map.put(AlarmType.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4, 27);
+        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1, 24);
+        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2, 25);
+        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3, 26);
+        map.put(AlarmTypeDto.NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4, 27);
         // bits 28 to 31 are not used
 
         alarmRegisterBitIndexPerAlarmType = Collections.unmodifiableMap(map);
@@ -97,10 +97,10 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
-            final AlarmNotifications alarmNotifications) throws ProtocolAdapterException {
+            final AlarmNotificationsDto alarmNotifications) throws ProtocolAdapterException {
 
         try {
-            final AlarmNotifications alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
+            final AlarmNotificationsDto alarmNotificationsOnDevice = this.retrieveCurrentAlarmNotifications(conn);
 
             LOGGER.info("Alarm Filter on device before setting notifications: {}", alarmNotificationsOnDevice);
 
@@ -115,7 +115,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         }
     }
 
-    public AlarmNotifications retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
+    public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
     TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
@@ -148,7 +148,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         return conn.set(setParameter).get(0);
     }
 
-    public AlarmNotifications alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
+    public AlarmNotificationsDto alarmNotifications(final DataObject alarmFilter) throws ProtocolAdapterException {
 
         if (alarmFilter == null) {
             throw new ProtocolAdapterException("DataObject expected to contain an alarm filter is null.");
@@ -167,8 +167,8 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
     }
 
-    public long calculateAlarmFilterLongValue(final AlarmNotifications alarmNotificationsOnDevice,
-            final AlarmNotifications alarmNotificationsToSet) {
+    public long calculateAlarmFilterLongValue(final AlarmNotificationsDto alarmNotificationsOnDevice,
+            final AlarmNotificationsDto alarmNotificationsToSet) {
 
         /*
          * Create a new (modifyable) set of alarm notifications, based on the
@@ -184,32 +184,32 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
          * setting per AlarmType.
          */
 
-        final Set<AlarmNotification> notificationsToSet = new TreeSet<>(alarmNotificationsToSet.getAlarmNotifications());
+        final Set<AlarmNotificationDto> notificationsToSet = new TreeSet<>(alarmNotificationsToSet.getAlarmNotifications());
 
         notificationsToSet.addAll(alarmNotificationsOnDevice.getAlarmNotifications());
 
-        return this.alarmFilterLongValue(new AlarmNotifications(notificationsToSet));
+        return this.alarmFilterLongValue(new AlarmNotificationsDto(notificationsToSet));
     }
 
-    public AlarmNotifications alarmNotifications(final long alarmFilterLongValue) {
+    public AlarmNotificationsDto alarmNotifications(final long alarmFilterLongValue) {
 
         final BitSet bitSet = BitSet.valueOf(new long[] { alarmFilterLongValue });
-        final Set<AlarmNotification> notifications = new TreeSet<>();
+        final Set<AlarmNotificationDto> notifications = new TreeSet<>();
 
-        final AlarmType[] alarmTypes = AlarmType.values();
-        for (final AlarmType alarmType : alarmTypes) {
+        final AlarmTypeDto[] alarmTypes = AlarmTypeDto.values();
+        for (final AlarmTypeDto alarmType : alarmTypes) {
             final boolean enabled = bitSet.get(alarmRegisterBitIndexPerAlarmType.get(alarmType));
-            notifications.add(new AlarmNotification(alarmType, enabled));
+            notifications.add(new AlarmNotificationDto(alarmType, enabled));
         }
 
-        return new AlarmNotifications(notifications);
+        return new AlarmNotificationsDto(notifications);
     }
 
-    public long alarmFilterLongValue(final AlarmNotifications alarmNotifications) {
+    public long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
 
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
-        final Set<AlarmNotification> notifications = alarmNotifications.getAlarmNotifications();
-        for (final AlarmNotification alarmNotification : notifications) {
+        final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotifications();
+        for (final AlarmNotificationDto alarmNotification : notifications) {
             bitSet.set(alarmRegisterBitIndexPerAlarmType.get(alarmNotification.getAlarmType()),
                     alarmNotification.isEnabled());
         }

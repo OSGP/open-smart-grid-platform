@@ -14,12 +14,12 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKey;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
-public class DeviceConverter extends BidirectionalConverter<SmartMeteringDevice, DlmsDevice> {
+public class DeviceConverter extends BidirectionalConverter<SmartMeteringDeviceDto, DlmsDevice> {
 
     @Override
-    public DlmsDevice convertTo(final SmartMeteringDevice source, final Type<DlmsDevice> destinationType) {
+    public DlmsDevice convertTo(final SmartMeteringDeviceDto source, final Type<DlmsDevice> destinationType) {
         final DlmsDevice dlmsDevice = new DlmsDevice();
         dlmsDevice.setDeviceIdentification(source.getDeviceIdentification());
         dlmsDevice.setCommunicationMethod(source.getCommunicationMethod());
@@ -48,7 +48,7 @@ public class DeviceConverter extends BidirectionalConverter<SmartMeteringDevice,
     }
 
     @Override
-    public SmartMeteringDevice convertFrom(final DlmsDevice source, final Type<SmartMeteringDevice> destinationType) {
+    public SmartMeteringDeviceDto convertFrom(final DlmsDevice source, final Type<SmartMeteringDeviceDto> destinationType) {
         throw new UnsupportedOperationException("convertFrom of class DeviceConverter is not implemented.");
     }
 

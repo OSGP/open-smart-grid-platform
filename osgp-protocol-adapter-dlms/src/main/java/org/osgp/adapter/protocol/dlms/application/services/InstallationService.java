@@ -13,7 +13,7 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDevice;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
 @Service(value = "dlmsInstallationService")
 public class InstallationService {
@@ -25,7 +25,7 @@ public class InstallationService {
     private InstallationMapper installationMapper;
 
     // === ADD METER ===
-    public void addMeter(final SmartMeteringDevice smartMeteringDevice) {
+    public void addMeter(final SmartMeteringDeviceDto smartMeteringDevice) {
         final DlmsDevice dlmsDevice = this.installationMapper.map(smartMeteringDevice, DlmsDevice.class);
         this.dlmsDeviceRepository.save(dlmsDevice);
     }

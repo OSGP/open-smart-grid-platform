@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
 @Component()
 public class SetAdministrativeStatusCommandExecutor implements
-        CommandExecutor<AdministrativeStatusType, AccessResultCode> {
+        CommandExecutor<AdministrativeStatusTypeDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusCommandExecutor.class);
 
@@ -41,7 +41,7 @@ public class SetAdministrativeStatusCommandExecutor implements
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
-            final AdministrativeStatusType administrativeStatusType) throws ProtocolAdapterException {
+            final AdministrativeStatusTypeDto administrativeStatusType) throws ProtocolAdapterException {
 
         LOGGER.info(
                 "Set administrative status by issuing get request for class id: {}, obis code: {}, attribute id: {}",

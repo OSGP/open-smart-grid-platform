@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -38,7 +38,7 @@ public class SetActivityCalendarRequestMessageProcessor extends DeviceRequestMes
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final ActivityCalendar activityCalendarDto = (ActivityCalendar) requestObject;
+        final ActivityCalendarDto activityCalendarDto = (ActivityCalendarDto) requestObject;
 
         return this.configurationService.setActivityCalendar(conn, device, activityCalendarDto);
     }

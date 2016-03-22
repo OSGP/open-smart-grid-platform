@@ -41,11 +41,11 @@ import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlag;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagType;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlags;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObject;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetConfigurationObjectCommandExecutorTest {
@@ -58,15 +58,15 @@ public class SetConfigurationObjectCommandExecutorTest {
     private static final ObisCode OBIS_CODE = new ObisCode("0.1.94.31.3.255");
     private static final int ATTRIBUTE_ID = 2;
 
-    private static final List<ConfigurationFlagType> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<ConfigurationFlagType>();
+    private static final List<ConfigurationFlagTypeDto> FLAGS_TYPES_FORBIDDEN_TO_SET = new ArrayList<ConfigurationFlagTypeDto>();
     static {
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.PO_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_3_ON_P_3_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_4_ON_P_3_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_5_ON_P_3_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_3_ON_PO_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_4_ON_PO_ENABLE);
-        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagType.HLS_5_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_3_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_4_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_5_ON_P_3_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_3_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_4_ON_PO_ENABLE);
+        FLAGS_TYPES_FORBIDDEN_TO_SET.add(ConfigurationFlagTypeDto.HLS_5_ON_PO_ENABLE);
     }
 
     @Mock
@@ -107,9 +107,9 @@ public class SetConfigurationObjectCommandExecutorTest {
             DecoderException {
 
         // Prepare new configuration object list to be set
-        final List<ConfigurationFlag> configurationFlagList = this.getAllForbiddenFlags();
-        final ConfigurationFlags configurationFlags = new ConfigurationFlags(configurationFlagList);
-        final ConfigurationObject configurationObject = new ConfigurationObject(GprsOperationModeType.ALWAYS_ON,
+        final List<ConfigurationFlagDto> configurationFlagList = this.getAllForbiddenFlags();
+        final ConfigurationFlagsDto configurationFlags = new ConfigurationFlagsDto(configurationFlagList);
+        final ConfigurationObjectDto configurationObject = new ConfigurationObjectDto(GprsOperationModeTypeDto.ALWAYS_ON,
                 configurationFlags);
 
         // Mock the retrieval of the current ConfigurationObject
@@ -174,11 +174,11 @@ public class SetConfigurationObjectCommandExecutorTest {
         return device;
     }
 
-    private List<ConfigurationFlag> getAllForbiddenFlags() {
-        final List<ConfigurationFlag> listOfConfigurationFlags = new ArrayList<ConfigurationFlag>();
+    private List<ConfigurationFlagDto> getAllForbiddenFlags() {
+        final List<ConfigurationFlagDto> listOfConfigurationFlags = new ArrayList<ConfigurationFlagDto>();
 
-        for (final ConfigurationFlagType confFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
-            listOfConfigurationFlags.add(new ConfigurationFlag(confFlagType, false));
+        for (final ConfigurationFlagTypeDto confFlagType : FLAGS_TYPES_FORBIDDEN_TO_SET) {
+            listOfConfigurationFlags.add(new ConfigurationFlagDto(confFlagType, false));
         }
         return listOfConfigurationFlags;
 
