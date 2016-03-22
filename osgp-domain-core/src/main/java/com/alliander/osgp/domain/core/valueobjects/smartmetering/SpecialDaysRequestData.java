@@ -17,7 +17,7 @@ public class SpecialDaysRequestData implements Serializable {
 
     private static final long serialVersionUID = -5161574052268470981L;
 
-    private final List<SpecialDay> specialDays;
+    private List<SpecialDay> specialDays;
 
     public SpecialDaysRequestData(final List<SpecialDay> specialDays) {
         super();
@@ -26,6 +26,10 @@ public class SpecialDaysRequestData implements Serializable {
 
     public List<SpecialDay> getSpecialDays() {
         return this.specialDays;
+    }
+
+    public void setSpecialDays(final List<SpecialDay> specialDays) {
+        this.specialDays = specialDays;
     }
 
 }

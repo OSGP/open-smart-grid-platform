@@ -16,7 +16,7 @@ public class AlarmNotifications implements Serializable {
 
     private static final long serialVersionUID = 2319359505656305783L;
 
-    private final Set<AlarmNotification> alarmNotifications;
+    private Set<AlarmNotification> alarmNotifications;
 
     public AlarmNotifications(final Set<AlarmNotification> alarmNotifications) {
         this.alarmNotifications = new TreeSet<AlarmNotification>(alarmNotifications);
@@ -29,5 +29,10 @@ public class AlarmNotifications implements Serializable {
 
     public Set<AlarmNotification> getAlarmNotifications() {
         return Collections.unmodifiableSet(this.alarmNotifications);
+
+    }
+
+    public void setAlarmNotifications(final Set<AlarmNotification> alarmNotifications) {
+        this.alarmNotifications = alarmNotifications;
     }
 }

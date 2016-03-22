@@ -41,6 +41,10 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         return Collections.unmodifiableList(this.seasonProfileList);
     }
 
+    public void setSeasonProfileList(final List<SeasonProfile> seasonProfileList) {
+        this.seasonProfileList = seasonProfileList;
+    }
+
     @Override
     public String toString() {
         return "ActivityCalendar [calendarName=" + this.calendarName + ", seasonProfileList=" + this.seasonProfileList
