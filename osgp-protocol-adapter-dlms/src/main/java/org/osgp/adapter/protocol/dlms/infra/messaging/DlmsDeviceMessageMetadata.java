@@ -7,6 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
+import java.util.Date;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -29,14 +31,15 @@ public class DlmsDeviceMessageMetadata {
     private String ipAddress;
     private int retryCount;
     private int messagePriority;
+    private Date scheduleTime;
 
     @Override
     public String toString() {
         return String
-                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d]",
+                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d, scheduleTimes=%s]",
                         this.correlationUid, this.domain, this.domainVersion, this.messageType,
                         this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.retryCount,
-                        this.messagePriority);
+                        this.messagePriority, this.scheduleTime);
     }
 
     /**
@@ -54,6 +57,7 @@ public class DlmsDeviceMessageMetadata {
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
+        this.scheduleTime = (Date) message.getObjectProperty(Constants.SCHEDULE_TIME);
         this.messagePriority = message.getJMSPriority();
     }
 
@@ -125,10 +129,14 @@ public class DlmsDeviceMessageMetadata {
         this.retryCount = retryCount;
     }
 
+    public Date getScheduleTime() {
+        return this.scheduleTime;
+    }
+
     public DeviceMessageMetadata asDeviceMessageMetadata() {
 
         return new DeviceMessageMetadata(this.getDeviceIdentification(), this.getOrganisationIdentification(),
-                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority());
+                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority(), this.getScheduleTime());
 
     }
 }
