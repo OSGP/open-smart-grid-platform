@@ -133,6 +133,8 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         responseMessageSender.send(responseMessage);
     }
 
+
+
     // protected void handleScheduledEmptyDeviceResponse(final DeviceResponse
     // deviceResponse,
     // final ResponseMessageSender responseMessageSender, final String domain,
