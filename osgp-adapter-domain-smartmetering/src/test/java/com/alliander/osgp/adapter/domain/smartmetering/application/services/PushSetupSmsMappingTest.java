@@ -83,7 +83,7 @@ public class PushSetupSmsMappingTest {
 
     // To test Mapping if lists contain values
     @Test
-    public void testPushSetupAlarmMappingWithLists() {
+    public void testPushSetupSmsMappingWithLists() {
 
         // build test data
         final PushSetupSms pushSetupSms = new PushSetupSmsBuilder().withLists().build();
