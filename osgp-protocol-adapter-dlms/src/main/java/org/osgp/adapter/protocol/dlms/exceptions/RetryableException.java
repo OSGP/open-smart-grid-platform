@@ -7,27 +7,28 @@
  */
 package org.osgp.adapter.protocol.dlms.exceptions;
 
-public class ConnectionException extends RetryableException {
-    private static final long serialVersionUID = -4527258679522467801L;
+public abstract class RetryableException extends RuntimeException {
 
-    public ConnectionException() {
+    private static final long serialVersionUID = 5671612098681860147L;
+
+    public RetryableException() {
         super();
     }
 
-    public ConnectionException(final String message, final Throwable cause, final boolean enableSuppression,
+    public RetryableException(final String message, final Throwable cause, final boolean enableSuppression,
             final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public ConnectionException(final String message, final Throwable cause) {
+    public RetryableException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public ConnectionException(final String message) {
+    public RetryableException(final String message) {
         super(message);
     }
 
-    public ConnectionException(final Throwable cause) {
+    public RetryableException(final Throwable cause) {
         super(cause);
     }
 }
