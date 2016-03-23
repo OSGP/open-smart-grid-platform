@@ -9,6 +9,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -17,6 +19,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSmsDetailsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSmsDetailsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetSmsDetailsRequest;
@@ -56,8 +59,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SynchronizeTimeAsyncResponse synchronizeTime(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SynchronizeTimeRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+            @RequestPayload final SynchronizeTimeRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final Date scheduleTime) throws OsgpException {
 
         final SynchronizeTimeAsyncResponse response = new SynchronizeTimeAsyncResponse();
 
@@ -66,7 +69,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         final String correlationUid = this.adhocService.enqueueSynchronizeTimeRequest(organisationIdentification,
                 synchronizeTimeRequest.getDeviceIdentification(), synchronizeTimeRequest,
-                MessagePriorityEnum.getMessagePriority(messagePriority));
+                MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -100,14 +103,15 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public SendWakeupSmsAsyncResponse sendWakeupSms(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final SendWakeupSmsRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+            @RequestPayload final SendWakeupSmsRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final Date scheduleTime) throws OsgpException {
 
         final SendWakeupSmsAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
         .createSendWakeupSmsAsyncResponse();
 
         final String correlationUid = this.adhocService.enqueueSendWakeUpSmsRequest(organisationIdentification,
-                request.getDeviceIdentification(), MessagePriorityEnum.getMessagePriority(messagePriority));
+                request.getDeviceIdentification(), MessagePriorityEnum.getMessagePriority(messagePriority),
+                scheduleTime);
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -146,8 +150,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public GetSmsDetailsAsyncResponse getSmsDetails(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final GetSmsDetailsRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+            @RequestPayload final GetSmsDetailsRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final Date scheduleTime) throws OsgpException {
 
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails smsDetails = this.adhocMapper.map(
                 request.getSmsDetails(), com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails.class);
@@ -157,7 +161,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         final String correlationUid = this.adhocService.enqueueGetSmsDetailsRequest(organisationIdentification,
                 smsDetails.getDeviceIdentification(), smsDetails,
-                MessagePriorityEnum.getMessagePriority(messagePriority));
+                MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(smsDetails.getDeviceIdentification());
@@ -196,7 +200,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
     public RetrieveConfigurationObjectsAsyncResponse retrieveConfigurationObjects(
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RetrieveConfigurationObjectsRequest request,
-            @MessagePriority final String messagePriority) throws OsgpException {
+            @MessagePriority final String messagePriority, @ScheduleTime final Date scheduleTime) throws OsgpException {
 
         final RetrieveConfigurationObjectsAsyncResponse response = new RetrieveConfigurationObjectsAsyncResponse();
 
@@ -205,7 +209,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         final String correlationUid = this.adhocService.enqueueRetrieveConfigurationObjectsRequest(
                 organisationIdentification, retrieveConfigurationObjectsRequest.getDeviceIdentification(),
-                retrieveConfigurationObjectsRequest, MessagePriorityEnum.getMessagePriority(messagePriority));
+                retrieveConfigurationObjectsRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                scheduleTime);
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());

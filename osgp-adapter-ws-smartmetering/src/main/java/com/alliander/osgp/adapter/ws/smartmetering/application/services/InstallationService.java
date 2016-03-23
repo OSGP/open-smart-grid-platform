@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public class InstallationService {
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SmartMeteringDevice device,
-            final int messagePriority) {
+            final int messagePriority, final Date scheduleTime) {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -53,13 +55,11 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ADD_METER.toString(),
-                messagePriority);
+                messagePriority,scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .request(device)
-        .build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);

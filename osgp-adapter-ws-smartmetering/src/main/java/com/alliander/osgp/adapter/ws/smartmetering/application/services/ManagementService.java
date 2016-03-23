@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -72,7 +73,8 @@ public class ManagementService {
     }
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<FindEventsQuery> findEventsQueryList, final int messagePriority) throws FunctionalException {
+            final List<FindEventsQuery> findEventsQueryList, final int messagePriority, final Date scheduleTime)
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -93,13 +95,12 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.FIND_EVENTS.toString(),
-                messagePriority);
+                messagePriority,scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .request(new FindEventsQueryMessageDataContainer(findEventsQueryList))
-        .build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new FindEventsQueryMessageDataContainer(findEventsQueryList)).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
