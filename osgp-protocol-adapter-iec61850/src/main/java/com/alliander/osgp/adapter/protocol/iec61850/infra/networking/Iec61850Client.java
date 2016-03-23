@@ -167,7 +167,7 @@ public class Iec61850Client implements ClientEventListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.openmuc.openiec61850.ClientEventListener#newReport(org.openmuc.
      * openiec61850.Report)
      */
@@ -178,7 +178,7 @@ public class Iec61850Client implements ClientEventListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.openmuc.openiec61850.ClientEventListener#associationClosed(java.io
      * .IOException)
@@ -329,6 +329,7 @@ public class Iec61850Client implements ClientEventListener {
             output = function.apply();
         } catch (final ServiceError e) {
             // Service exception means we have to retry
+            LOGGER.error("Caught ServiceError, retrying", e);
             this.sendCommandWithRetry(function, 0);
         } catch (final Exception e) {
             throw new ProtocolAdapterException("Could not execute command", e);

@@ -52,8 +52,10 @@ public class Iec61850DeviceConnectionService {
                 }
             }
         } catch (final Exception e) {
-            LOGGER.error("Unexpected exception while trying to find a cached connection for deviceIdentification: {}",
-                    deviceIdentification);
+            LOGGER.error(String.format(
+                    "Unexpected exception while trying to find a cached connection for deviceIdentification: %s",
+                    deviceIdentification), e);
+
         }
 
         final InetAddress inetAddress = this.convertIpAddress(ipAddress);
