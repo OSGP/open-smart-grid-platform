@@ -8,6 +8,7 @@
 package com.alliander.osgp.core.application.services;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.jms.JMSException;
 
@@ -38,8 +39,8 @@ public class DeviceResponseMessageService {
 
     // The array of exceptions which have to be retried.
     private static final String[] RETRY_EXCEPTIONS = { "Unable to connect", "ConnectException",
-            "Failed to receive response within timelimit", "Timeout waiting for",
-            "Connection closed by remote host while waiting for association response" };
+        "Failed to receive response within timelimit", "Timeout waiting for",
+    "Connection closed by remote host while waiting for association response" };
 
     @Autowired
     private DomainResponseService domainResponseMessageSender;
@@ -60,18 +61,12 @@ public class DeviceResponseMessageService {
         LOGGER.info("Processing protocol response message with correlation uid [{}]", message.getCorrelationUid());
 
         try {
-            if (this.shouldRetryBasedOnMessage(message)) {
-                LOGGER.info("Retrying: {} for {} time", message.getMessageType(), message.getRetryCount() + 1);
-                final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
-                this.deviceRequestMessageService.processMessage(protocolRequestMessage);
+            if (message.isScheduled()) {
+                LOGGER.info("Handling scheduled protocol response message.");
+                this.handleScheduleTask(message);
             } else {
-                if (message.isScheduled()) {
-                    LOGGER.info("Handling scheduled protocol response message.");
-                    this.handleScheduleTask(message);
-                } else {
-                    LOGGER.info("Sending domain response message.");
-                    this.domainResponseMessageSender.send(message);
-                }
+                LOGGER.info("Handling protocol response message.");
+                this.handleProtocolResponseMessage(message);
             }
         } catch (JMSException | FunctionalException e) {
             LOGGER.error("Exception: {}, StackTrace: {}", e.getMessage(), e.getStackTrace(), e);
@@ -135,12 +130,37 @@ public class DeviceResponseMessageService {
             scheduledTask.setComplete();
             // TODO:delete the completed schedule from the database
             // this.scheduledTaskRepository.delete(scheduledTask)
+
+            this.domainResponseMessageSender.send(message);
         } else {
             final String errorMessage = message.getOsgpException() == null ? "" : message.getOsgpException().getCause()
                     .getMessage();
             scheduledTask.setFailed(errorMessage);
+
+            if (message.getRetryHeader().shouldRetry()) {
+                scheduledTask.setRetry(message.getRetryHeader().getScheduledRetryTime());
+            } else {
+                this.domainResponseMessageSender.send(message);
+            }
         }
         this.scheduledTaskRepository.save(scheduledTask);
+    }
+
+    private void handleProtocolResponseMessage(final ProtocolResponseMessage message) throws FunctionalException,
+    JMSException {
+        if (message.getRetryHeader().shouldRetry()) {
+            // Create scheduled task for retries.
+            final ScheduledTask task = this.createScheduledRetryTask(message);
+            this.scheduledTaskRepository.save(task);
+        } else if (this.shouldRetryBasedOnMessage(message)) {
+            // Immediate retry based on error message. Should be deprecated.
+            LOGGER.info("Retrying: {} for {} time", message.getMessageType(), message.getRetryCount() + 1);
+            final ProtocolRequestMessage protocolRequestMessage = this.createProtocolRequestMessage(message);
+            this.deviceRequestMessageService.processMessage(protocolRequestMessage);
+        } else {
+            LOGGER.info("Sending domain response message.");
+            this.domainResponseMessageSender.send(message);
+        }
     }
 
     private ProtocolRequestMessage createProtocolRequestMessage(final ProtocolResponseMessage message)
@@ -151,17 +171,22 @@ public class DeviceResponseMessageService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
 
-        // @formatter:off
-        return new ProtocolRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .domain(message.getDomain())
-        .domainVersion(message.getDomainVersion())
-        .ipAddress(device.getIpAddress())
-        .request(messageData)
-        .scheduled(message.isScheduled())
-        .retryCount(message.getRetryCount() + 1)
-        .build();
-        // @formatter:on
+        return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+                .domain(message.getDomain()).domainVersion(message.getDomainVersion()).ipAddress(device.getIpAddress())
+                .request(messageData).scheduled(message.isScheduled()).retryCount(message.getRetryCount() + 1).build();
+    }
 
+    private ScheduledTask createScheduledRetryTask(final ProtocolResponseMessage message) throws JMSException {
+
+        final Serializable messageData = message.getDataObject();
+        final Timestamp scheduleTimeStamp = new Timestamp(message.getRetryHeader().getScheduledRetryTime().getTime());
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(message);
+
+        final ScheduledTask task = new ScheduledTask(deviceMessageMetadata, message.getDomain(),
+                message.getDomainVersion(), messageData, scheduleTimeStamp, message.getRetryHeader().getMaxRetries());
+        task.setRetry(scheduleTimeStamp);
+
+        return task;
     }
 }

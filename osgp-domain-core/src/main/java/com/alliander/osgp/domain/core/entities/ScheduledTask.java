@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -63,6 +64,12 @@ public class ScheduledTask extends AbstractEntity {
     @Column(name = "messagepriority")
     private Integer messagePriority;
 
+    @Column(name = "max_retries")
+    private int maxRetries;
+
+    @Column(name = "retries")
+    private int retries;
+
     @SuppressWarnings("unused")
     private ScheduledTask() {
 
@@ -81,6 +88,16 @@ public class ScheduledTask extends AbstractEntity {
         this.messageData = messageData;
         this.scheduledTime = (Timestamp) scheduledTime.clone();
         this.status = ScheduledTaskStatusType.NEW;
+        this.maxRetries = 0;
+        this.retries = 0;
+    }
+
+    public ScheduledTask(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
+            final String domainVersion, final Serializable messageData, final Timestamp scheduledTime,
+            final int maxRetries) {
+
+        this(deviceMessageMetadata, domain, domainVersion, messageData, scheduledTime);
+        this.maxRetries = maxRetries;
     }
 
     // public static
@@ -125,6 +142,10 @@ public class ScheduledTask extends AbstractEntity {
         return this.messagePriority;
     }
 
+    public int getRetries() {
+        return this.retries;
+    }
+
     public ScheduledTaskStatusType getStatus() {
         return this.status;
     }
@@ -140,6 +161,11 @@ public class ScheduledTask extends AbstractEntity {
 
     public void setComplete() {
         this.status = ScheduledTaskStatusType.COMPLETE;
+    }
+
+    public void setRetry(final Date retryTime) {
+        this.retries++;
+        this.status = ScheduledTaskStatusType.RETRY;
     }
 
     @Override

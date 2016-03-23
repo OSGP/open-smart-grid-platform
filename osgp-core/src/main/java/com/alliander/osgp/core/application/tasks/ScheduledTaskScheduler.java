@@ -43,10 +43,15 @@ public class ScheduledTaskScheduler implements Runnable {
     public void run() {
         LOGGER.info("Processing scheduled tasks");
 
+        this.processScheduledTasks(ScheduledTaskStatusType.NEW);
+        this.processScheduledTasks(ScheduledTaskStatusType.RETRY);
+    }
+
+    private void processScheduledTasks(final ScheduledTaskStatusType type) {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         final List<ScheduledTask> scheduledTasks = this.scheduledTaskRepository.findByStatusAndScheduledTimeLessThan(
-                ScheduledTaskStatusType.NEW, timestamp);
+                type, timestamp);
 
         for (ScheduledTask scheduledTask : scheduledTasks) {
             LOGGER.info("Processing scheduled task for device [{}] to perform [{}]  ",
@@ -72,14 +77,10 @@ public class ScheduledTaskScheduler implements Runnable {
                 scheduledTask.getCorrelationId(), scheduledTask.getMessageType(), scheduledTask.getMessagePriority());
 
         // @formatter:off
-        return new ProtocolRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .domain(scheduledTask.getDomain())
-        .domainVersion(scheduledTask.getDomainVersion())
-        .ipAddress(device.getNetworkAddress().getHostAddress())
-        .request(scheduledTask.getMessageData())
-        .scheduled(true)
-        .build();
+        return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+                .domain(scheduledTask.getDomain()).domainVersion(scheduledTask.getDomainVersion())
+                .ipAddress(device.getNetworkAddress().getHostAddress()).request(scheduledTask.getMessageData())
+                .retryCount(scheduledTask.getRetries()).scheduled(true).build();
         // @formatter:on
 
     }

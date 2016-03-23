@@ -82,14 +82,8 @@ public class DomainRequestMessageListener implements MessageListener {
         final String ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         final Serializable messageData = ((ObjectMessage) message).getObject();
 
-        // @formatter:off
-        return new ProtocolRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .domain(this.domainInfo.getDomain())
-        .domainVersion(this.domainInfo.getDomainVersion())
-        .ipAddress(ipAddress)
-        .request(messageData)
-        .build();
-        // @formatter:on
+        return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
+                .domain(this.domainInfo.getDomain()).domainVersion(this.domainInfo.getDomainVersion())
+                .ipAddress(ipAddress).request(messageData).build();
     }
 }
