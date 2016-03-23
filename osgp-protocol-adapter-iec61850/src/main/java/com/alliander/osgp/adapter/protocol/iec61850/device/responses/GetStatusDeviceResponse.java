@@ -15,15 +15,12 @@ public class GetStatusDeviceResponse extends DeviceResponse {
     private DeviceStatus deviceStatus;
 
     public GetStatusDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid) {
+            final String correlationUid, final DeviceStatus deviceStatus) {
         super(organisationIdentification, deviceIdentification, correlationUid);
+        this.deviceStatus = deviceStatus;
     }
 
     public DeviceStatus getDeviceStatus() {
         return this.deviceStatus;
-    }
-
-    public void setDeviceStatus(final DeviceStatus deviceStatus) {
-        this.deviceStatus = deviceStatus;
     }
 }

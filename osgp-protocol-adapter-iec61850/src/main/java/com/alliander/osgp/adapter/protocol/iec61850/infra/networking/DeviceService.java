@@ -11,6 +11,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
+import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 
 public interface DeviceService {
     //
@@ -26,6 +27,10 @@ public interface DeviceService {
     // DeviceResponseHandler deviceResponseHandler, String ipAddress)
     // throws IOException;
 
+    /**
+     * Gets all status data from the device and returns it as a
+     * {@link DeviceStatus}
+     */
     void getStatus(GetStatusDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler);
 
     // // void setReboot(DeviceRequest deviceRequest);
