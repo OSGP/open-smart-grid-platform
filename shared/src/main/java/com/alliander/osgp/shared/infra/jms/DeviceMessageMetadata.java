@@ -20,10 +20,10 @@ public class DeviceMessageMetadata {
     private final String correlationUid;
     private final String messageType;
     private final int messagePriority;
-    private final Date scheduleTime;
+    private final Long scheduleTime;
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority, final Date scheduleTime) {
+            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
         this.deviceIdentification = deviceIdentification;
         this.organisationIdentification = organisationIdentification;
         this.correlationUid = correlationUid;
@@ -33,8 +33,15 @@ public class DeviceMessageMetadata {
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority, final Date scheduleTime) {
+        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
+                scheduleTime == null ? null : scheduleTime.getTime());
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority) {
-        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority, null);
+        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
+                (Long) null);
     }
 
     public DeviceMessageMetadata(final Message message) throws JMSException {
@@ -68,7 +75,11 @@ public class DeviceMessageMetadata {
         return this.messagePriority;
     }
 
-    public Date getScheduleTime() {
+    /**
+     *
+     * @return the scheduling time or null if not applicable
+     */
+    public Long getScheduleTime() {
         return this.scheduleTime;
     }
 
