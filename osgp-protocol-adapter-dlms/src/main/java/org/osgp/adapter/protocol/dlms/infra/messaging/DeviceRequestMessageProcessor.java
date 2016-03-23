@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
+import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -27,11 +28,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.infra.jms.RetryHeader;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -112,6 +115,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         ClientConnection conn = null;
         DlmsDevice device = null;
 
+        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+
         try {
             // Handle message
             messageMetadata.handleMessage(message);
@@ -126,11 +132,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response);
+                    response, isScheduled, false);
         } catch (final ConnectionException exception) {
-            // Retry / redeliver by throwing RuntimeException.
-            LOGGER.info("ConnectionException occurred, JMS will catch this exception.");
-            throw exception;
+            final OsgpException ex = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, this.responseMessageSender,
+                    message.getObject(), isScheduled, true);
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
@@ -139,7 +145,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             final OsgpException ex = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, this.responseMessageSender,
-                    message.getObject());
+                    message.getObject(), isScheduled, false);
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -170,21 +176,27 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject,
+            final boolean isScheduled, final boolean shouldRetry) {
 
         final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
 
-        // @formatter:off
+        RetryHeader retryHeader;
+        if (shouldRetry) {
+            final Calendar retryTime = Calendar.getInstance();
+            retryTime.add(Calendar.MILLISECOND, 30000);
+            LOGGER.info("Scheduling retry for {}.", retryTime.getTime());
+            retryHeader = new RetryHeader(dlmsDeviceMessageMetadata.getRetryCount(), 5, retryTime.getTime());
+        } else {
+            retryHeader = new RetryHeader();
+        }
+
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .domain(dlmsDeviceMessageMetadata.getDomain())
-        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion())
-        .result(result)
-        .osgpException(osgpException)
-        .dataObject(responseObject)
-        .retryCount(dlmsDeviceMessageMetadata.getRetryCount())
-        .build();
-        // @formatter:on
+        .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
+        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
+        .osgpException(osgpException).dataObject(responseObject)
+        .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
+                .build();
 
         responseMessageSender.send(responseMessage);
     }

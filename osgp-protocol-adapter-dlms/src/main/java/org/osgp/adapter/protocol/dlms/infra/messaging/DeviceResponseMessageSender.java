@@ -100,6 +100,14 @@ public class DeviceResponseMessageSender implements ResponseMessageSender {
                 }
                 objectMessage.setBooleanProperty(Constants.IS_SCHEDULED, responseMessage.isScheduled());
                 objectMessage.setIntProperty(Constants.RETRY_COUNT, responseMessage.getRetryCount());
+
+                if (responseMessage.getRetryHeader().shouldRetry()) {
+                    objectMessage.setIntProperty(Constants.MAX_RETRIES, responseMessage.getRetryHeader()
+                            .getMaxRetries());
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME, responseMessage.getRetryHeader()
+                            .getScheduledRetryTime().getTime());
+                }
+
                 return objectMessage;
             }
 
