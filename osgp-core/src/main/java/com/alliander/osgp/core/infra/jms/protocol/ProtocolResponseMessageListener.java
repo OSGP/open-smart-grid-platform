@@ -16,13 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.core.application.services.DeviceResponseMessageService;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.infra.jms.Constants;
-import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
-import com.alliander.osgp.shared.infra.jms.RetryHeader;
 
 // This class should fetch incoming messages from a responses queue.
 public class ProtocolResponseMessageListener implements MessageListener {
@@ -59,42 +53,6 @@ public class ProtocolResponseMessageListener implements MessageListener {
     }
 
     private ProtocolResponseMessage createResponseMessage(final Message message) throws JMSException {
-
-        final ProtocolResponseMessage.Builder builder = new ProtocolResponseMessage.Builder();
-
-        final ResponseMessage responseMessage = (ResponseMessage) ((ObjectMessage) message).getObject();
-        final OsgpException osgpException = responseMessage.getOsgpException() == null ? null : responseMessage
-                .getOsgpException();
-
-        builder.osgpException(osgpException).domain(message.getStringProperty(Constants.DOMAIN))
-        .domainVersion(message.getStringProperty(Constants.DOMAIN_VERSION));
-
-        final ResponseMessageResultType responseMessageResultType = ResponseMessageResultType.valueOf(message
-                .getStringProperty(Constants.RESULT));
-        builder.result(responseMessageResultType);
-        builder.dataObject(responseMessage.getDataObject());
-
-        if (message.propertyExists(Constants.IS_SCHEDULED)) {
-            builder.scheduled(message.getBooleanProperty(Constants.IS_SCHEDULED));
-        } else {
-            builder.scheduled(false);
-        }
-
-        builder.retryCount(message.getIntProperty(Constants.RETRY_COUNT));
-
-        if (message.propertyExists(Constants.SCHEDULE_TIME)) {
-            int maxRetries = 0;
-            if (message.propertyExists(Constants.MAX_RETRIES)) {
-                maxRetries = message.getIntProperty(Constants.MAX_RETRIES);
-            }
-            builder.retryHeader(new RetryHeader(message.getIntProperty(Constants.RETRY_COUNT), maxRetries, message
-                    .getLongProperty(Constants.SCHEDULE_TIME)));
-        } else {
-            builder.retryHeader(new RetryHeader());
-        }
-
-        builder.deviceMessageMetadata(new DeviceMessageMetadata(message));
-
-        return builder.build();
+        return (ProtocolResponseMessage) ((ObjectMessage) message).getObject();
     }
 }
