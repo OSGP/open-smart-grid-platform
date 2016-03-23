@@ -18,7 +18,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
 
-        mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter(this));
 
     }
 }
