@@ -16,6 +16,7 @@
 	<xsd:element name="UserName" type="tns:Identification" />
 	<xsd:element name="ApplicationName" type="tns:Identification" />
 	<xsd:element name="MessagePriority" type="tns:MessagePriority" />
+    <xsd:element name="ScheduleTime" type="xsd:dateTime" />
 
 	<xsd:simpleType name="MessagePriority">
 		<xsd:restriction base="xsd:int">
