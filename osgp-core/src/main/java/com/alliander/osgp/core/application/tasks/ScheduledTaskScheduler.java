@@ -80,7 +80,7 @@ public class ScheduledTaskScheduler implements Runnable {
         return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
                 .domain(scheduledTask.getDomain()).domainVersion(scheduledTask.getDomainVersion())
                 .ipAddress(device.getNetworkAddress().getHostAddress()).request(scheduledTask.getMessageData())
-                .retryCount(scheduledTask.getRetries()).scheduled(true).build();
+                .retryCount(scheduledTask.getRetry()).scheduled(true).build();
         // @formatter:on
 
     }

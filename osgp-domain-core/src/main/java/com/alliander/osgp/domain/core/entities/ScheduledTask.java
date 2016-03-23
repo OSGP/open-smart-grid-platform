@@ -67,8 +67,8 @@ public class ScheduledTask extends AbstractEntity {
     @Column(name = "max_retries")
     private int maxRetries;
 
-    @Column(name = "retries")
-    private int retries;
+    @Column(name = "retry")
+    private int retry;
 
     @SuppressWarnings("unused")
     private ScheduledTask() {
@@ -89,7 +89,7 @@ public class ScheduledTask extends AbstractEntity {
         this.scheduledTime = (Timestamp) scheduledTime.clone();
         this.status = ScheduledTaskStatusType.NEW;
         this.maxRetries = 0;
-        this.retries = 0;
+        this.retry = 0;
     }
 
     public ScheduledTask(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
@@ -142,8 +142,8 @@ public class ScheduledTask extends AbstractEntity {
         return this.messagePriority;
     }
 
-    public int getRetries() {
-        return this.retries;
+    public int getRetry() {
+        return this.retry;
     }
 
     public ScheduledTaskStatusType getStatus() {
@@ -164,7 +164,7 @@ public class ScheduledTask extends AbstractEntity {
     }
 
     public void setRetry(final Date retryTime) {
-        this.retries++;
+        this.retry++;
         this.status = ScheduledTaskStatusType.RETRY;
     }
 
