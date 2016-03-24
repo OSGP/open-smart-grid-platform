@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -24,6 +27,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
@@ -31,7 +35,10 @@ import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataServ
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.DeviceStatus;
+import com.alliander.osgp.dto.valueobjects.LightType;
 import com.alliander.osgp.dto.valueobjects.LightValue;
+import com.alliander.osgp.dto.valueobjects.LinkType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -47,16 +54,15 @@ public class Iec61850DeviceService implements DeviceService {
     @Autowired
     private SsldDataService ssldDataService;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
-     * #getStatus(com.alliander.osgp.adapter.protocol.iec61850.device.requests.
-     * GetStatusDeviceRequest)
+    @Autowired
+    private Iec61850Client iec61850Client;
+
+    /**
+     * @see DeviceService#getStatus(GetStatusDeviceRequest,
+     *      DeviceResponseHandler)
      */
     @Override
-    public void getStatus(final GetStatusDeviceRequest deviceRequest) {
+    public void getStatus(final GetStatusDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
         try {
 
@@ -65,49 +71,28 @@ public class Iec61850DeviceService implements DeviceService {
             final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
                     .getDeviceIdentification());
 
-            final String xswc1PositionStateObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                    + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(1)
-                    + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
+            // Getting the ssld for the device outputsettings
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
-            LOGGER.info("xswc1PositionStateObjectReference: {}", xswc1PositionStateObjectReference);
+            // Getting the data with retries
+            final DeviceStatus deviceStatus = this.getStatusFromDevice(serverModel, ssld);
 
-            final FcModelNode switchPositonState = (FcModelNode) serverModel.findModelNode(
-                    xswc1PositionStateObjectReference, Fc.ST);
+            final GetStatusDeviceResponse deviceResponse = new GetStatusDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), deviceStatus);
 
-            LOGGER.info("FcModelNode: {}", switchPositonState);
+            deviceResponseHandler.handleResponse(deviceResponse);
 
-            final BdaBoolean state = (BdaBoolean) switchPositonState.getChild("stVal");
-            LOGGER.info("state: {}", state);
-
-            // GET STATUS OLD IMPL
-
-            // Connect to obtain ClientAssociation.
-            // final ClientAssociation clientAssociation =
-            // this.iec61850Client.connect(
-            // deviceRequest.getDeviceIdentification(), ipAddress);
-            //
-            // // Read the ServerModel, either from the device or from a SCL
-            // file.
-            // final ServerModel serverModel =
-            // this.iec61850Client.readServerModelFromDevice(clientAssociation);
-            //
-            // // Read all data values from the device.
-            // this.iec61850Client.readAllDataValues(clientAssociation);
-            //
-            // // Read a particular data value.
-            // this.iec61850Client.readDataValue(serverModel, "");
-            // // Write a particular data value.
-            // this.iec61850Client.writeDataValue(clientAssociation,
-            // serverModel, "", false);
-
-            // try {
-            // Thread.sleep(10000);
-            // } catch (final InterruptedException e) {
-            // }
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during getStatus", e);
 
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, true);
         }
+
     }
 
     /**
@@ -197,8 +182,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("xswc1PositionOperationObjectReference: {}", relayPositionOperationObjectReference);
 
                 // Check if the Pos.ctlModel [CF] is enabled. If it is not
-                // enabled,
-                // the relay can not be operated.
+                // enabled, the relay can not be operated.
                 final FcModelNode posCtlModel = (FcModelNode) serverModel.findModelNode(
                         relayPositionOperationObjectReference, Fc.CF);
                 final BdaInt8 masterControlValue = (BdaInt8) posCtlModel.getChild("ctlModel");
@@ -223,7 +207,70 @@ public class Iec61850DeviceService implements DeviceService {
             }
         };
 
-        this.iec61850DeviceConnectionService.sendCommandWithRetry(function);
+        this.iec61850Client.sendCommandWithRetry(function);
+    }
+
+    private DeviceStatus getStatusFromDevice(final ServerModel serverModel, final Ssld ssld)
+            throws ProtocolAdapterException {
+
+        // creating the Function that will be retried, if necessary
+        final Function<DeviceStatus> function = new Function<DeviceStatus>() {
+
+            @Override
+            public DeviceStatus apply() throws Exception {
+                // getting the light relay values
+
+                final List<LightValue> lightValues = new ArrayList<>();
+
+                for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+
+                    final String relayPositionOperationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                            + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(deviceOutputSetting
+                                    .getInternalId()) + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
+
+                    LOGGER.info("relayPositionOperationObjectReference: {}", relayPositionOperationObjectReference);
+
+                    final FcModelNode switchPositonState = (FcModelNode) serverModel.findModelNode(
+                            relayPositionOperationObjectReference, Fc.ST);
+
+                    LOGGER.info("FcModelNode: {}", switchPositonState);
+
+                    final BdaBoolean state = (BdaBoolean) switchPositonState.getChild("stVal");
+
+                    final boolean on = state.getValue();
+                    lightValues.add(new LightValue(deviceOutputSetting.getExternalId(), on, null));
+                }
+
+                // TODO caution: the referredLinkType and actualLinkType are
+                // hardcoded
+                // TODO eventNotificationsMask, the kaifa device will have a
+                // 1-9
+                // value that will have to be mapped to our
+                // eventNotificationsMask
+                // TODO uncomment the LightRelay code
+
+                // Getting the LightType
+                // final String softwareConfigurationObjectReference =
+                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                // +
+                // LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                // +
+                // LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
+                //
+                // final FcModelNode test = (FcModelNode)
+                // serverModel.findModelNode(softwareConfigurationObjectReference,
+                // Fc.CF);
+                //
+                // final BdaVisibleString value = (BdaVisibleString)
+                // test.getChild("LT");
+                // LightType.valueOf(new String(value.getValue()));
+
+                return new DeviceStatus(lightValues, LinkType.ETHERNET, LinkType.ETHERNET, LightType.RELAY, 0);
+            }
+        };
+
+        return this.iec61850Client.sendCommandWithRetry(function);
+
     }
 
 }

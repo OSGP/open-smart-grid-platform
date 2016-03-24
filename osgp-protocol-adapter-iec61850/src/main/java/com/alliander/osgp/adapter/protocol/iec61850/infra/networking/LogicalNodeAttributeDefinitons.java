@@ -20,6 +20,14 @@ public final class LogicalNodeAttributeDefinitons {
      * Property of Logical Node for relays, Pos.
      */
     public static final String PROPERTY_POSITION = ".Pos";
+
+    /**
+     * Property of CSLC Node, software configuration.
+     */
+    public static final String PROPERTY_SOFTWARE_CONFIGURATION = ".SWCf";
+
+    // SWCf
+
     /**
      * Attribute of Property Pos, used to read the status of the relay.
      */
@@ -31,14 +39,19 @@ public final class LogicalNodeAttributeDefinitons {
 
     public static final String PROPERTY_SWITCH_TYPE_ATTRIBUTE_STATE = "SwType.stVal";
 
-    private LogicalNodeAttributeDefinitons() {
-        // Private constructor to prevent instantiation of this class.
-    }
+    /*
+     * Property of CSLC Node.
+     */
+    public static final String PROPERTY_NODE_CSLC_PREFIX = "/CSLC";
 
     /*
      * Prefix of the relays' Logical Node.
      */
     private static final String LOGICAL_NODE_RELAY_PREFIX = "/XSWC";
+
+    private LogicalNodeAttributeDefinitons() {
+        // Private constructor to prevent instantiation of this class.
+    }
 
     /**
      * Returns the value of the Relay's logical node for the given index
