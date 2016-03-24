@@ -32,5 +32,6 @@ public enum SmartMeteringRequestMessageType {
     REPLACE_KEYS,
     SET_PUSH_SETUP_ALARM,
     SET_PUSH_SETUP_SMS,
-    GET_CONFIGURATION_OBJECTS
+    GET_CONFIGURATION_OBJECTS,
+    BUNDLE;
 }

@@ -11,7 +11,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PushSetupAlarm implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public class PushSetupAlarm implements Serializable, ActionValueObject {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
@@ -207,5 +209,11 @@ public class PushSetupAlarm implements Serializable {
 
     public Integer getRepetitionDelay() {
         return this.repetitionDelay;
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 }

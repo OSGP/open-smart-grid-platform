@@ -7,7 +7,9 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public enum AdministrativeStatusType {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public enum AdministrativeStatusType implements ActionValueObject {
     UNDEFINED,
     OFF,
     ON;
@@ -18,6 +20,12 @@ public enum AdministrativeStatusType {
 
     public static AdministrativeStatusType fromValue(final String v) {
         return valueOf(v);
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 
 }

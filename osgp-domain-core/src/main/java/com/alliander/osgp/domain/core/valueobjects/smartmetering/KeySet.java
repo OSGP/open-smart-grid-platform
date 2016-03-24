@@ -9,7 +9,9 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class KeySet implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public class KeySet implements Serializable, ActionValueObject {
 
     private static final long serialVersionUID = 1573954141584647005L;
 
@@ -28,5 +30,11 @@ public class KeySet implements Serializable {
 
     public byte[] getEncryptionKey() {
         return this.encryptionKey;
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 }

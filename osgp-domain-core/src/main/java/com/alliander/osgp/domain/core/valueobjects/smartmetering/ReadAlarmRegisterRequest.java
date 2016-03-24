@@ -9,7 +9,9 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ReadAlarmRegisterRequest implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public class ReadAlarmRegisterRequest implements Serializable, ActionValueObject {
     private static final long serialVersionUID = -5249256148066126239L;
 
     private String deviceIdentification;
@@ -20,5 +22,11 @@ public class ReadAlarmRegisterRequest implements Serializable {
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 }

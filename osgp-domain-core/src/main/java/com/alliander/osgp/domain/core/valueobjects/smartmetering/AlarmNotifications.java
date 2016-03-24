@@ -12,7 +12,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class AlarmNotifications implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public class AlarmNotifications implements Serializable, ActionValueObject {
 
     private static final long serialVersionUID = 2319359505656305783L;
 
@@ -29,5 +31,11 @@ public class AlarmNotifications implements Serializable {
 
     public Set<AlarmNotification> getAlarmNotifications() {
         return Collections.unmodifiableSet(this.alarmNotifications);
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -10,7 +10,9 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class SmartMeteringDevice implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public class SmartMeteringDevice implements Serializable, ActionValueObject {
 
     private static final long serialVersionUID = -6133164707489276802L;
 
@@ -152,5 +154,11 @@ public class SmartMeteringDevice implements Serializable {
 
     public void setDeliveryDate(final Date deliveryDate) {
         this.deliveryDate = deliveryDate;
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 }
