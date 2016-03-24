@@ -32,6 +32,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHead
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderScheduleTimeEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.WebServiceMonitorInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.X509CertificateRdnAttributeValueEndpointInterceptor;
 
@@ -50,6 +51,7 @@ public class WebServiceConfig {
 
     private static final String MESSAGE_PRIORITY_HEADER = "MessagePriority";
     private static final String MESSAGE_PRIORITY_CONTEXT = MESSAGE_PRIORITY_HEADER;
+    private static final String MESSAGE_SCHEDULETIME_HEADER = "ScheduleTime";
 
     private static final String USER_NAME_HEADER = "UserName";
 
@@ -286,6 +288,11 @@ public class WebServiceConfig {
         LOGGER.debug("Creating Message Priority Interceptor Bean");
 
         return new SoapHeaderMessagePriorityEndpointInterceptor(MESSAGE_PRIORITY_HEADER, MESSAGE_PRIORITY_CONTEXT);
+    }
+
+    @Bean
+    public SoapHeaderScheduleTimeEndpointInterceptor scheduleForInterceptor() {
+        return new SoapHeaderScheduleTimeEndpointInterceptor(MESSAGE_SCHEDULETIME_HEADER);
     }
 
     /**

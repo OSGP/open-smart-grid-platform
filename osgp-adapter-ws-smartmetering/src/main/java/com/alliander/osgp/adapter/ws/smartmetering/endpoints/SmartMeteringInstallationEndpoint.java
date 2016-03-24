@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
-import java.util.Date;
-
 import org.hibernate.validator.method.MethodConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +59,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority,
-            @ScheduleTime final Date scheduleTime) throws OsgpException {
+            @ScheduleTime final String scheduleTime) throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
@@ -73,7 +71,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
                     organisationIdentification, device.getDeviceIdentification(), device,
-                    MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
+                    MessagePriorityEnum.getMessagePriority(messagePriority), null);
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());

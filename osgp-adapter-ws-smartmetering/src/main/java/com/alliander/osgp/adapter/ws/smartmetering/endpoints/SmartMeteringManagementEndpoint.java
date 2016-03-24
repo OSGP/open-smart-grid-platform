@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.endpoints;
 
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.validator.method.MethodConstraintViolationException;
@@ -70,7 +69,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public FindEventsAsyncResponse findEventsRequest(
             @OrganisationIdentification final String organisationIdentification,
-            @MessagePriority final String messagePriority, @ScheduleTime final Date scheduleTime,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
             @RequestPayload final FindEventsRequest request) throws OsgpException {
 
         LOGGER.info("Find events request for organisation: {} and device: {}.", organisationIdentification,
@@ -88,7 +87,7 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class),
-                    MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
+                            MessagePriorityEnum.getMessagePriority(messagePriority), null);
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
