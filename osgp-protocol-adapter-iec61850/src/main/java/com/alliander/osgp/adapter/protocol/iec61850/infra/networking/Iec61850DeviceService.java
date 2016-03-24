@@ -23,10 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -35,10 +36,16 @@ import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataServ
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.dto.valueobjects.LightType;
 import com.alliander.osgp.dto.valueobjects.LightValue;
 import com.alliander.osgp.dto.valueobjects.LinkType;
+import com.alliander.osgp.dto.valueobjects.LongTermIntervalType;
+import com.alliander.osgp.dto.valueobjects.MeterType;
+import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
+import com.alliander.osgp.dto.valueobjects.RelayMap;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -62,7 +69,7 @@ public class Iec61850DeviceService implements DeviceService {
      *      DeviceResponseHandler)
      */
     @Override
-    public void getStatus(final GetStatusDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+    public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
         try {
 
@@ -165,9 +172,56 @@ public class Iec61850DeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
+    @Override
+    public void getConfiguration(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+
+            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                    deviceRequest.getDeviceIdentification());
+            final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
+                    .getDeviceIdentification());
+
+            // Getting the ssld for the device outputsettings
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
+
+            final Configuration configuration = this.getConfigurationFromDevice(serverModel, ssld);
+
+            final GetConfigurationDeviceResponse response = new GetConfigurationDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, configuration);
+
+            deviceResponseHandler.handleResponse(response);
+
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
+    }
+
+    // =================
+    // PRIVATE METHODS =
+    // =================
+
     private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
             final ServerModel serverModel, final ClientAssociation clientAssociation)
-            throws ConnectionFailureException, ProtocolAdapterException {
+                    throws ConnectionFailureException, ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {
@@ -273,4 +327,40 @@ public class Iec61850DeviceService implements DeviceService {
 
     }
 
+    private Configuration getConfigurationFromDevice(final ServerModel serverModel, final Ssld ssld)
+            throws ProtocolAdapterException {
+
+        // creating the Function that will be retried, if necessary
+        final Function<Configuration> function = new Function<Configuration>() {
+
+            @Override
+            public Configuration apply() throws Exception {
+
+                final DaliConfiguration daliConfiguration = null;
+                final RelayConfiguration relayConfiguration = new RelayConfiguration(new ArrayList<RelayMap>());
+
+                // TODO Lighttype is hardcoded, but it will be the same code as
+                // in getStatusFromDevice, so I won't copy it here for now
+                final LightType lightType = LightType.RELAY;
+
+                // Hardcoded (not supported)
+                final MeterType meterType = MeterType.AUX;
+                // Hardcoded (not supported)
+                final Integer shortTermHistoryIntervalMinutes = 15;
+                // Hardcoded (not supported)
+                final LinkType preferredLinkType = LinkType.ETHERNET;
+                // Hardcoded (not supported)
+                final Integer longTermHistoryInterval = 1;
+                // Hardcoded (not supported)
+                final LongTermIntervalType longTermHistoryIntervalType = LongTermIntervalType.DAYS;
+
+                return new Configuration(lightType, daliConfiguration, relayConfiguration,
+                        shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
+                        longTermHistoryIntervalType);
+            }
+        };
+
+        return this.iec61850Client.sendCommandWithRetry(function);
+
+    }
 }

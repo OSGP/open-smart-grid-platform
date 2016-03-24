@@ -18,9 +18,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceResponseService;
+import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -122,7 +124,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
-            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+            osgpException = new TechnicalException(ComponentType.PROTOCOL_IEC61850,
                     "Unexpected exception while retrieving response message", e);
         }
 
@@ -133,36 +135,31 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         responseMessageSender.send(responseMessage);
     }
 
-    // protected void handleScheduledEmptyDeviceResponse(final DeviceResponse
-    // deviceResponse,
-    // final ResponseMessageSender responseMessageSender, final String domain,
-    // final String domainVersion,
-    // final String messageType, final boolean isScheduled, final int
-    // retryCount) {
-    //
-    // ResponseMessageResultType result = ResponseMessageResultType.OK;
-    // OsgpException ex = null;
-    //
-    // try {
-    // final EmptyDeviceResponse response = (EmptyDeviceResponse)
-    // deviceResponse;
-    // this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-    // } catch (final Exception e) {
-    // LOGGER.error("Device Response Exception", e);
-    // result = ResponseMessageResultType.NOT_OK;
-    // ex = new TechnicalException(ComponentType.UNKNOWN, UNEXPECTED_EXCEPTION,
-    // e);
-    // }
-    //
-    // final ProtocolResponseMessage responseMessage = new
-    // ProtocolResponseMessage(domain, domainVersion, messageType,
-    // deviceResponse.getCorrelationUid(),
-    // deviceResponse.getOrganisationIdentification(),
-    // deviceResponse.getDeviceIdentification(), result, ex, null, isScheduled,
-    // retryCount);
-    //
-    // responseMessageSender.send(responseMessage);
-    // }
+    protected void handleGetConfigurationDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount) {
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+        OsgpException osgpException = null;
+        Configuration configuration = null;
+
+        try {
+            final GetConfigurationDeviceResponse response = (GetConfigurationDeviceResponse) deviceResponse;
+
+            configuration = response.getConfiguration();
+        } catch (final Exception e) {
+            LOGGER.error("Device Response Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.PROTOCOL_IEC61850,
+                    "Unexpected exception while retrieving response message", e);
+        }
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getDeviceIdentification(), result, osgpException, configuration, retryCount);
+
+        responseMessageSender.send(responseMessage);
+    }
 
     protected void handleError(final Exception e, final String correlationUid, final String organisationIdentification,
             final String deviceIdentification, final String domain, final String domainVersion,

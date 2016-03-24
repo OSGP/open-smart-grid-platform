@@ -14,9 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
-import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetStatusDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
@@ -108,9 +108,8 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
 
         };
 
-        final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, null, domain, domainVersion, messageType, ipAddress, retryCount,
-                isScheduled);
+        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         this.deviceService.getStatus(deviceRequest, deviceResponseHandler);
 
