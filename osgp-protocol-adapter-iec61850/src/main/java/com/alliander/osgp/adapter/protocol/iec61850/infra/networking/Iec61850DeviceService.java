@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850pMapper;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
@@ -63,6 +64,9 @@ public class Iec61850DeviceService implements DeviceService {
 
     @Autowired
     private Iec61850Client iec61850Client;
+
+    @Autowired
+    private Iec61850pMapper mapper;
 
     /**
      * @see DeviceService#getStatus(GetStatusDeviceRequest,
@@ -221,7 +225,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
             final ServerModel serverModel, final ClientAssociation clientAssociation)
-                    throws ConnectionFailureException, ProtocolAdapterException {
+            throws ConnectionFailureException, ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {
@@ -330,6 +334,24 @@ public class Iec61850DeviceService implements DeviceService {
     private Configuration getConfigurationFromDevice(final ServerModel serverModel, final Ssld ssld)
             throws ProtocolAdapterException {
 
+        // Keeping the hardcoded values and values that aren't fetched from the
+        // device out of the Function
+
+        // Hardcoded (not supported)
+        final MeterType meterType = MeterType.AUX;
+        // Hardcoded (not supported)
+        final Integer shortTermHistoryIntervalMinutes = 15;
+        // Hardcoded (not supported)
+        final LinkType preferredLinkType = LinkType.ETHERNET;
+        // Hardcoded (not supported)
+        final Integer longTermHistoryInterval = 1;
+        // Hardcoded (not supported)
+        final LongTermIntervalType longTermHistoryIntervalType = LongTermIntervalType.DAYS;
+
+        // coverting device outputsettings to relayMap values
+        final RelayConfiguration relayConfiguration = new RelayConfiguration(this.mapper.mapAsList(
+                ssld.getOutputSettings(), RelayMap.class));
+
         // creating the Function that will be retried, if necessary
         final Function<Configuration> function = new Function<Configuration>() {
 
@@ -337,22 +359,10 @@ public class Iec61850DeviceService implements DeviceService {
             public Configuration apply() throws Exception {
 
                 final DaliConfiguration daliConfiguration = null;
-                final RelayConfiguration relayConfiguration = new RelayConfiguration(new ArrayList<RelayMap>());
 
                 // TODO Lighttype is hardcoded, but it will be the same code as
                 // in getStatusFromDevice, so I won't copy it here for now
                 final LightType lightType = LightType.RELAY;
-
-                // Hardcoded (not supported)
-                final MeterType meterType = MeterType.AUX;
-                // Hardcoded (not supported)
-                final Integer shortTermHistoryIntervalMinutes = 15;
-                // Hardcoded (not supported)
-                final LinkType preferredLinkType = LinkType.ETHERNET;
-                // Hardcoded (not supported)
-                final Integer longTermHistoryInterval = 1;
-                // Hardcoded (not supported)
-                final LongTermIntervalType longTermHistoryIntervalType = LongTermIntervalType.DAYS;
 
                 return new Configuration(lightType, daliConfiguration, relayConfiguration,
                         shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
