@@ -12,6 +12,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
@@ -66,16 +68,20 @@ public class PushSetupAlarmMappingTest {
     public void testPushSetupAlarmMappingWithEmptyLists() {
 
         // build test data
-        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder().withEmptyLists().build();
+        final ArrayList<CosemObjectDefinition> pushObjectList = new ArrayList<CosemObjectDefinition>();
+        final ArrayList<WindowElement> communicationWindow = new ArrayList<WindowElement>();
+
+        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder().withEmptyLists(pushObjectList,
+                communicationWindow).build();
 
         // actual mapping
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
                 PushSetupAlarmDto.class);
 
         // check values
-        this.testCosemObisCodeMapping(pushSetupAlarm.getLogicalName(), pushSetupAlarmDto.getLogicalName());
-        this.testSendDestinationAndMethodMapping(pushSetupAlarm, pushSetupAlarmDto);
-        this.testIntegerMapping(pushSetupAlarm, pushSetupAlarmDto);
+        this.checkCosemObisCodeMapping(pushSetupAlarm.getLogicalName(), pushSetupAlarmDto.getLogicalName());
+        this.checkSendDestinationAndMethodMapping(pushSetupAlarm, pushSetupAlarmDto);
+        this.checkIntegerMapping(pushSetupAlarm, pushSetupAlarmDto);
 
         assertNotNull(pushSetupAlarmDto.getPushObjectList());
         assertNotNull(pushSetupAlarmDto.getCommunicationWindow());
@@ -87,22 +93,30 @@ public class PushSetupAlarmMappingTest {
     public void testPushSetupAlarmMappingWithLists() {
 
         // build test data
-        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder().withLists().build();
+        final CosemObisCode logicalName = new CosemObisCode(1, 2, 3, 4, 5, 6);
+        final CosemObjectDefinition cosemObjectDefinition = new CosemObjectDefinition(1, logicalName, 2);
+        final CosemDateTime startTime = new CosemDateTime(new CosemDate(2016, 3, 17), new CosemTime(11, 52, 45), 0,
+                new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
+        final CosemDateTime endTime = new CosemDateTime(new CosemDate(2016, 3, 17), new CosemTime(11, 52, 45), 0,
+                new ClockStatus(ClockStatus.STATUS_NOT_SPECIFIED));
+        final WindowElement windowElement = new WindowElement(startTime, endTime);
+
+        final PushSetupAlarm pushSetupAlarm = new PushSetupAlarmBuilder().withFilledLists(cosemObjectDefinition,
+                windowElement).build();
 
         // actual mapping
         final PushSetupAlarmDto pushSetupAlarmDto = this.configurationMapper.map(pushSetupAlarm,
                 PushSetupAlarmDto.class);
 
         // check values
-        this.testCosemObisCodeMapping(pushSetupAlarm.getLogicalName(), pushSetupAlarmDto.getLogicalName());
-        this.testSendDestinationAndMethodMapping(pushSetupAlarm, pushSetupAlarmDto);
-        this.testIntegerMapping(pushSetupAlarm, pushSetupAlarmDto);
-        this.testNonEmptyListMapping(pushSetupAlarm, pushSetupAlarmDto);
-
+        this.checkCosemObisCodeMapping(pushSetupAlarm.getLogicalName(), pushSetupAlarmDto.getLogicalName());
+        this.checkSendDestinationAndMethodMapping(pushSetupAlarm, pushSetupAlarmDto);
+        this.checkIntegerMapping(pushSetupAlarm, pushSetupAlarmDto);
+        this.checkNonEmptyListMapping(pushSetupAlarm, pushSetupAlarmDto);
     }
 
     // method to test Integer object mapping
-    private void testIntegerMapping(final PushSetupAlarm pushSetupAlarm, final PushSetupAlarmDto pushSetupAlarmDto) {
+    private void checkIntegerMapping(final PushSetupAlarm pushSetupAlarm, final PushSetupAlarmDto pushSetupAlarmDto) {
 
         // make sure none is null
         assertNotNull(pushSetupAlarmDto.getRandomisationStartInterval());
@@ -116,7 +130,7 @@ public class PushSetupAlarmMappingTest {
     }
 
     // method to test CosemObisCode object mapping
-    private void testCosemObisCodeMapping(final CosemObisCode cosemObisCode, final CosemObisCodeDto cosemObisCodeDto) {
+    private void checkCosemObisCodeMapping(final CosemObisCode cosemObisCode, final CosemObisCodeDto cosemObisCodeDto) {
 
         // make sure neither is null
         assertNotNull(cosemObisCode);
@@ -133,7 +147,7 @@ public class PushSetupAlarmMappingTest {
     }
 
     // method to test SendDestinationAndMethod mapping
-    private void testSendDestinationAndMethodMapping(final PushSetupAlarm pushSetupAlarm,
+    private void checkSendDestinationAndMethodMapping(final PushSetupAlarm pushSetupAlarm,
             final PushSetupAlarmDto pushSetupAlarmDto) {
         final SendDestinationAndMethod sendDestinationAndMethod = pushSetupAlarm.getSendDestinationAndMethod();
         final SendDestinationAndMethodDto sendDestinationAndMethodDto = pushSetupAlarmDto.getSendDestinationAndMethod();
@@ -150,7 +164,7 @@ public class PushSetupAlarmMappingTest {
     }
 
     // method to test non-empty list mapping
-    private void testNonEmptyListMapping(final PushSetupAlarm pushSetupAlarm, final PushSetupAlarmDto pushSetupAlarmDto) {
+    private void checkNonEmptyListMapping(final PushSetupAlarm pushSetupAlarm, final PushSetupAlarmDto pushSetupAlarmDto) {
 
         // test pushObjectList mapping
         assertNotNull(pushSetupAlarm.getPushObjectList());
@@ -162,7 +176,8 @@ public class PushSetupAlarmMappingTest {
         assertEquals(cosemObjectDefinition.getAttributeIndex(), cosemObjectDefinitionDto.getAttributeIndex());
         assertEquals(cosemObjectDefinition.getClassId(), cosemObjectDefinitionDto.getClassId());
         assertEquals(cosemObjectDefinition.getDataIndex(), cosemObjectDefinitionDto.getDataIndex());
-        this.testCosemObisCodeMapping(cosemObjectDefinition.getLogicalName(), cosemObjectDefinitionDto.getLogicalName());
+        this.checkCosemObisCodeMapping(cosemObjectDefinition.getLogicalName(),
+                cosemObjectDefinitionDto.getLogicalName());
 
         // test communicationWindow mapping
         assertNotNull(pushSetupAlarm.getCommunicationWindow());
@@ -172,13 +187,13 @@ public class PushSetupAlarmMappingTest {
         final WindowElement windowElement = pushSetupAlarm.getCommunicationWindow().get(0);
         final WindowElementDto windowElementDto = pushSetupAlarmDto.getCommunicationWindow().get(0);
 
-        this.testCosemDateTimeMapping(windowElement.getStartTime(), windowElementDto.getStartTime());
-        this.testCosemDateTimeMapping(windowElement.getEndTime(), windowElementDto.getEndTime());
+        this.checkCosemDateTimeMapping(windowElement.getStartTime(), windowElementDto.getStartTime());
+        this.checkCosemDateTimeMapping(windowElement.getEndTime(), windowElementDto.getEndTime());
 
     }
 
     // method to test mapping of CosemDateTime objects
-    private void testCosemDateTimeMapping(final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
+    private void checkCosemDateTimeMapping(final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
 
         // make sure neither is null
         assertNotNull(cosemDateTime);

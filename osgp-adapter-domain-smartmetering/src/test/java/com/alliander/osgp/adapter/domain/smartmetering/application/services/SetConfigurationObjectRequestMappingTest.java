@@ -12,9 +12,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationFlag;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationFlagType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationFlags;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ConfigurationObject;
@@ -86,7 +90,7 @@ public class SetConfigurationObjectRequestMappingTest {
         // build test data
         final String deviceIdentification = "nr1";
         final GprsOperationModeType gprsOperationModeType = GprsOperationModeType.ALWAYS_ON;
-        final ConfigurationFlags configurationFlags = new ConfigurationFlagsBuilder().withEmptyList().build();
+        final ConfigurationFlags configurationFlags = new ConfigurationFlags(new ArrayList<ConfigurationFlag>());
         final ConfigurationObject configurationObject = new ConfigurationObject(gprsOperationModeType,
                 configurationFlags);
         final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData(
@@ -120,8 +124,10 @@ public class SetConfigurationObjectRequestMappingTest {
         final String deviceIdentification = "nr1";
         final GprsOperationModeType gprsOperationModeType = GprsOperationModeType.ALWAYS_ON;
         final ConfigurationFlagType configurationFlagType = ConfigurationFlagType.DISCOVER_ON_OPEN_COVER;
-        final ConfigurationFlags configurationFlags = new ConfigurationFlagsBuilder().withConfigurationFlag(
-                configurationFlagType).build();
+        final ConfigurationFlag configurationFlag = new ConfigurationFlag(configurationFlagType, true);
+        final List<ConfigurationFlag> configurationFlagList = new ArrayList<>();
+        configurationFlagList.add(configurationFlag);
+        final ConfigurationFlags configurationFlags = new ConfigurationFlags(configurationFlagList);
         final ConfigurationObject configurationObject = new ConfigurationObject(gprsOperationModeType,
                 configurationFlags);
         final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData(

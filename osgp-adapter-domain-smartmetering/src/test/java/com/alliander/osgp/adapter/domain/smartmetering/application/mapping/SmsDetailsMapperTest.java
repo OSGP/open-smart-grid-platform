@@ -27,7 +27,7 @@ public class SmsDetailsMapperTest {
 
     // To test mapping from SmsDetails.class to SmsDetailsDTO.class
     @Test
-    public void testSmsDetailsToSmsDetailsDTO() {
+    public void testSmsDetailsToSmsDetailsDto() {
 
         final String deviceIdentification = "device";
         final Long smsMsgId = 123456789l;
@@ -37,20 +37,20 @@ public class SmsDetailsMapperTest {
 
         final SmsDetails smsDetailsValueObject = new SmsDetails(deviceIdentification, smsMsgId, status,
                 smsMsgAttemptStatus, msgType);
-        final SmsDetailsDto smsDetailsDTO = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
                 SmsDetailsDto.class);
 
-        assertEquals(deviceIdentification, smsDetailsDTO.getDeviceIdentification());
-        assertEquals(smsMsgId, smsDetailsDTO.getSmsMsgId());
-        assertEquals(status, smsDetailsDTO.getStatus());
-        assertEquals(smsMsgAttemptStatus, smsDetailsDTO.getSmsMsgAttemptStatus());
-        assertEquals(msgType, smsDetailsDTO.getMsgType());
+        assertEquals(deviceIdentification, smsDetailsDto.getDeviceIdentification());
+        assertEquals(smsMsgId, smsDetailsDto.getSmsMsgId());
+        assertEquals(status, smsDetailsDto.getStatus());
+        assertEquals(smsMsgAttemptStatus, smsDetailsDto.getSmsMsgAttemptStatus());
+        assertEquals(msgType, smsDetailsDto.getMsgType());
 
     }
 
     // To test mapping from SmsDetailsDTO.class to SmsDetails.class
     @Test
-    public void testSmsDetailsDTOToSmsDetails() {
+    public void testSmsDetailsDtoToSmsDetails() {
 
         final String deviceIdentification = "device";
         final Long smsMsgId = 123456789l;
@@ -82,7 +82,7 @@ public class SmsDetailsMapperTest {
 
     // To see if null is returned the other way.
     @Test
-    public void testNullSmsDetailsDTO() {
+    public void testNullSmsDetailsDto() {
 
         final SmsDetailsDto smsDetailsDTO = null;
         final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDTO, SmsDetails.class);

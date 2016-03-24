@@ -54,15 +54,9 @@ public class AlarmNotificationsMappingTest {
                 AlarmNotificationsDto.class);
 
         // check if mapping was successful
-        assertNotNull(alarmNotifications);
         assertNotNull(alarmNotificationsDto);
-
-        assertNotNull(alarmNotificationSet);
         assertNotNull(alarmNotificationsDto.getAlarmNotifications());
-
-        assertTrue(alarmNotificationSet.isEmpty());
         assertTrue(alarmNotificationsDto.getAlarmNotifications().isEmpty());
-        assertEquals(alarmNotificationSet.isEmpty(), alarmNotificationsDto.getAlarmNotifications().isEmpty());
     }
 
     // Tests if mapping with a Set with an entry succeeds.
@@ -79,14 +73,10 @@ public class AlarmNotificationsMappingTest {
                 AlarmNotificationsDto.class);
 
         // check if mapping was successful
-        assertNotNull(alarmNotifications);
         assertNotNull(alarmNotificationsDto);
-        assertNotNull(alarmNotificationSet);
         assertNotNull(alarmNotificationsDto.getAlarmNotifications());
         assertEquals(alarmNotificationSet.size(), alarmNotificationsDto.getAlarmNotifications().size());
-        assertFalse(alarmNotificationSet.isEmpty());
         assertFalse(alarmNotificationsDto.getAlarmNotifications().isEmpty());
-        assertEquals(alarmNotificationSet.isEmpty(), alarmNotificationsDto.getAlarmNotifications().isEmpty());
 
         // To see if there is an AlarmNotifictionDto with the same variables as
         // the AlarmNotification in the Set.

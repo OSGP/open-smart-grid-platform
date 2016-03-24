@@ -85,14 +85,13 @@ public class ActivityCalendarMappingTest {
                 ActivityCalendarDto.class);
 
         // check if mapping succeeded
-        assertNotNull(activityCalendar);
         assertNotNull(activityCalendarDto);
         assertNotNull(activityCalendarDto.getActivatePassiveCalendarTime());
         assertNotNull(activityCalendarDto.getSeasonProfileList());
 
         assertEquals(activityCalendar.getCalendarName(), activityCalendarDto.getCalendarName());
-        this.testEmptyListMapping(activityCalendar.getSeasonProfileList(), activityCalendarDto.getSeasonProfileList());
-        this.testCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime(),
+        this.checkEmptyListMapping(activityCalendar.getSeasonProfileList(), activityCalendarDto.getSeasonProfileList());
+        this.checkCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime(),
                 activityCalendarDto.getActivatePassiveCalendarTime());
 
     }
@@ -115,8 +114,8 @@ public class ActivityCalendarMappingTest {
         assertNotNull(activityCalendarDto.getSeasonProfileList());
 
         assertEquals(activityCalendar.getCalendarName(), activityCalendarDto.getCalendarName());
-        this.testEmptyListMapping(activityCalendar.getSeasonProfileList(), activityCalendarDto.getSeasonProfileList());
-        this.testCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime(),
+        this.checkEmptyListMapping(activityCalendar.getSeasonProfileList(), activityCalendarDto.getSeasonProfileList());
+        this.checkCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime(),
                 activityCalendarDto.getActivatePassiveCalendarTime());
 
     }
@@ -139,13 +138,13 @@ public class ActivityCalendarMappingTest {
         assertNotNull(activityCalendarDto.getSeasonProfileList());
 
         assertEquals(activityCalendar.getCalendarName(), activityCalendarDto.getCalendarName());
-        this.testListMapping(activityCalendar.getSeasonProfileList(), activityCalendarDto.getSeasonProfileList());
-        this.testCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime(),
+        this.checkListMapping(activityCalendar.getSeasonProfileList(), activityCalendarDto.getSeasonProfileList());
+        this.checkCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime(),
                 activityCalendarDto.getActivatePassiveCalendarTime());
     }
 
     // method to test mapping of Filled Lists
-    private void testListMapping(final List<SeasonProfile> seasonProfileList,
+    private void checkListMapping(final List<SeasonProfile> seasonProfileList,
             final List<SeasonProfileDto> seasonProfileDtoList) {
 
         assertNotNull(seasonProfileList);
@@ -159,7 +158,7 @@ public class ActivityCalendarMappingTest {
         final SeasonProfile seasonProfile = seasonProfileList.get(0);
         final SeasonProfileDto seasonProfileDto = seasonProfileDtoList.get(0);
         assertEquals(seasonProfile.getSeasonProfileName(), seasonProfileDto.getSeasonProfileName());
-        this.testCosemDateTimeMapping(seasonProfile.getSeasonStart(), seasonProfileDto.getSeasonStart());
+        this.checkCosemDateTimeMapping(seasonProfile.getSeasonStart(), seasonProfileDto.getSeasonStart());
 
         final WeekProfile weekProfile = seasonProfile.getWeekProfile();
         final WeekProfileDto weekProfileDto = seasonProfileDto.getWeekProfile();
@@ -184,7 +183,7 @@ public class ActivityCalendarMappingTest {
     }
 
     // method to test mapping of Empty lists
-    private void testEmptyListMapping(final List<SeasonProfile> seasonProfileList,
+    private void checkEmptyListMapping(final List<SeasonProfile> seasonProfileList,
             final List<SeasonProfileDto> seasonProfileDtoList) {
 
         assertNotNull(seasonProfileList);
@@ -197,7 +196,7 @@ public class ActivityCalendarMappingTest {
     }
 
     // method to test mapping of CosemDateTime objects
-    private void testCosemDateTimeMapping(final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
+    private void checkCosemDateTimeMapping(final CosemDateTime cosemDateTime, final CosemDateTimeDto cosemDateTimeDto) {
 
         // make sure neither is null
         assertNotNull(cosemDateTime);

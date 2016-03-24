@@ -35,9 +35,7 @@ public class KeySetMappingTest {
         final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
 
         // check if mapping succeeded
-        assertNotNull(keySet);
         assertNotNull(keySetDto);
-
         assertNull(keySetDto.getAuthenticationKey());
         assertNull(keySetDto.getEncryptionKey());
     }
@@ -54,12 +52,9 @@ public class KeySetMappingTest {
         final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
 
         // check if mapping succeeded
-        assertNotNull(keySet);
         assertNotNull(keySetDto);
-
         assertNotNull(keySetDto.getAuthenticationKey());
         assertNotNull(keySetDto.getEncryptionKey());
-
         assertEquals(keySet.getAuthenticationKey().length, keySetDto.getAuthenticationKey().length);
         assertEquals(keySet.getEncryptionKey().length, keySetDto.getEncryptionKey().length);
     }
@@ -76,15 +71,11 @@ public class KeySetMappingTest {
         final KeySetDto keySetDto = this.configurationMapper.map(keySet, KeySetDto.class);
 
         // check if mapping succeeded
-        assertNotNull(keySet);
         assertNotNull(keySetDto);
-
         assertNotNull(keySetDto.getAuthenticationKey());
         assertNotNull(keySetDto.getEncryptionKey());
-
         assertEquals(keySet.getAuthenticationKey().length, keySetDto.getAuthenticationKey().length);
         assertEquals(keySet.getEncryptionKey().length, keySetDto.getEncryptionKey().length);
-
         assertEquals(keySet.getAuthenticationKey()[0], keySetDto.getAuthenticationKey()[0]);
         assertEquals(keySet.getEncryptionKey()[0], keySetDto.getEncryptionKey()[0]);
 
