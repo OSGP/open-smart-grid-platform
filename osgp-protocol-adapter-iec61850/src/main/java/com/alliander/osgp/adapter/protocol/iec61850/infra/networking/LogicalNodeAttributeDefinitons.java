@@ -39,10 +39,6 @@ public final class LogicalNodeAttributeDefinitons {
 
     public static final String PROPERTY_SWITCH_TYPE_ATTRIBUTE_STATE = "SwType.stVal";
 
-    private LogicalNodeAttributeDefinitons() {
-        // Private constructor to prevent instantiation of this class.
-    }
-
     /*
      * Property of CSLC Node.
      */
@@ -52,6 +48,10 @@ public final class LogicalNodeAttributeDefinitons {
      * Prefix of the relays' Logical Node.
      */
     private static final String LOGICAL_NODE_RELAY_PREFIX = "/XSWC";
+
+    private LogicalNodeAttributeDefinitons() {
+        // Private constructor to prevent instantiation of this class.
+    }
 
     /**
      * Returns the value of the Relay's logical node for the given index
