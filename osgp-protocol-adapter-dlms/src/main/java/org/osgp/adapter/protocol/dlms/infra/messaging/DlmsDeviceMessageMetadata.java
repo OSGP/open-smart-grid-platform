@@ -7,8 +7,6 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
-import java.util.Date;
-
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -31,7 +29,7 @@ public class DlmsDeviceMessageMetadata {
     private String ipAddress;
     private int retryCount;
     private int messagePriority;
-    private Date scheduleTime;
+    private Long scheduleTime;
 
     @Override
     public String toString() {
@@ -57,7 +55,7 @@ public class DlmsDeviceMessageMetadata {
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-        this.scheduleTime = (Date) message.getObjectProperty(Constants.SCHEDULE_TIME);
+        this.scheduleTime = message.getLongProperty(Constants.SCHEDULE_TIME);
         this.messagePriority = message.getJMSPriority();
     }
 
@@ -129,7 +127,7 @@ public class DlmsDeviceMessageMetadata {
         this.retryCount = retryCount;
     }
 
-    public Date getScheduleTime() {
+    public Long getScheduleTime() {
         return this.scheduleTime;
     }
 
