@@ -65,7 +65,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void setLight(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final List<LightValue> lightValues, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("setLight called for device {} with organisation {}", deviceIdentification,
                 organisationIdentification);
@@ -101,7 +101,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -138,7 +138,7 @@ public class AdHocManagementService extends AbstractService {
 
             final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
             for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getInternalId(), dos);
+                dosMap.put(dos.getExternalId(), dos);
             }
 
             deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
@@ -161,7 +161,7 @@ public class AdHocManagementService extends AbstractService {
 
     public void resumeSchedule(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final Integer index, final boolean isImmediate, final String messageType)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);

@@ -166,7 +166,7 @@ public class ConfigurationManagementService extends AbstractService {
             for (final DeviceOutputSetting dos : outputSettings) {
                 if (dos.getOutputType().equals(RelayType.TARIFF_REVERSED)) {
                     for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
-                        if (rm.getIndex() == dos.getInternalId() && rm.getRelayType().equals(RelayType.TARIFF)) {
+                        if (rm.getIndex() == dos.getExternalId() && rm.getRelayType().equals(RelayType.TARIFF)) {
                             rm.changeRelayType(RelayType.TARIFF_REVERSED);
                         }
                     }
