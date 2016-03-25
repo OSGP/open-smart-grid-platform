@@ -10,12 +10,13 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-public class EventMessageDataContainerDto implements Serializable {
+public class EventMessageDataContainerDto implements Serializable, ActionValueObjectResponseDto {
 
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = 1050716134214636543L;
+    private static final long serialVersionUID = -6307300080258613848L;
+
     private List<EventDto> events;
 
     public EventMessageDataContainerDto(final List<EventDto> events) {
