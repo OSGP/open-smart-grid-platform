@@ -19,14 +19,12 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
-import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainSmartMeteringBundleService")
@@ -77,16 +75,22 @@ public class BundleService {
 
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final EventMessageDataContainerDto eventMessageDataContainerDto) {
+            final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto) {
 
-        final EventMessageDataContainer eventMessageDataContainer = this.managementMapper.map(
-                eventMessageDataContainerDto, EventMessageDataContainer.class);
+        // convert bundleResponseMessageDataContainerDto back to core object
+
+        // final EventMessageDataContainer eventMessageDataContainer =
+        // this.managementMapper.map(
+        // eventMessageDataContainerDto, EventMessageDataContainer.class);
 
         // Send the response containing the events to the webservice-adapter
-        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                responseMessageResultType, osgpException, eventMessageDataContainer,
-                deviceMessageMetadata.getMessagePriority());
-        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+        // final ResponseMessage responseMessage = new
+        // ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+        // deviceMessageMetadata.getOrganisationIdentification(),
+        // deviceMessageMetadata.getDeviceIdentification(),
+        // responseMessageResultType, osgpException, eventMessageDataContainer,
+        // deviceMessageMetadata.getMessagePriority());
+        // this.webServiceResponseMessageSender.send(responseMessage,
+        // deviceMessageMetadata.getMessageType());
     }
 }
