@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ReadAlarmRegisterRequestDto implements Serializable {
+public class ReadAlarmRegisterRequestDto implements Serializable, ActionValueObjectDto {
     private static final long serialVersionUID = 3751586818507193990L;
 
     private String deviceIdentification;
