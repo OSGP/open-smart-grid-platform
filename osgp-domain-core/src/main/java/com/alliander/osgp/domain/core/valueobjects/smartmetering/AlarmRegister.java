@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class AlarmRegister implements Serializable {
+public class AlarmRegister implements Serializable, ActionValueResponseObject {
 
     private static final long serialVersionUID = 2319359505656305783L;
 

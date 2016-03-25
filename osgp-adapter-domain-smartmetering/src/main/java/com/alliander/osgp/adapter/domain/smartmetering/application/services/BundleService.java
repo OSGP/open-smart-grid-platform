@@ -19,12 +19,14 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
+import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 
 @Service(value = "domainSmartMeteringBundleService")
@@ -48,6 +50,9 @@ public class BundleService {
 
     @Autowired
     private ActionMapperService actionMapperService;
+
+    @Autowired
+    private ActionMapperResponseService actionMapperResponseService;
 
     public BundleService() {
         // Parameterless constructor required for transactions...
@@ -78,19 +83,20 @@ public class BundleService {
             final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto) {
 
         // convert bundleResponseMessageDataContainerDto back to core object
+        final BundleResponseMessageDataContainerDto fd;
+        final BundleResponseMessageDataContainer bundleResponseMessageDataContainer = this.actionMapperResponseService
+                .mapAllActions(bundleResponseMessageDataContainerDto);
 
         // final EventMessageDataContainer eventMessageDataContainer =
         // this.managementMapper.map(
         // eventMessageDataContainerDto, EventMessageDataContainer.class);
 
-        // Send the response containing the events to the webservice-adapter
-        // final ResponseMessage responseMessage = new
-        // ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-        // deviceMessageMetadata.getOrganisationIdentification(),
-        // deviceMessageMetadata.getDeviceIdentification(),
-        // responseMessageResultType, osgpException, eventMessageDataContainer,
-        // deviceMessageMetadata.getMessagePriority());
-        // this.webServiceResponseMessageSender.send(responseMessage,
-        // deviceMessageMetadata.getMessageType());
+        // Send the response final containing the events final to the
+        // webservice-adapter
+        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                responseMessageResultType, osgpException, bundleResponseMessageDataContainer,
+                deviceMessageMetadata.getMessagePriority());
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }

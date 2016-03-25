@@ -10,7 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class MeterReadsGas implements Serializable {
+public class MeterReadsGas implements Serializable, ActionValueResponseObject {
 
     private static final long serialVersionUID = -156966569210717654L;
 
