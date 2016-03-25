@@ -13,7 +13,9 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class SpecialDaysRequestData implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public class SpecialDaysRequestData implements Serializable, ActionValueObject {
 
     private static final long serialVersionUID = -5161574052268470981L;
 
@@ -26,6 +28,12 @@ public class SpecialDaysRequestData implements Serializable {
 
     public List<SpecialDay> getSpecialDays() {
         return this.specialDays;
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 
 }

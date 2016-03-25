@@ -57,38 +57,44 @@ public class ActionMapperService {
     private static Map<Class, ConfigurableMapper> classToMapperMap = new HashMap<Class, ConfigurableMapper>();
 
     // @formatter:off
+    /**
+     * Specifies whith mapper to use for the ws class received
+     */
     @PostConstruct
     private void postConstruct() {
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,                        this.adhocMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,      this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest.class,         this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest.class, this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,                this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,                  this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,          this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,            this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,                        this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,                         this.installationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,                  this.managementMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest.class,             this.monitoringMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest.class,         this.monitoringMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,                            this.adhocMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,          this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,            this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class, this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,                    this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,                      this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,              this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,                this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,                            this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,                             this.installationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,                      this.managementMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,             this.monitoringMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest.class,             this.monitoringMapper);
     }
 
+    /**
+     * Specifies to which core object the ws object needs to be mapped
+     */
     private static Map<Class, Class<? extends Serializable>> classMap = new HashMap<Class, Class<? extends Serializable>>();
     static {
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,       com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest.class,          com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequest.class,  com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,                   com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,           com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,             com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,                         com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,                          com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,                   com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest.class,              com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest.class,          com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,                            com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,          com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,            com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class, com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,                    com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,                      com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,              com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,                com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,                            com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,                             com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,                      com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,             com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest.class,             com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
     }
     // @formatter:on
 

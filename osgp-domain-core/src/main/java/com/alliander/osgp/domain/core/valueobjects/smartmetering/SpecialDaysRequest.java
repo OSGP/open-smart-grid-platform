@@ -11,9 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-
-public class SpecialDaysRequest implements Serializable, ActionValueObject {
+public class SpecialDaysRequest implements Serializable {
 
     private static final long serialVersionUID = 2863312762786033679L;
 
@@ -35,9 +33,4 @@ public class SpecialDaysRequest implements Serializable, ActionValueObject {
         return this.specialDaysRequestData;
     }
 
-    @Override
-    public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
-    }
 }

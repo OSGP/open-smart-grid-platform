@@ -60,7 +60,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public BundleAsyncResponse bundleRequest(@OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @RequestPayload final BundleRequest request)
-                    throws OsgpException {
+            throws OsgpException {
 
         LOGGER.info("Bundle request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -77,9 +77,6 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             final List<? extends Action> actionList = actions.getActionList();
 
             final List<ActionValueObject> actionValueObjectList = this.actionMapperService.mapAllActions(actionList);
-
-            // this.bundleMapper.mapAsList(actionList,
-            // ActionValueObject.class);
 
             final String correlationUid = this.bundleService.enqueueBundleRequest(organisationIdentification,
                     deviceIdentification, actionValueObjectList,
