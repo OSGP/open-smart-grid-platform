@@ -22,6 +22,11 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_POSITION = ".Pos";
 
     /**
+     * Property of CSLC Node , clock
+     * */
+    public static final String PROPERTY_CLOCK = ".Clock";
+
+    /**
      * Property of Logical Node, for relays, SwitchType
      */
     public static final String PROPERTY_SWITCH_TYPE = ".SwType";
@@ -30,6 +35,16 @@ public final class LogicalNodeAttributeDefinitons {
      * Property of CSLC Node, software configuration.
      */
     public static final String PROPERTY_SOFTWARE_CONFIGURATION = ".SWCf";
+
+    /**
+     * Property of CSLC Node, Ip configuration.
+     */
+    public static final String PROPERTY_IP_CONFIGURATION = ".IPCf";
+
+    /**
+     * Property of CSLC Node, reg configuration.
+     */
+    public static final String PROPERTY_REG_CONFIGURATION = ".Reg";
 
     // SWCf
 

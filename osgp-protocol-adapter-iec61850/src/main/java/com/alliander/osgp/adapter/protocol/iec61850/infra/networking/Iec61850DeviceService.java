@@ -12,7 +12,9 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
+import org.openmuc.openiec61850.BdaInt16;
 import org.openmuc.openiec61850.BdaInt8;
+import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
@@ -228,7 +230,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
             final ServerModel serverModel, final ClientAssociation clientAssociation)
-                    throws ConnectionFailureException, ProtocolAdapterException {
+            throws ConnectionFailureException, ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {
@@ -383,26 +385,74 @@ public class Iec61850DeviceService implements DeviceService {
                         shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
                         longTermHistoryIntervalType);
 
-                // CSLC.Reg.srvAddr
-                configuration.setOspgIpAddress("");
+                // getting the reg configuration values
 
-                // CSLC.IPCf.ipAddr
-                configuration.setDeviceFixIpValue("");
-                // CSLC.IPCf.enbDHCP
-                configuration.setDhcpEnabled(false);
+                final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
 
-                // CSLC.SWCf.osRise
-                configuration.setAstroGateSunRiseOffset(0);
-                // CSLC.SWCf.osSet
-                configuration.setAstroGateSunSetOffset(0);
+                LOGGER.info("regObjectReference: {}", regObjectReference);
 
-                // CSLC.Clock.syncPer
-                configuration.setCommunicationTimeout(0);
-                // CSLC.Clock.enbDst
-                configuration.setAutomaticSummerTimingEnabled(false);
-                // CSLC.Clock.dstBegT
+                final FcModelNode regConfiguration = (FcModelNode) serverModel.findModelNode(regObjectReference, Fc.CF);
+
+                final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr");
+
+                configuration.setOspgIpAddress(new String(serverAddress.getValue()));
+
+                // getting the ip configuration values
+
+                final String ipcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_IP_CONFIGURATION;
+
+                LOGGER.info("ipcfObjectReference: {}", ipcfObjectReference);
+
+                final FcModelNode ipConfiguration = (FcModelNode) serverModel.findModelNode(ipcfObjectReference, Fc.CF);
+
+                final BdaVisibleString deviceFixIpValue = (BdaVisibleString) ipConfiguration.getChild("ipAddr");
+                final BdaBoolean dhcpEnabled = (BdaBoolean) ipConfiguration.getChild("enbDHCP");
+
+                configuration.setDeviceFixIpValue(new String(deviceFixIpValue.getValue()));
+                configuration.setDhcpEnabled(dhcpEnabled.getValue());
+
+                // getting the software configuration values
+
+                final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
+
+                LOGGER.info("swcfObjectReference: {}", swcfObjectReference);
+
+                final FcModelNode softwareConfiguration = (FcModelNode) serverModel.findModelNode(swcfObjectReference,
+                        Fc.CF);
+
+                final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration.getChild("osRise");
+                final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration.getChild("osSet");
+
+                configuration.setAstroGateSunRiseOffset((int) astroGateSunRiseOffset.getValue());
+                configuration.setAstroGateSunSetOffset((int) astroGateSunSetOffset.getValue());
+
+                // getting the clock configuration values
+
+                final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
+
+                LOGGER.info("clockObjectReference: {}", clockObjectReference);
+
+                final FcModelNode clockConfiguration = (FcModelNode) serverModel.findModelNode(clockObjectReference,
+                        Fc.CF);
+
+                final BdaInt16 communicationTimeout = (BdaInt16) clockConfiguration.getChild("syncPer");
+                final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean) clockConfiguration.getChild("enbDst");
+                final BdaVisibleString summerTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstBegT");
+                final BdaVisibleString winterTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstEndT");
+
+                configuration.setCommunicationTimeout((int) communicationTimeout.getValue());
+                configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled.getValue());
+                // TODO hardcoded current time for now
                 configuration.setSummerTimeDetails(new DateTime());
-                // CSLC.Clock.dstEndT
+                // TODO hardcoded current time for now
                 configuration.setWinterTimeDetails(new DateTime());
 
                 return configuration;
