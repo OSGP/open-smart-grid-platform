@@ -130,35 +130,50 @@ public class ActionMapperService {
 
         for (final ActionValueObject action : bundleMessageDataContainer.getBundleList()) {
 
-            final ConfigurableMapper mapper = classToMapperMap.get(action.getClass());
-
-            if (mapper == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                        ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                                "No mapper for Action Value Object class: " + action.getClass().getName()));
-            }
-
-            final Class<? extends ActionValueObjectDto> clazz = classMap.get(action.getClass());
-
-            if (clazz == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                        ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                                "No Action Value Object DTO class for Action Value Object class: "
-                                        + action.getClass().getName()));
-            }
-
-            final ActionValueObjectDto actionValueObjectDto = mapper.map(action, clazz);
-
-            if (actionValueObjectDto == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                        ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                                "No Action Value Object DTO for Action Value Object of class: "
-                                        + action.getClass().getName()));
-            }
+            final ConfigurableMapper mapper = this.getMapper(action);
+            final Class<? extends ActionValueObjectDto> clazz = this.getClazz(action);
+            final ActionValueObjectDto actionValueObjectDto = this.getActionValueObjectDto(action, mapper, clazz);
 
             actionValueObjectDtoList.add(actionValueObjectDto);
         }
 
         return new BundleMessageDataContainerDto(actionValueObjectDtoList);
+    }
+
+    private ActionValueObjectDto getActionValueObjectDto(final ActionValueObject action,
+            final ConfigurableMapper mapper, final Class<? extends ActionValueObjectDto> clazz)
+                    throws FunctionalException {
+        final ActionValueObjectDto actionValueObjectDto = mapper.map(action, clazz);
+
+        if (actionValueObjectDto == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                            "No Action Value Object DTO for Action Value Object of class: "
+                                    + action.getClass().getName()));
+        }
+        return actionValueObjectDto;
+    }
+
+    private Class<? extends ActionValueObjectDto> getClazz(final ActionValueObject action) throws FunctionalException {
+        final Class<? extends ActionValueObjectDto> clazz = classMap.get(action.getClass());
+
+        if (clazz == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                            "No Action Value Object DTO class for Action Value Object class: "
+                                    + action.getClass().getName()));
+        }
+        return clazz;
+    }
+
+    private ConfigurableMapper getMapper(final ActionValueObject action) throws FunctionalException {
+        final ConfigurableMapper mapper = classToMapperMap.get(action.getClass());
+
+        if (mapper == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+                            "No mapper for Action Value Object class: " + action.getClass().getName()));
+        }
+        return mapper;
     }
 }

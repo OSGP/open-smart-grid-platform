@@ -131,33 +131,47 @@ public class ActionMapperService {
 
         for (final Action action : actionList) {
 
-            final ConfigurableMapper mapper = classToMapperMap.get(action.getClass());
-
-            if (mapper == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                        ComponentType.WS_SMART_METERING, new RuntimeException("No mapper for Action class: "
-                                + action.getClass().getName()));
-            }
-
-            final Class<? extends ActionValueObject> clazz = classMap.get(action.getClass());
-
-            if (clazz == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                        ComponentType.WS_SMART_METERING, new RuntimeException(
-                                "No Value Object class for Action class: " + action.getClass().getName()));
-            }
-
-            final ActionValueObject actionValueObject = mapper.map(action, clazz);
-
-            if (actionValueObject == null) {
-                throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                        ComponentType.WS_SMART_METERING, new RuntimeException("No Value Object for Action of class: "
-                                + action.getClass().getName()));
-            }
+            final ConfigurableMapper mapper = this.getMapper(action);
+            final Class<? extends ActionValueObject> clazz = this.getClazz(action);
+            final ActionValueObject actionValueObject = this.getActionValueObject(action, mapper, clazz);
 
             actionValueObjectList.add(actionValueObject);
         }
 
         return actionValueObjectList;
+    }
+
+    private ActionValueObject getActionValueObject(final Action action, final ConfigurableMapper mapper,
+            final Class<? extends ActionValueObject> clazz) throws FunctionalException {
+        final ActionValueObject actionValueObject = mapper.map(action, clazz);
+
+        if (actionValueObject == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+                    ComponentType.WS_SMART_METERING, new RuntimeException("No Value Object for Action of class: "
+                            + action.getClass().getName()));
+        }
+        return actionValueObject;
+    }
+
+    private Class<? extends ActionValueObject> getClazz(final Action action) throws FunctionalException {
+        final Class<? extends ActionValueObject> clazz = classMap.get(action.getClass());
+
+        if (clazz == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+                    ComponentType.WS_SMART_METERING, new RuntimeException("No Value Object class for Action class: "
+                            + action.getClass().getName()));
+        }
+        return clazz;
+    }
+
+    private ConfigurableMapper getMapper(final Action action) throws FunctionalException {
+        final ConfigurableMapper mapper = classToMapperMap.get(action.getClass());
+
+        if (mapper == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+                    ComponentType.WS_SMART_METERING, new RuntimeException("No mapper for Action class: "
+                            + action.getClass().getName()));
+        }
+        return mapper;
     }
 }
