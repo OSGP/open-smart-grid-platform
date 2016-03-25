@@ -136,8 +136,8 @@ public class Iec61850DeviceService implements DeviceService {
                 // switched
                 if (lightValue.getIndex() == 0) {
                     for (final DeviceOutputSetting deviceOutputSetting : ssld.findByRelayType(RelayType.LIGHT)) {
-                        this.switchLightRelay(deviceRequest, deviceOutputSetting.getInternalId(), lightValue.isOn(),
-                                serverModel, clientAssociation);
+                        this.switchLightRelay(deviceOutputSetting.getInternalId(), lightValue.isOn(), serverModel,
+                                clientAssociation);
                     }
                 } else {
 
@@ -150,8 +150,8 @@ public class Iec61850DeviceService implements DeviceService {
                                 ComponentType.PROTOCOL_IEC61850);
                     }
 
-                    this.switchLightRelay(deviceRequest, deviceOutputSetting.getInternalId(), lightValue.isOn(),
-                            serverModel, clientAssociation);
+                    this.switchLightRelay(deviceOutputSetting.getInternalId(), lightValue.isOn(), serverModel,
+                            clientAssociation);
                 }
             }
         } catch (final ConnectionFailureException se) {
@@ -228,9 +228,8 @@ public class Iec61850DeviceService implements DeviceService {
     // PRIVATE METHODS =
     // =================
 
-    private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
-            final ServerModel serverModel, final ClientAssociation clientAssociation)
-            throws ConnectionFailureException, ProtocolAdapterException {
+    private void switchLightRelay(final int index, final boolean on, final ServerModel serverModel,
+            final ClientAssociation clientAssociation) throws ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {
