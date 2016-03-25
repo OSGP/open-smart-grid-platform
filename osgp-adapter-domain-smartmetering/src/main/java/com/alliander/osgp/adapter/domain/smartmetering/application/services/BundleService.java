@@ -20,8 +20,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -48,6 +48,9 @@ public class BundleService {
     @Autowired
     private ManagementMapper managementMapper;
 
+    @Autowired
+    private ActionMapperService actionMapperService;
+
     public BundleService() {
         // Parameterless constructor required for transactions...
     }
@@ -60,12 +63,14 @@ public class BundleService {
 
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
-        // hiero
+
+        final BundleMessageDataContainerDto bundleMessageDataContainerDto = this.actionMapperService
+                .mapAllActions(bundleMessageDataContainer);
+
         LOGGER.info("Sending request message to core.");
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeter.getIpAddress(), this.managementMapper.map(bundleMessageDataContainer,
-                        FindEventsQueryMessageDataContainerDto.class));
+                smartMeter.getIpAddress(), bundleMessageDataContainerDto);
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority());
     }
