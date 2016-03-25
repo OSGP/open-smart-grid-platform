@@ -22,6 +22,11 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_POSITION = ".Pos";
 
     /**
+     * Property of Logical Node, for relays, SwitchType
+     */
+    public static final String PROPERTY_SWITCH_TYPE = ".SwType";
+
+    /**
      * Property of CSLC Node, software configuration.
      */
     public static final String PROPERTY_SOFTWARE_CONFIGURATION = ".SWCf";
@@ -37,7 +42,7 @@ public final class LogicalNodeAttributeDefinitons {
      */
     public static final String PROPERTY_POSITION_ATTRIBUTE_CONTROL = ".Oper.ctlVal";
 
-    public static final String PROPERTY_SWITCH_TYPE_ATTRIBUTE_STATE = "SwType.stVal";
+    public static final String PROPERTY_SWITCH_TYPE_ATTRIBUTE_STATE = "SwType";
 
     /*
      * Property of CSLC Node.

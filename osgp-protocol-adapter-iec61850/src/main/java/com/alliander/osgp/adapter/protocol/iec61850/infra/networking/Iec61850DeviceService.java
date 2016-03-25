@@ -10,6 +10,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -30,7 +31,9 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDevi
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceRelayType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
+import com.alliander.osgp.adapter.protocol.iec61850.exceptions.InvalidConfigurationException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataService;
@@ -225,7 +228,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void switchLightRelay(final SetLightDeviceRequest deviceRequest, final int index, final boolean on,
             final ServerModel serverModel, final ClientAssociation clientAssociation)
-            throws ConnectionFailureException, ProtocolAdapterException {
+                    throws ConnectionFailureException, ProtocolAdapterException {
 
         // Commands don't return anything, so returnType is Void
         final Function<Void> function = new Function<Void>() {
@@ -348,29 +351,89 @@ public class Iec61850DeviceService implements DeviceService {
         // Hardcoded (not supported)
         final LongTermIntervalType longTermHistoryIntervalType = LongTermIntervalType.DAYS;
 
-        // coverting device outputsettings to relayMap values
-        final RelayConfiguration relayConfiguration = new RelayConfiguration(this.mapper.mapAsList(
-                ssld.getOutputSettings(), RelayMap.class));
-
         // creating the Function that will be retried, if necessary
         final Function<Configuration> function = new Function<Configuration>() {
 
             @Override
             public Configuration apply() throws Exception {
 
+                final List<RelayMap> relayMaps = new ArrayList<>();
+
+                for (final DeviceOutputSetting deviceOutputSetting : ssld.getOutputSettings()) {
+
+                    // TODO uncomment this code when XSWC1.SwType.stVal
+                    // functions properly. Exception handling hasn't been worked
+                    // out for this flow yet!
+                    // Iec61850DeviceService.this.checkRelayTypes(deviceOutputSetting,
+                    // serverModel);
+
+                    relayMaps.add(Iec61850DeviceService.this.mapper.map(deviceOutputSetting, RelayMap.class));
+                }
+
+                final RelayConfiguration relayConfiguration = new RelayConfiguration(relayMaps);
+
+                // PSLD specific => just sending null so it'll be ignored
                 final DaliConfiguration daliConfiguration = null;
 
                 // TODO Lighttype is hardcoded, but it will be the same code as
                 // in getStatusFromDevice, so I won't copy it here for now
                 final LightType lightType = LightType.RELAY;
 
-                return new Configuration(lightType, daliConfiguration, relayConfiguration,
+                final Configuration configuration = new Configuration(lightType, daliConfiguration, relayConfiguration,
                         shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
                         longTermHistoryIntervalType);
+
+                // CSLC.Reg.srvAddr
+                configuration.setOspgIpAddress("");
+
+                // CSLC.IPCf.ipAddr
+                configuration.setDeviceFixIpValue("");
+                // CSLC.IPCf.enbDHCP
+                configuration.setDhcpEnabled(false);
+
+                // CSLC.SWCf.osRise
+                configuration.setAstroGateSunRiseOffset(0);
+                // CSLC.SWCf.osSet
+                configuration.setAstroGateSunSetOffset(0);
+
+                // CSLC.Clock.syncPer
+                configuration.setCommunicationTimeout(0);
+                // CSLC.Clock.enbDst
+                configuration.setAutomaticSummerTimingEnabled(false);
+                // CSLC.Clock.dstBegT
+                configuration.setSummerTimeDetails(new DateTime());
+                // CSLC.Clock.dstEndT
+                configuration.setWinterTimeDetails(new DateTime());
+
+                return configuration;
+
             }
         };
 
         return this.iec61850Client.sendCommandWithRetry(function);
 
+    }
+
+    // This code will be used in the future
+    private void checkRelayTypes(final DeviceOutputSetting deviceOutputSetting, final ServerModel serverModel)
+            throws InvalidConfigurationException {
+
+        final String relaySwitchTypeObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(deviceOutputSetting.getInternalId())
+                + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE;
+
+        LOGGER.info("relaySwitchTypeObjectReference: {}", relaySwitchTypeObjectReference);
+
+        final FcModelNode switchTypeState = (FcModelNode) serverModel.findModelNode(relaySwitchTypeObjectReference,
+                Fc.ST);
+        final BdaInt8 state = (BdaInt8) switchTypeState.getChild("stVal");
+
+        if (DeviceRelayType.getByIndex(state.getValue()).name() != deviceOutputSetting.getRelayType().name()) {
+            // Inconsistent configuration, throwing exception
+            throw new InvalidConfigurationException(String.format(
+                    "RelayType of relay %d, {%s} is nconsisntent with the device output settings {%s}",
+                    deviceOutputSetting.getExternalId(), DeviceRelayType.getByIndex(state.getValue()),
+                    deviceOutputSetting.getRelayType()));
+        }
     }
 }
