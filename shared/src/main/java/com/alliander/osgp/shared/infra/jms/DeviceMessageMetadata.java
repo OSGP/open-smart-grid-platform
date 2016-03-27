@@ -47,7 +47,7 @@ public class DeviceMessageMetadata {
     public DeviceMessageMetadata(final Message message) throws JMSException {
         this(message.getStringProperty(Constants.DEVICE_IDENTIFICATION), message
                 .getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(), message
-                .getJMSType(), message.getJMSPriority());
+                .getJMSType(), message.getJMSPriority(), message.getLongProperty(Constants.SCHEDULE_TIME));
     }
 
     public DeviceMessageMetadata(final ProtocolResponseMessage message) {
