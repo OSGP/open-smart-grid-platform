@@ -71,7 +71,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
                     organisationIdentification, device.getDeviceIdentification(), device,
-                    MessagePriorityEnum.getMessagePriority(messagePriority), null);
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());

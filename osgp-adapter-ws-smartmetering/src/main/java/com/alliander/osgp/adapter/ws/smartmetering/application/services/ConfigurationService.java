@@ -61,7 +61,7 @@ public class ConfigurationService {
      */
     public String requestSetAdministrativeStatus(final String organisationIdentification,
             final String deviceIdentification, final AdministrativeStatusType requestData, final int messagePriority,
-            final Date scheduleTime) throws FunctionalException {
+            final Long scheduleTime) throws FunctionalException {
         return this.enqueueSetAdministrativeStatus(organisationIdentification, deviceIdentification, requestData,
                 messagePriority,scheduleTime);
     }
@@ -69,7 +69,7 @@ public class ConfigurationService {
     public String enqueueSetAdministrativeStatus(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification,
             @Identification final AdministrativeStatusType requestData, final int messagePriority,
-            final Date scheduleTime) throws FunctionalException {
+            final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -103,13 +103,13 @@ public class ConfigurationService {
     }
 
     public String requestGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Date scheduleTime)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
         return this.enqueueGetAdministrativeStatus(organisationIdentification, deviceIdentification, messagePriority,scheduleTime);
     }
 
     private String enqueueGetAdministrativeStatus(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Date scheduleTime)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -144,7 +144,7 @@ public class ConfigurationService {
 
     public String enqueueSetSpecialDaysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SpecialDaysRequest requestData,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -178,7 +178,7 @@ public class ConfigurationService {
 
     public String enqueueSetConfigurationObjectRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SetConfigurationObjectRequest requestData,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -212,7 +212,7 @@ public class ConfigurationService {
 
     public String enqueueSetPushSetupAlarmRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PushSetupAlarm pushSetupAlarm,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -246,7 +246,7 @@ public class ConfigurationService {
 
     public String enqueueSetPushSetupSmsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PushSetupSms pushSetupSms,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -280,7 +280,7 @@ public class ConfigurationService {
 
     public String enqueueSetAlarmNotificationsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final AlarmNotifications alarmSwitches,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -309,7 +309,7 @@ public class ConfigurationService {
 
     public String enqueueSetEncryptionKeyExchangeOnGMeterRequest(
             @Identification final String organisationIdentification, @Identification final String deviceIdentification,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -338,7 +338,7 @@ public class ConfigurationService {
 
     public String enqueueSetActivityCalendarRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActivityCalendar activityCalendar,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -372,7 +372,7 @@ public class ConfigurationService {
 
     public String enqueueReplaceKeysRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final KeySet keySet, final int messagePriority,
-            final Date scheduleTime) throws FunctionalException {
+            final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

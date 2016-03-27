@@ -57,7 +57,7 @@ public class MonitoringService {
 
     public String enqueuePeriodicMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final PeriodicMeterReadsQuery requestData,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -96,7 +96,7 @@ public class MonitoringService {
 
     public String enqueueActualMeterReadsRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ActualMeterReadsQuery requestData,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -135,7 +135,7 @@ public class MonitoringService {
 
     public String enqueueReadAlarmRegisterRequestData(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final ReadAlarmRegisterRequest requestData,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

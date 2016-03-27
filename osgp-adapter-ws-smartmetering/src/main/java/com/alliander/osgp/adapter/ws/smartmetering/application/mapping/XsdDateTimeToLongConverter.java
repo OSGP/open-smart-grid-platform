@@ -1,6 +1,5 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -18,18 +17,18 @@ import org.slf4j.LoggerFactory;
  * @author dev
  *
  */
-public class XsdDateTimeToDateConverter extends BidirectionalConverter<String, Date> {
+public class XsdDateTimeToLongConverter extends BidirectionalConverter<String, Long> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(XsdDateTimeToDateConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XsdDateTimeToLongConverter.class);
 
     @Override
-    public Date convertTo(final String source, final Type<Date> destinationType) {
+    public Long convertTo(final String source, final Type<Long> destinationType) {
         if (source == null) {
             return null;
         }
         try {
-            return new Date(DatatypeFactory.newInstance().newXMLGregorianCalendar(source).toGregorianCalendar()
-                    .getTimeInMillis());
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(source).toGregorianCalendar()
+                    .getTimeInMillis();
         } catch (final DatatypeConfigurationException e) {
             LOGGER.warn("wrong datetime " + source, e);
             return null;
@@ -37,12 +36,12 @@ public class XsdDateTimeToDateConverter extends BidirectionalConverter<String, D
     }
 
     @Override
-    public String convertFrom(final Date source, final Type<String> destinationType) {
+    public String convertFrom(final Long source, final Type<String> destinationType) {
         if (source == null) {
             return null;
         }
         final GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(source);
+        cal.setTimeInMillis(source);
         try {
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(cal).toXMLFormat();
         } catch (final DatatypeConfigurationException e) {

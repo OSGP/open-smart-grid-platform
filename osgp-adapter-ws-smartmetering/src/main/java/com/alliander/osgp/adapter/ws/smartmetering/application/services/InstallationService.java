@@ -43,7 +43,7 @@ public class InstallationService {
 
     public String enqueueAddSmartMeterRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SmartMeteringDevice device,
-            final int messagePriority, final Date scheduleTime) {
+            final int messagePriority, final Long scheduleTime) {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 

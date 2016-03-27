@@ -87,7 +87,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class),
-                            MessagePriorityEnum.getMessagePriority(messagePriority), null);
+                    MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
+                            Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());

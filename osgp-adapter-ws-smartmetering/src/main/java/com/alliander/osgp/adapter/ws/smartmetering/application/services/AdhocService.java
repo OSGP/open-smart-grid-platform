@@ -51,7 +51,7 @@ public class AdhocService {
 
     public String enqueueSynchronizeTimeRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final SynchronizeTimeRequest synchronizeTimeRequest,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -84,7 +84,7 @@ public class AdhocService {
     }
 
     public String enqueueSendWakeUpSmsRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Date scheduleTime)
+            final String deviceIdentification, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -120,7 +120,7 @@ public class AdhocService {
 
     public String enqueueGetSmsDetailsRequest(final String organisationIdentification,
             final String deviceIdentification, final SmsDetails smsDetails, final int messagePriority,
-            final Date scheduleTime) throws FunctionalException {
+            final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -154,7 +154,7 @@ public class AdhocService {
 
     public String enqueueRetrieveConfigurationObjectsRequest(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, final RetrieveConfigurationObjectsRequest request,
-            final int messagePriority, final Date scheduleTime) throws FunctionalException {
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);

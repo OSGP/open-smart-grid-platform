@@ -73,7 +73,7 @@ public class ManagementService {
     }
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<FindEventsQuery> findEventsQueryList, final int messagePriority, final Date scheduleTime)
+            final List<FindEventsQuery> findEventsQueryList, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);

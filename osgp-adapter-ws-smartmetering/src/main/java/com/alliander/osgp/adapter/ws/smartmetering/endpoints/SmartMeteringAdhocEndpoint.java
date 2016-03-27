@@ -65,9 +65,11 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest(
                 request.getDeviceIdentification());
 
-        final String correlationUid = this.adhocService.enqueueSynchronizeTimeRequest(organisationIdentification,
-                synchronizeTimeRequest.getDeviceIdentification(), synchronizeTimeRequest,
-                MessagePriorityEnum.getMessagePriority(messagePriority), null);
+        final String correlationUid = this.adhocService
+                .enqueueSynchronizeTimeRequest(organisationIdentification,
+                        synchronizeTimeRequest.getDeviceIdentification(), synchronizeTimeRequest,
+                        MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.adhocMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
@@ -108,7 +110,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                 .createSendWakeupSmsAsyncResponse();
 
         final String correlationUid = this.adhocService.enqueueSendWakeUpSmsRequest(organisationIdentification,
-                request.getDeviceIdentification(), MessagePriorityEnum.getMessagePriority(messagePriority), null);
+                request.getDeviceIdentification(), MessagePriorityEnum.getMessagePriority(messagePriority),
+                this.adhocMapper.map(scheduleTime, Long.class));
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(request.getDeviceIdentification());
@@ -156,9 +159,10 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final GetSmsDetailsAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
                 .createGetSmsDetailsAsyncResponse();
 
-        final String correlationUid = this.adhocService.enqueueGetSmsDetailsRequest(organisationIdentification,
-                smsDetails.getDeviceIdentification(), smsDetails,
-                MessagePriorityEnum.getMessagePriority(messagePriority), null);
+        final String correlationUid = this.adhocService
+                .enqueueGetSmsDetailsRequest(organisationIdentification, smsDetails.getDeviceIdentification(),
+                        smsDetails, MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.adhocMapper.map(scheduleTime, Long.class));
 
         asyncResponse.setCorrelationUid(correlationUid);
         asyncResponse.setDeviceIdentification(smsDetails.getDeviceIdentification());
@@ -207,7 +211,8 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         final String correlationUid = this.adhocService.enqueueRetrieveConfigurationObjectsRequest(
                 organisationIdentification, retrieveConfigurationObjectsRequest.getDeviceIdentification(),
-                retrieveConfigurationObjectsRequest, MessagePriorityEnum.getMessagePriority(messagePriority), null);
+                retrieveConfigurationObjectsRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
+                this.adhocMapper.map(scheduleTime, Long.class));
 
         response.setCorrelationUid(correlationUid);
         response.setDeviceIdentification(request.getDeviceIdentification());
