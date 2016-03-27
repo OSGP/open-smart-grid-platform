@@ -23,7 +23,7 @@ public class PushSetupAlarmDto extends AbstractPushSetupDto {
         }
     }
 
-    private PushSetupAlarmDto(final CosemObisCodeDto logicalName, final List<CosemObjectDefinitionDto> pushObjectList,
+    public PushSetupAlarmDto(final CosemObisCodeDto logicalName, final List<CosemObjectDefinitionDto> pushObjectList,
             final SendDestinationAndMethodDto sendDestinationAndMethod,
             final List<WindowElementDto> communicationWindow, final Integer randomisationStartInterval,
             final Integer numberOfRetries, final Integer repetitionDelay) {

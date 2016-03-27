@@ -18,7 +18,7 @@ public class ConfigurationFlagsDto implements Serializable {
 
     private static final long serialVersionUID = 8360475869038077578L;
 
-    private final List<ConfigurationFlagDto> configurationFlag;
+    private List<ConfigurationFlagDto> configurationFlag;
 
     public ConfigurationFlagsDto(final List<ConfigurationFlagDto> configurationFlag) {
         this.configurationFlag = new ArrayList<>(configurationFlag);
@@ -26,5 +26,9 @@ public class ConfigurationFlagsDto implements Serializable {
 
     public List<ConfigurationFlagDto> getConfigurationFlag() {
         return Collections.unmodifiableList(this.configurationFlag);
+    }
+
+    public void setConfigurationFlag(final List<ConfigurationFlagDto> configurationFlag) {
+        this.configurationFlag = configurationFlag;
     }
 }
