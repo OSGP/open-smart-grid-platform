@@ -79,7 +79,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         LOGGER.debug("Incoming PeriodicMeterReadsRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, MessagePriorityEnum.getMessagePriority(messagePriority), null);
+                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
     }
 
     @PayloadRoot(localPart = "PeriodicMeterReadsGasRequest", namespace = SMARTMETER_MONITORING_NAMESPACE)
@@ -92,11 +92,11 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
         LOGGER.debug("Incoming PeriodicMeterReadsGasRequest for meter: {}.", request.getDeviceIdentification());
 
         return (PeriodicMeterReadsGasAsyncResponse) this.getPeriodicAsyncResponseForEandG(organisationIdentification,
-                request, MessagePriorityEnum.getMessagePriority(messagePriority), null);
+                request, MessagePriorityEnum.getMessagePriority(messagePriority), scheduleTime);
     }
 
     private AsyncResponse getPeriodicAsyncResponseForEandG(final String organisationIdentification,
-            final PeriodicReadsRequest request, final int messagePriority, final Date scheduleTime)
+            final PeriodicReadsRequest request, final int messagePriority, final String scheduleTime)
             throws OsgpException {
         AsyncResponse response = null;
 
@@ -107,7 +107,7 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.monitoringService.enqueuePeriodicMeterReadsRequestData(
                     organisationIdentification, request.getDeviceIdentification(), dataRequest, messagePriority,
-                    scheduleTime);
+                    this.monitoringMapper.map(scheduleTime, Date.class));
 
             response = request instanceof PeriodicMeterReadsRequest ? new PeriodicMeterReadsAsyncResponse()
             : new PeriodicMeterReadsGasAsyncResponse();
@@ -218,7 +218,8 @@ public class SmartMeteringMonitoringEndpoint extends SmartMeteringEndpoint {
                     gas);
 
             final String correlationUid = this.monitoringService.enqueueActualMeterReadsRequestData(
-                    organisationIdentification, deviceIdentification, requestValueObject, messagePriority, null);
+                    organisationIdentification, deviceIdentification, requestValueObject, messagePriority,
+                    this.monitoringMapper.map(scheduleTime, Date.class));
 
             asyncResponse = gas ? new com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ObjectFactory()
             .createActualMeterReadsGasAsyncResponse()
