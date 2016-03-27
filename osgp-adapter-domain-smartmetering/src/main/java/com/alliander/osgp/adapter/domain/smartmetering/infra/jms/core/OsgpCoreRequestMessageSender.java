@@ -45,7 +45,9 @@ public class OsgpCoreRequestMessageSender {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
-                objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
+                if (objectMessage.propertyExists(Constants.SCHEDULE_TIME)) {
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME, scheduleTime);
+                }
                 objectMessage.setStringProperty(Constants.IP_ADDRESS, requestMessage.getIpAddress());
                 objectMessage.setObject(requestMessage.getRequest());
 
