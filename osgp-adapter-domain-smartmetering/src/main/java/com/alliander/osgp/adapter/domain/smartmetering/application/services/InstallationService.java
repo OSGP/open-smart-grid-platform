@@ -60,7 +60,7 @@ public class InstallationService {
     public void addMeter(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice smartMeteringDeviceValueObject)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -101,7 +101,7 @@ public class InstallationService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDeviceDto), deviceMessageMetadata.getMessageType(), deviceMessageMetadata
-                .getMessagePriority());
+                .getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleAddMeterResponse(final DeviceMessageMetadata deviceMessageMetadata,

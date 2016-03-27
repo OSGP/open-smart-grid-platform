@@ -67,7 +67,7 @@ public class MonitoringService {
     public void requestPeriodicMeterReads(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery periodicMeterReadsValueQuery)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("requestPeriodicMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -109,7 +109,7 @@ public class MonitoringService {
             this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                     deviceMessageMetadata.getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(),
                     gatewayDevice.getIpAddress(), periodicMeterReadsQuery), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority());
+                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         } else {
 
             this.osgpCoreRequestMessageSender.send(
@@ -117,7 +117,7 @@ public class MonitoringService {
                             .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                             smartMeter.getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
                                     PeriodicMeterReadsQueryDto.class)), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority());
+                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
     }
 
@@ -134,15 +134,15 @@ public class MonitoringService {
         }
 
         this.webServiceResponseMessageSender
-                .send(new ResponseMessage(
-                        deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        result,
-                        exception,
-                        this.monitoringMapper
-                                .map(periodMeterReadsValueDTO,
-                                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class),
+        .send(new ResponseMessage(
+                deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(),
+                deviceMessageMetadata.getDeviceIdentification(),
+                result,
+                exception,
+                this.monitoringMapper
+                .map(periodMeterReadsValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class),
                         deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
@@ -159,21 +159,21 @@ public class MonitoringService {
         }
 
         this.webServiceResponseMessageSender
-                .send(new ResponseMessage(
-                        deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        result,
-                        exception,
-                        this.monitoringMapper
-                                .map(periodMeterReadsValueDTO,
-                                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas.class),
+        .send(new ResponseMessage(
+                deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(),
+                deviceMessageMetadata.getDeviceIdentification(),
+                result,
+                exception,
+                this.monitoringMapper
+                .map(periodMeterReadsValueDTO,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas.class),
                         deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
     public void requestActualMeterReads(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery actualMeterReadsQuery)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -210,14 +210,15 @@ public class MonitoringService {
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                             .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
                             .getIpAddress(), new ActualMeterReadsQueryDto(
-                            ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority());
+                                    ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
+                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         } else {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                             .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                             smartMeter.getIpAddress(), new ActualMeterReadsQueryDto()), deviceMessageMetadata
-                            .getMessageType(), deviceMessageMetadata.getMessagePriority());
+                            .getMessageType(), deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata
+                            .getScheduleTime());
         }
     }
 
@@ -238,7 +239,7 @@ public class MonitoringService {
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(actualMeterReadsDto,
                                 com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads.class),
-                        deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
+                                deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
     public void handleActualMeterReadsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -258,13 +259,13 @@ public class MonitoringService {
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(actualMeterReadsGas,
                                 com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas.class),
-                                deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
+                        deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
     public void requestReadAlarmRegister(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest readAlarmRegisterRequestValueObject)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("requestReadAlarmRegister for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -278,7 +279,7 @@ public class MonitoringService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), readAlarmRegisterRequestDto), deviceMessageMetadata
-                .getMessageType(), deviceMessageMetadata.getMessagePriority());
+                .getMessageType(), deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleReadAlarmRegisterResponse(final DeviceMessageMetadata deviceMessageMetadata,
