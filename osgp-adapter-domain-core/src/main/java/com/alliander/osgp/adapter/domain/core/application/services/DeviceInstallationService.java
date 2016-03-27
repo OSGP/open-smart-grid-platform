@@ -89,13 +89,13 @@ public class DeviceInstallationService extends AbstractService {
 
             final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
             for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getInternalId(), dos);
+                dosMap.put(dos.getExternalId(), dos);
             }
 
             deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
                     DomainType.TARIFF_SWITCHING), filterLightValues(status.getLightValues(), dosMap,
-                            DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
-                            status.getLightType(), status.getEventNotificationsMask());
+                    DomainType.PUBLIC_LIGHTING), status.getPreferredLinkType(), status.getActualLinkType(),
+                    status.getLightType(), status.getEventNotificationsMask());
 
             deviceStatusMapped.setBootLoaderVersion(status.getBootLoaderVersion());
             deviceStatusMapped.setCurrentConfigurationBackUsed(status.getCurrentConfigurationBackUsed());
