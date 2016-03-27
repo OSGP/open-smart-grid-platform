@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * convert a xsd datetime string to a date and back
- * 
+ *
  * @author dev
  *
  */
@@ -28,7 +28,8 @@ public class XsdDateTimeToDateConverter extends BidirectionalConverter<String, D
             return null;
         }
         try {
-            return new Date(DatatypeFactory.newInstance().newXMLGregorianCalendar(source).getMillisecond());
+            return new Date(DatatypeFactory.newInstance().newXMLGregorianCalendar(source).toGregorianCalendar()
+                    .getTimeInMillis());
         } catch (final DatatypeConfigurationException e) {
             LOGGER.warn("wrong datetime " + source, e);
             return null;
