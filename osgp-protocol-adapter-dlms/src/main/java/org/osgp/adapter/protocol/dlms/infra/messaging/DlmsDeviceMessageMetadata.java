@@ -55,7 +55,9 @@ public class DlmsDeviceMessageMetadata {
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-        this.scheduleTime = message.getLongProperty(Constants.SCHEDULE_TIME);
+        if (message.propertyExists(Constants.SCHEDULE_TIME)) {
+            this.scheduleTime = message.getLongProperty(Constants.SCHEDULE_TIME);
+        }
         this.messagePriority = message.getJMSPriority();
     }
 
