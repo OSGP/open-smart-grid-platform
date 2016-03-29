@@ -101,7 +101,7 @@ public class ConfigurationManagementService extends AbstractService {
         final List<DeviceOutputSetting> outputSettings = new ArrayList<>();
         for (final RelayMap rm : configuration.getRelayConfiguration().getRelayMap()) {
             outputSettings
-                    .add(new DeviceOutputSetting(rm.getIndex(), rm.getAddress(), rm.getRelayType(), rm.getAlias()));
+            .add(new DeviceOutputSetting(rm.getIndex(), rm.getAddress(), rm.getRelayType(), rm.getAlias()));
         }
 
         final Ssld ssld = this.findSsldForDevice(device);
@@ -147,7 +147,7 @@ public class ConfigurationManagementService extends AbstractService {
                     .getRelayConfiguration().getRelayMap();
             for (final DeviceOutputSetting ouputSetting : outputSettings) {
                 for (final com.alliander.osgp.dto.valueobjects.RelayMap relaySettingDto : relayMapDto) {
-                    if (relaySettingDto.getIndex() == ouputSetting.getExternalId()) {
+                    if (relaySettingDto.getIndex() == ouputSetting.getInternalId()) {
                         final com.alliander.osgp.dto.valueobjects.RelayMap newRelayMapDto = new com.alliander.osgp.dto.valueobjects.RelayMap(
                                 ouputSetting.getInternalId(), ouputSetting.getExternalId(),
                                 com.alliander.osgp.dto.valueobjects.RelayType.valueOf(ouputSetting.getOutputType()
@@ -186,7 +186,7 @@ public class ConfigurationManagementService extends AbstractService {
 
     public void switchConfiguration(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final String messageType, final String configurationBank)
-                    throws FunctionalException {
+            throws FunctionalException {
         LOGGER.debug("switchConfiguration called with organisation {} and device {}", organisationIdentification,
                 deviceIdentification);
 
