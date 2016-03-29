@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
 import java.io.Serializable;
-import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -62,6 +61,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     @Autowired
     private DlmsConnectionFactory dlmsConnectionFactory;
+
+    @Autowired
+    private RetryHeaderFactory retryHeaderFactory;
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
@@ -179,12 +181,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         RetryHeader retryHeader;
         if (exception instanceof RetryableException) {
-            final Calendar retryTime = Calendar.getInstance();
-            retryTime.add(Calendar.MILLISECOND, 30000);
-            LOGGER.info("Scheduling retry for {}.", retryTime.getTime());
-            retryHeader = new RetryHeader(dlmsDeviceMessageMetadata.getRetryCount(), 5, retryTime.getTime());
+            retryHeader = this.retryHeaderFactory.createRetryHeader(dlmsDeviceMessageMetadata.getRetryCount());
         } else {
-            retryHeader = new RetryHeader();
+            retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
