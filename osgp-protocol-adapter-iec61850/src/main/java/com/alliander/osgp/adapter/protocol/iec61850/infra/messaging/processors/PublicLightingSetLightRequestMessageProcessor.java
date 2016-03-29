@@ -66,7 +66,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                     .getBooleanProperty(Constants.IS_SCHEDULED) : false;
 
-                    lightValueMessageDataContainer = (LightValueMessageDataContainer) message.getObject();
+            lightValueMessageDataContainer = (LightValueMessageDataContainer) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -112,18 +112,12 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             }
         };
 
-        try {
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, lightValueMessageDataContainer, domain, domainVersion,
+                messageType, ipAddress, retryCount, isScheduled);
 
-            final SetLightDeviceRequest deviceRequest = new SetLightDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, lightValueMessageDataContainer, domain, domainVersion,
-                    messageType, ipAddress, retryCount, isScheduled);
-
-            this.deviceService.setLight(deviceRequest, deviceResponseHandler);
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
+        this.deviceService.setLight(deviceRequest, deviceResponseHandler);
     }
 }
