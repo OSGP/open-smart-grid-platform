@@ -9,8 +9,6 @@
  */
 package com.alliander.osgp.shared.infra.jms;
 
-import java.util.Date;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 
@@ -33,12 +31,6 @@ public class DeviceMessageMetadata {
     }
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority, final Date scheduleTime) {
-        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
-                scheduleTime == null ? null : scheduleTime.getTime());
-    }
-
-    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
             final String correlationUid, final String messageType, final int messagePriority) {
         this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
                 (Long) null);
@@ -47,7 +39,8 @@ public class DeviceMessageMetadata {
     public DeviceMessageMetadata(final Message message) throws JMSException {
         this(message.getStringProperty(Constants.DEVICE_IDENTIFICATION), message
                 .getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(), message
-                .getJMSType(), message.getJMSPriority(), message.getLongProperty(Constants.SCHEDULE_TIME));
+                .getJMSType(), message.getJMSPriority(), message.propertyExists(Constants.SCHEDULE_TIME) ? message
+                .getLongProperty(Constants.SCHEDULE_TIME) : null);
     }
 
     public DeviceMessageMetadata(final ProtocolResponseMessage message) {
