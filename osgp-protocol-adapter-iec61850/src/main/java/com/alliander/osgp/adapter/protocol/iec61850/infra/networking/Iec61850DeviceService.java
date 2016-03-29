@@ -261,6 +261,8 @@ public class Iec61850DeviceService implements DeviceService {
                 final ModelNode operate = switchPositionOperation.getChild("Oper");
                 final BdaBoolean position = (BdaBoolean) operate.getChild("ctlVal");
 
+                LOGGER.info(String.format("Switching relay %d %s", index, on ? "on" : "off"));
+
                 position.setValue(on);
                 clientAssociation.setDataValues((FcModelNode) operate);
 
@@ -301,6 +303,9 @@ public class Iec61850DeviceService implements DeviceService {
 
                     final boolean on = state.getValue();
                     lightValues.add(new LightValue(deviceOutputSetting.getExternalId(), on, null));
+
+                    LOGGER.info(String.format("Got status of relay %d => %s", deviceOutputSetting.getInternalId(),
+                            on ? "on" : "off"));
                 }
 
                 // TODO caution: the referredLinkType and actualLinkType are
@@ -386,6 +391,8 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // getting the reg configuration values
 
+                LOGGER.info("Reading the registration configuration values");
+
                 final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                         + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
                         + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
@@ -399,6 +406,8 @@ public class Iec61850DeviceService implements DeviceService {
                 configuration.setOspgIpAddress(new String(serverAddress.getValue()));
 
                 // getting the ip configuration values
+
+                LOGGER.info("Reading the ip configuration values");
 
                 final String ipcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                         + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
@@ -416,6 +425,8 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // getting the software configuration values
 
+                LOGGER.info("Reading the software configuration values");
+
                 final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                         + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
                         + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
@@ -432,6 +443,8 @@ public class Iec61850DeviceService implements DeviceService {
                 configuration.setAstroGateSunSetOffset((int) astroGateSunSetOffset.getValue());
 
                 // getting the clock configuration values
+
+                LOGGER.info("Reading the clock configuration values");
 
                 final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                         + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
