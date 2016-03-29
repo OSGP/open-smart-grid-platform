@@ -7,14 +7,18 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
@@ -33,11 +37,15 @@ import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -55,20 +63,24 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
         OBIS_HASHMAP.put(4, OBIS_CODE_INTERVAL_MBUS_4);
     }
 
+    @Value("${device.security.key.path.priv}")
+    private String privateKeyPath;
+    private static final String ALGORITHM = "RSA";
+
     @Override
     public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
-
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-            final byte[] encryptionKey = Hex.decode(protocolMeterInfo.getEncryptionKey());
-            final byte[] masterKey = Hex.decode(protocolMeterInfo.getMasterKey());
+            // Decrypt the cipher text using the private key.
+            final byte[] decryptedEncryptionKey = this.decrypt(Hex.decode(protocolMeterInfo.getEncryptionKey()));
+            final byte[] decryptedMasterKey = this.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()));
 
             final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
-            final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode, masterKey,
-                    encryptionKey);
+            final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode,
+                    decryptedMasterKey, decryptedEncryptionKey);
 
             List<MethodResult> methodResultCode = conn.action(methodTransferKey);
             this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
@@ -76,15 +88,42 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
                     CLASS_ID, obisCode);
 
             final MethodParameter methodSetEncryptionKey = this.getSetEncryptionKeyMethodParameter(obisCode,
-                    encryptionKey);
+                    decryptedEncryptionKey);
             methodResultCode = conn.action(methodSetEncryptionKey);
             this.checkMethodResultCode(methodResultCode, "getSetEncryptionKeyMethodParameter");
             LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
 
             return MethodResultCode.SUCCESS;
-        } catch (final IOException e) {
+        } catch (final IOException | TechnicalException e) {
             throw new ConnectionException(e);
         }
+    }
+
+    private byte[] decrypt(final byte[] inputData) throws TechnicalException {
+        byte[] decryptedData = null;
+        ObjectInputStream inputStream = null;
+        PrivateKey privateKey;
+        try {
+            // Read the private key from the file.
+            inputStream = new ObjectInputStream(new FileInputStream(this.privateKeyPath));
+            privateKey = (PrivateKey) inputStream.readObject();
+
+            // Get an RSA cipher object and print the provider
+            final Cipher cipher = Cipher.getInstance(ALGORITHM);
+
+            // Decrypt the text using the private key
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            decryptedData = cipher.doFinal(inputData);
+        } catch (final Exception ex) {
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
+        } finally {
+            try {
+                inputStream.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return decryptedData;
     }
 
     private void checkMethodResultCode(final List<MethodResult> methodResultCode, final String methodParameterName)

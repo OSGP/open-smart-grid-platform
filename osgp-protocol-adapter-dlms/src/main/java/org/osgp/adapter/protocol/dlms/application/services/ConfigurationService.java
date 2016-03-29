@@ -49,8 +49,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "dlmsConfigurationService")
@@ -183,8 +183,8 @@ public class ConfigurationService {
         }
     }
 
-    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final ClientConnection conn, final DlmsDevice device)
-            throws ProtocolAdapterException {
+    public AdministrativeStatusTypeDto requestGetAdministrativeStatus(final ClientConnection conn,
+            final DlmsDevice device) throws ProtocolAdapterException {
 
         return this.getAdministrativeStatusCommandExecutor.execute(conn, device, null);
     }
@@ -204,7 +204,7 @@ public class ConfigurationService {
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                         SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                        SecurityKeyType.G_METER_MASTER).getKey());
+                                SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 

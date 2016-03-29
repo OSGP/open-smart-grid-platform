@@ -53,6 +53,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("file:${osp/osgpAdapterProtocolDlms/config}")
 public class DlmsConfig {
     private static final String PROPERTY_NAME_DLMS_PORT_SERVER = "dlms.port.server";
+    private static final String PROPERTY_NAME_DEVICE_SECURITY_KEY_PATH_PRIV = "device.security.key.path.priv";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DlmsConfig.class);
 
@@ -135,7 +136,8 @@ public class DlmsConfig {
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
             @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
         return new Hls5Connector(recoverKeyProcessInitiator, dlmsDeviceRepository, responseTimeout,
-                logicalDeviceAddress, clientAccessPoint);
+                logicalDeviceAddress, clientAccessPoint,
+                this.environment.getProperty(PROPERTY_NAME_DEVICE_SECURITY_KEY_PATH_PRIV));
     }
 
     @Bean

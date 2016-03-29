@@ -7,8 +7,13 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.security.PrivateKey;
 import java.util.Date;
+
+import javax.crypto.Cipher;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
@@ -24,10 +29,18 @@ import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component
 public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+
+    @Value("${device.security.key.path.priv}")
+    private String privateKeyPath;
+    private static final String ALGORITHM = "RSA";
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -91,17 +104,47 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
     private void sendToDevice(final ClientConnection conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
+            // Decrypt the cipher text using the private key.
+            final byte[] decryptedKey = this.decrypt(keyWrapper.getBytes());
+
             final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
-                    keyWrapper.getBytes(), keyWrapper.getKeyId());
+                    decryptedKey, keyWrapper.getKeyId());
             final MethodResultCode methodResultCode = conn.action(methodParameterAuth).get(0).resultCode();
 
             if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
                 throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
                         + methodResultCode);
             }
-        } catch (final IOException e) {
+        } catch (final TechnicalException | IOException e) {
             throw new ConnectionException(e);
         }
+    }
+
+    private byte[] decrypt(final byte[] inputData) throws TechnicalException {
+        byte[] decryptedData = null;
+        ObjectInputStream inputStream = null;
+        PrivateKey privateKey;
+        try {
+            // Read the private key from the file.
+            inputStream = new ObjectInputStream(new FileInputStream(this.privateKeyPath));
+            privateKey = (PrivateKey) inputStream.readObject();
+
+            // Get an RSA cipher object and print the provider
+            final Cipher cipher = Cipher.getInstance(ALGORITHM);
+
+            // Decrypt the text using the private key
+            cipher.init(Cipher.DECRYPT_MODE, privateKey);
+            decryptedData = cipher.doFinal(inputData);
+        } catch (final Exception ex) {
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
+        } finally {
+            try {
+                inputStream.close();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return decryptedData;
     }
 
     /**
