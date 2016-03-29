@@ -71,7 +71,7 @@ public class AdHocManagementService extends AbstractService {
      */
     public void getStatus(final String organisationIdentification, final String deviceIdentification,
             final String correlationUid, final DomainType allowedDomainType, final String messageType)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
@@ -106,7 +106,7 @@ public class AdHocManagementService extends AbstractService {
 
             final Map<Integer, DeviceOutputSetting> dosMap = new HashMap<>();
             for (final DeviceOutputSetting dos : deviceOutputSettings) {
-                dosMap.put(dos.getInternalId(), dos);
+                dosMap.put(dos.getExternalId(), dos);
             }
 
             deviceStatusMapped = new DeviceStatusMapped(filterTariffValues(status.getLightValues(), dosMap,
