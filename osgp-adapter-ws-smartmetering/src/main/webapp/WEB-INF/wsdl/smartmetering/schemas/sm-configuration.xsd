@@ -241,6 +241,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+
+	<!-- This is a special type so that GetAdministrativeStatus is supported in bundle requests -->
+	<xsd:complexType name="GetAdministrativeStatusData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:element name="GetAdministrativeStatusAsyncResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
@@ -332,7 +343,7 @@
 
 	<xsd:complexType name="SpecialDaysRequestData">
 		<xsd:complexContent>
-			<xsd:extension base="common:Query">
+			<xsd:extension base="common:Command">
 				<xsd:sequence>
 					<xsd:element maxOccurs="30" name="SpecialDays" type="tns:SpecialDay" />
 				</xsd:sequence>

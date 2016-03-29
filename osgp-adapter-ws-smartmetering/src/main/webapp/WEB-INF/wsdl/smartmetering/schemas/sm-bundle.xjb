@@ -29,6 +29,12 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema">
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="sm-monitoring.xsd" >
+		<jxb:schemaBindings>
+			<jxb:package name="com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring"></jxb:package>
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="sm-configuration.xsd" >
 		<jxb:schemaBindings>
 			<jxb:package name="com.alliander.osgp.adapter.ws.schema.smartmetering.configuration"></jxb:package>

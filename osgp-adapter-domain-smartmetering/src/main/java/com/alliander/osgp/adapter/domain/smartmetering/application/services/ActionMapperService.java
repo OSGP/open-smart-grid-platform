@@ -27,25 +27,31 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Manag
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
@@ -86,9 +92,16 @@ public class ActionMapperService {
      */
     @PostConstruct
     private void postConstruct() {
+        classToMapperMap.put(SpecialDaysRequestData.class, this.configurationMapper);
+        classToMapperMap.put(ReadAlarmRegisterData.class, this.monitoringMapper);
+        classToMapperMap.put(FindEventsQuery.class, this.managementMapper);
+        classToMapperMap.put(ActualMeterReadsData.class, this.monitoringMapper);
+        classToMapperMap.put(ActualMeterReadsGasData.class, this.monitoringMapper);
+        classToMapperMap.put(GetAdministrativeStatusData.class, this.configurationMapper);
+
+        // ok to here
         classToMapperMap.put(SmsDetails.class, this.adhocMapper);
         classToMapperMap.put(AdministrativeStatusType.class, this.configurationMapper);
-        classToMapperMap.put(SpecialDaysRequestData.class, this.configurationMapper);
         classToMapperMap.put(SetConfigurationObjectRequest.class, this.configurationMapper);
         classToMapperMap.put(PushSetupAlarm.class, this.configurationMapper);
         classToMapperMap.put(PushSetupSms.class, this.configurationMapper);
@@ -96,9 +109,9 @@ public class ActionMapperService {
         classToMapperMap.put(AlarmNotifications.class, this.configurationMapper);
         classToMapperMap.put(KeySet.class, this.configurationMapper);
         classToMapperMap.put(SmartMeteringDevice.class, this.installationMapper);
-        classToMapperMap.put(FindEventsQuery.class, this.managementMapper);
         classToMapperMap.put(PeriodicMeterReadsQuery.class, this.monitoringMapper);
-        classToMapperMap.put(ReadAlarmRegisterRequest.class, this.monitoringMapper);
+
+
     }
 
     /**
@@ -106,9 +119,15 @@ public class ActionMapperService {
      */
     private static Map<Class<? extends ActionValueObject>, Class<? extends ActionValueObjectDto>> classMap = new HashMap<>();
     static {
+        classMap.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
+        classMap.put(ReadAlarmRegisterData.class, ReadAlarmRegisterRequestDto.class);
+        classMap.put(FindEventsQuery.class, FindEventsQueryDto.class);
+        classMap.put(ActualMeterReadsData.class, ActualMeterReadsDataDto.class);
+        classMap.put(ActualMeterReadsGasData.class, ActualMeterReadsDataGasDto.class);
+        classMap.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
+        // ok to here
         classMap.put(SmsDetails.class, SmsDetailsDto.class);
         classMap.put(AdministrativeStatusType.class, AdministrativeStatusTypeDto.class);
-        classMap.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
         classMap.put(SetConfigurationObjectRequest.class, SetConfigurationObjectRequestDto.class);
         classMap.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
         classMap.put(PushSetupSms.class, PushSetupSmsDto.class);
@@ -116,9 +135,8 @@ public class ActionMapperService {
         classMap.put(AlarmNotifications.class, AlarmNotificationsDto.class);
         classMap.put(KeySet.class, KeySetDto.class);
         classMap.put(SmartMeteringDevice.class, SmartMeteringDeviceDto.class);
-        classMap.put(FindEventsQuery.class, FindEventsQueryDto.class);
         classMap.put(PeriodicMeterReadsQuery.class, PeriodicMeterReadsDto.class);
-        classMap.put(ReadAlarmRegisterRequest.class, ReadAlarmRegisterRequestDto.class);
+
     }
 
     // @formatter:on

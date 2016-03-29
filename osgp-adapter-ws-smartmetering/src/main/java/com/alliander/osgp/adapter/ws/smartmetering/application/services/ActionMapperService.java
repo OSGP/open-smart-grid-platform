@@ -58,13 +58,27 @@ public class ActionMapperService {
      */
     @PostConstruct
     private void postConstruct() {
+        classToMapperMap.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
+                this.configurationMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
+                this.monitoringMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
+                this.managementMapper);
+        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
+                this.monitoringMapper);
+        classToMapperMap.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
+                this.monitoringMapper);
+        classToMapperMap.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
+                this.configurationMapper);
+
+        // ok to here
         classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,
                 this.adhocMapper);
         classToMapperMap.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,
-                this.configurationMapper);
-        classToMapperMap.put(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
                 this.configurationMapper);
         classToMapperMap
         .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
@@ -82,13 +96,8 @@ public class ActionMapperService {
                 this.configurationMapper);
         classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,
                 this.installationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
-                this.managementMapper);
         classToMapperMap.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,
-                this.monitoringMapper);
-        classToMapperMap.put(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest.class,
                 this.monitoringMapper);
     }
 
@@ -97,12 +106,25 @@ public class ActionMapperService {
      */
     private static Map<Class<?>, Class<? extends ActionValueObject>> classMap = new HashMap<>();
     static {
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsData.class);
+        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasData.class);
+        classMap.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData.class);
+
+        // ok to here
         classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails.class);
         classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData.class);
         classMap.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
@@ -118,12 +140,8 @@ public class ActionMapperService {
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
         classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class);
         classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterRequest.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
     }
 
     public List<ActionValueObject> mapAllActions(final List<? extends Action> actionList) throws OsgpException {

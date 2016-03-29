@@ -94,7 +94,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-
+	
+	<!-- This is a special type so that ActualMeterReads is supported in bundle requests -->
+	<xsd:complexType name="ActualMeterReadsData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<xsd:element name="ActualMeterReadsAsyncResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
@@ -133,6 +143,16 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+	
+	<!-- This is a special type so that ActualMeterReads is supported in bundle requests -->
+	<xsd:complexType name="ActualMeterReadsGasData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<xsd:element name="ActualMeterReadsGasAsyncResponse">
 		<xsd:complexType>
@@ -167,6 +187,16 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+	
+	<!-- This is a special type so that ReadAlarmRigister is supported in bundle requests -->
+	<xsd:complexType name="ReadAlarmRegisterData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<xsd:element name="ReadAlarmRegisterAsyncResponse">
 		<xsd:complexType>
