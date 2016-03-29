@@ -90,7 +90,9 @@ public class SmartMeteringRequestMessageSender {
                         requestMessage.getOrganisationIdentification());
                 objectMessage.setStringProperty(Constants.DEVICE_IDENTIFICATION,
                         requestMessage.getDeviceIdentification());
-                objectMessage.setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime());
+                if (requestMessage.getScheduleTime() != null) {
+                    objectMessage.setLongProperty(Constants.SCHEDULE_TIME, requestMessage.getScheduleTime());
+                }
                 return objectMessage;
             }
         });

@@ -23,7 +23,7 @@ public class XsdDateTimeToLongConverter extends BidirectionalConverter<String, L
 
     @Override
     public Long convertTo(final String source, final Type<Long> destinationType) {
-        if (source == null) {
+        if (source == null || source.isEmpty()) {
             return null;
         }
         try {
