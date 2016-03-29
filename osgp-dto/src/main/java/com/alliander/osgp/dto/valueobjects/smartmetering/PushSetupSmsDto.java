@@ -23,7 +23,7 @@ public class PushSetupSmsDto extends AbstractPushSetupDto {
         }
     }
 
-    private PushSetupSmsDto(final CosemObisCodeDto logicalName, final List<CosemObjectDefinitionDto> pushObjectList,
+    public PushSetupSmsDto(final CosemObisCodeDto logicalName, final List<CosemObjectDefinitionDto> pushObjectList,
             final SendDestinationAndMethodDto sendDestinationAndMethod,
             final List<WindowElementDto> communicationWindow, final Integer randomisationStartInterval,
             final Integer numberOfRetries, final Integer repetitionDelay) {

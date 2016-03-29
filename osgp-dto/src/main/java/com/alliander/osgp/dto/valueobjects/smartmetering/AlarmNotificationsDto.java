@@ -16,7 +16,7 @@ public class AlarmNotificationsDto implements Serializable {
 
     private static final long serialVersionUID = 2319359505656305783L;
 
-    private final Set<AlarmNotificationDto> alarmNotifications;
+    private Set<AlarmNotificationDto> alarmNotifications;
 
     public AlarmNotificationsDto(final Set<AlarmNotificationDto> alarmNotifications) {
         this.alarmNotifications = new TreeSet<AlarmNotificationDto>(alarmNotifications);
@@ -29,5 +29,9 @@ public class AlarmNotificationsDto implements Serializable {
 
     public Set<AlarmNotificationDto> getAlarmNotifications() {
         return Collections.unmodifiableSet(this.alarmNotifications);
+    }
+
+    public void setAlarmNotifications(final Set<AlarmNotificationDto> alarmNotifications) {
+        this.alarmNotifications = alarmNotifications;
     }
 }
