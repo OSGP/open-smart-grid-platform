@@ -7,16 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.security.PrivateKey;
 
-import javax.crypto.Cipher;
-
-import org.apache.commons.codec.DecoderException;
+import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -46,9 +41,6 @@ public class Hls5Connector {
     private final DlmsDeviceRepository dlmsDeviceRepository;
 
     private DlmsDevice device;
-
-    private static final String DEVICE_KEY_FILE_PRIV = "/home/dev/Sources/Configuration/developers/certs/devicekey_priv.key";
-    private static final String ALGORITHM = "RSA";
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
@@ -104,67 +96,25 @@ public class Hls5Connector {
      * @throws IOException
      *             When there are problems in connecting to or communicating
      *             with the device.
-     * @throws TechnicalException
-     *             When there are problems reading or decrypting the encrypted
-     *             security and authorisation keys.
      */
     private ClientConnection createConnection() throws IOException, TechnicalException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
-        ObjectInputStream inputStream = null;
-        PrivateKey privateKey;
-        try {
-            // Decrypt the cipher text using the private key.
-            inputStream = new ObjectInputStream(new FileInputStream(DEVICE_KEY_FILE_PRIV));
-            privateKey = (PrivateKey) inputStream.readObject();
+        final byte[] authenticationKey = Hex.decode(validAuthenticationKey.getKey());
+        final byte[] encryptionKey = Hex.decode(validEncryptionKey.getKey());
 
-            final String authenticationKeyValue = validAuthenticationKey.getKey();
-            final String encryptionKeyValue = validEncryptionKey.getKey();
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
+                .getIpAddress())).useGmacAuthentication(authenticationKey, encryptionKey)
+                .enableEncryption(encryptionKey).responseTimeout(this.responseTimeout)
+                .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
 
-            // Decode the key from Hexstring to bytes
-            final byte[] authenticationKey = org.apache.commons.codec.binary.Hex.decodeHex(authenticationKeyValue
-                    .toCharArray());
-            final byte[] encryptionKey = org.apache.commons.codec.binary.Hex
-                    .decodeHex(encryptionKeyValue.toCharArray());
-
-            // Decrypt the key
-            final byte[] decryptedAuthentication = decrypt(authenticationKey, privateKey);
-            final byte[] decryptedEncryption = decrypt(encryptionKey, privateKey);
-
-            // Setup connection to device
-            final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
-                    InetAddress.getByName(this.device.getIpAddress()))
-                    .useGmacAuthentication(decryptedAuthentication, decryptedEncryption)
-                    .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
-                    .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
-
-            final Integer challengeLength = this.device.getChallengeLength();
-            if (challengeLength != null) {
-                tcpConnectionBuilder.challengeLength(challengeLength);
-            }
-
-            return tcpConnectionBuilder.buildLnConnection();
-        } catch (final ClassNotFoundException | DecoderException e) {
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while reading RSA key! ");
-        } finally {
-            inputStream.close();
+        final Integer challengeLength = this.device.getChallengeLength();
+        if (challengeLength != null) {
+            tcpConnectionBuilder.challengeLength(challengeLength);
         }
-    }
 
-    private static byte[] decrypt(final byte[] inputData, final PrivateKey key) throws TechnicalException {
-        byte[] decryptedData = null;
-        try {
-            // Get an RSA cipher object and print the provider
-            final Cipher cipher = Cipher.getInstance(ALGORITHM);
-
-            // Decrypt the text using the private key
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            decryptedData = cipher.doFinal(inputData);
-        } catch (final Exception ex) {
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
-        }
-        return decryptedData;
+        return tcpConnectionBuilder.buildLnConnection();
     }
 
     private void discardInvalidKeys() {
