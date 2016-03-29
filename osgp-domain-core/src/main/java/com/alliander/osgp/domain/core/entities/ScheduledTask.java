@@ -165,6 +165,7 @@ public class ScheduledTask extends AbstractEntity {
 
     public void setRetry(final Date retryTime) {
         this.retry++;
+        this.scheduledTime = new Timestamp(retryTime.getTime());
         this.status = ScheduledTaskStatusType.RETRY;
     }
 

@@ -128,9 +128,7 @@ public class DeviceResponseMessageService {
         if (message.getResult() == ResponseMessageResultType.OK
                 && scheduledTask.getStatus() == ScheduledTaskStatusType.PENDING) {
             scheduledTask.setComplete();
-            // TODO:delete the completed schedule from the database
-            // this.scheduledTaskRepository.delete(scheduledTask)
-
+            this.scheduledTaskRepository.delete(scheduledTask);
             this.domainResponseMessageSender.send(message);
         } else {
             final String errorMessage = message.getOsgpException() == null ? "" : message.getOsgpException().getCause()
