@@ -177,10 +177,13 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final boolean isScheduled) {
 
         final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
-        final OsgpException osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+        OsgpException osgpException = null;
+        if (exception != null) {
+            osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+        }
 
         RetryHeader retryHeader;
-        if (exception instanceof RetryableException) {
+        if (result == ResponseMessageResultType.NOT_OK && exception instanceof RetryableException) {
             retryHeader = this.retryHeaderFactory.createRetryHeader(dlmsDeviceMessageMetadata.getRetryCount());
         } else {
             retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
