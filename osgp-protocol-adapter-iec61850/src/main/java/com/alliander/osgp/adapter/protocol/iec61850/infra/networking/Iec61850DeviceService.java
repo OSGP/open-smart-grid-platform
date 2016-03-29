@@ -29,6 +29,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
@@ -154,6 +155,60 @@ public class Iec61850DeviceService implements DeviceService {
                             clientAssociation);
                 }
             }
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
+        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
+    /**
+     * @see DeviceService#setLight(SetLightDeviceRequest)
+     */
+    @Override
+    public void setConfiguration(final SetConfigurationDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+            // Connect, get the ServerModel final and ClientAssociation.
+            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                    deviceRequest.getDeviceIdentification());
+
+            final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
+                    .getDeviceIdentification());
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            final Configuration configuration = deviceRequest.getConfiguration();
+
+            // ignoring required fields meterType,
+            // shortTermHistoryIntervalMinutes, preferredLinkType,
+            // longTermHistoryInterval and longTermHistoryIntervalType
+
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
+
+            this.setConfigurationOnDevice(serverModel, clientAssociation, ssld, configuration);
+
         } catch (final ConnectionFailureException se) {
             LOGGER.error("Could not connect to device after all retries", se);
 
@@ -473,6 +528,23 @@ public class Iec61850DeviceService implements DeviceService {
         };
 
         return this.iec61850Client.sendCommandWithRetry(function);
+
+    }
+
+    private void setConfigurationOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final Ssld ssld, final Configuration configuration) throws ProtocolAdapterException {
+
+        // creating the Function that will be retried, if necessary
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
 
     }
 
