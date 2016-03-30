@@ -85,7 +85,7 @@
                 <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
                 <xsd:element name="Description" type="xsd:string" minOccurs="0" />
                 <xsd:sequence>
-                  <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion" minOccurs="1" maxOccurs="unbounded" />
+                    <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion" minOccurs="1" maxOccurs="unbounded" />
                 </xsd:sequence>
             </xsd:sequence>
         </xsd:complexType>
