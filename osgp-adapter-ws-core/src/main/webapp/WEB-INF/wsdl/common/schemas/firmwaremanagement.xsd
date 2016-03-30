@@ -84,7 +84,9 @@
             <xsd:sequence>
                 <xsd:element name="Result" type="common:OsgpResultType" minOccurs="1" />
                 <xsd:element name="Description" type="xsd:string" minOccurs="0" />
-                <xsd:element name="FirmwareVersion" type="xsd:string" />
+                <xsd:sequence>
+                  <xsd:element name="FirmwareVersion" type="tns:FirmwareVersion" minOccurs="1" maxOccurs="unbounded" />
+                </xsd:sequence>
             </xsd:sequence>
         </xsd:complexType>
     </xsd:element>
@@ -214,4 +216,18 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:complexType name="FirmwareVersion">
+      <xsd:sequence>
+        <xsd:element name="Type" type="tns:FirmwareType"  minOccurs="1" maxOccurs="1"/>
+        <xsd:element name="Version" type="xsd:string" />
+      </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="FirmwareType">
+      <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="ACTIVE_FIRMWARE" />
+        <xsd:enumeration value="MODULE_ACTIVE_FIRMWARE" />
+        <xsd:enumeration value="COMMUNICATION_MODULE_ACTIVE_FIRMWARE" />
+      </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>
