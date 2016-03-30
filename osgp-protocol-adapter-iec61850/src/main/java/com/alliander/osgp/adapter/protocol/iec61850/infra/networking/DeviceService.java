@@ -49,12 +49,13 @@ public interface DeviceService {
     // void doSetEventNotifications(DeviceRequest deviceRequest,
     // DeviceResponseHandler deviceResponseHandler,
     // String ipAddress) throws IOException;
-    //
-    // // void startSelfTest(DeviceRequest deviceRequest);
-    //
-    // void doStartSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
+
+    /**
+     * Runs a selftest. StartOfTest is a boolean, used to indicate wether the
+     * test is started or stopped
+     */
+    void runSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, boolean startOfTest);
+
     //
     // // void stopSelfTest(DeviceRequest deviceRequest);
     //
