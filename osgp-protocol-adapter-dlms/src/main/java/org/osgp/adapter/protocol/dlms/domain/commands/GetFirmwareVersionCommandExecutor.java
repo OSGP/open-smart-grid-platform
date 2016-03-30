@@ -9,6 +9,7 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -24,8 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.FirmwareTypeDto;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+
 @Component
-public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, String> {
+public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, List<FirmwareVersionDto>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionCommandExecutor.class);
 
@@ -33,9 +37,8 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
     private static final ObisCode OBIS_CODE = new ObisCode("1.0.0.2.0.255");
     private static final int ATTRIBUTE_ID = 2;
 
-
     @Override
-    public String execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
+    public List<FirmwareVersionDto> execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
         LOGGER.info(
@@ -67,6 +70,10 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
             throw new ProtocolAdapterException("Unexpected value returned by meter while retrieving firmware version.");
         }
 
-        return new String((byte[]) resultData.value(), StandardCharsets.US_ASCII);
+        final List<FirmwareVersionDto> resultList = new ArrayList<>();
+        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.ACTIVE_FIRMWARE, new String((byte[]) resultData.value(),
+                StandardCharsets.US_ASCII)));
+
+        return resultList;
     }
 }
