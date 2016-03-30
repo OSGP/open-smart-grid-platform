@@ -76,13 +76,10 @@ public class ScheduledTaskScheduler implements Runnable {
                 scheduledTask.getDeviceIdentification(), scheduledTask.getOrganisationIdentification(),
                 scheduledTask.getCorrelationId(), scheduledTask.getMessageType(), scheduledTask.getMessagePriority());
 
-        // @formatter:off
         return new ProtocolRequestMessage.Builder().deviceMessageMetadata(deviceMessageMetadata)
                 .domain(scheduledTask.getDomain()).domainVersion(scheduledTask.getDomainVersion())
                 .ipAddress(device.getNetworkAddress().getHostAddress()).request(scheduledTask.getMessageData())
                 .retryCount(scheduledTask.getRetry()).scheduled(true).build();
-        // @formatter:on
-
     }
 
 }
