@@ -12,9 +12,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareType;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
-import com.alliander.osgp.dto.valueobjects.FirmwareTypeDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
 @Component(value = "coreFirmwareManagementMapper")
@@ -23,6 +21,5 @@ public class FirmwareManagementMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.classMap(FirmwareVersion.class, FirmwareVersionDto.class).byDefault().register();
-        mapperFactory.classMap(FirmwareType.class, FirmwareTypeDto.class).byDefault().register();
     }
 }
