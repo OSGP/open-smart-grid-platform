@@ -34,18 +34,34 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionCommandExecutor.class);
 
     private static final int CLASS_ID = 1;
-    private static final ObisCode OBIS_CODE = new ObisCode("1.0.0.2.0.255");
+    private static final ObisCode OBIS_CODE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.0.0.2.0.255");
+    private static final ObisCode OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.1.0.2.0.255");
+    private static final ObisCode OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.2.0.2.0.255");
+
     private static final int ATTRIBUTE_ID = 2;
 
     @Override
     public List<FirmwareVersionDto> execute(final ClientConnection conn, final DlmsDevice device, final Void useless)
             throws ProtocolAdapterException {
 
+        final List<FirmwareVersionDto> resultList = new ArrayList<>();
+        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.ACTIVE_FIRMWARE, this.retrieveFirmwareData(conn,
+                OBIS_CODE_ACTIVE_FIRMWARE_VERSION)));
+        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.MODULE_ACTIVE_FIRMWARE, this.retrieveFirmwareData(conn,
+                OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION)));
+        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.COMMUNICATION_MODULE_ACTIVE_FIRMWARE, this
+                .retrieveFirmwareData(conn, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION)));
+
+        return resultList;
+    }
+
+    private String retrieveFirmwareData(final ClientConnection conn, final ObisCode obisCode)
+            throws ProtocolAdapterException {
         LOGGER.info(
                 "Retrieving firmware version by issuing get request for class id: {}, obis code: {}, attribute id: {}",
-                CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+                CLASS_ID, obisCode, ATTRIBUTE_ID);
 
-        final AttributeAddress firmwareVersionValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
+        final AttributeAddress firmwareVersionValue = new AttributeAddress(CLASS_ID, obisCode, ATTRIBUTE_ID);
 
         List<GetResult> getResultList;
         try {
@@ -70,10 +86,6 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
             throw new ProtocolAdapterException("Unexpected value returned by meter while retrieving firmware version.");
         }
 
-        final List<FirmwareVersionDto> resultList = new ArrayList<>();
-        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.ACTIVE_FIRMWARE, new String((byte[]) resultData.value(),
-                StandardCharsets.US_ASCII)));
-
-        return resultList;
+        return new String((byte[]) resultData.value(), StandardCharsets.US_ASCII);
     }
 }
