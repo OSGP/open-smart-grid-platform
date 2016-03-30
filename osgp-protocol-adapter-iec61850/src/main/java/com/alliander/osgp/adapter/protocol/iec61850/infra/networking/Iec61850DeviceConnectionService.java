@@ -67,7 +67,7 @@ public class Iec61850DeviceConnectionService {
         // values.
         try {
             // Try to connect.
-            LOGGER.info("Trying to connect to deviceIdentification: {}", deviceIdentification);
+            LOGGER.info("Trying to connect to deviceIdentification: {} at ip {}", deviceIdentification, ipAddress);
             final ClientAssociation clientAssociation = this.iec61850Client.connect(deviceIdentification, inetAddress);
 
             // Read the ServerModel, either from the device or from a SCL file.

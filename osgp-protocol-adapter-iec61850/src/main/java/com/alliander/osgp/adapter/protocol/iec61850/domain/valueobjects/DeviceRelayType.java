@@ -32,4 +32,8 @@ public enum DeviceRelayType {
         throw new IllegalArgumentException(String.valueOf(index));
     }
 
+    public int getIndex() {
+        return this.index;
+    }
+
 }

@@ -201,7 +201,7 @@ public class Iec61850DeviceService implements DeviceService {
 
             final Configuration configuration = deviceRequest.getConfiguration();
 
-            // ignoring required fields meterType,
+            // ignoring required fields daliconfiguration, meterType,
             // shortTermHistoryIntervalMinutes, preferredLinkType,
             // longTermHistoryInterval and longTermHistoryIntervalType
 
@@ -539,6 +539,132 @@ public class Iec61850DeviceService implements DeviceService {
 
             @Override
             public Void apply() throws Exception {
+
+                LOGGER.info("Reading the registration configuration values");
+
+                final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX;
+
+                LOGGER.info("regObjectReference: {}", regObjectReference);
+
+                final FcModelNode regConfiguration = (FcModelNode) serverModel.findModelNode(regObjectReference, Fc.CF)
+                        .getChild("Reg", Fc.CF);
+
+                final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr", Fc.CF);
+
+                serverAddress.setValue("168.63.97.65");
+
+                clientAssociation.setDataValues(regConfiguration);
+
+                // deviceFixIpValue -----> CSLC.IPCf.ipAddr
+                // isDhcpEnabled ----> CSLC.IPCf.enbDHCP
+                // ospgIpAddress ---> CSLC.Reg.srvAddr
+                // astroGateSunRiseOffset ---> CSLC.SWCf.osSet
+                // astroGateSunSetOffset ---> CSLC.Clock.osRise
+
+                // for (final RelayMap relayMap :
+                // configuration.getRelayConfiguration().getRelayMap()) {
+
+                // TODO uncomment this code once this field is writable
+
+                // final String relaySwitchTypeObjectReference =
+                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                // +
+                // LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(relayMap.getAddress())
+                // + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE;
+                //
+                // LOGGER.info("relaySwitchTypeObjectReference: {}",
+                // relaySwitchTypeObjectReference);
+                //
+                // final FcModelNode switchTypeState = (FcModelNode)
+                // serverModel.findModelNode(
+                // relaySwitchTypeObjectReference, Fc.ST);
+                // final BdaInt8 state = (BdaInt8)
+                // switchTypeState.getChild("stVal");
+                //
+                // state.setValue((byte)
+                // DeviceRelayType.valueOf(relayMap.getRelayType().name()).getIndex());
+                //
+                // clientAssociation.setDataValues(switchTypeState);
+
+                // }
+
+                // // getting the ip configuration values
+                //
+                // LOGGER.info("Reading the ip configuration values");
+                //
+                // final String ipcfObjectReference =
+                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                // + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                // + LogicalNodeAttributeDefinitons.PROPERTY_IP_CONFIGURATION;
+                //
+                // LOGGER.info("ipcfObjectReference: {}", ipcfObjectReference);
+                //
+                // final FcModelNode ipConfiguration = (FcModelNode)
+                // serverModel.findModelNode(ipcfObjectReference, Fc.CF);
+                //
+                // final BdaVisibleString deviceFixIpValue = (BdaVisibleString)
+                // ipConfiguration.getChild("ipAddr");
+                //
+                // deviceFixIpValue.setValue("192.168.1.10");
+                //
+                // clientAssociation.setDataValues(ipConfiguration);
+                //
+                // LOGGER.info("Reading the software configuration values");
+
+                // final String swcfObjectReference =
+                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                // + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                // +
+                // LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
+                //
+                // LOGGER.info("swcfObjectReference: {}", swcfObjectReference);
+                //
+                // final FcModelNode softwareConfiguration = (FcModelNode)
+                // serverModel.findModelNode(swcfObjectReference,
+                // Fc.CF);
+                //
+                // final BdaInt16 astroGateSunRiseOffset = (BdaInt16)
+                // softwareConfiguration.getChild("osRise");
+                // final BdaInt16 astroGateSunSetOffset = (BdaInt16)
+                // softwareConfiguration.getChild("osSet");
+                //
+                // astroGateSunRiseOffset.setValue((short) 21);
+                // astroGateSunSetOffset.setValue((short) 17);
+                //
+                // clientAssociation.setDataValues(softwareConfiguration);
+
+                // LOGGER.info("Reading the clock configuration values");
+                //
+                // final String clockObjectReference =
+                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                // + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                // + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
+                //
+                // LOGGER.info("clockObjectReference: {}",
+                // clockObjectReference);
+                //
+                // final FcModelNode clockConfiguration = (FcModelNode)
+                // serverModel.findModelNode(clockObjectReference,
+                // Fc.CF);
+                //
+                // final BdaInt16 communicationTimeout = (BdaInt16)
+                // clockConfiguration.getChild("syncPer");
+                // final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean)
+                // clockConfiguration.getChild("enbDst");
+                //
+                // communicationTimeout.setValue((short) 123);
+                // automaticSummerTimingEnabled.setValue(false);
+                //
+                // clientAssociation.setDataValues(clockConfiguration);
+
+                // TODO add these once the date formatting is sorted out. (Maybe
+                // an invalid format causes issues?)
+                // summerTimeDetails --> CSLC.Clock.dstBegT
+                // winterTimeDetails --> CSLC.Clock.dstEndT
+
+                // TODO set lightType once it's writable
+                // lightType --> CSLC.SWCf.LT
 
                 return null;
             }
