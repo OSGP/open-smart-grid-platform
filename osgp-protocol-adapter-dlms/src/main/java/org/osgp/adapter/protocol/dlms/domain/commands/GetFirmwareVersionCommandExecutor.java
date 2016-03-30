@@ -25,13 +25,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.FirmwareTypeDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
 @Component
 public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, List<FirmwareVersionDto>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionCommandExecutor.class);
+
+    private static final String COMMUNICATION_MODULE_ACTIVE_FIRMWARE = "COMMUNICATION_MODULE_ACTIVE_FIRMWARE";
+    private static final String MODULE_ACTIVE_FIRMWARE = "MODULE_ACTIVE_FIRMWARE";
+    private static final String ACTIVE_FIRMWARE = "ACTIVE_FIRMWARE";
 
     private static final int CLASS_ID = 1;
     private static final ObisCode OBIS_CODE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.0.0.2.0.255");
@@ -45,12 +48,12 @@ public class GetFirmwareVersionCommandExecutor implements CommandExecutor<Void, 
             throws ProtocolAdapterException {
 
         final List<FirmwareVersionDto> resultList = new ArrayList<>();
-        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.ACTIVE_FIRMWARE, this.retrieveFirmwareData(conn,
+        resultList.add(new FirmwareVersionDto(ACTIVE_FIRMWARE, this.retrieveFirmwareData(conn,
                 OBIS_CODE_ACTIVE_FIRMWARE_VERSION)));
-        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.MODULE_ACTIVE_FIRMWARE, this.retrieveFirmwareData(conn,
+        resultList.add(new FirmwareVersionDto(MODULE_ACTIVE_FIRMWARE, this.retrieveFirmwareData(conn,
                 OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION)));
-        resultList.add(new FirmwareVersionDto(FirmwareTypeDto.COMMUNICATION_MODULE_ACTIVE_FIRMWARE, this
-                .retrieveFirmwareData(conn, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION)));
+        resultList.add(new FirmwareVersionDto(COMMUNICATION_MODULE_ACTIVE_FIRMWARE, this.retrieveFirmwareData(conn,
+                OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION)));
 
         return resultList;
     }
