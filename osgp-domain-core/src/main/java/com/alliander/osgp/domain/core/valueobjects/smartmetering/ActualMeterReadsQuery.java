@@ -9,12 +9,14 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
 /**
  * request actual reads for E or GAS meters
  *
  * @author dev
  */
-public class ActualMeterReadsQuery implements Serializable {
+public class ActualMeterReadsQuery implements Serializable, ActionValueObject {
     private static final long serialVersionUID = 3751586818507193990L;
 
     private final boolean mbusDevice;
@@ -29,6 +31,12 @@ public class ActualMeterReadsQuery implements Serializable {
 
     public boolean isMbusDevice() {
         return this.mbusDevice;
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // TODO Auto-generated method stub
+
     }
 
 }

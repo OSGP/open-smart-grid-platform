@@ -41,6 +41,12 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema">
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="sm-adhoc.xsd" >
+		<jxb:schemaBindings>
+			<jxb:package name="com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc"></jxb:package>
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="sm-bundle.xsd" node="/xs:schema/xs:complexType[@name='Actions']/xs:sequence/xs:choice">
 		<jxb:property name="ActionList"/>
 	</jxb:bindings>

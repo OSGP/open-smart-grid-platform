@@ -9,6 +9,7 @@
 	xmlns:smman="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10"
 	xmlns:smconf="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10"
 	xmlns:smmon="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10"
+	xmlns:adhoc="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10"
 	xmlns:tns="http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10"
 	attributeFormDefault="unqualified"
 	elementFormDefault="qualified"
@@ -18,9 +19,9 @@
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-management/2014/10" schemaLocation="sm-management.xsd" />
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-configuration/2014/10" schemaLocation="sm-configuration.xsd" />
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-monitoring/2014/10" schemaLocation="sm-monitoring.xsd" />
+	<xsd:import namespace="http://www.alliander.com/schemas/osgp/smartmetering/sm-adhoc/2014/10" schemaLocation="sm-adhoc.xsd" />
 
 	<!-- Requests and Responses -->
-
 
 	<xsd:complexType name="Actions">
 		<xsd:sequence>
@@ -31,11 +32,13 @@
 				<xsd:element name="ActualMeterReadsData" type="smmon:ActualMeterReadsData" />
 				<xsd:element name="ActualMeterReadsGasData" type="smmon:ActualMeterReadsGasData" />
 				<xsd:element name="GetAdministrativeStatusData" type="smconf:GetAdministrativeStatusData" />
+				<xsd:element name="PeriodicReadsRequestQuery" type="smmon:PeriodicReadsRequestQuery" />
+				<xsd:element name="PushSetupAlarm" type="smconf:PushSetupAlarm" />
+				
 
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
-
 
 
 	<xsd:element name="BundleRequest">

@@ -25,6 +25,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Confi
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
+import com.alliander.osgp.domain.core.entities.Device;
+import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsData;
@@ -50,10 +52,12 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGas
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
@@ -84,7 +88,10 @@ public class ActionMapperService {
     @Autowired
     private MonitoringMapper monitoringMapper;
 
-    private static Map<Class<? extends ActionValueObject>, ConfigurableMapper> classToMapperMap = new HashMap<>();
+    @Autowired
+    private DomainHelperService domainHelperService;
+
+    private static Map<Class<? extends ActionValueObject>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
 
     // @formatter:off
     /**
@@ -92,24 +99,25 @@ public class ActionMapperService {
      */
     @PostConstruct
     private void postConstruct() {
-        classToMapperMap.put(SpecialDaysRequestData.class, this.configurationMapper);
-        classToMapperMap.put(ReadAlarmRegisterData.class, this.monitoringMapper);
-        classToMapperMap.put(FindEventsQuery.class, this.managementMapper);
-        classToMapperMap.put(ActualMeterReadsData.class, this.monitoringMapper);
-        classToMapperMap.put(ActualMeterReadsGasData.class, this.monitoringMapper);
-        classToMapperMap.put(GetAdministrativeStatusData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SpecialDaysRequestData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterData.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(FindEventsQuery.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(ActualMeterReadsData.class, this.monitoringMapper);
+        //        CLASS_TO_MAPPER_MAP.put(ActualMeterReadsGasData.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsQuery.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(PushSetupAlarm.class, this.configurationMapper);
 
         // ok to here
-        classToMapperMap.put(SmsDetails.class, this.adhocMapper);
-        classToMapperMap.put(AdministrativeStatusType.class, this.configurationMapper);
-        classToMapperMap.put(SetConfigurationObjectRequest.class, this.configurationMapper);
-        classToMapperMap.put(PushSetupAlarm.class, this.configurationMapper);
-        classToMapperMap.put(PushSetupSms.class, this.configurationMapper);
-        classToMapperMap.put(ActivityCalendar.class, this.configurationMapper);
-        classToMapperMap.put(AlarmNotifications.class, this.configurationMapper);
-        classToMapperMap.put(KeySet.class, this.configurationMapper);
-        classToMapperMap.put(SmartMeteringDevice.class, this.installationMapper);
-        classToMapperMap.put(PeriodicMeterReadsQuery.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(SmsDetails.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(AdministrativeStatusType.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequest.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(PushSetupSms.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(ActivityCalendar.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(AlarmNotifications.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(KeySet.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SmartMeteringDevice.class, this.installationMapper);
+
 
 
     }
@@ -117,50 +125,125 @@ public class ActionMapperService {
     /**
      * Specifies to which DTO object the core object needs to be mapped.
      */
-    private static Map<Class<? extends ActionValueObject>, Class<? extends ActionValueObjectDto>> classMap = new HashMap<>();
+    private static Map<Class<? extends ActionValueObject>, Class<? extends ActionValueObjectDto>> CLASS_MAP = new HashMap<>();
     static {
-        classMap.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
-        classMap.put(ReadAlarmRegisterData.class, ReadAlarmRegisterRequestDto.class);
-        classMap.put(FindEventsQuery.class, FindEventsQueryDto.class);
-        classMap.put(ActualMeterReadsData.class, ActualMeterReadsDataDto.class);
-        classMap.put(ActualMeterReadsGasData.class, ActualMeterReadsDataGasDto.class);
-        classMap.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
+        CLASS_MAP.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
+        CLASS_MAP.put(ReadAlarmRegisterData.class, ReadAlarmRegisterRequestDto.class);
+        CLASS_MAP.put(FindEventsQuery.class, FindEventsQueryDto.class);
+        CLASS_MAP.put(ActualMeterReadsData.class, ActualMeterReadsDataDto.class);
+        //        CLASS_MAP.put(ActualMeterReadsGasData.class, ActualMeterReadsDataGasDto.class);
+        CLASS_MAP.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
+        CLASS_MAP.put(PeriodicMeterReadsQuery.class, PeriodicMeterReadsQueryDto.class);
+        CLASS_MAP.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
+
         // ok to here
-        classMap.put(SmsDetails.class, SmsDetailsDto.class);
-        classMap.put(AdministrativeStatusType.class, AdministrativeStatusTypeDto.class);
-        classMap.put(SetConfigurationObjectRequest.class, SetConfigurationObjectRequestDto.class);
-        classMap.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
-        classMap.put(PushSetupSms.class, PushSetupSmsDto.class);
-        classMap.put(ActivityCalendar.class, ActivityCalendarDto.class);
-        classMap.put(AlarmNotifications.class, AlarmNotificationsDto.class);
-        classMap.put(KeySet.class, KeySetDto.class);
-        classMap.put(SmartMeteringDevice.class, SmartMeteringDeviceDto.class);
-        classMap.put(PeriodicMeterReadsQuery.class, PeriodicMeterReadsDto.class);
+        CLASS_MAP.put(SmsDetails.class, SmsDetailsDto.class);
+        CLASS_MAP.put(AdministrativeStatusType.class, AdministrativeStatusTypeDto.class);
+        CLASS_MAP.put(SetConfigurationObjectRequest.class, SetConfigurationObjectRequestDto.class);
+        CLASS_MAP.put(PushSetupSms.class, PushSetupSmsDto.class);
+        CLASS_MAP.put(ActivityCalendar.class, ActivityCalendarDto.class);
+        CLASS_MAP.put(AlarmNotifications.class, AlarmNotificationsDto.class);
+        CLASS_MAP.put(KeySet.class, KeySetDto.class);
+        CLASS_MAP.put(SmartMeteringDevice.class, SmartMeteringDeviceDto.class);
 
     }
 
     // @formatter:on
 
-    public BundleMessageDataContainerDto mapAllActions(final BundleMessageDataContainer bundleMessageDataContainer)
-            throws FunctionalException {
+    public BundleMessageDataContainerDto mapAllActions(final BundleMessageDataContainer bundleMessageDataContainer,
+            final SmartMeter smartMeter) throws FunctionalException {
 
         final List<ActionValueObjectDto> actionValueObjectDtoList = new ArrayList<ActionValueObjectDto>();
 
         for (final ActionValueObject action : bundleMessageDataContainer.getBundleList()) {
 
-            final ConfigurableMapper mapper = this.getMapper(action);
-            final Class<? extends ActionValueObjectDto> clazz = this.getClazz(action);
-            final ActionValueObjectDto actionValueObjectDto = this.getActionValueObjectDto(action, mapper, clazz);
-
-            actionValueObjectDtoList.add(actionValueObjectDto);
+            final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
+            final Class<? extends ActionValueObjectDto> clazz = CLASS_MAP.get(action.getClass());
+            if (mapper != null) {
+                actionValueObjectDtoList.add(this.performDefaultMapping(action, mapper, clazz));
+            } else {
+                actionValueObjectDtoList.add(this.performSpecialMapping(action, clazz, smartMeter));
+            }
         }
 
         return new BundleMessageDataContainerDto(actionValueObjectDtoList);
     }
 
-    private ActionValueObjectDto getActionValueObjectDto(final ActionValueObject action,
-            final ConfigurableMapper mapper, final Class<? extends ActionValueObjectDto> clazz)
+    private ActionValueObjectDto performSpecialMapping(final ActionValueObject action,
+            final Class<? extends ActionValueObjectDto> clazz, final SmartMeter smartMeter) throws FunctionalException {
+
+        if (action instanceof PeriodicMeterReadsQuery) {
+            return this.performPeriodicMeterReadsQueryMapping((PeriodicMeterReadsQuery) action, smartMeter);
+        } else if (action instanceof ActualMeterReadsGasData) {
+            return this.performActualMeterReadsGasDatayMapping((ActualMeterReadsGasData) action);
+        } else {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError("No mapper defined for class: "
+                            + clazz.getName()));
+        }
+    }
+
+    private ActionValueObjectDto performActualMeterReadsGasDatayMapping(
+            final ActualMeterReadsGasData actualMeterReadsGasData) throws FunctionalException {
+
+        final SmartMeter gasMeter = this.domainHelperService.findSmartMeter(actualMeterReadsGasData
+                .getDeviceIdentification());
+
+        if (gasMeter.getChannel() == null) {
+            /*
+             * For now, throw a FunctionalException. As soon as we can
+             * communicate with some types of gas meters directly, and not
+             * through an M-Bus port of an energy meter, this will have to be
+             * changed.
+             */
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                            "Meter for gas reads should have a channel configured."));
+        }
+        final Device gatewayDevice = gasMeter.getGatewayDevice();
+        if (gatewayDevice == null) {
+            /*
+             * For now throw a FunctionalException, based on the same reasoning
+             * as with the channel a couple of lines up. As soon as we have
+             * scenario's with direct communication with gas meters this will
+             * have to be changed.
+             */
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                            "Meter for gas reads should have an energy meter as gateway device."));
+        }
+
+        return new ActualMeterReadsDataGasDto(ChannelDto.fromNumber(gasMeter.getChannel()));
+    }
+
+    private ActionValueObjectDto performPeriodicMeterReadsQueryMapping(
+            final PeriodicMeterReadsQuery periodicMeterReadsQuery, final SmartMeter smartMeter)
                     throws FunctionalException {
+
+        if (periodicMeterReadsQuery.isMbusDevice()) {
+            if (smartMeter.getChannel() != null) {
+
+                return new PeriodicMeterReadsQueryDto(PeriodTypeDto.valueOf(periodicMeterReadsQuery.getPeriodType()
+                        .name()), periodicMeterReadsQuery.getBeginDate(), periodicMeterReadsQuery.getEndDate(),
+                        ChannelDto.fromNumber(smartMeter.getChannel()));
+            }
+            /*
+             * For now, throw a FunctionalException. As soon as we can
+             * communicate with some types of gas meters directly, and not
+             * through an M-Bus port of an energy meter, this will have to be
+             * changed.
+             */
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError(
+                            "Meter for gas reads should have a channel configured."));
+
+        } else {
+            return this.monitoringMapper.map(periodicMeterReadsQuery, PeriodicMeterReadsQueryDto.class);
+        }
+    }
+
+    private ActionValueObjectDto performDefaultMapping(final ActionValueObject action, final ConfigurableMapper mapper,
+            final Class<? extends ActionValueObjectDto> clazz) throws FunctionalException {
         final ActionValueObjectDto actionValueObjectDto = mapper.map(action, clazz);
 
         if (actionValueObjectDto == null) {
@@ -172,26 +255,32 @@ public class ActionMapperService {
         return actionValueObjectDto;
     }
 
-    private Class<? extends ActionValueObjectDto> getClazz(final ActionValueObject action) throws FunctionalException {
-        final Class<? extends ActionValueObjectDto> clazz = classMap.get(action.getClass());
+    // private Class<? extends ActionValueObjectDto> getClazz(final
+    // ActionValueObject action) throws FunctionalException {
+    // final Class<? extends ActionValueObjectDto> clazz = );
+    //
+    // if (clazz == null) {
+    // throw new
+    // FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+    // ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+    // "No Action Value Object DTO class for Action Value Object class: "
+    // + action.getClass().getName()));
+    // }
+    // return clazz;
+    // }
 
-        if (clazz == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                            "No Action Value Object DTO class for Action Value Object class: "
-                                    + action.getClass().getName()));
-        }
-        return clazz;
-    }
-
-    private ConfigurableMapper getMapper(final ActionValueObject action) throws FunctionalException {
-        final ConfigurableMapper mapper = classToMapperMap.get(action.getClass());
-
-        if (mapper == null) {
-            throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-                    ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-                            "No mapper for Action Value Object class: " + action.getClass().getName()));
-        }
-        return mapper;
-    }
+    // private ConfigurableMapper getMapper(final ActionValueObject action)
+    // throws FunctionalException {
+    // final ConfigurableMapper mapper =
+    // classToMapperMap.get(action.getClass());
+    //
+    // if (mapper == null) {
+    // throw new
+    // FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
+    // ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
+    // "No mapper for Action Value Object class: " +
+    // action.getClass().getName()));
+    // }
+    // return mapper;
+    // }
 }

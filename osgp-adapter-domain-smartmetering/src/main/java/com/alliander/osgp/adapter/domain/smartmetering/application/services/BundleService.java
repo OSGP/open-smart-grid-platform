@@ -67,8 +67,8 @@ public class BundleService {
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final BundleMessageDataContainerDto bundleMessageDataContainerDto = this.actionMapperService
-                .mapAllActions(bundleMessageDataContainer);
+        final BundleMessageDataContainerDto bundleMessageDataContainerDto = this.actionMapperService.mapAllActions(
+                bundleMessageDataContainer, smartMeter);
 
         LOGGER.info("Sending request message to core.");
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),

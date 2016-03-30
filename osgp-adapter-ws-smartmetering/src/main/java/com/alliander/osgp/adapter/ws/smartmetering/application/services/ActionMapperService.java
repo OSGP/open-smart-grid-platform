@@ -27,10 +27,11 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Installat
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Service(value = "wsSmartMeteringActionMapperService")
 @Validated
@@ -51,116 +52,151 @@ public class ActionMapperService {
     @Autowired
     private MonitoringMapper monitoringMapper;
 
-    private static Map<Class<?>, ConfigurableMapper> classToMapperMap = new HashMap<>();
+    private static Map<Class<?>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the ws class received.
      */
     @PostConstruct
     private void postConstruct() {
-        classToMapperMap.put(
+        CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
                 this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
                 this.monitoringMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
+        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
                 this.managementMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
-                this.monitoringMapper);
-        classToMapperMap.put(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
-                this.monitoringMapper);
-        classToMapperMap.put(
+        CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
                 this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestGasQuery.class,
+                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestQuery.class,
+                this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,
+                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
+                this.monitoringMapper);
 
         // ok to here
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,
+        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,
                 this.adhocMapper);
-        classToMapperMap.put(
+        CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,
                 this.configurationMapper);
-        classToMapperMap
+        CLASS_TO_MAPPER_MAP
         .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
                 this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,
+        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,
                 this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,
-                this.configurationMapper);
-        classToMapperMap.put(
+        CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,
                 this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,
                 this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,
+        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,
                 this.configurationMapper);
-        classToMapperMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,
+        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,
                 this.installationMapper);
-        classToMapperMap.put(
+        CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,
                 this.monitoringMapper);
+
+        // Requires special mapping from ws object to core object
+        // com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
+        // com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
+
     }
 
     /**
      * Specifies to which core object the ws object needs to be mapped.
      */
-    private static Map<Class<?>, Class<? extends ActionValueObject>> classMap = new HashMap<>();
+    private static Map<Class<?>, Class<? extends ActionValueObject>> CLASS_MAP = new HashMap<>();
     static {
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRegisterData.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsQuery.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsData.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasData.class);
-        classMap.put(
+        CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestGasQuery.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestQuery.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
+                ActualMeterReadsData.class);
 
         // ok to here
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusType.class);
-        classMap.put(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,
+        CLASS_MAP
+                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device.class,
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice.class);
-        classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery.class);
+
+        // Requires special mapping for Gas, so ommit it from the standard
+        // mapper
+        // classMap.put(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData.class,
+        // com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasData.class);
+
     }
 
-    public List<ActionValueObject> mapAllActions(final List<? extends Action> actionList) throws OsgpException {
+    public List<ActionValueObject> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {
         final List<ActionValueObject> actionValueObjectList = new ArrayList<>();
 
         for (final Action action : actionList) {
 
-            final ConfigurableMapper mapper = this.getMapper(action);
-            final Class<? extends ActionValueObject> clazz = this.getClazz(action);
-            final ActionValueObject actionValueObject = this.getActionValueObject(action, mapper, clazz);
-
-            actionValueObjectList.add(actionValueObject);
+            final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
+            final Class<? extends ActionValueObject> clazz = CLASS_MAP.get(action.getClass());
+            if (mapper != null) {
+                actionValueObjectList.add(this.getActionValueObjectWithDefaultMapper(action, mapper, clazz));
+            } else {
+                actionValueObjectList.add(this.performSpecialMapping(action));
+            }
         }
 
         return actionValueObjectList;
     }
 
-    private ActionValueObject getActionValueObject(final Action action, final ConfigurableMapper mapper,
-            final Class<? extends ActionValueObject> clazz) throws FunctionalException {
+    private ActionValueObject performSpecialMapping(final Action action) throws FunctionalException {
+
+        if (action instanceof com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData) {
+            final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData actualMeterReadsGasData = (com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData) action;
+
+            return new ActualMeterReadsGasData(actualMeterReadsGasData.getDeviceIdentification());
+        } else if (action instanceof com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData) {
+            return new ActualMeterReadsData();
+        } else {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                    ComponentType.DOMAIN_SMART_METERING, new AssertionError("No mapper defined for class: "
+                            + action.getClass().getName()));
+        }
+
+    }
+
+    private ActionValueObject getActionValueObjectWithDefaultMapper(final Action action,
+            final ConfigurableMapper mapper, final Class<? extends ActionValueObject> clazz) throws FunctionalException {
         final ActionValueObject actionValueObject = mapper.map(action, clazz);
 
         if (actionValueObject == null) {
@@ -172,7 +208,7 @@ public class ActionMapperService {
     }
 
     private Class<? extends ActionValueObject> getClazz(final Action action) throws FunctionalException {
-        final Class<? extends ActionValueObject> clazz = classMap.get(action.getClass());
+        final Class<? extends ActionValueObject> clazz = CLASS_MAP.get(action.getClass());
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
@@ -183,7 +219,7 @@ public class ActionMapperService {
     }
 
     private ConfigurableMapper getMapper(final Action action) throws FunctionalException {
-        final ConfigurableMapper mapper = classToMapperMap.get(action.getClass());
+        final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
 
         if (mapper == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,

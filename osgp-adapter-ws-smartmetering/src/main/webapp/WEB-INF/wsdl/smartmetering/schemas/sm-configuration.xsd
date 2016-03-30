@@ -482,18 +482,22 @@
 	</xsd:simpleType>
 
 	<xsd:complexType name="PushSetupAlarm">
-		<xsd:sequence>
-			<xsd:element name="Host" type="xsd:string">
-				<xsd:annotation>
-					<xsd:documentation>IP address or DNS name of the service listening for alarm notifications over TCP.</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Port" type="xsd:integer">
-				<xsd:annotation>
-					<xsd:documentation>Port number of the service listening for alarm notifications over TCP.</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="Host" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>IP address or DNS name of the service listening for alarm notifications over TCP.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Port" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:documentation>Port number of the service listening for alarm notifications over TCP.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
     <xsd:complexType name="PushSetupSms">

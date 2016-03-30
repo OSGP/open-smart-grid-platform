@@ -14,6 +14,15 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 public class ActualMeterReadsGasData implements Serializable, ActionValueObject {
 
     private static final long serialVersionUID = 2901630229011386951L;
+    private String deviceIdentification;
+
+    public ActualMeterReadsGasData(final String deviceIdentification2) {
+        this.deviceIdentification = deviceIdentification2;
+    }
+
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
+    }
 
     @Override
     public void validate() throws FunctionalException {
