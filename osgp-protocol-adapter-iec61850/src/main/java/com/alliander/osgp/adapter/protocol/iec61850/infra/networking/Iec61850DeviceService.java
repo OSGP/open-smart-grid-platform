@@ -13,6 +13,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt16;
+import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -449,7 +450,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the registration configuration values");
 
                 final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
 
                 LOGGER.info("regObjectReference: {}", regObjectReference);
@@ -457,15 +458,17 @@ public class Iec61850DeviceService implements DeviceService {
                 final FcModelNode regConfiguration = (FcModelNode) serverModel.findModelNode(regObjectReference, Fc.CF);
 
                 final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr");
+                final BdaInt32 serverPort = (BdaInt32) regConfiguration.getChild("svrPort");
 
                 configuration.setOspgIpAddress(new String(serverAddress.getValue()));
+                configuration.setOsgpPortNumber(serverPort.getValue());
 
-                // getting the ip configuration values
+                // getting the IP configuration values
 
-                LOGGER.info("Reading the ip configuration values");
+                LOGGER.info("Reading the IP configuration values");
 
                 final String ipcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_IP_CONFIGURATION;
 
                 LOGGER.info("ipcfObjectReference: {}", ipcfObjectReference);
@@ -483,7 +486,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the software configuration values");
 
                 final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
 
                 LOGGER.info("swcfObjectReference: {}", swcfObjectReference);
@@ -502,7 +505,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the clock configuration values");
 
                 final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
 
                 LOGGER.info("clockObjectReference: {}", clockObjectReference);
@@ -542,25 +545,64 @@ public class Iec61850DeviceService implements DeviceService {
 
                 LOGGER.info("Reading the registration configuration values");
 
+                // Create the object reference string for LD/CSLC.Reg
                 final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX;
-
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
                 LOGGER.info("regObjectReference: {}", regObjectReference);
 
-                final FcModelNode regConfiguration = (FcModelNode) serverModel.findModelNode(regObjectReference, Fc.CF)
-                        .getChild("Reg", Fc.CF);
+                // Get the node using configuration functional constraint.
+                final FcModelNode cslcLogicalNodeRegAttribute = (FcModelNode) serverModel.findModelNode(
+                        regObjectReference, Fc.CF);
+                if (cslcLogicalNodeRegAttribute == null) {
+                    LOGGER.info("{} is null", regObjectReference);
+                    // FAIL
+                } else {
+                    LOGGER.info("{}: {}", regObjectReference, cslcLogicalNodeRegAttribute);
+                }
 
-                final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr", Fc.CF);
+                // Get a data attribute using configuration functional
+                // constraint.
+                final BdaVisibleString serverAddress = (BdaVisibleString) cslcLogicalNodeRegAttribute.getChild(
+                        LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_SERVER_ADDRESS, Fc.CF);
+                if (serverAddress == null) {
+                    LOGGER.info("{} is null", LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_SERVER_ADDRESS);
+                    // FAIL
+                } else {
+                    LOGGER.info("{}: {}", LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_SERVER_ADDRESS,
+                            serverAddress);
+                }
 
-                serverAddress.setValue("168.63.97.65");
+                // Get the value from the given configuration argument and set
+                // it. Then send the value to the device.
+                serverAddress.setValue(configuration.getOspgIpAddress());
+                clientAssociation.setDataValues(serverAddress);
 
-                clientAssociation.setDataValues(regConfiguration);
+                // Get a data attribute using configuration functional
+                // constraint.
+                final BdaInt32 serverPort = (BdaInt32) cslcLogicalNodeRegAttribute.getChild(
+                        LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_SERVER_PORT, Fc.CF);
+                if (serverPort == null) {
+                    LOGGER.info("{} is null", LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_SERVER_PORT);
+                    // FAIL
+                } else {
+                    LOGGER.info("{}: {}", LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_SERVER_PORT, serverPort);
+                }
 
-                // deviceFixIpValue -----> CSLC.IPCf.ipAddr
-                // isDhcpEnabled ----> CSLC.IPCf.enbDHCP
+                // Get the value from the given configuration argument and set
+                // it. Then send the value to the device.
+                serverPort.setValue(configuration.getOsgpPortNumber());
+                clientAssociation.setDataValues(serverPort);
+
+                // Disconnect from the device.
+                clientAssociation.disconnect();
+
+                // deviceFixIpValue ---> CSLC.IPCf.ipAddr
+                // isDhcpEnabled ---> CSLC.IPCf.enbDHCP
                 // ospgIpAddress ---> CSLC.Reg.srvAddr
-                // astroGateSunRiseOffset ---> CSLC.SWCf.osSet
-                // astroGateSunSetOffset ---> CSLC.Clock.osRise
+                // osgpPortNumber ---> CSLC.Reg.svrPort
+                // astroGateSunRiseOffset ---> CSLC.SWCf.osRise
+                // astroGateSunSetOffset ---> CSLC.SWCf.osSet
 
                 // for (final RelayMap relayMap :
                 // configuration.getRelayConfiguration().getRelayMap()) {
@@ -589,9 +631,9 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // }
 
-                // // getting the ip configuration values
+                // // getting the IP configuration values
                 //
-                // LOGGER.info("Reading the ip configuration values");
+                // LOGGER.info("Reading the IP configuration values");
                 //
                 // final String ipcfObjectReference =
                 // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE

@@ -14,6 +14,9 @@ public final class LogicalNodeAttributeDefinitons {
 
     private static final int MAX_RELAY_INDEX = 4;
 
+    /**
+     * The name of the Logical Device.
+     */
     public static final String LOGICAL_DEVICE = "SWDeviceGenericIO";
 
     /**
@@ -22,7 +25,7 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_POSITION = ".Pos";
 
     /**
-     * Property of CSLC Node , clock
+     * Property of CSLC Node, clock
      * */
     public static final String PROPERTY_CLOCK = ".Clock";
 
@@ -37,14 +40,26 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_SOFTWARE_CONFIGURATION = ".SWCf";
 
     /**
-     * Property of CSLC Node, Ip configuration.
+     * Property of CSLC Node, IP configuration.
      */
     public static final String PROPERTY_IP_CONFIGURATION = ".IPCf";
 
     /**
-     * Property of CSLC Node, reg configuration.
+     * Property of CSLC Node, Reg[ister] configuration.
      */
     public static final String PROPERTY_REG_CONFIGURATION = ".Reg";
+
+    /**
+     * Attribute of Property Reg, used to read or set the IP address of the
+     * platform.
+     */
+    public static final String PROPERTY_REG_ATTRIBUTE_SERVER_ADDRESS = "svrAddr";
+
+    /**
+     * Attribute of Property Reg, used to read or set the port number of the
+     * platform.
+     */
+    public static final String PROPERTY_REG_ATTRIBUTE_SERVER_PORT = "svrPort";
 
     // SWCf
 
@@ -52,20 +67,19 @@ public final class LogicalNodeAttributeDefinitons {
      * Attribute of Property Pos, used to read the status of the relay.
      */
     public static final String PROPERTY_POSITION_ATTRIBUTE_STATE = "stVal";
+
     /**
      * Attribute of Property Pos, used to switch the relay on or off.
      */
     public static final String PROPERTY_POSITION_ATTRIBUTE_CONTROL = ".Oper.ctlVal";
 
-    public static final String PROPERTY_SWITCH_TYPE_ATTRIBUTE_STATE = "SwType";
-
     /*
-     * Property of CSLC Node.
+     * CSLC, configuration Logical Node.
      */
-    public static final String PROPERTY_NODE_CSLC_PREFIX = "/CSLC";
+    public static final String PROPERTY_NODE_CSLC = "/CSLC";
 
     /*
-     * Prefix of the relays' Logical Node.
+     * XSWC, prefix of the relays' Logical Node.
      */
     private static final String LOGICAL_NODE_RELAY_PREFIX = "/XSWC";
 

@@ -55,7 +55,6 @@ public class Iec61850DeviceConnectionService {
             LOGGER.error(String.format(
                     "Unexpected exception while trying to find a cached connection for deviceIdentification: %s",
                     deviceIdentification), e);
-
         }
 
         final InetAddress inetAddress = this.convertIpAddress(ipAddress);
@@ -74,7 +73,7 @@ public class Iec61850DeviceConnectionService {
             final ServerModel serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
 
             // Read all data values from the device.
-            this.iec61850Client.readAllDataValues(clientAssociation);
+            // this.iec61850Client.readAllDataValues(clientAssociation);
 
             // Cache the connection.
             this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(clientAssociation, serverModel));
@@ -111,10 +110,11 @@ public class Iec61850DeviceConnectionService {
     private Iec61850Connection fetchIec61850Connection(final String deviceIdentification)
             throws ProtocolAdapterException {
         final Iec61850Connection iec61850Connection = cache.get(deviceIdentification);
-        if (iec61850Connection == null) {
-            throw new ProtocolAdapterException(String.format("No connection found for deviceIdentification: %s",
-                    deviceIdentification));
-        }
+        // if (iec61850Connection == null) {
+        // throw new
+        // ProtocolAdapterException(String.format("No connection found for deviceIdentification: %s",
+        // deviceIdentification));
+        // }
         return iec61850Connection;
     }
 
@@ -130,5 +130,4 @@ public class Iec61850DeviceConnectionService {
             return null;
         }
     }
-
 }
