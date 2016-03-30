@@ -51,7 +51,7 @@ public interface DeviceService {
     // String ipAddress) throws IOException;
 
     /**
-     * Runs a selftest. StartOfTest is a boolean, used to indicate wether the
+     * Runs a selftest. StartOfTest is a boolean, used to indicate whether the
      * test is started or stopped
      */
     void runSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, boolean startOfTest);

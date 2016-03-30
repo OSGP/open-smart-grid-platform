@@ -246,16 +246,16 @@ public class Iec61850DeviceService implements DeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            // Turning all lights on or off, depending on the value of
-            // startOfTest
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
 
             // This list will contain the external indexes of all light relays.
-            // This is use to interpret the deviceStatus data later on
+            // It's used to interpret the deviceStatus data later on
             final List<Integer> lightRelays = new ArrayList<>();
 
             LOGGER.info("Turning all lights relays {}", startOfTest ? "on" : "off");
 
+            // Turning all light relays on or off, depending on the value of
+            // startOfTest
             for (final DeviceOutputSetting deviceOutputSetting : ssld.findByRelayType(RelayType.LIGHT)) {
                 lightRelays.add(deviceOutputSetting.getExternalId());
                 this.switchLightRelay(deviceOutputSetting.getInternalId(), startOfTest, serverModel, clientAssociation);
@@ -271,12 +271,12 @@ public class Iec61850DeviceService implements DeviceService {
                         "An error occured during the device selftest timeout.");
             }
 
-            // getting the status
+            // Getting the status
             final DeviceStatus deviceStatus = this.getStatusFromDevice(serverModel, ssld);
 
             LOGGER.info("Fetching and checking the devicestatus");
 
-            // checking to see if all light relays have the correct value
+            // checking to see if all light relays have the correct state
             for (final LightValue lightValue : deviceStatus.getLightValues()) {
                 if (lightRelays.contains(lightValue.getIndex()) && lightValue.isOn() != startOfTest) {
                     // One the the light relays is not in the correct state,
