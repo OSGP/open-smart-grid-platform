@@ -1,4 +1,4 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = SLIM-435_Refactor_Converters_And_Mappers
+	branch = SLIM-472-Retries
