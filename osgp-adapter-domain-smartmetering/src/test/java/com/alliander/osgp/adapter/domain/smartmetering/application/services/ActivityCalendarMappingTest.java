@@ -53,7 +53,7 @@ public class ActivityCalendarMappingTest {
 
     // Neither the CosemDateTime or List<SeasonProfile> of a ActivityCalendar
     // may ever be null. Tests to make sure a NullPointerException is thrown
-    // when they are.
+    // when one is.
     @Test(expected = NullPointerException.class)
     public void testNullCosemDateTime() {
         final String calendarName = "calendar";
@@ -63,6 +63,9 @@ public class ActivityCalendarMappingTest {
         new ActivityCalendar(calendarName, activePassiveCalendarTime, seasonProfileList);
     }
 
+    // Neither the CosemDateTime or List<SeasonProfile> of a ActivityCalendar
+    // may ever be null. Tests to make sure a NullPointerException is thrown
+    // when one is.
     @Test(expected = NullPointerException.class)
     public void testNullList() {
         final String calendarName = "calendar";
@@ -72,33 +75,9 @@ public class ActivityCalendarMappingTest {
         new ActivityCalendar(calendarName, activePassiveCalendarTime, seasonProfileList);
     }
 
-    // Tests mapping when List is empty
-    @Test
-    public void testWithEmptyList() {
-
-        // build test data
-        final ActivityCalendar activityCalendar = new ActivityCalendarBuilder().withCosemDateTime(this.cosemDateTime)
-                .build();
-
-        // actual mapping
-        final ActivityCalendarDto activityCalendarDto = this.configurationMapper.map(activityCalendar,
-                ActivityCalendarDto.class);
-
-        // check if mapping succeeded
-        assertNotNull(activityCalendarDto);
-        assertNotNull(activityCalendarDto.getActivatePassiveCalendarTime());
-        assertNotNull(activityCalendarDto.getSeasonProfileList());
-
-        assertEquals(activityCalendar.getCalendarName(), activityCalendarDto.getCalendarName());
-        this.checkEmptyListMapping(activityCalendar.getSeasonProfileList(), activityCalendarDto.getSeasonProfileList());
-        this.checkCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime(),
-                activityCalendarDto.getActivatePassiveCalendarTime());
-
-    }
-
     // Test mapping with a CosemDateTime object AND an empty list
     @Test
-    public void testWithCosemDateTime() {
+    public void testWithCosemDateTimeAndEmptyList() {
         // build test data
         final ActivityCalendar activityCalendar = new ActivityCalendarBuilder().withCosemDateTime(this.cosemDateTime)
                 .build();
@@ -108,7 +87,6 @@ public class ActivityCalendarMappingTest {
                 ActivityCalendarDto.class);
 
         // check if mapping succeeded
-        assertNotNull(activityCalendar);
         assertNotNull(activityCalendarDto);
         assertNotNull(activityCalendarDto.getActivatePassiveCalendarTime());
         assertNotNull(activityCalendarDto.getSeasonProfileList());
@@ -132,7 +110,6 @@ public class ActivityCalendarMappingTest {
                 ActivityCalendarDto.class);
 
         // check if mapping succeeded
-        assertNotNull(activityCalendar);
         assertNotNull(activityCalendarDto);
         assertNotNull(activityCalendarDto.getActivatePassiveCalendarTime());
         assertNotNull(activityCalendarDto.getSeasonProfileList());
@@ -150,10 +127,8 @@ public class ActivityCalendarMappingTest {
         assertNotNull(seasonProfileList);
         assertNotNull(seasonProfileDtoList);
         assertEquals(seasonProfileList.size(), seasonProfileDtoList.size());
-
         assertFalse(seasonProfileList.isEmpty());
         assertFalse(seasonProfileDtoList.isEmpty());
-        assertEquals(seasonProfileList.isEmpty(), seasonProfileDtoList.isEmpty());
 
         final SeasonProfile seasonProfile = seasonProfileList.get(0);
         final SeasonProfileDto seasonProfileDto = seasonProfileDtoList.get(0);

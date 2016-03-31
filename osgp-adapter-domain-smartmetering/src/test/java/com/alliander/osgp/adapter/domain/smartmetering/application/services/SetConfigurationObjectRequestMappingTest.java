@@ -11,6 +11,7 @@ package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,8 +112,7 @@ public class SetConfigurationObjectRequestMappingTest {
         assertNotNull(configurationObjectDto);
 
         // Check if both configurationFlags instances have an empty list
-        assertEquals(configurationFlags.getConfigurationFlag().isEmpty(), configurationObjectDto
-                .getConfigurationFlags().getConfigurationFlag().isEmpty());
+        assertTrue(configurationObjectDto.getConfigurationFlags().getConfigurationFlag().isEmpty());
     }
 
     // Tests if mapping with a complete SetConfigurationObjectRequestData object
