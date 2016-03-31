@@ -184,9 +184,9 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
          * setting per AlarmType.
          */
 
-        final Set<AlarmNotificationDto> notificationsToSet = new TreeSet<>(alarmNotificationsToSet.getAlarmNotifications());
+        final Set<AlarmNotificationDto> notificationsToSet = new TreeSet<>(alarmNotificationsToSet.getAlarmNotificationsSet());
 
-        notificationsToSet.addAll(alarmNotificationsOnDevice.getAlarmNotifications());
+        notificationsToSet.addAll(alarmNotificationsOnDevice.getAlarmNotificationsSet());
 
         return this.alarmFilterLongValue(new AlarmNotificationsDto(notificationsToSet));
     }
@@ -208,7 +208,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     public long alarmFilterLongValue(final AlarmNotificationsDto alarmNotifications) {
 
         final BitSet bitSet = new BitSet(NUMBER_OF_BITS_IN_ALARM_FILTER);
-        final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotifications();
+        final Set<AlarmNotificationDto> notifications = alarmNotifications.getAlarmNotificationsSet();
         for (final AlarmNotificationDto alarmNotification : notifications) {
             bitSet.set(alarmRegisterBitIndexPerAlarmType.get(alarmNotification.getAlarmType()),
                     alarmNotification.isEnabled());
