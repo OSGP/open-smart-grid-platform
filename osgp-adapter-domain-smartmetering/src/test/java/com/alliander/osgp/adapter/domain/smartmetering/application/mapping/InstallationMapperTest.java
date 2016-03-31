@@ -24,7 +24,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 
 public class InstallationMapperTest {
 
-    // private InstallationMapper installationMapper = new InstallationMapper();
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     @Test
