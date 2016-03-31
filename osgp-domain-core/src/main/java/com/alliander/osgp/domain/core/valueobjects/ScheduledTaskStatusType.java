@@ -11,5 +11,6 @@ public enum ScheduledTaskStatusType {
     NEW,
     PENDING,
     COMPLETE,
-    FAILED
+    FAILED,
+    RETRY
 }
