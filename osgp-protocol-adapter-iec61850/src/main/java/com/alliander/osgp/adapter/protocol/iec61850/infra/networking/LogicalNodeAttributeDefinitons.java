@@ -53,7 +53,7 @@ public final class LogicalNodeAttributeDefinitons {
      * Attribute of Property Reg, used to read or set the IP address of the
      * platform.
      */
-    public static final String PROPERTY_REG_ATTRIBUTE_SERVER_ADDRESS = "svrAddr";
+    public static final String PROPERTY_REG_ATTRIBUTE_OSGP_IP_ADDRESS = "svrAddr";
 
     /**
      * Attribute of Property Reg, used to read or set the port number of the
@@ -67,6 +67,38 @@ public final class LogicalNodeAttributeDefinitons {
      * Attribute of Property Pos, used to read the status of the relay.
      */
     public static final String PROPERTY_POSITION_ATTRIBUTE_STATE = "stVal";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of the offset from
+     * astronomic sunrise.
+     */
+    public static final String PROPERTY_POSITION_OFFSET_SUNRISE = "osRise";
+
+    /**
+     * Attribute of Property Clock, used to read the value of time sync period.
+     */
+    public static final String PROPERTY_POSITION_SYNC_PERIOD = "syncPer";
+
+    /**
+     * Attribute of Property Clock, used to enable daylights savings.
+     */
+    public static final String PROPERTY_POSITION_DAYLIGHT_SAVING_ENABLED = "enbDst";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of the offset from
+     * astronomic sunset.
+     */
+    public static final String PROPERTY_POSITION_OFFSET_SUNSET = "osSet";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of fixed ip address
+     */
+    public static final String PROPERTY_POSITION_FIXED_IP = "ipAddr";
+
+    /**
+     * Attribute of Property SWCf, used to enable dhcp
+     */
+    public static final String PROPERTY_POSITION_DHCP_ENABLED = "enbDHCP";
 
     /**
      * Attribute of Property Pos, used to switch the relay on or off.

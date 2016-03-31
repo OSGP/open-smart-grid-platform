@@ -73,7 +73,7 @@ public class Iec61850DeviceConnectionService {
             final ServerModel serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
 
             // Read all data values from the device.
-            // this.iec61850Client.readAllDataValues(clientAssociation);
+            this.iec61850Client.readAllDataValues(clientAssociation);
 
             // Cache the connection.
             this.cacheIec61850Connection(deviceIdentification, new Iec61850Connection(clientAssociation, serverModel));
