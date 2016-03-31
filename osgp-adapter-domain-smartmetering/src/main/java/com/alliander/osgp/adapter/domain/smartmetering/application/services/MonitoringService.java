@@ -20,6 +20,12 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
@@ -64,10 +70,8 @@ public class MonitoringService {
         // Parameterless constructor required for transactions...
     }
 
-    public void requestPeriodicMeterReads(
-            final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery periodicMeterReadsValueQuery)
-            throws FunctionalException {
+    public void requestPeriodicMeterReads(final DeviceMessageMetadata deviceMessageMetadata,
+            final PeriodicMeterReadsQuery periodicMeterReadsValueQuery) throws FunctionalException {
 
         LOGGER.info("requestPeriodicMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -133,17 +137,12 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender
-                .send(new ResponseMessage(
-                        deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        result,
-                        exception,
-                        this.monitoringMapper
-                                .map(periodMeterReadsValueDTO,
-                                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer.class),
-                        deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
+                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
+                        exception, this.monitoringMapper
+                                .map(periodMeterReadsValueDTO, PeriodicMeterReadsContainer.class), deviceMessageMetadata
+                                .getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -158,17 +157,12 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender
-                .send(new ResponseMessage(
-                        deviceMessageMetadata.getCorrelationUid(),
-                        deviceMessageMetadata.getOrganisationIdentification(),
-                        deviceMessageMetadata.getDeviceIdentification(),
-                        result,
-                        exception,
-                        this.monitoringMapper
-                                .map(periodMeterReadsValueDTO,
-                                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas.class),
-                        deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
+        this.webServiceResponseMessageSender.send(
+                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
+                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
+                        exception, this.monitoringMapper.map(periodMeterReadsValueDTO,
+                                PeriodicMeterReadsContainerGas.class), deviceMessageMetadata.getMessagePriority()),
+                                deviceMessageMetadata.getMessageType());
     }
 
     public void requestActualMeterReads(final DeviceMessageMetadata deviceMessageMetadata,
@@ -233,12 +227,10 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(
-                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
-                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
-                        exception, this.monitoringMapper.map(actualMeterReadsDto,
-                                com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads.class),
-                        deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, this.monitoringMapper.map(actualMeterReadsDto, MeterReads.class),
+                deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
     public void handleActualMeterReadsResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -253,18 +245,14 @@ public class MonitoringService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        this.webServiceResponseMessageSender.send(
-                new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
-                        .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
-                        exception, this.monitoringMapper.map(actualMeterReadsGas,
-                                com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas.class),
-                                deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, this.monitoringMapper.map(actualMeterReadsGas, MeterReadsGas.class),
+                deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 
-    public void requestReadAlarmRegister(
-            final DeviceMessageMetadata deviceMessageMetadata,
-            final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest readAlarmRegisterRequestValueObject)
-            throws FunctionalException {
+    public void requestReadAlarmRegister(final DeviceMessageMetadata deviceMessageMetadata,
+            final ReadAlarmRegisterRequest readAlarmRegisterRequestValueObject) throws FunctionalException {
 
         LOGGER.info("requestReadAlarmRegister for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());

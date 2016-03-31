@@ -9,6 +9,9 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +19,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
@@ -50,7 +52,7 @@ public class AdhocService {
     private DomainHelperService domainHelperService;
 
     @Autowired
-    private AdhocMapper adhocMapper;
+    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     public AdhocService() {
         // Parameterless constructor required for transactions...
@@ -59,7 +61,7 @@ public class AdhocService {
     public void synchronizeTime(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -102,7 +104,8 @@ public class AdhocService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final SmsDetailsDto smsDetailsDto = this.adhocMapper.map(smsDetailsValueObject, SmsDetailsDto.class);
+        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -123,7 +126,7 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
+        final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -140,7 +143,8 @@ public class AdhocService {
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final SmsDetailsDto smsDetailsDto = this.adhocMapper.map(smsDetailsValueObject, SmsDetailsDto.class);
+        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
+                SmsDetailsDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -161,7 +165,7 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final SmsDetails smsDetails = this.adhocMapper.map(smsDetailsDto, SmsDetails.class);
+        final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDto, SmsDetails.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getDeviceIdentification(), result,
@@ -171,7 +175,7 @@ public class AdhocService {
 
     public void retrieveConfigurationObjects(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest request)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("retrieveConfigurationObjects for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
