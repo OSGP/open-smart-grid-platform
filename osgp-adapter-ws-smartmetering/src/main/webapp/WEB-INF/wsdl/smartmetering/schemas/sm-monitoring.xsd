@@ -266,6 +266,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="common:Query">
 				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
 					<xsd:element name="PeriodicReadsRequestData" type="tns:PeriodicReadsRequestData" />
 				</xsd:sequence>
 			</xsd:extension>

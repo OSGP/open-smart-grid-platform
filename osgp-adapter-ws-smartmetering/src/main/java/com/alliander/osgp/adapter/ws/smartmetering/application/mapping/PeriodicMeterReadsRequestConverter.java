@@ -15,8 +15,8 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicRea
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 
 public class PeriodicMeterReadsRequestConverter
-        extends
-        CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
+extends
+CustomConverter<com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequest, PeriodicMeterReadsQuery> {
 
     @Override
     public PeriodicMeterReadsQuery convert(final PeriodicReadsRequest source,
@@ -25,7 +25,8 @@ public class PeriodicMeterReadsRequestConverter
                 com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType.valueOf(source
                         .getPeriodicReadsRequestData().getPeriodType().name()), source.getPeriodicReadsRequestData()
                         .getBeginDate().toGregorianCalendar().getTime(), source.getPeriodicReadsRequestData()
-                        .getEndDate().toGregorianCalendar().getTime(), source instanceof PeriodicMeterReadsGasRequest);
+                        .getEndDate().toGregorianCalendar().getTime(), source instanceof PeriodicMeterReadsGasRequest,
+                "");
     }
 
 }

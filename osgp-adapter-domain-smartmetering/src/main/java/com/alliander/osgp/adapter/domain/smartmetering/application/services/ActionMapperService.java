@@ -99,13 +99,14 @@ public class ActionMapperService {
      */
     @PostConstruct
     private void postConstruct() {
+        // Omitted because it needs custom conversion
+        // CLASS_TO_MAPPER_MAP.put(ActualMeterReadsGasData.class, this.monitoringMapper);
+        // CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsQuery.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(SpecialDaysRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(FindEventsQuery.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ActualMeterReadsData.class, this.monitoringMapper);
-        //        CLASS_TO_MAPPER_MAP.put(ActualMeterReadsGasData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusData.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsQuery.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(PushSetupAlarm.class, this.configurationMapper);
 
         // ok to here
@@ -117,9 +118,6 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(AlarmNotifications.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(KeySet.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SmartMeteringDevice.class, this.installationMapper);
-
-
-
     }
 
     /**
@@ -127,13 +125,14 @@ public class ActionMapperService {
      */
     private static Map<Class<? extends ActionValueObject>, Class<? extends ActionValueObjectDto>> CLASS_MAP = new HashMap<>();
     static {
+        // Omitted because it needs custom conversion
+        // CLASS_MAP.put(ActualMeterReadsGasData.class, ActualMeterReadsDataGasDto.class);
+        // CLASS_MAP.put(PeriodicMeterReadsQuery.class, PeriodicMeterReadsQueryDto.class);
         CLASS_MAP.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
         CLASS_MAP.put(ReadAlarmRegisterData.class, ReadAlarmRegisterRequestDto.class);
         CLASS_MAP.put(FindEventsQuery.class, FindEventsQueryDto.class);
         CLASS_MAP.put(ActualMeterReadsData.class, ActualMeterReadsDataDto.class);
-        //        CLASS_MAP.put(ActualMeterReadsGasData.class, ActualMeterReadsDataGasDto.class);
         CLASS_MAP.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
-        CLASS_MAP.put(PeriodicMeterReadsQuery.class, PeriodicMeterReadsQueryDto.class);
         CLASS_MAP.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
 
         // ok to here
@@ -162,14 +161,14 @@ public class ActionMapperService {
             if (mapper != null) {
                 actionValueObjectDtoList.add(this.performDefaultMapping(action, mapper, clazz));
             } else {
-                actionValueObjectDtoList.add(this.performSpecialMapping(action, clazz, smartMeter));
+                actionValueObjectDtoList.add(this.convertCoreToDto(action, clazz, smartMeter));
             }
         }
 
         return new BundleMessageDataContainerDto(actionValueObjectDtoList);
     }
 
-    private ActionValueObjectDto performSpecialMapping(final ActionValueObject action,
+    private ActionValueObjectDto convertCoreToDto(final ActionValueObject action,
             final Class<? extends ActionValueObjectDto> clazz, final SmartMeter smartMeter) throws FunctionalException {
 
         if (action instanceof PeriodicMeterReadsQuery) {
@@ -218,14 +217,22 @@ public class ActionMapperService {
 
     private ActionValueObjectDto performPeriodicMeterReadsQueryMapping(
             final PeriodicMeterReadsQuery periodicMeterReadsQuery, final SmartMeter smartMeter)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         if (periodicMeterReadsQuery.isMbusDevice()) {
-            if (smartMeter.getChannel() != null) {
+
+            final SmartMeter gasMeter = this.domainHelperService.findSmartMeter(periodicMeterReadsQuery
+                    .getDeviceIdentification());
+
+            if (gasMeter.getChannel() != null
+                    && gasMeter.getGatewayDevice() != null
+                    && gasMeter.getGatewayDevice().getDeviceIdentification() != null
+                    && gasMeter.getGatewayDevice().getDeviceIdentification()
+                            .equals(smartMeter.getDeviceIdentification())) {
 
                 return new PeriodicMeterReadsQueryDto(PeriodTypeDto.valueOf(periodicMeterReadsQuery.getPeriodType()
                         .name()), periodicMeterReadsQuery.getBeginDate(), periodicMeterReadsQuery.getEndDate(),
-                        ChannelDto.fromNumber(smartMeter.getChannel()));
+                        ChannelDto.fromNumber(gasMeter.getChannel()));
             }
             /*
              * For now, throw a FunctionalException. As soon as we can

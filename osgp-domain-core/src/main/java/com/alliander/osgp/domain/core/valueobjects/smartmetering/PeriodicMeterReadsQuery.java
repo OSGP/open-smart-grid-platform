@@ -25,17 +25,19 @@ public class PeriodicMeterReadsQuery implements Serializable, ActionValueObject 
     private final Date beginDate;
     private final Date endDate;
     private final boolean mbusDevice;
+    private final String deviceIdentification;
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
-            final boolean mbusDevice) {
+            final boolean mbusDevice, final String deviceIdentification) {
         this.periodType = periodType;
         this.beginDate = new Date(beginDate.getTime());
         this.endDate = new Date(endDate.getTime());
         this.mbusDevice = mbusDevice;
+        this.deviceIdentification = deviceIdentification;
     }
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate) {
-        this(periodType, beginDate, endDate, false);
+        this(periodType, beginDate, endDate, false, "");
     }
 
     public PeriodType getPeriodType() {
@@ -52,6 +54,10 @@ public class PeriodicMeterReadsQuery implements Serializable, ActionValueObject 
 
     public boolean isMbusDevice() {
         return this.mbusDevice;
+    }
+
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
     }
 
     @Override
