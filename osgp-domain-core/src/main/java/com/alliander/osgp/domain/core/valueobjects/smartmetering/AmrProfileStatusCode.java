@@ -8,7 +8,6 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -18,8 +17,8 @@ public class AmrProfileStatusCode implements Serializable {
 
     private final Set<AmrProfileStatusCodeFlag> amrProfileStatusCodeFlags;
 
-    public AmrProfileStatusCode(final Set<AmrProfileStatusCodeFlag> amrProfileStatusses) {
-        this.amrProfileStatusCodeFlags = new TreeSet<AmrProfileStatusCodeFlag>(amrProfileStatusses);
+    public AmrProfileStatusCode(final Set<AmrProfileStatusCodeFlag> amrProfileStatusCodeFlags) {
+        this.amrProfileStatusCodeFlags = new TreeSet<AmrProfileStatusCodeFlag>(amrProfileStatusCodeFlags);
     }
 
     @Override
@@ -28,6 +27,6 @@ public class AmrProfileStatusCode implements Serializable {
     }
 
     public Set<AmrProfileStatusCodeFlag> getAmrProfileStatusCodeFlags() {
-        return Collections.unmodifiableSet(this.amrProfileStatusCodeFlags);
+        return new TreeSet<>(this.amrProfileStatusCodeFlags);
     }
 }

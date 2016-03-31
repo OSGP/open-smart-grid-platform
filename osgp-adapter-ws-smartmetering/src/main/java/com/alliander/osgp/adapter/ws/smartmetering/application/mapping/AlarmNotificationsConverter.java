@@ -35,7 +35,7 @@ extends
         final List<com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotification> alarmNotifications = result
                 .getAlarmNotification();
 
-        final Set<AlarmNotification> sourceNotifications = source.getAlarmNotifications();
+        final Set<AlarmNotification> sourceNotifications = source.getAlarmNotificationsSet();
 
         for (final AlarmNotification sourceNotification : sourceNotifications) {
 

@@ -8,7 +8,6 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -28,6 +27,6 @@ public class AlarmRegister implements Serializable {
     }
 
     public Set<AlarmType> getAlarmTypes() {
-        return Collections.unmodifiableSet(this.alarmTypes);
+        return new TreeSet<>(this.alarmTypes);
     }
 }

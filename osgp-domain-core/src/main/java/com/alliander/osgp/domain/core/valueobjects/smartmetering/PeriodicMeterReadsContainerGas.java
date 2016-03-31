@@ -8,7 +8,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PeriodicMeterReadsContainerGas implements Serializable {
@@ -19,12 +19,12 @@ public class PeriodicMeterReadsContainerGas implements Serializable {
     private final PeriodType periodType;
 
     public PeriodicMeterReadsContainerGas(final PeriodType periodType, final List<PeriodicMeterReadsGas> meterReadsGas) {
-        this.meterReadsGas = Collections.unmodifiableList(meterReadsGas);
+        this.meterReadsGas = new ArrayList<>(meterReadsGas);
         this.periodType = periodType;
     }
 
     public List<PeriodicMeterReadsGas> getMeterReadsGas() {
-        return this.meterReadsGas;
+        return new ArrayList<>(this.meterReadsGas);
     }
 
     public PeriodType getPeriodType() {
