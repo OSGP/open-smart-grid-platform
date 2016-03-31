@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -21,16 +21,16 @@ public class RetryHeaderFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetryHeaderFactory.class);
 
-    @Value("${core.retry.dlms.delay}")
+    @Value("${schedule.retry.dlms.delay}")
     private int retryDelay;
 
-    @Value("${core.retry.dlms.retries}")
+    @Value("${schedule.retry.dlms.retries}")
     private int maximumRetries;
 
-    @Value("${core.retry.dlms.backoff.multiplier}")
+    @Value("${schedule.retry.dlms.backoff.multiplier}")
     private int backoffMultiplier;
 
-    @Value("${core.retry.dlms.backoff.exponential}")
+    @Value("${schedule.retry.dlms.backoff.exponential}")
     private boolean exponentialBackoff;
 
     public RetryHeader createRetryHeader(final int retry) {
@@ -48,8 +48,8 @@ public class RetryHeaderFactory {
     private int calculateDelay(final int retry) {
         int delay = this.retryDelay;
         if (this.exponentialBackoff) {
-            final double exponent = Math.pow(this.backoffMultiplier, retry);
-            delay *= exponent;
+            final double factor = Math.pow(this.backoffMultiplier, retry);
+            delay *= factor;
         }
         return delay;
     }

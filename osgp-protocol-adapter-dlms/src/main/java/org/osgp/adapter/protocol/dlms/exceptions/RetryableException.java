@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -10,10 +10,6 @@ package org.osgp.adapter.protocol.dlms.exceptions;
 public abstract class RetryableException extends RuntimeException {
 
     private static final long serialVersionUID = 5671612098681860147L;
-
-    public RetryableException() {
-        super();
-    }
 
     public RetryableException(final String message, final Throwable cause, final boolean enableSuppression,
             final boolean writableStackTrace) {
