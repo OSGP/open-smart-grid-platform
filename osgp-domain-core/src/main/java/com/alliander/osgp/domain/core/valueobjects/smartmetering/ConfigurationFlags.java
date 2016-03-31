@@ -11,7 +11,6 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ConfigurationFlags implements Serializable {
@@ -25,10 +24,6 @@ public class ConfigurationFlags implements Serializable {
     }
 
     public List<ConfigurationFlag> getConfigurationFlag() {
-        return Collections.unmodifiableList(this.configurationFlag);
-    }
-
-    public void setConfigurationFlag(final List<ConfigurationFlag> configurationFlag) {
-        this.configurationFlag = configurationFlag;
+        return new ArrayList<>(this.configurationFlag);
     }
 }

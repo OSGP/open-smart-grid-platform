@@ -10,7 +10,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SpecialDaysRequestData implements Serializable {
@@ -21,15 +21,10 @@ public class SpecialDaysRequestData implements Serializable {
 
     public SpecialDaysRequestData(final List<SpecialDay> specialDays) {
         super();
-        this.specialDays = Collections.unmodifiableList(specialDays);
+        this.specialDays = new ArrayList<>(specialDays);
     }
 
     public List<SpecialDay> getSpecialDays() {
-        return this.specialDays;
+        return new ArrayList<>(this.specialDays);
     }
-
-    public void setSpecialDays(final List<SpecialDay> specialDays) {
-        this.specialDays = specialDays;
-    }
-
 }
