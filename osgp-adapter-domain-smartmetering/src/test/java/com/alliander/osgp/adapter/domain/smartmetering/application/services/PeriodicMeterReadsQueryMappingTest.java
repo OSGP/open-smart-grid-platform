@@ -13,19 +13,16 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.junit.Test;
 
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 
 public class PeriodicMeterReadsQueryMappingTest {
 
-    // private MonitoringMapper monitoringMapper = new MonitoringMapper();
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
     // A beginDate may never be null.
     @Test(expected = NullPointerException.class)
@@ -51,9 +48,11 @@ public class PeriodicMeterReadsQueryMappingTest {
         new PeriodicMeterReadsQuery(periodType, beginDate, endDate, mbusDevice);
     }
 
+    // Test if mapping a PeriodicMeterReadsQuery succeeds if both beginDate and
+    // endDate are non-null.
     @Test
     public void TestMapping() {
-
+        // build test data
         final PeriodType periodType = PeriodType.DAILY;
         final Date beginDate = new Date();
         final Date endDate = new Date();
@@ -61,10 +60,10 @@ public class PeriodicMeterReadsQueryMappingTest {
 
         final PeriodicMeterReadsQuery periodicMeterReadsQuery = new PeriodicMeterReadsQuery(periodType, beginDate,
                 endDate, mbusDevice);
-
-        final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = this.mapperFactory.getMapperFacade().map(
+        // actual mapping
+        final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = this.monitoringMapper.map(
                 periodicMeterReadsQuery, PeriodicMeterReadsQueryDto.class);
-
+        // test mapping
         assertNotNull(periodicMeterReadsQueryDto);
         assertEquals(periodicMeterReadsQuery.getPeriodType().value(), periodicMeterReadsQueryDto.getPeriodType()
                 .value());

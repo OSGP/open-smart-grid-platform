@@ -28,44 +28,48 @@ public class FindEventsQueryMessageDataContainerMappingTest {
 
     private ManagementMapper managementMapper = new ManagementMapper();
 
-    // MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
-
+    // Test if mapping with a null List succeeds
     @Test
     public void testWithNullList() {
-
+        // build test data
         final FindEventsQueryMessageDataContainer container = new FindEventsQueryMessageDataContainer(null);
+        // actual mapping
         final FindEventsQueryMessageDataContainerDto containerDto = this.managementMapper.map(container,
                 FindEventsQueryMessageDataContainerDto.class);
-
+        // test mapping
         assertNotNull(containerDto);
         assertNull(containerDto.getFindEventsQueryList());
     }
 
+    // Test if mapping with an empty List succeeds
     @Test
     public void testWithEmptyList() {
-
+        // build test data
         final FindEventsQueryMessageDataContainer container = new FindEventsQueryMessageDataContainer(
                 new ArrayList<FindEventsQuery>());
+        // actual mapping
         final FindEventsQueryMessageDataContainerDto containerDto = this.managementMapper.map(container,
                 FindEventsQueryMessageDataContainerDto.class);
-
+        // test mapping
         assertNotNull(containerDto);
         assertNotNull(containerDto.getFindEventsQueryList());
         assertTrue(containerDto.getFindEventsQueryList().isEmpty());
     }
 
+    // Test if mapping with a non-empty List succeeds
     @Test
-    public void testWithFilledList() {
-
+    public void testWithNonEmptyList() {
+        // build test data
         final FindEventsQuery findEventsQuery = new FindEventsQuery(EventLogCategory.STANDARD_EVENT_LOG,
                 new DateTime(), new DateTime());
         final ArrayList<FindEventsQuery> findEventsQueryList = new ArrayList<FindEventsQuery>();
         findEventsQueryList.add(findEventsQuery);
         final FindEventsQueryMessageDataContainer container = new FindEventsQueryMessageDataContainer(
                 findEventsQueryList);
+        // actual mapping
         final FindEventsQueryMessageDataContainerDto containerDto = this.managementMapper.map(container,
                 FindEventsQueryMessageDataContainerDto.class);
-
+        // test mapping
         assertNotNull(containerDto);
         assertNotNull(containerDto.getFindEventsQueryList());
         assertEquals(container.getFindEventsQueryList().get(0).getEventLogCategory().name(), containerDto

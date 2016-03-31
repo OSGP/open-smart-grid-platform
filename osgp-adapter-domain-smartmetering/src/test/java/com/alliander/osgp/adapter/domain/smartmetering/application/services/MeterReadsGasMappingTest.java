@@ -29,13 +29,15 @@ public class MeterReadsGasMappingTest {
 
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
+    // Test the mapping of a complete MeterReadsGasDto object
     @Test
     public void testMeterReadsGasMappingTest() {
-
+        // build test data
         final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitDto.M3);
         final MeterReadsGasDto meterReadsGasDto = new MeterReadsGasDto(new Date(), consumption, new Date());
+        // actual mapping
         final MeterReadsGas meterReadsGas = this.monitoringMapper.map(meterReadsGasDto, MeterReadsGas.class);
-
+        // test mapping
         assertNotNull(meterReadsGas);
         assertEquals(meterReadsGasDto.getLogTime(), meterReadsGas.getLogTime());
         assertEquals(meterReadsGasDto.getCaptureTime(), meterReadsGas.getCaptureTime());
@@ -47,13 +49,15 @@ public class MeterReadsGasMappingTest {
 
     }
 
+    // Test mapping when DlmsMeterValue is null;
     @Test
     public void testWithNullDlmsMeterValueDto() {
-
+        // build test data
         final DlmsMeterValueDto consumption = null;
         final MeterReadsGasDto meterReadsGasDto = new MeterReadsGasDto(new Date(), consumption, new Date());
+        // actual mapping
         final MeterReadsGas meterReadsGas = this.monitoringMapper.map(meterReadsGasDto, MeterReadsGas.class);
-
+        // test mapping
         assertNotNull(meterReadsGas);
         assertEquals(meterReadsGasDto.getLogTime(), meterReadsGas.getLogTime());
         assertEquals(meterReadsGasDto.getCaptureTime(), meterReadsGas.getCaptureTime());

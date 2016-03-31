@@ -37,7 +37,8 @@ public class PeriodicMeterReadsContainerGasMappingTest {
 
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
-    // the List is not allowed to be null
+    // the List is not allowed to be null because of the way the constructor is
+    // defined
     @Test(expected = NullPointerException.class)
     public void testWithNullList() {
 
@@ -47,6 +48,7 @@ public class PeriodicMeterReadsContainerGasMappingTest {
         new PeriodicMeterReadsContainerGasDto(periodType, meterReads);
     }
 
+    // Test if mapping with an empty List succeeds
     @Test
     public void testWithEmptyList() {
 
@@ -66,8 +68,9 @@ public class PeriodicMeterReadsContainerGasMappingTest {
                 .getPeriodType().value());
     }
 
+    // Test if mapping with a non-empty List succeeds
     @Test
-    public void testWithFilledList() {
+    public void testWithNonEmptyList() {
         // build test data
         final DlmsMeterValueDto consumption = new DlmsMeterValueDto(new BigDecimal(1.0), DlmsUnitDto.M3);
 
@@ -84,9 +87,10 @@ public class PeriodicMeterReadsContainerGasMappingTest {
 
         final PeriodicMeterReadsContainerGasDto periodicMeterReadsContainerDto = new PeriodicMeterReadsContainerGasDto(
                 periodType, meterReads);
+        // actual mapping
         final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = this.monitoringMapper.map(
                 periodicMeterReadsContainerDto, PeriodicMeterReadsContainerGas.class);
-
+        // test mapping
         assertNotNull(periodicMeterReadsContainerGas);
 
         assertEquals(periodicMeterReadsContainerDto.getPeriodType().value(), periodicMeterReadsContainerGas

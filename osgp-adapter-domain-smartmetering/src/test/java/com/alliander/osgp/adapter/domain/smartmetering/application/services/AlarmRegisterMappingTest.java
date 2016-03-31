@@ -36,26 +36,30 @@ public class AlarmRegisterMappingTest {
 
     }
 
+    // Test if mapping with an empty set succeeds
     @Test
     public void testWithEmptySet() {
-
+        // build test data
         final Set<AlarmTypeDto> alarmTypes = new TreeSet<>();
         final AlarmRegisterDto alarmRegisterDto = new AlarmRegisterDto(alarmTypes);
+        // actual mapping
         final AlarmRegister alarmRegister = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
-
+        // test mapping
         assertNotNull(alarmRegister);
         assertTrue(alarmRegister.getAlarmTypes().isEmpty());
 
     }
 
+    // Test if mapping with a non-empty set succeeds
     @Test
-    public void testWithFilledSet() {
-
+    public void testWithNonEmptySet() {
+        // build test data
         final Set<AlarmTypeDto> alarmTypes = new TreeSet<>();
         alarmTypes.add(AlarmTypeDto.CLOCK_INVALID);
         final AlarmRegisterDto alarmRegisterDto = new AlarmRegisterDto(alarmTypes);
+        // actual mapping
         final AlarmRegister alarmRegister = this.monitoringMapper.map(alarmRegisterDto, AlarmRegister.class);
-
+        // test mapping
         assertNotNull(alarmRegister);
         assertEquals(alarmRegisterDto.getAlarmTypes().size(), alarmRegister.getAlarmTypes().size());
         assertTrue(alarmRegister.getAlarmTypes().contains(AlarmType.CLOCK_INVALID));

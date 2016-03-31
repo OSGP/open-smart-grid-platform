@@ -22,26 +22,32 @@ public class ReadAlarmRegisterRequestMappingTest {
 
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
+    // Test if mapping a ReadAlarmRegisterRequest succeeds when it's String is
+    // non-null
     @Test
     public void testReadAlarmRegisterRequestMappingTest() {
-
+        // build test data
         final String deviceId = "device1";
         final ReadAlarmRegisterRequest request = new ReadAlarmRegisterRequest(deviceId);
+        // actual mapping
         final ReadAlarmRegisterRequestDto requestDto = this.monitoringMapper.map(request,
                 ReadAlarmRegisterRequestDto.class);
-
+        // test mapping
         assertNotNull(requestDto);
         assertEquals(deviceId, requestDto.getDeviceIdentification());
     }
 
+    // Test if mapping a ReadAlarmRegisterRequest succeeds when it's String is
+    // null
     @Test
     public void testWithNullString() {
-
+        // build test data
         final String deviceId = null;
         final ReadAlarmRegisterRequest request = new ReadAlarmRegisterRequest(deviceId);
+        // actual mapping
         final ReadAlarmRegisterRequestDto requestDto = this.monitoringMapper.map(request,
                 ReadAlarmRegisterRequestDto.class);
-
+        // test mapping
         assertNotNull(requestDto);
         assertNull(requestDto.getDeviceIdentification());
     }
