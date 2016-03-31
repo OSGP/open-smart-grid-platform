@@ -33,6 +33,7 @@
 				<xsd:element name="ActualMeterReadsGasData" type="smmon:ActualMeterReadsGasData" />
 				<xsd:element name="GetAdministrativeStatusData" type="smconf:GetAdministrativeStatusData" />
 				<xsd:element name="PeriodicReadsRequestQuery" type="smmon:PeriodicReadsRequestQuery" />
+				<xsd:element name="PeriodicReadsRequestGasQuery" type="smmon:PeriodicReadsRequestGasQuery" />
 				<xsd:element name="PushSetupAlarm" type="smconf:PushSetupAlarm" />
 				
 
