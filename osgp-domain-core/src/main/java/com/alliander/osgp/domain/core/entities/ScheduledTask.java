@@ -88,16 +88,7 @@ public class ScheduledTask extends AbstractEntity {
         this.messageData = messageData;
         this.scheduledTime = (Timestamp) scheduledTime.clone();
         this.status = ScheduledTaskStatusType.NEW;
-        this.maxRetries = 0;
         this.retry = 0;
-    }
-
-    public ScheduledTask(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
-            final String domainVersion, final Serializable messageData, final Timestamp scheduledTime,
-            final int maxRetries) {
-
-        this(deviceMessageMetadata, domain, domainVersion, messageData, scheduledTime);
-        this.maxRetries = maxRetries;
     }
 
     // public static
@@ -163,7 +154,7 @@ public class ScheduledTask extends AbstractEntity {
         this.status = ScheduledTaskStatusType.COMPLETE;
     }
 
-    public void setRetry(final Date retryTime) {
+    public void retryOn(final Date retryTime) {
         this.retry++;
         this.scheduledTime = new Timestamp(retryTime.getTime());
         this.status = ScheduledTaskStatusType.RETRY;
