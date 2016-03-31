@@ -55,8 +55,8 @@ public class AlarmNotificationsMappingTest {
 
         // check if mapping was successful
         assertNotNull(alarmNotificationsDto);
-        assertNotNull(alarmNotificationsDto.getAlarmNotifications());
-        assertTrue(alarmNotificationsDto.getAlarmNotifications().isEmpty());
+        assertNotNull(alarmNotificationsDto.getAlarmNotificationsSet());
+        assertTrue(alarmNotificationsDto.getAlarmNotificationsSet().isEmpty());
     }
 
     // Tests if mapping with a Set with an entry succeeds.
@@ -74,14 +74,14 @@ public class AlarmNotificationsMappingTest {
 
         // check if mapping was successful
         assertNotNull(alarmNotificationsDto);
-        assertNotNull(alarmNotificationsDto.getAlarmNotifications());
-        assertEquals(alarmNotificationSet.size(), alarmNotificationsDto.getAlarmNotifications().size());
-        assertFalse(alarmNotificationsDto.getAlarmNotifications().isEmpty());
+        assertNotNull(alarmNotificationsDto.getAlarmNotificationsSet());
+        assertEquals(alarmNotificationSet.size(), alarmNotificationsDto.getAlarmNotificationsSet().size());
+        assertFalse(alarmNotificationsDto.getAlarmNotificationsSet().isEmpty());
 
         // To see if there is an AlarmNotifictionDto with the same variables as
         // the AlarmNotification in the Set.
         final AlarmNotificationDto alarmNotificationDto = new AlarmNotificationDto(AlarmTypeDto.CLOCK_INVALID, true);
-        assertTrue(alarmNotificationsDto.getAlarmNotifications().contains(alarmNotificationDto));
+        assertTrue(alarmNotificationsDto.getAlarmNotificationsSet().contains(alarmNotificationDto));
     }
 
 }

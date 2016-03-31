@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.NotificationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -35,9 +36,8 @@ public class NotificationService {
 
         LOGGER.info("handlePushNotificationAlarm for MessageType: {}", deviceMessageMetadata.getMessageType());
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm pushNotificationAlarmDomain = this.notificationMapper
-                .map(pushNotificationAlarm,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm.class);
+        final PushNotificationAlarm pushNotificationAlarmDomain = this.notificationMapper.map(pushNotificationAlarm,
+                PushNotificationAlarm.class);
 
         /*
          * Send the push notification alarm as a response message to the web
