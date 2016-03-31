@@ -80,7 +80,8 @@ public class BundleService {
 
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto) {
+            final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
+            throws FunctionalException {
 
         // convert bundleResponseMessageDataContainerDto back to core object
         final BundleResponseMessageDataContainerDto fd;
