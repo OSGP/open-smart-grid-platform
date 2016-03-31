@@ -64,9 +64,6 @@ public class ScheduledTask extends AbstractEntity {
     @Column(name = "messagepriority")
     private Integer messagePriority;
 
-    @Column(name = "max_retries")
-    private int maxRetries;
-
     @Column(name = "retry")
     private int retry;
 
