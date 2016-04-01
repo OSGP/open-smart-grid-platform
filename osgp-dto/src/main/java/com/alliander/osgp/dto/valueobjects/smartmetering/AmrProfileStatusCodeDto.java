@@ -8,7 +8,6 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -28,6 +27,6 @@ public class AmrProfileStatusCodeDto implements Serializable {
     }
 
     public Set<AmrProfileStatusCodeFlagDto> getAmrProfileStatusCodeFlags() {
-        return Collections.unmodifiableSet(this.amrProfileStatusCodeFlags);
+        return new TreeSet<>(this.amrProfileStatusCodeFlags);
     }
 }

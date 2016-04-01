@@ -23,7 +23,9 @@ public class ProtocolResponseMessage extends ResponseMessage {
     private final String domainVersion;
     private final String messageType;
     private final boolean scheduled;
+
     private final int retryCount;
+    private final RetryHeader retryHeader;
 
     /**
      * @deprecated Use builder in stead
@@ -90,12 +92,13 @@ public class ProtocolResponseMessage extends ResponseMessage {
         this.messageType = messageType;
         this.scheduled = scheduled;
         this.retryCount = retryCount;
+        this.retryHeader = new RetryHeader();
     }
 
     // scheduled and retryCount and messagePriority
     private ProtocolResponseMessage(final DeviceMessageMetadata deviceMessageMetadata, final String domain,
             final String domainVersion, final ResponseMessageResultType result, final OsgpException osgpException,
-            final Serializable dataObject, final boolean scheduled, final int retryCount) {
+            final Serializable dataObject, final boolean scheduled, final int retryCount, final RetryHeader retryHeader) {
         super(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getOrganisationIdentification(),
                 deviceMessageMetadata.getDeviceIdentification(), result, osgpException, dataObject,
                 deviceMessageMetadata.getMessagePriority());
@@ -104,6 +107,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
         this.messageType = deviceMessageMetadata.getMessageType();
         this.scheduled = scheduled;
         this.retryCount = retryCount;
+        this.retryHeader = retryHeader;
     }
 
     public static class Builder {
@@ -117,6 +121,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
         private Serializable dataObject;
         private boolean scheduled;
         private int retryCount;
+        private RetryHeader retryHeader;
 
         public Builder deviceMessageMetadata(final DeviceMessageMetadata deviceMessageMetadata) {
             this.deviceMessageMetadata = deviceMessageMetadata;
@@ -158,9 +163,14 @@ public class ProtocolResponseMessage extends ResponseMessage {
             return this;
         }
 
+        public Builder retryHeader(final RetryHeader retryHeader) {
+            this.retryHeader = retryHeader;
+            return this;
+        }
+
         public ProtocolResponseMessage build() {
             return new ProtocolResponseMessage(this.deviceMessageMetadata, this.domain, this.domainVersion,
-                    this.result, this.osgpException, this.dataObject, this.scheduled, this.retryCount);
+                    this.result, this.osgpException, this.dataObject, this.scheduled, this.retryCount, this.retryHeader);
         }
     }
 
@@ -184,4 +194,7 @@ public class ProtocolResponseMessage extends ResponseMessage {
         return this.scheduled;
     }
 
+    public RetryHeader getRetryHeader() {
+        return this.retryHeader;
+    }
 }
