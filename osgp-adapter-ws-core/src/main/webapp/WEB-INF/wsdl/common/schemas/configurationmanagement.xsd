@@ -216,6 +216,11 @@
   <xsd:complexType name="IndexAddressMap">
     <xsd:sequence>
       <xsd:element name="Index">
+        <xsd:annotation>
+	       <xsd:documentation>
+	          The Index is the external id of a device output setting. This is the index used by the end user and in SOAP messages.
+           </xsd:documentation>
+        </xsd:annotation>
         <xsd:simpleType>
           <xsd:restriction base="xsd:int">
             <xsd:minInclusive value="1" />
@@ -224,6 +229,11 @@
         </xsd:simpleType>
       </xsd:element>
       <xsd:element name="Address">
+        <xsd:annotation>
+	       <xsd:documentation>
+	               The Address is the internal id of a device output setting. This is the index of the relay that is actually switched.
+           </xsd:documentation>
+        </xsd:annotation>
         <xsd:simpleType>
           <xsd:restriction base="xsd:int">
             <xsd:minInclusive value="1" />
