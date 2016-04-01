@@ -10,7 +10,6 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,8 @@ public class AdhocService {
     @Autowired
     private DomainHelperService domainHelperService;
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    @Autowired
+    private MapperFactory mapperFactory;
 
     public AdhocService() {
         // Parameterless constructor required for transactions...

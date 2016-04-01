@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,7 @@ public class InstallationService {
     private ProtocolInfoRepository protocolInfoRepository;
 
     @Autowired
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MapperFactory mapperFactory;
 
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
