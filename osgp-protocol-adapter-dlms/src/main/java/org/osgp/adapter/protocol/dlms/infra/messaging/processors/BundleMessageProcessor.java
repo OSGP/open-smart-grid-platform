@@ -8,14 +8,10 @@
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
-import org.osgp.adapter.protocol.dlms.application.services.ManagementService;
+import org.osgp.adapter.protocol.dlms.application.services.BundleService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
@@ -24,10 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
  * Class for processing find events request messages
@@ -36,7 +30,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
-    private ManagementService managementService;
+    private BundleService bundleService;
 
     public BundleMessageProcessor() {
         super(DeviceRequestMessageType.BUNDLE);
@@ -44,18 +38,17 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+            final Serializable requestObject) throws ProtocolAdapterException {
 
-        // TODO: handle requestObject --> dispatch to all command executors and
-        // put the result in the BundleResponseMessageDataContainerDto
+        if (!(requestObject instanceof BundleMessageDataContainerDto)) {
+            throw new ProtocolAdapterException(
+                    "Expected request object of type BundleMessageDataContainer. In stead of "
+                            + requestObject.getClass());
+        }
+        final BundleMessageDataContainerDto bundleMessageDataContainerDto = (BundleMessageDataContainerDto) requestObject;
 
-        final EventDto eventDto = new EventDto(new DateTime(), 99, 4);
-
-        final EventMessageDataContainerDto eventMessageDataContainerDto = new EventMessageDataContainerDto(
-                Arrays.asList(eventDto));
-
-        final List<ActionValueObjectResponseDto> actionValueObjectResponseDtoList = new ArrayList<ActionValueObjectResponseDto>();
-        actionValueObjectResponseDtoList.add(eventMessageDataContainerDto);
+        final List<ActionValueObjectResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(
+                conn, device, bundleMessageDataContainerDto);
 
         final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto = new BundleResponseMessageDataContainerDto(
                 actionValueObjectResponseDtoList);
