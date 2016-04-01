@@ -13,7 +13,7 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Iec61850pMapper extends ConfigurableMapper {
+public class Iec61850Mapper extends ConfigurableMapper {
 
     @Override
     protected void configure(final MapperFactory factory) {

@@ -20,7 +20,7 @@ public class DeviceOutputSettingToRelayMapConverter extends BidirectionalConvert
     public RelayMap convertTo(final DeviceOutputSetting source, final Type<RelayMap> destinationType) {
         final RelayType relayType = RelayType.valueOf(source.getRelayType().name());
 
-        return new RelayMap(source.getInternalId(), source.getExternalId(), relayType, source.getAlias());
+        return new RelayMap(source.getExternalId(), source.getInternalId(), relayType, source.getAlias());
     }
 
     @Override
