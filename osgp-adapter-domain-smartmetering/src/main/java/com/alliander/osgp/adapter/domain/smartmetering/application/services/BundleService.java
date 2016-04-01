@@ -81,10 +81,9 @@ public class BundleService {
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         // convert bundleResponseMessageDataContainerDto back to core object
-        final BundleResponseMessageDataContainerDto fd;
         final BundleResponseMessageDataContainer bundleResponseMessageDataContainer = this.actionMapperResponseService
                 .mapAllActions(bundleResponseMessageDataContainerDto);
 
