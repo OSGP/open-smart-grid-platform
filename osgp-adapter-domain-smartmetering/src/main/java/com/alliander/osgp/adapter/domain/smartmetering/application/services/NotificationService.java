@@ -8,7 +8,6 @@
 package com.alliander.osgp.adapter.domain.smartmetering.application.services;
 
 import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,7 @@ public class NotificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationService.class);
 
     @Autowired
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MapperFactory mapperFactory;
 
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
@@ -50,6 +49,6 @@ public class NotificationService {
                 new ResponseMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                         ResponseMessageResultType.OK, null, pushNotificationAlarmDomain, deviceMessageMetadata
-                        .getMessagePriority()), deviceMessageMetadata.getMessageType());
+                                .getMessagePriority()), deviceMessageMetadata.getMessageType());
     }
 }
