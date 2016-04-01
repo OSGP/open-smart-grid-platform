@@ -44,7 +44,6 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     @Override
     public AlarmRegisterDto execute(final ClientConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto object) throws ProtocolAdapterException {
-
         return new AlarmRegisterDto(this.retrieveAlarmRegister(conn));
     }
 

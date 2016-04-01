@@ -134,7 +134,6 @@ public class DlmsDeviceMessageMetadata {
     }
 
     public DeviceMessageMetadata asDeviceMessageMetadata() {
-
         return new DeviceMessageMetadata(this.getDeviceIdentification(), this.getOrganisationIdentification(),
                 this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority(), this.getScheduleTime());
 
