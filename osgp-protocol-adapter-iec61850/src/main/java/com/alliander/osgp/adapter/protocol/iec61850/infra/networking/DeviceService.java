@@ -9,21 +9,16 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 
 public interface DeviceService {
-    //
-    // // void getConfiguration(DeviceRequest deviceRequest);
-    //
+
     void getConfiguration(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
-    //
-    // // void getFirmwareVersion(DeviceRequest deviceRequest);
-    //
-    // void doGetFirmwareVersion(DeviceRequest deviceRequest,
-    // DeviceResponseHandler deviceResponseHandler, String ipAddress)
-    // throws IOException;
+    // void getFirmwareVersion(DeviceRequest deviceRequest,
+    // DeviceResponseHandler deviceResponseHandler);
 
     /**
      * Gets all status data from the device and returns it as a
@@ -31,67 +26,39 @@ public interface DeviceService {
      */
     void getStatus(DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler);
 
-    // // void setReboot(DeviceRequest deviceRequest);
-    //
-    // void doSetReboot(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
-    // // void setConfiguration(SetConfigurationDeviceRequest deviceRequest);
-    //
-    // void doSetConfiguration(DeviceRequest deviceRequest,
-    // DeviceResponseHandler deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
-    // // void setEventNotifications(SetEventNotificationsDeviceRequest
-    // // deviceRequest);
-    //
-    // void doSetEventNotifications(DeviceRequest deviceRequest,
+    // void setReboot(DeviceRequest deviceRequest, DeviceResponseHandler
+    // deviceResponseHandler);
+
+    void setConfiguration(SetConfigurationDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+
+    // void setEventNotifications(DeviceRequest deviceRequest,
     // DeviceResponseHandler deviceResponseHandler,
-    // String ipAddress) throws IOException;
-    //
-    // // void startSelfTest(DeviceRequest deviceRequest);
-    //
-    // void doStartSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
-    // // void stopSelfTest(DeviceRequest deviceRequest);
-    //
-    // void doStopSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
-    // // void updateFirmware(UpdateFirmwareDeviceRequest deviceRequest);
-    //
-    // void doUpdateFirmware(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
-    // // void getActualPowerUsage(DeviceRequest deviceRequest);
-    //
-    // void doGetActualPowerUsage(DeviceRequest deviceRequest,
+    // String ipAddress);
+
+    // void startSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler
+    // deviceResponseHandler);
+
+    // void stopSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler
+    // deviceResponseHandler);
+
+    // void updateFirmware(DeviceRequest deviceRequest, DeviceResponseHandler
+    // deviceResponseHandler);
+
+    // void getActualPowerUsage(DeviceRequest deviceRequest,
     // DeviceResponseHandler deviceResponseHandler,
-    // String ipAddress) throws IOException;
-    //
-    // // void getPowerUsageHistory(GetPowerUsageHistoryDeviceRequest
-    // // deviceRequest);
-    //
-    // void doGetPowerUsageHistory(
+    // String ipAddress);
+
+    // void getPowerUsageHistory(
     // PowerUsageHistoryResponseMessageDataContainer
     // powerUsageHistoryResponseMessageDataContainer,
     // GetPowerUsageHistoryDeviceRequest deviceRequest, DeviceResponseHandler
     // deviceResponseHandler,
     // String ipAddress, String domain, String domainVersion, String
     // messageType, int retryCount,
-    // boolean isScheduled) throws IOException;
-    //
-    // // void resumeSchedule(ResumeScheduleDeviceRequest deviceRequest);
-    //
-    // void doResumeSchedule(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
-    //
+    // boolean isScheduled);
+
+    // void resumeSchedule(DeviceRequest deviceRequest, DeviceResponseHandler
+    // deviceResponseHandler);
 
     /**
      * Switches the light relays of the device given in the
@@ -99,17 +66,12 @@ public interface DeviceService {
      */
     void setLight(SetLightDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
-    // // void setSchedule(SetScheduleDeviceRequest deviceRequest);
-    //
-    // void doSetSchedule(SetScheduleDeviceRequest deviceRequest,
+    // void setSchedule(SetScheduleDeviceRequest deviceRequest,
     // DeviceResponseHandler deviceResponseHandler,
     // String ipAddress, String domain, String domainVersion, String
     // messageType, int retryCount,
-    // boolean isScheduled, PageInfo pageInfo) throws IOException;
-    //
-    // // void setTransition(SetTransitionDeviceRequest deviceRequest);
-    //
-    // void doSetTransition(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler, String ipAddress)
-    // throws IOException;
+    // boolean isScheduled, PageInfo pageInfo);
+
+    // void setTransition(DeviceRequest deviceRequest, DeviceResponseHandler
+    // deviceResponseHandler);
 }
