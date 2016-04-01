@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850pMapper;
+import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850Mapper;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
@@ -73,7 +73,7 @@ public class Iec61850DeviceService implements DeviceService {
     private Iec61850Client iec61850Client;
 
     @Autowired
-    private Iec61850pMapper mapper;
+    private Iec61850Mapper mapper;
 
     /**
      * @see DeviceService#getStatus(GetStatusDeviceRequest,
