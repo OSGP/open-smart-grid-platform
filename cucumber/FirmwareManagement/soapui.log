@@ -1,0 +1,18 @@
+2016-04-01 11:14:35,871 WARN  [SoapUI] Missing folder [/home/dev/Sources/Integration-Tests/cucumber/FirmwareManagement/ext] for external libraries
+2016-04-01 11:14:36,051 INFO  [DefaultSoapUICore] initialized soapui-settings from [/home/dev/soapui-settings.xml]
+2016-04-01 11:14:36,076 INFO  [HttpClientSupport$Helper] Initializing KeyStore
+2016-04-01 11:14:37,148 INFO  [WsdlProject] Loaded project from [file:/home/dev/Sources/Integration-Tests/cucumber/FirmwareManagement/src/test/resources/FirmwareManagement-soapui-project.xml]
+2016-04-01 11:14:41,728 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/xop.xsd with targetNamespace http://www.w3.org/2004/08/xop/include
+2016-04-01 11:14:41,768 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/XMLSchema.xsd with targetNamespace http://www.w3.org/2001/XMLSchema
+2016-04-01 11:14:41,769 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/xml.xsd with targetNamespace http://www.w3.org/XML/1998/namespace
+2016-04-01 11:14:41,770 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/swaref.xsd with targetNamespace http://ws-i.org/profiles/basic/1.1/xsd
+2016-04-01 11:14:41,771 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/xmime200505.xsd with targetNamespace http://www.w3.org/2005/05/xmlmime
+2016-04-01 11:14:41,772 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/xmime200411.xsd with targetNamespace http://www.w3.org/2004/11/xmlmime
+2016-04-01 11:14:41,774 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/soapEnvelope.xsd with targetNamespace http://schemas.xmlsoap.org/soap/envelope/
+2016-04-01 11:14:41,779 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/soapEncoding.xsd with targetNamespace http://schemas.xmlsoap.org/soap/encoding/
+2016-04-01 11:14:41,781 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/soapEnvelope12.xsd with targetNamespace http://www.w3.org/2003/05/soap-envelope
+2016-04-01 11:14:41,786 INFO  [SchemaUtils] Added default schema from file:/home/dev/.m2/repository/com/smartbear/soapui/soapui/5.1.3/soapui-5.1.3.jar!/com/eviware/soapui/resources/xsds/soapEncoding12.xsd with targetNamespace http://www.w3.org/2003/05/soap-encoding
+2016-04-01 11:14:41,787 INFO  [SchemaUtils] Loading schema types from [https://osgp-tst.cloudapp.net:57443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl]
+2016-04-01 11:14:41,787 INFO  [SchemaUtils] Getting schema https://osgp-tst.cloudapp.net:57443/osgp-adapter-ws-core/wsdl/common/FirmwareManagement.wsdl
+2016-04-01 11:14:41,804 INFO  [SchemaUtils] Getting schema https://osgp-tst.cloudapp.net:57443/osgp-adapter-ws-core/wsdl/common/schemas/firmwaremanagement.xsd
+2016-04-01 11:14:41,807 INFO  [SchemaUtils] Getting schema https://osgp-tst.cloudapp.net:57443/osgp-adapter-ws-core/wsdl/common/schemas/common.xsd
