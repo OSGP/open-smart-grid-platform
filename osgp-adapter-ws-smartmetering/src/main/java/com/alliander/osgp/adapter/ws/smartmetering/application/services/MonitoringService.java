@@ -28,7 +28,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterRead
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificationAlarm;
@@ -86,7 +86,7 @@ public class MonitoringService {
 
     public MeterResponseData dequeuePeriodicMeterReadsResponse(final String correlationUid)
             throws CorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadContainer.class);
+        return this.meterResponseDataService.dequeue(correlationUid, PeriodicMeterReadsContainer.class);
     }
 
     public MeterResponseData dequeuePeriodicMeterReadsGasResponse(final String correlationUid)

@@ -12,13 +12,13 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
-
 @Component(value = "managementMapper")
 public class ManagementMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+
+        // These two converters are needed. Otherwise mapping will lead to
+        // strange exceptions when mapping DateTime fields
         mapperFactory.getConverterFactory().registerConverter(new FindEventsQueryConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventsConverter());
     }

@@ -26,15 +26,15 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReads;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 
 public class PeriodicMeterReadsResponseConverter
 extends
-CustomConverter<PeriodicMeterReadContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
+CustomConverter<PeriodicMeterReadsContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodicMeterReadsResponseConverter.class);
 
     @Override
-    public PeriodicMeterReadsResponse convert(final PeriodicMeterReadContainer source,
+    public PeriodicMeterReadsResponse convert(final PeriodicMeterReadsContainer source,
             final Type<? extends PeriodicMeterReadsResponse> destinationType) {
         final PeriodicMeterReadsResponse periodicMeterReadsResponse = new PeriodicMeterReadsResponse();
         periodicMeterReadsResponse.setPeriodType(PeriodType.valueOf(source.getPeriodType().name()));
