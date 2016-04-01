@@ -193,13 +193,9 @@ public class FirmwareManagementEndpoint {
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
-
-                    final List<FirmwareVersionDto> retrieved = (List<FirmwareVersionDto>) message.getDataObject();
                     final List<FirmwareVersion> target = response.getFirmwareVersion();
-
-                    for (final FirmwareVersionDto dto : retrieved) {
-                        target.add(this.firmwareManagementMapper.map(dto, FirmwareVersion.class));
-                    }
+                    target.addAll(this.firmwareManagementMapper.mapAsList(
+                            (List<FirmwareVersionDto>) message.getDataObject(), FirmwareVersion.class));
                 } else {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
