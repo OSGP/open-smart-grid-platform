@@ -16,7 +16,7 @@ import javax.annotation.PostConstruct;
 
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
@@ -46,7 +46,7 @@ public class BundleService {
     private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
 
     @Autowired
-    private GetActualMeterReadsCommandExecutor actualMeterReadsCommandExecutor;
+    private GetActualMeterReadsBundleCommandExecutor actualMeterReadsBundleCommandExecutor;
 
     @Autowired
     private GetActualMeterReadsGasCommandExecutor actualMeterReadsGasCommandExecutor;
@@ -62,7 +62,7 @@ public class BundleService {
     @PostConstruct
     private void postConstruct() {
         CLAZZ_EXECUTOR_MAP.put(FindEventsQueryDto.class, this.retrieveEventsBundleCommandExecutor);
-        CLAZZ_EXECUTOR_MAP.put(ActualMeterReadsDataDto.class, this.actualMeterReadsCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(ActualMeterReadsDataDto.class, this.actualMeterReadsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActualMeterReadsDataGasDto.class, this.actualMeterReadsGasCommandExecutor);
     }
 
@@ -75,7 +75,7 @@ public class BundleService {
             // suppress else the compiler will complain
             @SuppressWarnings({ "unchecked", "rawtypes" })
             final CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> executor = (CommandExecutor) CLAZZ_EXECUTOR_MAP
-                    .get(actionValueObjectDto.getClass());
+            .get(actionValueObjectDto.getClass());
 
             try {
 
