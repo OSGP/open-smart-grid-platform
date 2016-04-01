@@ -13,6 +13,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt16;
+import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -29,6 +30,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
@@ -185,6 +187,60 @@ public class Iec61850DeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
+    /**
+     * @see DeviceService#setLight(SetLightDeviceRequest)
+     */
+    @Override
+    public void setConfiguration(final SetConfigurationDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+            // Connect, get the ServerModel final and ClientAssociation.
+            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                    deviceRequest.getDeviceIdentification());
+
+            final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
+                    .getDeviceIdentification());
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            final Configuration configuration = deviceRequest.getConfiguration();
+
+            // ignoring required, unused fields daliconfiguration, meterType,
+            // shortTermHistoryIntervalMinutes, preferredLinkType,
+            // longTermHistoryInterval and longTermHistoryIntervalType
+
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
+
+            this.setConfigurationOnDevice(serverModel, clientAssociation, ssld, configuration);
+
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
+        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
     @Override
     public void getConfiguration(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
@@ -233,7 +289,7 @@ public class Iec61850DeviceService implements DeviceService {
             final boolean startOfTest) {
 
         // Assuming all goes well
-        DeviceMessageStatus status = DeviceMessageStatus.OK;
+        final DeviceMessageStatus status = DeviceMessageStatus.OK;
 
         try {
 
@@ -241,7 +297,7 @@ public class Iec61850DeviceService implements DeviceService {
             this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
                     deviceRequest.getDeviceIdentification());
 
-            final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
+            ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
                     .getDeviceIdentification());
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
@@ -261,6 +317,9 @@ public class Iec61850DeviceService implements DeviceService {
                 this.switchLightRelay(deviceOutputSetting.getInternalId(), startOfTest, serverModel, clientAssociation);
             }
 
+            // Disconnect from the device.
+            clientAssociation.disconnect();
+
             // Sleep and wait
             try {
                 LOGGER.info("Waiting {} seconds before getting the device status", SELF_TEST_TIMEOUT / 1000);
@@ -271,18 +330,24 @@ public class Iec61850DeviceService implements DeviceService {
                         "An error occured during the device selftest timeout.");
             }
 
+            // Reconnecting to the device
+            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                    deviceRequest.getDeviceIdentification());
+
+            // Refreshing the servermodel
+            serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
+
             // Getting the status
             final DeviceStatus deviceStatus = this.getStatusFromDevice(serverModel, ssld);
 
             LOGGER.info("Fetching and checking the devicestatus");
 
-            // checking to see if all light relays have the correct state
+            // Checking to see if all light relays have the correct state
             for (final LightValue lightValue : deviceStatus.getLightValues()) {
                 if (lightRelays.contains(lightValue.getIndex()) && lightValue.isOn() != startOfTest) {
                     // One the the light relays is not in the correct state,
                     // request failed
-                    status = DeviceMessageStatus.FAILURE;
-                    break;
+                    throw new ProtocolAdapterException("not all relays are ".concat(startOfTest ? "on" : "off"));
                 }
             }
 
@@ -487,7 +552,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the registration configuration values");
 
                 final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
 
                 LOGGER.info("regObjectReference: {}", regObjectReference);
@@ -495,15 +560,17 @@ public class Iec61850DeviceService implements DeviceService {
                 final FcModelNode regConfiguration = (FcModelNode) serverModel.findModelNode(regObjectReference, Fc.CF);
 
                 final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr");
+                final BdaInt32 serverPort = (BdaInt32) regConfiguration.getChild("svrPort");
 
                 configuration.setOspgIpAddress(new String(serverAddress.getValue()));
+                configuration.setOsgpPortNumber(serverPort.getValue());
 
-                // getting the ip configuration values
+                // getting the IP configuration values
 
-                LOGGER.info("Reading the ip configuration values");
+                LOGGER.info("Reading the IP configuration values");
 
                 final String ipcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_IP_CONFIGURATION;
 
                 LOGGER.info("ipcfObjectReference: {}", ipcfObjectReference);
@@ -521,7 +588,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the software configuration values");
 
                 final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
 
                 LOGGER.info("swcfObjectReference: {}", swcfObjectReference);
@@ -540,7 +607,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the clock configuration values");
 
                 final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
+                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
 
                 LOGGER.info("clockObjectReference: {}", clockObjectReference);
@@ -548,12 +615,12 @@ public class Iec61850DeviceService implements DeviceService {
                 final FcModelNode clockConfiguration = (FcModelNode) serverModel.findModelNode(clockObjectReference,
                         Fc.CF);
 
-                final BdaInt16 communicationTimeout = (BdaInt16) clockConfiguration.getChild("syncPer");
+                final BdaInt16 timeSyncFrequency = (BdaInt16) clockConfiguration.getChild("syncPer");
                 final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean) clockConfiguration.getChild("enbDst");
                 final BdaVisibleString summerTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstBegT");
                 final BdaVisibleString winterTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstEndT");
 
-                configuration.setCommunicationTimeout((int) communicationTimeout.getValue());
+                configuration.setTimeSyncFrequency((int) timeSyncFrequency.getValue());
                 configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled.getValue());
                 // TODO hardcoded current time for now
                 configuration.setSummerTimeDetails(new DateTime());
@@ -566,6 +633,199 @@ public class Iec61850DeviceService implements DeviceService {
         };
 
         return this.iec61850Client.sendCommandWithRetry(function);
+
+    }
+
+    private void setConfigurationOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final Ssld ssld, final Configuration configuration) throws ProtocolAdapterException {
+
+        // creating the Function that will be retried, if necessary
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                // TODO add these once the date formatting is sorted out. (Maybe
+                // an invalid format causes issues?)
+                // summerTimeDetails --> CSLC.Clock.dstBegT
+                // winterTimeDetails --> CSLC.Clock.dstEndT
+
+                // TODO set lightType once it's writable
+                // lightType --> CSLC.SWCf.LT
+
+                // TODO set relayTypes once they are writable
+                // relayMap.getRelayType() --> XSWC{1-4}.post.stVal
+
+                // checking to see if all register values are null, so that we
+                // don't read the values for no reason
+                if (!(configuration.getOspgIpAddress() == null && configuration.getOsgpPortNumber() == null)) {
+
+                    // Create the object reference string
+                    final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
+                    LOGGER.info("regObjectReference: {}", regObjectReference);
+
+                    // Get the node using configuration functional constraint.
+                    final FcModelNode cslcLogicalNodeRegAttribute = Iec61850DeviceService.this.getNode(serverModel,
+                            regObjectReference, Fc.CF);
+
+                    if (configuration.getOspgIpAddress() != null) {
+
+                        // Get a data attribute using configuration functional
+                        // constraint.
+                        final BdaVisibleString serverAddress = (BdaVisibleString) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(cslcLogicalNodeRegAttribute,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_OSGP_IP_ADDRESS, Fc.CF);
+
+                        LOGGER.info("Updating OspgIpAddress to {}", configuration.getOspgIpAddress());
+
+                        // Get the value and send the value to the device.
+                        serverAddress.setValue(configuration.getOspgIpAddress());
+                        clientAssociation.setDataValues(serverAddress);
+
+                    }
+
+                    if (configuration.getOsgpPortNumber() != null) {
+
+                        final BdaInt32 serverPort = (BdaInt32) Iec61850DeviceService.this.getChildOfNodeWithConstraint(
+                                cslcLogicalNodeRegAttribute,
+                                LogicalNodeAttributeDefinitons.PROPERTY_REG_ATTRIBUTE_SERVER_PORT, Fc.CF);
+
+                        LOGGER.info("Updating OsgpPortNumber to {}", configuration.getOsgpPortNumber());
+
+                        // Get the value and send the value to the device.
+                        serverPort.setValue(configuration.getOsgpPortNumber());
+                        clientAssociation.setDataValues(serverPort);
+                    }
+
+                }
+
+                // checking to see if all software config values are null, so
+                // that we don't read the values for no reason
+                if (!(configuration.getAstroGateSunRiseOffset() == null && configuration.getAstroGateSunSetOffset() == null)) {
+
+                    final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
+
+                    final FcModelNode softwareConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                            swcfObjectReference, Fc.CF);
+
+                    if (configuration.getAstroGateSunRiseOffset() != null) {
+
+                        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(softwareConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE, Fc.CF);
+
+                        LOGGER.info("Updating AstroGateSunRiseOffset to {}", configuration.getAstroGateSunRiseOffset());
+
+                        // Get the value and send the value to the device.
+                        astroGateSunRiseOffset.setValue(configuration.getAstroGateSunRiseOffset().shortValue());
+                        clientAssociation.setDataValues(astroGateSunRiseOffset);
+                    }
+
+                    if (configuration.getAstroGateSunSetOffset() != null) {
+
+                        final BdaInt16 astroGateSunSetOffset = (BdaInt16) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(softwareConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET, Fc.CF);
+
+                        LOGGER.info("Updating AstroGateSunSetOffset to {}", configuration.getAstroGateSunSetOffset());
+
+                        // Get the value and send the value to the device.
+                        astroGateSunSetOffset.setValue(configuration.getAstroGateSunSetOffset().shortValue());
+                        clientAssociation.setDataValues(astroGateSunSetOffset);
+                    }
+
+                }
+
+                // checking to see if all register values are null, so that we
+                // don't read the values for no reason
+                if (!(configuration.getTimeSyncFrequency() == null && configuration.isAutomaticSummerTimingEnabled() == null)) {
+
+                    final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
+
+                    final FcModelNode clockConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                            clockObjectReference, Fc.CF);
+
+                    if (configuration.getTimeSyncFrequency() != null) {
+
+                        final BdaInt16 timeSyncFrequency = (BdaInt16) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(clockConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_SYNC_PERIOD, Fc.CF);
+
+                        LOGGER.info("Updating TimeSyncFrequency to {}", configuration.getTimeSyncFrequency());
+
+                        // Get the value and send the value to the device.
+                        timeSyncFrequency.setValue(configuration.getTimeSyncFrequency().shortValue());
+                        clientAssociation.setDataValues(timeSyncFrequency);
+                    }
+
+                    if (configuration.isAutomaticSummerTimingEnabled() != null) {
+
+                        final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(clockConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_DAYLIGHT_SAVING_ENABLED, Fc.CF);
+
+                        LOGGER.info("Updating AutomaticSummerTimingEnabled to {}",
+                                configuration.isAutomaticSummerTimingEnabled());
+
+                        // Get the value and send the value to the device.
+                        automaticSummerTimingEnabled.setValue(configuration.isAutomaticSummerTimingEnabled());
+                        clientAssociation.setDataValues(automaticSummerTimingEnabled);
+                    }
+
+                }
+
+                // checking to see if all network values are null, so that we
+                // don't read the values for no reason
+                if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixIpValue() == null)) {
+
+                    final String networkObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.PROPERTY_IP_CONFIGURATION;
+
+                    final FcModelNode networkConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                            networkObjectReference, Fc.CF);
+
+                    if (configuration.isDhcpEnabled() != null) {
+
+                        final BdaBoolean dhcpEnabled = (BdaBoolean) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(networkConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_DHCP_ENABLED, Fc.CF);
+
+                        LOGGER.info("Updating DhcpEnabled to {}", configuration.isDhcpEnabled());
+
+                        // Get the value and send the value to the device.
+                        dhcpEnabled.setValue(configuration.isDhcpEnabled());
+                        clientAssociation.setDataValues(dhcpEnabled);
+                    }
+
+                    if (configuration.getDeviceFixIpValue() != null) {
+
+                        final BdaVisibleString deviceFixIpValue = (BdaVisibleString) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(networkConfiguration,
+                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP, Fc.CF);
+
+                        LOGGER.info("Updating DeviceFixIpValue to {}", configuration.getDeviceFixIpValue());
+
+                        // Get the value and send the value to the device.
+                        deviceFixIpValue.setValue(configuration.getDeviceFixIpValue());
+                        clientAssociation.setDataValues(deviceFixIpValue);
+                    }
+                }
+
+                // Disconnect from the device.
+                clientAssociation.disconnect();
+
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
 
     }
 
@@ -592,4 +852,36 @@ public class Iec61850DeviceService implements DeviceService {
         }
     }
 
+    /*
+     * Returns an FcModelNode, or throws an exception if the returned node is
+     * null
+     */
+    private FcModelNode getNode(final ServerModel serverModel, final String objectReference,
+            final Fc functionalConstraint) {
+
+        final FcModelNode output = (FcModelNode) serverModel.findModelNode(objectReference, Fc.CF);
+        if (output == null) {
+            LOGGER.info("{} is null", objectReference);
+            // TODO exceptionHandling
+        }
+
+        return output;
+
+    }
+
+    /*
+     * Returnsthe child of a node, or throws an exception if the returned child
+     * is null
+     */
+    private ModelNode getChildOfNodeWithConstraint(final FcModelNode modelNode, final String attribute,
+            final Fc functionalConstraint) {
+
+        final ModelNode output = modelNode.getChild(attribute, functionalConstraint);
+        if (output == null) {
+            LOGGER.info("{} is null", attribute);
+            // TODO exceptionHandling
+        }
+
+        return output;
+    }
 }
