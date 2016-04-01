@@ -9,6 +9,7 @@ package com.alliander.osgp.domain.core.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -63,6 +64,9 @@ public class ScheduledTask extends AbstractEntity {
     @Column(name = "messagepriority")
     private Integer messagePriority;
 
+    @Column(name = "retry")
+    private int retry;
+
     @SuppressWarnings("unused")
     private ScheduledTask() {
 
@@ -81,6 +85,7 @@ public class ScheduledTask extends AbstractEntity {
         this.messageData = messageData;
         this.scheduledTime = (Timestamp) scheduledTime.clone();
         this.status = ScheduledTaskStatusType.NEW;
+        this.retry = 0;
     }
 
     // public static
@@ -125,6 +130,10 @@ public class ScheduledTask extends AbstractEntity {
         return this.messagePriority;
     }
 
+    public int getRetry() {
+        return this.retry;
+    }
+
     public ScheduledTaskStatusType getStatus() {
         return this.status;
     }
@@ -140,6 +149,12 @@ public class ScheduledTask extends AbstractEntity {
 
     public void setComplete() {
         this.status = ScheduledTaskStatusType.COMPLETE;
+    }
+
+    public void retryOn(final Date retryTime) {
+        this.retry++;
+        this.scheduledTime = new Timestamp(retryTime.getTime());
+        this.status = ScheduledTaskStatusType.RETRY;
     }
 
     @Override
