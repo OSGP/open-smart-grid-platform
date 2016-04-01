@@ -14,8 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -69,68 +75,41 @@ public class CommonRebootRequestMessageProcessor extends DeviceRequestMessagePro
             return;
         }
 
+        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
+                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-        // final DeviceRequest deviceRequest = new
-        // DeviceRequest(organisationIdentification, deviceIdentification,
-        // correlationUid, domain, domainVersion, messageType, ipAddress,
-        // retryCount, isScheduled);
-        //
-        // this.deviceService.setReboot(deviceRequest);
-    }
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
-    // @Override
-    // public void processSignedOslpEnvelope(final String deviceIdentification,
-    // final SignedOslpEnvelopeDto signedOslpEnvelopeDto) {
-    //
-    // final UnsignedOslpEnvelopeDto unsignedOslpEnvelopeDto =
-    // signedOslpEnvelopeDto.getUnsignedOslpEnvelopeDto();
-    // final OslpEnvelope oslpEnvelope =
-    // signedOslpEnvelopeDto.getOslpEnvelope();
-    // final String correlationUid =
-    // unsignedOslpEnvelopeDto.getCorrelationUid();
-    // final String organisationIdentification =
-    // unsignedOslpEnvelopeDto.getOrganisationIdentification();
-    // final String domain = unsignedOslpEnvelopeDto.getDomain();
-    // final String domainVersion = unsignedOslpEnvelopeDto.getDomainVersion();
-    // final String messageType = unsignedOslpEnvelopeDto.getMessageType();
-    // final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
-    // final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
-    // final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-    //
-    // final DeviceResponseHandler deviceResponseHandler = new
-    // DeviceResponseHandler() {
-    //
-    // @Override
-    // public void handleResponse(final DeviceResponse deviceResponse) {
-    // CommonRebootRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-    // CommonRebootRequestMessageProcessor.this.responseMessageSender, domain,
-    // domainVersion,
-    // messageType, retryCount);
-    // }
-    //
-    // @Override
-    // public void handleException(final Throwable t, final DeviceResponse
-    // deviceResponse) {
-    // CommonRebootRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(deviceResponse,
-    // t, null,
-    // CommonRebootRequestMessageProcessor.this.responseMessageSender,
-    // deviceResponse, domain,
-    // domainVersion, messageType, isScheduled, retryCount);
-    // }
-    // };
-    //
-    // final DeviceRequest deviceRequest = new
-    // DeviceRequest(organisationIdentification, deviceIdentification,
-    // correlationUid);
-    //
-    // try {
-    // this.deviceService.doSetReboot(oslpEnvelope, deviceRequest,
-    // deviceResponseHandler, ipAddress);
-    // } catch (final IOException e) {
-    // this.handleError(e, correlationUid, organisationIdentification,
-    // deviceIdentification, domain,
-    // domainVersion, messageType, retryCount);
-    // }
-    // }
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                CommonRebootRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
+                        CommonRebootRequestMessageProcessor.this.responseMessageSender, requestMessageData.getDomain(),
+                        requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
+                        requestMessageData.getRetryCount());
+            }
+
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
+                if (expected) {
+                    CommonRebootRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
+                            ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
+                            requestMessageData.getOrganisationIdentification(), requestMessageData
+                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                    .getDomainVersion(), requestMessageData.getMessageType());
+                } else {
+                    CommonRebootRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
+                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
+                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
+                }
+            }
+        };
+
+        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+
+        this.deviceService.setReboot(deviceRequest, deviceResponseHandler);
+    }
 }

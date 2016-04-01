@@ -110,7 +110,6 @@ public class Iec61850DeviceService implements DeviceService {
 
             deviceResponseHandler.handleException(e, deviceResponse, true);
         }
-
     }
 
     /**
@@ -277,12 +276,58 @@ public class Iec61850DeviceService implements DeviceService {
             deviceResponseHandler.handleException(e, deviceResponse, false);
             return;
         }
+    }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
+     * #
+     * setReboot(com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest
+     * ,
+     * com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
+     * )
+     */
+    @Override
+    public void setReboot(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+            this.rebootDevice(serverModel, clientAssociation, deviceRequest.getDeviceIdentification());
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
     }
 
     // =================
     // PRIVATE METHODS =
     // =================
+
+    private ServerModel connectAndRetrieveServerModel(final DeviceRequest deviceRequest)
+            throws ProtocolAdapterException {
+        this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                deviceRequest.getDeviceIdentification());
+        return this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
+    }
 
     private void switchLightRelay(final int index, final boolean on, final ServerModel serverModel,
             final ClientAssociation clientAssociation) throws ProtocolAdapterException {
@@ -450,7 +495,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the registration configuration values");
 
                 final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
 
                 LOGGER.info("regObjectReference: {}", regObjectReference);
@@ -468,7 +513,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the IP configuration values");
 
                 final String ipcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_IP_CONFIGURATION;
 
                 LOGGER.info("ipcfObjectReference: {}", ipcfObjectReference);
@@ -486,7 +531,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the software configuration values");
 
                 final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
 
                 LOGGER.info("swcfObjectReference: {}", swcfObjectReference);
@@ -505,7 +550,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("Reading the clock configuration values");
 
                 final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                         + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
 
                 LOGGER.info("clockObjectReference: {}", clockObjectReference);
@@ -560,7 +605,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                     // Create the object reference string
                     final String regObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                             + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
                     LOGGER.info("regObjectReference: {}", regObjectReference);
 
@@ -604,7 +649,7 @@ public class Iec61850DeviceService implements DeviceService {
                 if (!(configuration.getAstroGateSunRiseOffset() == null && configuration.getAstroGateSunSetOffset() == null)) {
 
                     final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                             + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
 
                     final FcModelNode softwareConfiguration = Iec61850DeviceService.this.getNode(serverModel,
@@ -643,7 +688,7 @@ public class Iec61850DeviceService implements DeviceService {
                 if (!(configuration.getTimeSyncFrequency() == null && configuration.isAutomaticSummerTimingEnabled() == null)) {
 
                     final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                             + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
 
                     final FcModelNode clockConfiguration = Iec61850DeviceService.this.getNode(serverModel,
@@ -683,7 +728,7 @@ public class Iec61850DeviceService implements DeviceService {
                 if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixIpValue() == null)) {
 
                     final String networkObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                            + LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
                             + LogicalNodeAttributeDefinitons.PROPERTY_IP_CONFIGURATION;
 
                     final FcModelNode networkConfiguration = Iec61850DeviceService.this.getNode(serverModel,
@@ -725,6 +770,41 @@ public class Iec61850DeviceService implements DeviceService {
 
         this.iec61850Client.sendCommandWithRetry(function);
 
+    }
+
+    private void rebootDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final String deviceIdentification) throws ProtocolAdapterException {
+
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+                final String rbOperObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER;
+                LOGGER.info("device: {}, rbOperObjectReference: {}", deviceIdentification, rbOperObjectReference);
+
+                final FcModelNode rebootConfiguration = (FcModelNode) serverModel.findModelNode(rbOperObjectReference,
+                        Fc.CO);
+                LOGGER.info("device: {}, rebootConfiguration: {}", deviceIdentification, rebootConfiguration);
+
+                final FcModelNode oper = (FcModelNode) rebootConfiguration.getChild(
+                        LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER_ATTRIBUTE_OPER, Fc.CO);
+                LOGGER.info("device: {}, oper: {}", deviceIdentification, oper);
+
+                final BdaBoolean ctlVal = (BdaBoolean) oper.getChild(
+                        LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER_ATTRIBUTE_CONTROL, Fc.CO);
+                LOGGER.info("device: {}, ctlVal: {}", deviceIdentification, ctlVal);
+
+                ctlVal.setValue(true);
+                LOGGER.info("device: {}, set ctlVal to true in order to reboot the device", deviceIdentification);
+
+                clientAssociation.setDataValues(oper);
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
     }
 
     // This code will be used in the future

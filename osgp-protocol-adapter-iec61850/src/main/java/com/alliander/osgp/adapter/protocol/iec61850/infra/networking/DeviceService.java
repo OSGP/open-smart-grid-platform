@@ -26,8 +26,7 @@ public interface DeviceService {
      */
     void getStatus(DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler);
 
-    // void setReboot(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler);
+    void setReboot(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
     void setConfiguration(SetConfigurationDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
