@@ -7,8 +7,6 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,12 +64,10 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority,scheduleTime);
+                SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority, scheduleTime);
 
-        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
-        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -101,7 +97,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.SEND_WAKEUP_SMS.toString(),
-                messagePriority,scheduleTime);
+                messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
@@ -135,7 +131,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.GET_SMS_DETAILS.toString(),
-                messagePriority,scheduleTime);
+                messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
@@ -169,7 +165,7 @@ public class AdhocService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority,scheduleTime);
+                SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()

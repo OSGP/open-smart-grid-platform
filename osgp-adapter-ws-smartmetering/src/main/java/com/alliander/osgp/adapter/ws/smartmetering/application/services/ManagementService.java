@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;

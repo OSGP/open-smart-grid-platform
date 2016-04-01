@@ -346,7 +346,7 @@ public class WebServiceConfig {
     }
 
     @Bean
-    public SoapHeaderScheduleTimeEndpointInterceptor scheduleForInterceptor() {
+    public SoapHeaderScheduleTimeEndpointInterceptor scheduleTimeInterceptor() {
         return new SoapHeaderScheduleTimeEndpointInterceptor(MESSAGE_SCHEDULETIME_HEADER);
     }
 

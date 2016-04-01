@@ -53,7 +53,7 @@
         <ref bean="x509CertificateSubjectCnEndpointInterceptor"/>
         <ref bean="organisationIdentificationInterceptor"/>
         <ref bean="messagePriorityInterceptor"/>
-        <ref bean="scheduleForInterceptor"/>
+        <ref bean="scheduleTimeInterceptor"/>
         <ref bean="organisationIdentificationInCertificateCnEndpointInterceptor"/>
         <ref bean="payloadValidatingInterceptor"/>
     </sws:interceptors>
