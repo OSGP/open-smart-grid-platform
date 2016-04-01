@@ -72,9 +72,6 @@ public class ActionMapperService {
                 this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,
                 this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsData.class,
-                this.monitoringMapper);
 
         // ok to here
         CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SmsDetailsType.class,
