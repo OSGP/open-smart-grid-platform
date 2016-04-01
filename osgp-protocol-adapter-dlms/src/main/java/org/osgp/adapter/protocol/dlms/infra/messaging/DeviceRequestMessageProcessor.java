@@ -18,20 +18,22 @@ import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.except
 import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.factories.DlmsConnectionFactory;
-import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.OsgpExceptionConverter;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.osgp.adapter.protocol.dlms.exceptions.RetryableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.ProtocolResponseMessage;
 import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
+import com.alliander.osgp.shared.infra.jms.RetryHeader;
 
 /**
  * Base class for MessageProcessor implementations. Each MessageProcessor
@@ -59,6 +61,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
     @Autowired
     private DlmsConnectionFactory dlmsConnectionFactory;
+
+    @Autowired
+    private RetryHeaderFactory retryHeaderFactory;
 
     protected final DeviceRequestMessageType deviceRequestMessageType;
 
@@ -112,6 +117,9 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         ClientConnection conn = null;
         DlmsDevice device = null;
 
+        final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
+                .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+
         try {
             // Handle message
             messageMetadata.handleMessage(message);
@@ -126,20 +134,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                    response);
-        } catch (final ConnectionException exception) {
-            // Retry / redeliver by throwing RuntimeException.
-            LOGGER.info("ConnectionException occurred, JMS will catch this exception.");
-            throw exception;
+                    response, isScheduled);
         } catch (final JMSException exception) {
             this.logJmsException(LOGGER, exception, messageMetadata);
         } catch (final Exception exception) {
             // Return original request + exception
             LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
 
-            final OsgpException ex = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
-            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, ex, this.responseMessageSender,
-                    message.getObject());
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
+                            this.responseMessageSender, message.getObject(), isScheduled);
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
@@ -169,22 +172,29 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException;
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
-            final ResponseMessageResultType result, final OsgpException osgpException,
-            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject) {
+            final ResponseMessageResultType result, final Exception exception,
+            final DeviceResponseMessageSender responseMessageSender, final Serializable responseObject,
+            final boolean isScheduled) {
 
         final DeviceMessageMetadata deviceMessageMetadata = dlmsDeviceMessageMetadata.asDeviceMessageMetadata();
+        OsgpException osgpException = null;
+        if (exception != null) {
+            osgpException = this.osgpExceptionConverter.ensureOsgpOrTechnicalException(exception);
+        }
 
-        // @formatter:off
+        RetryHeader retryHeader;
+        if (result == ResponseMessageResultType.NOT_OK && exception instanceof RetryableException) {
+            retryHeader = this.retryHeaderFactory.createRetryHeader(dlmsDeviceMessageMetadata.getRetryCount());
+        } else {
+            retryHeader = this.retryHeaderFactory.createEmtpyRetryHeader();
+        }
+
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .domain(dlmsDeviceMessageMetadata.getDomain())
-        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion())
-        .result(result)
-        .osgpException(osgpException)
-        .dataObject(responseObject)
-        .retryCount(dlmsDeviceMessageMetadata.getRetryCount())
-        .build();
-        // @formatter:on
+        .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
+        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
+        .osgpException(osgpException).dataObject(responseObject)
+        .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
+                .build();
 
         responseMessageSender.send(responseMessage);
     }
