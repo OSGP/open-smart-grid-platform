@@ -35,11 +35,11 @@ public interface DeviceService {
     // DeviceResponseHandler deviceResponseHandler,
     // String ipAddress);
 
-    // void startSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler);
-
-    // void stopSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler);
+    /**
+     * Runs a selftest. StartOfTest is a boolean, used to indicate whether the
+     * test is started or stopped
+     */
+    void runSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, boolean startOfTest);
 
     // void updateFirmware(DeviceRequest deviceRequest, DeviceResponseHandler
     // deviceResponseHandler);

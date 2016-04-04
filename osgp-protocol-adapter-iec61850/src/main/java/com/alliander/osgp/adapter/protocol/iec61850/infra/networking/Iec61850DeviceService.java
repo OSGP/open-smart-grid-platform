@@ -57,6 +57,7 @@ import com.alliander.osgp.dto.valueobjects.RelayMap;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component
 public class Iec61850DeviceService implements DeviceService {
@@ -74,6 +75,9 @@ public class Iec61850DeviceService implements DeviceService {
 
     @Autowired
     private Iec61850Mapper mapper;
+
+    // 30 seconds
+    private static final int SELF_TEST_TIMEOUT = 30_000;
 
     /**
      * @see DeviceService#getStatus(GetStatusDeviceRequest,
@@ -277,6 +281,104 @@ public class Iec61850DeviceService implements DeviceService {
             deviceResponseHandler.handleException(e, deviceResponse, false);
             return;
         }
+
+    }
+
+    @Override
+    public void runSelfTest(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler,
+            final boolean startOfTest) {
+
+        // Assuming all goes well
+        final DeviceMessageStatus status = DeviceMessageStatus.OK;
+
+        try {
+
+            // Connect, get the ServerModel final and ClientAssociation.
+            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                    deviceRequest.getDeviceIdentification());
+
+            ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
+                    .getDeviceIdentification());
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
+
+            // This list will contain the external indexes of all light relays.
+            // It's used to interpret the deviceStatus data later on
+            final List<Integer> lightRelays = new ArrayList<>();
+
+            LOGGER.info("Turning all lights relays {}", startOfTest ? "on" : "off");
+
+            // Turning all light relays on or off, depending on the value of
+            // startOfTest
+            for (final DeviceOutputSetting deviceOutputSetting : ssld.findByRelayType(RelayType.LIGHT)) {
+                lightRelays.add(deviceOutputSetting.getExternalId());
+                this.switchLightRelay(deviceOutputSetting.getInternalId(), startOfTest, serverModel, clientAssociation);
+            }
+
+            // Disconnect from the device.
+            clientAssociation.disconnect();
+
+            // Sleep and wait
+            try {
+                LOGGER.info("Waiting {} seconds before getting the device status", SELF_TEST_TIMEOUT / 1000);
+                Thread.sleep(SELF_TEST_TIMEOUT);
+            } catch (final InterruptedException e) {
+                LOGGER.error("An error occured during the device selftest timeout.", e);
+                throw new TechnicalException(ComponentType.PROTOCOL_IEC61850,
+                        "An error occured during the device selftest timeout.");
+            }
+
+            // Reconnecting to the device
+            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                    deviceRequest.getDeviceIdentification());
+
+            // Refreshing the servermodel
+            serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest.getDeviceIdentification());
+
+            // Getting the status
+            final DeviceStatus deviceStatus = this.getStatusFromDevice(serverModel, ssld);
+
+            LOGGER.info("Fetching and checking the devicestatus");
+
+            // Checking to see if all light relays have the correct state
+            for (final LightValue lightValue : deviceStatus.getLightValues()) {
+                if (lightRelays.contains(lightValue.getIndex()) && lightValue.isOn() != startOfTest) {
+                    // One the the light relays is not in the correct state,
+                    // request failed
+                    throw new ProtocolAdapterException("not all relays are ".concat(startOfTest ? "on" : "off"));
+                }
+            }
+
+            LOGGER.info("All lights relays are {}, returning OK", startOfTest ? "on" : "off");
+
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
+        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), status);
+
+        deviceResponseHandler.handleResponse(deviceResponse);
 
     }
 
