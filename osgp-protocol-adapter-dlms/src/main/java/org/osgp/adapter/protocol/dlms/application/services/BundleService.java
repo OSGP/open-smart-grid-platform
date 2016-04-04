@@ -21,6 +21,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsGasComm
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -54,16 +56,17 @@ public class BundleService {
     @Autowired
     private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
 
-    private final static Map<Class<? extends ActionValueObjectDto>, CommandExecutor<? extends ActionValueObjectDto, ? extends ActionValueObjectResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
+    @Autowired
+    private SetSpecialDaysBundleCommandExecutor setSpecialDaysBundleCommandExecutor;
 
-    // ? extends CommandExecutor<? extends ActionValueObjectDto, Object>
-    // ? extends CommandExecutor<?,?>
+    private final static Map<Class<? extends ActionValueObjectDto>, CommandExecutor<? extends ActionValueObjectDto, ? extends ActionValueObjectResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
     private void postConstruct() {
         CLAZZ_EXECUTOR_MAP.put(FindEventsQueryDto.class, this.retrieveEventsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActualMeterReadsDataDto.class, this.actualMeterReadsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActualMeterReadsDataGasDto.class, this.actualMeterReadsGasCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(SpecialDaysRequestDataDto.class, this.setSpecialDaysBundleCommandExecutor);
     }
 
     public List<ActionValueObjectResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
@@ -75,17 +78,16 @@ public class BundleService {
             // suppress else the compiler will complain
             @SuppressWarnings({ "unchecked", "rawtypes" })
             final CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> executor = (CommandExecutor) CLAZZ_EXECUTOR_MAP
-            .get(actionValueObjectDto.getClass());
+                    .get(actionValueObjectDto.getClass());
 
             try {
 
                 final ActionValueObjectResponseDto actionResult = executor.execute(conn, device, actionValueObjectDto);
                 actionValueObjectResponseDtoList.add(actionResult);
             } catch (final Exception e) {
-                final ActionValueObjectResponseDto actionValueObjectResponseDto = new ActionValueObjectResponseDto();
-                actionValueObjectResponseDto.setException(e);
-                actionValueObjectResponseDto.setResultString("Error while executing bundle action for class "
-                        + actionValueObjectDto.getClass() + " and executor " + executor.getClass());
+                final ActionValueObjectResponseDto actionValueObjectResponseDto = new ActionValueObjectResponseDto(e,
+                        "Error while executing bundle action for class " + actionValueObjectDto.getClass()
+                                + " and executor " + executor.getClass());
                 actionValueObjectResponseDtoList.add(actionValueObjectResponseDto);
             }
         }
