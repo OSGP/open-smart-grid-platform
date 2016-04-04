@@ -29,7 +29,6 @@ public class DlmsDeviceMessageMetadata {
     private String ipAddress;
     private int retryCount;
     private int messagePriority;
-    private Long scheduleTime;
 
     @Override
     public String toString() {
@@ -37,7 +36,7 @@ public class DlmsDeviceMessageMetadata {
                 .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d, scheduleTime=%s]",
                         this.correlationUid, this.domain, this.domainVersion, this.messageType,
                         this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.retryCount,
-                        this.messagePriority, this.scheduleTime);
+                        this.messagePriority);
     }
 
     /**
@@ -55,9 +54,6 @@ public class DlmsDeviceMessageMetadata {
         this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
         this.ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
         this.retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-        if (message.propertyExists(Constants.SCHEDULE_TIME)) {
-            this.scheduleTime = message.getLongProperty(Constants.SCHEDULE_TIME);
-        }
         this.messagePriority = message.getJMSPriority();
     }
 
@@ -129,13 +125,9 @@ public class DlmsDeviceMessageMetadata {
         this.retryCount = retryCount;
     }
 
-    public Long getScheduleTime() {
-        return this.scheduleTime;
-    }
-
     public DeviceMessageMetadata asDeviceMessageMetadata() {
         return new DeviceMessageMetadata(this.getDeviceIdentification(), this.getOrganisationIdentification(),
-                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority(), this.getScheduleTime());
+                this.getCorrelationUid(), this.getMessageType(), this.getMessagePriority());
 
     }
 }
