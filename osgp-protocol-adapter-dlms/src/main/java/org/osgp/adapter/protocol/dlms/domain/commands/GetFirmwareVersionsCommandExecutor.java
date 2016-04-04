@@ -36,9 +36,9 @@ public class GetFirmwareVersionsCommandExecutor implements CommandExecutor<Void,
     private static final ObisCode OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION = new ObisCode("1.2.0.2.0.255");
 
     private static final AttributeAddress[] ATTRIBUTE_ADDRESSES = {
-            new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
-            new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
-            new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID) };
+        new AttributeAddress(CLASS_ID, OBIS_CODE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+        new AttributeAddress(CLASS_ID, OBIS_CODE_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID),
+        new AttributeAddress(CLASS_ID, OBIS_CODE_COMMUNICATION_MODULE_ACTIVE_FIRMWARE_VERSION, ATTRIBUTE_ID) };
 
     private static final int INDEX_ACTIVE_FIRMWARE_VERSION = 0;
     private static final int INDEX_MODULE_ACTIVE_FIRMWARE_VERSION = 1;
@@ -54,7 +54,7 @@ public class GetFirmwareVersionsCommandExecutor implements CommandExecutor<Void,
         final List<FirmwareVersionDto> resultList = new ArrayList<>();
 
         final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
-                "retrieve actual meter reads", ATTRIBUTE_ADDRESSES);
+                "retrieve firmware versions", ATTRIBUTE_ADDRESSES);
 
         resultList.add(new FirmwareVersionDto(ACTIVE_FIRMWARE, this.dlmsHelperService.readString(
                 getResultList.get(INDEX_ACTIVE_FIRMWARE_VERSION).resultData(), ACTIVE_FIRMWARE)));
