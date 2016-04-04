@@ -33,7 +33,7 @@ public class DlmsDeviceMessageMetadata {
     @Override
     public String toString() {
         return String
-                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d, scheduleTime=%s]",
+                .format("DlmsDeviceMessageMetadata[correlationUid=%s, domain=%s, domainVersion=%s, messageType=%s, organisation=%s, device=%s, ipAddress=%s, retryCount=%d, messagePriority=%d]",
                         this.correlationUid, this.domain, this.domainVersion, this.messageType,
                         this.organisationIdentification, this.deviceIdentification, this.ipAddress, this.retryCount,
                         this.messagePriority);
