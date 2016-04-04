@@ -105,10 +105,25 @@ public final class LogicalNodeAttributeDefinitons {
      */
     public static final String PROPERTY_POSITION_ATTRIBUTE_CONTROL = ".Oper.ctlVal";
 
+    /**
+     * Property of CSLC Node, reboot.
+     */
+    public static final String PROPERTY_RB_OPER = ".RbOper";
+
+    /**
+     * Attribute of Property RbOper, used to reboot the device.
+     */
+    public static final String PROPERTY_RB_OPER_ATTRIBUTE_OPER = "Oper";
+
+    /**
+     * Attribute of Property Oper, used to reboot the device.
+     */
+    public static final String PROPERTY_RB_OPER_ATTRIBUTE_CONTROL = "ctlVal";
+
     /*
      * CSLC, configuration Logical Node.
      */
-    public static final String PROPERTY_NODE_CSLC = "/CSLC";
+    public static final String LOGICAL_NODE_CSLC = "/CSLC";
 
     /*
      * XSWC, prefix of the relays' Logical Node.
