@@ -48,39 +48,7 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-	
-	<xsd:element name="SendWakeupSmsRequest">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	<xsd:element name="SendWakeupSmsAsyncResponse">
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="common:AsyncResponse" />
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="SendWakeupSmsAsyncRequest">
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="common:AsyncRequest"></xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	<xsd:element name="SendWakeupSmsResponse">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="Result" type="common:OsgpResultType" />
-				<xsd:element name="Description" type="xsd:string" minOccurs="0" />
-    			<xsd:element name="smsMsgId" type="xsd:long" />
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-	
+		
 	<xsd:element name="GetSmsDetailsRequest">
 		<xsd:complexType>
 			<xsd:sequence>

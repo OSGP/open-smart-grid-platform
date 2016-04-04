@@ -94,45 +94,6 @@ public class AdhocService {
                 .getMessageType());
     }
 
-    public void sendWakeupSms(final DeviceMessageMetadata deviceMessageMetadata, final SmsDetails smsDetailsValueObject)
-            throws FunctionalException {
-
-        LOGGER.debug("send wakeup sms request for organisationIdentification: {} for deviceIdentification: {}",
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
-
-        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
-                .getDeviceIdentification());
-
-        final SmsDetailsDto smsDetailsDto = this.mapperFactory.getMapperFacade().map(smsDetailsValueObject,
-                SmsDetailsDto.class);
-
-        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                smartMeteringDevice.getIpAddress(), smsDetailsDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority());
-
-    }
-
-    public void handleSendWakeupSmsResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessageResultType responseMessageResultType, final OsgpException exception,
-            final SmsDetailsDto smsDetailsDto) {
-
-        LOGGER.debug("handleSendWakeupSmsResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
-
-        ResponseMessageResultType result = responseMessageResultType;
-        if (exception != null) {
-            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
-            result = ResponseMessageResultType.NOT_OK;
-        }
-
-        final SmsDetails smsDetails = this.mapperFactory.getMapperFacade().map(smsDetailsDto, SmsDetails.class);
-
-        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, smsDetails, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
-                .getMessageType());
-    }
-
     public void getSmsDetails(final DeviceMessageMetadata deviceMessageMetadata, final SmsDetails smsDetailsValueObject)
             throws FunctionalException {
 
