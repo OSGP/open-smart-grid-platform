@@ -8,6 +8,9 @@
 package com.alliander.osgp.adapter.protocol.oslp.infra.messaging.processors;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -23,6 +26,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.responses.GetFirmwareVers
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -142,12 +146,15 @@ OslpEnvelopeProcessor {
             final String messageType, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
-        String firmwareVersion = "";
+
         OsgpException osgpException = null;
 
+        final List<FirmwareVersionDto> firmwareVersions = new ArrayList<>();
         try {
             final GetFirmwareVersionDeviceResponse response = (GetFirmwareVersionDeviceResponse) deviceResponse;
-            firmwareVersion = response.getFirmwareVersion();
+            final String firmwareVersion = response.getFirmwareVersion();
+
+            firmwareVersions.add(new FirmwareVersionDto("FIRMWARE", firmwareVersion));
         } catch (final Exception e) {
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
@@ -157,7 +164,8 @@ OslpEnvelopeProcessor {
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
-                deviceResponse.getDeviceIdentification(), result, osgpException, firmwareVersion, retryCount);
+                deviceResponse.getDeviceIdentification(), result, osgpException, (Serializable) firmwareVersions,
+                retryCount);
 
         responseMessageSender.send(responseMessage);
     }
