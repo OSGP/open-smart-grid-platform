@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessage;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageSender;
 import com.alliander.osgp.adapter.ws.smartmetering.infra.jms.SmartMeteringRequestMessageType;
@@ -25,6 +26,8 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
+import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
@@ -45,6 +48,9 @@ public class BundleService {
     // private MeterResponseDataRepository meterResponseDataRepository;
 
     @Autowired
+    private MeterResponseDataService meterResponseDataService;
+
+    @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
 
     @Autowired
@@ -52,6 +58,11 @@ public class BundleService {
 
     public BundleService() {
         // Parameterless constructor required for transactions
+    }
+
+    public MeterResponseData dequeueBundleResponse(final String correlationUid)
+            throws CorrelationUidException {
+        return this.meterResponseDataService.dequeue(correlationUid, BundleResponseMessageDataContainer.class);
     }
 
     public String enqueueBundleRequest(final String organisationIdentification, final String deviceIdentification,

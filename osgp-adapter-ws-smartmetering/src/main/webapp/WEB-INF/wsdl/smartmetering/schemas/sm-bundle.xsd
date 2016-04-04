@@ -69,29 +69,26 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<!-- TODO replace Events with ActionsResult -->
+	
+	<xsd:complexType name="AllResponses">
+		<xsd:sequence>
+			<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="FindEventsResponseData" type="smman:FindEventsResponseData" maxOccurs="unbounded" />
+					<xsd:element name="ActionValueResponseData" type="common:ActionValueResponseData" maxOccurs="unbounded" />
+				
+
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	<xsd:element name="BundleResponse">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element name="ActionsResult" type="tns:ActionsResult" maxOccurs="unbounded" />
+				<xsd:element name="AllResponses" type="tns:AllResponses" minOccurs="1" maxOccurs="1" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
 	
-	<!-- Data Types -->	
-	
-	<!-- Query for BundleRequest -->
-	
-	
-	<!-- Event containing Timestamp and EventType -->
-	<xsd:complexType name="ActionsResult">
-		<xsd:sequence>
-			<xsd:element name="actionType" type="xsd:string" minOccurs="1" maxOccurs="1" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	
-		
 	<!-- Requests and Responses -->
 	
 	<xsd:element name="GetDevicesRequest">

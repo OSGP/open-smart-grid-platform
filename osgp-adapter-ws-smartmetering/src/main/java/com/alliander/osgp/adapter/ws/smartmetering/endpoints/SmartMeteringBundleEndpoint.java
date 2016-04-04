@@ -26,8 +26,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleAsyncResp
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.bundle.BundleResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.Action;
+import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMapperResponseService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMapperService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.BundleService;
+import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -47,13 +49,16 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
 
     private final BundleService bundleService;
     private final ActionMapperService actionMapperService;
+    private final ActionMapperResponseService actionMapperResponseService;
 
     @Autowired
     public SmartMeteringBundleEndpoint(
             @Qualifier(value = "wsSmartMeteringBundleService") final BundleService bundleService,
-            @Qualifier(value = "wsSmartMeteringActionMapperService") final ActionMapperService actionMapperService) {
+            @Qualifier(value = "wsSmartMeteringActionMapperService") final ActionMapperService actionMapperService,
+            @Qualifier(value = "wsSmartMeteringActionResponseMapperService") final ActionMapperResponseService actionMapperResponseService) {
         this.bundleService = bundleService;
         this.actionMapperService = actionMapperService;
+        this.actionMapperResponseService = actionMapperResponseService;
     }
 
     @PayloadRoot(localPart = "BundleRequest", namespace = NAMESPACE)
@@ -99,27 +104,13 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
         LOGGER.info("Get bundle response for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
 
-        BundleResponse response = null;
+        final MeterResponseData meterResponseData = this.bundleService.dequeueBundleResponse(request
+                .getCorrelationUid());
+
         // Create response.
-        response = new BundleResponse();
+        final BundleResponse response = this.actionMapperResponseService.mapAllActions(meterResponseData
+                .getMessageData());
 
-        // Get the request parameters, make sure that date time are in UTC.
-        final String correlationUid = request.getCorrelationUid();
-
-        // TODO:
-        // final List<Action> actions =
-        // this.bundleService.findActionsByCorrelationUid(organisationIdentification,
-        // correlationUid);
-
-        // LOGGER.info("getBundleResponse() number of actions: {}",
-        // actions.size());
-        LOGGER.info("mapping events to schema type...");
-        // TODO:
-        // response.getgetEvents().addAll(
-        // this.managementMapper.mapAsList(events,
-        // com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class));
-        LOGGER.info("mapping done, sending response...");
         return response;
     }
-
 }

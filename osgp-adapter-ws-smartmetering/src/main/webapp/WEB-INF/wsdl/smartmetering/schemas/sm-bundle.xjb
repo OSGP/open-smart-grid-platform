@@ -51,4 +51,9 @@ xmlns:xs="http://www.w3.org/2001/XMLSchema">
 		<jxb:property name="ActionList"/>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="sm-bundle.xsd" node="/xs:schema/xs:complexType[@name='AllResponses']/xs:sequence/xs:choice">
+		<jxb:property name="ResponseList"/>
+	</jxb:bindings>
+
+
 </jxb:bindings>

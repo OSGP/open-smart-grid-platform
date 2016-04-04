@@ -163,14 +163,14 @@ public class ActionMapperService {
             if (mapper != null) {
                 actionValueObjectList.add(this.getActionValueObjectWithDefaultMapper(action, mapper, clazz));
             } else {
-                actionValueObjectList.add(this.convertCoreToDto(action));
+                actionValueObjectList.add(this.convertWsToCore(action));
             }
         }
 
         return actionValueObjectList;
     }
 
-    private ActionValueObject convertCoreToDto(final Action action) throws FunctionalException {
+    private ActionValueObject convertWsToCore(final Action action) throws FunctionalException {
 
         if (action instanceof com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData) {
             final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData actualMeterReadsGasData = (com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasData) action;

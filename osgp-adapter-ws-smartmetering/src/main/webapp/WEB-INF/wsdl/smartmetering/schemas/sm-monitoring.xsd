@@ -135,6 +135,22 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:complexType name="ActualMeterReadsResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="LogTime" type="xsd:dateTime" />
+					<xsd:element name="ActiveEnergyImport" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyExport" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<!-- gas meter actual -->
 	<xsd:element name="ActualMeterReadsGasRequest">
 		<xsd:complexType>

@@ -58,6 +58,22 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:complexType name="Response" abstract="true">
+		<xsd:sequence>
+			<xsd:element name="exception" type="xsd:string" />
+			<xsd:element name="resultString" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ActionValueResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="tns:Response">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="Action" abstract="true">
 		<xsd:sequence>
 		</xsd:sequence>

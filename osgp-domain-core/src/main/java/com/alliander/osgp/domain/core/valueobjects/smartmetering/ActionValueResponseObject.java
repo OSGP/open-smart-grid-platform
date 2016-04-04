@@ -7,6 +7,32 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import java.io.Serializable;
 
-public interface ActionValueResponseObject {
+public class ActionValueResponseObject implements Serializable {
+
+    private static final long serialVersionUID = -1400608536968152107L;
+    private String exception;
+    private String resultString;
+
+    public String getException() {
+        return this.exception;
+    }
+
+    public void setException(final String exception) {
+        this.exception = exception;
+    }
+
+    public boolean hasException() {
+        return this.exception != null;
+    }
+
+    public String getResultString() {
+        return this.resultString;
+    }
+
+    public void setResultString(final String resultString) {
+        this.resultString = resultString;
+
+    }
 }
