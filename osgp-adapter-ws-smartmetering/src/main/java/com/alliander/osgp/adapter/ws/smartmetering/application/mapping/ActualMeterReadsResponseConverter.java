@@ -34,7 +34,7 @@ public class ActualMeterReadsResponseConverter extends CustomConverter<MeterRead
             final Type<? extends ActualMeterReadsResponseData> destinationType) {
 
         final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponseData destination = new ObjectFactory()
-        .createActualMeterReadsResponseData();
+                .createActualMeterReadsResponseData();
 
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(source.getLogTime());
