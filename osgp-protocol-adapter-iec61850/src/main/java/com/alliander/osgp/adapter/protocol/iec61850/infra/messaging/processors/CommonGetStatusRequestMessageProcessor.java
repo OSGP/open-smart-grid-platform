@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2014-2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -96,8 +96,8 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
                     CommonGetStatusRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
                             ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
                             requestMessageData.getOrganisationIdentification(), requestMessageData
-                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
-                                    .getDomainVersion(), requestMessageData.getMessageType());
+                            .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                            .getDomainVersion(), requestMessageData.getMessageType());
                 } else {
                     CommonGetStatusRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
                             requestMessageData.getMessageData(), requestMessageData.getDomain(),
