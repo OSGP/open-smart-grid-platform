@@ -69,7 +69,7 @@ public class ManagementService {
                 smartMeter.getIpAddress(), this.managementMapper.map(findEventsQueryMessageDataContainer,
                         FindEventsQueryMessageDataContainerDto.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleFindEventsResponse(final DeviceMessageMetadata deviceMessageMetadata,

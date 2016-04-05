@@ -22,6 +22,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncResponse;
@@ -68,8 +69,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public FindEventsAsyncResponse findEventsRequest(
             @OrganisationIdentification final String organisationIdentification,
-            @MessagePriority final String messagePriority, @RequestPayload final FindEventsRequest request)
-                    throws OsgpException {
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime,
+            @RequestPayload final FindEventsRequest request) throws OsgpException {
 
         LOGGER.info("Find events request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());
@@ -86,7 +87,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
+                    MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
+                            Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
