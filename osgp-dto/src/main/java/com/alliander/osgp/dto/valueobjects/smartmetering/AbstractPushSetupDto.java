@@ -16,9 +16,9 @@ class AbstractPushSetupDto implements Serializable, ActionValueObjectDto {
     private static final char TAB_CHAR = '\t';
 
     private final CosemObisCodeDto logicalName;
-    private final List<CosemObjectDefinitionDto> pushObjectList;
+    private List<CosemObjectDefinitionDto> pushObjectList;
     private final SendDestinationAndMethodDto sendDestinationAndMethod;
-    private final List<WindowElementDto> communicationWindow;
+    private List<WindowElementDto> communicationWindow;
     private final Integer randomisationStartInterval;
     private final Integer numberOfRetries;
     private final Integer repetitionDelay;

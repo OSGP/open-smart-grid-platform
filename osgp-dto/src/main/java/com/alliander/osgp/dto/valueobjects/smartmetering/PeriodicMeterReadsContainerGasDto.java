@@ -9,7 +9,6 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class PeriodicMeterReadsContainerGasDto implements Serializable {
@@ -19,13 +18,14 @@ public class PeriodicMeterReadsContainerGasDto implements Serializable {
     private final List<PeriodicMeterReadsGasDto> meterReadsGas;
     private final PeriodTypeDto periodType;
 
-    public PeriodicMeterReadsContainerGasDto(final PeriodTypeDto periodType, final List<PeriodicMeterReadsGasDto> meterReadsGas) {
+    public PeriodicMeterReadsContainerGasDto(final PeriodTypeDto periodType,
+            final List<PeriodicMeterReadsGasDto> meterReadsGas) {
         this.meterReadsGas = new ArrayList<PeriodicMeterReadsGasDto>(meterReadsGas);
         this.periodType = periodType;
     }
 
     public List<PeriodicMeterReadsGasDto> getMeterReadsGas() {
-        return Collections.unmodifiableList(this.meterReadsGas);
+        return new ArrayList<>(this.meterReadsGas);
     }
 
     public PeriodTypeDto getPeriodType() {

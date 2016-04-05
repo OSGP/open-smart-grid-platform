@@ -39,7 +39,7 @@ public class ActivityCalendarDto implements Comparable<ActivityCalendarDto>, Ser
     }
 
     public List<SeasonProfileDto> getSeasonProfileList() {
-        return Collections.unmodifiableList(this.seasonProfileList);
+        return new ArrayList<>(this.seasonProfileList);
     }
 
     @Override

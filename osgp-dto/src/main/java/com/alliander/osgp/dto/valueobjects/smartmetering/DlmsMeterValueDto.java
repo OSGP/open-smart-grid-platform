@@ -12,13 +12,13 @@ public class DlmsMeterValueDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public DlmsMeterValueDto(final BigDecimal value, final DlmsUnitDto dlmsUnit) {
-        this.value = value;
-        this.dlmsUnit = dlmsUnit;
-    }
-
     private final BigDecimal value;
     private final DlmsUnitDto dlmsUnit;
+
+    public DlmsMeterValueDto(final BigDecimal value, final DlmsUnitDto unit) {
+        this.value = value;
+        this.dlmsUnit = unit;
+    }
 
     public BigDecimal getValue() {
         return this.value;

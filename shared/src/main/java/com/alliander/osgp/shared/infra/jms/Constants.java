@@ -162,12 +162,17 @@ public class Constants {
      */
     public static final String DEVICE_TYPE = "DeviceType";
 
-    // === DEPRECATED ===
-
     /**
-     * DEPRECATED JMS constant for message field: RetryCount.
+     * JMS constant for message field: RetryCount.
      */
     public static final String RETRY_COUNT = "RetryCount";
+
+    /**
+     * JMS constant for message field: MaxRetries.
+     */
+    public static final String MAX_RETRIES = "MaxRetries";
+
+    // === DEPRECATED ===
 
     /**
      * DEPRECATED JMS constant for message field: ErrorMessage.

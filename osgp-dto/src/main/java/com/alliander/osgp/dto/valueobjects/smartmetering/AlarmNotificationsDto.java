@@ -8,7 +8,6 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -16,18 +15,19 @@ public class AlarmNotificationsDto implements Serializable, ActionValueObjectDto
 
     private static final long serialVersionUID = 2319359505656305783L;
 
-    private final Set<AlarmNotificationDto> alarmNotifications;
+    private Set<AlarmNotificationDto> alarmNotificationsSet;
 
-    public AlarmNotificationsDto(final Set<AlarmNotificationDto> alarmNotifications) {
-        this.alarmNotifications = new TreeSet<AlarmNotificationDto>(alarmNotifications);
+    public AlarmNotificationsDto(final Set<AlarmNotificationDto> alarmNotificationsSet) {
+        this.alarmNotificationsSet = new TreeSet<AlarmNotificationDto>(alarmNotificationsSet);
     }
 
     @Override
     public String toString() {
-        return "AlarmNotifications[" + this.alarmNotifications + "]";
+        return "AlarmNotifications[" + this.alarmNotificationsSet + "]";
     }
 
-    public Set<AlarmNotificationDto> getAlarmNotifications() {
-        return Collections.unmodifiableSet(this.alarmNotifications);
+    public Set<AlarmNotificationDto> getAlarmNotificationsSet() {
+        return new TreeSet<>(this.alarmNotificationsSet);
     }
+
 }

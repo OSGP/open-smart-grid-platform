@@ -33,6 +33,10 @@ public class DayProfileDto implements Comparable<DayProfileDto>, Serializable {
         return Collections.unmodifiableList(this.dayProfileActionList);
     }
 
+    public void setDayProfileActionList(final List<DayProfileActionDto> dayProfileActionList) {
+        this.dayProfileActionList = dayProfileActionList;
+    }
+
     @Override
     public String toString() {
         return "DayProfile [\n\t\t\t\t\t\tdayId=" + this.dayId + ", \n\t\t\t\t\t\tdayProfileActionList=\n\t\t\t\t\t\t"
