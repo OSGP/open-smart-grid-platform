@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueResponseObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
@@ -46,6 +47,9 @@ public class ActionMapperResponseService {
 
     @Autowired
     private ManagementMapper managementMapper;
+
+    @Autowired
+    private MonitoringMapper monitoringMapper;
 
     @Autowired
     private CommonMapper commonMapper;
@@ -73,7 +77,7 @@ public class ActionMapperResponseService {
 
          */
         classToMapperMap.put(EventMessageDataContainerDto.class, this.managementMapper);
-        classToMapperMap.put(MeterReadsDto.class, this.commonMapper);
+        classToMapperMap.put(MeterReadsDto.class, this.monitoringMapper);
         classToMapperMap.put(MeterReadsGasDto.class, this.commonMapper);
         classToMapperMap.put(ActionValueObjectResponseDto.class, this.commonMapper);
         classToMapperMap.put(AlarmRegisterDto.class, this.commonMapper);
