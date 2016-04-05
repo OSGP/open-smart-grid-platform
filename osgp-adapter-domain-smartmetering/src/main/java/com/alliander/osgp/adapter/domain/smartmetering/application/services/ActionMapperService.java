@@ -262,32 +262,4 @@ public class ActionMapperService {
         return actionValueObjectDto;
     }
 
-    // private Class<? extends ActionValueObjectDto> getClazz(final
-    // ActionValueObject action) throws FunctionalException {
-    // final Class<? extends ActionValueObjectDto> clazz = );
-    //
-    // if (clazz == null) {
-    // throw new
-    // FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-    // ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-    // "No Action Value Object DTO class for Action Value Object class: "
-    // + action.getClass().getName()));
-    // }
-    // return clazz;
-    // }
-
-    // private ConfigurableMapper getMapper(final ActionValueObject action)
-    // throws FunctionalException {
-    // final ConfigurableMapper mapper =
-    // classToMapperMap.get(action.getClass());
-    //
-    // if (mapper == null) {
-    // throw new
-    // FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
-    // ComponentType.DOMAIN_SMART_METERING, new RuntimeException(
-    // "No mapper for Action Value Object class: " +
-    // action.getClass().getName()));
-    // }
-    // return mapper;
-    // }
 }

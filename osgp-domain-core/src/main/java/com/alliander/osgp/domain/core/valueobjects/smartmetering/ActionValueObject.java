@@ -7,9 +7,11 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import java.io.Serializable;
+
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public interface ActionValueObject {
+public interface ActionValueObject extends Serializable {
     /**
      * Validates the ActionValueObject.
      *
