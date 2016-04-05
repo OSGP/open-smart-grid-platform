@@ -286,7 +286,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #
@@ -449,27 +449,40 @@ public class Iec61850DeviceService implements DeviceService {
 
                 final String nodeName = LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(index);
 
+                // Check if CfSt.enbOper [CF] is set to true. If it is not
+                // set to true, the relay can not be operated.
+                final String masterControlObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE + nodeName
+                        + LogicalNodeAttributeDefinitons.PROPERTY_MASTER_CONTROL;
+                LOGGER.info("masterControlObjectReference: {}", masterControlObjectReference);
+
+                final FcModelNode cfSt = Iec61850DeviceService.this.getNode(serverModel, masterControlObjectReference,
+                        Fc.CF);
+                final BdaBoolean enbOper = (BdaBoolean) Iec61850DeviceService.this.getChildOfNodeWithConstraint(cfSt,
+                        LogicalNodeAttributeDefinitons.PROPERTY_MASTER_CONTROL_ATTRIBUTE_ENABLE_OPERATION, Fc.CF);
+                if (enbOper.getValue()) {
+                    LOGGER.info("masterControlValue is true, switching of relay is enabled");
+                } else {
+                    LOGGER.info("masterControlValue is false, switching of relay is disabled");
+                    // Set the value to true.
+                    enbOper.setValue(true);
+                    clientAssociation.setDataValues(enbOper);
+                    LOGGER.info("set masterControlValue to true to enable switching");
+                }
+
+                // Switch the relay using Pos.Oper.ctlVal [CO].
                 final String relayPositionOperationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                         + nodeName + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
-                LOGGER.info("xswc1PositionOperationObjectReference: {}", relayPositionOperationObjectReference);
-
-                // Check if the Pos.ctlModel [CF] is enabled. If it is not
-                // enabled, the relay can not be operated.
-                final FcModelNode posCtlModel = (FcModelNode) serverModel.findModelNode(
-                        relayPositionOperationObjectReference, Fc.CF);
-                final BdaInt8 masterControlValue = (BdaInt8) posCtlModel.getChild("ctlModel");
-                if (masterControlValue.getValue() == 0) {
-                    LOGGER.info("masterControlValue is false");
-                    // Set the value to true.
-                    masterControlValue.setValue((byte) 1);
-                    clientAssociation.setDataValues(posCtlModel);
-                    LOGGER.info("set masterControlValue to 1 to enable switching");
-                }
+                LOGGER.info("relayPositionOperationObjectReference: {}", relayPositionOperationObjectReference);
 
                 final FcModelNode switchPositionOperation = (FcModelNode) serverModel.findModelNode(
                         relayPositionOperationObjectReference, Fc.CO);
-                final ModelNode operate = switchPositionOperation.getChild("Oper");
-                final BdaBoolean position = (BdaBoolean) operate.getChild("ctlVal");
+                LOGGER.info("switchPositionOperation: {}", switchPositionOperation);
+                final ModelNode operate = switchPositionOperation
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_ATTRIBUTE_OPER);
+                LOGGER.info("operate: {}", operate);
+                final BdaBoolean position = (BdaBoolean) operate
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_ATTRIBUTE_OPER_CONTROL_VALUE);
+                LOGGER.info("position: {}", position);
 
                 LOGGER.info(String.format("Switching relay %d %s", index, on ? "on" : "off"));
 
@@ -941,7 +954,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * Returns an FcModelNode, or throws an exception if the returned node is
-     * null
+     * null.
      */
     private FcModelNode getNode(final ServerModel serverModel, final String objectReference,
             final Fc functionalConstraint) {
@@ -957,8 +970,23 @@ public class Iec61850DeviceService implements DeviceService {
     }
 
     /*
-     * Returnsthe child of a node, or throws an exception if the returned child
-     * is null
+     * Returns the child of a node, or throws an exception if the returned child
+     * is null.
+     */
+    private ModelNode getChildOfNode(final FcModelNode modelNode, final String attribute) {
+
+        final ModelNode output = modelNode.getChild(attribute);
+        if (output == null) {
+            LOGGER.info("{} is null", attribute);
+            // TODO exceptionHandling
+        }
+
+        return output;
+    }
+
+    /*
+     * Returns the child of a node, using a given {@link Fc} or throws an
+     * exception if the returned child is null.
      */
     private ModelNode getChildOfNodeWithConstraint(final FcModelNode modelNode, final String attribute,
             final Fc functionalConstraint) {
