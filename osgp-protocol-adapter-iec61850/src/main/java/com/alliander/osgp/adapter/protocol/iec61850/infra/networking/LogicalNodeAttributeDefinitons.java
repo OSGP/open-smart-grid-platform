@@ -19,10 +19,41 @@ public final class LogicalNodeAttributeDefinitons {
      */
     public static final String LOGICAL_DEVICE = "SWDeviceGenericIO";
 
+    /*
+     * CSLC, configuration Logical Node.
+     */
+    public static final String LOGICAL_NODE_CSLC = "/CSLC";
+
+    /*
+     * XSWC, prefix of the relays' Logical Node.
+     */
+    private static final String LOGICAL_NODE_RELAY_PREFIX = "/XSWC";
+
     /**
-     * Property of Logical Node for relays, Pos.
+     * Property of XSWC Node, CfSt, configuration state of a relay which
+     * determines if the relay can be operated.
+     */
+    public static final String PROPERTY_MASTER_CONTROL = ".CfSt";
+
+    /**
+     * Attribute of Property CfSt, enbOper, enables the operation of a relay.
+     */
+    public static final String PROPERTY_MASTER_CONTROL_ATTRIBUTE_ENABLE_OPERATION = "enbOper";
+
+    /**
+     * Property of XSWC Node, Pos.
      */
     public static final String PROPERTY_POSITION = ".Pos";
+
+    /**
+     * Attribute of Property Pos, Oper, operates a relay.
+     */
+    public static final String PROPERTY_POSITION_ATTRIBUTE_OPER = "Oper";
+
+    /**
+     * Attribute of Attribute Oper, ctlVal, operates a relay.
+     */
+    public static final String PROPERTY_POSITION_ATTRIBUTE_OPER_CONTROL_VALUE = "ctlVal";
 
     /**
      * Property of CSLC Node, clock
@@ -30,7 +61,7 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_CLOCK = ".Clock";
 
     /**
-     * Property of Logical Node, for relays, SwitchType
+     * Property of XSWC Node, SwitchType
      */
     public static final String PROPERTY_SWITCH_TYPE = ".SwType";
 
@@ -103,7 +134,8 @@ public final class LogicalNodeAttributeDefinitons {
     /**
      * Attribute of Property Pos, used to switch the relay on or off.
      */
-    public static final String PROPERTY_POSITION_ATTRIBUTE_CONTROL = ".Oper.ctlVal";
+    // public static final String PROPERTY_POSITION_ATTRIBUTE_CONTROL =
+    // ".Oper.ctlVal";
 
     /**
      * Property of CSLC Node, reboot.
@@ -119,16 +151,6 @@ public final class LogicalNodeAttributeDefinitons {
      * Attribute of Property Oper, used to reboot the device.
      */
     public static final String PROPERTY_RB_OPER_ATTRIBUTE_CONTROL = "ctlVal";
-
-    /*
-     * CSLC, configuration Logical Node.
-     */
-    public static final String LOGICAL_NODE_CSLC = "/CSLC";
-
-    /*
-     * XSWC, prefix of the relays' Logical Node.
-     */
-    private static final String LOGICAL_NODE_RELAY_PREFIX = "/XSWC";
 
     private LogicalNodeAttributeDefinitons() {
         // Private constructor to prevent instantiation of this class.

@@ -447,27 +447,36 @@ public class Iec61850DeviceService implements DeviceService {
 
                 final String nodeName = LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(index);
 
+                // Check if CfSt.enbOper [CF] is set to true. If it is not
+                // set to true, the relay can not be operated.
+                final String masterControlObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE + nodeName
+                        + LogicalNodeAttributeDefinitons.PROPERTY_MASTER_CONTROL;
+                LOGGER.info("masterControlObjectReference: {}", masterControlObjectReference);
+
+                final FcModelNode cfSt = (FcModelNode) serverModel.findModelNode(masterControlObjectReference, Fc.CF);
+                final BdaBoolean enbOper = (BdaBoolean) cfSt
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_MASTER_CONTROL_ATTRIBUTE_ENABLE_OPERATION);
+                if (enbOper.getValue()) {
+                    LOGGER.info("masterControlValue is true, switching of relay is enabled");
+                } else {
+                    LOGGER.info("masterControlValue is false, switching of relay is disabled");
+                    // Set the value to true.
+                    enbOper.setValue(true);
+                    clientAssociation.setDataValues(enbOper);
+                    LOGGER.info("set masterControlValue to true to enable switching");
+                }
+
+                // Switch the relay using Pos.Oper.ctlVal [CO].
                 final String relayPositionOperationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                         + nodeName + LogicalNodeAttributeDefinitons.PROPERTY_POSITION;
-                LOGGER.info("xswc1PositionOperationObjectReference: {}", relayPositionOperationObjectReference);
-
-                // Check if the Pos.ctlModel [CF] is enabled. If it is not
-                // enabled, the relay can not be operated.
-                final FcModelNode posCtlModel = (FcModelNode) serverModel.findModelNode(
-                        relayPositionOperationObjectReference, Fc.CF);
-                final BdaInt8 masterControlValue = (BdaInt8) posCtlModel.getChild("ctlModel");
-                if (masterControlValue.getValue() == 0) {
-                    LOGGER.info("masterControlValue is false");
-                    // Set the value to true.
-                    masterControlValue.setValue((byte) 1);
-                    clientAssociation.setDataValues(posCtlModel);
-                    LOGGER.info("set masterControlValue to 1 to enable switching");
-                }
+                LOGGER.info("relayPositionOperationObjectReference: {}", relayPositionOperationObjectReference);
 
                 final FcModelNode switchPositionOperation = (FcModelNode) serverModel.findModelNode(
                         relayPositionOperationObjectReference, Fc.CO);
-                final ModelNode operate = switchPositionOperation.getChild("Oper");
-                final BdaBoolean position = (BdaBoolean) operate.getChild("ctlVal");
+                final ModelNode operate = switchPositionOperation
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_ATTRIBUTE_OPER);
+                final BdaBoolean position = (BdaBoolean) operate
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_ATTRIBUTE_OPER_CONTROL_VALUE);
 
                 LOGGER.info(String.format("Switching relay %d %s", index, on ? "on" : "off"));
 
