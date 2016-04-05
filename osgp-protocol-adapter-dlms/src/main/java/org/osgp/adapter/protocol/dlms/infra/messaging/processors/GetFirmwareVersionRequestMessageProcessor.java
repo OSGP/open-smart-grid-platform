@@ -34,6 +34,6 @@ public class GetFirmwareVersionRequestMessageProcessor extends DeviceRequestMess
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        return this.configurationService.requestFirmwareVersion(conn, device);
+        return (Serializable) this.configurationService.requestFirmwareVersion(conn, device);
     }
 }
