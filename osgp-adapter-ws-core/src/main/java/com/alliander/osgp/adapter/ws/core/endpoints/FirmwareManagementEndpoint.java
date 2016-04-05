@@ -32,6 +32,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.ChangeManufacturerResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FindAllManufacturersResponse;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
@@ -48,6 +49,7 @@ import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwa
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.UpdateFirmwareResponse;
 import com.alliander.osgp.domain.core.entities.Manufacturer;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -191,7 +193,9 @@ public class FirmwareManagementEndpoint {
             if (message != null) {
                 response.setResult(OsgpResultType.fromValue(message.getResult().getValue()));
                 if (message.getDataObject() != null) {
-                    response.setFirmwareVersion((String) message.getDataObject());
+                    final List<FirmwareVersion> target = response.getFirmwareVersion();
+                    target.addAll(this.firmwareManagementMapper.mapAsList(
+                            (List<FirmwareVersionDto>) message.getDataObject(), FirmwareVersion.class));
                 } else {
                     LOGGER.info("Get Firmware Version firmware is null");
                 }
