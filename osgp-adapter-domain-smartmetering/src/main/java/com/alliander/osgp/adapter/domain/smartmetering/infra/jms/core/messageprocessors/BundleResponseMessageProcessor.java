@@ -28,7 +28,7 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
     private BundleService bundleService;
 
     public BundleResponseMessageProcessor() {
-        super(DeviceFunction.BUNDLE);
+        super(DeviceFunction.HANDLE_BUNDLED_ACTIONS);
     }
 
     @Override

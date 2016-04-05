@@ -71,7 +71,7 @@ public class BundleService {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
-        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.BUNDLE);
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.HANDLE_BUNDLED_ACTIONS);
 
         LOGGER.info("findEvents called with organisation {}", organisationIdentification);
 
@@ -83,7 +83,7 @@ public class BundleService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.BUNDLE.toString(),
+                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.HANDLE_BUNDLED_ACTIONS.toString(),
                 messagePriority);
 
         // @formatter:off

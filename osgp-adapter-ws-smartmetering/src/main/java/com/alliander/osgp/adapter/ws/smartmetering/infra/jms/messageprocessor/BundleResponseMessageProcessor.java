@@ -18,6 +18,6 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 public class BundleResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public BundleResponseMessageProcessor() {
-        super(DeviceFunction.BUNDLE);
+        super(DeviceFunction.HANDLE_BUNDLED_ACTIONS);
     }
 }

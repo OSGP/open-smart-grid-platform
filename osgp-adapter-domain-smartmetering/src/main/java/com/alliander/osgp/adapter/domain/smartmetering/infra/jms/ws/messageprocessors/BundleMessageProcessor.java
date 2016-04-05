@@ -26,7 +26,7 @@ public class BundleMessageProcessor extends WebServiceRequestMessageProcessor {
     private BundleService bundleService;
 
     protected BundleMessageProcessor() {
-        super(DeviceFunction.BUNDLE);
+        super(DeviceFunction.HANDLE_BUNDLED_ACTIONS);
     }
 
     @Override
