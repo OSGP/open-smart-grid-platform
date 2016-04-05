@@ -35,6 +35,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -69,6 +70,7 @@ public class ActionMapperResponseService {
     @PostConstruct
     private void postConstruct() {
         CLASS_TO_MAPPER_MAP.put(MeterReads.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(MeterReadsGas.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(EventMessageDataContainer.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ActionValueResponseObject.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(AlarmRegister.class, this.monitoringMapper);
@@ -79,6 +81,8 @@ public class ActionMapperResponseService {
      */
     private static Map<Class<? extends ActionValueResponseObject>, Class<?>> CLASS_MAP = new HashMap<>();
     static {
+        CLASS_MAP.put(MeterReadsGas.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponseData.class);
         CLASS_MAP.put(MeterReads.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponseData.class);
         CLASS_MAP.put(EventMessageDataContainer.class,

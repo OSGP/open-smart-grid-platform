@@ -77,7 +77,7 @@
 					<xsd:element name="ActionValueResponseData" type="common:ActionValueResponseData" maxOccurs="unbounded" />
 					<xsd:element name="AlarmRegister" type="smmon:AlarmRegister" maxOccurs="unbounded" />
 					<xsd:element name="ActualMeterReadsResponseData" type="smmon:ActualMeterReadsResponseData" maxOccurs="unbounded" />
-				
+					<xsd:element name="ActualMeterReadsGasResponseData" type="smmon:ActualMeterReadsGasResponseData" maxOccurs="unbounded" />
 
 			</xsd:choice>
 		</xsd:sequence>

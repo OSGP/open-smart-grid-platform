@@ -197,6 +197,18 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:complexType name="ActualMeterReadsGasResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="LogTime" type="xsd:dateTime" />
+					<xsd:element name="Consumption" type="tns:MeterValue" />
+					<xsd:element name="CaptureTime" type="xsd:dateTime" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<xsd:element name="ReadAlarmRegisterRequest">
 		<xsd:complexType>
 			<xsd:sequence>
