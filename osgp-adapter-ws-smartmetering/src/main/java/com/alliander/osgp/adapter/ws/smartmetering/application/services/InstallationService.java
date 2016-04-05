@@ -56,7 +56,7 @@ public class InstallationService {
                 messagePriority);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -64,34 +64,6 @@ public class InstallationService {
     }
 
     public MeterResponseData dequeueAddSmartMeterResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
-    }
-
-    public String enqueueDeactivateSmartMeterRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority) {
-
-        // TODO: bypassing authorization logic for now, needs to be fixed.
-
-        LOGGER.debug("enqueueDeactivateSmartMeterRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.DEACTIVATE_METER.toString(), messagePriority);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
-
-    public MeterResponseData dequeueDeactivateSmartMeterResponse(final String correlationUid)
             throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
     }

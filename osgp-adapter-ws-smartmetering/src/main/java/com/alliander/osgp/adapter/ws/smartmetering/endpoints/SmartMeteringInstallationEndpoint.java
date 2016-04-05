@@ -23,10 +23,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDevice
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeactivateDeviceAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeactivateDeviceAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeactivateDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.DeactivateDeviceResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.InstallationService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
@@ -62,7 +58,7 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
             @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority)
-                    throws OsgpException {
+            throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
@@ -108,67 +104,6 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
             response = new AddDeviceResponse();
             final MeterResponseData meterResponseData = this.installationService.dequeueAddSmartMeterResponse(request
                     .getCorrelationUid());
-
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "DeactivateDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public DeactivateDeviceAsyncResponse deactivateDevice(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final DeactivateDeviceRequest request, @MessagePriority final String messagePriority)
-                    throws OsgpException {
-
-        LOGGER.info("Incoming DeactivateDeviceRequest for meter: {}.", request.getDeviceIdentification());
-
-        DeactivateDeviceAsyncResponse response = null;
-        try {
-            response = new DeactivateDeviceAsyncResponse();
-
-            final String correlationUid = this.installationService.enqueueDeactivateSmartMeterRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
-
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-
-        } catch (final MethodConstraintViolationException e) {
-
-            LOGGER.error("Exception: {} while deactivating device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
-
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-
-        } catch (final Exception e) {
-
-            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getDeviceIdentification(), organisationIdentification }, e);
-
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "DeactivateDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
-    @ResponsePayload
-    public DeactivateDeviceResponse getSetConfigurationObjectResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final DeactivateDeviceAsyncRequest request) throws OsgpException {
-
-        DeactivateDeviceResponse response = null;
-        try {
-            response = new DeactivateDeviceResponse();
-            final MeterResponseData meterResponseData = this.installationService
-                    .dequeueDeactivateSmartMeterResponse(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
