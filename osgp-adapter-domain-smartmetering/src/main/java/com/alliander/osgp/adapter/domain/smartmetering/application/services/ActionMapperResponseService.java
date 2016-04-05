@@ -78,7 +78,7 @@ public class ActionMapperResponseService {
          */
         classToMapperMap.put(EventMessageDataContainerDto.class, this.managementMapper);
         classToMapperMap.put(MeterReadsDto.class, this.monitoringMapper);
-        classToMapperMap.put(MeterReadsGasDto.class, this.commonMapper);
+        classToMapperMap.put(MeterReadsGasDto.class, this.monitoringMapper);
         classToMapperMap.put(ActionValueObjectResponseDto.class, this.commonMapper);
         classToMapperMap.put(AlarmRegisterDto.class, this.commonMapper);
         classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.commonMapper);
@@ -115,7 +115,7 @@ public class ActionMapperResponseService {
 
     public BundleResponseMessageDataContainer mapAllActions(
             final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         final List<ActionValueResponseObject> actionResponseList = new ArrayList<ActionValueResponseObject>();
 
