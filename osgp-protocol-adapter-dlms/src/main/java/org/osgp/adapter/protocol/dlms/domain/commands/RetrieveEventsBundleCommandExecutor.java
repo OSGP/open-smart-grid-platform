@@ -18,8 +18,6 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component()
 public class RetrieveEventsBundleCommandExecutor implements
@@ -33,17 +31,10 @@ public class RetrieveEventsBundleCommandExecutor implements
 
     @Override
     public EventMessageDataContainerDto execute(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsQueryDto findEventsQuery) {
+            final FindEventsQueryDto findEventsQuery) throws ProtocolAdapterException {
 
         List<EventDto> eventDtoList;
-        try {
-            eventDtoList = this.retrieveEventsCommandExecutor.execute(conn, device, findEventsQuery);
-        } catch (final ProtocolAdapterException e) {
-            final EventMessageDataContainerDto containerDto = new EventMessageDataContainerDto(null);
-            containerDto.setException(new OsgpException(ComponentType.PROTOCOL_DLMS,
-                    "Error while retrieving events in bundle request", e));
-            return containerDto;
-        }
+        eventDtoList = this.retrieveEventsCommandExecutor.execute(conn, device, findEventsQuery);
 
         return new EventMessageDataContainerDto(eventDtoList);
     }
