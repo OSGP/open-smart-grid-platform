@@ -18,6 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Manag
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
@@ -44,6 +45,9 @@ public class ManagementService {
 
     @Autowired
     private DomainHelperService domainHelperService;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @Autowired
     private ManagementMapper managementMapper;
@@ -84,6 +88,25 @@ public class ManagementService {
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 responseMessageResultType, osgpException, eventMessageDataContainer,
                 deviceMessageMetadata.getMessagePriority());
+        this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
+    }
+
+    public void deactivateDevice(final DeviceMessageMetadata deviceMessageMetadata) throws FunctionalException {
+        LOGGER.info("deactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        // TODO: bypassing authorization, this should be fixed.
+
+        final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
+                .getDeviceIdentification());
+
+        smartMeter.setActivated(false);
+
+        this.deviceRepository.save(smartMeter);
+
+        final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                ResponseMessageResultType.OK, null, deviceMessageMetadata.getMessagePriority());
         this.webServiceResponseMessageSender.send(responseMessage, deviceMessageMetadata.getMessageType());
     }
 }
