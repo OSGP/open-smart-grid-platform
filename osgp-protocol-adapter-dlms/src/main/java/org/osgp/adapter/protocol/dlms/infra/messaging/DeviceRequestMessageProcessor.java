@@ -26,7 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 import com.alliander.osgp.shared.infra.jms.MessageProcessorMap;
@@ -119,10 +121,14 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-            device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            conn = this.dlmsConnectionFactory.getConnection(device);
-
-            final Serializable response = this.handleMessage(conn, device, message.getObject());
+            final Serializable response;
+            if (this.mustConnect()) {
+                device = this.domainHelperService.findDlmsDevice(messageMetadata);
+                conn = this.dlmsConnectionFactory.getConnection(device);
+                response = this.handleMessage(conn, device, message.getObject());
+            } else {
+                response = this.handleMessage(message.getObject());
+            }
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
@@ -165,8 +171,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @throws ProtocolAdapterException
      * @throws SessionProviderException
      */
-    protected abstract Serializable handleMessage(ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException;
+    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "This method should be overwritten.");
+    }
+
+    protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
+    ProtocolAdapterException, SessionProviderException {
+        throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "This method should be overwritten.");
+    }
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
             final ResponseMessageResultType result, final OsgpException osgpException,
@@ -176,16 +189,16 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         // @formatter:off
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .domain(dlmsDeviceMessageMetadata.getDomain())
-        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion())
-        .result(result)
-        .osgpException(osgpException)
-        .dataObject(responseObject)
-        .retryCount(dlmsDeviceMessageMetadata.getRetryCount())
-        .build();
+        .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
+        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
+        .osgpException(osgpException).dataObject(responseObject)
+        .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).build();
         // @formatter:on
 
         responseMessageSender.send(responseMessage);
+    }
+
+    protected boolean mustConnect() {
+        return true;
     }
 }
