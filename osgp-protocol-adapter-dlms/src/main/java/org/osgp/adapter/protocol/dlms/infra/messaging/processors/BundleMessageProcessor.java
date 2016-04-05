@@ -33,7 +33,7 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
     private BundleService bundleService;
 
     public BundleMessageProcessor() {
-        super(DeviceRequestMessageType.BUNDLE);
+        super(DeviceRequestMessageType.HANDLE_BUNDLED_ACTIONS);
     }
 
     @Override

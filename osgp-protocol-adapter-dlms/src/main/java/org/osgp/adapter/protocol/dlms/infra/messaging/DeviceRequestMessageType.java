@@ -47,5 +47,5 @@ public enum DeviceRequestMessageType {
     SET_PUSH_SETUP_ALARM,
     SET_PUSH_SETUP_SMS,
     GET_CONFIGURATION_OBJECTS,
-    BUNDLE
+    HANDLE_BUNDLED_ACTIONS
 }
