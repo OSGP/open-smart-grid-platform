@@ -75,6 +75,8 @@
 			<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="FindEventsResponseData" type="smman:FindEventsResponseData" maxOccurs="unbounded" />
 					<xsd:element name="ActionValueResponseData" type="common:ActionValueResponseData" maxOccurs="unbounded" />
+					<xsd:element name="AlarmRegister" type="smmon:AlarmRegister" maxOccurs="unbounded" />
+					<xsd:element name="ActualMeterReadsResponseData" type="smmon:ActualMeterReadsResponseData" maxOccurs="unbounded" />
 				
 
 			</xsd:choice>

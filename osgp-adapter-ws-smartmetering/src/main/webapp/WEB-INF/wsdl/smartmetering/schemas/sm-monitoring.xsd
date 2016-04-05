@@ -257,13 +257,15 @@
 		</xsd:complexType>
 	</xsd:element>
 
-
 	<!-- DATATYPES -->
-	
 	<xsd:complexType name="AlarmRegister">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="AlarmTypes" type="common:AlarmType" />
-		</xsd:sequence>
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="AlarmTypes" type="common:AlarmType" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<!-- This is a special type so that PeriodicReadsRequestQuery is supported in bundle requests -->
