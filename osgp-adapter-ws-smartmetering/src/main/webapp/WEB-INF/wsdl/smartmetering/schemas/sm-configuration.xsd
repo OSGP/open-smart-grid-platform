@@ -372,6 +372,17 @@
 	</xsd:complexType>
 	
 	<!-- Administrative Status Types -->
+	<xsd:complexType name="AdministrativeStatusResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Administrative Status Types -->
 	<xsd:simpleType name="AdministrativeStatusType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="UNDEFINED" />

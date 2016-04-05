@@ -27,12 +27,14 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Insta
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueResponseObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
@@ -91,6 +93,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(MeterReadsGasDto.class, this.monitoringMapper);
         classToMapperMap.put(ActionValueObjectResponseDto.class, this.commonMapper);
         classToMapperMap.put(AlarmRegisterDto.class, this.monitoringMapper);
+        classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.configurationMapper);
     }
 
     /**
@@ -118,6 +121,7 @@ public class ActionMapperResponseService {
         classMap.put(MeterReadsGasDto.class, MeterReadsGas.class);
         classMap.put(ActionValueObjectResponseDto.class, ActionValueResponseObject.class);
         classMap.put(AlarmRegisterDto.class, AlarmRegister.class);
+        classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
 
     }
 

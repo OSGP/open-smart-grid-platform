@@ -31,6 +31,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Installat
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueResponseObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
@@ -74,6 +75,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(EventMessageDataContainer.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ActionValueResponseObject.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(AlarmRegister.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeResponse.class, this.configurationMapper);
     }
 
     /**
@@ -91,6 +93,9 @@ public class ActionMapperResponseService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.common.ActionValueResponseData.class);
         CLASS_MAP.put(AlarmRegister.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
+        CLASS_MAP
+                .put(AdministrativeStatusTypeResponse.class,
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
 
     }
 
