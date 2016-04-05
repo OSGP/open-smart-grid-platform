@@ -32,9 +32,9 @@ public class SetSpecialDaysBundleCommandExecutor implements
             final AccessResultCode resultCode = this.setSpecialDaysCommandExecutor.execute(conn, device,
                     specialDaysRequestDataDto.getSpecialDays());
             if (AccessResultCode.SUCCESS.equals(resultCode)) {
-                return new ActionValueObjectResponseDto(null, "Set special days was succesfull");
+                return new ActionValueObjectResponseDto("Set special days was succesfull");
             } else {
-                return new ActionValueObjectResponseDto(null, "Set special days was not succesfull. Result code: "
+                return new ActionValueObjectResponseDto("Set special days was not succesfull. Result code: "
                         + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
