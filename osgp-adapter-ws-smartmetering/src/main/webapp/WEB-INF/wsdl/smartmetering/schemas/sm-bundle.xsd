@@ -79,6 +79,8 @@
 					<xsd:element name="ActualMeterReadsResponseData" type="smmon:ActualMeterReadsResponseData" maxOccurs="unbounded" />
 					<xsd:element name="ActualMeterReadsGasResponseData" type="smmon:ActualMeterReadsGasResponseData" maxOccurs="unbounded" />
 					<xsd:element name="AdministrativeStatusResponseData" type="smconf:AdministrativeStatusResponseData" maxOccurs="unbounded" />
+					<xsd:element name="PeriodicMeterReadsResponseData" type="smmon:PeriodicMeterReadsResponseData" maxOccurs="unbounded" />
+					
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>

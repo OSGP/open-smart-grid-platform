@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
@@ -74,6 +75,9 @@ public class ActionMapperService {
     private ManagementMapper managementMapper;
 
     @Autowired
+    private MonitoringMapper monitoringMapper;
+
+    @Autowired
     private CommonMapper commonMapper;
 
     @Autowired
@@ -91,7 +95,7 @@ public class ActionMapperService {
         // CLASS_TO_MAPPER_MAP.put(ActualMeterReadsGasData.class, this.monitoringMapper);
         // CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsQuery.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(SpecialDaysRequestData.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(FindEventsQuery.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ActualMeterReadsData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusData.class, this.commonMapper);
