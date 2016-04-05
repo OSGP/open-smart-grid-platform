@@ -31,6 +31,9 @@ import com.alliander.osgp.core.db.api.iec61850.application.config.Iec61850OsgpCo
 public class ApplicationContext {
 
     private static final String PROPERTY_NAME_MAX_RETRY_COUNT = "retrycount.max";
+    private static final String PROPERTY_NAME_SELFTEST_TIMEOUT = "selftest.timeout";
+
+    private static final String PROPERTY_NAME_CONNECTION_RESPONSE_TIMEOUT = "connection.reponse.timeout";
 
     @Resource
     private Environment environment;
@@ -41,6 +44,24 @@ public class ApplicationContext {
     @Bean
     public int maxRetryCount() {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_MAX_RETRY_COUNT));
+    }
+
+    /**
+     * The amount of time, in milliseconds, the library will wait for a
+     * response.
+     */
+    @Bean
+    public int responseTimeout() {
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_CONNECTION_RESPONSE_TIMEOUT));
+    }
+
+    /**
+     * The amount of time, in milliseconds, between the switching of the relays
+     * and the status check in the selftest
+     */
+    @Bean
+    public int selftestTimeout() {
+        return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_SELFTEST_TIMEOUT));
     }
 
 }

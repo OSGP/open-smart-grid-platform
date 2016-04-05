@@ -10,6 +10,8 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt16;
@@ -76,8 +78,8 @@ public class Iec61850DeviceService implements DeviceService {
     @Autowired
     private Iec61850Mapper mapper;
 
-    // 30 seconds
-    private static final int SELF_TEST_TIMEOUT = 30_000;
+    @Resource
+    private int selftestTimeout;
 
     /**
      * @see DeviceService#getStatus(GetStatusDeviceRequest,
@@ -365,8 +367,8 @@ public class Iec61850DeviceService implements DeviceService {
 
             // Sleep and wait
             try {
-                LOGGER.info("Waiting {} seconds before getting the device status", SELF_TEST_TIMEOUT / 1000);
-                Thread.sleep(SELF_TEST_TIMEOUT);
+                LOGGER.info("Waiting {} seconds before getting the device status", this.selftestTimeout / 1000);
+                Thread.sleep(this.selftestTimeout);
             } catch (final InterruptedException e) {
                 LOGGER.error("An error occured during the device selftest timeout.", e);
                 throw new TechnicalException(ComponentType.PROTOCOL_IEC61850,
