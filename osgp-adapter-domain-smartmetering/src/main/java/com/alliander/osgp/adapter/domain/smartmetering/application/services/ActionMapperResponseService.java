@@ -20,12 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.CommonMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueResponseObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
@@ -50,18 +46,6 @@ public class ActionMapperResponseService {
 
     @Autowired
     private ManagementMapper managementMapper;
-
-    @Autowired
-    private AdhocMapper adhocMapper;
-
-    @Autowired
-    private ConfigurationMapper configurationMapper;
-
-    @Autowired
-    private InstallationMapper installationMapper;
-
-    @Autowired
-    private MonitoringMapper monitoringMapper;
 
     @Autowired
     private CommonMapper commonMapper;
@@ -89,11 +73,11 @@ public class ActionMapperResponseService {
 
          */
         classToMapperMap.put(EventMessageDataContainerDto.class, this.managementMapper);
-        classToMapperMap.put(MeterReadsDto.class, this.monitoringMapper);
-        classToMapperMap.put(MeterReadsGasDto.class, this.monitoringMapper);
+        classToMapperMap.put(MeterReadsDto.class, this.commonMapper);
+        classToMapperMap.put(MeterReadsGasDto.class, this.commonMapper);
         classToMapperMap.put(ActionValueObjectResponseDto.class, this.commonMapper);
-        classToMapperMap.put(AlarmRegisterDto.class, this.monitoringMapper);
-        classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.configurationMapper);
+        classToMapperMap.put(AlarmRegisterDto.class, this.commonMapper);
+        classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.commonMapper);
     }
 
     /**
@@ -127,7 +111,7 @@ public class ActionMapperResponseService {
 
     public BundleResponseMessageDataContainer mapAllActions(
             final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final List<ActionValueResponseObject> actionResponseList = new ArrayList<ActionValueResponseObject>();
 

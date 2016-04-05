@@ -28,6 +28,12 @@ public class PeriodicMeterReadsQuery implements Serializable, ActionValueObject 
     private final String deviceIdentification;
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
+            final boolean mbusDevice) {
+     this(periodType, beginDate, endDate, mbusDevice, "");
+    }
+
+    
+    public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
             final boolean mbusDevice, final String deviceIdentification) {
         this.periodType = periodType;
         this.beginDate = new Date(beginDate.getTime());

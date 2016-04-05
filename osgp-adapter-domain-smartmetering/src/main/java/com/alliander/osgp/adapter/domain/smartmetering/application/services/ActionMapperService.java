@@ -20,11 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.AdhocMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.InstallationMapper;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
@@ -77,16 +74,7 @@ public class ActionMapperService {
     private ManagementMapper managementMapper;
 
     @Autowired
-    private AdhocMapper adhocMapper;
-
-    @Autowired
-    private ConfigurationMapper configurationMapper;
-
-    @Autowired
-    private InstallationMapper installationMapper;
-
-    @Autowired
-    private MonitoringMapper monitoringMapper;
+    private CommonMapper commonMapper;
 
     @Autowired
     private DomainHelperService domainHelperService;
@@ -102,22 +90,22 @@ public class ActionMapperService {
         // Omitted because it needs custom conversion
         // CLASS_TO_MAPPER_MAP.put(ActualMeterReadsGasData.class, this.monitoringMapper);
         // CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsQuery.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(SpecialDaysRequestData.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterData.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(SpecialDaysRequestData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(FindEventsQuery.class, this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(ActualMeterReadsData.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusData.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(PushSetupAlarm.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(ActualMeterReadsData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(PushSetupAlarm.class, this.commonMapper);
 
         // ok to here
-        CLASS_TO_MAPPER_MAP.put(SmsDetails.class, this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(AdministrativeStatusType.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequest.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(PushSetupSms.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(ActivityCalendar.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(AlarmNotifications.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(KeySet.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(SmartMeteringDevice.class, this.installationMapper);
+        //        CLASS_TO_MAPPER_MAP.put(SmsDetails.class, this.adhocMapper);
+        CLASS_TO_MAPPER_MAP.put(AdministrativeStatusType.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequest.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(PushSetupSms.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(ActivityCalendar.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(AlarmNotifications.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(KeySet.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(SmartMeteringDevice.class, this.commonMapper);
     }
 
     /**
@@ -245,7 +233,7 @@ public class ActionMapperService {
                             "Meter for gas reads should have a channel configured."));
 
         } else {
-            return this.monitoringMapper.map(periodicMeterReadsQuery, PeriodicMeterReadsQueryDto.class);
+            return this.commonMapper.map(periodicMeterReadsQuery, PeriodicMeterReadsQueryDto.class);
         }
     }
 
