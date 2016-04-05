@@ -10,7 +10,7 @@
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -19,15 +19,15 @@ public class SpecialDaysRequestData implements Serializable, ActionValueObject {
 
     private static final long serialVersionUID = -5161574052268470981L;
 
-    private final List<SpecialDay> specialDays;
+    private List<SpecialDay> specialDays;
 
     public SpecialDaysRequestData(final List<SpecialDay> specialDays) {
         super();
-        this.specialDays = Collections.unmodifiableList(specialDays);
+        this.specialDays = new ArrayList<>(specialDays);
     }
 
     public List<SpecialDay> getSpecialDays() {
-        return this.specialDays;
+        return new ArrayList<>(this.specialDays);
     }
 
     @Override

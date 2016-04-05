@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.domain.core.application.services;
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.validation.Identification;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -68,9 +72,9 @@ public class FirmwareManagementService extends AbstractService {
                 deviceIdentification, null), messageType, device.getIpAddress());
     }
 
-    public void handleGetFirmwareVersionResponse(final String firmwareVersion, final String deviceIdentification,
-            final String organisationIdentification, final String correlationUid, final String messageType,
-            final ResponseMessageResultType deviceResult, final OsgpException exception) {
+    public void handleGetFirmwareVersionResponse(final List<FirmwareVersionDto> firmwareVersions,
+            final String deviceIdentification, final String organisationIdentification, final String correlationUid,
+            final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
         LOGGER.info("handleResponse for MessageType: {}", messageType);
 
@@ -90,7 +94,7 @@ public class FirmwareManagementService extends AbstractService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
-                deviceIdentification, result, osgpException, firmwareVersion));
+                deviceIdentification, result, osgpException, (Serializable) firmwareVersions));
     }
 
     // === SWITCH TO OTHER FIRMWARE VERSION ===

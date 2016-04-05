@@ -7,6 +7,10 @@
  */
 package com.alliander.osgp.adapter.domain.smartmetering.application.config;
 
+import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -22,4 +26,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @PropertySource("file:${osp/osgpAdapterDomainSmartMetering/config}")
 public class ApplicationContext {
 
+    @Bean
+    public MapperFactory defaultMapperFactory() {
+        return new DefaultMapperFactory.Builder().build();
+    }
 }

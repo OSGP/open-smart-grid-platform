@@ -9,7 +9,6 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -40,7 +39,7 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
     }
 
     public List<SeasonProfile> getSeasonProfileList() {
-        return Collections.unmodifiableList(this.seasonProfileList);
+        return new ArrayList<>(this.seasonProfileList);
     }
 
     @Override

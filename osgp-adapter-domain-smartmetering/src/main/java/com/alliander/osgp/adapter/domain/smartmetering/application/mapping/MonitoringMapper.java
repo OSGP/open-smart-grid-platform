@@ -17,17 +17,12 @@ public class MonitoringMapper extends ConfigurableMapper {
 
     @Override
     public final void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsGasConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsGasResponseConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsGasConverter());
+
+        // This converter must be used: a multiplier might be needed when
+        // mapping between DlmsMeterValue and OsgpMeterValue. Thus mapping must
+        // never be attempted without using this converter!
         mapperFactory.getConverterFactory().registerConverter(new DlmsMeterValueConverter());
 
-        mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
     }
 
 }
