@@ -74,7 +74,7 @@ public class AdhocService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), synchronizeTimeRequestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleSynchronizeTimeResponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -109,7 +109,7 @@ public class AdhocService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), smsDetailsDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
 
     }
 
@@ -148,7 +148,7 @@ public class AdhocService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), smsDetailsDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
 
     }
 
@@ -188,7 +188,7 @@ public class AdhocService {
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
-                deviceMessageMetadata.getMessagePriority());
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
 
     }
 
