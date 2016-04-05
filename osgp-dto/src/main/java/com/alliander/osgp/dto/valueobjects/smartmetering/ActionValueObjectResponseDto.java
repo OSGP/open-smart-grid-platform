@@ -12,8 +12,14 @@ public class ActionValueObjectResponseDto implements Serializable {
         // default constructor
     }
 
+    public ActionValueObjectResponseDto(final String resultString) {
+        this(null, resultString);
+    }
+
     public ActionValueObjectResponseDto(final Exception exception, final String resultString) {
-        this.exception = exception.toString();
+        if (exception != null) {
+            this.exception = exception.toString();
+        }
         this.resultString = resultString;
     }
 
