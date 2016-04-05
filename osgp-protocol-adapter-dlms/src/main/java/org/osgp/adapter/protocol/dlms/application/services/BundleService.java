@@ -37,6 +37,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGas
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
@@ -79,7 +80,7 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(SpecialDaysRequestDataDto.class, this.setSpecialDaysBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ReadAlarmRegisterRequestDto.class, this.readAlarmRegisterCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GetAdministrativeStatusDataDto.class, this.getAdministrativeStatusBundleCommandExecutor);
-
+        CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsQueryDto.class, this.getPeriodicMeterReadsCommandExecutor);
     }
 
     public List<ActionValueObjectResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
