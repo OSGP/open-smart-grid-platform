@@ -20,5 +20,6 @@ public class InstallationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.classMap(Device.class, SmartMeteringDevice.class).byDefault().register();
+        mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
     }
 }
