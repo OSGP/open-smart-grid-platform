@@ -132,12 +132,6 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_POSITION_DHCP_ENABLED = "enbDHCP";
 
     /**
-     * Attribute of Property Pos, used to switch the relay on or off.
-     */
-    // public static final String PROPERTY_POSITION_ATTRIBUTE_CONTROL =
-    // ".Oper.ctlVal";
-
-    /**
      * Property of CSLC Node, reboot.
      */
     public static final String PROPERTY_RB_OPER = ".RbOper";
