@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.domain.core.infra.jms.core.messageprocessors;
 
+import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.core.application.services.FirmwareManagementService;
 import com.alliander.osgp.adapter.domain.core.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -81,9 +84,9 @@ public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseM
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final String firmwareVersion = (String) dataObject;
+            final List<FirmwareVersionDto> firmwareVersions = (List<FirmwareVersionDto>) dataObject;
 
-            this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersion, deviceIdentification,
+            this.firmwareManagementService.handleGetFirmwareVersionResponse(firmwareVersions, deviceIdentification,
                     organisationIdentification, correlationUid, messageType, responseMessageResultType, osgpException);
 
         } catch (final Exception e) {
