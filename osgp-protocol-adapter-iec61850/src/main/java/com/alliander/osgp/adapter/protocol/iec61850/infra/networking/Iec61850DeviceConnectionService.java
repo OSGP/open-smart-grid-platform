@@ -11,6 +11,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Resource;
+
 import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.ServerModel;
 import org.openmuc.openiec61850.ServiceError;
@@ -30,6 +32,9 @@ public class Iec61850DeviceConnectionService {
 
     @Autowired
     private Iec61850Client iec61850Client;
+
+    @Resource
+    private int responseTimeout;
 
     public void connect(final String ipAddress, final String deviceIdentification) {
         LOGGER.info("Trying to find connection in cache for deviceIdentification: {}", deviceIdentification);
@@ -68,6 +73,9 @@ public class Iec61850DeviceConnectionService {
             // Try to connect.
             LOGGER.info("Trying to connect to deviceIdentification: {} at ip {}", deviceIdentification, ipAddress);
             final ClientAssociation clientAssociation = this.iec61850Client.connect(deviceIdentification, inetAddress);
+
+            // Set response time-out
+            clientAssociation.setResponseTimeout(this.responseTimeout);
 
             // Read the ServerModel, either from the device or from a SCL file.
             final ServerModel serverModel = this.iec61850Client.readServerModelFromDevice(clientAssociation);
