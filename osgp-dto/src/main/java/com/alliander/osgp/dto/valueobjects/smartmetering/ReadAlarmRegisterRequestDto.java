@@ -12,4 +12,13 @@ import java.io.Serializable;
 public class ReadAlarmRegisterRequestDto implements Serializable, ActionValueObjectDto {
     private static final long serialVersionUID = 3751586818507193990L;
 
+    private String deviceIdentification;
+
+    public ReadAlarmRegisterRequestDto(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+    }
+
+    public String getDeviceIdentification() {
+        return this.deviceIdentification;
+    }
 }
