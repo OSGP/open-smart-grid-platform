@@ -178,8 +178,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public DeactivateDeviceAsyncResponse deactivateDevice(
             @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final DeactivateDeviceRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+            @ScheduleTime final String scheduleTime, @RequestPayload final DeactivateDeviceRequest request,
+            @MessagePriority final String messagePriority) throws OsgpException {
 
         LOGGER.info("Incoming DeactivateDeviceRequest for meter: {}.", request.getDeviceIdentification());
 
@@ -189,7 +189,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.managementService.enqueueDeactivateSmartMeterRequest(
                     organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.managementMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
