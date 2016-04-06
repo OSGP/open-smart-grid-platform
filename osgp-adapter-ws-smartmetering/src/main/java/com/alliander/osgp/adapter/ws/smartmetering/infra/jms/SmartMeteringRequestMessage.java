@@ -11,7 +11,6 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
-import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
 public class SmartMeteringRequestMessage extends RequestMessage {
 
@@ -19,51 +18,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
 
     private final String messageType;
     private final Integer messagePriority;
-
-    /**
-     * Use builder instead
-     *
-     * @deprecated
-     */
-    @Deprecated
-    public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final Serializable request) {
-        this(messageType.toString(), correlationUid, organisationIdentification, deviceIdentification, null, request,
-                MessagePriorityEnum.DEFAULT.getPriority());
-    }
-
-    /**
-     * Use builder instead
-     *
-     * @deprecated
-     */
-    @Deprecated
-    public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final String ipAddress,
-            final Serializable request) {
-        this(messageType.toString(), correlationUid, organisationIdentification, deviceIdentification, ipAddress,
-                request, MessagePriorityEnum.DEFAULT.getPriority());
-    }
-
-    /**
-     * Use builder instead
-     *
-     * @deprecated
-     */
-    @Deprecated
-    public SmartMeteringRequestMessage(final SmartMeteringRequestMessageType messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification) {
-        this(messageType.toString(), correlationUid, organisationIdentification, deviceIdentification, null, null,
-                MessagePriorityEnum.DEFAULT.getPriority());
-    }
-
-    private SmartMeteringRequestMessage(final String messageType, final String correlationUid,
-            final String organisationIdentification, final String deviceIdentification, final String ipAddress,
-            final Serializable request, final Integer messagePriority) {
-        super(correlationUid, organisationIdentification, deviceIdentification, ipAddress, request);
-        this.messageType = messageType;
-        this.messagePriority = messagePriority;
-    }
+    private final Long scheduleTime;
 
     private SmartMeteringRequestMessage(final DeviceMessageMetadata deviceMessageMetadata, final String ipAddress,
             final Serializable request) {
@@ -71,6 +26,7 @@ public class SmartMeteringRequestMessage extends RequestMessage {
                 deviceMessageMetadata.getDeviceIdentification(), ipAddress, request);
         this.messageType = deviceMessageMetadata.getMessageType();
         this.messagePriority = deviceMessageMetadata.getMessagePriority();
+        this.scheduleTime = deviceMessageMetadata.getScheduleTime();
     }
 
     public static class Builder {
@@ -109,4 +65,9 @@ public class SmartMeteringRequestMessage extends RequestMessage {
     public String getMessageType() {
         return this.messageType;
     }
+
+    public Long getScheduleTime() {
+        return this.scheduleTime;
+    }
+
 }

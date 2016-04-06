@@ -18,6 +18,7 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.AddDeviceAsyncResponse;
@@ -57,8 +58,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
     @PayloadRoot(localPart = "AddDeviceRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
     public AddDeviceAsyncResponse addDevice(@OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority)
-            throws OsgpException {
+            @RequestPayload final AddDeviceRequest request, @MessagePriority final String messagePriority,
+            @ScheduleTime final String scheduleTime) throws OsgpException {
 
         LOGGER.info("Incoming AddDeviceRequest for meter: {}.", request.getDevice().getDeviceIdentification());
 
@@ -70,7 +71,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
             final String correlationUid = this.installationService.enqueueAddSmartMeterRequest(
                     organisationIdentification, device.getDeviceIdentification(), device,
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
+                    MessagePriorityEnum.getMessagePriority(messagePriority),
+                    this.installationMapper.map(scheduleTime, Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDevice().getDeviceIdentification());

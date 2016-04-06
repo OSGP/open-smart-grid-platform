@@ -39,6 +39,7 @@ public class AnnotationMethodArgumentResolver implements MethodArgumentResolver 
             return messageContext.getProperty(this.contextPropertyName);
         }
 
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(String.format("argument %s not found in message context",
+                this.contextPropertyName));
     }
 }
