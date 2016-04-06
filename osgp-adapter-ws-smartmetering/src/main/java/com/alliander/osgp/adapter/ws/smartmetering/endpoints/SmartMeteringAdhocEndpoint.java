@@ -38,6 +38,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -128,8 +129,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
             this.throwExceptionIfResultNotOk(meterResponseData, "retrieving the send wakeup sms response data");
 
-            response = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
-            .createSendWakeupSmsResponse();
+            response = new SendWakeupSmsResponse();
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             final SmsDetailsType dataRequest = this.adhocMapper.map(meterResponseData.getMessageData(),
@@ -149,8 +149,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             @RequestPayload final GetSmsDetailsRequest request, @MessagePriority final String messagePriority)
             throws OsgpException {
 
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails smsDetails = this.adhocMapper.map(
-                request.getSmsDetails(), com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails.class);
+        final SmsDetails smsDetails = this.adhocMapper.map(request.getSmsDetails(), SmsDetails.class);
 
         final GetSmsDetailsAsyncResponse asyncResponse = new com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectFactory()
         .createGetSmsDetailsAsyncResponse();
