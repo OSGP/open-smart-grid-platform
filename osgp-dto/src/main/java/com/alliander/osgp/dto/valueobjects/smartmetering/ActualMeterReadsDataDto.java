@@ -13,4 +13,7 @@ public class ActualMeterReadsDataDto implements Serializable, ActionValueObjectD
 
     private static final long serialVersionUID = -3285918794296226542L;
 
+    public ActualMeterReadsDataDto() {
+        // default constructor
+    }
 }

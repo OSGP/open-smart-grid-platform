@@ -1,5 +1,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public interface ActionValueObjectDto {
+import java.io.Serializable;
+
+public interface ActionValueObjectDto extends Serializable {
 
 }

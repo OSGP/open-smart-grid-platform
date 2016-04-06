@@ -13,4 +13,8 @@ public class GetAdministrativeStatusDataDto implements Serializable, ActionValue
 
     private static final long serialVersionUID = -1308931578783587193L;
 
+    public GetAdministrativeStatusDataDto() {
+        // default constructor
+    }
+
 }
