@@ -27,7 +27,6 @@ public class ActualMeterReadsGasRequestData implements Serializable, ActionValue
     @Override
     public void validate() throws FunctionalException {
         // no validation needed
-
     }
 
 }

@@ -52,8 +52,7 @@ public class PeriodicMeterReadsGasRequestData implements Serializable, ActionVal
 
     @Override
     public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
+        // Validation not necessary
     }
 
 }

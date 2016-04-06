@@ -32,8 +32,7 @@ public class SpecialDaysRequestData implements Serializable, ActionValueObject {
 
     @Override
     public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
+        // Validation not necessary
     }
 
 }

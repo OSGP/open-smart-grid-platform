@@ -17,7 +17,6 @@ public class ReadAlarmRegisterData implements Serializable, ActionValueObject {
     @Override
     public void validate() throws FunctionalException {
         // no validation needed
-
     }
 
 }

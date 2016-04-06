@@ -18,7 +18,6 @@ public class GetAdministrativeStatusData implements Serializable, ActionValueObj
     @Override
     public void validate() throws FunctionalException {
         // no validation needed
-
     }
 
 }

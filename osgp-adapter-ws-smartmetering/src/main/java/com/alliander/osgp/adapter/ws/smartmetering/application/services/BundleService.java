@@ -41,12 +41,6 @@ public class BundleService {
     @Autowired
     private DomainHelperService domainHelperService;
 
-    // @Autowired
-    // private DeviceRepository deviceRepository;
-    //
-    // @Autowired
-    // private MeterResponseDataRepository meterResponseDataRepository;
-
     @Autowired
     private MeterResponseDataService meterResponseDataService;
 
@@ -60,8 +54,7 @@ public class BundleService {
         // Parameterless constructor required for transactions
     }
 
-    public MeterResponseData dequeueBundleResponse(final String correlationUid)
-            throws CorrelationUidException {
+    public MeterResponseData dequeueBundleResponse(final String correlationUid) throws CorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid, BundleResponseMessageDataContainer.class);
     }
 
@@ -83,8 +76,8 @@ public class BundleService {
                 deviceIdentification);
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid, SmartMeteringRequestMessageType.HANDLE_BUNDLED_ACTIONS.toString(),
-                messagePriority);
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.HANDLE_BUNDLED_ACTIONS.toString(), messagePriority);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
