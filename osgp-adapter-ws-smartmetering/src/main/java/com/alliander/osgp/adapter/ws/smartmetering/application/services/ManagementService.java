@@ -77,7 +77,7 @@ public class ManagementService {
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
             final List<FindEventsQuery> findEventsQueryList, final int messagePriority, final Long scheduleTime)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
@@ -102,8 +102,8 @@ public class ManagementService {
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata)
-        .request(new FindEventsQueryMessageDataContainer(findEventsQueryList)).build();
+                .deviceMessageMetadata(deviceMessageMetadata)
+                .request(new FindEventsQueryMessageDataContainer(findEventsQueryList)).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -181,7 +181,7 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.DEACTIVATE_METER.toString(), messagePriority, scheduleTime);
+                SmartMeteringRequestMessageType.DEACTIVATE_DEVICE.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
                 deviceMessageMetadata).build();
