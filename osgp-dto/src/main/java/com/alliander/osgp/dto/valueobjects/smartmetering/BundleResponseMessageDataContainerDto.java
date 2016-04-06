@@ -8,6 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BundleResponseMessageDataContainerDto implements Serializable {
@@ -25,6 +26,6 @@ public class BundleResponseMessageDataContainerDto implements Serializable {
     }
 
     public List<ActionValueObjectResponseDto> getActionValueObjectResponseDto() {
-        return this.actionValueObjectResponseDtoList;
+        return new ArrayList<ActionValueObjectResponseDto>(this.actionValueObjectResponseDtoList);
     }
 }
