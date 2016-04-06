@@ -38,10 +38,6 @@
         <groupId>com.smartbear.soapui</groupId>
         <artifactId>soapui-maven-plugin</artifactId>
         <version>5.1.3</version>
-        <configuration>
-          <outputFolder>${basedir}/target/output</outputFolder>
-          <junitReport>true</junitReport>
-        </configuration>
       </plugin>
     </plugins>
   </build>
