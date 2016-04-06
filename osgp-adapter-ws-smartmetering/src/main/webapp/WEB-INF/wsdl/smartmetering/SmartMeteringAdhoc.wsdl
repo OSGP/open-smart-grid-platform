@@ -45,44 +45,6 @@
         </wsdl:part>
     </wsdl:message>
     
-    <!-- SEND WAKEUP SMS -->
-    
-    <wsdl:message name="SendWakeupSmsRequest">
-        <wsdl:part element="smadhoc:SendWakeupSmsRequest" name="SendWakeupSmsRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="SendWakeupSmsAsyncResponse">
-        <wsdl:part element="smadhoc:SendWakeupSmsAsyncResponse" name="SendWakeupSmsAsyncResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="SendWakeupSmsAsyncRequest">
-        <wsdl:part element="smadhoc:SendWakeupSmsAsyncRequest" name="SendWakeupSmsAsyncRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="SendWakeupSmsResponse">
-        <wsdl:part element="smadhoc:SendWakeupSmsResponse" name="SendWakeupSmsResponse">
-        </wsdl:part>
-    </wsdl:message>
-    
-    <!-- GET SMS DETAILS -->
-    
-    <wsdl:message name="GetSmsDetailsRequest">
-        <wsdl:part element="smadhoc:GetSmsDetailsRequest" name="GetSmsDetailsRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetSmsDetailsAsyncResponse">
-        <wsdl:part element="smadhoc:GetSmsDetailsAsyncResponse" name="GetSmsDetailsAsyncResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetSmsDetailsAsyncRequest">
-        <wsdl:part element="smadhoc:GetSmsDetailsAsyncRequest" name="GetSmsDetailsAsyncRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="GetSmsDetailsResponse">
-        <wsdl:part element="smadhoc:GetSmsDetailsResponse" name="GetSmsDetailsResponse">
-        </wsdl:part>
-    </wsdl:message>
-
     <!-- RETRIEVE CONFIGURATION OBJECTS -->
     
     <wsdl:message name="RetrieveConfigurationObjectsRequest">
@@ -112,26 +74,6 @@
             <wsdl:input message="tns:SynchronizeTimeAsyncRequest" name="SynchronizeTimeAsyncRequest" />
             <wsdl:output message="tns:SynchronizeTimeResponse" name="SynchronizeTimeResponse" />
         </wsdl:operation>        
-
-        <wsdl:operation name="SendWakeupSms">
-            <wsdl:input message="tns:SendWakeupSmsRequest" name="SendWakeupSmsRequest" />
-            <wsdl:output message="tns:SendWakeupSmsAsyncResponse" name="SendWakeupSmsAsyncResponse" />
-        </wsdl:operation>
-        
-        <wsdl:operation name="GetSendWakeupSmsResponse">
-            <wsdl:input message="tns:SendWakeupSmsAsyncRequest" name="SendWakeupSmsAsyncRequest" />
-            <wsdl:output message="tns:SendWakeupSmsResponse" name="SendWakeupSmsResponse" />
-        </wsdl:operation>
-
-        <wsdl:operation name="GetSmsDetails">
-            <wsdl:input message="tns:GetSmsDetailsRequest" name="GetSmsDetailsRequest" />
-            <wsdl:output message="tns:GetSmsDetailsAsyncResponse" name="GetSmsDetailsAsyncResponse" />
-        </wsdl:operation>
-        
-        <wsdl:operation name="GetGetSmsDetailsResponse">
-            <wsdl:input message="tns:GetSmsDetailsAsyncRequest" name="GetSmsDetailsAsyncRequest" />
-            <wsdl:output message="tns:GetSmsDetailsResponse" name="GetSmsDetailsResponse" />
-        </wsdl:operation>
 
         <wsdl:operation name="RetrieveConfigurationObjects">
             <wsdl:input message="tns:RetrieveConfigurationObjectsRequest" name="RetrieveConfigurationObjectsRequest" />
@@ -168,58 +110,6 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="SynchronizeTimeResponse">
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
-
-        <wsdl:operation name="SendWakeupSms">
-            <soap:operation soapAction="" />
-            <wsdl:input name="SendWakeupSmsRequest">
-                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output name="SendWakeupSmsAsyncResponse">
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
-        
-        <wsdl:operation name="GetSendWakeupSmsResponse">
-            <soap:operation soapAction="" />
-            <wsdl:input name="SendWakeupSmsAsyncRequest">
-                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output name="SendWakeupSmsResponse">
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
-
-        <wsdl:operation name="GetSmsDetails">
-            <soap:operation soapAction="" />
-            <wsdl:input name="GetSmsDetailsRequest">
-                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output name="GetSmsDetailsAsyncResponse">
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
-        
-        <wsdl:operation name="GetGetSmsDetailsResponse">
-            <soap:operation soapAction="" />
-            <wsdl:input name="GetSmsDetailsAsyncRequest">
-                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output name="GetSmsDetailsResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
