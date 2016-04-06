@@ -18,10 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
+import com.alliander.osgp.domain.core.entities.DeviceAuthorization;
+import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.repositories.DeviceAuthorizationRepository;
+import com.alliander.osgp.domain.core.repositories.OrganisationRepository;
 import com.alliander.osgp.domain.core.repositories.ProtocolInfoRepository;
 import com.alliander.osgp.domain.core.repositories.SmartMeterRepository;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -55,6 +60,12 @@ public class InstallationService {
     @Autowired
     private WebServiceResponseMessageSender webServiceResponseMessageSender;
 
+    @Autowired
+    private OrganisationRepository organisationRepository;
+
+    @Autowired
+    private DeviceAuthorizationRepository deviceAuthorizationRepository;
+
     public InstallationService() {
         // Parameterless constructor required for transactions...
     }
@@ -87,9 +98,12 @@ public class InstallationService {
 
             device.updateProtocol(protocolInfo);
 
-            // TODO deviceAuthorization
+            device = this.smartMeteringDeviceRepository.save(device);
 
-            this.smartMeteringDeviceRepository.save(device);
+            final Organisation organisation = this.organisationRepository
+                    .findByOrganisationIdentification(deviceMessageMetadata.getOrganisationIdentification());
+            final DeviceAuthorization authorization = device.addAuthorization(organisation, DeviceFunctionGroup.OWNER);
+            this.deviceAuthorizationRepository.save(authorization);
 
         } else {
             throw new FunctionalException(FunctionalExceptionType.EXISTING_DEVICE, ComponentType.DOMAIN_SMART_METERING);
