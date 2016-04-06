@@ -13,36 +13,39 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 public class DeviceMessageMetadata {
-    private String deviceIdentification;
-    private String organisationIdentification;
-    private String correlationUid;
-    private String messageType;
-    private int messagePriority;
+    private final String deviceIdentification;
+    private final String organisationIdentification;
+    private final String correlationUid;
+    private final String messageType;
+    private final int messagePriority;
+    private final Long scheduleTime;
 
     public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
-            final String correlationUid, final String messageType, final int messagePriority) {
+            final String correlationUid, final String messageType, final int messagePriority, final Long scheduleTime) {
         this.deviceIdentification = deviceIdentification;
         this.organisationIdentification = organisationIdentification;
         this.correlationUid = correlationUid;
         this.messageType = messageType;
         this.messagePriority = messagePriority;
+        this.scheduleTime = scheduleTime;
+    }
+
+    public DeviceMessageMetadata(final String deviceIdentification, final String organisationIdentification,
+            final String correlationUid, final String messageType, final int messagePriority) {
+        this(deviceIdentification, organisationIdentification, correlationUid, messageType, messagePriority,
+                (Long) null);
     }
 
     public DeviceMessageMetadata(final Message message) throws JMSException {
-
-        this.deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-        this.organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
-        this.correlationUid = message.getJMSCorrelationID();
-        this.messageType = message.getJMSType();
-        this.messagePriority = message.getJMSPriority();
+        this(message.getStringProperty(Constants.DEVICE_IDENTIFICATION), message
+                .getStringProperty(Constants.ORGANISATION_IDENTIFICATION), message.getJMSCorrelationID(), message
+                .getJMSType(), message.getJMSPriority(), message.propertyExists(Constants.SCHEDULE_TIME) ? message
+                .getLongProperty(Constants.SCHEDULE_TIME) : null);
     }
 
     public DeviceMessageMetadata(final ProtocolResponseMessage message) {
-        this.deviceIdentification = message.getDeviceIdentification();
-        this.organisationIdentification = message.getOrganisationIdentification();
-        this.correlationUid = message.getCorrelationUid();
-        this.messageType = message.getMessageType();
-        this.messagePriority = message.getMessagePriority();
+        this(message.getDeviceIdentification(), message.getOrganisationIdentification(), message.getCorrelationUid(),
+                message.getMessageType(), message.getMessagePriority());
     }
 
     public String getDeviceIdentification() {
@@ -65,12 +68,20 @@ public class DeviceMessageMetadata {
         return this.messagePriority;
     }
 
+    /**
+     *
+     * @return the scheduling time or null if not applicable
+     */
+    public Long getScheduleTime() {
+        return this.scheduleTime;
+    }
+
     @Override
     public String toString() {
         return "DeviceMessageMetadata [deviceIdentification=" + this.deviceIdentification
                 + ", organisationIdentification=" + this.organisationIdentification + ", correlationUid="
                 + this.correlationUid + ", messageType=" + this.messageType + ", messagePriority="
-                + this.messagePriority + "]";
+                + this.messagePriority + ", scheduleTime=" + this.scheduleTime + "]";
     }
 
 }
