@@ -38,6 +38,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDat
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -78,6 +79,8 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(AlarmRegister.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainer.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
+
     }
 
     /**
@@ -96,10 +99,12 @@ public class ActionMapperResponseService {
         CLASS_MAP.put(AlarmRegister.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
         CLASS_MAP
-        .put(AdministrativeStatusTypeResponse.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
+                .put(AdministrativeStatusTypeResponse.class,
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
         CLASS_MAP.put(PeriodicMeterReadsContainer.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponseData.class);
+        CLASS_MAP.put(PeriodicMeterReadsContainerGas.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponseData.class);
 
     }
 

@@ -97,6 +97,17 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:complexType name="PeriodicMeterReadsGasResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="PeriodType" type="tns:PeriodType" />
+					<xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- smart meter actual -->
 	<xsd:element name="ActualMeterReadsRequest">
 		<xsd:complexType>
@@ -339,6 +350,28 @@
                     <xsd:element name="BeginDate" type="xsd:date" />
                     <xsd:element name="EndDate" type="xsd:date" />
             </xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="PeriodicMeterReadsRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+					<xsd:element name="PeriodType" type="tns:PeriodType" />
+					<xsd:element name="BeginDate" type="xsd:date" />
+					<xsd:element name="EndDate" type="xsd:date" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="PeriodicMeterReadsGasRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="tns:PeriodicMeterReadsRequestData">
+				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:simpleType name="PeriodType">

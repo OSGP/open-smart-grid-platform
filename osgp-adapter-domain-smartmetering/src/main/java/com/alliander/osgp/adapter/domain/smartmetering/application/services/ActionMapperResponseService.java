@@ -31,6 +31,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDat
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
@@ -39,6 +40,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContain
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -75,7 +77,6 @@ public class ActionMapperResponseService {
          classToMapperMap.put(KeySet.class, this.configurationMapper);
          classToMapperMap.put(SmartMeteringDevice.class, this.installationMapper);
          classToMapperMap.put(PeriodicMeterReadsContainerGasDto.class, this.monitoringMapper);
-         classToMapperMap.put(PeriodicMeterReadsContainerDto.class, this.monitoringMapper);
 
          */
         classToMapperMap.put(EventMessageDataContainerDto.class, this.managementMapper);
@@ -85,6 +86,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(AlarmRegisterDto.class, this.commonMapper);
         classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.commonMapper);
         classToMapperMap.put(PeriodicMeterReadsContainerDto.class, this.monitoringMapper);
+        classToMapperMap.put(PeriodicMeterReadsContainerGasDto.class, this.monitoringMapper);
     }
 
     /**
@@ -113,6 +115,7 @@ public class ActionMapperResponseService {
         classMap.put(AlarmRegisterDto.class, AlarmRegister.class);
         classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
         classMap.put(PeriodicMeterReadsContainerDto.class, PeriodicMeterReadsContainer.class);
+        classMap.put(PeriodicMeterReadsContainerGasDto.class, PeriodicMeterReadsContainerGas.class);
 
     }
 
