@@ -127,10 +127,14 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
                     messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-            device = this.domainHelperService.findDlmsDevice(messageMetadata);
-            conn = this.dlmsConnectionFactory.getConnection(device);
-
-            final Serializable response = this.handleMessage(conn, device, message.getObject());
+            Serializable response = null;
+            if (this.usesDeviceConnection()) {
+                device = this.domainHelperService.findDlmsDevice(messageMetadata);
+                conn = this.dlmsConnectionFactory.getConnection(device);
+                response = this.handleMessage(conn, device, message.getObject());
+            } else {
+                response = this.handleMessage(message.getObject());
+            }
 
             // Send response
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
@@ -168,8 +172,17 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      * @throws ProtocolAdapterException
      * @throws SessionProviderException
      */
-    protected abstract Serializable handleMessage(ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException;
+    protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
+            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+        throw new UnsupportedOperationException(
+                "handleMessage(ClientConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
+    }
+
+    protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
+    ProtocolAdapterException {
+        throw new UnsupportedOperationException(
+                "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
+    }
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
             final ResponseMessageResultType result, final Exception exception,
@@ -197,5 +210,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 .build();
 
         responseMessageSender.send(responseMessage);
+    }
+
+    /**
+     * Used to determine if the handleMessage needs a device connection or not.
+     * Default value is true, override to alter behaviour of subclasses.
+     *
+     * @return Use device connection in handleMessage.
+     */
+    protected boolean usesDeviceConnection() {
+        return true;
     }
 }
