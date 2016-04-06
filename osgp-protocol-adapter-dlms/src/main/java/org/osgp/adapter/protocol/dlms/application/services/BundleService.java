@@ -21,7 +21,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsBundleG
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -39,7 +39,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
 @Service(value = "dlmsBundleService")
@@ -66,7 +66,7 @@ public class BundleService {
     private SetSpecialDaysBundleCommandExecutor setSpecialDaysBundleCommandExecutor;
 
     @Autowired
-    private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
+    private ReadAlarmRegisterBundleCommandExecutor readAlarmRegisterBundleCommandExecutor;
 
     @Autowired
     private GetAdministrativeStatusBundleCommandExecutor getAdministrativeStatusBundleCommandExecutor;
@@ -79,18 +79,19 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(ActualMeterReadsDataDto.class, this.actualMeterReadsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActualMeterReadsDataGasDto.class, this.actualMeterReadsBundleGasCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SpecialDaysRequestDataDto.class, this.setSpecialDaysBundleCommandExecutor);
-        CLAZZ_EXECUTOR_MAP.put(ReadAlarmRegisterRequestDto.class, this.readAlarmRegisterCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(ReadAlarmRegisterDataDto.class, this.readAlarmRegisterBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GetAdministrativeStatusDataDto.class, this.getAdministrativeStatusBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsRequestDataDto.class, this.getPeriodicMeterReadsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsGasRequestDataDto.class,
                 this.getPeriodicMeterReadsGasBundleCommandExecutor);
+
     }
 
     public List<ActionValueObjectResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
             final BundleMessageDataContainerDto bundleMessageDataContainerDto) {
         final List<ActionValueObjectResponseDto> actionValueObjectResponseDtoList = new ArrayList<>();
 
-        for (final ActionValueObjectDto actionValueObjectDto : bundleMessageDataContainerDto.getFindEventsQueryList()) {
+        for (final ActionValueObjectDto actionValueObjectDto : bundleMessageDataContainerDto.getActionList()) {
 
             // suppress else the compiler will complain
             @SuppressWarnings({ "unchecked" })

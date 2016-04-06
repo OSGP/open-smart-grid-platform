@@ -19,7 +19,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataD
 
 @Component()
 public class SetSpecialDaysBundleCommandExecutor implements
-        CommandExecutor<SpecialDaysRequestDataDto, ActionValueObjectResponseDto> {
+CommandExecutor<SpecialDaysRequestDataDto, ActionValueObjectResponseDto> {
 
     @Autowired
     SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
@@ -32,13 +32,13 @@ public class SetSpecialDaysBundleCommandExecutor implements
             final AccessResultCode resultCode = this.setSpecialDaysCommandExecutor.execute(conn, device,
                     specialDaysRequestDataDto.getSpecialDays());
             if (AccessResultCode.SUCCESS.equals(resultCode)) {
-                return new ActionValueObjectResponseDto("Set special days was succesfull");
+                return new ActionValueObjectResponseDto("Set special days was successful");
             } else {
-                return new ActionValueObjectResponseDto("Set special days was not succesfull. Result code: "
+                return new ActionValueObjectResponseDto("Set special days was not successful. Result code: "
                         + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
-            return new ActionValueObjectResponseDto(e, "Set special days was not succesfull");
+            return new ActionValueObjectResponseDto(e, "Set special days was not successful");
         }
 
     }
