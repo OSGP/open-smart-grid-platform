@@ -4,6 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCase;
@@ -27,9 +29,9 @@ public class GetFirmwareVersion {
 
     private String response;
 
-    private final String soapProjectXml = "src/test/resources/FirmwareManagement-soapui-project.xml";
-    private final String testSuiteXml = "FirmwareManagementPortSoap11 TestSuite";
-    private final String testCaseXml = "GetFirmwareVersion TestCase";
+    private static final String SOAP_PROJECT_XML = "src/test/resources/FirmwareManagement-soapui-project.xml";
+    private static final String TEST_SUITE_XML = "FirmwareManagementPortSoap11 TestSuite";
+    private static final String TEST_CASE_XML = "GetFirmwareVersion TestCase";
     private String correlationUid;
     private String organisationId;
     private String deviceId;
@@ -37,12 +39,14 @@ public class GetFirmwareVersion {
     Pattern pCorrelationUid = Pattern.compile("");
     Matcher mCorrelationUid = this.pCorrelationUid.matcher("");
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
+
     @Given("^a device with DeviceID \"([^\"]*)\"$")
     public void aDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId = deviceId;
-        this.project = new WsdlProject(this.soapProjectXml);
-        this.testSuite = this.project.getTestSuiteByName(this.testSuiteXml);
-        this.testCase = this.testSuite.getTestCaseByName(this.testCaseXml);
+        this.project = new WsdlProject(GetFirmwareVersion.SOAP_PROJECT_XML);
+        this.testSuite = this.project.getTestSuiteByName(GetFirmwareVersion.TEST_SUITE_XML);
+        this.testCase = this.testSuite.getTestCaseByName(GetFirmwareVersion.TEST_CASE_XML);
     }
 
     @And("^an organisation with OrganisationID \"([^\"]*)\"$")
@@ -88,8 +92,8 @@ public class GetFirmwareVersion {
         final TestStepResult runTestStepByName = wsdlTestCaseRunner.runTestStepByName("GetGetFirmwareVersionResponse");
 
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
-            this.response = ((MessageExchange) tcr).getResponseContent();
-            System.out.println("Response: " + this.response);
+            LOGGER.info("GetGetFirmwareVersionResponse response {}",
+                    this.response = ((MessageExchange) tcr).getResponseContent());
         }
 
         Assert.assertEquals(TestStepStatus.OK, runTestStepByName.getStatus());

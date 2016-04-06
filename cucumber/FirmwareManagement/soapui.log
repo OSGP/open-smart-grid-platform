@@ -1,0 +1,4 @@
+2016-04-06 08:10:18,833 WARN  [SoapUI] Missing folder [/home/dev/Sources/Integration-Tests/cucumber/FirmwareManagement/ext] for external libraries
+2016-04-06 08:10:19,008 INFO  [DefaultSoapUICore] initialized soapui-settings from [/home/dev/soapui-settings.xml]
+2016-04-06 08:10:19,030 INFO  [HttpClientSupport$Helper] Initializing KeyStore
+2016-04-06 08:10:20,068 INFO  [WsdlProject] Loaded project from [file:/home/dev/Sources/Integration-Tests/cucumber/FirmwareManagement/src/test/resources/FirmwareManagement-soapui-project.xml]
