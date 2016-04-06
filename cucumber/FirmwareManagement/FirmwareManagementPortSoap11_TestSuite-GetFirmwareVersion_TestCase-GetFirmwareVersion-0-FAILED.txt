@@ -1,0 +1,55 @@
+Status: FAILED
+Time Taken: 1056
+Size: 326
+Timestamp: Wed Mar 30 08:43:01 CEST 2016
+TestStep: GetFirmwareVersion
+
+----------------- Messages ------------------------------
+[Not SOAP Fault] Response is a SOAP Fault
+
+----------------- Properties ------------------------------
+Encoding: UTF-8
+Endpoint: https://osgp-tst.cloudapp.net:62443/osgp-adapter-ws-core/common/firmwareManagementService/
+
+---------------- Request ---------------------------
+Request Headers: Host : osgp-tst.cloudapp.net:62443
+Content-Length : 652
+SOAPAction : ""
+Accept-Encoding : gzip,deflate
+User-Agent : Apache-HttpClient/4.5.1 (Java/1.7.0_95)
+Connection : Keep-Alive
+Content-Type : text/xml;charset=UTF-8
+
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.alliander.com/schemas/osgp/common/2014/10" xmlns:ns1="http://www.alliander.com/schemas/osgp/common/firmwaremanagement/2014/10">
+   <soapenv:Header>
+      <ns:ApplicationName>SoapUI</ns:ApplicationName>
+      <ns:UserName>carlogeenen</ns:UserName>
+      <ns:OrganisationIdentification>test4</ns:OrganisationIdentification>
+   </soapenv:Header>
+   <soapenv:Body>
+      <ns1:GetFirmwareVersionRequest>
+         <ns1:DeviceIdentification>test4</ns1:DeviceIdentification>
+      </ns1:GetFirmwareVersionRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+---------------- Response --------------------------
+Response Headers: Date : Wed, 30 Mar 2016 06:43:14 GMT
+#status# : HTTP/1.1 500 Internal Server Error
+Content-Length : 326
+SOAPAction : ""
+Connection : close
+Content-Type : text/xml;charset=utf-8
+Accept : text/xml, text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+
+
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+   <SOAP-ENV:Header/>
+   <SOAP-ENV:Body>
+      <SOAP-ENV:Fault>
+         <faultcode>SOAP-ENV:Server</faultcode>
+         <faultstring xml:lang="en">Client certificate is untrusted or invalid for organisation [test4]</faultstring>
+      </SOAP-ENV:Fault>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
