@@ -19,8 +19,8 @@ import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsBundleGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusBundleCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
@@ -37,7 +37,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGas
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
@@ -50,16 +51,16 @@ public class BundleService {
     private RetrieveEventsBundleCommandExecutor retrieveEventsBundleCommandExecutor;
 
     @Autowired
-    private GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
-
-    @Autowired
     private GetActualMeterReadsBundleCommandExecutor actualMeterReadsBundleCommandExecutor;
 
     @Autowired
     private GetActualMeterReadsBundleGasCommandExecutor actualMeterReadsBundleGasCommandExecutor;
 
     @Autowired
-    private GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+    private GetPeriodicMeterReadsGasBundleCommandExecutor getPeriodicMeterReadsGasBundleCommandExecutor;
+
+    @Autowired
+    private GetPeriodicMeterReadsBundleCommandExecutor getPeriodicMeterReadsBundleCommandExecutor;
 
     @Autowired
     private SetSpecialDaysBundleCommandExecutor setSpecialDaysBundleCommandExecutor;
@@ -80,7 +81,9 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(SpecialDaysRequestDataDto.class, this.setSpecialDaysBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ReadAlarmRegisterRequestDto.class, this.readAlarmRegisterCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GetAdministrativeStatusDataDto.class, this.getAdministrativeStatusBundleCommandExecutor);
-        CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsQueryDto.class, this.getPeriodicMeterReadsCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsRequestDataDto.class, this.getPeriodicMeterReadsBundleCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsGasRequestDataDto.class,
+                this.getPeriodicMeterReadsGasBundleCommandExecutor);
     }
 
     public List<ActionValueObjectResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
@@ -90,8 +93,8 @@ public class BundleService {
         for (final ActionValueObjectDto actionValueObjectDto : bundleMessageDataContainerDto.getFindEventsQueryList()) {
 
             // suppress else the compiler will complain
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            final CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> executor = (CommandExecutor) CLAZZ_EXECUTOR_MAP
+            @SuppressWarnings({ "unchecked" })
+            final CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> executor = (CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto>) CLAZZ_EXECUTOR_MAP
                     .get(actionValueObjectDto.getClass());
 
             try {
