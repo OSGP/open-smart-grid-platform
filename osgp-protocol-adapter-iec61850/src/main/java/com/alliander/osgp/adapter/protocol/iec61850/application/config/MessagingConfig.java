@@ -122,73 +122,6 @@ public class MessagingConfig {
     private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_BACK_OFF_MULTIPLIER = "jms.osgp.responses.back.off.multiplier";
     private static final String PROPERTY_NAME_JMS_OSGP_RESPONSES_USE_EXPONENTIAL_BACK_OFF = "jms.osgp.responses.use.exponential.back.off";
 
-    // JMS Settings: outgoing signing server requests
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_QUEUE =
-    // "jms.signing.server.requests.queue";
-    //
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_EXPLICIT_QOS_ENABLED =
-    // "jms.signing.server.requests.explicit.qos.enabled";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_DELIVERY_PERSISTENT =
-    // "jms.signing.server.requests.delivery.persistent";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_TIME_TO_LIVE =
-    // "jms.signing.server.requests.time.to.live";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_RECEIVE_TIMEOUT =
-    // "jms.signing.server.requests.receive.timeout";
-    //
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_INITIAL_REDELIVERY_DELAY =
-    // "jms.signing.server.requests.initial.redelivery.delay";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERIES =
-    // "jms.signing.server.requests.maximum.redeliveries";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERY_DELAY =
-    // "jms.signing.server.requests.maximum.redelivery.delay";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_REDELIVERY_DELAY =
-    // "jms.signing.server.requests.redelivery.delay";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_BACK_OFF_MULTIPLIER =
-    // "jms.signing.server.requests.back.off.multiplier";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_USE_EXPONENTIAL_BACK_OFF =
-    // "jms.signing.server.requests.use.exponential.back.off";
-    //
-    // // JMS Settings: incoming signing server responses
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE =
-    // "jms.signing.server.responses.queue";
-    //
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_CONCURRENT_CONSUMERS =
-    // "jms.signing.server.responses.concurrent.consumers";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAX_CONCURRENT_CONSUMERS =
-    // "jms.signing.server.responses.max.concurrent.consumers";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_INITIAL_REDELIVERY_DELAY =
-    // "jms.signing.server.responses.initial.redelivery.delay";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERIES =
-    // "jms.signing.server.responses.maximum.redeliveries";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERY_DELAY =
-    // "jms.signing.server.responses.maximum.redelivery.delay";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY =
-    // "jms.signing.server.responses.redelivery.delay";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER =
-    // "jms.signing.server.responses.back.off.multiplier";
-    // private static final String
-    // PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_USE_EXPONENTIAL_BACK_OFF =
-    // "jms.signing.server.responses.use.exponential.back.off";
-
     @Resource
     private Environment environment;
 
@@ -226,10 +159,6 @@ public class MessagingConfig {
         redeliveryPolicyMap.put(this.osgpRequestsQueue(), this.osgpRequestsRedeliveryPolicy());
         redeliveryPolicyMap.put(this.osgpResponsesQueue(), this.osgpResponsesRedeliveryPolicy());
         redeliveryPolicyMap.put(this.iec61850LogItemRequestsQueue(), this.iec61850LogItemRequestsRedeliveryPolicy());
-        // redeliveryPolicyMap.put(this.signingServerRequestsQueue(),
-        // this.signingServerRequestsRedeliveryPolicy());
-        // redeliveryPolicyMap.put(this.replyToQueue(),
-        // this.signingServerResponsesRedeliveryPolicy());
         return redeliveryPolicyMap;
     }
 
@@ -384,13 +313,6 @@ public class MessagingConfig {
         return redeliveryPolicy;
     }
 
-    // @Bean
-    // public Iec61850LogItemRequestMessageSender
-    // Iec61850LogItemRequestMessageSender()
-    // {
-    // return new Iec61850LogItemRequestMessageSender();
-    // }
-
     // === OSGP REQUESTS ===
 
     @Bean
@@ -484,128 +406,4 @@ public class MessagingConfig {
         return new OsgpResponseMessageListener();
     }
 
-    // === JMS SETTINGS: SIGNING SERVER REQUESTS ===
-
-    // @Bean
-    // public JmsTemplate signingServerRequestsJmsTemplate() {
-    // final JmsTemplate jmsTemplate = new JmsTemplate();
-    // jmsTemplate.setDefaultDestination(this.signingServerRequestsQueue());
-    // // Enable the use of deliveryMode, priority, and timeToLive
-    // jmsTemplate.setExplicitQosEnabled(Boolean.parseBoolean(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_EXPLICIT_QOS_ENABLED)));
-    // jmsTemplate.setTimeToLive(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_TIME_TO_LIVE)));
-    // jmsTemplate.setDeliveryPersistent(Boolean.parseBoolean(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_DELIVERY_PERSISTENT)));
-    // jmsTemplate.setConnectionFactory(this.pooledConnectionFactory());
-    // jmsTemplate.setReceiveTimeout(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_RECEIVE_TIMEOUT)));
-    // return jmsTemplate;
-    // }
-    //
-    // @Bean
-    // public ActiveMQDestination signingServerRequestsQueue() {
-    // return new
-    // ActiveMQQueue(this.environment.getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_QUEUE));
-    // }
-    //
-    // @Bean
-    // public RedeliveryPolicy signingServerRequestsRedeliveryPolicy() {
-    // final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-    // redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_INITIAL_REDELIVERY_DELAY)));
-    // redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERIES)));
-    // redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_MAXIMUM_REDELIVERY_DELAY)));
-    // redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_REDELIVERY_DELAY)));
-    // redeliveryPolicy.setDestination(this.signingServerRequestsQueue());
-    // redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_BACK_OFF_MULTIPLIER)));
-    // redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
-    // return redeliveryPolicy;
-    // }
-    //
-    // @Bean
-    // public SigningServerRequestMessageSender
-    // signingServerRequestMessageSender() {
-    // return new SigningServerRequestMessageSender();
-    // }
-    //
-    // // === JMS SETTINGS SIGNING SERVER RESPONSES ===
-    //
-    // @Autowired
-    // @Qualifier("signingServerResponsesMessageListener")
-    // private MessageListener signingServerResponsesMessageListener;
-    //
-    // /**
-    // * Instead of a fixed name for the responses queue, the signing-server
-    // uses
-    // * a 'reply-to' responses queue. This 'reply-to' responses queue is
-    // * communicated to the signing-server by this Protocol-Adapter-OSLP
-    // instance
-    // * when a request message is sent to the signing-server. The
-    // signing-server
-    // * will send signed response messages to the 'reply-to' queue. This
-    // ensures
-    // * that the signed response messages for this Protocol-Adapter-OSLP
-    // instance
-    // * are sent back to this instance.
-    // */
-    // @Bean
-    // public ActiveMQDestination replyToQueue() {
-    // try {
-    // final String prefix = this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_QUEUE);
-    // final String hostName = InetAddress.getLocalHost().getHostName();
-    // final String randomPostFix = RandomStringUtils.random(10, false, true);
-    // final String queueName =
-    // prefix.concat("-").concat(hostName).concat("-").concat(randomPostFix);
-    //
-    // LOGGER.info("------> replyToQueue: {}", queueName);
-    //
-    // return new ActiveMQQueue(queueName);
-    // } catch (final UnknownHostException e) {
-    // LOGGER.error("UnknownHostException while trying to create replyToQueue",
-    // e);
-    // return null;
-    // }
-    // }
-    //
-    // @Bean
-    // public RedeliveryPolicy signingServerResponsesRedeliveryPolicy() {
-    // final RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
-    // redeliveryPolicy.setInitialRedeliveryDelay(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_INITIAL_REDELIVERY_DELAY)));
-    // redeliveryPolicy.setMaximumRedeliveries(Integer.parseInt(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERIES)));
-    // redeliveryPolicy.setMaximumRedeliveryDelay(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAXIMUM_REDELIVERY_DELAY)));
-    // redeliveryPolicy.setRedeliveryDelay(Long.parseLong(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_REDELIVERY_DELAY)));
-    // redeliveryPolicy.setDestination(this.replyToQueue());
-    // redeliveryPolicy.setBackOffMultiplier(Double.parseDouble(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_BACK_OFF_MULTIPLIER)));
-    // redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_USE_EXPONENTIAL_BACK_OFF)));
-    // return redeliveryPolicy;
-    // }
-    //
-    // @Bean
-    // public DefaultMessageListenerContainer
-    // signingResponsesMessageListenerContainer() {
-    // final DefaultMessageListenerContainer messageListenerContainer = new
-    // DefaultMessageListenerContainer();
-    // messageListenerContainer.setConnectionFactory(this.pooledConnectionFactory());
-    // messageListenerContainer.setDestination(this.replyToQueue());
-    // messageListenerContainer.setConcurrentConsumers(Integer.parseInt(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_CONCURRENT_CONSUMERS)));
-    // messageListenerContainer.setMaxConcurrentConsumers(Integer.parseInt(this.environment
-    // .getRequiredProperty(PROPERTY_NAME_JMS_SIGNING_SERVER_RESPONSES_MAX_CONCURRENT_CONSUMERS)));
-    // messageListenerContainer.setMessageListener(this.signingServerResponsesMessageListener);
-    // messageListenerContainer.setSessionTransacted(true);
-    // return messageListenerContainer;
-    // }
 }
