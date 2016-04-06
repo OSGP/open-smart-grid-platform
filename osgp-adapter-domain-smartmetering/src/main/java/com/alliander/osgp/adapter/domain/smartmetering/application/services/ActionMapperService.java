@@ -58,7 +58,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
@@ -128,7 +128,7 @@ public class ActionMapperService {
         CLASS_MAP.put(PeriodicMeterReadsRequestData.class, PeriodicMeterReadsRequestDataDto.class);
         CLASS_MAP.put(ActualMeterReadsRequestData.class, ActualMeterReadsDataDto.class);
         CLASS_MAP.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
-        CLASS_MAP.put(ReadAlarmRegisterData.class, ReadAlarmRegisterRequestDto.class);
+        CLASS_MAP.put(ReadAlarmRegisterData.class, ReadAlarmRegisterDataDto.class);
         CLASS_MAP.put(FindEventsQuery.class, FindEventsQueryDto.class);
         CLASS_MAP.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
         CLASS_MAP.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
