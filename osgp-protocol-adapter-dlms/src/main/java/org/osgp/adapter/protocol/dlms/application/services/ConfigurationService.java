@@ -15,7 +15,7 @@ import org.openmuc.jdlms.MethodResultCode;
 import org.openmuc.jdlms.SecurityUtils.KeyId;
 import org.osgp.adapter.protocol.dlms.application.models.ProtocolMeterInfo;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPushSetupSmsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarCommandActivationExecutor;
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
@@ -99,7 +100,7 @@ public class ConfigurationService {
     private GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
 
     @Autowired
-    private GetFirmwareVersionCommandExecutor getFirmwareVersionCommandExecutor;
+    private GetFirmwareVersionsCommandExecutor getFirmwareVersionCommandExecutor;
 
     @Autowired
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
@@ -259,7 +260,7 @@ public class ConfigurationService {
 
     }
 
-    public String requestFirmwareVersion(final ClientConnection conn, final DlmsDevice device)
+    public List<FirmwareVersionDto> requestFirmwareVersion(final ClientConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
 
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
