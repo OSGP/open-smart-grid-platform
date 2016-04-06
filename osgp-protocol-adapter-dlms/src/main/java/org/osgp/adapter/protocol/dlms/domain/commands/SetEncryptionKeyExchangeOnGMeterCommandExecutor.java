@@ -45,7 +45,7 @@ import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -95,6 +95,7 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
 
             return MethodResultCode.SUCCESS;
         } catch (final IOException | TechnicalException e) {
+            LOGGER.error("Unexpected exception during decoding of data", e);
             throw new ConnectionException(e);
         }
     }
@@ -115,12 +116,14 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedData = cipher.doFinal(inputData);
         } catch (final Exception ex) {
+            LOGGER.error("Unexpected exception during decryption", ex);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
         } finally {
             try {
                 inputStream.close();
             } catch (final IOException e) {
-                e.printStackTrace();
+                LOGGER.error("Unexpected exception during closing of inputstream", e);
+                throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while closing inputstream!");
             }
         }
         return decryptedData;

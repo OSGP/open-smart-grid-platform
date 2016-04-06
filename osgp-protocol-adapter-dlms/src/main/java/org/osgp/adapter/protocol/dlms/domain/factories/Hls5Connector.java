@@ -130,9 +130,9 @@ public class Hls5Connector {
             // Setup connection to device
             final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
                     InetAddress.getByName(this.device.getIpAddress()))
-                    .useGmacAuthentication(decryptedAuthentication, decryptedEncryption)
-                    .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
-                    .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
+            .useGmacAuthentication(decryptedAuthentication, decryptedEncryption)
+            .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
+            .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
 
             final Integer challengeLength = this.device.getChallengeLength();
             if (challengeLength != null) {
@@ -161,12 +161,14 @@ public class Hls5Connector {
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedData = cipher.doFinal(inputData);
         } catch (final Exception ex) {
+            LOGGER.error("Unexpected exception during decryption", ex);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
         } finally {
             try {
                 inputStream.close();
             } catch (final IOException e) {
-                e.printStackTrace();
+                LOGGER.error("Unexpected exception during closing of inputstream", e);
+                throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while closing inputstream!");
             }
         }
         return decryptedData;

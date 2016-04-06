@@ -28,6 +28,8 @@ import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,6 +43,7 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
     @Value("${device.security.key.path.priv}")
     private String privateKeyPath;
     private static final String ALGORITHM = "RSA";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -136,12 +139,14 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedData = cipher.doFinal(inputData);
         } catch (final Exception ex) {
+            LOGGER.error("Unexpected exception during decryption}", ex);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
         } finally {
             try {
                 inputStream.close();
             } catch (final IOException e) {
-                e.printStackTrace();
+                LOGGER.error("Unexpected exception during closing of inputstream", e);
+                throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while closing inputstream!");
             }
         }
         return decryptedData;
