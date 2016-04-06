@@ -125,11 +125,9 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
 
     private byte[] decrypt(final byte[] inputData) throws TechnicalException {
         byte[] decryptedData = null;
-        ObjectInputStream inputStream = null;
         PrivateKey privateKey;
-        try {
+        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(this.privateKeyPath))) {
             // Read the private key from the file.
-            inputStream = new ObjectInputStream(new FileInputStream(this.privateKeyPath));
             privateKey = (PrivateKey) inputStream.readObject();
 
             // Get an RSA cipher object and print the provider
@@ -141,13 +139,6 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
         } catch (final Exception ex) {
             LOGGER.error("Unexpected exception during decryption}", ex);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
-        } finally {
-            try {
-                inputStream.close();
-            } catch (final IOException e) {
-                LOGGER.error("Unexpected exception during closing of inputstream", e);
-                throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while closing inputstream!");
-            }
         }
         return decryptedData;
     }
