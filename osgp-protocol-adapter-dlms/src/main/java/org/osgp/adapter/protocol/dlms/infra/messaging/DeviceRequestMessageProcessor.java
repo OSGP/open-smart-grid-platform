@@ -26,9 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
@@ -122,39 +120,39 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         final boolean isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                 .getBooleanProperty(Constants.IS_SCHEDULED) : false;
 
-                try {
-                    // Handle message
-                    messageMetadata.handleMessage(message);
+        try {
+            // Handle message
+            messageMetadata.handleMessage(message);
 
-                    LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
-                            messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
+            LOGGER.info("{} called for device: {} for organisation: {}", message.getJMSType(),
+                    messageMetadata.getDeviceIdentification(), messageMetadata.getOrganisationIdentification());
 
-                    final Serializable response;
-                    if (this.mustConnect()) {
-                        device = this.domainHelperService.findDlmsDevice(messageMetadata);
-                        conn = this.dlmsConnectionFactory.getConnection(device);
-                        response = this.handleMessage(conn, device, message.getObject());
-                    } else {
-                        response = this.handleMessage(message.getObject());
-                    }
+            Serializable response = null;
+            if (this.usesDeviceConnection()) {
+                device = this.domainHelperService.findDlmsDevice(messageMetadata);
+                conn = this.dlmsConnectionFactory.getConnection(device);
+                response = this.handleMessage(conn, device, message.getObject());
+            } else {
+                response = this.handleMessage(message.getObject());
+            }
 
-                    // Send response
-                    this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
-                            response, isScheduled);
-                } catch (final JMSException exception) {
-                    this.logJmsException(LOGGER, exception, messageMetadata);
-                } catch (final Exception exception) {
-                    // Return original request + exception
-                    LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
+            // Send response
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.OK, null, this.responseMessageSender,
+                    response, isScheduled);
+        } catch (final JMSException exception) {
+            this.logJmsException(LOGGER, exception, messageMetadata);
+        } catch (final Exception exception) {
+            // Return original request + exception
+            LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
 
-                    this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                    this.responseMessageSender, message.getObject(), isScheduled);
-                } finally {
-                    if (conn != null) {
-                        LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
-                        conn.close();
-                    }
-                }
+            this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
+                            this.responseMessageSender, message.getObject(), isScheduled);
+        } finally {
+            if (conn != null) {
+                LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
+                conn.close();
+            }
+        }
     }
 
     /**
@@ -176,12 +174,14 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
      */
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "This method should be overwritten.");
+        throw new UnsupportedOperationException(
+                "handleMessage(ClientConnection, DlmsDevice, Serializable) should be overriden by a subclass, or usesDeviceConnection should return false.");
     }
 
     protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
-            ProtocolAdapterException, SessionProviderException {
-        throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "This method should be overwritten.");
+    ProtocolAdapterException {
+        throw new UnsupportedOperationException(
+                "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
 
     private void sendResponseMessage(final DlmsDeviceMessageMetadata dlmsDeviceMessageMetadata,
@@ -211,8 +211,13 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         responseMessageSender.send(responseMessage);
     }
-
-    protected boolean mustConnect() {
+    /**
+     * Used to determine if the handleMessage needs a device connection or not.
+     * Default value is true, override to alter behaviour of subclasses.
+     *
+     * @return Use device connection in handleMessage.
+     */
+    protected boolean usesDeviceConnection() {
         return true;
     }
 }

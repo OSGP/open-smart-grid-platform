@@ -33,6 +33,11 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
     }
 
     @Override
+    protected boolean usesDeviceConnection() {
+        return false;
+    }
+
+    @Override
     protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
             ProtocolAdapterException {
         final SmartMeteringDeviceDto smartMeteringDevice = (SmartMeteringDeviceDto) requestObject;
@@ -40,10 +45,5 @@ public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcess
 
         // No return object.
         return null;
-    }
-
-    @Override
-    protected boolean mustConnect() {
-        return false;
     }
 }
