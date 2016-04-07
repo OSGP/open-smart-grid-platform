@@ -11,6 +11,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 
 public interface DeviceService {
@@ -65,11 +66,7 @@ public interface DeviceService {
      */
     void setLight(SetLightDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
-    // void setSchedule(SetScheduleDeviceRequest deviceRequest,
-    // DeviceResponseHandler deviceResponseHandler,
-    // String ipAddress, String domain, String domainVersion, String
-    // messageType, int retryCount,
-    // boolean isScheduled, PageInfo pageInfo);
+    void setSchedule(SetScheduleDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
     // void setTransition(DeviceRequest deviceRequest, DeviceResponseHandler
     // deviceResponseHandler);

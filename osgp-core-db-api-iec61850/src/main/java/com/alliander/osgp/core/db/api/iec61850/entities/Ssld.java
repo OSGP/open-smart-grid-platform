@@ -84,39 +84,9 @@ public class Ssld extends Device {
         return this.outputSettings;
     }
 
-    /**
-     * Returns the {@link DeviceOutputSetting} for the given index
-     */
-    public DeviceOutputSetting getDeviceOutputSettingForIndex(final int index) {
-        for (final DeviceOutputSetting d : this.getOutputSettings()) {
-            if (d.getExternalId() == index) {
-                return d;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a list of all {@link DeviceOutputSetting}s for the given
-     * {@link RelayType}
-     */
-    public List<DeviceOutputSetting> findByRelayType(final RelayType relayType) {
-
-        final List<DeviceOutputSetting> output = new ArrayList<>();
-
-        for (final DeviceOutputSetting d : this.getOutputSettings()) {
-            if (relayType.equals(d.getRelayType())) {
-                output.add(d);
-            }
-        }
-
-        return output;
-    }
-
     /*
      * Create default configuration for a device (based on type).
-     * 
+     *
      * @return default configuration
      */
     private List<DeviceOutputSetting> createDefaultConfiguration() {

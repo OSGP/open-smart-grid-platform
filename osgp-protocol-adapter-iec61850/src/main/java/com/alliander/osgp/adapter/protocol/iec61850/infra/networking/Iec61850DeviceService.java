@@ -8,7 +8,9 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -19,6 +21,7 @@ import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ClientAssociation;
+import org.openmuc.openiec61850.ConstructedDataAttribute;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ModelNode;
@@ -34,10 +37,14 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceRelayType;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.InvalidConfigurationException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
@@ -46,6 +53,7 @@ import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataServ
 import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.ActionTimeType;
 import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
@@ -56,6 +64,7 @@ import com.alliander.osgp.dto.valueobjects.LongTermIntervalType;
 import com.alliander.osgp.dto.valueobjects.MeterType;
 import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
 import com.alliander.osgp.dto.valueobjects.RelayMap;
+import com.alliander.osgp.dto.valueobjects.Schedule;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -80,6 +89,8 @@ public class Iec61850DeviceService implements DeviceService {
 
     @Resource
     private int selftestTimeout;
+
+    private static final int DEFAULT_SCHEDULE_VALUE = -1;
 
     /**
      * @see DeviceService#getStatus(GetStatusDeviceRequest,
@@ -142,23 +153,25 @@ public class Iec61850DeviceService implements DeviceService {
                 // for index 0, only devices LIGHT RelaytTypes have to be
                 // switched
                 if (lightValue.getIndex() == 0) {
-                    for (final DeviceOutputSetting deviceOutputSetting : ssld.findByRelayType(RelayType.LIGHT)) {
+                    for (final DeviceOutputSetting deviceOutputSetting : this.ssldDataService.findByRelayType(ssld,
+                            RelayType.LIGHT)) {
                         this.switchLightRelay(deviceOutputSetting.getInternalId(), lightValue.isOn(), serverModel,
                                 clientAssociation);
                     }
                 } else {
 
-                    final DeviceOutputSetting deviceOutputSetting = ssld.getDeviceOutputSettingForIndex(lightValue
-                            .getIndex());
+                    final DeviceOutputSetting deviceOutputSetting = this.ssldDataService
+                            .getDeviceOutputSettingForExternalIndex(ssld, lightValue.getIndex());
 
-                    // You can only switch LIGHT relays that are used
-                    if (deviceOutputSetting == null || !RelayType.LIGHT.equals(deviceOutputSetting.getRelayType())) {
-                        throw new FunctionalException(FunctionalExceptionType.LIGHT_SWITCHING_NOT_ALLOWED_FOR_RELAY,
-                                ComponentType.PROTOCOL_IEC61850);
+                    if (deviceOutputSetting != null) {
+
+                        // You can only switch LIGHT relays that are used
+                        this.checkRelay(deviceOutputSetting.getRelayType(), RelayType.LIGHT);
+
+                        this.switchLightRelay(deviceOutputSetting.getInternalId(), lightValue.isOn(), serverModel,
+                                clientAssociation);
                     }
 
-                    this.switchLightRelay(deviceOutputSetting.getInternalId(), lightValue.isOn(), serverModel,
-                            clientAssociation);
                 }
             }
         } catch (final ConnectionFailureException se) {
@@ -286,7 +299,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #
@@ -357,7 +370,8 @@ public class Iec61850DeviceService implements DeviceService {
 
             // Turning all light relays on or off, depending on the value of
             // startOfTest
-            for (final DeviceOutputSetting deviceOutputSetting : ssld.findByRelayType(RelayType.LIGHT)) {
+            for (final DeviceOutputSetting deviceOutputSetting : this.ssldDataService.findByRelayType(ssld,
+                    RelayType.LIGHT)) {
                 lightRelays.add(deviceOutputSetting.getExternalId());
                 this.switchLightRelay(deviceOutputSetting.getInternalId(), startOfTest, serverModel, clientAssociation);
             }
@@ -427,9 +441,51 @@ public class Iec61850DeviceService implements DeviceService {
 
     }
 
-    // =================
-    // PRIVATE METHODS =
-    // =================
+    @Override
+    public void setSchedule(final SetScheduleDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+        try {
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
+
+            // TODO make this method more generic once the light schedules are
+            // implemented
+            this.setTariffScheduleOnDevice(serverModel, clientAssociation, deviceRequest
+                    .getScheduleMessageDataContainer().getScheduleList(), ssld);
+
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
+        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+        deviceResponseHandler.handleResponse(deviceResponse);
+
+    }
+
+    // ======================================
+    // PRIVATE DEVICE COMMUNICATION METHODS =
+    // ======================================
 
     private ServerModel connectAndRetrieveServerModel(final DeviceRequest deviceRequest)
             throws ProtocolAdapterException {
@@ -929,6 +985,103 @@ public class Iec61850DeviceService implements DeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
+    private void setTariffScheduleOnDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final List<Schedule> scheduleList, final Ssld ssld) throws ProtocolAdapterException, FunctionalException {
+
+        // Creating a list of all Schedule entries, grouped by relay index
+        final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList, ssld,
+                RelayType.TARIFF);
+
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
+
+                    // TODO clear existing schedule. Do this at the end for the
+                    // remaining schedules?
+
+                    final String scheduleObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                            + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(relayIndex)
+                            + LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE;
+
+                    final FcModelNode scheduleConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                            scheduleObjectReference, Fc.CF);
+
+                    for (int i = 0; i < relaySchedulesEntries.get(relayIndex).size(); i++) {
+
+                        LOGGER.info("Writing schedule entry {} for relay {}", i + 1, relayIndex);
+
+                        final ScheduleEntry scheduleEntry = relaySchedulesEntries.get(relayIndex).get(i);
+
+                        final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(scheduleConfiguration,
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForRelayIndex(i + 1),
+                                        Fc.CF);
+
+                        // Setting enables
+                        final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
+                                LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
+                        enabled.setValue(scheduleEntry.isEnabled());
+                        clientAssociation.setDataValues(enabled);
+
+                        final BdaInt32 day = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
+                                LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_DAY);
+                        day.setValue(scheduleEntry.getWeekday().getIndex());
+                        clientAssociation.setDataValues(day);
+
+                        // Setting the default values for all of these
+                        int timeOnValue = DEFAULT_SCHEDULE_VALUE;
+                        byte timeOnTypeValue = DEFAULT_SCHEDULE_VALUE;
+                        int timeOffValue = DEFAULT_SCHEDULE_VALUE;
+                        byte timeOffTypeValue = DEFAULT_SCHEDULE_VALUE;
+
+                        // checking to see if the timeOn of timeOff values have
+                        // to be filled
+                        if (scheduleEntry.isOn()) {
+                            timeOnValue = scheduleEntry.getTime();
+                            timeOnTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
+
+                        } else {
+                            timeOffValue = scheduleEntry.getTime();
+                            timeOffTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
+                        }
+
+                        final BdaInt32 timeOn = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
+                                LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_ON);
+                        timeOn.setValue(timeOnValue);
+                        clientAssociation.setDataValues(timeOn);
+
+                        final BdaInt8 timeOnActionTime = (BdaInt8) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_ON_TYPE);
+                        timeOnActionTime.setValue(timeOnTypeValue);
+                        clientAssociation.setDataValues(timeOnActionTime);
+
+                        final BdaInt32 timeOff = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
+                                LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_OFF);
+                        timeOff.setValue(timeOffValue);
+                        clientAssociation.setDataValues(timeOff);
+
+                        final BdaInt8 timeOffActionTime = (BdaInt8) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TIME_OFF_TYPE);
+                        timeOffActionTime.setValue(timeOffTypeValue);
+                        clientAssociation.setDataValues(timeOffActionTime);
+
+                    }
+                }
+
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
+    }
+
+    // ========================
+    // PRIVATE HELPER METHODS =
+    // ========================
+
     // This code will be used in the future
     private void checkRelayTypes(final DeviceOutputSetting deviceOutputSetting, final ServerModel serverModel)
             throws InvalidConfigurationException {
@@ -998,5 +1151,116 @@ public class Iec61850DeviceService implements DeviceService {
         }
 
         return output;
+    }
+
+    /*
+     * Checks to see if the relay has the correct type, throws an exception when
+     * that't not the case
+     */
+    private void checkRelay(final RelayType actual, final RelayType expected) throws FunctionalException {
+
+        if (!actual.equals(expected)) {
+            if (RelayType.LIGHT.equals(expected)) {
+                throw new FunctionalException(FunctionalExceptionType.ACTION_NOT_ALLOWED_FOR_LIGHT_RELAY,
+                        ComponentType.PROTOCOL_IEC61850);
+            } else {
+                throw new FunctionalException(FunctionalExceptionType.ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY,
+                        ComponentType.PROTOCOL_IEC61850);
+            }
+        }
+    }
+
+    /*
+     * Converts a {@link Schedule} to a {@link ScheduleEntry}
+     */
+    private ScheduleEntry convertToScheduleEntry(final Schedule schedule, final LightValue lightValue) {
+
+        // A time is formatted as hh:mm:ss, the time on the device is formatted
+        // as hhmm in int form
+        final short time = Short.valueOf(schedule.getTime().replace(":", "").substring(0, 4));
+
+        // TODO what to do when weekday is ABSOLUTEDAY? Special days is not
+        // implemented yet
+        final ScheduleWeekday weekday = ScheduleWeekday.valueOf(schedule.getWeekDay().name());
+
+        // ActionTime ABSOLUTETIME --> Fix
+        // TriggerType LIGHT_TRIGGER & ActionTime SUNRISE or SUNSET --> Sensor
+        // TriggerType ASTRONOMICAL --> Autonome
+        final TriggerType triggerType;
+
+        if (ActionTimeType.ABSOLUTETIME.equals(schedule.getActionTime())) {
+            triggerType = TriggerType.FIX;
+        } else if (com.alliander.osgp.dto.valueobjects.TriggerType.ASTRONOMICAL.equals(schedule.getTriggerType())) {
+            triggerType = TriggerType.AUTONOME;
+        } else {
+            triggerType = TriggerType.SENSOR;
+        }
+
+        return new ScheduleEntry(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled(), triggerType,
+                weekday, time, lightValue.isOn());
+
+    }
+
+    /*
+     * returns a map of schedule entries, grouped by the internal index
+     */
+    private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<Schedule> scheduleList, final Ssld ssld,
+            final RelayType relayType) throws FunctionalException {
+
+        final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
+
+        for (final Schedule schedule : scheduleList) {
+            for (final LightValue lightValue : schedule.getLightValue()) {
+
+                final List<Integer> indexes = new ArrayList<>();
+
+                if (lightValue.getIndex() == 0 && RelayType.TARIFF.equals(relayType)) {
+
+                    // Index 0 is not allowed for tariff switching
+                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.PROTOCOL_IEC61850);
+
+                } else if (lightValue.getIndex() == 0 && RelayType.LIGHT.equals(relayType)) {
+
+                    // index == 0, getting all light relays and adding their
+                    // internal indexes to the indexes list
+                    final List<DeviceOutputSetting> settings = Iec61850DeviceService.this.ssldDataService
+                            .findByRelayType(ssld, relayType);
+
+                    for (final DeviceOutputSetting deviceOutputSetting : settings) {
+                        indexes.add(deviceOutputSetting.getInternalId());
+                    }
+                } else {
+                    // index != 0, adding just the one index to the list
+                    indexes.add(Iec61850DeviceService.this.ssldDataService.convertToInternalIndex(ssld,
+                            lightValue.getIndex()));
+                }
+
+                final ScheduleEntry scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
+
+                for (final Integer internalIndex : indexes) {
+
+                    if (relaySchedulesEntries.containsKey(internalIndex)) {
+                        // Internal index already in the Map, adding to the List
+                        relaySchedulesEntries.get(internalIndex).add(scheduleEntry);
+                    } else {
+
+                        // First time we come across this relay, checking its
+                        // type
+                        Iec61850DeviceService.this.checkRelay(Iec61850DeviceService.this.ssldDataService
+                                .getDeviceOutputSettingForInternalIndex(ssld, internalIndex).getRelayType(), relayType);
+
+                        // Adding it to scheduleEntries
+                        final List<ScheduleEntry> scheduleEntries = new ArrayList<>();
+                        scheduleEntries.add(scheduleEntry);
+
+                        relaySchedulesEntries.put(internalIndex, scheduleEntries);
+                    }
+                }
+            }
+        }
+
+        return relaySchedulesEntries;
+
     }
 }

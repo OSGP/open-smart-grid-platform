@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
+
 /**
  * Definitions of Logical Device, Logical Nodes and Attributes.
  */
@@ -14,12 +17,14 @@ public final class LogicalNodeAttributeDefinitons {
 
     private static final int MAX_RELAY_INDEX = 4;
 
+    private static final int MAX_SCHEDULE_INDEX = 64;
+
     /**
      * The name of the Logical Device.
      */
     public static final String LOGICAL_DEVICE = "SWDeviceGenericIO";
 
-    /*
+    /**
      * CSLC, configuration Logical Node.
      */
     public static final String LOGICAL_NODE_CSLC = "/CSLC";
@@ -34,6 +39,64 @@ public final class LogicalNodeAttributeDefinitons {
      * determines if the relay can be operated.
      */
     public static final String PROPERTY_MASTER_CONTROL = ".CfSt";
+
+    /**
+     * Property of XSWC Node, schedule
+     * */
+    public static final String PROPERTY_SCHEDULE = ".Sche";
+
+    /**
+     * Property of XSWC Node, schedule
+     * */
+    public static final String PROPERTY_SCHEDULE_PREFIX = "sche";
+
+    /**
+     * Schedule enabled.
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_ENABLE = "enable";
+
+    /**
+     * Schedule day of the week. see {@link ScheduleWeekday}
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_DAY = "day";
+
+    /**
+     * Time on
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TIME_ON = "tOn";
+
+    /**
+     * Time on type. see {@link TriggerType}
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TIME_ON_TYPE = "tOnT";
+
+    /**
+     * Time off
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TIME_OFF = "tOff";
+
+    /**
+     * Time off type. see {@link TriggerType}
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TIME_OFF_TYPE = "tOffT";
 
     /**
      * Attribute of Property CfSt, enbOper, enables the operation of a relay.
@@ -160,5 +223,17 @@ public final class LogicalNodeAttributeDefinitons {
         }
 
         return LogicalNodeAttributeDefinitons.LOGICAL_NODE_RELAY_PREFIX + index;
+    }
+
+    /**
+     * Returns the value of the Relay's logical node for the given index
+     */
+    public static final String getSchedulePropertyNameForRelayIndex(final int index) {
+
+        if (index < 1 || index > MAX_SCHEDULE_INDEX) {
+            throw new IllegalArgumentException("Invalid index value : " + index);
+        }
+
+        return LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_PREFIX + index;
     }
 }
