@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import org.joda.time.DateTime;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt16;
+import org.openmuc.openiec61850.BdaInt16U;
 import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt8;
 import org.openmuc.openiec61850.BdaVisibleString;
@@ -299,7 +300,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #
@@ -596,22 +597,18 @@ public class Iec61850DeviceService implements DeviceService {
                 // TODO uncomment the LightRelay code
 
                 // Getting the LightType
-                // final String softwareConfigurationObjectReference =
-                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                // +
-                // LogicalNodeAttributeDefinitons.PROPERTY_NODE_CSLC_PREFIX
-                // +
-                // LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
-                //
-                // final FcModelNode test = (FcModelNode)
-                // serverModel.findModelNode(softwareConfigurationObjectReference,
-                // Fc.CF);
-                //
-                // final BdaVisibleString value = (BdaVisibleString)
-                // test.getChild("LT");
-                // LightType.valueOf(new String(value.getValue()));
+                final String softwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
 
-                return new DeviceStatus(lightValues, LinkType.ETHERNET, LinkType.ETHERNET, LightType.RELAY, 0);
+                final FcModelNode softwareConfiguration = (FcModelNode) serverModel.findModelNode(
+                        softwareConfigurationObjectReference, Fc.CF);
+
+                final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
+                final LightType lightType = LightType.valueOf(lightTypeValue.getStringValue());
+
+                return new DeviceStatus(lightValues, LinkType.ETHERNET, LinkType.ETHERNET, lightType, 0);
             }
         };
 
@@ -660,9 +657,23 @@ public class Iec61850DeviceService implements DeviceService {
                 // PSLD specific => just sending null so it'll be ignored
                 final DaliConfiguration daliConfiguration = null;
 
-                // TODO Lighttype is hardcoded, but it will be the same code as
-                // in getStatusFromDevice, so I won't copy it here for now
-                final LightType lightType = LightType.RELAY;
+                LOGGER.info("Reading the software configuration values");
+
+                // Getting the LightType
+                final String softwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
+
+                final FcModelNode softwareConfiguration = (FcModelNode) serverModel.findModelNode(
+                        softwareConfigurationObjectReference, Fc.CF);
+
+                final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
+                final LightType lightType = LightType.valueOf(lightTypeValue.getStringValue());
+
+                // These will be used later on
+                final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration.getChild("osRise");
+                final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration.getChild("osSet");
 
                 final Configuration configuration = new Configuration(lightType, daliConfiguration, relayConfiguration,
                         shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
@@ -704,21 +715,7 @@ public class Iec61850DeviceService implements DeviceService {
                 configuration.setDeviceFixIpValue(new String(deviceFixIpValue.getValue()));
                 configuration.setDhcpEnabled(dhcpEnabled.getValue());
 
-                // getting the software configuration values
-
-                LOGGER.info("Reading the software configuration values");
-
-                final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                        + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
-
-                LOGGER.info("swcfObjectReference: {}", swcfObjectReference);
-
-                final FcModelNode softwareConfiguration = (FcModelNode) serverModel.findModelNode(swcfObjectReference,
-                        Fc.CF);
-
-                final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration.getChild("osRise");
-                final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration.getChild("osSet");
+                // setting the software configuration values
 
                 configuration.setAstroGateSunRiseOffset((int) astroGateSunRiseOffset.getValue());
                 configuration.setAstroGateSunSetOffset((int) astroGateSunSetOffset.getValue());
@@ -736,12 +733,12 @@ public class Iec61850DeviceService implements DeviceService {
                 final FcModelNode clockConfiguration = (FcModelNode) serverModel.findModelNode(clockObjectReference,
                         Fc.CF);
 
-                final BdaInt16 timeSyncFrequency = (BdaInt16) clockConfiguration.getChild("syncPer");
+                final BdaInt16U timeSyncFrequency = (BdaInt16U) clockConfiguration.getChild("syncPer");
                 final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean) clockConfiguration.getChild("enbDst");
                 final BdaVisibleString summerTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstBegT");
                 final BdaVisibleString winterTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstEndT");
 
-                configuration.setTimeSyncFrequency((int) timeSyncFrequency.getValue());
+                configuration.setTimeSyncFrequency(timeSyncFrequency.getValue());
                 configuration.setAutomaticSummerTimingEnabled(automaticSummerTimingEnabled.getValue());
                 // TODO hardcoded current time for now
                 configuration.setSummerTimeDetails(new DateTime());
@@ -770,9 +767,6 @@ public class Iec61850DeviceService implements DeviceService {
                 // an invalid format causes issues?)
                 // summerTimeDetails --> CSLC.Clock.dstBegT
                 // winterTimeDetails --> CSLC.Clock.dstEndT
-
-                // TODO set lightType once it's writable
-                // lightType --> CSLC.SWCf.LT
 
                 // TODO set relayTypes once they are writable
                 // relayMap.getRelayType() --> XSWC{1-4}.post.stVal
@@ -824,7 +818,8 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // checking to see if all software config values are null, so
                 // that we don't read the values for no reason
-                if (!(configuration.getAstroGateSunRiseOffset() == null && configuration.getAstroGateSunSetOffset() == null)) {
+                if (!(configuration.getAstroGateSunRiseOffset() == null
+                        && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
 
                     final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
@@ -859,6 +854,18 @@ public class Iec61850DeviceService implements DeviceService {
                         clientAssociation.setDataValues(astroGateSunSetOffset);
                     }
 
+                    if (configuration.getLightType() != null) {
+
+                        final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
+                                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
+
+                        LOGGER.info("Updating LightType to {}", configuration.getLightType());
+
+                        // Get the value and send the value to the device.
+                        lightTypeValue.setValue(configuration.getLightType().name());
+                        clientAssociation.setDataValues(lightTypeValue);
+                    }
+
                 }
 
                 // checking to see if all register values are null, so that we
@@ -874,7 +881,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                     if (configuration.getTimeSyncFrequency() != null) {
 
-                        final BdaInt16 timeSyncFrequency = (BdaInt16) Iec61850DeviceService.this
+                        final BdaInt16U timeSyncFrequency = (BdaInt16U) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(clockConfiguration,
                                         LogicalNodeAttributeDefinitons.PROPERTY_POSITION_SYNC_PERIOD, Fc.CF);
 

@@ -7,8 +7,9 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
-import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
+import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
+import com.alliander.osgp.dto.valueobjects.LightType;
 
 /**
  * Definitions of Logical Device, Logical Nodes and Attributes.
@@ -183,6 +184,12 @@ public final class LogicalNodeAttributeDefinitons {
      * astronomic sunset.
      */
     public static final String PROPERTY_POSITION_OFFSET_SUNSET = "osSet";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of the
+     * {@link LightType}
+     */
+    public static final String PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE = "LT";
 
     /**
      * Attribute of Property SWCf, used to read the value of fixed ip address
