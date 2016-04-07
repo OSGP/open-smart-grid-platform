@@ -34,7 +34,8 @@
 				<xsd:element name="GetAdministrativeStatusData" type="smconf:GetAdministrativeStatusData" />
 				<xsd:element name="PeriodicMeterReadsRequestData" type="smmon:PeriodicMeterReadsRequestData" />
 				<xsd:element name="PeriodicMeterReadsGasRequestData" type="smmon:PeriodicMeterReadsGasRequestData" />
-				
+				<xsd:element name="SetAdministrativeStatusTypeData" type="smconf:AdministrativeStatusTypeData" />
+
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>

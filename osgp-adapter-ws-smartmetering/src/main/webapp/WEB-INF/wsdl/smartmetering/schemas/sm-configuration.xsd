@@ -391,6 +391,16 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<xsd:complexType name="AdministrativeStatusTypeData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="SetConfigurationObjectRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
