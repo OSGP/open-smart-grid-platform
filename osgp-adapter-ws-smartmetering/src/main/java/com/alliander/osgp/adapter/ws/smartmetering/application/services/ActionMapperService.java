@@ -28,6 +28,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Managemen
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
@@ -104,6 +105,9 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusTypeData.class,
                 this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType.class,
+                this.configurationMapper);
 
         // ok to here
         CLASS_TO_MAPPER_MAP
@@ -152,11 +156,13 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusTypeData.class,
                 AdministrativeStatusTypeData.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarDataType.class,
+                ActivityCalendarData.class);
 
         // ok to here
         CLASS_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
-                        SetConfigurationObjectRequest.class);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
+                SetConfigurationObjectRequest.class);
         CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms.class,
                 PushSetupSms.class);
         CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.ActivityCalendarType.class,

@@ -35,6 +35,7 @@
 				<xsd:element name="PeriodicMeterReadsRequestData" type="smmon:PeriodicMeterReadsRequestData" />
 				<xsd:element name="PeriodicMeterReadsGasRequestData" type="smmon:PeriodicMeterReadsGasRequestData" />
 				<xsd:element name="SetAdministrativeStatusTypeData" type="smconf:AdministrativeStatusTypeData" />
+				<xsd:element name="ActivityCalendarDataType" type="smconf:ActivityCalendarDataType" />
 
 			</xsd:choice>
 		</xsd:sequence>

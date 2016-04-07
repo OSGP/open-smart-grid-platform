@@ -31,6 +31,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Perio
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
@@ -49,7 +50,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
@@ -116,6 +117,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(PushSetupAlarm.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(ActivityCalendarData.class, this.configurationMapper);
 
         // ok to here
         CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequest.class, this.commonMapper);
@@ -139,12 +141,12 @@ public class ActionMapperService {
         CLASS_MAP.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
         CLASS_MAP.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
         CLASS_MAP.put(AdministrativeStatusTypeData.class, AdministrativeStatusTypeDataDto.class);
+        CLASS_MAP.put(ActivityCalendarData.class, ActivityCalendarDataDto.class);
 
         // ok to here
         CLASS_MAP.put(SmsDetails.class, SmsDetailsDto.class);
         CLASS_MAP.put(SetConfigurationObjectRequest.class, SetConfigurationObjectRequestDto.class);
         CLASS_MAP.put(PushSetupSms.class, PushSetupSmsDto.class);
-        CLASS_MAP.put(ActivityCalendar.class, ActivityCalendarDto.class);
         CLASS_MAP.put(AlarmNotifications.class, AlarmNotificationsDto.class);
         CLASS_MAP.put(KeySet.class, KeySetDto.class);
         CLASS_MAP.put(SmartMeteringDevice.class, SmartMeteringDeviceDto.class);
