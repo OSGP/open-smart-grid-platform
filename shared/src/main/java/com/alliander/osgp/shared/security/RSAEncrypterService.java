@@ -4,17 +4,22 @@
 package com.alliander.osgp.shared.security;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
 
 /**
  * RSA Encryption service class that offers encrypt and decrypt methods to
@@ -34,43 +39,45 @@ public final class RSAEncrypterService {
          */
     }
 
-    public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath) throws TechnicalException {
+    /**
+     * Reads the private key from the file and decrypts the data using the
+     * private key
+     */
+    public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath)
+            throws RsaEncrypterException {
         byte[] decryptedData = null;
         PrivateKey privateKey;
+
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(devicePrivateKeyPath))) {
-            // Read the private key from the file.
             privateKey = (PrivateKey) inputStream.readObject();
-
-            // Get an RSA cipher object and print the provider
             final Cipher cipher = Cipher.getInstance(algorithm);
-
-            // Decrypt the text using the private key
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             decryptedData = cipher.doFinal(inputData);
-        } catch (final Exception ex) {
+        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | ClassNotFoundException | IOException
+                | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
             LOGGER.error("Unexpected exception during decryption", ex);
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
+            throw new RsaEncrypterException("Error while decrypting RSA key!", ex);
         }
         return decryptedData;
     }
 
-    public static byte[] encrypt(final byte[] inputData, final String publicKeyPath) throws TechnicalException {
+    /**
+     * Reads the public key from the file and encrypts the data using the public
+     * key
+     */
+    public static byte[] encrypt(final byte[] inputData, final String publicKeyPath) throws RsaEncrypterException {
         byte[] cipherData = null;
         PublicKey publicKey;
 
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(publicKeyPath))) {
-            // Read the public key from the file.
             publicKey = (PublicKey) inputStream.readObject();
-
-            // Get an RSA cipher object and print the provider
             final Cipher cipher = Cipher.getInstance(algorithm);
-
-            // Encrypt the data using the public key
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             cipherData = cipher.doFinal(inputData);
-        } catch (final Exception e) {
-            LOGGER.error("Unexpected exception during encryption", e);
-            throw new TechnicalException(ComponentType.WS_SMART_METERING, "Error while encrypting RSA key!");
+        } catch (final NoSuchAlgorithmException | NoSuchPaddingException | ClassNotFoundException | IOException
+                | InvalidKeyException | IllegalBlockSizeException | BadPaddingException ex) {
+            LOGGER.error("Unexpected exception during encryption", ex);
+            throw new RsaEncrypterException("Error while encrypting RSA key!", ex);
         }
         return cipherData;
     }
