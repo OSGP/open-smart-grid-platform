@@ -7,18 +7,14 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
@@ -40,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.security.RSAEncrypterService;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
@@ -65,7 +61,6 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     @Value("${device.security.key.path.priv}")
     private String privateKeyPath;
-    private static final String ALGORITHM = "RSA";
 
     @Override
     public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,
@@ -74,8 +69,10 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedEncryptionKey = this.decrypt(Hex.decode(protocolMeterInfo.getEncryptionKey()));
-            final byte[] decryptedMasterKey = this.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()));
+            final byte[] decryptedEncryptionKey = RSAEncrypterService.decrypt(
+                    Hex.decode(protocolMeterInfo.getEncryptionKey()), this.privateKeyPath);
+            final byte[] decryptedMasterKey = RSAEncrypterService.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()),
+                    this.privateKeyPath);
 
             final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
@@ -98,26 +95,6 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             LOGGER.error("Unexpected exception during decoding of data", e);
             throw new ConnectionException(e);
         }
-    }
-
-    private byte[] decrypt(final byte[] inputData) throws TechnicalException {
-        byte[] decryptedData = null;
-        PrivateKey privateKey;
-        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(this.privateKeyPath))) {
-            // Read the private key from the file.
-            privateKey = (PrivateKey) inputStream.readObject();
-
-            // Get an RSA cipher object and print the provider
-            final Cipher cipher = Cipher.getInstance(ALGORITHM);
-
-            // Decrypt the text using the private key
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            decryptedData = cipher.doFinal(inputData);
-        } catch (final Exception ex) {
-            LOGGER.error("Unexpected exception during decryption", ex);
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
-        }
-        return decryptedData;
     }
 
     private void checkMethodResultCode(final List<MethodResult> methodResultCode, final String methodParameterName)

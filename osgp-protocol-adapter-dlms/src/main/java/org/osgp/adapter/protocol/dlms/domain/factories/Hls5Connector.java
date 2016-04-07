@@ -7,14 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.factories;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.security.PrivateKey;
-
-import javax.crypto.Cipher;
 
 import org.apache.commons.codec.DecoderException;
 import org.openmuc.jdlms.ClientConnection;
@@ -30,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.security.RSAEncrypterService;
 
 public class Hls5Connector {
 
@@ -47,8 +43,7 @@ public class Hls5Connector {
 
     private DlmsDevice device;
 
-    private String devicePrivateKeyPath;
-    private static final String ALGORITHM = "RSA";
+    private final String devicePrivateKeyPath;
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
@@ -124,8 +119,9 @@ public class Hls5Connector {
                     .decodeHex(encryptionKeyValue.toCharArray());
 
             // Decrypt the key
-            final byte[] decryptedAuthentication = this.decrypt(authenticationKey);
-            final byte[] decryptedEncryption = this.decrypt(encryptionKey);
+            final byte[] decryptedAuthentication = RSAEncrypterService.decrypt(authenticationKey,
+                    this.devicePrivateKeyPath);
+            final byte[] decryptedEncryption = RSAEncrypterService.decrypt(encryptionKey, this.devicePrivateKeyPath);
 
             // Setup connection to device
             final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
@@ -144,26 +140,6 @@ public class Hls5Connector {
             LOGGER.error("Unexpected exception while readinig RSA key", e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while reading RSA key! ");
         }
-    }
-
-    private byte[] decrypt(final byte[] inputData) throws TechnicalException {
-        byte[] decryptedData = null;
-        PrivateKey privateKey;
-        try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(this.devicePrivateKeyPath))) {
-            // Read the private key from the file.
-            privateKey = (PrivateKey) inputStream.readObject();
-
-            // Get an RSA cipher object and print the provider
-            final Cipher cipher = Cipher.getInstance(ALGORITHM);
-
-            // Decrypt the text using the private key
-            cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            decryptedData = cipher.doFinal(inputData);
-        } catch (final Exception ex) {
-            LOGGER.error("Unexpected exception during decryption", ex);
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while decrypting RSA key!");
-        }
-        return decryptedData;
     }
 
     private void discardInvalidKeys() {
