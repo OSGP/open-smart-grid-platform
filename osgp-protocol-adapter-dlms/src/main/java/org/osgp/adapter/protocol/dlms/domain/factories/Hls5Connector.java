@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.commons.codec.DecoderException;
+import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
 import org.osgp.adapter.protocol.dlms.application.threads.RecoverKeyProcessInitiator;
@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.security.RSAEncrypterService;
 
@@ -83,6 +84,11 @@ public class Hls5Connector {
                         this.device.getIpAddress());
             }
             throw new ConnectionException(e);
+        } catch (final RsaEncrypterException e) {
+            LOGGER.error("RSA decryption on security keys went wrong for device with ip: {}",
+                    this.device.getIpAddress(), e);
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    "RSA decryption on security keys went wrong for device with ip: " + this.device.getIpAddress());
         }
     }
 
@@ -101,45 +107,40 @@ public class Hls5Connector {
      *             When there are problems in connecting to or communicating
      *             with the device.
      * @throws TechnicalException
-     *             When there are problems reading or decrypting the encrypted
+     *             When there are problems reading the
+     *             security and authorisation keys.
+     * @throws RsaEncrypterException
+     *             When there are problems decrypting the encrypted
      *             security and authorisation keys.
      */
-    private ClientConnection createConnection() throws IOException, TechnicalException {
+    private ClientConnection createConnection() throws IOException, TechnicalException, RsaEncrypterException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
-        try {
-            final String authenticationKeyValue = validAuthenticationKey.getKey();
-            final String encryptionKeyValue = validEncryptionKey.getKey();
+        final String authenticationKeyValue = validAuthenticationKey.getKey();
+        final String encryptionKeyValue = validEncryptionKey.getKey();
 
-            // Decode the key from Hexstring to bytes
-            final byte[] authenticationKey = org.apache.commons.codec.binary.Hex.decodeHex(authenticationKeyValue
-                    .toCharArray());
-            final byte[] encryptionKey = org.apache.commons.codec.binary.Hex
-                    .decodeHex(encryptionKeyValue.toCharArray());
+        // Decode the key from Hexstring to bytes
+        final byte[] authenticationKey = Hex.decode(authenticationKeyValue);
+        final byte[] encryptionKey = Hex.decode(encryptionKeyValue);
 
-            // Decrypt the key
-            final byte[] decryptedAuthentication = RSAEncrypterService.decrypt(authenticationKey,
-                    this.devicePrivateKeyPath);
-            final byte[] decryptedEncryption = RSAEncrypterService.decrypt(encryptionKey, this.devicePrivateKeyPath);
+        // Decrypt the key
+        final byte[] decryptedAuthentication = RSAEncrypterService
+                .decrypt(authenticationKey, this.devicePrivateKeyPath);
+        final byte[] decryptedEncryption = RSAEncrypterService.decrypt(encryptionKey, this.devicePrivateKeyPath);
 
-            // Setup connection to device
-            final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(
-                    InetAddress.getByName(this.device.getIpAddress()))
-            .useGmacAuthentication(decryptedAuthentication, decryptedEncryption)
-            .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
-            .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
+        // Setup connection to device
+        final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
+                .getIpAddress())).useGmacAuthentication(decryptedAuthentication, decryptedEncryption)
+                .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
+                .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
 
-            final Integer challengeLength = this.device.getChallengeLength();
-            if (challengeLength != null) {
-                tcpConnectionBuilder.challengeLength(challengeLength);
-            }
-
-            return tcpConnectionBuilder.buildLnConnection();
-        } catch (final DecoderException e) {
-            LOGGER.error("Unexpected exception while readinig RSA key", e);
-            throw new TechnicalException(ComponentType.PROTOCOL_DLMS, "Error while reading RSA key! ");
+        final Integer challengeLength = this.device.getChallengeLength();
+        if (challengeLength != null) {
+            tcpConnectionBuilder.challengeLength(challengeLength);
         }
+
+        return tcpConnectionBuilder.buildLnConnection();
     }
 
     private void discardInvalidKeys() {

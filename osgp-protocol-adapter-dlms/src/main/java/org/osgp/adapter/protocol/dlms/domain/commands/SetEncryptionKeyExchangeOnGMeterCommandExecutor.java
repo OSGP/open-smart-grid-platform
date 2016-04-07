@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
 import com.alliander.osgp.shared.security.RSAEncrypterService;
 
 @Component()
@@ -91,9 +91,13 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
 
             return MethodResultCode.SUCCESS;
-        } catch (final IOException | TechnicalException e) {
+        } catch (final IOException e) {
             LOGGER.error("Unexpected exception during decoding of data", e);
             throw new ConnectionException(e);
+        } catch (final RsaEncrypterException e) {
+            LOGGER.error("Unexpected exception during decryption of security keys", e);
+            throw new ProtocolAdapterException("Unexpected exception during decryption of security keys, reason = "
+                    + e.getMessage());
         }
     }
 

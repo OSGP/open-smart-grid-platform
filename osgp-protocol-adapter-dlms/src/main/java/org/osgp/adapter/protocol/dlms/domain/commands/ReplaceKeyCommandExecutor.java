@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
 import com.alliander.osgp.shared.security.RSAEncrypterService;
 
 @Component
@@ -104,8 +104,9 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
         try {
             // Decrypt the cipher text using the private key.
             final byte[] decryptedKey = RSAEncrypterService.decrypt(keyWrapper.getBytes(), this.privateKeyPath);
+            final byte[] decryptedMasterKey = RSAEncrypterService.decrypt(this.getMasterKey(device), this.privateKeyPath);
 
-            final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
+            final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());
             final MethodResultCode methodResultCode = conn.action(methodParameterAuth).get(0).resultCode();
 
@@ -113,8 +114,12 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
                 throw new ProtocolAdapterException("AccessResultCode for replace keys was not SUCCESS: "
                         + methodResultCode);
             }
-        } catch (final TechnicalException | IOException e) {
+        } catch (final IOException e) {
             throw new ConnectionException(e);
+        } catch (final RsaEncrypterException e) {
+            LOGGER.error("Unexpected exception during decryption of security keys", e);
+            throw new ProtocolAdapterException("Unexpected exception during decryption of security keys, reason = "
+                    + e.getMessage());
         }
     }
 
