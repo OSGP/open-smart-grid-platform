@@ -27,6 +27,13 @@ public final class RSAEncrypterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RSAEncrypterService.class);
     private static final String algorithm = "RSA";
 
+    private RSAEncrypterService() {
+        /*
+         * Private Constructor will prevent the instantiation of this class
+         * directly
+         */
+    }
+
     public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath) throws TechnicalException {
         byte[] decryptedData = null;
         PrivateKey privateKey;
