@@ -11,9 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-
-public class SetConfigurationObjectRequest implements Serializable, ActionValueObject {
+public class SetConfigurationObjectRequest implements Serializable {
 
     private static final long serialVersionUID = -8295596279285780413L;
 
@@ -33,11 +31,5 @@ public class SetConfigurationObjectRequest implements Serializable, ActionValueO
 
     public SetConfigurationObjectRequestData getSetConfigurationObjectRequestData() {
         return this.setConfigurationObjectRequestData;
-    }
-
-    @Override
-    public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
     }
 }

@@ -36,6 +36,8 @@
 				<xsd:element name="PeriodicMeterReadsGasRequestData" type="smmon:PeriodicMeterReadsGasRequestData" />
 				<xsd:element name="SetAdministrativeStatusTypeData" type="smconf:AdministrativeStatusTypeData" />
 				<xsd:element name="ActivityCalendarDataType" type="smconf:ActivityCalendarDataType" />
+				<xsd:element name="SetEncryptionKeyExchangeOnGMeterRequestData" type="smconf:SetEncryptionKeyExchangeOnGMeterRequestData" />
+				<xsd:element name="SetAlarmNotificationsRequestData" type="smconf:SetAlarmNotificationsRequestData" />
 
 			</xsd:choice>
 		</xsd:sequence>

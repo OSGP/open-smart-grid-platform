@@ -21,50 +21,42 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ActualMeterReadsRequestGasRequestDataConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.CommonMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
-import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.CustomValueToDtoConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.PeriodicReadsRequestGasDataConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.ActualMeterReadsRequestGasRequestDataConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CustomValueToDtoConverter;
+import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.SetEncryptionKeyExchangeOnGMeterDataConverter;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmsDetails;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmNotificationsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmartMeteringDeviceDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SmsDetailsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -96,8 +88,11 @@ public class ActionMapperService {
     @Autowired
     private ActualMeterReadsRequestGasRequestDataConverter actualReadsRequestGasDataConverter;
 
+    @Autowired
+    private SetEncryptionKeyExchangeOnGMeterDataConverter setEncryptionKeyExchangeOnGMeterDataConverter;
+
     private static Map<Class<? extends ActionValueObject>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static Map<Class<? extends ActionValueObject>, CustomValueToDtoConverter<? extends ActionValueObject, ? extends ActionValueObjectDto>> SPECIAL_CONVERTER_FOR_CLASS = new HashMap<>();
+    private static Map<Class<? extends ActionValueObject>, CustomValueToDtoConverter<? extends ActionValueObject, ? extends ActionValueObjectDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the core class received.
@@ -105,9 +100,11 @@ public class ActionMapperService {
     @PostConstruct
     private void postConstruct() {
 
-        SPECIAL_CONVERTER_FOR_CLASS.put(PeriodicMeterReadsGasRequestData.class,
+        CUSTOM_CONVERTER_FOR_CLASS.put(PeriodicMeterReadsGasRequestData.class,
                 this.periodicReadsRequestGasDataConverter);
-        SPECIAL_CONVERTER_FOR_CLASS.put(ActualMeterReadsGasRequestData.class, this.actualReadsRequestGasDataConverter);
+        CUSTOM_CONVERTER_FOR_CLASS.put(ActualMeterReadsGasRequestData.class, this.actualReadsRequestGasDataConverter);
+        CUSTOM_CONVERTER_FOR_CLASS.put(SetEncryptionKeyExchangeOnGMeterRequestData.class,
+                this.setEncryptionKeyExchangeOnGMeterDataConverter);
 
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsRequestData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(ActualMeterReadsRequestData.class, this.commonMapper);
@@ -118,14 +115,9 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(PushSetupAlarm.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ActivityCalendarData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequestData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetAlarmNotificationsRequestData.class, this.configurationMapper);
 
-        // ok to here
-        CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequest.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(PushSetupSms.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(ActivityCalendar.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(AlarmNotifications.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(KeySet.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(SmartMeteringDevice.class, this.commonMapper);
     }
 
     /**
@@ -142,14 +134,7 @@ public class ActionMapperService {
         CLASS_MAP.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
         CLASS_MAP.put(AdministrativeStatusTypeData.class, AdministrativeStatusTypeDataDto.class);
         CLASS_MAP.put(ActivityCalendarData.class, ActivityCalendarDataDto.class);
-
-        // ok to here
-        CLASS_MAP.put(SmsDetails.class, SmsDetailsDto.class);
-        CLASS_MAP.put(SetConfigurationObjectRequest.class, SetConfigurationObjectRequestDto.class);
-        CLASS_MAP.put(PushSetupSms.class, PushSetupSmsDto.class);
-        CLASS_MAP.put(AlarmNotifications.class, AlarmNotificationsDto.class);
-        CLASS_MAP.put(KeySet.class, KeySetDto.class);
-        CLASS_MAP.put(SmartMeteringDevice.class, SmartMeteringDeviceDto.class);
+        CLASS_MAP.put(SetAlarmNotificationsRequestData.class, SetAlarmNotificationsRequestDataDto.class);
 
     }
 
@@ -162,7 +147,7 @@ public class ActionMapperService {
 
             @SuppressWarnings("unchecked")
             // suppress else the compiler will complain
-            final CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto>) SPECIAL_CONVERTER_FOR_CLASS
+            final CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto>) CUSTOM_CONVERTER_FOR_CLASS
                     .get(action.getClass());
 
             if (customValueToDtoConverter != null) {

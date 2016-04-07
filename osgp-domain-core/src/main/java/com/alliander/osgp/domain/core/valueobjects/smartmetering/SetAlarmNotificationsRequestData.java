@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,18 +13,18 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SetConfigurationObjectRequestData implements Serializable, ActionValueObject {
+public class SetAlarmNotificationsRequestData implements Serializable, ActionValueObject {
 
-    private static final long serialVersionUID = -381163520662276868L;
+    private static final long serialVersionUID = -1833812559523610412L;
 
-    private final ConfigurationObject configurationObject;
+    private final AlarmNotifications alarmNotifications;
 
-    public SetConfigurationObjectRequestData(final ConfigurationObject configurationObject) {
-        this.configurationObject = configurationObject;
+    public SetAlarmNotificationsRequestData(final AlarmNotifications alarmNotifications) {
+        this.alarmNotifications = alarmNotifications;
     }
 
-    public ConfigurationObject getConfigurationObject() {
-        return this.configurationObject;
+    public AlarmNotifications getAlarmNotifications() {
+        return this.alarmNotifications;
     }
 
     @Override

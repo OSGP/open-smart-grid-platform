@@ -171,6 +171,16 @@
         </xsd:complexType>
     </xsd:element>
 
+	<xsd:complexType name="SetEncryptionKeyExchangeOnGMeterRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -306,7 +316,7 @@
             </xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-    
+
     <xsd:element name="ReplaceKeysRequest">
         <xsd:complexType>
             <xsd:sequence>
