@@ -23,6 +23,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundl
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
@@ -76,6 +78,9 @@ public class BundleService {
     @Autowired
     private SetAdministrativeStatusBundleCommandExecutor setAdministrativeStatusBundleCommandExecutor;
 
+    @Autowired
+    private SetActivityCalendarBundleCommandExecutor setActivityCalendarBundleCommandExecutor;
+
     private final static Map<Class<? extends ActionValueObjectDto>, CommandExecutor<? extends ActionValueObjectDto, ? extends ActionValueObjectResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
@@ -90,7 +95,8 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsGasRequestDataDto.class,
                 this.getPeriodicMeterReadsGasBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP
-                .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
+        .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(ActivityCalendarDataDto.class, this.setActivityCalendarBundleCommandExecutor);
 
     }
 
