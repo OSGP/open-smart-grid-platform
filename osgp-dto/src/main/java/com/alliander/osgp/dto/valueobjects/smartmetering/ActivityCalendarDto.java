@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ActivityCalendarDto implements Comparable<ActivityCalendarDto>, Serializable, ActionValueObjectDto {
+public class ActivityCalendarDto implements Comparable<ActivityCalendarDto>, Serializable {
 
     private static final long serialVersionUID = -8278955482889960359L;
 
