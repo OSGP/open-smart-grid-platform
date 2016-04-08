@@ -117,4 +117,5 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
         }
         return response;
     }
+
 }

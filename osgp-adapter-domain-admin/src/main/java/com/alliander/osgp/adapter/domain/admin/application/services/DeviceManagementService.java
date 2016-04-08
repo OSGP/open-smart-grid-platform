@@ -165,4 +165,23 @@ public class DeviceManagementService extends AbstractService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, null));
     }
+
+    public void deactivateDevice(final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType)
+                    throws FunctionalException {
+        LOGGER.info("deactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        // TODO: bypassing authorization, this should be fixed.
+
+        final Device smartMeter = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        smartMeter.setActivated(false);
+
+        this.deviceRepository.save(smartMeter);
+
+        final ResponseMessage responseMessage = new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, ResponseMessageResultType.OK, null);
+        this.webServiceResponseMessageSender.send(responseMessage);
+    }
 }

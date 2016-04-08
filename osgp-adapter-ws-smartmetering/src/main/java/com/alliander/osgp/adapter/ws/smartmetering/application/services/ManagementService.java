@@ -41,7 +41,6 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.exceptionhandling.UnknownCorrelationUidException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
 @Service(value = "wsSmartMeteringManagementService")
@@ -61,9 +60,6 @@ public class ManagementService {
 
     @Autowired
     private MeterResponseDataRepository meterResponseDataRepository;
-
-    @Autowired
-    private MeterResponseDataService meterResponseDataService;
 
     @Autowired
     private CorrelationIdProviderService correlationIdProviderService;
@@ -98,7 +94,7 @@ public class ManagementService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.FIND_EVENTS.toString(),
-                messagePriority, scheduleTime);
+                messagePriority,scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
@@ -166,33 +162,5 @@ public class ManagementService {
 
         final PageRequest request = new PageRequest(pageNumber, PAGE_SIZE, Sort.Direction.DESC, "deviceIdentification");
         return this.deviceRepository.findAllAuthorized(organisation, request);
-    }
-
-    public String enqueueDeactivateSmartMeterRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority, final Long scheduleTime) {
-
-        // TODO: bypassing authorization logic for now, needs to be fixed.
-
-        LOGGER.debug("enqueueDeactivateSmartMeterRequest called with organisation {} and device {}",
-                organisationIdentification, deviceIdentification);
-
-        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
-                deviceIdentification);
-
-        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
-                organisationIdentification, correlationUid,
-                SmartMeteringRequestMessageType.DEACTIVATE_DEVICE.toString(), messagePriority, scheduleTime);
-
-        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder().deviceMessageMetadata(
-                deviceMessageMetadata).build();
-
-        this.smartMeteringRequestMessageSender.send(message);
-
-        return correlationUid;
-    }
-
-    public MeterResponseData dequeueDeactivateSmartMeterResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 }

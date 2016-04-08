@@ -53,10 +53,12 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ADD_METER.toString(),
-                messagePriority, scheduleTime);
+                messagePriority,scheduleTime);
 
+        // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
+                .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
+        // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
 

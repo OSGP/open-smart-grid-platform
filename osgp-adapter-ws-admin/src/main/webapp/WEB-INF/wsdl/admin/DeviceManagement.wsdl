@@ -146,6 +146,22 @@
 			name="RemoveDeviceResponse">
 		</wsdl:part>
 	</wsdl:message>
+    <wsdl:message name="DeactivateDeviceRequest">
+        <wsdl:part element="dman:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DeactivateDeviceAsyncResponse">
+        <wsdl:part element="dman:DeactivateDeviceAsyncResponse" name="DeactivateDeviceAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DeactivateDeviceAsyncRequest">
+        <wsdl:part element="dman:DeactivateDeviceAsyncRequest" name="DeactivateDeviceAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DeactivateDeviceResponse">
+        <wsdl:part element="dman:DeactivateDeviceResponse" name="DeactivateDeviceResponse">
+        </wsdl:part>
+    </wsdl:message>
 	<wsdl:message name="SetOwnerHeader">
 		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
 		<wsdl:part element="common:UserName" name="UserName" />
@@ -259,7 +275,20 @@
 				name="RemoveDeviceResponse">
 			</wsdl:output>
 		</wsdl:operation>
-		<wsdl:operation name="SetOwner">
+
+        <wsdl:operation name="DeactivateDevice">
+            <wsdl:input message="tns:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:DeactivateDeviceAsyncResponse" name="DeactivateDeviceAsyncResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetDeactivateDeviceReponse">
+            <wsdl:input message="tns:DeactivateDeviceAsyncRequest" name="DeactivateDeviceAsyncRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:DeactivateDeviceResponse" name="DeactivateDeviceResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SetOwner">
 			<wsdl:input message="tns:SetOwnerRequest"
 				name="SetOwnerRequest">
 			</wsdl:input>
@@ -404,7 +433,34 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
-		<wsdl:operation name="SetOwner">
+
+        <wsdl:operation name="DeactivateDevice">
+            <soap:operation soapAction="" />
+            <wsdl:input name="DeactivateDeviceRequest">
+                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="DeactivateDeviceAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetDeactivateDeviceReponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="DeactivateDeviceAsyncRequest">
+                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="DeactivateDeviceResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetOwner">
 			<soap:operation soapAction="" />
 			<wsdl:input name="SetOwnerRequest">
 				<soap:header message="tns:SetOwnerHeader" part="OrganisationIdentification" use="literal" />
