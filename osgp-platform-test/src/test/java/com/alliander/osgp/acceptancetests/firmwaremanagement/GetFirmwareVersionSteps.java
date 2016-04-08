@@ -49,6 +49,7 @@ import com.alliander.osgp.adapter.ws.core.application.services.FirmwareManagemen
 import com.alliander.osgp.adapter.ws.core.endpoints.FirmwareManagementEndpoint;
 import com.alliander.osgp.adapter.ws.core.infra.jms.CommonResponseMessageFinder;
 import com.alliander.osgp.adapter.ws.schema.core.common.AsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.FirmwareVersion;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.core.firmwaremanagement.GetFirmwareVersionRequest;
@@ -195,7 +196,7 @@ public class GetFirmwareVersionSteps {
         authorizations.add(new DeviceAuthorizationBuilder().withDevice(this.device).withOrganisation(this.organisation)
                 .withFunctionGroup(DeviceFunctionGroup.FIRMWARE).build());
         when(this.deviceAuthorizationRepositoryMock.findByOrganisationAndDevice(this.organisation, this.device))
-        .thenReturn(authorizations);
+                .thenReturn(authorizations);
 
         final List<DeviceFunction> deviceFunctions = new ArrayList<>();
         deviceFunctions.add(DeviceFunction.GET_FIRMWARE_VERSION);
@@ -266,7 +267,12 @@ public class GetFirmwareVersionSteps {
                             ComponentType.UNKNOWN, new ValidationException());
                     exception = (OsgpException) dataObject;
                 } else {
-                    dataObject = firmwareversion;
+                    final List<FirmwareVersion> firmwareVersions = new ArrayList<FirmwareVersion>();
+                    final FirmwareVersion fw = new FirmwareVersion();
+                    fw.setType("Firmware");
+                    fw.setVersion(firmwareversion);
+                    firmwareVersions.add(fw);
+                    dataObject = (Serializable) firmwareVersions;
                 }
                 final ResponseMessage message = new ResponseMessage(correlationId, ORGANISATION_ID, deviceId, result,
                         exception, dataObject);
@@ -437,6 +443,10 @@ public class GetFirmwareVersionSteps {
 
                 Assert.assertTrue("Invalid result, found: " + actual + " , expected: " + expected,
                         (actual == null && expected == null) || actual.equals(expected));
+
+                if ("OK".equals(result)) {
+                    Assert.assertEquals(this.response.getFirmwareVersion().get(0).getVersion(), firmwareversion);
+                }
             }
         } catch (final Throwable t) {
             LOGGER.error("Exception [{}]: {}", t.getClass().getSimpleName(), t.getMessage());
