@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
-import com.alliander.osgp.shared.security.RSAEncrypterService;
+import com.alliander.osgp.shared.security.RsaEncrypterService;
 
 @Component
 public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
@@ -103,8 +103,8 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedKey = RSAEncrypterService.decrypt(keyWrapper.getBytes(), this.privateKeyPath);
-            final byte[] decryptedMasterKey = RSAEncrypterService.decrypt(this.getMasterKey(device), this.privateKeyPath);
+            final byte[] decryptedKey = RsaEncrypterService.decrypt(keyWrapper.getBytes(), this.privateKeyPath);
+            final byte[] decryptedMasterKey = RsaEncrypterService.decrypt(this.getMasterKey(device), this.privateKeyPath);
 
             final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());

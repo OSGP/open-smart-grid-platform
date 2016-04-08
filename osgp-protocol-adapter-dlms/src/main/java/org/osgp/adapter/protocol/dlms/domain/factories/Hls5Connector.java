@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.security.RSAEncrypterService;
+import com.alliander.osgp.shared.security.RsaEncrypterService;
 
 public class Hls5Connector {
 
@@ -85,10 +85,10 @@ public class Hls5Connector {
             }
             throw new ConnectionException(e);
         } catch (final RsaEncrypterException e) {
-            LOGGER.error("RSA decryption on security keys went wrong for device with ip: {}",
-                    this.device.getIpAddress(), e);
+            LOGGER.error("RSA decryption on security keys went wrong for device: {}",
+                    this.device.getDeviceIdentification(), e);
             throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
-                    "RSA decryption on security keys went wrong for device with ip: " + this.device.getIpAddress());
+                    "RSA decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
         }
     }
 
@@ -107,27 +107,24 @@ public class Hls5Connector {
      *             When there are problems in connecting to or communicating
      *             with the device.
      * @throws TechnicalException
-     *             When there are problems reading the
-     *             security and authorisation keys.
+     *             When there are problems reading the security and
+     *             authorisation keys.
      * @throws RsaEncrypterException
-     *             When there are problems decrypting the encrypted
-     *             security and authorisation keys.
+     *             When there are problems decrypting the encrypted security and
+     *             authorisation keys.RSAEncrypterService
      */
     private ClientConnection createConnection() throws IOException, TechnicalException, RsaEncrypterException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
-        final String authenticationKeyValue = validAuthenticationKey.getKey();
-        final String encryptionKeyValue = validEncryptionKey.getKey();
-
         // Decode the key from Hexstring to bytes
-        final byte[] authenticationKey = Hex.decode(authenticationKeyValue);
-        final byte[] encryptionKey = Hex.decode(encryptionKeyValue);
+        final byte[] authenticationKey = Hex.decode(validAuthenticationKey.getKey());
+        final byte[] encryptionKey = Hex.decode(validEncryptionKey.getKey());
 
         // Decrypt the key
-        final byte[] decryptedAuthentication = RSAEncrypterService
+        final byte[] decryptedAuthentication = RsaEncrypterService
                 .decrypt(authenticationKey, this.devicePrivateKeyPath);
-        final byte[] decryptedEncryption = RSAEncrypterService.decrypt(encryptionKey, this.devicePrivateKeyPath);
+        final byte[] decryptedEncryption = RsaEncrypterService.decrypt(encryptionKey, this.devicePrivateKeyPath);
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device

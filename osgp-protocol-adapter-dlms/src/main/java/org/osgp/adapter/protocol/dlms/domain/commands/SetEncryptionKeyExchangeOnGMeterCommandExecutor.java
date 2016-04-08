@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
-import com.alliander.osgp.shared.security.RSAEncrypterService;
+import com.alliander.osgp.shared.security.RsaEncrypterService;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
@@ -69,9 +69,9 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedEncryptionKey = RSAEncrypterService.decrypt(
+            final byte[] decryptedEncryptionKey = RsaEncrypterService.decrypt(
                     Hex.decode(protocolMeterInfo.getEncryptionKey()), this.privateKeyPath);
-            final byte[] decryptedMasterKey = RSAEncrypterService.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()),
+            final byte[] decryptedMasterKey = RsaEncrypterService.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()),
                     this.privateKeyPath);
 
             final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
@@ -92,7 +92,7 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
             return MethodResultCode.SUCCESS;
         } catch (final IOException e) {
-            LOGGER.error("Unexpected exception during decoding of data", e);
+            LOGGER.error("Unexpected exception while connecting with device", e);
             throw new ConnectionException(e);
         } catch (final RsaEncrypterException e) {
             LOGGER.error("Unexpected exception during decryption of security keys", e);
