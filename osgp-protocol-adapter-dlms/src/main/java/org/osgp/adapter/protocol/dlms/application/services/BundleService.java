@@ -31,6 +31,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOn
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
 
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -106,6 +108,9 @@ public class BundleService {
     @Autowired
     private SetPushSetupSmsBundleCommandExecutor setPushSetupSmsBundleCommandExecutor;
 
+    @Autowired
+    private SynchronizeTimeBundleCommandExecutor synchronizeTimeBundleCommandExecutor;
+
     private final static Map<Class<? extends ActionValueObjectDto>, CommandExecutor<? extends ActionValueObjectDto, ? extends ActionValueObjectResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
@@ -129,6 +134,7 @@ public class BundleService {
                 this.setConfigurationObjectBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetPushSetupAlarmRequestDataDto.class, this.setPushSetupAlarmBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetPushSetupSmsRequestDataDto.class, this.setPushSetupSmsBundleCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(SynchronizeTimeRequestDataDto.class, this.synchronizeTimeBundleCommandExecutor);
 
     }
 
