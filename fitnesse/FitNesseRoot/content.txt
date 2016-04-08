@@ -4,6 +4,11 @@
 
 !define CM_SYSTEM {fitnesse.wiki.cmSystems.TfsCmSystem}
 
+!define SHARED_VERSION {3.3.0-SNAPSHOT}
+!define PLATFORM_VERSION {3.3.0-SNAPSHOT}
+!define PROTOCOL_ADAPTER_OSLP_VERSION {3.3.0-SNAPSHOT}
+!define OSGP_VERSION {3.3.0-SNAPSHOT}
+
 !path plugins/junit-4.5.jar
 !path plugins/commons-logging.jar
 !path plugins/javassist.jar
@@ -12,6 +17,8 @@
 !path plugins/commons-vfs-1.0.jar
 !path plugins/clover-2.6.1.jar
 !path plugins/givwenzen-1.0.3-SNAPSHOT.jar
+
+
 
 !path ../Platform/osgp-adapter-ws-core/target/classes
 !path ../Platform/osgp-adapter-ws-core/target/test-classes
@@ -58,6 +65,9 @@
 !path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/classes
 !path ../Protocol-Adapter-OSLP/osgp-adapter-protocol-oslp/target/test-classes
 
+!path ../Protocol-Adapter-OSLP/signing-server/target/classes
+!path ../Protocol-Adapter-OSLP/signing-server/target/test-classes
+
 !path ../Protocol-Adapter-OSLP/oslp/target/classes
 !path ../Protocol-Adapter-OSLP/oslp/target/test-classes
 
@@ -66,26 +76,30 @@
 !path ${MAVEN_REPO}/aopalliance/aopalliance/1.0/aopalliance-1.0.jar
 !path ${MAVEN_REPO}/ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar
 !path ${MAVEN_REPO}/ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-admin/3.3.0-SNAPSHOT/osgp-adapter-domain-admin-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-core/3.3.0-SNAPSHOT/osgp-adapter-domain-core-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-publiclighting/3.3.0-SNAPSHOT/osgp-adapter-domain-publiclighting-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-tariffswitching/3.3.0-SNAPSHOT/osgp-adapter-domain-tariffswitching-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-admin/3.3.0-SNAPSHOT/osgp-adapter-ws-admin-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-core/3.3.0-SNAPSHOT/osgp-adapter-ws-core-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-publiclighting/3.3.0-SNAPSHOT/osgp-adapter-ws-publiclighting-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared/3.3.0-SNAPSHOT/osgp-adapter-ws-shared-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared-db/3.3.0-SNAPSHOT/osgp-adapter-ws-shared-db-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-tariffswitching/3.3.0-SNAPSHOT/osgp-adapter-ws-tariffswitching-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core/3.3.0-SNAPSHOT/osgp-core-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core-db-api/3.3.0-SNAPSHOT/osgp-core-db-api-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-core/3.3.0-SNAPSHOT/osgp-domain-core-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-logging/3.3.0-SNAPSHOT/osgp-domain-logging-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-dto/3.3.0-SNAPSHOT/osgp-dto-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-logging/3.3.0-SNAPSHOT/osgp-logging-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/osgp-protocol-adapter-oslp/3.3.0-SNAPSHOT/osgp-protocol-adapter-oslp-3.3.0-SNAPSHOT-classes.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/oslp/3.3.0-SNAPSHOT/oslp-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/shared/3.3.0-SNAPSHOT/shared-3.3.0-SNAPSHOT.jar
-!path ${MAVEN_REPO}/com/alliander/osgp/signing-server/3.3.0-SNAPSHOT/signing-server-3.3.0-SNAPSHOT-classes.jar
+
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-admin/${PLATFORM_VERSION}/osgp-adapter-domain-admin-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-core/${PLATFORM_VERSION}/osgp-adapter-domain-core-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-publiclighting/${PLATFORM_VERSION}/osgp-adapter-domain-publiclighting-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-domain-tariffswitching/${PLATFORM_VERSION}/osgp-adapter-domain-tariffswitching-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-admin/${PLATFORM_VERSION}/osgp-adapter-ws-admin-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-core/${PLATFORM_VERSION}/osgp-adapter-ws-core-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-publiclighting/${PLATFORM_VERSION}/osgp-adapter-ws-publiclighting-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared/${PLATFORM_VERSION}/osgp-adapter-ws-shared-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-shared-db/${PLATFORM_VERSION}/osgp-adapter-ws-shared-db-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-adapter-ws-tariffswitching/${PLATFORM_VERSION}/osgp-adapter-ws-tariffswitching-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core/${PLATFORM_VERSION}/osgp-core-${PLATFORM_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-core/${PLATFORM_VERSION}/osgp-domain-core-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-logging/${PLATFORM_VERSION}/osgp-domain-logging-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-dto/${SHARED_VERSION}/osgp-dto-${SHARED_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-logging/${PLATFORM_VERSION}/osgp-logging-${PLATFORM_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/shared/${SHARED_VERSION}/shared-${SHARED_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-protocol-adapter-oslp/${PROTOCOL_ADAPTER_OSLP_VERSION}/osgp-protocol-adapter-oslp-${PROTOCOL_ADAPTER_OSLP_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/oslp/${PROTOCOL_ADAPTER_OSLP_VERSION}/oslp-${PROTOCOL_ADAPTER_OSLP_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/signing-server/${PROTOCOL_ADAPTER_OSLP_VERSION}/signing-server-${PROTOCOL_ADAPTER_OSLP_VERSION}-classes.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-core-db-api/${PROTOCOL_ADAPTER_OSLP_VERSION}/osgp-core-db-api-${PROTOCOL_ADAPTER_OSLP_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-publiclighting/${OSGP_VERSION}/osgp-domain-publiclighting-${OSGP_VERSION}.jar
+!path ${MAVEN_REPO}/com/alliander/osgp/osgp-domain-tariffswitching/${OSGP_VERSION}/osgp-domain-tariffswitching-${OSGP_VERSION}.jar
+
 !path ${MAVEN_REPO}/com/carrotsearch/java-sizeof/0.0.4/java-sizeof-0.0.4.jar
 !path ${MAVEN_REPO}/com/fasterxml/jackson/core/jackson-annotations/2.4.0/jackson-annotations-2.4.0.jar
 !path ${MAVEN_REPO}/com/fasterxml/jackson/core/jackson-annotations/2.4.2/jackson-annotations-2.4.2.jar
@@ -107,13 +121,10 @@
 !path ${MAVEN_REPO}/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar
 !path ${MAVEN_REPO}/commons-lang/commons-lang/2.4/commons-lang-2.4.jar
 !path ${MAVEN_REPO}/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3.jar
-!path ${MAVEN_REPO}/commons-logging/commons-logging/1.2/commons-logging-1.2.jar
 !path ${MAVEN_REPO}/commons-net/commons-net/3.3/commons-net-3.3.jar
 !path ${MAVEN_REPO}/commons-pool/commons-pool/1.6/commons-pool-1.6.jar
 !path ${MAVEN_REPO}/commons-vfs/commons-vfs/1.0/commons-vfs-1.0.jar
 !path ${MAVEN_REPO}/com/thoughtworks/paranamer/paranamer/2.3/paranamer-2.3.jar
-!path ${MAVEN_REPO}/com/thoughtworks/paranamer/paranamer/2.7/paranamer-2.7.jar
-!path ${MAVEN_REPO}/com/zaxxer/HikariCP/2.4.0/HikariCP-2.4.0.jar
 !path ${MAVEN_REPO}/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar
 !path ${MAVEN_REPO}/io/netty/netty/3.9.4.Final/netty-3.9.4.Final.jar
 !path ${MAVEN_REPO}/javassist/javassist/3.8.0.GA/javassist-3.8.0.GA.jar
@@ -127,7 +138,6 @@
 !path ${MAVEN_REPO}/junit/junit/4.11/junit-4.11.jar
 !path ${MAVEN_REPO}/log4j/log4j/1.2.14/log4j-1.2.14.jar
 !path ${MAVEN_REPO}/ma/glasnost/orika/orika-core/1.4.5/orika-core-1.4.5.jar
-!path ${MAVEN_REPO}/ma/glasnost/orika/orika-core/1.4.6/orika-core-1.4.6.jar
 !path ${MAVEN_REPO}/org/apache/activemq/activemq-broker/5.10.0/activemq-broker-5.10.0.jar
 !path ${MAVEN_REPO}/org/apache/activemq/activemq-client/5.10.0/activemq-client-5.10.0.jar
 !path ${MAVEN_REPO}/org/apache/activemq/activemq-jms-pool/5.10.0/activemq-jms-pool-5.10.0.jar
@@ -157,7 +167,6 @@
 !path ${MAVEN_REPO}/org/apache/ws/xmlschema/xmlschema-core/2.1.0/xmlschema-core-2.1.0.jar
 !path ${MAVEN_REPO}/org/apache/xbean/xbean-spring/3.16/xbean-spring-3.16.jar
 !path ${MAVEN_REPO}/org/aspectj/aspectjrt/1.8.1/aspectjrt-1.8.1.jar
-!path ${MAVEN_REPO}/org/aspectj/aspectjrt/1.8.6/aspectjrt-1.8.6.jar
 !path ${MAVEN_REPO}/org/codehaus/woodstox/stax2-api/3.1.4/stax2-api-3.1.4.jar
 !path ${MAVEN_REPO}/org/codehaus/woodstox/woodstox-core-asl/4.4.0/woodstox-core-asl-4.4.0.jar
 !path ${MAVEN_REPO}/org/eclipse/jgit/org.eclipse.jgit/2.3.1.201302201838-r/org.eclipse.jgit-2.3.1.201302201838-r.jar
@@ -178,56 +187,32 @@
 !path ${MAVEN_REPO}/org/json/json/20140107/json-20140107.jar
 !path ${MAVEN_REPO}/org/logback-extensions/logback-ext-spring/0.1.2/logback-ext-spring-0.1.2.jar
 !path ${MAVEN_REPO}/org/mockito/mockito-all/1.9.5/mockito-all-1.9.5.jar
-!path ${MAVEN_REPO}/org/slf4j/jcl-over-slf4j/1.7.12/jcl-over-slf4j-1.7.12.jar
 !path ${MAVEN_REPO}/org/slf4j/jcl-over-slf4j/1.7.7/jcl-over-slf4j-1.7.7.jar
 !path ${MAVEN_REPO}/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar
 !path ${MAVEN_REPO}/org/slf4j/slf4j-simple/1.5.6/slf4j-simple-1.5.6.jar
-!path ${MAVEN_REPO}/org/springframework/data/spring-data-commons/1.10.2.RELEASE/spring-data-commons-1.10.2.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/data/spring-data-commons/1.8.4.RELEASE/spring-data-commons-1.8.4.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/data/spring-data-jpa/1.6.4.RELEASE/spring-data-jpa-1.6.4.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/data/spring-data-jpa/1.8.2.RELEASE/spring-data-jpa-1.8.2.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/security/spring-security-config/3.2.5.RELEASE/spring-security-config-3.2.5.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/security/spring-security-config/4.0.2.RELEASE/spring-security-config-4.0.2.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/security/spring-security-core/3.2.5.RELEASE/spring-security-core-3.2.5.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/security/spring-security-core/4.0.2.RELEASE/spring-security-core-4.0.2.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/security/spring-security-web/3.2.5.RELEASE/spring-security-web-3.2.5.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/security/spring-security-web/4.0.2.RELEASE/spring-security-web-4.0.2.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-aop/3.2.10.RELEASE/spring-aop-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-aop/4.1.6.RELEASE/spring-aop-4.1.6.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-aop/4.2.0.RELEASE/spring-aop-4.2.0.RELEASE.jar
+!path ${MAVEN_REPO}/org/springframework/spring-aop/3.2.8.RELEASE/spring-aop-3.2.8.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-beans/3.2.10.RELEASE/spring-beans-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-beans/4.2.0.RELEASE/spring-beans-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-context/3.2.10.RELEASE/spring-context-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-context/4.2.0.RELEASE/spring-context-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-context-support/3.2.10.RELEASE/spring-context-support-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-context-support/4.2.0.RELEASE/spring-context-support-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-core/3.2.10.RELEASE/spring-core-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-core/4.2.0.RELEASE/spring-core-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-expression/3.2.10.RELEASE/spring-expression-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-expression/4.1.6.RELEASE/spring-expression-4.1.6.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-expression/4.2.0.RELEASE/spring-expression-4.2.0.RELEASE.jar
+!path ${MAVEN_REPO}/org/springframework/spring-expression/3.2.8.RELEASE/spring-expression-3.2.8.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-jdbc/3.2.10.RELEASE/spring-jdbc-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-jdbc/4.2.0.RELEASE/spring-jdbc-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-jms/3.2.10.RELEASE/spring-jms-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-jms/4.2.0.RELEASE/spring-jms-4.2.0.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-messaging/4.2.0.RELEASE/spring-messaging-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-orm/3.2.10.RELEASE/spring-orm-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-orm/4.2.0.RELEASE/spring-orm-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-oxm/3.2.4.RELEASE/spring-oxm-3.2.4.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-oxm/4.0.5.RELEASE/spring-oxm-4.0.5.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-tx/3.2.10.RELEASE/spring-tx-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-tx/4.2.0.RELEASE/spring-tx-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-web/3.2.10.RELEASE/spring-web-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-web/4.2.0.RELEASE/spring-web-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/spring-webmvc/3.2.10.RELEASE/spring-webmvc-3.2.10.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/spring-webmvc/4.2.0.RELEASE/spring-webmvc-4.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/ws/spring-ws-core/2.1.4.RELEASE/spring-ws-core-2.1.4.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/ws/spring-ws-core/2.2.0.RELEASE/spring-ws-core-2.2.0.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/ws/spring-ws-security/2.2.0.RELEASE/spring-ws-security-2.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/ws/spring-ws-support/2.1.4.RELEASE/spring-ws-support-2.1.4.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/ws/spring-ws-support/2.2.0.RELEASE/spring-ws-support-2.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/org/springframework/ws/spring-xml/2.1.4.RELEASE/spring-xml-2.1.4.RELEASE.jar
-!path ${MAVEN_REPO}/org/springframework/ws/spring-xml/2.2.0.RELEASE/spring-xml-2.2.0.RELEASE.jar
 !path ${MAVEN_REPO}/wsdl4j/wsdl4j/1.6.1/wsdl4j-1.6.1.jar
 
 *!
