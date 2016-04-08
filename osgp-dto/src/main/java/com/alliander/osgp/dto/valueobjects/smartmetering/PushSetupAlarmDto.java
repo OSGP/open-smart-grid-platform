@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.util.List;
 
-public class PushSetupAlarmDto extends AbstractPushSetupDto {
+public class PushSetupAlarmDto extends AbstractPushSetupDto implements ActionValueObjectDto {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
