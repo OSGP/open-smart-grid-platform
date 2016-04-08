@@ -47,6 +47,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
@@ -61,6 +62,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -122,6 +124,7 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetPushSetupAlarmRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetPushSetupSmsRequestData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequestData.class, this.commonMapper);
 
     }
 
@@ -142,6 +145,7 @@ public class ActionMapperService {
         CLASS_MAP.put(SetConfigurationObjectRequestData.class, SetConfigurationObjectRequestDataDto.class);
         CLASS_MAP.put(SetPushSetupAlarmRequestData.class, SetPushSetupAlarmRequestDataDto.class);
         CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDataDto.class);
+        CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDataDto.class);
 
     }
 
