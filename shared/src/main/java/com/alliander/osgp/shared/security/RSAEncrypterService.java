@@ -43,8 +43,7 @@ public final class RSAEncrypterService {
      * Reads the private key from the file and decrypts the data using the
      * private key
      */
-    public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath)
-            throws RsaEncrypterException {
+    public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath) {
         byte[] decryptedData = null;
         PrivateKey privateKey;
 
@@ -65,7 +64,7 @@ public final class RSAEncrypterService {
      * Reads the public key from the file and encrypts the data using the public
      * key
      */
-    public static byte[] encrypt(final byte[] inputData, final String publicKeyPath) throws RsaEncrypterException {
+    public static byte[] encrypt(final byte[] inputData, final String publicKeyPath) {
         byte[] cipherData = null;
         PublicKey publicKey;
 
