@@ -40,6 +40,7 @@
 				<xsd:element name="SetAlarmNotificationsRequestData" type="smconf:SetAlarmNotificationsRequestData" />
 				<xsd:element name="SetConfigurationObjectRequestData" type="smconf:SetConfigurationObjectRequestData" />
 				<xsd:element name="SetPushSetupAlarmRequestData" type="smconf:SetPushSetupAlarmRequestData" />
+				<xsd:element name="SetPushSetupSmsRequestData" type="smconf:SetPushSetupSmsRequestData" />
 
 			</xsd:choice>
 		</xsd:sequence>
