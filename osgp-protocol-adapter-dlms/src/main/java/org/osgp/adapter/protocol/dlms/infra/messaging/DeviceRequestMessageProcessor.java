@@ -203,15 +203,14 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage.Builder()
-        .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
-        .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
-        .osgpException(osgpException).dataObject(responseObject)
-        .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
-                .build();
+                .deviceMessageMetadata(deviceMessageMetadata).domain(dlmsDeviceMessageMetadata.getDomain())
+                .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
+                .osgpException(osgpException).dataObject(responseObject)
+                .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
+        .build();
 
         responseMessageSender.send(responseMessage);
     }
-
     /**
      * Used to determine if the handleMessage needs a device connection or not.
      * Default value is true, override to alter behaviour of subclasses.
