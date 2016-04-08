@@ -39,6 +39,7 @@
 				<xsd:element name="SetEncryptionKeyExchangeOnGMeterRequestData" type="smconf:SetEncryptionKeyExchangeOnGMeterRequestData" />
 				<xsd:element name="SetAlarmNotificationsRequestData" type="smconf:SetAlarmNotificationsRequestData" />
 				<xsd:element name="SetConfigurationObjectRequestData" type="smconf:SetConfigurationObjectRequestData" />
+				<xsd:element name="SetPushSetupAlarmRequestData" type="smconf:SetPushSetupAlarmRequestData" />
 
 			</xsd:choice>
 		</xsd:sequence>

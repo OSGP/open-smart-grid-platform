@@ -35,11 +35,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -82,8 +82,6 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
                 this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,
-                this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicReadsRequestData.class,
                 this.monitoringMapper);
@@ -112,8 +110,11 @@ public class ActionMapperService {
                 .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData.class,
                         this.configurationMapper);
         CLASS_TO_MAPPER_MAP
-                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
-                        this.configurationMapper);
+        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
+                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData.class,
+                this.configurationMapper);
 
     }
 
@@ -131,8 +132,6 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetAdministrativeStatusData.class,
                 GetAdministrativeStatusData.class);
-        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm.class,
-                PushSetupAlarm.class);
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsRequestData.class,
                 PeriodicMeterReadsRequestData.class);
@@ -157,6 +156,9 @@ public class ActionMapperService {
         CLASS_MAP
                 .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
                         SetConfigurationObjectRequestData.class);
+        CLASS_MAP.put(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData.class,
+                SetPushSetupAlarmRequestData.class);
 
     }
 

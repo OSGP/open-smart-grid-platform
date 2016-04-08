@@ -10,9 +10,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.List;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-
-public class PushSetupAlarm extends AbstractPushSetup implements Serializable, ActionValueObject {
+public class PushSetupAlarm extends AbstractPushSetup implements Serializable {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
@@ -34,9 +32,4 @@ public class PushSetupAlarm extends AbstractPushSetup implements Serializable, A
                 numberOfRetries, repetitionDelay);
     }
 
-    @Override
-    public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
-    }
 }

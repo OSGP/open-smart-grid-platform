@@ -40,11 +40,11 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetAlarmNotificationsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKeyExchangeOnGMeterRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
@@ -54,10 +54,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContai
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -113,12 +113,12 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(ReadAlarmRegisterData.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(FindEventsQuery.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(GetAdministrativeStatusData.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(PushSetupAlarm.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(ActivityCalendarData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetAlarmNotificationsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetConfigurationObjectRequestData.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(SetPushSetupAlarmRequestData.class, this.configurationMapper);
 
     }
 
@@ -133,11 +133,11 @@ public class ActionMapperService {
         CLASS_MAP.put(ReadAlarmRegisterData.class, ReadAlarmRegisterDataDto.class);
         CLASS_MAP.put(FindEventsQuery.class, FindEventsQueryDto.class);
         CLASS_MAP.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
-        CLASS_MAP.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
         CLASS_MAP.put(AdministrativeStatusTypeData.class, AdministrativeStatusTypeDataDto.class);
         CLASS_MAP.put(ActivityCalendarData.class, ActivityCalendarDataDto.class);
         CLASS_MAP.put(SetAlarmNotificationsRequestData.class, SetAlarmNotificationsRequestDataDto.class);
         CLASS_MAP.put(SetConfigurationObjectRequestData.class, SetConfigurationObjectRequestDataDto.class);
+        CLASS_MAP.put(SetPushSetupAlarmRequestData.class, SetPushSetupAlarmRequestDataDto.class);
 
     }
 
