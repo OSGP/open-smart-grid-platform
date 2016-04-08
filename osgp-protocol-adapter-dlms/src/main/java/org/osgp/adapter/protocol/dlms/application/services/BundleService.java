@@ -29,6 +29,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetAlarmNotificationsBundl
 import org.osgp.adapter.protocol.dlms.domain.commands.SetConfigurationObjectBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
 @Service(value = "dlmsBundleService")
@@ -101,6 +103,9 @@ public class BundleService {
     @Autowired
     private SetPushSetupAlarmBundleCommandExecutor setPushSetupAlarmBundleCommandExecutor;
 
+    @Autowired
+    private SetPushSetupSmsBundleCommandExecutor setPushSetupSmsBundleCommandExecutor;
+
     private final static Map<Class<? extends ActionValueObjectDto>, CommandExecutor<? extends ActionValueObjectDto, ? extends ActionValueObjectResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
@@ -115,7 +120,7 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsGasRequestDataDto.class,
                 this.getPeriodicMeterReadsGasBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP
-        .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
+                .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActivityCalendarDataDto.class, this.setActivityCalendarBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GMeterInfoDto.class, this.setEncryptionKeyExchangeOnGMeterBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetAlarmNotificationsRequestDataDto.class,
@@ -123,6 +128,7 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(SetConfigurationObjectRequestDataDto.class,
                 this.setConfigurationObjectBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetPushSetupAlarmRequestDataDto.class, this.setPushSetupAlarmBundleCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(SetPushSetupSmsRequestDataDto.class, this.setPushSetupSmsBundleCommandExecutor);
 
     }
 
@@ -135,7 +141,7 @@ public class BundleService {
             // suppress else the compiler will complain
             @SuppressWarnings({ "unchecked" })
             final CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> executor = (CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto>) CLAZZ_EXECUTOR_MAP
-            .get(actionValueObjectDto.getClass());
+                    .get(actionValueObjectDto.getClass());
 
             try {
                 final ActionValueObjectResponseDto actionResult = executor.execute(conn, device, actionValueObjectDto);
@@ -143,7 +149,7 @@ public class BundleService {
             } catch (final Exception e) {
                 final ActionValueObjectResponseDto actionValueObjectResponseDto = new ActionValueObjectResponseDto(e,
                         "Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                        + " and executor " + executor.getClass());
+                                + " and executor " + executor.getClass());
                 actionValueObjectResponseDtoList.add(actionValueObjectResponseDto);
             }
         }
