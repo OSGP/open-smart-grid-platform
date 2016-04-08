@@ -47,8 +47,7 @@ public final class RSAEncrypterService {
     /**
      * Decrypts the data using the private key
      */
-    public static byte[] decrypt(final byte[] inputData, String devicePrivateKeyPath) {
-        devicePrivateKeyPath = "/home/dev/Sources/Configuration/developers/certs/devicekey_priv.der";
+    public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath) {
         byte[] decryptedData = null;
         final PrivateKey privateKey = getPrivateKey(devicePrivateKeyPath);
         Cipher cipher;
@@ -67,8 +66,7 @@ public final class RSAEncrypterService {
     /**
      * Encrypts the data using the public key
      */
-    public static byte[] encrypt(final byte[] inputData, String devicePublicKeyPath) {
-        devicePublicKeyPath = "/home/dev/Sources/Configuration/developers/certs/devicekey_pub.der";
+    public static byte[] encrypt(final byte[] inputData, final String devicePublicKeyPath) {
         byte[] encryptedData = null;
         final PublicKey publicKey = getPublicKey(devicePublicKeyPath);
         Cipher cipher;
