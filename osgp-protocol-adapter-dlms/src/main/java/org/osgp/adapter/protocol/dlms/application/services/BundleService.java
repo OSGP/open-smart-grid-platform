@@ -19,9 +19,11 @@ import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetActualMeterReadsBundleGasCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetAdministrativeStatusBundleCommandExecutor;
@@ -48,6 +50,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContai
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
@@ -111,6 +115,12 @@ public class BundleService {
     @Autowired
     private SynchronizeTimeBundleCommandExecutor synchronizeTimeBundleCommandExecutor;
 
+    @Autowired
+    private RetrieveConfigurationObjectsBundleCommandExecutor retrieveConfigurationObjectsBundleCommandExecutor;
+
+    @Autowired
+    private GetFirmwareVersionsBundleCommandExecutor getFirmwareVersionsBundleCommandExecutor;
+
     private final static Map<Class<? extends ActionValueObjectDto>, CommandExecutor<? extends ActionValueObjectDto, ? extends ActionValueObjectResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
@@ -135,6 +145,9 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(SetPushSetupAlarmRequestDataDto.class, this.setPushSetupAlarmBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetPushSetupSmsRequestDataDto.class, this.setPushSetupSmsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SynchronizeTimeRequestDataDto.class, this.synchronizeTimeBundleCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(GetConfigurationRequestDataDto.class,
+                this.retrieveConfigurationObjectsBundleCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(GetFirmwareVersionRequestDataDto.class, this.getFirmwareVersionsBundleCommandExecutor);
 
     }
 
@@ -150,6 +163,7 @@ public class BundleService {
                     .get(actionValueObjectDto.getClass());
 
             try {
+                LOGGER.info("Calling executor in bundle {}", executor.getClass());
                 final ActionValueObjectResponseDto actionResult = executor.execute(conn, device, actionValueObjectDto);
                 actionValueObjectResponseDtoList.add(actionResult);
             } catch (final Exception e) {
