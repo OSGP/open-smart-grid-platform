@@ -42,6 +42,8 @@
 				<xsd:element name="SetPushSetupAlarmRequestData" type="smconf:SetPushSetupAlarmRequestData" />
 				<xsd:element name="SetPushSetupSmsRequestData" type="smconf:SetPushSetupSmsRequestData" />
 				<xsd:element name="SynchronizeTimeRequestData" type="adhoc:SynchronizeTimeRequestData" />
+				<xsd:element name="GetConfigurationRequestData" type="smconf:GetConfigurationRequestData" />
+				<xsd:element name="GetFirmwareVersionRequestData" type="smconf:GetFirmwareVersionRequestData" />
 
 			</xsd:choice>
 		</xsd:sequence>
@@ -87,6 +89,8 @@
 					<xsd:element name="AdministrativeStatusResponseData" type="smconf:AdministrativeStatusResponseData" maxOccurs="unbounded" />
 					<xsd:element name="PeriodicMeterReadsResponseData" type="smmon:PeriodicMeterReadsResponseData" maxOccurs="unbounded" />
 					<xsd:element name="PeriodicMeterReadsGasResponseData" type="smmon:PeriodicMeterReadsGasResponseData" maxOccurs="unbounded" />
+					<xsd:element name="GetConfigurationResponseData" type="smconf:GetConfigurationResponseData" maxOccurs="unbounded" />
+					<xsd:element name="GetFirmwareVersionResponseData" type="smconf:GetFirmwareVersionResponseData" maxOccurs="unbounded" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>

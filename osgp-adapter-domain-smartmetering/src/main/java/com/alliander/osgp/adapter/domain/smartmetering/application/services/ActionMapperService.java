@@ -38,6 +38,8 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
@@ -55,6 +57,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
@@ -125,6 +129,8 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(SetPushSetupAlarmRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SetPushSetupSmsRequestData.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SynchronizeTimeRequestData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(GetConfigurationRequestData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(GetFirmwareVersionRequestData.class, this.commonMapper);
 
     }
 
@@ -146,6 +152,8 @@ public class ActionMapperService {
         CLASS_MAP.put(SetPushSetupAlarmRequestData.class, SetPushSetupAlarmRequestDataDto.class);
         CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDataDto.class);
         CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDataDto.class);
+        CLASS_MAP.put(GetConfigurationRequestData.class, GetConfigurationRequestDataDto.class);
+        CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDataDto.class);
 
     }
 
@@ -159,7 +167,7 @@ public class ActionMapperService {
             @SuppressWarnings("unchecked")
             // suppress else the compiler will complain
             final CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto>) CUSTOM_CONVERTER_FOR_CLASS
-                    .get(action.getClass());
+            .get(action.getClass());
 
             if (customValueToDtoConverter != null) {
                 actionValueObjectDtoList.add(customValueToDtoConverter.convert(action, smartMeter));
