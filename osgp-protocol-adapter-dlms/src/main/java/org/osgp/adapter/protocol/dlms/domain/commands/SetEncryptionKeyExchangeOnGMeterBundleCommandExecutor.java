@@ -14,6 +14,8 @@ import org.osgp.adapter.protocol.dlms.application.services.DomainHelperService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,9 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor implements
 CommandExecutor<GMeterInfoDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor.class);
 
     @Autowired
     private SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor;
@@ -54,9 +59,13 @@ CommandExecutor<GMeterInfoDto, ActionValueObjectResponseDto> {
                         + methodResultCode);
             }
         } catch (final ProtocolAdapterException e) {
+            LOGGER.error(
+                    "Error while setting encryption key exchange on Gas meter " + gMeterInfo.getDeviceIdentification(),
+                    e);
             return new ActionValueObjectResponseDto(e, "Error while setting encryption key exchange on Gas meter "
                     + gMeterInfo.getDeviceIdentification());
         } catch (final FunctionalException e) {
+            LOGGER.error("Error while looking up G-Meter " + gMeterInfo.getDeviceIdentification(), e);
             return new ActionValueObjectResponseDto(e, "Error while looking up G-Meter "
                     + gMeterInfo.getDeviceIdentification());
         }

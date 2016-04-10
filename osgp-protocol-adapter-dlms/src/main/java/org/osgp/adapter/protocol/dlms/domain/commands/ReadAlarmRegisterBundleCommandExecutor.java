@@ -10,27 +10,36 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Component
 public class ReadAlarmRegisterBundleCommandExecutor implements
-        CommandExecutor<ReadAlarmRegisterDataDto, AlarmRegisterDto> {
+        CommandExecutor<ReadAlarmRegisterDataDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterBundleCommandExecutor.class);
 
     @Autowired
     private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
 
     @Override
-    public AlarmRegisterDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ReadAlarmRegisterDataDto object) throws ProtocolAdapterException {
+    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final ReadAlarmRegisterDataDto object) {
 
         final ReadAlarmRegisterRequestDto readAlarmRegisterRequestDto = new ReadAlarmRegisterRequestDto("not relevant");
 
-        return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequestDto);
-
+        try {
+            return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequestDto);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Error while reading alarm register from device: " + device.getDeviceIdentification(), e);
+            return new ActionValueObjectResponseDto(e, "Error while reading alarm register from device: "
+                    + device.getDeviceIdentification());
+        }
     }
 }

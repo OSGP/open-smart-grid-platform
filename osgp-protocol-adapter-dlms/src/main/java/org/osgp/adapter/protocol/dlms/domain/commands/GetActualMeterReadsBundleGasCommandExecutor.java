@@ -10,29 +10,39 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasDto;
 
 @Component()
 public class GetActualMeterReadsBundleGasCommandExecutor implements
-        CommandExecutor<ActualMeterReadsDataGasDto, MeterReadsGasDto> {
+        CommandExecutor<ActualMeterReadsDataGasDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsBundleGasCommandExecutor.class);
 
     @Autowired
     private GetActualMeterReadsGasCommandExecutor getActualMeterReadsGasCommandExecutor;
 
     @Override
-    public MeterReadsGasDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsDataGasDto actualMeterReadsDataGasDto) throws ProtocolAdapterException {
+    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final ActualMeterReadsDataGasDto actualMeterReadsDataGasDto) {
 
         final ActualMeterReadsQueryDto actualMeterReadsQueryDto = new ActualMeterReadsQueryDto(
                 actualMeterReadsDataGasDto.getChannel());
 
-        return this.getActualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsQueryDto);
+        try {
+            return this.getActualMeterReadsGasCommandExecutor.execute(conn, device, actualMeterReadsQueryDto);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Error while getting actual meter reads Gas for device: " + device.getDeviceIdentification(),
+                    e);
+            return new ActionValueObjectResponseDto(e, "Error while getting actual meter reads Gas for device: "
+                    + device.getDeviceIdentification());
+        }
 
     }
-
 }

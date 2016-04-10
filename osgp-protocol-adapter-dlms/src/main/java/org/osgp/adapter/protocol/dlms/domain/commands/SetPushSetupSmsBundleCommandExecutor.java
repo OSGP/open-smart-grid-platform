@@ -21,7 +21,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestD
 
 @Component()
 public class SetPushSetupSmsBundleCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<SetPushSetupSmsRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<SetPushSetupSmsRequestDataDto, ActionValueObjectResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsBundleCommandExecutor.class);
 
@@ -32,7 +32,7 @@ CommandExecutor<SetPushSetupSmsRequestDataDto, ActionValueObjectResponseDto> {
 
     @Override
     public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetPushSetupSmsRequestDataDto setPushSetupSmsRequestDataDto) throws ProtocolAdapterException {
+            final SetPushSetupSmsRequestDataDto setPushSetupSmsRequestDataDto) {
 
         AccessResultCode accessResultCode;
         try {

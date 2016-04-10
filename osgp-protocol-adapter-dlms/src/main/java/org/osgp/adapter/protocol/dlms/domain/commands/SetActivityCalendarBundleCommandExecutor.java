@@ -11,6 +11,8 @@ import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.MethodResultCode;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +21,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto
 
 @Component()
 public class SetActivityCalendarBundleCommandExecutor implements
-CommandExecutor<ActivityCalendarDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<ActivityCalendarDataDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarBundleCommandExecutor.class);
 
     @Autowired
     private SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor;
@@ -38,6 +42,7 @@ CommandExecutor<ActivityCalendarDataDto, ActionValueObjectResponseDto> {
 
             methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, device, null);
         } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Error while setting new activity calendar", e);
             return new ActionValueObjectResponseDto(e, "Error while setting new activity calendar");
         }
 

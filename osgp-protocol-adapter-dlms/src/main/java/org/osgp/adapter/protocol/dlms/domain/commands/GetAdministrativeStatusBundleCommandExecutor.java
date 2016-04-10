@@ -11,15 +11,20 @@ import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 
 @Component()
 public class GetAdministrativeStatusBundleCommandExecutor implements
-        CommandExecutor<ActionValueObjectDto, AdministrativeStatusTypeResponseDto> {
+        CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusBundleCommandExecutor.class);
 
     @Autowired
     GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
@@ -28,10 +33,15 @@ public class GetAdministrativeStatusBundleCommandExecutor implements
     private ConfigurationMapper configurationMapper;
 
     @Override
-    public AdministrativeStatusTypeResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActionValueObjectDto useless) throws ProtocolAdapterException {
+    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final ActionValueObjectDto useless) {
 
-        return new AdministrativeStatusTypeResponseDto(this.getAdministrativeStatusCommandExecutor.execute(conn,
-                device, null));
+        try {
+            return new AdministrativeStatusTypeResponseDto(this.getAdministrativeStatusCommandExecutor.execute(conn,
+                    device, null));
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Error while getting administrative status type", e);
+            return new ActionValueObjectResponseDto(e, "Error while getting administrative status type");
+        }
     }
 }

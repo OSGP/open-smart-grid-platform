@@ -18,35 +18,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
 
 @Component
 public class GetFirmwareVersionsBundleCommandExecutor implements
-        CommandExecutor<GetFirmwareVersionRequestDataDto, FirmwareVersionResponseDataDto> {
+        CommandExecutor<GetFirmwareVersionRequestDataDto, ActionValueObjectResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionsBundleCommandExecutor.class);
-
-    private static final String ERROR_WHILE_GETTING_FIRMWARE_VERSIONS_FROM_DEVICE = "Error while getting firmware versions from device: ";
 
     @Autowired
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
     @Override
-    public FirmwareVersionResponseDataDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final GetFirmwareVersionRequestDataDto getFirmwareVersionRequestDataDto) {
 
         List<FirmwareVersionDto> resultList;
         try {
             resultList = this.getFirmwareVersionsCommandExecutor.execute(conn, device, null);
         } catch (final ProtocolAdapterException e) {
-            LOGGER.error(ERROR_WHILE_GETTING_FIRMWARE_VERSIONS_FROM_DEVICE, e);
+            LOGGER.error("Error while getting firmware versions from device: " + device.getDeviceIdentification(), e);
 
-            final FirmwareVersionResponseDataDto firmwareVersionResponseDataDto = new FirmwareVersionResponseDataDto();
-            firmwareVersionResponseDataDto.setException(e);
-            firmwareVersionResponseDataDto.setResultString(ERROR_WHILE_GETTING_FIRMWARE_VERSIONS_FROM_DEVICE
+            return new ActionValueObjectResponseDto(e, "Error while getting firmware versions from device: "
                     + device.getDeviceIdentification());
-            return firmwareVersionResponseDataDto;
         }
 
         return new FirmwareVersionResponseDataDto(resultList);

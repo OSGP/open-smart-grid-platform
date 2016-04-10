@@ -10,31 +10,41 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 
 @Component()
 public class GetPeriodicMeterReadsGasBundleCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsGasRequestDataDto, PeriodicMeterReadsContainerGasDto> {
+        CommandExecutor<PeriodicMeterReadsGasRequestDataDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasBundleCommandExecutor.class);
 
     @Autowired
     GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
 
     @Override
-    public PeriodicMeterReadsContainerGasDto execute(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsGasRequestDataDto periodicMeterReadsGasRequestDataDto)
-            throws ProtocolAdapterException {
+    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final PeriodicMeterReadsGasRequestDataDto periodicMeterReadsGasRequestDataDto) {
 
         final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = new PeriodicMeterReadsQueryDto(
                 periodicMeterReadsGasRequestDataDto.getPeriodType(),
                 periodicMeterReadsGasRequestDataDto.getBeginDate(), periodicMeterReadsGasRequestDataDto.getEndDate(),
                 periodicMeterReadsGasRequestDataDto.getChannel());
 
-        return this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQueryDto);
+        try {
+            return this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQueryDto);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error(
+                    "Error while getting periodic meter reads gas from device: " + device.getDeviceIdentification(), e);
+            return new ActionValueObjectResponseDto(e, "Error while getting periodic meter reads gas from device: "
+                    + device.getDeviceIdentification());
+        }
 
     }
 }

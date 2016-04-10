@@ -11,6 +11,8 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +21,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataD
 
 @Component()
 public class SetSpecialDaysBundleCommandExecutor implements
-CommandExecutor<SpecialDaysRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<SpecialDaysRequestDataDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetSpecialDaysBundleCommandExecutor.class);
 
     @Autowired
     SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
@@ -38,6 +42,7 @@ CommandExecutor<SpecialDaysRequestDataDto, ActionValueObjectResponseDto> {
                         + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Set special days was not successful", e);
             return new ActionValueObjectResponseDto(e, "Set special days was not successful");
         }
 

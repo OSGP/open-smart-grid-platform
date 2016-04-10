@@ -21,7 +21,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmReques
 
 @Component()
 public class SetPushSetupAlarmBundleCommandExecutor implements
-CommandExecutor<SetPushSetupAlarmRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<SetPushSetupAlarmRequestDataDto, ActionValueObjectResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmBundleCommandExecutor.class);
 
@@ -32,7 +32,7 @@ CommandExecutor<SetPushSetupAlarmRequestDataDto, ActionValueObjectResponseDto> {
 
     @Override
     public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetPushSetupAlarmRequestDataDto setPushSetupAlarmRequestDataDto) throws ProtocolAdapterException {
+            final SetPushSetupAlarmRequestDataDto setPushSetupAlarmRequestDataDto) {
 
         AccessResultCode accessResultCode;
         try {

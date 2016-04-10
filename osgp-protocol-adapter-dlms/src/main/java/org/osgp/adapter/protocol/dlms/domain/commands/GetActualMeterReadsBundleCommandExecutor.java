@@ -10,27 +10,37 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto;
 
 @Component()
 public class GetActualMeterReadsBundleCommandExecutor implements
-        CommandExecutor<ActualMeterReadsDataDto, MeterReadsDto> {
+        CommandExecutor<ActualMeterReadsDataDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsBundleCommandExecutor.class);
 
     @Autowired
     GetActualMeterReadsCommandExecutor getActualMeterReadsCommandExecutor;
 
     @Override
-    public MeterReadsDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsDataDto actualMeterReadsDataDto) throws ProtocolAdapterException {
+    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final ActualMeterReadsDataDto actualMeterReadsDataDto) {
 
         final ActualMeterReadsQueryDto actualMeterReadsQuery = new ActualMeterReadsQueryDto();
 
-        return this.getActualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsQuery);
+        try {
+            return this.getActualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsQuery);
+        } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Error while getting actual meter reads from device: " + device.getDeviceIdentification());
+            return new ActionValueObjectResponseDto(e, "Error while getting actual meter reads from device: "
+                    + device.getDeviceIdentification());
+        }
 
     }
 }

@@ -23,6 +23,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsBundleC
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarBundleCommandExecutor;
@@ -52,6 +53,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
@@ -121,6 +123,9 @@ public class BundleService {
     @Autowired
     private GetFirmwareVersionsBundleCommandExecutor getFirmwareVersionsBundleCommandExecutor;
 
+    @Autowired
+    private ReplaceKeyBundleCommandExecutor replaceKeyBundleCommandExecutor;
+
     private final static Map<Class<? extends ActionValueObjectDto>, CommandExecutor<? extends ActionValueObjectDto, ? extends ActionValueObjectResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
@@ -135,7 +140,7 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsGasRequestDataDto.class,
                 this.getPeriodicMeterReadsGasBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP
-                .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
+        .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActivityCalendarDataDto.class, this.setActivityCalendarBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GMeterInfoDto.class, this.setEncryptionKeyExchangeOnGMeterBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetAlarmNotificationsRequestDataDto.class,
@@ -148,7 +153,7 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(GetConfigurationRequestDataDto.class,
                 this.retrieveConfigurationObjectsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GetFirmwareVersionRequestDataDto.class, this.getFirmwareVersionsBundleCommandExecutor);
-
+        CLAZZ_EXECUTOR_MAP.put(KeySetDto.class, this.replaceKeyBundleCommandExecutor);
     }
 
     public List<ActionValueObjectResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
@@ -160,16 +165,18 @@ public class BundleService {
             // suppress else the compiler will complain
             @SuppressWarnings({ "unchecked" })
             final CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> executor = (CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto>) CLAZZ_EXECUTOR_MAP
-                    .get(actionValueObjectDto.getClass());
+            .get(actionValueObjectDto.getClass());
 
             try {
                 LOGGER.info("Calling executor in bundle {}", executor.getClass());
                 final ActionValueObjectResponseDto actionResult = executor.execute(conn, device, actionValueObjectDto);
                 actionValueObjectResponseDtoList.add(actionResult);
             } catch (final Exception e) {
+                LOGGER.error("Error while executing bundle action for class " + actionValueObjectDto.getClass()
+                        + " and executor " + executor.getClass(), e);
                 final ActionValueObjectResponseDto actionValueObjectResponseDto = new ActionValueObjectResponseDto(e,
                         "Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                                + " and executor " + executor.getClass());
+                        + " and executor " + executor.getClass());
                 actionValueObjectResponseDtoList.add(actionValueObjectResponseDto);
             }
         }

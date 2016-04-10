@@ -11,6 +11,8 @@ import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +22,16 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 
 @Component()
 public class SetAdministrativeStatusBundleCommandExecutor implements
-CommandExecutor<AdministrativeStatusTypeDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<AdministrativeStatusTypeDataDto, ActionValueObjectResponseDto> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusBundleCommandExecutor.class);
 
     @Autowired
     private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
 
     @Override
     public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final AdministrativeStatusTypeDataDto administrativeStatusType) throws ProtocolAdapterException {
+            final AdministrativeStatusTypeDataDto administrativeStatusType) {
 
         final AdministrativeStatusTypeDto adminStatusType = administrativeStatusType.getAdministrativeStatusType();
 
@@ -43,6 +47,7 @@ CommandExecutor<AdministrativeStatusTypeDataDto, ActionValueObjectResponseDto> {
                         + " was not successful. Result code: " + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
+            LOGGER.error("Set administrative status to " + adminStatusType + " was not successful", e);
             return new ActionValueObjectResponseDto(e, "Set administrative status to " + adminStatusType
                     + " was not successful");
         }

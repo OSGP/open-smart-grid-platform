@@ -15,37 +15,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationResponseDataDto;
 
 @Component
 public class RetrieveConfigurationObjectsBundleCommandExecutor implements
-CommandExecutor<GetConfigurationRequestDataDto, GetConfigurationResponseDataDto> {
+        CommandExecutor<GetConfigurationRequestDataDto, ActionValueObjectResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RetrieveConfigurationObjectsBundleCommandExecutor.class);
-
-    private static final String ERROR_RETRIEVING_CONFIGURATION_OBJECTS_FOR_DEVICE = "Error retrieving configuration objects for device: ";
 
     @Autowired
     private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
 
     @Override
-    public GetConfigurationResponseDataDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final GetConfigurationRequestDataDto getConfigurationRequestDataDto) {
 
-        final String resultString;
+        String resultString = null;
         try {
             resultString = this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
         } catch (final ProtocolAdapterException e) {
 
-            LOGGER.error(ERROR_RETRIEVING_CONFIGURATION_OBJECTS_FOR_DEVICE + device.getDeviceIdentification(), e);
+            LOGGER.error("Error retrieving configuration objects for device: " + device.getDeviceIdentification(), e);
 
-            final GetConfigurationResponseDataDto getConfigurationResponseDataDto = new GetConfigurationResponseDataDto();
-            getConfigurationResponseDataDto.setException(e);
-            getConfigurationResponseDataDto.setResultString(ERROR_RETRIEVING_CONFIGURATION_OBJECTS_FOR_DEVICE
+            new ActionValueObjectResponseDto(e, "Error retrieving configuration objects for device: "
                     + device.getDeviceIdentification());
-            return getConfigurationResponseDataDto;
         }
 
         return new GetConfigurationResponseDataDto(resultString);
