@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
 
 @Component()
 public class SetAlarmNotificationsBundleCommandExecutor implements
-        CommandExecutor<SetAlarmNotificationsRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<SetAlarmNotificationsRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsBundleCommandExecutor.class);
 
@@ -29,7 +29,7 @@ public class SetAlarmNotificationsBundleCommandExecutor implements
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final SetAlarmNotificationsRequestDataDto alarmNotificationsRequestDataDto) {
 
         AccessResultCode accessResultCode = null;
@@ -38,15 +38,15 @@ public class SetAlarmNotificationsBundleCommandExecutor implements
             accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
                     alarmNotificationsRequestDataDto.getAlarmNotifications());
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionValueObjectResponseDto("Set alarm notification on meter "
+                return new ActionResponseDto("Set alarm notification on meter "
                         + device.getDeviceIdentification() + " was successful");
             } else {
-                return new ActionValueObjectResponseDto("Set alarm notification on meter "
+                return new ActionResponseDto("Set alarm notification on meter "
                         + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
             }
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while setting alarm notifications", e);
-            return new ActionValueObjectResponseDto(e, "Error while setting alarm notifications");
+            return new ActionResponseDto(e, "Error while setting alarm notifications");
         }
 
     }

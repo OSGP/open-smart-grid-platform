@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 
 @Component()
 public class GetPeriodicMeterReadsGasBundleCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsGasRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<PeriodicMeterReadsGasRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasBundleCommandExecutor.class);
 
@@ -29,7 +29,7 @@ public class GetPeriodicMeterReadsGasBundleCommandExecutor implements
     GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsGasRequestDataDto periodicMeterReadsGasRequestDataDto) {
 
         final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = new PeriodicMeterReadsQueryDto(
@@ -42,7 +42,7 @@ public class GetPeriodicMeterReadsGasBundleCommandExecutor implements
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(
                     "Error while getting periodic meter reads gas from device: " + device.getDeviceIdentification(), e);
-            return new ActionValueObjectResponseDto(e, "Error while getting periodic meter reads gas from device: "
+            return new ActionResponseDto(e, "Error while getting periodic meter reads gas from device: "
                     + device.getDeviceIdentification());
         }
 

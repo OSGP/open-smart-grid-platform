@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
@@ -25,7 +25,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 
 @Component()
 public class SetConfigurationObjectBundleCommandExecutor implements
-CommandExecutor<SetConfigurationObjectRequestDataDto, ActionValueObjectResponseDto> {
+CommandExecutor<SetConfigurationObjectRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectBundleCommandExecutor.class);
 
@@ -36,7 +36,7 @@ CommandExecutor<SetConfigurationObjectRequestDataDto, ActionValueObjectResponseD
     private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestDataDto) {
 
         // Configuration Object towards the Smart Meter
@@ -63,16 +63,16 @@ CommandExecutor<SetConfigurationObjectRequestDataDto, ActionValueObjectResponseD
             accessResultCode = this.setConfigurationObjectCommandExecutor.execute(conn, device, configurationObject);
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionValueObjectResponseDto("Setting configuration object for device: "
+                return new ActionResponseDto("Setting configuration object for device: "
                         + device.getDeviceIdentification() + " was successful");
             } else {
-                return new ActionValueObjectResponseDto("Setting configuration object for device: "
+                return new ActionResponseDto("Setting configuration object for device: "
                         + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(ERROR_WHILE_SETTING_CONFIGURATION_OBJECT_FOR_DEVICE + device.getDeviceIdentification(), e);
-            return new ActionValueObjectResponseDto(e, ERROR_WHILE_SETTING_CONFIGURATION_OBJECT_FOR_DEVICE
+            return new ActionResponseDto(e, ERROR_WHILE_SETTING_CONFIGURATION_OBJECT_FOR_DEVICE
                     + device.getDeviceIdentification());
         }
 

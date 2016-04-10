@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
 
@@ -47,7 +47,7 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
         }
         final BundleMessageDataContainerDto bundleMessageDataContainerDto = (BundleMessageDataContainerDto) requestObject;
 
-        final List<ActionValueObjectResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(
+        final List<ActionResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(
                 conn, device, bundleMessageDataContainerDto);
 
         final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto = new BundleResponseMessageDataContainerDto(

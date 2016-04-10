@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 
 @Component()
 public class GetAdministrativeStatusBundleCommandExecutor implements
-        CommandExecutor<ActionValueObjectDto, ActionValueObjectResponseDto> {
+        CommandExecutor<ActionDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusBundleCommandExecutor.class);
 
@@ -33,15 +33,15 @@ public class GetAdministrativeStatusBundleCommandExecutor implements
     private ConfigurationMapper configurationMapper;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActionValueObjectDto useless) {
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final ActionDto useless) {
 
         try {
             return new AdministrativeStatusTypeResponseDto(this.getAdministrativeStatusCommandExecutor.execute(conn,
                     device, null));
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while getting administrative status type", e);
-            return new ActionValueObjectResponseDto(e, "Error while getting administrative status type");
+            return new ActionResponseDto(e, "Error while getting administrative status type");
         }
     }
 }

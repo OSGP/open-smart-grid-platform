@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
 @Component()
 public class SetSpecialDaysBundleCommandExecutor implements
-        CommandExecutor<SpecialDaysRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<SpecialDaysRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetSpecialDaysBundleCommandExecutor.class);
 
@@ -29,21 +29,21 @@ public class SetSpecialDaysBundleCommandExecutor implements
     SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final SpecialDaysRequestDataDto specialDaysRequestDataDto) {
 
         try {
             final AccessResultCode resultCode = this.setSpecialDaysCommandExecutor.execute(conn, device,
                     specialDaysRequestDataDto.getSpecialDays());
             if (AccessResultCode.SUCCESS.equals(resultCode)) {
-                return new ActionValueObjectResponseDto("Set special days was successful");
+                return new ActionResponseDto("Set special days was successful");
             } else {
-                return new ActionValueObjectResponseDto("Set special days was not successful. Result code: "
+                return new ActionResponseDto("Set special days was not successful. Result code: "
                         + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Set special days was not successful", e);
-            return new ActionValueObjectResponseDto(e, "Set special days was not successful");
+            return new ActionResponseDto(e, "Set special days was not successful");
         }
 
     }

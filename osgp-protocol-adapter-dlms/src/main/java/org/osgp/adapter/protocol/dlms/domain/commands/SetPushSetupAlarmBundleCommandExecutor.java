@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 
 @Component()
 public class SetPushSetupAlarmBundleCommandExecutor implements
-        CommandExecutor<SetPushSetupAlarmRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<SetPushSetupAlarmRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmBundleCommandExecutor.class);
 
@@ -31,7 +31,7 @@ public class SetPushSetupAlarmBundleCommandExecutor implements
     private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final SetPushSetupAlarmRequestDataDto setPushSetupAlarmRequestDataDto) {
 
         AccessResultCode accessResultCode;
@@ -40,16 +40,16 @@ public class SetPushSetupAlarmBundleCommandExecutor implements
                     setPushSetupAlarmRequestDataDto.getPushSetupAlarm());
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionValueObjectResponseDto("Setting push setup alarm for device: "
+                return new ActionResponseDto("Setting push setup alarm for device: "
                         + device.getDeviceIdentification() + " was successful");
             } else {
-                return new ActionValueObjectResponseDto("Setting push setup alarm for device: "
+                return new ActionResponseDto("Setting push setup alarm for device: "
                         + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(ERROR_WHILE_PUSHING_SETUP_ALARM + device.getDeviceIdentification(), e);
-            return new ActionValueObjectResponseDto(e, ERROR_WHILE_PUSHING_SETUP_ALARM
+            return new ActionResponseDto(e, ERROR_WHILE_PUSHING_SETUP_ALARM
                     + device.getDeviceIdentification());
         }
     }

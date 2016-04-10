@@ -19,13 +19,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor implements
-CommandExecutor<GMeterInfoDto, ActionValueObjectResponseDto> {
+CommandExecutor<GMeterInfoDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor.class);
@@ -37,7 +37,7 @@ CommandExecutor<GMeterInfoDto, ActionValueObjectResponseDto> {
     private DomainHelperService domainHelperService;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final GMeterInfoDto gMeterInfo) {
 
         DlmsDevice gMeterDevice;
@@ -51,10 +51,10 @@ CommandExecutor<GMeterInfoDto, ActionValueObjectResponseDto> {
             final MethodResultCode methodResultCode = this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(
                     conn, device, protocolMeterInfo);
             if (MethodResultCode.SUCCESS.equals(methodResultCode)) {
-                return new ActionValueObjectResponseDto("Setting encryption key exchange on Gas meter "
+                return new ActionResponseDto("Setting encryption key exchange on Gas meter "
                         + gMeterInfo.getDeviceIdentification() + " was successful");
             } else {
-                return new ActionValueObjectResponseDto("Setting encryption key exchange on Gas meter "
+                return new ActionResponseDto("Setting encryption key exchange on Gas meter "
                         + gMeterInfo.getDeviceIdentification() + " was not successful and returned with: "
                         + methodResultCode);
             }
@@ -62,11 +62,11 @@ CommandExecutor<GMeterInfoDto, ActionValueObjectResponseDto> {
             LOGGER.error(
                     "Error while setting encryption key exchange on Gas meter " + gMeterInfo.getDeviceIdentification(),
                     e);
-            return new ActionValueObjectResponseDto(e, "Error while setting encryption key exchange on Gas meter "
+            return new ActionResponseDto(e, "Error while setting encryption key exchange on Gas meter "
                     + gMeterInfo.getDeviceIdentification());
         } catch (final FunctionalException e) {
             LOGGER.error("Error while looking up G-Meter " + gMeterInfo.getDeviceIdentification(), e);
-            return new ActionValueObjectResponseDto(e, "Error while looking up G-Meter "
+            return new ActionResponseDto(e, "Error while looking up G-Meter "
                     + gMeterInfo.getDeviceIdentification());
         }
 

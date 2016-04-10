@@ -17,14 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 
 @Component()
 public class RetrieveEventsBundleCommandExecutor implements
-        CommandExecutor<FindEventsQueryDto, ActionValueObjectResponseDto> {
+        CommandExecutor<FindEventsQueryDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsBundleCommandExecutor.class);
 
@@ -35,7 +35,7 @@ public class RetrieveEventsBundleCommandExecutor implements
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final FindEventsQueryDto findEventsQuery) {
 
         List<EventDto> eventDtoList;
@@ -44,7 +44,7 @@ public class RetrieveEventsBundleCommandExecutor implements
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while retrieving " + findEventsQuery.getEventLogCategory() + "events from device: "
                     + device.getDeviceIdentification(), e);
-            return new ActionValueObjectResponseDto(e, "Error while retrieving "
+            return new ActionResponseDto(e, "Error while retrieving "
                     + findEventsQuery.getEventLogCategory() + "events from device: " + device.getDeviceIdentification());
         }
         return new EventMessageDataContainerDto(eventDtoList);

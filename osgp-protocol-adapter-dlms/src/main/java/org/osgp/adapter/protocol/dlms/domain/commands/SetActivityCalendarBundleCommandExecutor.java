@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 
 @Component()
 public class SetActivityCalendarBundleCommandExecutor implements
-        CommandExecutor<ActivityCalendarDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<ActivityCalendarDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarBundleCommandExecutor.class);
 
@@ -32,7 +32,7 @@ public class SetActivityCalendarBundleCommandExecutor implements
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final ActivityCalendarDataDto activityCalendar) {
 
         MethodResultCode methodResult = null;
@@ -43,14 +43,14 @@ public class SetActivityCalendarBundleCommandExecutor implements
             methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, device, null);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while setting new activity calendar", e);
-            return new ActionValueObjectResponseDto(e, "Error while setting new activity calendar");
+            return new ActionResponseDto(e, "Error while setting new activity calendar");
         }
 
         if (!MethodResultCode.SUCCESS.equals(methodResult)) {
-            return new ActionValueObjectResponseDto("AccessResultCode for set Activity Calendar: " + methodResult);
+            return new ActionResponseDto("AccessResultCode for set Activity Calendar: " + methodResult);
         }
 
-        return new ActionValueObjectResponseDto("Set Activity Calendar Result is OK for device id: "
+        return new ActionResponseDto("Set Activity Calendar Result is OK for device id: "
                 + device.getDeviceIdentification() + " calendar name: "
                 + activityCalendar.getActivityCalendar().getCalendarName());
 

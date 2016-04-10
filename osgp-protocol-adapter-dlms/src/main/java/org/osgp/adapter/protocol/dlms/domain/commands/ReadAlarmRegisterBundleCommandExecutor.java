@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Component
 public class ReadAlarmRegisterBundleCommandExecutor implements
-        CommandExecutor<ReadAlarmRegisterDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<ReadAlarmRegisterDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterBundleCommandExecutor.class);
 
@@ -29,7 +29,7 @@ public class ReadAlarmRegisterBundleCommandExecutor implements
     private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterDataDto object) {
 
         final ReadAlarmRegisterRequestDto readAlarmRegisterRequestDto = new ReadAlarmRegisterRequestDto("not relevant");
@@ -38,7 +38,7 @@ public class ReadAlarmRegisterBundleCommandExecutor implements
             return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequestDto);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while reading alarm register from device: " + device.getDeviceIdentification(), e);
-            return new ActionValueObjectResponseDto(e, "Error while reading alarm register from device: "
+            return new ActionResponseDto(e, "Error while reading alarm register from device: "
                     + device.getDeviceIdentification());
         }
     }

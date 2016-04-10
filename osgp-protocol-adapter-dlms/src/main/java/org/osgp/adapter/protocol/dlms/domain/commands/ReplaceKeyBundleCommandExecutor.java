@@ -17,11 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 
 @Component
-public class ReplaceKeyBundleCommandExecutor implements CommandExecutor<KeySetDto, ActionValueObjectResponseDto> {
+public class ReplaceKeyBundleCommandExecutor implements CommandExecutor<KeySetDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyBundleCommandExecutor.class);
 
@@ -29,7 +29,7 @@ public class ReplaceKeyBundleCommandExecutor implements CommandExecutor<KeySetDt
     ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final KeySetDto keySetDto) {
 
         // Add the // Change AUTHENTICATION key.
@@ -48,11 +48,11 @@ public class ReplaceKeyBundleCommandExecutor implements CommandExecutor<KeySetDt
             conn.changeClientGlobalEncryptionKey(keySetDto.getEncryptionKey());
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Replace keys for device: " + device.getDeviceIdentification() + " was not successful");
-            return new ActionValueObjectResponseDto(e, "Replace keys for device: " + device.getDeviceIdentification()
+            return new ActionResponseDto(e, "Replace keys for device: " + device.getDeviceIdentification()
                     + " was not successful");
         }
 
-        return new ActionValueObjectResponseDto("Replace keys for device: " + device.getDeviceIdentification()
+        return new ActionResponseDto("Replace keys for device: " + device.getDeviceIdentification()
                 + " was successful");
     }
 }

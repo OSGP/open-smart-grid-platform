@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationResponseDataDto;
 
 @Component
 public class RetrieveConfigurationObjectsBundleCommandExecutor implements
-        CommandExecutor<GetConfigurationRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<GetConfigurationRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RetrieveConfigurationObjectsBundleCommandExecutor.class);
@@ -30,7 +30,7 @@ public class RetrieveConfigurationObjectsBundleCommandExecutor implements
     private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final GetConfigurationRequestDataDto getConfigurationRequestDataDto) {
 
         String resultString = null;
@@ -40,7 +40,7 @@ public class RetrieveConfigurationObjectsBundleCommandExecutor implements
 
             LOGGER.error("Error retrieving configuration objects for device: " + device.getDeviceIdentification(), e);
 
-            new ActionValueObjectResponseDto(e, "Error retrieving configuration objects for device: "
+            new ActionResponseDto(e, "Error retrieving configuration objects for device: "
                     + device.getDeviceIdentification());
         }
 

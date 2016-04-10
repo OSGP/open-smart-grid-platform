@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
 
 @Component()
 public class SynchronizeTimeBundleCommandExecutor implements
-        CommandExecutor<SynchronizeTimeRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<SynchronizeTimeRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeBundleCommandExecutor.class);
 
@@ -31,7 +31,7 @@ public class SynchronizeTimeBundleCommandExecutor implements
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final SynchronizeTimeRequestDataDto synchronizeTimeRequestDataDto) {
 
         AccessResultCode accessResultCode;
@@ -39,16 +39,16 @@ public class SynchronizeTimeBundleCommandExecutor implements
             accessResultCode = this.synchronizeTimeCommandExecutor.execute(conn, device, null);
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionValueObjectResponseDto("Synchronizing time for device: "
+                return new ActionResponseDto("Synchronizing time for device: "
                         + device.getDeviceIdentification() + " was successful");
             } else {
-                return new ActionValueObjectResponseDto("Synchronizing time for device: "
+                return new ActionResponseDto("Synchronizing time for device: "
                         + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(ERROR_WHILE_SYNCHRONIZING_TIME + device.getDeviceIdentification(), e);
-            return new ActionValueObjectResponseDto(e, ERROR_WHILE_SYNCHRONIZING_TIME
+            return new ActionResponseDto(e, ERROR_WHILE_SYNCHRONIZING_TIME
                     + device.getDeviceIdentification());
         }
     }

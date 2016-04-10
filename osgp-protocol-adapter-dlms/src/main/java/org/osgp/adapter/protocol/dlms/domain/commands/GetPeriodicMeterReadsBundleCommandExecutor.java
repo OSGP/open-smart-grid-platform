@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 
 @Component()
 public class GetPeriodicMeterReadsBundleCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<PeriodicMeterReadsRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsBundleCommandExecutor.class);
 
@@ -29,7 +29,7 @@ public class GetPeriodicMeterReadsBundleCommandExecutor implements
     GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDataDto periodicMeterReadsRequestDataDto) {
 
         final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = new PeriodicMeterReadsQueryDto(
@@ -40,7 +40,7 @@ public class GetPeriodicMeterReadsBundleCommandExecutor implements
             return this.getPeriodicMeterReadsCommandExecutor.execute(conn, device, periodicMeterReadsQueryDto);
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while getting periodic meter reads from device: " + device.getDeviceIdentification());
-            return new ActionValueObjectResponseDto(e, "Error while getting periodic meter reads from device: "
+            return new ActionResponseDto(e, "Error while getting periodic meter reads from device: "
                     + device.getDeviceIdentification());
         }
 

@@ -18,13 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
 
 @Component
 public class GetFirmwareVersionsBundleCommandExecutor implements
-        CommandExecutor<GetFirmwareVersionRequestDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<GetFirmwareVersionRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionsBundleCommandExecutor.class);
 
@@ -32,7 +32,7 @@ public class GetFirmwareVersionsBundleCommandExecutor implements
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final GetFirmwareVersionRequestDataDto getFirmwareVersionRequestDataDto) {
 
         List<FirmwareVersionDto> resultList;
@@ -41,7 +41,7 @@ public class GetFirmwareVersionsBundleCommandExecutor implements
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while getting firmware versions from device: " + device.getDeviceIdentification(), e);
 
-            return new ActionValueObjectResponseDto(e, "Error while getting firmware versions from device: "
+            return new ActionResponseDto(e, "Error while getting firmware versions from device: "
                     + device.getDeviceIdentification());
         }
 

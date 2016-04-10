@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
 @Component()
 public class SetAdministrativeStatusBundleCommandExecutor implements
-        CommandExecutor<AdministrativeStatusTypeDataDto, ActionValueObjectResponseDto> {
+        CommandExecutor<AdministrativeStatusTypeDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusBundleCommandExecutor.class);
 
@@ -30,7 +30,7 @@ public class SetAdministrativeStatusBundleCommandExecutor implements
     private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final AdministrativeStatusTypeDataDto administrativeStatusType) {
 
         final AdministrativeStatusTypeDto adminStatusType = administrativeStatusType.getAdministrativeStatusType();
@@ -40,15 +40,15 @@ public class SetAdministrativeStatusBundleCommandExecutor implements
             final AccessResultCode resultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
                     adminStatusType);
             if (AccessResultCode.SUCCESS.equals(resultCode)) {
-                return new ActionValueObjectResponseDto("Set administrative status to " + adminStatusType
+                return new ActionResponseDto("Set administrative status to " + adminStatusType
                         + " was successful");
             } else {
-                return new ActionValueObjectResponseDto("Set administrative status to " + adminStatusType
+                return new ActionResponseDto("Set administrative status to " + adminStatusType
                         + " was not successful. Result code: " + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Set administrative status to " + adminStatusType + " was not successful", e);
-            return new ActionValueObjectResponseDto(e, "Set administrative status to " + adminStatusType
+            return new ActionResponseDto(e, "Set administrative status to " + adminStatusType
                     + " was not successful");
         }
 

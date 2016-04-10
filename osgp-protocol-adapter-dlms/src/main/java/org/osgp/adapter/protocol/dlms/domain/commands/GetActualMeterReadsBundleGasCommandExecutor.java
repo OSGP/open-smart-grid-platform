@@ -15,13 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 
 @Component()
 public class GetActualMeterReadsBundleGasCommandExecutor implements
-        CommandExecutor<ActualMeterReadsDataGasDto, ActionValueObjectResponseDto> {
+        CommandExecutor<ActualMeterReadsDataGasDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsBundleGasCommandExecutor.class);
 
@@ -29,7 +29,7 @@ public class GetActualMeterReadsBundleGasCommandExecutor implements
     private GetActualMeterReadsGasCommandExecutor getActualMeterReadsGasCommandExecutor;
 
     @Override
-    public ActionValueObjectResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsDataGasDto actualMeterReadsDataGasDto) {
 
         final ActualMeterReadsQueryDto actualMeterReadsQueryDto = new ActualMeterReadsQueryDto(
@@ -40,7 +40,7 @@ public class GetActualMeterReadsBundleGasCommandExecutor implements
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while getting actual meter reads Gas for device: " + device.getDeviceIdentification(),
                     e);
-            return new ActionValueObjectResponseDto(e, "Error while getting actual meter reads Gas for device: "
+            return new ActionResponseDto(e, "Error while getting actual meter reads Gas for device: "
                     + device.getDeviceIdentification());
         }
 
