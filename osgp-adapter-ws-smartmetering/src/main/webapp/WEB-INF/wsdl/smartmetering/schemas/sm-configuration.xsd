@@ -648,9 +648,13 @@
 	</xsd:simpleType>
     
     <xsd:complexType name="KeySet">       
-        <xsd:sequence>
-            <xsd:element name="AuthenticationKey" type="xsd:hexBinary"></xsd:element>
-            <xsd:element name="EncryptionKey" type="xsd:hexBinary"></xsd:element>
-        </xsd:sequence>
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+		        <xsd:sequence>
+            		<xsd:element name="AuthenticationKey" type="xsd:hexBinary"></xsd:element>
+            		<xsd:element name="EncryptionKey" type="xsd:hexBinary"></xsd:element>
+        		</xsd:sequence>
+        	</xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 </xsd:schema>

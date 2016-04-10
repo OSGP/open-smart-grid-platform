@@ -35,6 +35,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterData;
@@ -131,6 +132,8 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequestData.class,
                 this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class,
+                this.configurationMapper);
 
     }
 
@@ -186,6 +189,7 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionRequestData.class,
                 GetFirmwareVersionRequestData.class);
+        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet.class, KeySet.class);
 
     }
 
