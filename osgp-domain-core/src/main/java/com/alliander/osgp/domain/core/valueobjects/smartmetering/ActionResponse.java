@@ -9,7 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ActionValueResponseObject implements Serializable {
+public class ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -1400608536968152107L;
     private String exception;

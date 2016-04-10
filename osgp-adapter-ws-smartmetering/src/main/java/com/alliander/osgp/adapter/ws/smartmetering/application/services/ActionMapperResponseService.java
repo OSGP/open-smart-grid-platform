@@ -30,7 +30,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Configura
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueResponseObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
@@ -67,7 +67,7 @@ public class ActionMapperResponseService {
     @Autowired
     private CommonMapper commonMapper;
 
-    private static Map<Class<? extends ActionValueResponseObject>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+    private static Map<Class<? extends ActionResponse>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the core object class received.
@@ -77,7 +77,7 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(MeterReads.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(MeterReadsGas.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(EventMessageDataContainer.class, this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(ActionValueResponseObject.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(ActionResponse.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(AlarmRegister.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainer.class, this.monitoringMapper);
@@ -90,7 +90,7 @@ public class ActionMapperResponseService {
     /**
      * Specifies to which core object the ws object needs to be mapped.
      */
-    private static Map<Class<? extends ActionValueResponseObject>, Class<?>> CLASS_MAP = new HashMap<>();
+    private static Map<Class<? extends ActionResponse>, Class<?>> CLASS_MAP = new HashMap<>();
     static {
         CLASS_MAP.put(MeterReadsGas.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponseData.class);
@@ -98,13 +98,13 @@ public class ActionMapperResponseService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponseData.class);
         CLASS_MAP.put(EventMessageDataContainer.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData.class);
-        CLASS_MAP.put(ActionValueResponseObject.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.common.ActionValueResponseData.class);
+        CLASS_MAP.put(ActionResponse.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.common.ActionResponseData.class);
         CLASS_MAP.put(AlarmRegister.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
         CLASS_MAP
-                .put(AdministrativeStatusTypeResponse.class,
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
+        .put(AdministrativeStatusTypeResponse.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
         CLASS_MAP.put(PeriodicMeterReadsContainer.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponseData.class);
         CLASS_MAP.put(PeriodicMeterReadsContainerGas.class,
@@ -120,10 +120,9 @@ public class ActionMapperResponseService {
 
         final BundleResponseMessageDataContainer bundleResponseMessageDataContainer = (BundleResponseMessageDataContainer) actionList;
         final AllResponses allResponses = new ObjectFactory().createAllResponses();
-        final List<? extends ActionValueResponseObject> actionValueList = bundleResponseMessageDataContainer
-                .getBundleList();
+        final List<? extends ActionResponse> actionValueList = bundleResponseMessageDataContainer.getBundleList();
 
-        for (final ActionValueResponseObject actionValueResponseObject : actionValueList) {
+        for (final ActionResponse actionValueResponseObject : actionValueList) {
 
             final ConfigurableMapper mapper = this.getMapper(actionValueResponseObject);
             final Class<?> clazz = this.getClazz(actionValueResponseObject);
@@ -138,7 +137,7 @@ public class ActionMapperResponseService {
         return bundleResponse;
     }
 
-    private Response doMap(final ActionValueResponseObject actionValueResponseObject, final ConfigurableMapper mapper,
+    private Response doMap(final ActionResponse actionValueResponseObject, final ConfigurableMapper mapper,
             final Class<?> clazz) throws FunctionalException {
         final Response response = (Response) mapper.map(actionValueResponseObject, clazz);
 
@@ -151,7 +150,7 @@ public class ActionMapperResponseService {
         return response;
     }
 
-    private Class<?> getClazz(final ActionValueResponseObject actionValueResponseObject) throws FunctionalException {
+    private Class<?> getClazz(final ActionResponse actionValueResponseObject) throws FunctionalException {
         final Class<?> clazz = CLASS_MAP.get(actionValueResponseObject.getClass());
 
         if (clazz == null) {
@@ -163,8 +162,7 @@ public class ActionMapperResponseService {
         return clazz;
     }
 
-    private ConfigurableMapper getMapper(final ActionValueResponseObject actionValueResponseObject)
-            throws FunctionalException {
+    private ConfigurableMapper getMapper(final ActionResponse actionValueResponseObject) throws FunctionalException {
         final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(actionValueResponseObject.getClass());
 
         if (mapper == null) {

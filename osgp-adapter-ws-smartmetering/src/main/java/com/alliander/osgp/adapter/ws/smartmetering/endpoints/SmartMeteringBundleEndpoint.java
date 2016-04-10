@@ -31,21 +31,14 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMa
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.BundleService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
-import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
-//MethodConstraintViolationException is deprecated.
-//Will by replaced by equivalent functionality defined
-//by the Bean Validation 1.1 API as of Hibernate Validator 5.
-
-@SuppressWarnings("deprecation")
 @Endpoint
 public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringBundleEndpoint.class);
     private static final String NAMESPACE = "http://www.alliander.com/schemas/osgp/smartmetering/sm-bundle/2014/10";
-    private static final ComponentType COMPONENT_WS_SMART_METERING = ComponentType.WS_SMART_METERING;
 
     private final BundleService bundleService;
     private final ActionMapperService actionMapperService;
@@ -65,7 +58,7 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
     @ResponsePayload
     public BundleAsyncResponse bundleRequest(@OrganisationIdentification final String organisationIdentification,
             @MessagePriority final String messagePriority, @RequestPayload final BundleRequest request)
-            throws OsgpException {
+                    throws OsgpException {
 
         LOGGER.info("Bundle request for organisation: {} and device: {}.", organisationIdentification,
                 request.getDeviceIdentification());

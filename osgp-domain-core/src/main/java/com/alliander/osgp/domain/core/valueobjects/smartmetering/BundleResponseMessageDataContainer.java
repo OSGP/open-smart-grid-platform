@@ -17,13 +17,13 @@ public class BundleResponseMessageDataContainer implements Serializable {
      */
     private static final long serialVersionUID = -3617762659993165221L;
 
-    private List<ActionValueResponseObject> actionResponseList;
+    private List<ActionResponse> actionResponseList;
 
-    public BundleResponseMessageDataContainer(final List<ActionValueResponseObject> actionResponseList) {
+    public BundleResponseMessageDataContainer(final List<ActionResponse> actionResponseList) {
         this.actionResponseList = actionResponseList;
     }
 
-    public List<ActionValueResponseObject> getBundleList() {
+    public List<ActionResponse> getBundleList() {
         return this.actionResponseList;
     }
 }

@@ -51,7 +51,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupAla
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
@@ -103,7 +103,7 @@ public class ActionMapperService {
     private SetEncryptionKeyExchangeOnGMeterDataConverter setEncryptionKeyExchangeOnGMeterDataConverter;
 
     private static Map<Class<? extends ActionValueObject>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static Map<Class<? extends ActionValueObject>, CustomValueToDtoConverter<? extends ActionValueObject, ? extends ActionValueObjectDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+    private static Map<Class<? extends ActionValueObject>, CustomValueToDtoConverter<? extends ActionValueObject, ? extends ActionDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the core class received.
@@ -140,7 +140,7 @@ public class ActionMapperService {
     /**
      * Specifies to which DTO object the core object needs to be mapped.
      */
-    private static Map<Class<? extends ActionValueObject>, Class<? extends ActionValueObjectDto>> CLASS_MAP = new HashMap<>();
+    private static Map<Class<? extends ActionValueObject>, Class<? extends ActionDto>> CLASS_MAP = new HashMap<>();
     static {
         CLASS_MAP.put(PeriodicMeterReadsRequestData.class, PeriodicMeterReadsRequestDataDto.class);
         CLASS_MAP.put(ActualMeterReadsRequestData.class, ActualMeterReadsDataDto.class);
@@ -164,13 +164,13 @@ public class ActionMapperService {
     public BundleMessageDataContainerDto mapAllActions(final BundleMessageDataContainer bundleMessageDataContainer,
             final SmartMeter smartMeter) throws FunctionalException {
 
-        final List<ActionValueObjectDto> actionValueObjectDtoList = new ArrayList<ActionValueObjectDto>();
+        final List<ActionDto> actionValueObjectDtoList = new ArrayList<ActionDto>();
 
         for (final ActionValueObject action : bundleMessageDataContainer.getBundleList()) {
 
             @SuppressWarnings("unchecked")
             // suppress else the compiler will complain
-            final CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionValueObject, ActionValueObjectDto>) CUSTOM_CONVERTER_FOR_CLASS
+            final CustomValueToDtoConverter<ActionValueObject, ActionDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionValueObject, ActionDto>) CUSTOM_CONVERTER_FOR_CLASS
             .get(action.getClass());
 
             if (customValueToDtoConverter != null) {
@@ -178,7 +178,7 @@ public class ActionMapperService {
             } else {
 
                 final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
-                final Class<? extends ActionValueObjectDto> clazz = CLASS_MAP.get(action.getClass());
+                final Class<? extends ActionDto> clazz = CLASS_MAP.get(action.getClass());
                 if (mapper != null) {
                     actionValueObjectDtoList.add(this.performDefaultMapping(action, mapper, clazz));
                 } else {
@@ -191,9 +191,9 @@ public class ActionMapperService {
         return new BundleMessageDataContainerDto(actionValueObjectDtoList);
     }
 
-    private ActionValueObjectDto performDefaultMapping(final ActionValueObject action, final ConfigurableMapper mapper,
-            final Class<? extends ActionValueObjectDto> clazz) throws FunctionalException {
-        final ActionValueObjectDto actionValueObjectDto = mapper.map(action, clazz);
+    private ActionDto performDefaultMapping(final ActionValueObject action, final ConfigurableMapper mapper,
+            final Class<? extends ActionDto> clazz) throws FunctionalException {
+        final ActionDto actionValueObjectDto = mapper.map(action, clazz);
 
         if (actionValueObjectDto == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,

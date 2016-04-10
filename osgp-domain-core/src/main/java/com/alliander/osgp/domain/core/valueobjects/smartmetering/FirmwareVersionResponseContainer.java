@@ -9,7 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.util.List;
 
-public class FirmwareVersionResponseContainer extends ActionValueResponseObject {
+public class FirmwareVersionResponseContainer extends ActionResponse {
 
     private static final long serialVersionUID = 4471818892560224779L;
 

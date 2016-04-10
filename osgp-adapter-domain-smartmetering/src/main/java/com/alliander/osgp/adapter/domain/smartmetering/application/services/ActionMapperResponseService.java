@@ -24,7 +24,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Commo
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueResponseObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
@@ -35,7 +35,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionValueObjectResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
@@ -69,28 +69,14 @@ public class ActionMapperResponseService {
     /**
      * Specifies which mapper to use for the DTO class received.
      */
-    private static Map<Class<? extends ActionValueObjectResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
+    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
 
     @PostConstruct
     private void postConstruct() {
-        /*-
-         classToMapperMap.put(SmsDetailsDto.class, this.adhocMapper);
-         classToMapperMap.put(AdministrativeStatusTypeDto.class, this.configurationMapper);
-         classToMapperMap.put(SpecialDaysRequestData.class, this.configurationMapper);
-         classToMapperMap.put(SetConfigurationObjectRequest.class, this.configurationMapper);
-         classToMapperMap.put(PushSetupAlarm.class, this.configurationMapper);
-         classToMapperMap.put(PushSetupSms.class, this.configurationMapper);
-         classToMapperMap.put(ActivityCalendar.class, this.configurationMapper);
-         classToMapperMap.put(AlarmNotifications.class, this.configurationMapper);
-         classToMapperMap.put(KeySet.class, this.configurationMapper);
-         classToMapperMap.put(SmartMeteringDevice.class, this.installationMapper);
-         classToMapperMap.put(PeriodicMeterReadsContainerGasDto.class, this.monitoringMapper);
-
-         */
         classToMapperMap.put(EventMessageDataContainerDto.class, this.managementMapper);
         classToMapperMap.put(MeterReadsDto.class, this.monitoringMapper);
         classToMapperMap.put(MeterReadsGasDto.class, this.monitoringMapper);
-        classToMapperMap.put(ActionValueObjectResponseDto.class, this.commonMapper);
+        classToMapperMap.put(ActionResponseDto.class, this.commonMapper);
         classToMapperMap.put(AlarmRegisterDto.class, this.commonMapper);
         classToMapperMap.put(AdministrativeStatusTypeResponseDto.class, this.configurationMapper);
         classToMapperMap.put(PeriodicMeterReadsContainerDto.class, this.monitoringMapper);
@@ -103,26 +89,12 @@ public class ActionMapperResponseService {
     /**
      * Specifies to which core value object the DTO object needs to be mapped.
      */
-    private static Map<Class<? extends ActionValueObjectResponseDto>, Class<? extends ActionValueResponseObject>> classMap = new HashMap<>();
+    private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
     static {
-        /*-
-         classMap.put(SmsDetailsDto.class, SmsDetails.class);
-         classMap.put(AdministrativeStatusTypeDto.class, AdministrativeStatusType.class);
-         classMap.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
-         classMap.put(SetConfigurationObjectRequest.class, SetConfigurationObjectRequestDto.class);
-         classMap.put(PushSetupAlarm.class, PushSetupAlarmDto.class);
-         classMap.put(PushSetupSms.class, PushSetupSmsDto.class);
-         classMap.put(ActivityCalendar.class, ActivityCalendarDto.class);
-         classMap.put(AlarmNotifications.class, AlarmNotificationsDto.class);
-         classMap.put(KeySet.class, KeySetDto.class);
-         classMap.put(SmartMeteringDevice.class, SmartMeteringDeviceDto.class);
-         classMap.put(PeriodicMeterReadsContainerGasDto.class, PeriodicMeterReadsContainerGas.class);
-
-         */
         classMap.put(EventMessageDataContainerDto.class, EventMessageDataContainer.class);
         classMap.put(MeterReadsDto.class, MeterReads.class);
         classMap.put(MeterReadsGasDto.class, MeterReadsGas.class);
-        classMap.put(ActionValueObjectResponseDto.class, ActionValueResponseObject.class);
+        classMap.put(ActionResponseDto.class, ActionResponse.class);
         classMap.put(AlarmRegisterDto.class, AlarmRegister.class);
         classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
         classMap.put(PeriodicMeterReadsContainerDto.class, PeriodicMeterReadsContainer.class);
@@ -136,14 +108,13 @@ public class ActionMapperResponseService {
             final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
                     throws FunctionalException {
 
-        final List<ActionValueResponseObject> actionResponseList = new ArrayList<ActionValueResponseObject>();
+        final List<ActionResponse> actionResponseList = new ArrayList<ActionResponse>();
 
-        for (final ActionValueObjectResponseDto action : bundleResponseMessageDataContainerDto
-                .getActionValueObjectResponseDto()) {
+        for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getActionValueObjectResponseDto()) {
 
             final ConfigurableMapper mapper = this.getMapper(action);
-            final Class<? extends ActionValueResponseObject> clazz = this.getClazz(action);
-            final ActionValueResponseObject actionValueResponseObject = this.doMap(action, mapper, clazz);
+            final Class<? extends ActionResponse> clazz = this.getClazz(action);
+            final ActionResponse actionValueResponseObject = this.doMap(action, mapper, clazz);
 
             actionResponseList.add(actionValueResponseObject);
         }
@@ -152,9 +123,9 @@ public class ActionMapperResponseService {
 
     }
 
-    private ActionValueResponseObject doMap(final ActionValueObjectResponseDto action, final ConfigurableMapper mapper,
-            final Class<? extends ActionValueResponseObject> clazz) throws FunctionalException {
-        final ActionValueResponseObject actionValueResponseObject = mapper.map(action, clazz);
+    private ActionResponse doMap(final ActionResponseDto action, final ConfigurableMapper mapper,
+            final Class<? extends ActionResponse> clazz) throws FunctionalException {
+        final ActionResponse actionValueResponseObject = mapper.map(action, clazz);
 
         if (actionValueResponseObject == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
@@ -165,9 +136,8 @@ public class ActionMapperResponseService {
         return actionValueResponseObject;
     }
 
-    private Class<? extends ActionValueResponseObject> getClazz(final ActionValueObjectResponseDto action)
-            throws FunctionalException {
-        final Class<? extends ActionValueResponseObject> clazz = classMap.get(action.getClass());
+    private Class<? extends ActionResponse> getClazz(final ActionResponseDto action) throws FunctionalException {
+        final Class<? extends ActionResponse> clazz = classMap.get(action.getClass());
 
         if (clazz == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
@@ -178,7 +148,7 @@ public class ActionMapperResponseService {
         return clazz;
     }
 
-    private ConfigurableMapper getMapper(final ActionValueObjectResponseDto action) throws FunctionalException {
+    private ConfigurableMapper getMapper(final ActionResponseDto action) throws FunctionalException {
         final ConfigurableMapper mapper = classToMapperMap.get(action.getClass());
 
         if (mapper == null) {

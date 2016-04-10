@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public class AdministrativeStatusTypeResponse extends ActionValueResponseObject {
+public class AdministrativeStatusTypeResponse extends ActionResponse {
 
     private static final long serialVersionUID = -8661462528133418593L;
 

@@ -70,7 +70,7 @@
 		</xsd:sequence>
 	</xsd:complexType>
 	
-	<xsd:complexType name="ActionValueResponseData">
+	<xsd:complexType name="ActionResponseData">
 		<xsd:complexContent>
 			<xsd:extension base="tns:Response">
 				<xsd:sequence>
