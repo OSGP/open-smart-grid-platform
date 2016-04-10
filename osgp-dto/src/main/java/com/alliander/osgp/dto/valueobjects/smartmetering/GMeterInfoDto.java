@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * Class to pass G-Meter information to the protocol adapter
  */
-public class GMeterInfoDto implements Serializable, ActionValueObjectDto {
+public class GMeterInfoDto implements Serializable, ActionDto {
 
     private static final long serialVersionUID = -4321438772672309715L;
     private final int channel;

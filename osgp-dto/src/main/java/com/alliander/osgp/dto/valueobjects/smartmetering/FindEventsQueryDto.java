@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
-public class FindEventsQueryDto implements Serializable, ActionValueObjectDto {
+public class FindEventsQueryDto implements Serializable, ActionDto {
 
     /**
      * Serial Version UID.

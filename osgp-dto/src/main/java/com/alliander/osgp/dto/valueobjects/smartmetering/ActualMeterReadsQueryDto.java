@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @author dev
  */
-public class ActualMeterReadsQueryDto implements Serializable, ActionValueObjectDto {
+public class ActualMeterReadsQueryDto implements Serializable, ActionDto {
     private static final long serialVersionUID = 3751586818507193990L;
 
     private final ChannelDto channel;

@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
-public class FirmwareVersionResponseDataDto extends ActionValueObjectResponseDto {
+public class FirmwareVersionResponseDataDto extends ActionResponseDto {
 
     private static final long serialVersionUID = 4779593744529504287L;
 

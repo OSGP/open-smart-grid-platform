@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-class AbstractPushSetupDto implements Serializable, ActionValueObjectDto {
+class AbstractPushSetupDto implements Serializable, ActionDto {
     private static final long serialVersionUID = -1080411684155651756L;
     private static final char TAB_CHAR = '\t';
 

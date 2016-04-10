@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public enum AdministrativeStatusTypeDto implements ActionValueObjectDto {
+public enum AdministrativeStatusTypeDto implements ActionDto {
     UNDEFINED,
     OFF,
     ON;

@@ -2,21 +2,21 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ActionValueObjectResponseDto implements Serializable {
+public class ActionResponseDto implements Serializable {
 
     private static final long serialVersionUID = -6579443565899923397L;
     private String exception;
     private String resultString;
 
-    public ActionValueObjectResponseDto() {
+    public ActionResponseDto() {
         // default constructor
     }
 
-    public ActionValueObjectResponseDto(final String resultString) {
+    public ActionResponseDto(final String resultString) {
         this(null, resultString);
     }
 
-    public ActionValueObjectResponseDto(final Exception exception, final String resultString) {
+    public ActionResponseDto(final Exception exception, final String resultString) {
         if (exception != null) {
             this.exception = exception.toString();
         }

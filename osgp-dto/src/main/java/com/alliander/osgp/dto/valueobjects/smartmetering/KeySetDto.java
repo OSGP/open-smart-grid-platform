@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.apache.commons.codec.binary.Hex;
 
-public class KeySetDto implements Serializable, ActionValueObjectDto {
+public class KeySetDto implements Serializable, ActionDto {
 
     private static final long serialVersionUID = 1573954141584647005L;
 

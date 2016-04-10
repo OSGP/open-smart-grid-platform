@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class AlarmNotificationsDto implements Serializable, ActionValueObjectDto {
+public class AlarmNotificationsDto implements Serializable, ActionDto {
 
     private static final long serialVersionUID = 2319359505656305783L;
 

@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ActivityCalendarDataDto implements Serializable, ActionValueObjectDto {
+public class ActivityCalendarDataDto implements Serializable, ActionDto {
 
     private static final long serialVersionUID = -4254902895916399366L;
 

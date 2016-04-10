@@ -15,7 +15,7 @@ import java.util.Date;
  *
  * @author dev
  */
-public class PeriodicMeterReadsQueryDto implements Serializable, ActionValueObjectDto {
+public class PeriodicMeterReadsQueryDto implements Serializable, ActionDto {
 
     private static final long serialVersionUID = -2483665562035897062L;
 

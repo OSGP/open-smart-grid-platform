@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class AdministrativeStatusTypeResponseDto extends ActionValueObjectResponseDto {
+public class AdministrativeStatusTypeResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -8661462528133418593L;
 

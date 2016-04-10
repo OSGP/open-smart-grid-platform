@@ -18,14 +18,14 @@ public class BundleMessageDataContainerDto implements Serializable {
      */
     private static final long serialVersionUID = -4268617729741836833L;
 
-    private List<ActionValueObjectDto> actionList;
+    private List<ActionDto> actionList;
 
-    public BundleMessageDataContainerDto(final List<ActionValueObjectDto> actionList) {
+    public BundleMessageDataContainerDto(final List<ActionDto> actionList) {
         this.actionList = actionList;
     }
 
-    public List<ActionValueObjectDto> getActionList() {
-        return new ArrayList<ActionValueObjectDto>(this.actionList);
+    public List<ActionDto> getActionList() {
+        return new ArrayList<ActionDto>(this.actionList);
     }
 
 }

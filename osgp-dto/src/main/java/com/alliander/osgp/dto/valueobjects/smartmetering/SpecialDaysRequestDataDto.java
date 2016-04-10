@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpecialDaysRequestDataDto implements Serializable, ActionValueObjectDto {
+public class SpecialDaysRequestDataDto implements Serializable, ActionDto {
 
     private static final long serialVersionUID = 2733945253731054997L;
 

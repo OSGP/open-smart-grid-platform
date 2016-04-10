@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ActualMeterReadsDataGasDto implements Serializable, ActionValueObjectDto {
+public class ActualMeterReadsDataGasDto implements Serializable, ActionDto {
 
     private static final long serialVersionUID = -3285918794296226542L;
 
