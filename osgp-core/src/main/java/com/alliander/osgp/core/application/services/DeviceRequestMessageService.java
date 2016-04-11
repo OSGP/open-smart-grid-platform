@@ -54,7 +54,7 @@ public class DeviceRequestMessageService {
             } else {
                 protocolInfo = device.getGatewayDevice().getProtocolInfo();
             }
-            if (protocolInfo == null) {
+            if (protocolInfo == null || !this.protocolRequestService.isSupported(protocolInfo)) {
                 final String msg = "Protocol unknown for device [" + device.getDeviceIdentification() + "]";
                 LOGGER.error(msg);
                 throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
