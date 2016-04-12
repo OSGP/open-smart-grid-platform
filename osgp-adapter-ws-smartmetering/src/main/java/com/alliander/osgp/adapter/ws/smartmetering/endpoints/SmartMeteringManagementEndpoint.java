@@ -23,11 +23,6 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DeactivateDeviceAsyncRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DeactivateDeviceAsyncResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DeactivateDeviceRequest;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DeactivateDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.DevicePage;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsAsyncResponse;
@@ -38,7 +33,6 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesR
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.GetDevicesResponse;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ManagementService;
-import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
@@ -93,8 +87,8 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
             final String correlationUid = this.managementService.enqueueFindEventsRequest(organisationIdentification,
                     deviceIdentification, this.managementMapper.mapAsList(findEventsQuery,
                             com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery.class),
-                            MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
-                                    Long.class));
+                    MessagePriorityEnum.getMessagePriority(messagePriority), this.managementMapper.map(scheduleTime,
+                            Long.class));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -174,65 +168,4 @@ public class SmartMeteringManagementEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
-    @PayloadRoot(localPart = "DeactivateDeviceRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public DeactivateDeviceAsyncResponse deactivateDevice(
-            @OrganisationIdentification final String organisationIdentification,
-            @ScheduleTime final String scheduleTime, @RequestPayload final DeactivateDeviceRequest request,
-            @MessagePriority final String messagePriority) throws OsgpException {
-
-        LOGGER.info("Incoming DeactivateDeviceRequest for meter: {}.", request.getDeviceIdentification());
-
-        DeactivateDeviceAsyncResponse response = null;
-        try {
-            response = new DeactivateDeviceAsyncResponse();
-
-            final String correlationUid = this.managementService.enqueueDeactivateSmartMeterRequest(
-                    organisationIdentification, request.getDeviceIdentification(),
-                    MessagePriorityEnum.getMessagePriority(messagePriority),
-                    this.managementMapper.map(scheduleTime, Long.class));
-
-            response.setCorrelationUid(correlationUid);
-            response.setDeviceIdentification(request.getDeviceIdentification());
-
-        } catch (final MethodConstraintViolationException e) {
-
-            LOGGER.error("Exception: {} while deactivating device: {} for organisation {}.",
-                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
-
-            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_CORE,
-                    new ValidationException(e.getConstraintViolations()));
-
-        } catch (final Exception e) {
-
-            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getDeviceIdentification(), organisationIdentification }, e);
-
-            this.handleException(e);
-        }
-        return response;
-    }
-
-    @PayloadRoot(localPart = "DeactivateDeviceAsyncRequest", namespace = NAMESPACE)
-    @ResponsePayload
-    public DeactivateDeviceResponse getSetConfigurationObjectResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final DeactivateDeviceAsyncRequest request) throws OsgpException {
-
-        DeactivateDeviceResponse response = null;
-        try {
-            response = new DeactivateDeviceResponse();
-            final MeterResponseData meterResponseData = this.managementService
-                    .dequeueDeactivateSmartMeterResponse(request.getCorrelationUid());
-
-            response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof String) {
-                response.setDescription((String) meterResponseData.getMessageData());
-            }
-
-        } catch (final Exception e) {
-            this.handleException(e);
-        }
-        return response;
-    }
 }

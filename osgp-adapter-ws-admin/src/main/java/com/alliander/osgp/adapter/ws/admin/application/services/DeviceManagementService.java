@@ -578,7 +578,7 @@ public class DeviceManagementService {
     }
 
     public String enqueueDeactivateSmartMeterRequest(final String organisationIdentification,
-            final String deviceIdentification, final int messagePriority) {
+            final String deviceIdentification) {
 
         // TODO: bypassing authorization logic for now, needs to be fixed.
 
@@ -594,6 +594,18 @@ public class DeviceManagementService {
         this.adminRequestMessageSender.send(message);
 
         return correlationUid;
+    }
+
+    public void deactivateSmartMeterRequest(final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
+
+        LOGGER.debug("Deactivating device [{}] on behalf of organisation [{}]", deviceIdentification,
+                organisationIdentification);
+
+        final Organisation organisation = this.findOrganisation(organisationIdentification);
+        this.isAllowed(organisation, PlatformFunction.DEACTIVATE_DEVICE);
+
+        this.enqueueDeactivateSmartMeterRequest(organisationIdentification, deviceIdentification);
     }
 
     private Device findDevice(final String deviceIdentification) throws FunctionalException {

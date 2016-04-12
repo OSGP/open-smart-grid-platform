@@ -40,14 +40,12 @@ public class DeactivateDeviceRequestMessageProcessor extends WebServiceRequestMe
         String messageType = null;
         String organisationIdentification = null;
         String deviceIdentification = null;
-        Object dataObject = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
             messageType = message.getJMSType();
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
-            dataObject = message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);

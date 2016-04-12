@@ -44,7 +44,6 @@
 	<xsd:simpleType name="NotificationType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="ADD_METER" />
-            <xsd:enumeration value="DEACTIVATE_DEVICE" />
 			<xsd:enumeration value="FIND_EVENTS" />
 			<xsd:enumeration value="REQUEST_PERIODIC_METER_DATA" />
 			<xsd:enumeration value="SYNCHRONIZE_TIME" />
@@ -57,6 +56,8 @@
 			<xsd:enumeration value="REQUEST_ACTUAL_METER_DATA" />
 			<xsd:enumeration value="READ_ALARM_REGISTER" />
 			<xsd:enumeration value="PUSH_NOTIFICATION_ALARM" />
+			<xsd:enumeration value="SEND_WAKEUP_SMS" />
+			<xsd:enumeration value="GET_SMS_DETAILS" />
 			<xsd:enumeration value="REPLACE_KEYS" />
 			<xsd:enumeration value="SET_PUSH_SETUP_ALARM" />
             <xsd:enumeration value="SET_PUSH_SETUP_SMS" />

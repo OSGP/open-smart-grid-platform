@@ -50,7 +50,7 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-    
+
 	<!-- DATATYPES -->
 
 	<xsd:complexType name="Device">

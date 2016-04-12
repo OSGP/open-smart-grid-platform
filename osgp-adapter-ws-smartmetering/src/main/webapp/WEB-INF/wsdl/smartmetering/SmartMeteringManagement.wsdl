@@ -62,7 +62,6 @@
 		</wsdl:part>
 	</wsdl:message>
 	
-
 	<wsdl:portType name="SmartMeteringManagementPort">
 	
 		<wsdl:operation name="FindEvents">
@@ -131,7 +130,6 @@
 			</wsdl:output>
 		</wsdl:operation>
 		
-
 	</wsdl:binding>
 	
 	<wsdl:service name="SmartMeteringManagementPortService">

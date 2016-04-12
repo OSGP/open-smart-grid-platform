@@ -279,12 +279,6 @@
         <wsdl:operation name="DeactivateDevice">
             <wsdl:input message="tns:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
             </wsdl:input>
-            <wsdl:output message="tns:DeactivateDeviceAsyncResponse" name="DeactivateDeviceAsyncResponse">
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="GetDeactivateDeviceReponse">
-            <wsdl:input message="tns:DeactivateDeviceAsyncRequest" name="DeactivateDeviceAsyncRequest">
-            </wsdl:input>
             <wsdl:output message="tns:DeactivateDeviceResponse" name="DeactivateDeviceResponse">
             </wsdl:output>
         </wsdl:operation>
@@ -437,19 +431,6 @@
         <wsdl:operation name="DeactivateDevice">
             <soap:operation soapAction="" />
             <wsdl:input name="DeactivateDeviceRequest">
-                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
-                <soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
-                <soap:body use="literal" />
-            </wsdl:input>
-            <wsdl:output name="DeactivateDeviceAsyncResponse">
-                <soap:body use="literal" />
-            </wsdl:output>
-        </wsdl:operation>
-        
-        <wsdl:operation name="GetDeactivateDeviceReponse">
-            <soap:operation soapAction="" />
-            <wsdl:input name="DeactivateDeviceAsyncRequest">
                 <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
                 <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
                 <soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />

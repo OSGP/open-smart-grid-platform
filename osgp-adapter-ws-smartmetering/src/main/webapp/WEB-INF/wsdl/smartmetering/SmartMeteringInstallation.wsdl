@@ -19,7 +19,7 @@
         </xsd:schema>
     </wsdl:types>    
 
-    <wsdl:message name="SoapHeaders">
+    <wsdl:message name="AddDeviceHeader">
         <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />
         <wsdl:part element="common:UserName" name="UserName" />
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
@@ -57,6 +57,7 @@
             <wsdl:output message="tns:AddDeviceResponse" name="AddDeviceResponse">
             </wsdl:output>
         </wsdl:operation>
+
     </wsdl:portType>
     
     <wsdl:binding name="SmartmeterInstallationPortSoap11" type="tns:SmartmeterInstallationPort">
@@ -65,9 +66,9 @@
         <wsdl:operation name="AddDevice">
             <soap:operation soapAction="" />
             <wsdl:input name="AddDeviceRequest">
-                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
-				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+                <soap:header message="tns:AddDeviceHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:AddDeviceHeader" part="UserName" use="literal" />
+				<soap:header message="tns:AddDeviceHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="AddDeviceAsyncResponse">
@@ -78,15 +79,16 @@
         <wsdl:operation name="GetAddDeviceReponse">
             <soap:operation soapAction="" />
             <wsdl:input name="AddDeviceAsyncRequest">
-                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
-				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+                <soap:header message="tns:AddDeviceHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:AddDeviceHeader" part="UserName" use="literal" />
+				<soap:header message="tns:AddDeviceHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="AddDeviceResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+
     </wsdl:binding>
     <wsdl:service name="SmartmeterInstallationPortService">
         <wsdl:port binding="tns:SmartmeterInstallationPortSoap11" name="SmartmeterInstallationPortSoap11">
