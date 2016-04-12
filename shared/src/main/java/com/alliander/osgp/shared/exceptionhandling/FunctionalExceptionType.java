@@ -35,6 +35,8 @@ public enum FunctionalExceptionType {
     UNKNOWN_CORRELATION_UID(405, "No results found for the given correlation uid."),
     LIGHT_SWITCHING_NOT_ALLOWED_FOR_RELAY(406, "This relay is not configured for light switching"),
     UNSUPPORTED_DEVICE_ACTION(407, "No handling implemented for the specified device action."),
+    ACTION_NOT_ALLOWED_FOR_LIGHT_RELAY(406, "This relay is not configured for light switching"),
+    ACTION_NOT_ALLOWED_FOR_TARIFF_RELAY(407, "This relay is not configured for tariff switching"),
 
     // Manufacturer exceptions
     UNKNOWN_MANUFACTURER(501, "Manufacturer does not exist."),
