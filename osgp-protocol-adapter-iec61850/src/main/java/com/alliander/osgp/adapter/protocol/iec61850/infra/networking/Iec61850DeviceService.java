@@ -1163,7 +1163,7 @@ public class Iec61850DeviceService implements DeviceService {
                 LOGGER.info("device: {}, set ctlVal to {} means {} message", deviceIdentification,
                         controlValueForTransition, controlValueForTransition ? "Evening" : "Morning");
 
-                clientAssociation.setDataValues(ctlVal);
+                clientAssociation.setDataValues(oper);
                 return null;
             }
         };
