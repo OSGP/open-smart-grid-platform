@@ -133,9 +133,10 @@ public class DlmsConfig {
             final DlmsDeviceRepository dlmsDeviceRepository,
             @Value("${jdlms.response_timeout}") final int responseTimeout,
             @Value("${jdlms.logical_device_address}") final int logicalDeviceAddress,
-            @Value("${jdlms.client_access_point}") final int clientAccessPoint) {
+            @Value("${jdlms.client_access_point}") final int clientAccessPoint,
+            @Value("${device.security.key.path.priv}") final String privateKeyPath) {
         return new Hls5Connector(recoverKeyProcessInitiator, dlmsDeviceRepository, responseTimeout,
-                logicalDeviceAddress, clientAccessPoint);
+                logicalDeviceAddress, clientAccessPoint, privateKeyPath);
     }
 
     @Bean

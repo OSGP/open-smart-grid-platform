@@ -24,7 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
+import com.alliander.osgp.shared.security.RsaEncrypterService;
 
 public class Hls5Connector {
 
@@ -42,14 +44,17 @@ public class Hls5Connector {
 
     private DlmsDevice device;
 
+    private final String devicePrivateKeyPath;
+
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
-            final int clientAccessPoint) {
+            final int clientAccessPoint, final String devicePrivateKeyPath) {
         this.recoverKeyProcessInitiator = recoverKeyProcessInitiator;
         this.dlmsDeviceRepository = dlmsDeviceRepository;
         this.responseTimeout = responseTimeout;
         this.logicalDeviceAddress = logicalDeviceAddress;
         this.clientAccessPoint = clientAccessPoint;
+        this.devicePrivateKeyPath = devicePrivateKeyPath;
     }
 
     public void setDevice(final DlmsDevice device) {
@@ -79,6 +84,11 @@ public class Hls5Connector {
                         this.device.getIpAddress());
             }
             throw new ConnectionException(e);
+        } catch (final RsaEncrypterException e) {
+            LOGGER.error("RSA decryption on security keys went wrong for device: {}",
+                    this.device.getDeviceIdentification(), e);
+            throw new TechnicalException(ComponentType.PROTOCOL_DLMS,
+                    "RSA decryption on security keys went wrong for device: " + this.device.getDeviceIdentification());
         }
     }
 
@@ -96,17 +106,30 @@ public class Hls5Connector {
      * @throws IOException
      *             When there are problems in connecting to or communicating
      *             with the device.
+     * @throws TechnicalException
+     *             When there are problems reading the security and
+     *             authorisation keys.
+     * @throws RsaEncrypterException
+     *             When there are problems decrypting the encrypted security and
+     *             authorisation keys.RSAEncrypterService
      */
-    private ClientConnection createConnection() throws IOException, TechnicalException {
+    private ClientConnection createConnection() throws IOException, TechnicalException, RsaEncrypterException {
         final SecurityKey validAuthenticationKey = this.getSecurityKey(SecurityKeyType.E_METER_AUTHENTICATION);
         final SecurityKey validEncryptionKey = this.getSecurityKey(SecurityKeyType.E_METER_ENCRYPTION);
 
+        // Decode the key from Hexstring to bytes
         final byte[] authenticationKey = Hex.decode(validAuthenticationKey.getKey());
         final byte[] encryptionKey = Hex.decode(validEncryptionKey.getKey());
 
+        // Decrypt the key
+        final byte[] decryptedAuthentication = RsaEncrypterService
+                .decrypt(authenticationKey, this.devicePrivateKeyPath);
+        final byte[] decryptedEncryption = RsaEncrypterService.decrypt(encryptionKey, this.devicePrivateKeyPath);
+
+        // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device
-                .getIpAddress())).useGmacAuthentication(authenticationKey, encryptionKey)
-                .enableEncryption(encryptionKey).responseTimeout(this.responseTimeout)
+                .getIpAddress())).useGmacAuthentication(decryptedAuthentication, decryptedEncryption)
+                .enableEncryption(decryptedEncryption).responseTimeout(this.responseTimeout)
                 .logicalDeviceAddress(this.logicalDeviceAddress).clientAccessPoint(this.clientAccessPoint);
 
         final Integer challengeLength = this.device.getChallengeLength();
