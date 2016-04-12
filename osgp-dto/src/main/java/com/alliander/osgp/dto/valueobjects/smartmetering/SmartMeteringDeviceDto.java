@@ -10,7 +10,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class SmartMeteringDeviceDto implements Serializable, ActionDto {
+public class SmartMeteringDeviceDto implements Serializable {
 
     private static final long serialVersionUID = -6133164707489276802L;
 
