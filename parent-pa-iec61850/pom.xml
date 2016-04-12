@@ -47,8 +47,8 @@
       <layout>default</layout>
     </snapshotRepository>
     <site>
-      <id>pa-oslp</id>
-      <name>pa-oslp</name>
+      <id>pa-iec61850</id>
+      <name>pa-iec61850</name>
       <!-- URL is passed in as a maven argument: -Dmaven.site.distributionManagement.site.url=file:////the/path/to/deploy/the/site/to -->
       <url>${maven.site.distributionManagement.site.url}</url>
     </site>
@@ -111,11 +111,6 @@
   <dependencyManagement>
     <dependencies>
       <!-- Alliander -->
-      <dependency>
-        <groupId>com.alliander.osgp</groupId>
-        <artifactId>oslp</artifactId>
-        <version>${osgp.version}</version>
-      </dependency>
       <dependency>
         <groupId>com.alliander.osgp</groupId>
         <artifactId>osgp-dto</artifactId>
