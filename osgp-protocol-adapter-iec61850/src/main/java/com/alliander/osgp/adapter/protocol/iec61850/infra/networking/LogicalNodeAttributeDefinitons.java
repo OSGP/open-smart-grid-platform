@@ -216,6 +216,23 @@ public final class LogicalNodeAttributeDefinitons {
      */
     public static final String PROPERTY_RB_OPER_ATTRIBUTE_CONTROL = "ctlVal";
 
+    /**
+     * Property of CSLC Node, Sensor.
+     */
+    public static final String PROPERTY_SENSOR = ".Sensor";
+
+    /**
+     * Attribute of Property Sensor, used to transition the device between day
+     * and night schedule.
+     */
+    public static final String PROPERTY_SENSOR_ATTRIBUTE_OPER = "Oper";
+
+    /**
+     * Attribute of Property Oper, used to transition the device between day and
+     * night schedule.
+     */
+    public static final String PROPERTY_SENSOR_ATTRIBUTE_CONTROL = "ctlVal";
+
     private LogicalNodeAttributeDefinitons() {
         // Private constructor to prevent instantiation of this class.
     }

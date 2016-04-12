@@ -39,6 +39,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitionDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
@@ -66,6 +67,8 @@ import com.alliander.osgp.dto.valueobjects.MeterType;
 import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
 import com.alliander.osgp.dto.valueobjects.RelayMap;
 import com.alliander.osgp.dto.valueobjects.Schedule;
+import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.TransitionType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -482,6 +485,43 @@ public class Iec61850DeviceService implements DeviceService {
                 deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
         deviceResponseHandler.handleResponse(deviceResponse);
 
+    }
+
+    @Override
+    public void setTransition(final SetTransitionDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            this.transitionDevice(serverModel, clientAssociation, deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getTransitionTypeContainer());
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+            deviceResponseHandler.handleResponse(deviceResponse);
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
     }
 
     // ======================================
@@ -1078,6 +1118,52 @@ public class Iec61850DeviceService implements DeviceService {
                     }
                 }
 
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
+    }
+
+    private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final String deviceIdentification, final TransitionMessageDataContainer transitionMessageDataContainer)
+                    throws ProtocolAdapterException {
+
+        final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
+        LOGGER.info("device: {}, transition: {}", deviceIdentification, transitionType);
+        final boolean controlValueForTransition = transitionType.equals(TransitionType.DAY_NIGHT);
+
+        final DateTime dateTime = transitionMessageDataContainer.getDateTime();
+        if (dateTime != null) {
+            LOGGER.warn("device: {}, setting date/time {} for transition {} not supported", deviceIdentification,
+                    dateTime, transitionType);
+        }
+
+        final Function<Void> function = new Function<Void>() {
+            @Override
+            public Void apply() throws Exception {
+                final String sensorObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_SENSOR;
+                LOGGER.info("device: {}, sensorObjectReference: {}", deviceIdentification, sensorObjectReference);
+
+                final FcModelNode sensorConfiguration = (FcModelNode) serverModel.findModelNode(sensorObjectReference,
+                        Fc.CO);
+                LOGGER.info("device: {}, sensorConfiguration: {}", deviceIdentification, sensorConfiguration);
+
+                final FcModelNode oper = (FcModelNode) sensorConfiguration.getChild(
+                        LogicalNodeAttributeDefinitons.PROPERTY_SENSOR_ATTRIBUTE_OPER, Fc.CO);
+                LOGGER.info("device: {}, oper: {}", deviceIdentification, oper);
+
+                final BdaBoolean ctlVal = (BdaBoolean) oper.getChild(
+                        LogicalNodeAttributeDefinitons.PROPERTY_SENSOR_ATTRIBUTE_CONTROL, Fc.CO);
+                LOGGER.info("device: {}, ctlVal: {}", deviceIdentification, ctlVal);
+
+                ctlVal.setValue(controlValueForTransition);
+                LOGGER.info("device: {}, set ctlVal to {} means {} message", deviceIdentification,
+                        controlValueForTransition, controlValueForTransition ? "Evening" : "Morning");
+
+                clientAssociation.setDataValues(ctlVal);
                 return null;
             }
         };
