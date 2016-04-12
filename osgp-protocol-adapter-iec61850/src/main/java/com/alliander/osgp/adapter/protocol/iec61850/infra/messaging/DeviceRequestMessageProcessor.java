@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.messaging;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -19,11 +20,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceResponseService;
 import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -157,6 +160,34 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
                 deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
                 deviceResponse.getDeviceIdentification(), result, osgpException, configuration, retryCount);
+
+        responseMessageSender.send(responseMessage);
+    }
+
+    protected void handleGetFirmwareVersionDeviceResponse(final DeviceResponse deviceResponse,
+            final ResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
+            final String messageType, final int retryCount) {
+
+        ResponseMessageResultType result = ResponseMessageResultType.OK;
+
+        OsgpException osgpException = null;
+
+        List<FirmwareVersionDto> firmwareVersions = null;
+
+        try {
+            firmwareVersions = ((GetFirmwareVersionDeviceResponse) deviceResponse).getFirmwareVersions();
+
+        } catch (final Exception e) {
+            LOGGER.error("Device Response Exception", e);
+            result = ResponseMessageResultType.NOT_OK;
+            osgpException = new TechnicalException(ComponentType.UNKNOWN,
+                    "Unexpected exception while retrieving response message", e);
+        }
+
+        final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
+                deviceResponse.getCorrelationUid(), deviceResponse.getOrganisationIdentification(),
+                deviceResponse.getDeviceIdentification(), result, osgpException, (Serializable) firmwareVersions,
+                retryCount);
 
         responseMessageSender.send(responseMessage);
     }

@@ -41,6 +41,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDevi
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceRelayType;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
@@ -58,6 +59,7 @@ import com.alliander.osgp.dto.valueobjects.ActionTimeType;
 import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.LightType;
 import com.alliander.osgp.dto.valueobjects.LightValue;
 import com.alliander.osgp.dto.valueobjects.LinkType;
@@ -93,6 +95,10 @@ public class Iec61850DeviceService implements DeviceService {
 
     private static final int DEFAULT_SCHEDULE_VALUE = -1;
 
+    private static final String FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION = "Functional firmware version";
+
+    private static final String SECURITY_FIRMWARE_TYPE_DESCRIPTION = "Security firmware version";
+
     /**
      * @see DeviceService#getStatus(GetStatusDeviceRequest,
      *      DeviceResponseHandler)
@@ -119,6 +125,15 @@ public class Iec61850DeviceService implements DeviceService {
 
             deviceResponseHandler.handleResponse(deviceResponse);
 
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during getStatus", e);
 
@@ -484,6 +499,46 @@ public class Iec61850DeviceService implements DeviceService {
 
     }
 
+    @Override
+    public void getFirmwareVersion(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+
+            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
+                    deviceRequest.getDeviceIdentification());
+            final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
+                    .getDeviceIdentification());
+
+            // Getting the data with retries
+            final List<FirmwareVersionDto> firmwareVersions = this.getFirmwareVersionFromDevice(serverModel);
+
+            final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), firmwareVersions);
+
+            deviceResponseHandler.handleResponse(deviceResponse);
+
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during getFirmwareVersion", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, true);
+        }
+
+    }
+
     // ======================================
     // PRIVATE DEVICE COMMUNICATION METHODS =
     // ======================================
@@ -694,7 +749,7 @@ public class Iec61850DeviceService implements DeviceService {
                 final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr");
                 final BdaInt32 serverPort = (BdaInt32) regConfiguration.getChild("svrPort");
 
-                configuration.setOspgIpAddress(new String(serverAddress.getValue()));
+                configuration.setOspgIpAddress(serverAddress.getStringValue());
                 configuration.setOsgpPortNumber(serverPort.getValue());
 
                 // getting the IP configuration values
@@ -1085,6 +1140,59 @@ public class Iec61850DeviceService implements DeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
+    private List<FirmwareVersionDto> getFirmwareVersionFromDevice(final ServerModel serverModel)
+            throws ProtocolAdapterException {
+
+        // creating the unction that will be retried, if necessary
+        final Function<List<FirmwareVersionDto>> function = new Function<List<FirmwareVersionDto>>() {
+
+            @Override
+            public List<FirmwareVersionDto> apply() throws Exception {
+
+                final List<FirmwareVersionDto> output = new ArrayList<>();
+
+                // Getting the functional firmware version
+                LOGGER.info("Reading the functional firmware version");
+
+                final String functionalFirmwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_FUNCTIONAL_FIRMWARE_CONFIGURATION;
+
+                final FcModelNode functionalFirmwareConfiguration = (FcModelNode) serverModel.findModelNode(
+                        functionalFirmwareConfigurationObjectReference, Fc.ST);
+
+                final BdaVisibleString functionalFirmwareVersion = (BdaVisibleString) functionalFirmwareConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_FIRMWARE_CONFIG_CURRENT_VERSION);
+
+                // Adding it to the list
+                output.add(new FirmwareVersionDto(Iec61850DeviceService.FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION,
+                        functionalFirmwareVersion.getStringValue()));
+
+                // Getting the security firmware version
+                LOGGER.info("Reading the security firmware version");
+
+                final String securityFirmwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_SECURITY_FIRMWARE_CONFIGURATION;
+
+                final FcModelNode securityFirmwareConfiguration = (FcModelNode) serverModel.findModelNode(
+                        securityFirmwareConfigurationObjectReference, Fc.ST);
+
+                final BdaVisibleString securityFirmwareVersion = (BdaVisibleString) securityFirmwareConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_FIRMWARE_CONFIG_CURRENT_VERSION);
+
+                // Adding it to the list
+                output.add(new FirmwareVersionDto(Iec61850DeviceService.SECURITY_FIRMWARE_TYPE_DESCRIPTION,
+                        securityFirmwareVersion.getStringValue()));
+
+                return output;
+            }
+        };
+
+        return this.iec61850Client.sendCommandWithRetry(function);
+
+    }
+
     // ========================
     // PRIVATE HELPER METHODS =
     // ========================
@@ -1270,4 +1378,5 @@ public class Iec61850DeviceService implements DeviceService {
         return relaySchedulesEntries;
 
     }
+
 }

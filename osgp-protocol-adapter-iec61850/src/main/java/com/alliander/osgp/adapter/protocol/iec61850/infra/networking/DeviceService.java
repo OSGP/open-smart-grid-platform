@@ -18,8 +18,7 @@ public interface DeviceService {
 
     void getConfiguration(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
-    // void getFirmwareVersion(DeviceRequest deviceRequest,
-    // DeviceResponseHandler deviceResponseHandler);
+    void getFirmwareVersion(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
     /**
      * Gets all status data from the device and returns it as a

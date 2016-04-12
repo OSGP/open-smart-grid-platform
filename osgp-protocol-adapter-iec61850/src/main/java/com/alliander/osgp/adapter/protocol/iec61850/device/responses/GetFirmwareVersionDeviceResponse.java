@@ -7,19 +7,23 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.device.responses;
 
+import java.util.List;
+
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
+import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
 public class GetFirmwareVersionDeviceResponse extends DeviceResponse {
 
-    private String firmwareVersion;
+    private List<FirmwareVersionDto> firmwareVersions;
 
     public GetFirmwareVersionDeviceResponse(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final String firmwareVersion) {
+            final String correlationUid, final List<FirmwareVersionDto> firmwareVersions) {
         super(organisationIdentification, deviceIdentification, correlationUid);
-        this.firmwareVersion = firmwareVersion;
+        this.firmwareVersions = firmwareVersions;
     }
 
-    public String getFirmwareVersion() {
-        return this.firmwareVersion;
+    public List<FirmwareVersionDto> getFirmwareVersions() {
+        return this.firmwareVersions;
     }
+
 }
