@@ -54,15 +54,16 @@ public class DeviceRequestMessageService {
             } else {
                 protocolInfo = device.getGatewayDevice().getProtocolInfo();
             }
+
             if (protocolInfo == null || !this.protocolRequestService.isSupported(protocolInfo)) {
                 final String msg = "Protocol unknown for device [" + device.getDeviceIdentification() + "]";
                 LOGGER.error(msg);
                 throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
                         ComponentType.OSGP_CORE);
-            } else {
-                LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
-                        protocolInfo.getProtocolVersion());
             }
+
+            LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
+                    protocolInfo.getProtocolVersion());
 
             final Organisation organisation = this.domainHelperService.findOrganisation(message
                     .getOrganisationIdentification());
