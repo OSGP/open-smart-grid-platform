@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SetAlarmNotificationsRequestData implements Serializable, ActionValueObject {
+public class SetAlarmNotificationsRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -1833812559523610412L;
 

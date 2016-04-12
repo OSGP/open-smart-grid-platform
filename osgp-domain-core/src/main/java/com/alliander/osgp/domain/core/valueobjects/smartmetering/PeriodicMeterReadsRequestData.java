@@ -17,7 +17,7 @@ import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
  *
  * @author dev
  */
-public class PeriodicMeterReadsRequestData implements Serializable, ActionValueObject {
+public class PeriodicMeterReadsRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -5667197909843709650L;
 

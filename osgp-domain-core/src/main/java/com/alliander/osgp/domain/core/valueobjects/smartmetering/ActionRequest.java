@@ -11,9 +11,9 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public interface ActionValueObject extends Serializable {
+public interface ActionRequest extends Serializable {
     /**
-     * Validates the ActionValueObject.
+     * Validates the ActionRequest.
      *
      * @throws FunctionalException
      *             is thrown when the validation is not ok.

@@ -11,9 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-
-public class SmsDetails implements Serializable, ActionValueObject {
+public class SmsDetails implements Serializable {
 
     private static final long serialVersionUID = -95100923844792133L;
 
@@ -50,12 +48,6 @@ public class SmsDetails implements Serializable, ActionValueObject {
 
     public String getMsgType() {
         return this.msgType;
-    }
-
-    @Override
-    public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
     }
 
 }

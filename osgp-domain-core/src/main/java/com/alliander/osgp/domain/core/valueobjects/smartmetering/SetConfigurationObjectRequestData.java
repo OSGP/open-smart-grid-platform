@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SetConfigurationObjectRequestData implements Serializable, ActionValueObject {
+public class SetConfigurationObjectRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -381163520662276868L;
 

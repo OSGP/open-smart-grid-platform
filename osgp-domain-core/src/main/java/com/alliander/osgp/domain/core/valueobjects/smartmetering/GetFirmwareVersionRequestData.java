@@ -11,7 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class GetFirmwareVersionRequestData implements ActionValueObject {
+public class GetFirmwareVersionRequestData implements ActionRequest {
 
     private static final long serialVersionUID = 5044944004218551417L;
 

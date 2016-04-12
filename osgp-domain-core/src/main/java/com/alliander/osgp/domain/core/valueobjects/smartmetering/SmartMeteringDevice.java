@@ -12,7 +12,7 @@ import java.util.Date;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SmartMeteringDevice implements Serializable, ActionValueObject {
+public class SmartMeteringDevice implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -6133164707489276802L;
 

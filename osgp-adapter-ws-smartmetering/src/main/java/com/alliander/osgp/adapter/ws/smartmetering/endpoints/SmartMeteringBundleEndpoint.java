@@ -30,7 +30,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMa
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.ActionMapperService;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.BundleService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -74,11 +74,10 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
             final Actions actions = request.getActions();
             final List<? extends Action> actionList = actions.getActionList();
 
-            final List<ActionValueObject> actionValueObjectList = this.actionMapperService.mapAllActions(actionList);
+            final List<ActionRequest> actionRequestList = this.actionMapperService.mapAllActions(actionList);
 
             final String correlationUid = this.bundleService.enqueueBundleRequest(organisationIdentification,
-                    deviceIdentification, actionValueObjectList,
-                    MessagePriorityEnum.getMessagePriority(messagePriority));
+                    deviceIdentification, actionRequestList, MessagePriorityEnum.getMessagePriority(messagePriority));
 
             response.setCorrelationUid(correlationUid);
             response.setDeviceIdentification(request.getDeviceIdentification());
@@ -101,9 +100,6 @@ public class SmartMeteringBundleEndpoint extends SmartMeteringEndpoint {
                 .getCorrelationUid());
 
         // Create response.
-        final BundleResponse response = this.actionMapperResponseService.mapAllActions(meterResponseData
-                .getMessageData());
-
-        return response;
+        return this.actionMapperResponseService.mapAllActions(meterResponseData.getMessageData());
     }
 }

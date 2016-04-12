@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class ReadAlarmRegisterData implements Serializable, ActionValueObject {
+public class ReadAlarmRegisterData implements Serializable, ActionRequest {
     private static final long serialVersionUID = -3362734074245702002L;
 
     @Override

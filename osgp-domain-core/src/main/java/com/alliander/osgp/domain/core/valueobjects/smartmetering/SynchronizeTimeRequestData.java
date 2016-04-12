@@ -14,7 +14,7 @@ import java.util.Date;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SynchronizeTimeRequestData implements Serializable, ActionValueObject {
+public class SynchronizeTimeRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -7197837365579237374L;
 

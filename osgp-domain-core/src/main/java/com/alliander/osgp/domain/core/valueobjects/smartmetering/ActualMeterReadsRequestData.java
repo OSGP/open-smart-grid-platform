@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class ActualMeterReadsRequestData implements Serializable, ActionValueObject {
+public class ActualMeterReadsRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 8288965714188382694L;
 

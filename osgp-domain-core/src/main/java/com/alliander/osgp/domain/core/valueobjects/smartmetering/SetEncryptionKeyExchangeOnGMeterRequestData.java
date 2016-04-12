@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable, ActionValueObject {
+public class SetEncryptionKeyExchangeOnGMeterRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 3965412208032103531L;
 

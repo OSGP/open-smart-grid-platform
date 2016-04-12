@@ -11,9 +11,7 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-
-public class AlarmNotifications implements Serializable, ActionValueObject {
+public class AlarmNotifications implements Serializable {
 
     private static final long serialVersionUID = 2319359505656305783L;
 
@@ -30,12 +28,6 @@ public class AlarmNotifications implements Serializable, ActionValueObject {
 
     public Set<AlarmNotification> getAlarmNotificationsSet() {
         return new TreeSet<>(this.alarmNotificationsSet);
-
-    }
-
-    @Override
-    public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
 
     }
 

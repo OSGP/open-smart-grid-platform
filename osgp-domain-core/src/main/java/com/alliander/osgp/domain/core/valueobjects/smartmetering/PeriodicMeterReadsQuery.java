@@ -10,14 +10,12 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-
 /**
  * request periodic reads for E or GAS meter
  *
  * @author dev
  */
-public class PeriodicMeterReadsQuery implements Serializable, ActionValueObject {
+public class PeriodicMeterReadsQuery implements Serializable {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
@@ -29,10 +27,9 @@ public class PeriodicMeterReadsQuery implements Serializable, ActionValueObject 
 
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
             final boolean mbusDevice) {
-     this(periodType, beginDate, endDate, mbusDevice, "");
+        this(periodType, beginDate, endDate, mbusDevice, "");
     }
 
-    
     public PeriodicMeterReadsQuery(final PeriodType periodType, final Date beginDate, final Date endDate,
             final boolean mbusDevice, final String deviceIdentification) {
         this.periodType = periodType;
@@ -64,12 +61,6 @@ public class PeriodicMeterReadsQuery implements Serializable, ActionValueObject 
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
-    }
-
-    @Override
-    public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -17,6 +17,7 @@ public class CommonMapper extends ConfigurableMapper {
 
     @Override
     public final void configure(final MapperFactory mapperFactory) {
+        // Only default mapping neede at this time
     }
 
 }

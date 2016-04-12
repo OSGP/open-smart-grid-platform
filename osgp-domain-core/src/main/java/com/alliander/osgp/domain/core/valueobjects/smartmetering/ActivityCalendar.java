@@ -11,9 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
-
-public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializable, ActionValueObject {
+public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializable {
 
     private static final long serialVersionUID = -8278955482889960359L;
 
@@ -87,9 +85,4 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         return true;
     }
 
-    @Override
-    public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
-    }
 }

@@ -9,7 +9,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SetPushSetupAlarmRequestData implements ActionValueObject {
+public class SetPushSetupAlarmRequestData implements ActionRequest {
 
     private static final long serialVersionUID = -5185544572873050431L;
 

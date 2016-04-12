@@ -15,7 +15,7 @@ import java.util.List;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SpecialDaysRequestData implements Serializable, ActionValueObject {
+public class SpecialDaysRequestData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = -5161574052268470981L;
 

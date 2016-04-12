@@ -30,7 +30,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.custo
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.CustomValueToDtoConverter;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.customconverters.SetEncryptionKeyExchangeOnGMeterDataConverter;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
@@ -102,8 +102,8 @@ public class ActionMapperService {
     @Autowired
     private SetEncryptionKeyExchangeOnGMeterDataConverter setEncryptionKeyExchangeOnGMeterDataConverter;
 
-    private static Map<Class<? extends ActionValueObject>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-    private static Map<Class<? extends ActionValueObject>, CustomValueToDtoConverter<? extends ActionValueObject, ? extends ActionDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
+    private static Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
+    private static Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
 
     /**
      * Specifies which mapper to use for the core class received.
@@ -140,7 +140,7 @@ public class ActionMapperService {
     /**
      * Specifies to which DTO object the core object needs to be mapped.
      */
-    private static Map<Class<? extends ActionValueObject>, Class<? extends ActionDto>> CLASS_MAP = new HashMap<>();
+    private static Map<Class<? extends ActionRequest>, Class<? extends ActionDto>> CLASS_MAP = new HashMap<>();
     static {
         CLASS_MAP.put(PeriodicMeterReadsRequestData.class, PeriodicMeterReadsRequestDataDto.class);
         CLASS_MAP.put(ActualMeterReadsRequestData.class, ActualMeterReadsDataDto.class);
@@ -166,11 +166,11 @@ public class ActionMapperService {
 
         final List<ActionDto> actionValueObjectDtoList = new ArrayList<ActionDto>();
 
-        for (final ActionValueObject action : bundleMessageDataContainer.getBundleList()) {
+        for (final ActionRequest action : bundleMessageDataContainer.getBundleList()) {
 
             @SuppressWarnings("unchecked")
             // suppress else the compiler will complain
-            final CustomValueToDtoConverter<ActionValueObject, ActionDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionValueObject, ActionDto>) CUSTOM_CONVERTER_FOR_CLASS
+            final CustomValueToDtoConverter<ActionRequest, ActionDto> customValueToDtoConverter = (CustomValueToDtoConverter<ActionRequest, ActionDto>) CUSTOM_CONVERTER_FOR_CLASS
             .get(action.getClass());
 
             if (customValueToDtoConverter != null) {
@@ -191,7 +191,7 @@ public class ActionMapperService {
         return new BundleMessageDataContainerDto(actionValueObjectDtoList);
     }
 
-    private ActionDto performDefaultMapping(final ActionValueObject action, final ConfigurableMapper mapper,
+    private ActionDto performDefaultMapping(final ActionRequest action, final ConfigurableMapper mapper,
             final Class<? extends ActionDto> clazz) throws FunctionalException {
         final ActionDto actionValueObjectDto = mapper.map(action, clazz);
 

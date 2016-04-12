@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 Smart Society Services B.V.
+ * Copyright 2016 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -24,7 +24,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Organisation;
 import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
 import com.alliander.osgp.shared.exceptionhandling.CorrelationUidException;
@@ -59,16 +59,17 @@ public class BundleService {
     }
 
     public String enqueueBundleRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<ActionValueObject> actionList, final int messagePriority) throws FunctionalException {
+            final List<ActionRequest> actionList, final int messagePriority) throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
         final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
 
         this.domainHelperService.isAllowed(organisation, device, DeviceFunction.HANDLE_BUNDLED_ACTIONS);
 
-        LOGGER.info("findEvents called with organisation {}", organisationIdentification);
+        LOGGER.info("Bundle request called with organisation {}", organisationIdentification);
 
-        for (final ActionValueObject action : actionList) {
+        for (final ActionRequest action : actionList) {
+
             action.validate();
         }
 

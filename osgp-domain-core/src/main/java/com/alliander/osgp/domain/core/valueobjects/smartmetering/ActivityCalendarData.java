@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class ActivityCalendarData implements Serializable, ActionValueObject {
+public class ActivityCalendarData implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 4760320198627332239L;
 

@@ -15,7 +15,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 
 public class AdministrativeStatusResponseConverter extends
-CustomConverter<AdministrativeStatusTypeResponseDto, AdministrativeStatusTypeResponse> {
+        CustomConverter<AdministrativeStatusTypeResponseDto, AdministrativeStatusTypeResponse> {
 
     @Override
     public AdministrativeStatusTypeResponse convert(final AdministrativeStatusTypeResponseDto source,
@@ -25,10 +25,8 @@ CustomConverter<AdministrativeStatusTypeResponseDto, AdministrativeStatusTypeRes
             return null;
         }
 
-        final AdministrativeStatusTypeResponse administrativeStatusTypeResponse = new AdministrativeStatusTypeResponse(
-                this.mapperFacade.map(source.getAdministrativeStatusTypeDto(), AdministrativeStatusType.class));
-
-        return administrativeStatusTypeResponse;
+        return new AdministrativeStatusTypeResponse(this.mapperFacade.map(source.getAdministrativeStatusTypeDto(),
+                AdministrativeStatusType.class));
 
     }
 }

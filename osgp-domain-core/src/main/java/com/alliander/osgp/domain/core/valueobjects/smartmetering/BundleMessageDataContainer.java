@@ -16,13 +16,13 @@ public class BundleMessageDataContainer implements Serializable {
      */
     private static final long serialVersionUID = -1865461707073500L;
 
-    private List<ActionValueObject> actionList;
+    private List<ActionRequest> actionList;
 
-    public BundleMessageDataContainer(final List<ActionValueObject> actionList) {
+    public BundleMessageDataContainer(final List<ActionRequest> actionList) {
         this.actionList = actionList;
     }
 
-    public List<ActionValueObject> getBundleList() {
+    public List<ActionRequest> getBundleList() {
         return this.actionList;
     }
 }

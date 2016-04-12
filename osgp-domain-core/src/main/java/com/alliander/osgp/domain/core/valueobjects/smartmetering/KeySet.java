@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class KeySet implements Serializable, ActionValueObject {
+public class KeySet implements Serializable, ActionRequest {
 
     private static final long serialVersionUID = 1573954141584647005L;
 
@@ -34,7 +34,6 @@ public class KeySet implements Serializable, ActionValueObject {
 
     @Override
     public void validate() throws FunctionalException {
-        // TODO Auto-generated method stub
-
+        // No validation needed
     }
 }

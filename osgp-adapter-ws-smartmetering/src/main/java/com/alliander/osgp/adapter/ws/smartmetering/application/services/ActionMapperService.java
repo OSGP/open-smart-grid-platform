@@ -26,7 +26,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.Configura
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.InstallationMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.MonitoringMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendarData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
@@ -140,7 +140,7 @@ public class ActionMapperService {
     /**
      * Specifies to which core object the ws object needs to be mapped.
      */
-    private static Map<Class<?>, Class<? extends ActionValueObject>> CLASS_MAP = new HashMap<>();
+    private static Map<Class<?>, Class<? extends ActionRequest>> CLASS_MAP = new HashMap<>();
     static {
         CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecialDaysRequestData.class,
                 SpecialDaysRequestData.class);
@@ -193,15 +193,15 @@ public class ActionMapperService {
 
     }
 
-    public List<ActionValueObject> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {
-        final List<ActionValueObject> actionValueObjectList = new ArrayList<>();
+    public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {
+        final List<ActionRequest> ActionRequestList = new ArrayList<>();
 
         for (final Action action : actionList) {
 
             final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
-            final Class<? extends ActionValueObject> clazz = CLASS_MAP.get(action.getClass());
+            final Class<? extends ActionRequest> clazz = CLASS_MAP.get(action.getClass());
             if (mapper != null) {
-                actionValueObjectList.add(this.getActionValueObjectWithDefaultMapper(action, mapper, clazz));
+                ActionRequestList.add(this.getActionRequestWithDefaultMapper(action, mapper, clazz));
             } else {
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING, new AssertionError("No mapper defined for class: "
@@ -210,19 +210,19 @@ public class ActionMapperService {
             }
         }
 
-        return actionValueObjectList;
+        return ActionRequestList;
     }
 
-    private ActionValueObject getActionValueObjectWithDefaultMapper(final Action action,
-            final ConfigurableMapper mapper, final Class<? extends ActionValueObject> clazz) throws FunctionalException {
-        final ActionValueObject actionValueObject = mapper.map(action, clazz);
+    private ActionRequest getActionRequestWithDefaultMapper(final Action action, final ConfigurableMapper mapper,
+            final Class<? extends ActionRequest> clazz) throws FunctionalException {
+        final ActionRequest ActionRequest = mapper.map(action, clazz);
 
-        if (actionValueObject == null) {
+        if (ActionRequest == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
                     ComponentType.WS_SMART_METERING, new RuntimeException("No Value Object for Action of class: "
                             + action.getClass().getName()));
         }
-        return actionValueObject;
+        return ActionRequest;
     }
 
 }

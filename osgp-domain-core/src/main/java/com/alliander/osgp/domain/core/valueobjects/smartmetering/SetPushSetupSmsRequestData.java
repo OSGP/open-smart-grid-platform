@@ -11,7 +11,7 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-public class SetPushSetupSmsRequestData implements ActionValueObject {
+public class SetPushSetupSmsRequestData implements ActionRequest {
 
     private static final long serialVersionUID = 6093319027662713873L;
 
