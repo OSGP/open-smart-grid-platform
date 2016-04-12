@@ -33,7 +33,11 @@ import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
+import com.alliander.osgp.shared.security.RsaEncrypterService;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
@@ -55,20 +59,25 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
         OBIS_HASHMAP.put(4, OBIS_CODE_INTERVAL_MBUS_4);
     }
 
+    @Value("${device.security.key.path.priv}")
+    private String privateKeyPath;
+
     @Override
     public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
-
         try {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
-            final byte[] encryptionKey = Hex.decode(protocolMeterInfo.getEncryptionKey());
-            final byte[] masterKey = Hex.decode(protocolMeterInfo.getMasterKey());
+            // Decrypt the cipher text using the private key.
+            final byte[] decryptedEncryptionKey = RsaEncrypterService.decrypt(
+                    Hex.decode(protocolMeterInfo.getEncryptionKey()), this.privateKeyPath);
+            final byte[] decryptedMasterKey = RsaEncrypterService.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()),
+                    this.privateKeyPath);
 
             final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
-            final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode, masterKey,
-                    encryptionKey);
+            final MethodParameter methodTransferKey = this.getTransferKeyToMBusMethodParameter(obisCode,
+                    decryptedMasterKey, decryptedEncryptionKey);
 
             List<MethodResult> methodResultCode = conn.action(methodTransferKey);
             this.checkMethodResultCode(methodResultCode, "getTransferKeyToMBusMethodParameter");
@@ -76,14 +85,19 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
                     CLASS_ID, obisCode);
 
             final MethodParameter methodSetEncryptionKey = this.getSetEncryptionKeyMethodParameter(obisCode,
-                    encryptionKey);
+                    decryptedEncryptionKey);
             methodResultCode = conn.action(methodSetEncryptionKey);
             this.checkMethodResultCode(methodResultCode, "getSetEncryptionKeyMethodParameter");
             LOGGER.info("Success!: Finished calling setEncryptionKey class_id {} obis_code {}", CLASS_ID, obisCode);
 
             return MethodResultCode.SUCCESS;
         } catch (final IOException e) {
+            LOGGER.error("Unexpected exception while connecting with device", e);
             throw new ConnectionException(e);
+        } catch (final RsaEncrypterException e) {
+            LOGGER.error("Unexpected exception during decryption of security keys", e);
+            throw new ProtocolAdapterException("Unexpected exception during decryption of security keys, reason = "
+                    + e.getMessage());
         }
     }
 
