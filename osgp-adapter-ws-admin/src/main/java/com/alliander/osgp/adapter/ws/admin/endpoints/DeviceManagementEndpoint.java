@@ -411,11 +411,11 @@ public class DeviceManagementEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final DeactivateDeviceRequest request) throws OsgpException {
 
-        LOGGER.info("Incoming DeactivateDeviceRequest for meter: {}.", request.getDeviceIdentification());
+        LOGGER.info("Incoming DeactivateDeviceRequest for device: {}.", request.getDeviceIdentification());
 
         try {
 
-            this.deviceManagementService.deactivateSmartMeterRequest(organisationIdentification,
+            this.deviceManagementService.deactivateDeviceRequest(organisationIdentification,
                     request.getDeviceIdentification());
 
         } catch (final MethodConstraintViolationException e) {
@@ -428,8 +428,8 @@ public class DeviceManagementEndpoint {
 
         } catch (final Exception e) {
 
-            LOGGER.error("Exception: {} while adding device: {} for organisation {}.", new Object[] { e.getMessage(),
-                    request.getDeviceIdentification(), organisationIdentification }, e);
+            LOGGER.error("Exception: {} while deactivating device: {} for organisation {}.",
+                    new Object[] { e.getMessage(), request.getDeviceIdentification(), organisationIdentification }, e);
 
             this.handleException(e);
         }
