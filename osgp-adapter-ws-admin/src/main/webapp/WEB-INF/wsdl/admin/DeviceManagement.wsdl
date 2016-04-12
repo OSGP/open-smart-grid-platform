@@ -136,6 +136,11 @@
 		<wsdl:part element="common:UserName" name="UserName" />
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
 	</wsdl:message>
+    <wsdl:message name="DeactivateDeviceHeader">
+        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />     
+        <wsdl:part element="common:UserName" name="UserName" />
+        <wsdl:part element="common:ApplicationName" name="ApplicationName" />
+    </wsdl:message>
 	<wsdl:message name="RemoveDeviceRequest">
 		<wsdl:part element="dman:RemoveDeviceRequest"
 			name="RemoveDeviceRequest">
@@ -148,14 +153,6 @@
 	</wsdl:message>
     <wsdl:message name="DeactivateDeviceRequest">
         <wsdl:part element="dman:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="DeactivateDeviceAsyncResponse">
-        <wsdl:part element="dman:DeactivateDeviceAsyncResponse" name="DeactivateDeviceAsyncResponse">
-        </wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="DeactivateDeviceAsyncRequest">
-        <wsdl:part element="dman:DeactivateDeviceAsyncRequest" name="DeactivateDeviceAsyncRequest">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="DeactivateDeviceResponse">
@@ -431,9 +428,9 @@
         <wsdl:operation name="DeactivateDevice">
             <soap:operation soapAction="" />
             <wsdl:input name="DeactivateDeviceRequest">
-                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
-                <soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+				<soap:header message="tns:DeactivateDeviceHeader" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:DeactivateDeviceHeader" part="UserName" use="literal" />
+				<soap:header message="tns:DeactivateDeviceHeader" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="DeactivateDeviceResponse">
