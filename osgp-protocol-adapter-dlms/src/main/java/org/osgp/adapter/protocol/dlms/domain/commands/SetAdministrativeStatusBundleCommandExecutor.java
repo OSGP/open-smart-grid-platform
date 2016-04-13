@@ -25,6 +25,8 @@ public class SetAdministrativeStatusBundleCommandExecutor implements
         CommandExecutor<AdministrativeStatusTypeDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusBundleCommandExecutor.class);
+    private static final String WAS_NOT_SUCCESSFUL = " was not successful";
+    private static final String SET_ADMINISTRATIVE_STATUS_TO = "Set administrative status to ";
 
     @Autowired
     private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
@@ -40,16 +42,14 @@ public class SetAdministrativeStatusBundleCommandExecutor implements
             final AccessResultCode resultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
                     adminStatusType);
             if (AccessResultCode.SUCCESS.equals(resultCode)) {
-                return new ActionResponseDto("Set administrative status to " + adminStatusType
-                        + " was successful");
+                return new ActionResponseDto(SET_ADMINISTRATIVE_STATUS_TO + adminStatusType + " was successful");
             } else {
-                return new ActionResponseDto("Set administrative status to " + adminStatusType
+                return new ActionResponseDto(SET_ADMINISTRATIVE_STATUS_TO + adminStatusType
                         + " was not successful. Result code: " + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Set administrative status to " + adminStatusType + " was not successful", e);
-            return new ActionResponseDto(e, "Set administrative status to " + adminStatusType
-                    + " was not successful");
+            LOGGER.error(SET_ADMINISTRATIVE_STATUS_TO + adminStatusType + WAS_NOT_SUCCESSFUL, e);
+            return new ActionResponseDto(e, SET_ADMINISTRATIVE_STATUS_TO + adminStatusType + WAS_NOT_SUCCESSFUL);
         }
 
     }
