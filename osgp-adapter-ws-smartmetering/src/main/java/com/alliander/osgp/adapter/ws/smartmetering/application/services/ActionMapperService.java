@@ -194,14 +194,14 @@ public class ActionMapperService {
     }
 
     public List<ActionRequest> mapAllActions(final List<? extends Action> actionList) throws FunctionalException {
-        final List<ActionRequest> ActionRequestList = new ArrayList<>();
+        final List<ActionRequest> actionRequestList = new ArrayList<>();
 
         for (final Action action : actionList) {
 
             final ConfigurableMapper mapper = CLASS_TO_MAPPER_MAP.get(action.getClass());
             final Class<? extends ActionRequest> clazz = CLASS_MAP.get(action.getClass());
             if (mapper != null) {
-                ActionRequestList.add(this.getActionRequestWithDefaultMapper(action, mapper, clazz));
+                actionRequestList.add(this.getActionRequestWithDefaultMapper(action, mapper, clazz));
             } else {
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.DOMAIN_SMART_METERING, new AssertionError("No mapper defined for class: "
@@ -210,19 +210,19 @@ public class ActionMapperService {
             }
         }
 
-        return ActionRequestList;
+        return actionRequestList;
     }
 
     private ActionRequest getActionRequestWithDefaultMapper(final Action action, final ConfigurableMapper mapper,
             final Class<? extends ActionRequest> clazz) throws FunctionalException {
-        final ActionRequest ActionRequest = mapper.map(action, clazz);
+        final ActionRequest actionRequest = mapper.map(action, clazz);
 
-        if (ActionRequest == null) {
+        if (actionRequest == null) {
             throw new FunctionalException(FunctionalExceptionType.UNSUPPORTED_DEVICE_ACTION,
                     ComponentType.WS_SMART_METERING, new RuntimeException("No Value Object for Action of class: "
                             + action.getClass().getName()));
         }
-        return ActionRequest;
+        return actionRequest;
     }
 
 }

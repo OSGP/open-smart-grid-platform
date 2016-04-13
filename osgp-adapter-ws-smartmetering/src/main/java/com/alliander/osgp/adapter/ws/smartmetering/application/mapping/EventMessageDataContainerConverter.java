@@ -10,18 +10,13 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 
 public class EventMessageDataContainerConverter
         extends
-CustomConverter<EventMessageDataContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventMessageDataContainerConverter.class);
+        CustomConverter<EventMessageDataContainer, com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData> {
 
     @Override
     public FindEventsResponseData convert(final EventMessageDataContainer source,
