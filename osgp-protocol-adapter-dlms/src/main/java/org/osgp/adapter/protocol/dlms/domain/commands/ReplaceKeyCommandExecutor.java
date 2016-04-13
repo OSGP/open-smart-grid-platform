@@ -23,11 +23,22 @@ import org.osgp.adapter.protocol.dlms.domain.entities.SecurityKeyType;
 import org.osgp.adapter.protocol.dlms.domain.repositories.DlmsDeviceRepository;
 import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
+import com.alliander.osgp.shared.security.RsaEncrypterService;
 
 @Component
 public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
+
+    @Value("${device.security.key.path.priv}")
+    private String privateKeyPath;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
     static class KeyWrapper {
         private final byte[] bytes;
@@ -91,8 +102,12 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
     private void sendToDevice(final ClientConnection conn, final DlmsDevice device,
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
-            final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(this.getMasterKey(device),
-                    keyWrapper.getBytes(), keyWrapper.getKeyId());
+            // Decrypt the cipher text using the private key.
+            final byte[] decryptedKey = RsaEncrypterService.decrypt(keyWrapper.getBytes(), this.privateKeyPath);
+            final byte[] decryptedMasterKey = RsaEncrypterService.decrypt(this.getMasterKey(device), this.privateKeyPath);
+
+            final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
+                    decryptedKey, keyWrapper.getKeyId());
             final MethodResultCode methodResultCode = conn.action(methodParameterAuth).get(0).resultCode();
 
             if (!MethodResultCode.SUCCESS.equals(methodResultCode)) {
@@ -101,6 +116,10 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             }
         } catch (final IOException e) {
             throw new ConnectionException(e);
+        } catch (final RsaEncrypterException e) {
+            LOGGER.error("Unexpected exception during decryption of security keys", e);
+            throw new ProtocolAdapterException("Unexpected exception during decryption of security keys, reason = "
+                    + e.getMessage());
         }
     }
 
