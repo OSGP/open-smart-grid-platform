@@ -14,8 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -69,14 +75,43 @@ public class CommonGetFirmwareRequestMessageProcessor extends DeviceRequestMessa
             return;
         }
 
+        final RequestMessageData requestMessageData = new RequestMessageData(null, domain, domainVersion, messageType,
+                retryCount, isScheduled, correlationUid, organisationIdentification, deviceIdentification);
+
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-        // final DeviceRequest deviceRequest = new
-        // DeviceRequest(organisationIdentification, deviceIdentification,
-        // correlationUid, domain, domainVersion, messageType, ipAddress,
-        // retryCount, isScheduled);
-        // //
-        // this.deviceService.getFirmwareVersion(deviceRequest);
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                CommonGetFirmwareRequestMessageProcessor.this.handleGetFirmwareVersionDeviceResponse(deviceResponse,
+                        CommonGetFirmwareRequestMessageProcessor.this.responseMessageSender,
+                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
+                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
+            }
+
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
+                if (expected) {
+                    CommonGetFirmwareRequestMessageProcessor.this.handleExpectedError(new ConnectionFailureException(
+                            ComponentType.PROTOCOL_IEC61850, t.getMessage()), requestMessageData.getCorrelationUid(),
+                            requestMessageData.getOrganisationIdentification(), requestMessageData
+                                    .getDeviceIdentification(), requestMessageData.getDomain(), requestMessageData
+                                    .getDomainVersion(), requestMessageData.getMessageType());
+                } else {
+                    CommonGetFirmwareRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
+                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
+                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
+                }
+            }
+
+        };
+
+        final DeviceRequest deviceRequest = new DeviceRequest(organisationIdentification, deviceIdentification,
+                correlationUid, domain, domainVersion, messageType, ipAddress, retryCount, isScheduled);
+
+        this.deviceService.getFirmwareVersion(deviceRequest, deviceResponseHandler);
     }
 
 }

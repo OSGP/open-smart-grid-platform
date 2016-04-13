@@ -135,6 +135,16 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_SOFTWARE_CONFIGURATION = ".SWCf";
 
     /**
+     * Property of CSLC Node, Functional firmware configuration.
+     */
+    public static final String PROPERTY_FUNCTIONAL_FIRMWARE_CONFIGURATION = ".FuncFwDw";
+
+    /**
+     * Property of CSLC Node, security firmware configuration.
+     */
+    public static final String PROPERTY_SECURITY_FIRMWARE_CONFIGURATION = ".ScyFwDw";
+
+    /**
      * Property of CSLC Node, IP configuration.
      */
     public static final String PROPERTY_IP_CONFIGURATION = ".IPCf";
@@ -190,6 +200,12 @@ public final class LogicalNodeAttributeDefinitons {
      * {@link LightType}
      */
     public static final String PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE = "LT";
+
+    /**
+     * Attribute of both firmware configuration nodes, used to read the value of
+     * the current firmware version
+     */
+    public static final String PROPERTY_FIRMWARE_CONFIG_CURRENT_VERSION = "curVer";
 
     /**
      * Attribute of Property SWCf, used to read the value of fixed ip address

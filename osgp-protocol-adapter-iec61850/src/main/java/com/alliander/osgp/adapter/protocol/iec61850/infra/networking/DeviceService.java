@@ -19,8 +19,7 @@ public interface DeviceService {
 
     void getConfiguration(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
-    // void getFirmwareVersion(DeviceRequest deviceRequest,
-    // DeviceResponseHandler deviceResponseHandler);
+    void getFirmwareVersion(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
     /**
      * Gets all status data from the device and returns it as a
@@ -44,10 +43,6 @@ public interface DeviceService {
 
     // void updateFirmware(DeviceRequest deviceRequest, DeviceResponseHandler
     // deviceResponseHandler);
-
-    // void getActualPowerUsage(DeviceRequest deviceRequest,
-    // DeviceResponseHandler deviceResponseHandler,
-    // String ipAddress);
 
     // void getPowerUsageHistory(
     // PowerUsageHistoryResponseMessageDataContainer

@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.NotSupportedException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -44,8 +46,6 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
         String organisationIdentification = null;
         String deviceIdentification = null;
         String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -55,9 +55,6 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -72,12 +69,9 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
 
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-        // final DeviceRequest deviceRequest = new
-        // DeviceRequest(organisationIdentification, deviceIdentification,
-        // correlationUid, domain, domainVersion, messageType, ipAddress,
-        // retryCount, isScheduled);
-        //
-        // this.deviceService.getActualPowerUsage(deviceRequest);
+        this.handleExpectedError(new NotSupportedException(ComponentType.PROTOCOL_IEC61850,
+                "GetActualPowerUsage is not supported"), correlationUid, organisationIdentification,
+                deviceIdentification, domain, domainVersion, messageType);
     }
 
 }
