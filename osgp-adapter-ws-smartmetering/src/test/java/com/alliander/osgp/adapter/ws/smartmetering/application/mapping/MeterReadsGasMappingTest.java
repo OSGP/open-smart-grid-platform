@@ -23,8 +23,8 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponse;
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpMeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.OsgpUnit;
@@ -33,11 +33,11 @@ public class MeterReadsGasMappingTest {
 
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-    // classmap is needed because of different variable names
+    // This converter is needed because of the M_3 in the OsgpUnitType enum
+    // and the M3 in the OsgpUnit enum.
     @Before
     public void init() {
-        this.mapperFactory.classMap(OsgpMeterValue.class, MeterValue.class).field("osgpUnit", "unit").byDefault()
-        .register();
+        this.mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
     }
 
     // Test to check if a MeterReadsGas object can be mapped
@@ -46,7 +46,7 @@ public class MeterReadsGasMappingTest {
 
         // build test data
         final Date date = new Date();
-        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.KWH);
+        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.M3);
         final MeterReadsGas meterReadsGas = new MeterReadsGas(date, osgpMeterValue, date);
 
         // actual mapping
@@ -59,7 +59,7 @@ public class MeterReadsGasMappingTest {
         this.checkDateMapping(date, actualMeterReadsGasResponse.getCaptureTime());
         this.checkDateMapping(date, actualMeterReadsGasResponse.getLogTime());
 
-        assertEquals(osgpMeterValue.getOsgpUnit().name(), actualMeterReadsGasResponse.getConsumption().getUnit().name());
+        assertEquals(OsgpUnitType.M_3, actualMeterReadsGasResponse.getConsumption().getUnit());
         assertEquals(osgpMeterValue.getValue(), actualMeterReadsGasResponse.getConsumption().getValue());
     }
 

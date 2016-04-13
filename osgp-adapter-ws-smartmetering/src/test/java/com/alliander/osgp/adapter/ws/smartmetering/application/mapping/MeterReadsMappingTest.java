@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
@@ -33,11 +34,11 @@ public class MeterReadsMappingTest {
 
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-    // classmap is needed because of different variable names
+    // This converter is needed because of the M_3 in the OsgpUnitType enum
+    // and the M3 in the OsgpUnit enum.
     @Before
     public void init() {
-        this.mapperFactory.classMap(OsgpMeterValue.class, MeterValue.class).field("osgpUnit", "unit").byDefault()
-        .register();
+        this.mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
     }
 
     // Test to check if a MeterReads object can be mapped.
@@ -46,7 +47,7 @@ public class MeterReadsMappingTest {
 
         // build test data
         final Date date = new Date();
-        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.KWH);
+        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.M3);
         final MeterReads meterReads = new MeterReads(date, osgpMeterValue, osgpMeterValue, osgpMeterValue,
                 osgpMeterValue, osgpMeterValue, osgpMeterValue);
 
@@ -69,7 +70,7 @@ public class MeterReadsMappingTest {
     // method to check the mapping of OsgpMeterValue objects
     private void checkOsgpMeterValueMapping(final OsgpMeterValue osgpMeterValue, final MeterValue meterValue) {
 
-        assertEquals(osgpMeterValue.getOsgpUnit().name(), meterValue.getUnit().name());
+        assertEquals(OsgpUnitType.M_3, meterValue.getUnit());
         assertEquals(osgpMeterValue.getValue(), meterValue.getValue());
 
     }

@@ -26,12 +26,13 @@ public class AlarmNotificationsMappingTest {
 
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-    // Mapping a List to a Set needs a Converter?
-    // List and set have a different name/getter. Can I change it?
-    // Changed it before, got a lot of refactoring trouble.
+    // ClassMap needed because of different fieldnames
     @Before
     public void init() {
-        this.mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
+        this.mapperFactory
+        .classMap(AlarmNotifications.class,
+                com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
+                .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
     }
 
     // Test to see if AlarmNotifications can be mapped.

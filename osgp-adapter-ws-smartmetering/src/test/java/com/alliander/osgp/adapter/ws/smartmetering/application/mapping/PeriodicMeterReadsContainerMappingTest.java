@@ -25,7 +25,6 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
@@ -40,15 +39,16 @@ public class PeriodicMeterReadsContainerMappingTest {
     private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
     // The registering below is needed because the same variables have different
-    // names in these classes.
+    // names in these classes. The converter is needed because of the M_3 in the
+    // OsgpUnitType enum and the M3 in the OsgpUnit enum.
     @Before
     public void init() {
-        this.mapperFactory.classMap(MeterValue.class, OsgpMeterValue.class).field("unit", "osgpUnit").byDefault()
-        .register();
+
         this.mapperFactory
-        .classMap(AmrProfileStatusCode.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class)
-                .field("amrProfileStatusCodeFlags", "amrProfileStatusCodeFlag").byDefault().register();
+        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
+                        AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
+                .byDefault().register();
+        this.mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
     }
 
     // Test to check mapping when the List is empty.

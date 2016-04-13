@@ -44,11 +44,11 @@ public class PeriodicReadsRequestMappingTest {
         } catch (final DatatypeConfigurationException e) {
             e.printStackTrace();
         }
+        // converter is needed because of instanceOf check to set boolean
+        // mbusDevice
+        this.mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
     }
 
-    // Test to see if NullPointerException is thrown when
-    // PeriodcReadsRequestData is null, converter can't handle a null
-    // PeriodicReadsRequestData
     @Test(expected = NullPointerException.class)
     public void testWithNullPeriodicReadsRequestData() {
 
@@ -57,8 +57,7 @@ public class PeriodicReadsRequestMappingTest {
         periodicReadsRequest.setPeriodicReadsRequestData(null);
 
         // actual mapping
-        this.mapperFactory.getMapperFacade().map(periodicReadsRequest.getPeriodicReadsRequestData(),
-                PeriodicMeterReadsQuery.class);
+        this.mapperFactory.getMapperFacade().map(periodicReadsRequest, PeriodicMeterReadsQuery.class);
 
     }
 
@@ -78,7 +77,7 @@ public class PeriodicReadsRequestMappingTest {
 
         // actual mapping
         final PeriodicMeterReadsQuery periodicMeterReadsQuery = this.mapperFactory.getMapperFacade().map(
-                periodicReadsRequest.getPeriodicReadsRequestData(), PeriodicMeterReadsQuery.class);
+                periodicReadsRequest, PeriodicMeterReadsQuery.class);
 
         // check mapping
         assertNotNull(periodicMeterReadsQuery);
@@ -99,7 +98,6 @@ public class PeriodicReadsRequestMappingTest {
         assertEquals(this.xmlCalendar.getMinute(), endDateTime.getMinuteOfHour());
         assertEquals(this.xmlCalendar.getSecond(), endDateTime.getSecondOfMinute());
         assertEquals(this.xmlCalendar.getMillisecond(), endDateTime.getMillisOfSecond());
-        // not all fields are mapped: check for default values
         assertFalse(periodicMeterReadsQuery.isMbusDevice());
 
     }

@@ -28,7 +28,7 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.MeterValue;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
@@ -46,13 +46,14 @@ public class PeriodicMeterReadsContainerGasMappingTest {
     @Before
     public void init() {
         this.mapperFactory.classMap(PeriodicMeterReadsContainerGas.class, PeriodicMeterReadsGasResponse.class)
-        .field("meterReadsGas", "periodicMeterReadsGas").byDefault().register();
-        this.mapperFactory.classMap(OsgpMeterValue.class, MeterValue.class).field("osgpUnit", "unit").byDefault()
-        .register();
+                .field("meterReadsGas", "periodicMeterReadsGas").byDefault().register();
         this.mapperFactory
-        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
-                AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
+                .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
+                        AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
                 .byDefault().register();
+        // Converter is needed because of difference in names for values in
+        // enums OsgpUnitType and OsgpUnit
+        this.mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
     }
 
     // Test to see if mapping succeeds with an empty List.
@@ -80,7 +81,7 @@ public class PeriodicMeterReadsContainerGasMappingTest {
 
         // build test data
         final Date date = new Date();
-        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.KWH);
+        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.M3);
         final Set<AmrProfileStatusCodeFlag> flagSet = new TreeSet<>();
         flagSet.add(AmrProfileStatusCodeFlag.CLOCK_INVALID);
         final AmrProfileStatusCode amrProfileStatusCode = new AmrProfileStatusCode(flagSet);
@@ -103,8 +104,8 @@ public class PeriodicMeterReadsContainerGasMappingTest {
         assertEquals(periodicMeterReadsList.size(), periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().size());
         assertEquals(periodicMeterReadsGas.getConsumption().getValue(), periodicMeterReadsResponseGas
                 .getPeriodicMeterReadsGas().get(0).getConsumption().getValue());
-        assertEquals(periodicMeterReadsGas.getConsumption().getOsgpUnit().name(), periodicMeterReadsResponseGas
-                .getPeriodicMeterReadsGas().get(0).getConsumption().getUnit().name());
+        assertEquals(OsgpUnitType.M_3, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption()
+                .getUnit());
 
         this.checkDateMapping(date, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getCaptureTime());
         this.checkDateMapping(date, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getLogTime());
