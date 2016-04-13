@@ -40,7 +40,7 @@ public class RetrieveConfigurationObjectsBundleCommandExecutor implements
 
             LOGGER.error("Error retrieving configuration objects for device: " + device.getDeviceIdentification(), e);
 
-            new ActionResponseDto(e, "Error retrieving configuration objects for device: "
+            return new ActionResponseDto(e, "Error retrieving configuration objects for device: "
                     + device.getDeviceIdentification());
         }
 

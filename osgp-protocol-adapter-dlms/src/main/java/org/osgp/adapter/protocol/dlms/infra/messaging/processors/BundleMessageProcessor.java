@@ -47,12 +47,9 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
         }
         final BundleMessageDataContainerDto bundleMessageDataContainerDto = (BundleMessageDataContainerDto) requestObject;
 
-        final List<ActionResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(
-                conn, device, bundleMessageDataContainerDto);
+        final List<ActionResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(conn, device,
+                bundleMessageDataContainerDto);
 
-        final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto = new BundleResponseMessageDataContainerDto(
-                actionValueObjectResponseDtoList);
-
-        return bundleResponseMessageDataContainerDto;
+        return new BundleResponseMessageDataContainerDto(actionValueObjectResponseDtoList);
     }
 }
