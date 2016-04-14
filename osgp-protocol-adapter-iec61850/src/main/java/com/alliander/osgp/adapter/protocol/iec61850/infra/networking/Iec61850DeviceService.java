@@ -322,7 +322,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #
@@ -1225,7 +1225,7 @@ public class Iec61850DeviceService implements DeviceService {
     private List<FirmwareVersionDto> getFirmwareVersionFromDevice(final ServerModel serverModel)
             throws ProtocolAdapterException {
 
-        // creating the unction that will be retried, if necessary
+        // creating the function that will be retried, if necessary
         final Function<List<FirmwareVersionDto>> function = new Function<List<FirmwareVersionDto>>() {
 
             @Override
@@ -1277,7 +1277,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
             final String deviceIdentification, final TransitionMessageDataContainer transitionMessageDataContainer)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
         LOGGER.info("device: {}, transition: {}", deviceIdentification, transitionType);
@@ -1324,7 +1324,7 @@ public class Iec61850DeviceService implements DeviceService {
     private void pushFirmwareToDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
             final String fullUrl) throws ProtocolAdapterException, FunctionalException {
 
-        // creating the unction that will be retried, if necessary
+        // creating the function that will be retried, if necessary
         final Function<Void> function = new Function<Void>() {
 
             @Override
