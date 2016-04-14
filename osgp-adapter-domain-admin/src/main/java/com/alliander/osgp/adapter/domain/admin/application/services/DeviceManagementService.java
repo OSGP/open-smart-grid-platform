@@ -174,11 +174,11 @@ public class DeviceManagementService extends AbstractService {
 
         // TODO: bypassing authorization, this should be fixed.
 
-        final Device smartMeter = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
 
-        smartMeter.setActivated(false);
+        device.setActivated(false);
 
-        this.deviceRepository.save(smartMeter);
+        this.deviceRepository.save(device);
 
         final ResponseMessage responseMessage = new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, ResponseMessageResultType.OK, null);
