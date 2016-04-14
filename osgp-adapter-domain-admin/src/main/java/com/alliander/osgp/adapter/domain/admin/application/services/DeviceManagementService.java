@@ -53,7 +53,7 @@ public class DeviceManagementService extends AbstractService {
 
     public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
             final String correlationUid, final String messageType, @PublicKey final String publicKey)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
                 deviceIdentification, organisationIdentification, messageType);
@@ -167,8 +167,7 @@ public class DeviceManagementService extends AbstractService {
     }
 
     public void deactivateDevice(final String organisationIdentification,
-            @Identification final String deviceIdentification, final String correlationUid, final String messageType)
-                    throws FunctionalException {
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType) {
         LOGGER.info("deactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
                 organisationIdentification, deviceIdentification);
 
