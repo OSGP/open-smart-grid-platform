@@ -54,15 +54,22 @@ public class DeviceRequestMessageService {
             } else {
                 protocolInfo = device.getGatewayDevice().getProtocolInfo();
             }
-            if (protocolInfo == null) {
-                final String msg = "Protocol unknown for device [" + device.getDeviceIdentification() + "]";
-                LOGGER.error(msg);
+
+            if (protocolInfo == null || !this.protocolRequestService.isSupported(protocolInfo)) {
+                if (protocolInfo == null) {
+                    LOGGER.error("Protocol unknown for device [{}]", device.getDeviceIdentification());
+                } else {
+                    LOGGER.error("Protocol [{}] with version [{}] unknown for device [{}], needs to be reloaded.",
+                            protocolInfo.getProtocol(), protocolInfo.getProtocolVersion(),
+                            device.getDeviceIdentification());
+                }
+
                 throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
                         ComponentType.OSGP_CORE);
-            } else {
-                LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
-                        protocolInfo.getProtocolVersion());
             }
+
+            LOGGER.info("Device is using protocol [{}] with version [{}]", protocolInfo.getProtocol(),
+                    protocolInfo.getProtocolVersion());
 
             final Organisation organisation = this.domainHelperService.findOrganisation(message
                     .getOrganisationIdentification());

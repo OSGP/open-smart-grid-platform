@@ -30,6 +30,10 @@ public class SmartMeter extends Device {
         // Default constructor for hibernate
     }
 
+    public void setDeviceType(final String deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public String getSupplier() {
         return this.supplier;
     }

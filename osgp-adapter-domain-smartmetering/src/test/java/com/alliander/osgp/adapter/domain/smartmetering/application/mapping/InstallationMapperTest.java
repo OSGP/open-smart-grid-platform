@@ -48,10 +48,9 @@ public class InstallationMapperTest {
 
         assertNotNull(device);
 
-        // We only test if mapping of deviceIdentification succeeded, because it
-        // is on the only required field
         assertEquals(smartMeteringDevice.getDeviceIdentification(), device.getDeviceIdentification());
-
+        assertEquals(smartMeteringDevice.getSupplier(), device.getSupplier());
+        assertEquals(smartMeteringDevice.getDeviceType(), device.getDeviceType());
     }
 
     @Test
