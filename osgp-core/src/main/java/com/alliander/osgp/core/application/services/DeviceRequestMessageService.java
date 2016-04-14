@@ -56,7 +56,14 @@ public class DeviceRequestMessageService {
             }
 
             if (protocolInfo == null || !this.protocolRequestService.isSupported(protocolInfo)) {
-                LOGGER.error("Protocol unknown for device [" + device.getDeviceIdentification() + "]");
+                if (protocolInfo == null) {
+                    LOGGER.error("Protocol unknown for device [{}]", device.getDeviceIdentification());
+                } else {
+                    LOGGER.error("Protocol [{}] with version [{}] unknown for device [{}], needs to be reloaded.",
+                            protocolInfo.getProtocol(), protocolInfo.getProtocolVersion(),
+                            device.getDeviceIdentification());
+                }
+
                 throw new FunctionalException(FunctionalExceptionType.PROTOCOL_UNKNOWN_FOR_DEVICE,
                         ComponentType.OSGP_CORE);
             }
