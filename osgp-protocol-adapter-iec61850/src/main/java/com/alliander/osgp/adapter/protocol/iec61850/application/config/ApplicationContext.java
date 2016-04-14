@@ -17,6 +17,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.alliander.osgp.adapter.protocol.iec61850.device.FirmwareLocation;
 import com.alliander.osgp.core.db.api.iec61850.application.config.Iec61850OsgpCoreDbApiPersistenceConfig;
 
 /**
@@ -34,6 +35,10 @@ public class ApplicationContext {
     private static final String PROPERTY_NAME_SELFTEST_TIMEOUT = "selftest.timeout";
 
     private static final String PROPERTY_NAME_CONNECTION_RESPONSE_TIMEOUT = "connection.reponse.timeout";
+
+    private static final String PROPERTY_NAME_FIRMWARE_DOMAIN = "firmware.domain";
+    private static final String PROPERTY_NAME_FIRMWARE_PATH = "firmware.path";
+    private static final String PROPERTY_NAME_FIRMWARE_FILE_EXTENSION = "firmware.fileExtension";
 
     @Resource
     private Environment environment;
@@ -62,6 +67,13 @@ public class ApplicationContext {
     @Bean
     public int selftestTimeout() {
         return Integer.parseInt(this.environment.getProperty(PROPERTY_NAME_SELFTEST_TIMEOUT));
+    }
+
+    @Bean
+    public FirmwareLocation firmwareLocation() {
+        return new FirmwareLocation(this.environment.getProperty(PROPERTY_NAME_FIRMWARE_DOMAIN),
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_PATH),
+                this.environment.getProperty(PROPERTY_NAME_FIRMWARE_FILE_EXTENSION));
     }
 
 }

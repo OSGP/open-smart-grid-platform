@@ -13,6 +13,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigura
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitionDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 
 public interface DeviceService {
@@ -41,8 +42,7 @@ public interface DeviceService {
      */
     void runSelfTest(DeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler, boolean startOfTest);
 
-    // void updateFirmware(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler);
+    void updateFirmware(UpdateFirmwareDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
     // void getPowerUsageHistory(
     // PowerUsageHistoryResponseMessageDataContainer
