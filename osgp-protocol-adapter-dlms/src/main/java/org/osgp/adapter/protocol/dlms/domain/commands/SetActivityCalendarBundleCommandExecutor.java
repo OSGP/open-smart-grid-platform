@@ -21,7 +21,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto
 
 @Component()
 public class SetActivityCalendarBundleCommandExecutor implements
-        CommandExecutor<ActivityCalendarDataDto, ActionResponseDto> {
+CommandExecutor<ActivityCalendarDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarBundleCommandExecutor.class);
 
@@ -35,24 +35,23 @@ public class SetActivityCalendarBundleCommandExecutor implements
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final ActivityCalendarDataDto activityCalendar) {
 
-        MethodResultCode methodResult = null;
-
         try {
             this.setActivityCalendarCommandExecutor.execute(conn, device, activityCalendar.getActivityCalendar());
 
-            methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn, device, null);
+            final MethodResultCode methodResult = this.setActivityCalendarCommandActivationExecutor.execute(conn,
+                    device, null);
+            if (!MethodResultCode.SUCCESS.equals(methodResult)) {
+                return new ActionResponseDto("AccessResultCode for set Activity Calendar: " + methodResult);
+            }
+
+            return new ActionResponseDto("Set Activity Calendar Result is OK for device id: "
+                    + device.getDeviceIdentification() + " calendar name: "
+                    + activityCalendar.getActivityCalendar().getCalendarName());
+
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while setting new activity calendar", e);
             return new ActionResponseDto(e, "Error while setting new activity calendar");
         }
-
-        if (!MethodResultCode.SUCCESS.equals(methodResult)) {
-            return new ActionResponseDto("AccessResultCode for set Activity Calendar: " + methodResult);
-        }
-
-        return new ActionResponseDto("Set Activity Calendar Result is OK for device id: "
-                + device.getDeviceIdentification() + " calendar name: "
-                + activityCalendar.getActivityCalendar().getCalendarName());
 
     }
 }

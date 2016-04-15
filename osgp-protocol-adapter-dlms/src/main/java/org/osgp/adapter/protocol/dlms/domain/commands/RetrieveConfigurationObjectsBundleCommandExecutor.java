@@ -33,9 +33,9 @@ public class RetrieveConfigurationObjectsBundleCommandExecutor implements
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final GetConfigurationRequestDataDto getConfigurationRequestDataDto) {
 
-        String resultString = null;
         try {
-            resultString = this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
+            return new GetConfigurationResponseDataDto(this.retrieveConfigurationObjectsCommandExecutor.execute(conn,
+                    device, null));
         } catch (final ProtocolAdapterException e) {
 
             LOGGER.error("Error retrieving configuration objects for device: " + device.getDeviceIdentification(), e);
@@ -44,8 +44,5 @@ public class RetrieveConfigurationObjectsBundleCommandExecutor implements
                     + device.getDeviceIdentification());
         }
 
-        return new GetConfigurationResponseDataDto(resultString);
-
     }
-
 }
