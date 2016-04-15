@@ -7,9 +7,10 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PushSetupAlarm extends AbstractPushSetup {
+public class PushSetupAlarm extends AbstractPushSetup implements Serializable {
 
     private static final long serialVersionUID = -3541154908239512383L;
 
@@ -30,4 +31,5 @@ public class PushSetupAlarm extends AbstractPushSetup {
         super(logicalName, pushObjectList, sendDestinationAndMethod, communicationWindow, randomisationStartInterval,
                 numberOfRetries, repetitionDelay);
     }
+
 }

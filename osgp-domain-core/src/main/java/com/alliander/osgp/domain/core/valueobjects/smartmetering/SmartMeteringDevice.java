@@ -153,4 +153,5 @@ public class SmartMeteringDevice implements Serializable {
     public void setDeliveryDate(final Date deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
+
 }

@@ -21,4 +21,5 @@ public class ReadAlarmRegisterRequest implements Serializable {
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
+
 }

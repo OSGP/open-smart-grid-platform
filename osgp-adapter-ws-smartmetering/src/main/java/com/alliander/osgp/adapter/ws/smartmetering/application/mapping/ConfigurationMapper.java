@@ -37,11 +37,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         // These two converters are needed because they combine two fields
         // into one SendDestinationAndMethod object (or split the object into
         // two fields)
-        mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
-
-        // The following 4 converters are necessary to ensure correct mapping of
-        // dates and times.
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());

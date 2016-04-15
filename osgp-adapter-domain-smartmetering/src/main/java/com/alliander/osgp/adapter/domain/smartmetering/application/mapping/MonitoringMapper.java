@@ -22,6 +22,7 @@ public class MonitoringMapper extends ConfigurableMapper {
         // mapping between DlmsMeterValue and OsgpMeterValue. Thus mapping must
         // never be attempted without using this converter!
         mapperFactory.getConverterFactory().registerConverter(new DlmsMeterValueConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ReadAlarmRegisterDataConverter());
 
     }
 

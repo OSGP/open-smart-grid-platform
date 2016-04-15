@@ -27,5 +27,8 @@ public class ManagementMapper extends ConfigurableMapper {
         // dates and times.
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
+        
+        mapperFactory.getConverterFactory().registerConverter(new EventMessageDataContainerConverter());
+        
     }
 }
