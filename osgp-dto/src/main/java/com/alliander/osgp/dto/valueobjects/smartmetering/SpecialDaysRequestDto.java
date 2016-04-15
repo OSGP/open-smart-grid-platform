@@ -17,7 +17,8 @@ public class SpecialDaysRequestDto implements Serializable {
 
     private final SpecialDaysRequestDataDto specialDaysRequestData;
 
-    public SpecialDaysRequestDto(final String deviceIdentification, final SpecialDaysRequestDataDto specialDaysRequestData) {
+    public SpecialDaysRequestDto(final String deviceIdentification,
+            final SpecialDaysRequestDataDto specialDaysRequestData) {
         super();
         this.deviceIdentification = deviceIdentification;
         this.specialDaysRequestData = specialDaysRequestData;
