@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 public class AdhocMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
+
+        // This converter is needed to ensure correct mapping of dates and times
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
     }
 
