@@ -7,11 +7,9 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
-
 import org.apache.commons.codec.binary.Hex;
 
-public class KeySetDto implements Serializable {
+public class KeySetDto implements ActionDto {
 
     private static final long serialVersionUID = 1573954141584647005L;
 
