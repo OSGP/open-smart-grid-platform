@@ -7,9 +7,8 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
 
-public class GetAdministrativeStatusDataDto implements Serializable, ActionDto {
+public class GetAdministrativeStatusDataDto implements ActionDto {
 
     private static final long serialVersionUID = -1308931578783587193L;
 

@@ -10,9 +10,8 @@
 
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
 
-public class SetAlarmNotificationsRequestDataDto implements Serializable, ActionDto {
+public class SetAlarmNotificationsRequestDataDto implements ActionDto {
 
     private static final long serialVersionUID = -1833812559523610412L;
 

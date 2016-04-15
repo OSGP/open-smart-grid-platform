@@ -7,10 +7,9 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class EventMessageDataContainerDto extends ActionResponseDto implements Serializable {
+public class EventMessageDataContainerDto extends ActionResponseDto {
 
     /**
      * Serial Version UID.

@@ -7,7 +7,6 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Date;
  *
  * @author dev
  */
-public class PeriodicMeterReadsQueryDto implements Serializable, ActionDto {
+public class PeriodicMeterReadsQueryDto implements ActionDto {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
