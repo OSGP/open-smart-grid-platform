@@ -27,10 +27,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 
 @Component()
 public class SetPushSetupSmsCommandExecutor extends SetPushSetupCommandExecutor implements
-CommandExecutor<PushSetupSmsDto, AccessResultCode> {
+        CommandExecutor<PushSetupSmsDto, AccessResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsCommandExecutor.class);
-    private static final ObisCode OBIS_CODE = new ObisCode("0.1.25.9.0.255");
+    private static final ObisCode OBIS_CODE = new ObisCode("0.2.25.9.0.255");
 
     @Override
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
