@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
+
 public enum AdministrativeStatusType {
     UNDEFINED,
     OFF,

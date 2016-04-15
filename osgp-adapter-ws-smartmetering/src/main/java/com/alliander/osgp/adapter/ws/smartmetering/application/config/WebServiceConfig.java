@@ -48,6 +48,7 @@ import com.alliander.osgp.adapter.ws.smartmetering.infra.ws.WebServiceTemplateFa
 public class WebServiceConfig {
 
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MANAGEMENT = "jaxb2.marshaller.context.path.smartmetering.management";
+    private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_BUNDLE = "jaxb2.marshaller.context.path.smartmetering.bundle";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_INSTALLATION = "jaxb2.marshaller.context.path.smartmetering.installation";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_MONITORING = "jaxb2.marshaller.context.path.smartmetering.monitoring";
     private static final String PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_ADHOC = "jaxb2.marshaller.context.path.smartmetering.adhoc";
@@ -159,6 +160,33 @@ public class WebServiceConfig {
     public MarshallingPayloadMethodProcessor smartMeteringManagementMarshallingPayloadMethodProcessor() {
         return new MarshallingPayloadMethodProcessor(this.smartMeteringManagementMarshaller(),
                 this.smartMeteringManagementMarshaller());
+    }
+
+    /**
+     * Method for creating the Marshaller for smart metering bundle.
+     *
+     * @return Jaxb2Marshaller
+     */
+    @Bean
+    public Jaxb2Marshaller smartMeteringBundleMarshaller() {
+        final Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        marshaller.setContextPath(this.environment
+                .getRequiredProperty(PROPERTY_NAME_MARSHALLER_CONTEXT_PATH_SMART_METERING_BUNDLE));
+
+        return marshaller;
+    }
+
+    /**
+     * Method for creating the Marshalling Payload Method Processor for Smart
+     * Metering bundle.
+     *
+     * @return MarshallingPayloadMethodProcessor
+     */
+    @Bean
+    public MarshallingPayloadMethodProcessor smartMeteringBundleMarshallingPayloadMethodProcessor() {
+        return new MarshallingPayloadMethodProcessor(this.smartMeteringBundleMarshaller(),
+                this.smartMeteringBundleMarshaller());
     }
 
     /**
@@ -283,6 +311,7 @@ public class WebServiceConfig {
 
         // SMART METERING
         methodArgumentResolvers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
+        methodArgumentResolvers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
         methodArgumentResolvers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());
@@ -300,6 +329,7 @@ public class WebServiceConfig {
 
         // SMART METERING
         methodReturnValueHandlers.add(this.smartMeteringManagementMarshallingPayloadMethodProcessor());
+        methodReturnValueHandlers.add(this.smartMeteringBundleMarshallingPayloadMethodProcessor());
         methodReturnValueHandlers.add(this.smartMeteringInstallationMarshallingPayloadMethodProcessor());
         methodReturnValueHandlers.add(this.smartMeteringMonitoringMarshallingPayloadMethodProcessor());
         methodReturnValueHandlers.add(this.smartMeteringAdhocMarshallingPayloadMethodProcessor());

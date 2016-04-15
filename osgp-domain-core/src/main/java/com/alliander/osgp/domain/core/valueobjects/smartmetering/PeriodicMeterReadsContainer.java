@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PeriodicMeterReadsContainer implements Serializable {
+public class PeriodicMeterReadsContainer extends ActionResponse implements Serializable {
 
     private static final long serialVersionUID = -156966569210717657L;
     private final PeriodType periodType;

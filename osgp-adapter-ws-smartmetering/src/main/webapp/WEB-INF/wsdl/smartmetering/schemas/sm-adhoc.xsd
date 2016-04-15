@@ -16,6 +16,17 @@
 	<xsd:import namespace="http://www.alliander.com/schemas/osgp/common/2014/10"
 		schemaLocation="common.xsd" />
 
+
+	<xsd:complexType name="SynchronizeTimeRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+
 	<xsd:element name="SynchronizeTimeRequest">
 		<xsd:complexType>
 			<xsd:sequence>

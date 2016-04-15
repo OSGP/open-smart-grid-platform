@@ -32,4 +32,5 @@ public class SpecialDaysRequest implements Serializable {
     public SpecialDaysRequestData getSpecialDaysRequestData() {
         return this.specialDaysRequestData;
     }
+
 }
