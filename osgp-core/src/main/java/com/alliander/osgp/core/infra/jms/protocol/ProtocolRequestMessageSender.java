@@ -39,6 +39,11 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
     private Long getPowerUsageHistoryRequestTimeToLive;
 
     @Override
+    public boolean isSupported(final ProtocolInfo protocolInfo) {
+        return this.protocolRequestMessageJmsTemplateFactory.getJmsTemplate(protocolInfo) != null;
+    }
+
+    @Override
     public void send(final ProtocolRequestMessage message, final ProtocolInfo protocolInfo) {
         LOGGER.info("Sending protocol request message for device [{}] using protocol [{}] with version [{}]",
                 message.getDeviceIdentification(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
