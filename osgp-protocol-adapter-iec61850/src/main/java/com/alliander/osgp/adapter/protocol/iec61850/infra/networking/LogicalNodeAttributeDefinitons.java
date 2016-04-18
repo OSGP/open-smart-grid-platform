@@ -130,6 +130,32 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_SWITCH_TYPE = ".SwType";
 
     /**
+     * Property of XSWC Node, On Interval Buffer
+     */
+    public static final String PROPERTY_SWITCH_ON_ITV_B = ".OnItvB";
+
+    /**
+     * Attribute of Property OnItvB, lastIdx.
+     */
+    public static final String PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_LAST_IDX = "lastIdx";
+
+    /**
+     * Attribute of Property OnItvB, itv (itv followed by an index from 1 ..
+     * 60).
+     */
+    public static final String PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV = "itv";
+
+    /**
+     * Attribute of Attribute itv_i, itv, the interval value.
+     */
+    public static final String PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV_ITV = "itv";
+
+    /**
+     * Attribute of Attribute itv_i, day, the timestamp value.
+     */
+    public static final String PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV_DAY = "day";
+
+    /**
      * Property of CSLC Node, software configuration.
      */
     public static final String PROPERTY_SOFTWARE_CONFIGURATION = ".SWCf";
