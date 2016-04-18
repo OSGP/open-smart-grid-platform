@@ -322,7 +322,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #
@@ -679,6 +679,11 @@ public class Iec61850DeviceService implements DeviceService {
 
                 position.setValue(on);
                 clientAssociation.setDataValues((FcModelNode) operate);
+
+                // TODO remove this once the Kaifa device can handle the calls
+                // again
+                System.out.println("Sleeping for 5 seconds");
+                Thread.sleep(5000);
 
                 // return null == Void
                 return null;
@@ -1277,7 +1282,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
             final String deviceIdentification, final TransitionMessageDataContainer transitionMessageDataContainer)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
         LOGGER.info("device: {}, transition: {}", deviceIdentification, transitionType);
