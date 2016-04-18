@@ -20,6 +20,7 @@ import org.openmuc.openiec61850.BdaInt16;
 import org.openmuc.openiec61850.BdaInt16U;
 import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt8;
+import org.openmuc.openiec61850.BdaInt8U;
 import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -163,10 +164,7 @@ public class Iec61850DeviceService implements DeviceService {
 
         try {
 
-            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                    deviceRequest.getDeviceIdentification());
-            final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
-                    .getDeviceIdentification());
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
 
             final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
             final List<DeviceOutputSetting> deviceOutputSettingsLightRelays = this.ssldDataService.findByRelayType(
@@ -809,7 +807,6 @@ public class Iec61850DeviceService implements DeviceService {
             final String deviceIdentification, final TimePeriod timePeriod,
             final DeviceOutputSetting deviceOutputSetting) throws TechnicalException {
         final List<PowerUsageData> powerUsageHistoryDataFromRelay = new ArrayList<>();
-        final List<RelayData> relayDataList = new ArrayList<>();
 
         final int relayIndex = deviceOutputSetting.getExternalId();
 
@@ -818,39 +815,47 @@ public class Iec61850DeviceService implements DeviceService {
         final String onIntervalBufferObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE + nodeName
                 + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B;
         LOGGER.info("onIntervalBufferObjectReference: {}", onIntervalBufferObjectReference);
-        final FcModelNode onItvB = this.getNode(serverModel, onIntervalBufferObjectReference,
-                Fc.ST);
+        final FcModelNode onItvB = this.getNode(serverModel, onIntervalBufferObjectReference, Fc.ST);
         LOGGER.info("device: {}, onItvB: {}", deviceIdentification, onItvB);
-
-        if (onItvB == null) {
-            throw new TechnicalException(ComponentType.PROTOCOL_IEC61850, "Missing value for: " + nodeName
-                    + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B);
-        }
 
         final ModelNode lastIdx = onItvB
                 .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_LAST_IDX);
         LOGGER.info("device: {}, lastIdx: {}", deviceIdentification, lastIdx);
 
-        final int max = ((BdaInt32) lastIdx).getValue();
-        for (int i = 0; i < max; i++) {
-            final ModelNode itv = onItvB.getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV
-                    + (i + 1));
-            LOGGER.info("device: {}, itv{}: {}", deviceIdentification, i + 1, itv);
-            final ModelNode intervalValue = itv
+        /*-
+         * Last index is the last index written in the 60-entry buffer.
+         * When the last buffer entry is written, the next entry will be placed
+         * at the first position in the buffer (cyclical).
+         * To preserve the order of entries written in the response, iteration
+         * starts with the next index (oldest entry) and loops from there.
+         */
+        final int numberOfEntries = 60;
+        final int idxOldest = (((BdaInt8U) lastIdx).getValue() + 1) % numberOfEntries;
+        for (int i = 0; i < numberOfEntries; i++) {
+            final int bufferIndex = (idxOldest + i) % numberOfEntries;
+            final ModelNode indexedItvNode = onItvB.getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV
+                    + (bufferIndex + 1));
+            LOGGER.info("device: {}, itv{}: {}", deviceIdentification, bufferIndex + 1, indexedItvNode);
+            final ModelNode itvNode = indexedItvNode
                     .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV_ITV);
-            LOGGER.info("device: {}, itv{}.itv: {}", deviceIdentification, i + 1, intervalValue);
-            final ModelNode day = itv
+            LOGGER.info("device: {}, itv{}.itv: {}", deviceIdentification, bufferIndex + 1, itvNode);
+            final ModelNode dayNode = indexedItvNode
                     .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV_DAY);
-            LOGGER.info("device: {}, itv{}.day: {}", deviceIdentification, i + 1, day);
+            LOGGER.info("device: {}, itv{}.day: {}", deviceIdentification, bufferIndex + 1, dayNode);
 
-            if (timePeriod != null) {
-                LOGGER.warn("device: {}, ignoring TimePeriod ({} - {}) determining power usage history for relay {}",
-                        deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex);
+            final DateTime date = new DateTime(((BdaTimestamp) dayNode).getDate());
+            final int totalMinutesOnForDate = ((BdaInt32) itvNode).getValue();
+
+            final boolean includeEntryInResponse = this.periodIncludesDateForPowerUsageHistory(timePeriod, date,
+                    deviceIdentification, relayIndex, bufferIndex);
+            if (!includeEntryInResponse) {
+                continue;
             }
 
-            final PowerUsageData powerUsageData = new PowerUsageData(new DateTime(((BdaTimestamp) day).getDate()),
-                    null, 0, 0);
-            final RelayData relayData = new RelayData(relayIndex, ((BdaInt32) intervalValue).getValue());
+            // MeterType.AUX hardcoded (not supported)
+            final PowerUsageData powerUsageData = new PowerUsageData(date, MeterType.AUX, 0, 0);
+            final List<RelayData> relayDataList = new ArrayList<>();
+            final RelayData relayData = new RelayData(relayIndex, totalMinutesOnForDate);
             relayDataList.add(relayData);
             final SsldData ssldData = new SsldData(0, 0, 0, 0, 0, 0, 0, 0, 0, relayDataList);
             powerUsageData.setSsldData(ssldData);
@@ -858,6 +863,40 @@ public class Iec61850DeviceService implements DeviceService {
         }
 
         return powerUsageHistoryDataFromRelay;
+    }
+
+    private boolean periodIncludesDateForPowerUsageHistory(final TimePeriod timePeriod, final DateTime date,
+            final String deviceIdentification, final int relayIndex, final int bufferIndex) {
+        if (timePeriod == null) {
+            LOGGER.info(
+                    "device: {}, no TimePeriod determining power usage history for relay {}, include entry for itv{}",
+                    deviceIdentification, relayIndex, bufferIndex + 1);
+            return true;
+        }
+        if (date == null) {
+            LOGGER.info(
+                    "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, skip entry for itv{}, no date",
+                    deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex,
+                    bufferIndex + 1);
+            return false;
+        }
+        if (timePeriod.getStartTime() != null && date.isBefore(timePeriod.getStartTime())) {
+            LOGGER.info(
+                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is before start time: {}",
+                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getStartTime());
+            return false;
+        }
+        if (timePeriod.getEndTime() != null && date.isAfter(timePeriod.getEndTime())) {
+            LOGGER.info(
+                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is after end time: {}",
+                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getEndTime());
+            return false;
+        }
+        LOGGER.info(
+                "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, include entry for itv{}, date: {}",
+                deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex, bufferIndex + 1,
+                date);
+        return true;
     }
 
     private Configuration getConfigurationFromDevice(final ServerModel serverModel, final Ssld ssld)
@@ -1462,7 +1501,7 @@ public class Iec61850DeviceService implements DeviceService {
     private FcModelNode getNode(final ServerModel serverModel, final String objectReference,
             final Fc functionalConstraint) {
 
-        final FcModelNode output = (FcModelNode) serverModel.findModelNode(objectReference, Fc.CF);
+        final FcModelNode output = (FcModelNode) serverModel.findModelNode(objectReference, functionalConstraint);
         if (output == null) {
             LOGGER.info("{} is null", objectReference);
             // TODO exceptionHandling
