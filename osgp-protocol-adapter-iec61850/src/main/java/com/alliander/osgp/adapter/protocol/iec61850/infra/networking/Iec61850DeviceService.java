@@ -8,6 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaInt16;
 import org.openmuc.openiec61850.BdaInt16U;
@@ -43,6 +45,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigura
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitionDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
@@ -558,11 +561,7 @@ public class Iec61850DeviceService implements DeviceService {
     public void getFirmwareVersion(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
         try {
-
-            this.iec61850DeviceConnectionService.connect(deviceRequest.getIpAddress(),
-                    deviceRequest.getDeviceIdentification());
-            final ServerModel serverModel = this.iec61850DeviceConnectionService.getServerModel(deviceRequest
-                    .getDeviceIdentification());
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
 
             // Getting the data with retries
             final List<FirmwareVersionDto> firmwareVersions = this.getFirmwareVersionFromDevice(serverModel);
@@ -629,6 +628,45 @@ public class Iec61850DeviceService implements DeviceService {
             deviceResponseHandler.handleException(e, deviceResponse, false);
             return;
         }
+    }
+
+    @Override
+    public void updateFirmware(final UpdateFirmwareDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            this.pushFirmwareToDevice(serverModel, clientAssociation,
+                    deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+            deviceResponseHandler.handleResponse(deviceResponse);
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
     }
 
     // ======================================
@@ -1017,7 +1055,8 @@ public class Iec61850DeviceService implements DeviceService {
                         Fc.CF);
 
                 final BdaInt16U timeSyncFrequency = (BdaInt16U) clockConfiguration.getChild("syncPer");
-                final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean) clockConfiguration.getChild("enbDst");
+                final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean) clockConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_DAYLIGHT_SAVING_ENABLED);
                 final BdaVisibleString summerTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstBegT");
                 final BdaVisibleString winterTimeDetails = (BdaVisibleString) clockConfiguration.getChild("dstEndT");
 
@@ -1282,12 +1321,12 @@ public class Iec61850DeviceService implements DeviceService {
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = this.createScheduleEntries(scheduleList, ssld,
                 RelayType.TARIFF);
 
-        final Function<Void> function = new Function<Void>() {
+        for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
 
-            @Override
-            public Void apply() throws Exception {
+            final Function<Void> function = new Function<Void>() {
 
-                for (final Integer relayIndex : relaySchedulesEntries.keySet()) {
+                @Override
+                public Void apply() throws Exception {
 
                     // TODO clear existing schedule. Do this at the end for the
                     // remaining schedules?
@@ -1359,19 +1398,21 @@ public class Iec61850DeviceService implements DeviceService {
                         clientAssociation.setDataValues(timeOffActionTime);
 
                     }
+
+                    return null;
                 }
+            };
 
-                return null;
-            }
-        };
+            this.iec61850Client.sendCommandWithRetry(function);
 
-        this.iec61850Client.sendCommandWithRetry(function);
+        }
+
     }
 
     private List<FirmwareVersionDto> getFirmwareVersionFromDevice(final ServerModel serverModel)
             throws ProtocolAdapterException {
 
-        // creating the unction that will be retried, if necessary
+        // creating the function that will be retried, if necessary
         final Function<List<FirmwareVersionDto>> function = new Function<List<FirmwareVersionDto>>() {
 
             @Override
@@ -1465,6 +1506,52 @@ public class Iec61850DeviceService implements DeviceService {
         };
 
         this.iec61850Client.sendCommandWithRetry(function);
+    }
+
+    private void pushFirmwareToDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final String fullUrl) throws ProtocolAdapterException, FunctionalException {
+
+        // creating the function that will be retried, if necessary
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                // Getting the functional firmware version
+                LOGGER.info("Reading the functional firmware version");
+
+                final String functionalFirmwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_FUNCTIONAL_FIRMWARE_CONFIGURATION;
+
+                final FcModelNode functionalFirmwareConfiguration = (FcModelNode) serverModel.findModelNode(
+                        functionalFirmwareConfigurationObjectReference, Fc.CF);
+
+                final BdaVisibleString functionalFirmwareDownloadUrl = (BdaVisibleString) functionalFirmwareConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_FIRMWARE_CONFIG_DOWNLOAD_URL);
+
+                final BdaTimestamp functionalFirmwareStartTime = (BdaTimestamp) functionalFirmwareConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_FIRMWARE_CONFIG_START_TIME);
+
+                LOGGER.info("Updating the firmware download url to {}", fullUrl);
+
+                functionalFirmwareDownloadUrl.setValue(fullUrl);
+                clientAssociation.setDataValues(functionalFirmwareDownloadUrl);
+
+                final Date oneMinuteFromNow = Iec61850DeviceService.this.getLocalTimeForDevice(serverModel)
+                        .plusMinutes(1).toDate();
+
+                LOGGER.info("Updating the firmware download start time to {}", oneMinuteFromNow);
+
+                functionalFirmwareStartTime.setDate(oneMinuteFromNow);
+                clientAssociation.setDataValues(functionalFirmwareStartTime);
+
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
+
     }
 
     // ========================
@@ -1651,5 +1738,55 @@ public class Iec61850DeviceService implements DeviceService {
 
         return relaySchedulesEntries;
 
+    }
+
+    /*
+     * Checks the time zone of the device and check to see if daylight saving is
+     * in effect and adjusts the current time accordingly
+     */
+    private DateTime getLocalTimeForDevice(final ServerModel serverModel) {
+
+        LOGGER.info("Converting local time to the device's local time");
+
+        // getting the clock configuration values
+        LOGGER.info("Reading the clock configuration values");
+
+        final String clockObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC + LogicalNodeAttributeDefinitons.PROPERTY_CLOCK;
+
+        LOGGER.info("clockObjectReference: {}", clockObjectReference);
+
+        final FcModelNode clockConfiguration = (FcModelNode) serverModel.findModelNode(clockObjectReference, Fc.CF);
+
+        // Checking to see if daylight savings is enabled.
+        final BdaBoolean automaticSummerTimingEnabled = (BdaBoolean) clockConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_DAYLIGHT_SAVING_ENABLED);
+
+        if (automaticSummerTimingEnabled.getValue()) {
+
+            // TODO figure out which time is used when daylight savings is
+            // disabled. For example, if you disable it when daylight savings is
+            // in effect, does it stay in daylight saving all year round or does
+            // it revert to regular time?
+
+            // TODO use these once a better time format is introduced. Check to
+            // see if the current date is between the start and end time of the
+            // daylight saving. Also check to see if the current time is in
+            // daylight savings.
+
+            // final BdaVisibleString summerTimeDetails = (BdaVisibleString)
+            // clockConfiguration.getChild("dstBegT");
+            // final BdaVisibleString winterTimeDetails = (BdaVisibleString)
+            // clockConfiguration.getChild("dstEndT");
+        }
+
+        final BdaInt16 timezone = (BdaInt16) clockConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_CLOCK_TIME_ZONE);
+
+        // TODO Default value for time zone offset is 60, so I'm assuming that
+        // means 60 minutes / 1 hour. Verify this assumption.
+        final int offset = timezone.getValue() / 60;
+
+        return DateTime.now().withZone(DateTimeZone.forOffsetHours(offset));
     }
 }

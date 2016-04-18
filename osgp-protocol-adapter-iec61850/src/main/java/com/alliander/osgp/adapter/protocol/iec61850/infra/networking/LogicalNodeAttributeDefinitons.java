@@ -216,6 +216,11 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_POSITION_DAYLIGHT_SAVING_ENABLED = "enbDst";
 
     /**
+     * Attribute of Property Clock, contains the time zone value
+     * */
+    public static final String PROPERTY_CLOCK_TIME_ZONE = "tZ";
+
+    /**
      * Attribute of Property SWCf, used to read the value of the offset from
      * astronomic sunset.
      */
@@ -232,6 +237,18 @@ public final class LogicalNodeAttributeDefinitons {
      * the current firmware version
      */
     public static final String PROPERTY_FIRMWARE_CONFIG_CURRENT_VERSION = "curVer";
+
+    /**
+     * Attribute of both firmware configuration nodes, used to read the value of
+     * the firmware download url
+     */
+    public static final String PROPERTY_FIRMWARE_CONFIG_DOWNLOAD_URL = "url";
+
+    /**
+     * Attribute of both firmware configuration nodes, used to read the value of
+     * the startTime of the firmware download
+     */
+    public static final String PROPERTY_FIRMWARE_CONFIG_START_TIME = "startT";
 
     /**
      * Attribute of Property SWCf, used to read the value of fixed ip address
