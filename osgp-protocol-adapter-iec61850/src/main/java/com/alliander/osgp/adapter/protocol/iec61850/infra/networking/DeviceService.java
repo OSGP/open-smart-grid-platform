@@ -53,9 +53,6 @@ public interface DeviceService {
     // messageType, int retryCount,
     // boolean isScheduled);
 
-    // void resumeSchedule(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler);
-
     /**
      * Switches the light relays of the device given in the
      * {@link DeviceRequest}, according to the

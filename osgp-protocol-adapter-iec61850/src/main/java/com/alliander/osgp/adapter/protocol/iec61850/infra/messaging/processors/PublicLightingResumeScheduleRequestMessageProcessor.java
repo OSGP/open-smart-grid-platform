@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainer;
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.NotSupportedException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -45,8 +46,6 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         String organisationIdentification = null;
         String deviceIdentification = null;
         String ipAddress = null;
-        int retryCount = 0;
-        boolean isScheduled = false;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -56,9 +55,6 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
             organisationIdentification = message.getStringProperty(Constants.ORGANISATION_IDENTIFICATION);
             deviceIdentification = message.getStringProperty(Constants.DEVICE_IDENTIFICATION);
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
-            retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
-                    .getBooleanProperty(Constants.IS_SCHEDULED) : false;
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -71,24 +67,11 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
             return;
         }
 
-        try {
-            final ResumeScheduleMessageDataContainer resumeScheduleMessageDataContainer = (ResumeScheduleMessageDataContainer) message
-                    .getObject();
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
-
-            // final ResumeScheduleDeviceRequest deviceRequest = new
-            // ResumeScheduleDeviceRequest(
-            // organisationIdentification, deviceIdentification, correlationUid,
-            // resumeScheduleMessageDataContainer, domain, domainVersion,
-            // messageType, ipAddress, retryCount,
-            // isScheduled);
-            //
-            // this.deviceService.resumeSchedule(deviceRequest);
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
+        this.handleExpectedError(new NotSupportedException(ComponentType.PROTOCOL_IEC61850,
+                "ResumeSchedule is not supported"), correlationUid, organisationIdentification, deviceIdentification,
+                domain, domainVersion, messageType);
     }
 
 }
