@@ -9,6 +9,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetPowerUsageHistoryDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
@@ -44,14 +45,8 @@ public interface DeviceService {
 
     void updateFirmware(UpdateFirmwareDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
-    // void getPowerUsageHistory(
-    // PowerUsageHistoryResponseMessageDataContainer
-    // powerUsageHistoryResponseMessageDataContainer,
-    // GetPowerUsageHistoryDeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler,
-    // String ipAddress, String domain, String domainVersion, String
-    // messageType, int retryCount,
-    // boolean isScheduled);
+    void getPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler);
 
     // void resumeSchedule(DeviceRequest deviceRequest, DeviceResponseHandler
     // deviceResponseHandler);

@@ -22,6 +22,7 @@ import org.openmuc.openiec61850.BdaInt16;
 import org.openmuc.openiec61850.BdaInt16U;
 import org.openmuc.openiec61850.BdaInt32;
 import org.openmuc.openiec61850.BdaInt8;
+import org.openmuc.openiec61850.BdaInt8U;
 import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.ClientAssociation;
@@ -39,6 +40,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.application.mapping.Iec61850
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceMessageStatus;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetPowerUsageHistoryDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
@@ -47,6 +49,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateFirmwa
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
+import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceRelayType;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
@@ -65,14 +68,20 @@ import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
+import com.alliander.osgp.dto.valueobjects.HistoryTermType;
 import com.alliander.osgp.dto.valueobjects.LightType;
 import com.alliander.osgp.dto.valueobjects.LightValue;
 import com.alliander.osgp.dto.valueobjects.LinkType;
 import com.alliander.osgp.dto.valueobjects.LongTermIntervalType;
 import com.alliander.osgp.dto.valueobjects.MeterType;
+import com.alliander.osgp.dto.valueobjects.PowerUsageData;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
+import com.alliander.osgp.dto.valueobjects.RelayData;
 import com.alliander.osgp.dto.valueobjects.RelayMap;
 import com.alliander.osgp.dto.valueobjects.Schedule;
+import com.alliander.osgp.dto.valueobjects.SsldData;
+import com.alliander.osgp.dto.valueobjects.TimePeriod;
 import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.TransitionType;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -143,6 +152,48 @@ public class Iec61850DeviceService implements DeviceService {
             return;
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during getStatus", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, true);
+        }
+    }
+
+    @Override
+    public void getPowerUsageHistory(final GetPowerUsageHistoryDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+
+            final Ssld ssld = this.ssldDataService.findDevice(deviceRequest.getDeviceIdentification());
+            final List<DeviceOutputSetting> deviceOutputSettingsLightRelays = this.ssldDataService.findByRelayType(
+                    ssld, RelayType.LIGHT);
+
+            final List<PowerUsageData> powerUsageHistoryData = this.getPowerUsageHistoryDataFromDevice(serverModel,
+                    deviceRequest.getDeviceIdentification(), deviceRequest.getPowerUsageHistoryContainer(),
+                    deviceOutputSettingsLightRelays);
+
+            final GetPowerUsageHistoryDeviceResponse deviceResponse = new GetPowerUsageHistoryDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK, powerUsageHistoryData);
+
+            deviceResponseHandler.handleResponse(deviceResponse);
+
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during getPowerUsageHistory", e);
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -322,7 +373,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #
@@ -748,6 +799,142 @@ public class Iec61850DeviceService implements DeviceService {
 
         return this.iec61850Client.sendCommandWithRetry(function);
 
+    }
+
+    private List<PowerUsageData> getPowerUsageHistoryDataFromDevice(final ServerModel serverModel,
+            final String deviceIdentification, final PowerUsageHistoryMessageDataContainer powerUsageHistoryContainer,
+            final List<DeviceOutputSetting> deviceOutputSettingsLightRelays) throws ProtocolAdapterException {
+
+        final HistoryTermType historyTermType = powerUsageHistoryContainer.getHistoryTermType();
+        if (historyTermType != null) {
+            LOGGER.info("device: {}, ignoring HistoryTermType ({}) determining power usage history",
+                    deviceIdentification, historyTermType);
+        }
+        final TimePeriod timePeriod = powerUsageHistoryContainer.getTimePeriod();
+
+        final Function<List<PowerUsageData>> function = new Function<List<PowerUsageData>>() {
+
+            @Override
+            public List<PowerUsageData> apply() throws Exception {
+                final List<PowerUsageData> powerUsageHistoryData = new ArrayList<>();
+                for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettingsLightRelays) {
+                    final List<PowerUsageData> powerUsageData = Iec61850DeviceService.this
+                            .getPowerUsageHistoryDataFromRelay(serverModel, deviceIdentification, timePeriod,
+                                    deviceOutputSetting);
+                    powerUsageHistoryData.addAll(powerUsageData);
+                }
+                /*-
+                 * This way of gathering leads to PowerUsageData elements per relay.
+                 * If it is necessary to only include one PowerUsageData element for
+                 * the device, where data for the different relays is combined in
+                 * the SsldData.relayData some sort of merge needs to be performed.
+                 *
+                 * This can either be a rework of the list currently returned, or it
+                 * can be a list constructed based on an altered return type from
+                 * getPowerUsageHistoryDataFromRelay (for instance a Map of Date to
+                 * a Map of Relay Index to Total Lighting Minutes).
+                 */
+                return powerUsageHistoryData;
+            }
+        };
+
+        return this.iec61850Client.sendCommandWithRetry(function);
+    }
+
+    private List<PowerUsageData> getPowerUsageHistoryDataFromRelay(final ServerModel serverModel,
+            final String deviceIdentification, final TimePeriod timePeriod,
+            final DeviceOutputSetting deviceOutputSetting) throws TechnicalException {
+        final List<PowerUsageData> powerUsageHistoryDataFromRelay = new ArrayList<>();
+
+        final int relayIndex = deviceOutputSetting.getExternalId();
+
+        final String nodeName = LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(deviceOutputSetting
+                .getInternalId());
+        final String onIntervalBufferObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE + nodeName
+                + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B;
+        LOGGER.info("onIntervalBufferObjectReference: {}", onIntervalBufferObjectReference);
+        final FcModelNode onItvB = this.getNode(serverModel, onIntervalBufferObjectReference, Fc.ST);
+        LOGGER.info("device: {}, onItvB: {}", deviceIdentification, onItvB);
+
+        final ModelNode lastIdx = onItvB
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_LAST_IDX);
+        LOGGER.info("device: {}, lastIdx: {}", deviceIdentification, lastIdx);
+
+        /*-
+         * Last index is the last index written in the 60-entry buffer.
+         * When the last buffer entry is written, the next entry will be placed
+         * at the first position in the buffer (cyclical).
+         * To preserve the order of entries written in the response, iteration
+         * starts with the next index (oldest entry) and loops from there.
+         */
+        final int numberOfEntries = 60;
+        final int idxOldest = (((BdaInt8U) lastIdx).getValue() + 1) % numberOfEntries;
+        for (int i = 0; i < numberOfEntries; i++) {
+            final int bufferIndex = (idxOldest + i) % numberOfEntries;
+            final ModelNode indexedItvNode = onItvB.getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV
+                    + (bufferIndex + 1));
+            LOGGER.info("device: {}, itv{}: {}", deviceIdentification, bufferIndex + 1, indexedItvNode);
+            final ModelNode itvNode = indexedItvNode
+                    .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV_ITV);
+            LOGGER.info("device: {}, itv{}.itv: {}", deviceIdentification, bufferIndex + 1, itvNode);
+            final ModelNode dayNode = indexedItvNode
+                    .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV_DAY);
+            LOGGER.info("device: {}, itv{}.day: {}", deviceIdentification, bufferIndex + 1, dayNode);
+
+            final DateTime date = new DateTime(((BdaTimestamp) dayNode).getDate());
+            final int totalMinutesOnForDate = ((BdaInt32) itvNode).getValue();
+
+            final boolean includeEntryInResponse = this.periodIncludesDateForPowerUsageHistory(timePeriod, date,
+                    deviceIdentification, relayIndex, bufferIndex);
+            if (!includeEntryInResponse) {
+                continue;
+            }
+
+            // MeterType.AUX hardcoded (not supported)
+            final PowerUsageData powerUsageData = new PowerUsageData(date, MeterType.AUX, 0, 0);
+            final List<RelayData> relayDataList = new ArrayList<>();
+            final RelayData relayData = new RelayData(relayIndex, totalMinutesOnForDate);
+            relayDataList.add(relayData);
+            final SsldData ssldData = new SsldData(0, 0, 0, 0, 0, 0, 0, 0, 0, relayDataList);
+            powerUsageData.setSsldData(ssldData);
+            powerUsageHistoryDataFromRelay.add(powerUsageData);
+        }
+
+        return powerUsageHistoryDataFromRelay;
+    }
+
+    private boolean periodIncludesDateForPowerUsageHistory(final TimePeriod timePeriod, final DateTime date,
+            final String deviceIdentification, final int relayIndex, final int bufferIndex) {
+        if (timePeriod == null) {
+            LOGGER.info(
+                    "device: {}, no TimePeriod determining power usage history for relay {}, include entry for itv{}",
+                    deviceIdentification, relayIndex, bufferIndex + 1);
+            return true;
+        }
+        if (date == null) {
+            LOGGER.info(
+                    "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, skip entry for itv{}, no date",
+                    deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex,
+                    bufferIndex + 1);
+            return false;
+        }
+        if (timePeriod.getStartTime() != null && date.isBefore(timePeriod.getStartTime())) {
+            LOGGER.info(
+                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is before start time: {}",
+                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getStartTime());
+            return false;
+        }
+        if (timePeriod.getEndTime() != null && date.isAfter(timePeriod.getEndTime())) {
+            LOGGER.info(
+                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is after end time: {}",
+                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getEndTime());
+            return false;
+        }
+        LOGGER.info(
+                "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, include entry for itv{}, date: {}",
+                deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex, bufferIndex + 1,
+                date);
+        return true;
     }
 
     private Configuration getConfigurationFromDevice(final ServerModel serverModel, final Ssld ssld)
@@ -1277,7 +1464,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
             final String deviceIdentification, final TransitionMessageDataContainer transitionMessageDataContainer)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
         LOGGER.info("device: {}, transition: {}", deviceIdentification, transitionType);
@@ -1401,7 +1588,7 @@ public class Iec61850DeviceService implements DeviceService {
     private FcModelNode getNode(final ServerModel serverModel, final String objectReference,
             final Fc functionalConstraint) {
 
-        final FcModelNode output = (FcModelNode) serverModel.findModelNode(objectReference, Fc.CF);
+        final FcModelNode output = (FcModelNode) serverModel.findModelNode(objectReference, functionalConstraint);
         if (output == null) {
             LOGGER.info("{} is null", objectReference);
             // TODO exceptionHandling
