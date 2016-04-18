@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -166,7 +167,7 @@ public abstract class OsgpCoreResponseMessageProcessor implements MessageProcess
     protected abstract boolean hasRegularResponseObject(final ResponseMessage responseMessage);
 
     protected abstract void handleMessage(DeviceMessageMetadata deviceMessageMetadata,
-            final ResponseMessage responseMessage, final OsgpException osgpException);
+            final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException;
 
     /**
      * In case of an error, this function can be used to send a response

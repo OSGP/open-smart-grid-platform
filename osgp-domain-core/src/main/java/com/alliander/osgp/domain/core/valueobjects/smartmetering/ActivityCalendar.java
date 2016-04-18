@@ -84,4 +84,5 @@ public class ActivityCalendar implements Comparable<ActivityCalendar>, Serializa
         }
         return true;
     }
+
 }

@@ -47,6 +47,53 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:complexType name="GetConfigurationRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="GetConfigurationResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="configurationData" type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="GetFirmwareVersionRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="GetFirmwareVersionResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="FirmwareVersions" type="tns:FirmwareVersion" minOccurs="1" maxOccurs="unbounded"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="FirmwareVersion">
+		<xsd:sequence>
+			<xsd:element name="version" type="xsd:string"/>
+			<xsd:element name="type" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+
 	<xsd:element name="SetConfigurationObjectRequest">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -171,6 +218,16 @@
         </xsd:complexType>
     </xsd:element>
 
+	<xsd:complexType name="SetEncryptionKeyExchangeOnGMeterRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:element name="SetEncryptionKeyExchangeOnGMeterRequest">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -241,6 +298,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+
+	<!-- This is a special type so that GetAdministrativeStatus is supported in bundle requests -->
+	<xsd:complexType name="GetAdministrativeStatusData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:element name="GetAdministrativeStatusAsyncResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
@@ -295,7 +363,7 @@
             </xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-    
+
     <xsd:element name="ReplaceKeysRequest">
         <xsd:complexType>
             <xsd:sequence>
@@ -332,7 +400,7 @@
 
 	<xsd:complexType name="SpecialDaysRequestData">
 		<xsd:complexContent>
-			<xsd:extension base="common:Query">
+			<xsd:extension base="common:Command">
 				<xsd:sequence>
 					<xsd:element maxOccurs="30" name="SpecialDays" type="tns:SpecialDay" />
 				</xsd:sequence>
@@ -361,6 +429,17 @@
 	</xsd:complexType>
 	
 	<!-- Administrative Status Types -->
+	<xsd:complexType name="AdministrativeStatusResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- Administrative Status Types -->
 	<xsd:simpleType name="AdministrativeStatusType">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="UNDEFINED" />
@@ -369,6 +448,16 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<xsd:complexType name="AdministrativeStatusTypeData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="AdministrativeStatusType" type="tns:AdministrativeStatusType" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="SetConfigurationObjectRequestData">
 		<xsd:complexContent>
 			<xsd:extension base="common:Command">
@@ -471,18 +560,22 @@
 	</xsd:simpleType>
 
 	<xsd:complexType name="PushSetupAlarm">
-		<xsd:sequence>
-			<xsd:element name="Host" type="xsd:string">
-				<xsd:annotation>
-					<xsd:documentation>IP address or DNS name of the service listening for alarm notifications over TCP.</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element name="Port" type="xsd:integer">
-				<xsd:annotation>
-					<xsd:documentation>Port number of the service listening for alarm notifications over TCP.</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
-		</xsd:sequence>
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="Host" type="xsd:string">
+						<xsd:annotation>
+							<xsd:documentation>IP address or DNS name of the service listening for alarm notifications over TCP.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element name="Port" type="xsd:integer">
+						<xsd:annotation>
+							<xsd:documentation>Port number of the service listening for alarm notifications over TCP.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
     <xsd:complexType name="PushSetupSms">
@@ -555,9 +648,13 @@
 	</xsd:simpleType>
     
     <xsd:complexType name="KeySet">       
-        <xsd:sequence>
-            <xsd:element name="AuthenticationKey" type="xsd:hexBinary"></xsd:element>
-            <xsd:element name="EncryptionKey" type="xsd:hexBinary"></xsd:element>
-        </xsd:sequence>
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+		        <xsd:sequence>
+            		<xsd:element name="AuthenticationKey" type="xsd:hexBinary"></xsd:element>
+            		<xsd:element name="EncryptionKey" type="xsd:hexBinary"></xsd:element>
+        		</xsd:sequence>
+        	</xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 </xsd:schema>
