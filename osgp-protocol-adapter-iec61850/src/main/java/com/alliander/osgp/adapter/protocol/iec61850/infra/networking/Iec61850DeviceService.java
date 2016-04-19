@@ -731,9 +731,9 @@ public class Iec61850DeviceService implements DeviceService {
                 position.setValue(on);
                 clientAssociation.setDataValues((FcModelNode) operate);
 
-                // TODO remove this once the Kaifa device can handle the calls
-                // again
-                System.out.println("Sleeping for 5 seconds");
+                // TODO remove this once the Kaifa device can handle the
+                // calls again
+                LOGGER.warn("Sleeping for 5 seconds before moving on");
                 Thread.sleep(5000);
 
                 // return null == Void
@@ -876,8 +876,8 @@ public class Iec61850DeviceService implements DeviceService {
         final int idxOldest = (((BdaInt8U) lastIdx).getValue() + 1) % numberOfEntries;
         for (int i = 0; i < numberOfEntries; i++) {
             final int bufferIndex = (idxOldest + i) % numberOfEntries;
-            final ModelNode indexedItvNode = onItvB.getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV
-                    + (bufferIndex + 1));
+            final ModelNode indexedItvNode = onItvB
+                    .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV + (bufferIndex + 1));
             LOGGER.info("device: {}, itv{}: {}", deviceIdentification, bufferIndex + 1, indexedItvNode);
             final ModelNode itvNode = indexedItvNode
                     .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_ON_ITV_B_ATTRIBUTE_ITV_ITV);
