@@ -48,9 +48,6 @@ public interface DeviceService {
     void getPowerUsageHistory(GetPowerUsageHistoryDeviceRequest deviceRequest,
             DeviceResponseHandler deviceResponseHandler);
 
-    // void resumeSchedule(DeviceRequest deviceRequest, DeviceResponseHandler
-    // deviceResponseHandler);
-
     /**
      * Switches the light relays of the device given in the
      * {@link DeviceRequest}, according to the
