@@ -21,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObjectListType;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ObjectListTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -58,7 +62,7 @@ public class AdhocService {
     public void synchronizeTime(
             final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequest synchronizeTimeRequestValueObject)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("synchronizeTime for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -94,7 +98,7 @@ public class AdhocService {
 
     public void retrieveConfigurationObjects(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.RetrieveConfigurationObjectsRequest request)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.debug("retrieveConfigurationObjects for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -127,6 +131,41 @@ public class AdhocService {
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getDeviceIdentification(), result,
                 exception, resultData, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
+                .getMessageType());
+
+    }
+
+    public void getAssociationLnObjects(final DeviceMessageMetadata deviceMessageMetadata,
+            final GetAssociationLnObjectsRequest request) throws FunctionalException {
+        LOGGER.debug("getAssociationLnObjects for organisationIdentification: {} for deviceIdentification: {}",
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
+
+        final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
+                .getDeviceIdentification());
+
+        final GetAssociationLnObjectsRequestDto requestDto = new GetAssociationLnObjectsRequestDto(
+                request.getDeviceIdentification());
+
+        this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                smartMeteringDevice.getIpAddress(), requestDto), deviceMessageMetadata.getMessageType(),
+                deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+    }
+
+    public void handleGetAssocationLnObjectsResponse(final DeviceMessageMetadata deviceMessageMetadata,
+            ResponseMessageResultType result, final OsgpException exception, final ObjectListTypeDto resultData) {
+
+        if (exception != null) {
+            LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
+            result = ResponseMessageResultType.NOT_OK;
+        }
+
+        final ObjectListType objectListValueDomain = this.mapperFactory.getMapperFacade().map(resultData,
+                ObjectListType.class);
+
+        this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
+                deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getDeviceIdentification(), result,
+                exception, objectListValueDomain, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
                 .getMessageType());
 
     }
