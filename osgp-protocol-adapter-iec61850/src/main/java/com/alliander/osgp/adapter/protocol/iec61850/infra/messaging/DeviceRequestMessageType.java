@@ -27,5 +27,7 @@ public enum DeviceRequestMessageType {
     GET_TARIFF_STATUS,
     SET_TARIFF_SCHEDULE,
     UPDATE_KEY,
-    REVOKE_KEY
+    REVOKE_KEY,
+    UPDATE_DEVICE_SSL_CERTIFICATION
+
 }

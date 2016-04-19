@@ -45,6 +45,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigura
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitionDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateDeviceSslCertificationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigurationDeviceResponse;
@@ -64,6 +65,7 @@ import com.alliander.osgp.core.db.api.iec61850.entities.DeviceOutputSetting;
 import com.alliander.osgp.core.db.api.iec61850.entities.Ssld;
 import com.alliander.osgp.core.db.api.iec61850valueobjects.RelayType;
 import com.alliander.osgp.dto.valueobjects.ActionTimeType;
+import com.alliander.osgp.dto.valueobjects.Certification;
 import com.alliander.osgp.dto.valueobjects.Configuration;
 import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
@@ -373,7 +375,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
      * #
@@ -642,6 +644,44 @@ public class Iec61850DeviceService implements DeviceService {
 
             this.pushFirmwareToDevice(serverModel, clientAssociation,
                     deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+            deviceResponseHandler.handleResponse(deviceResponse);
+        } catch (final ConnectionFailureException se) {
+            LOGGER.error("Could not connect to device after all retries", se);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(se, deviceResponse, true);
+            return;
+        } catch (final Exception e) {
+            LOGGER.error("Unexpected exception during writeDataValue", e);
+
+            final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                    deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                    deviceRequest.getCorrelationUid(), DeviceMessageStatus.FAILURE);
+
+            deviceResponseHandler.handleException(e, deviceResponse, false);
+            return;
+        }
+
+    }
+
+    @Override
+    public void updateDeviceSslCertification(final UpdateDeviceSslCertificationDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        try {
+
+            final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
+            final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
+                    .getClientAssociation(deviceRequest.getDeviceIdentification());
+
+            this.pushSslCertificateToDevice(serverModel, clientAssociation, deviceRequest.getCertification());
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -1469,7 +1509,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
             final String deviceIdentification, final TransitionMessageDataContainer transitionMessageDataContainer)
-                    throws ProtocolAdapterException {
+            throws ProtocolAdapterException {
 
         final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
         LOGGER.info("device: {}, transition: {}", deviceIdentification, transitionType);
@@ -1533,10 +1573,10 @@ public class Iec61850DeviceService implements DeviceService {
                         functionalFirmwareConfigurationObjectReference, Fc.CF);
 
                 final BdaVisibleString functionalFirmwareDownloadUrl = (BdaVisibleString) functionalFirmwareConfiguration
-                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_FIRMWARE_CONFIG_DOWNLOAD_URL);
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_URL);
 
-                final BdaTimestamp functionalFirmwareStartTime = (BdaTimestamp) functionalFirmwareConfiguration
-                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_FIRMWARE_CONFIG_START_TIME);
+                final BdaTimestamp functionalFirmwareDownloadStartTime = (BdaTimestamp) functionalFirmwareConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_START_TIME);
 
                 LOGGER.info("Updating the firmware download url to {}", fullUrl);
 
@@ -1548,8 +1588,56 @@ public class Iec61850DeviceService implements DeviceService {
 
                 LOGGER.info("Updating the firmware download start time to {}", oneMinuteFromNow);
 
-                functionalFirmwareStartTime.setDate(oneMinuteFromNow);
-                clientAssociation.setDataValues(functionalFirmwareStartTime);
+                functionalFirmwareDownloadStartTime.setDate(oneMinuteFromNow);
+                clientAssociation.setDataValues(functionalFirmwareDownloadStartTime);
+
+                return null;
+            }
+        };
+
+        this.iec61850Client.sendCommandWithRetry(function);
+
+    }
+
+    private void pushSslCertificateToDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
+            final Certification certification) throws ProtocolAdapterException, FunctionalException {
+
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                LOGGER.info("Reading the certificate authority url");
+
+                final String updateSslConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_CERTIFICATE_AUTHORITY_REPLACE;
+
+                final FcModelNode certificateConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                        updateSslConfigurationObjectReference, Fc.CF);
+
+                final BdaVisibleString certificateDownloadUrl = (BdaVisibleString) certificateConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_URL);
+
+                final BdaTimestamp certificateUrlDownloadStartTime = (BdaTimestamp) certificateConfiguration
+                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_START_TIME);
+
+                final String separator = certification.getCertificateUrl().startsWith("/") ? "" : "/";
+                final String fullUrl = certification.getCertificateDomain().concat(separator)
+                        .concat(certification.getCertificateUrl());
+
+                LOGGER.info("Updating the certificate download url to {}", fullUrl);
+
+                certificateDownloadUrl.setValue(fullUrl);
+                clientAssociation.setDataValues(certificateDownloadUrl);
+
+                final Date oneMinuteFromNow = Iec61850DeviceService.this.getLocalTimeForDevice(serverModel)
+                        .plusMinutes(1).toDate();
+
+                LOGGER.info("Updating the certificate download start time to {}", oneMinuteFromNow);
+
+                certificateUrlDownloadStartTime.setDate(oneMinuteFromNow);
+                clientAssociation.setDataValues(certificateUrlDownloadStartTime);
 
                 return null;
             }
