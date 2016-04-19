@@ -53,7 +53,7 @@ public class DeviceManagementService extends AbstractService {
 
     public void updateKey(final String organisationIdentification, @Identification final String deviceIdentification,
             final String correlationUid, final String messageType, @PublicKey final String publicKey)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         LOGGER.info("MessageType: {}. Updating key for device [{}] on behalf of organisation [{}]",
                 deviceIdentification, organisationIdentification, messageType);
@@ -164,5 +164,23 @@ public class DeviceManagementService extends AbstractService {
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(correlationUid, organisationIdentification,
                 deviceIdentification, result, osgpException, null));
+    }
+
+    public void deactivateDevice(final String organisationIdentification,
+            @Identification final String deviceIdentification, final String correlationUid, final String messageType) {
+        LOGGER.info("deactivateDevice for organisationIdentification: {} for deviceIdentification: {}",
+                organisationIdentification, deviceIdentification);
+
+        // TODO: bypassing authorization, this should be fixed.
+
+        final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
+
+        device.setActivated(false);
+
+        this.deviceRepository.save(device);
+
+        final ResponseMessage responseMessage = new ResponseMessage(correlationUid, organisationIdentification,
+                deviceIdentification, ResponseMessageResultType.OK, null);
+        this.webServiceResponseMessageSender.send(responseMessage);
     }
 }

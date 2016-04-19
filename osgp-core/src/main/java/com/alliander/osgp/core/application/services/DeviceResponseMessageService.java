@@ -39,8 +39,8 @@ public class DeviceResponseMessageService {
 
     // The array of exceptions which have to be retried.
     private static final String[] RETRY_EXCEPTIONS = { "Unable to connect", "ConnectException",
-            "Failed to receive response within timelimit", "Timeout waiting for",
-            "Connection closed by remote host while waiting for association response" };
+        "Failed to receive response within timelimit", "Timeout waiting for",
+    "Connection closed by remote host while waiting for association response" };
 
     @Autowired
     private DomainResponseService domainResponseMessageSender;
@@ -130,8 +130,9 @@ public class DeviceResponseMessageService {
             this.scheduledTaskRepository.delete(scheduledTask);
             this.domainResponseMessageSender.send(message);
         } else {
-            final String errorMessage = message.getOsgpException() == null ? "" : message.getOsgpException().getCause()
-                    .getMessage();
+            final String errorMessage = message.getOsgpException() == null ? ""
+                    : message.getOsgpException().getCause() == null ? message.getOsgpException().getMessage() : message
+                            .getOsgpException().getCause().getMessage();
             scheduledTask.setFailed(errorMessage);
 
             if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
@@ -145,7 +146,7 @@ public class DeviceResponseMessageService {
     }
 
     private void handleProtocolResponseMessage(final ProtocolResponseMessage message) throws FunctionalException,
-            JMSException {
+    JMSException {
         if (message.getRetryHeader() != null && message.getRetryHeader().shouldRetry()) {
             // Create scheduled task for retries.
             LOGGER.info("Creating a scheduled retry task for message of type {} for device {}.",
