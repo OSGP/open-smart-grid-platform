@@ -81,52 +81,44 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
             return;
         }
 
-        try {
+        final RequestMessageData requestMessageData = new RequestMessageData(scheduleMessageDataContainer, domain,
+                domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
+                deviceIdentification);
 
-            final RequestMessageData requestMessageData = new RequestMessageData(scheduleMessageDataContainer, domain,
-                    domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
-                    deviceIdentification);
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
-            final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                TariffSwitchingSetScheduleRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
+                        TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender,
+                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
+                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
+            }
 
-                @Override
-                public void handleResponse(final DeviceResponse deviceResponse) {
-                    TariffSwitchingSetScheduleRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                            TariffSwitchingSetScheduleRequestMessageProcessor.this.responseMessageSender,
-                            requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                            requestMessageData.getMessageType(), requestMessageData.getRetryCount());
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
+
+                if (expected) {
+                    TariffSwitchingSetScheduleRequestMessageProcessor.this.handleExpectedError(
+                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
+                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
+                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
+                } else {
+                    TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
+                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
+                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
                 }
+            }
+        };
 
-                @Override
-                public void handleException(final Throwable t, final DeviceResponse deviceResponse,
-                        final boolean expected) {
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-                    if (expected) {
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleExpectedError(
-                                new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                                requestMessageData.getCorrelationUid(),
-                                requestMessageData.getOrganisationIdentification(),
-                                requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                                requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                    } else {
-                        TariffSwitchingSetScheduleRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
-                                requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                                requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                                requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                    }
-                }
-            };
+        final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.LIGHT, domain,
+                domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
-
-            final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.LIGHT, domain,
-                    domainVersion, messageType, ipAddress, retryCount, isScheduled);
-
-            this.deviceService.setSchedule(deviceRequest, deviceResponseHandler);
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
+        this.deviceService.setSchedule(deviceRequest, deviceResponseHandler);
     }
 }

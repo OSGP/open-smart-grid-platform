@@ -52,12 +52,10 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigur
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
-import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.DeviceRelayType;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleEntry;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
-import com.alliander.osgp.adapter.protocol.iec61850.exceptions.InvalidConfigurationException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.core.db.api.iec61850.application.services.SsldDataService;
@@ -108,19 +106,19 @@ public class Iec61850DeviceService implements DeviceService {
     @Autowired
     private Iec61850Mapper mapper;
 
+    // Timeout between the SetLight and getStatus during the device selftest
     @Resource
     private int selftestTimeout;
 
+    // The value used to indicate that the time on or time off of a schedule
+    // entry is unused.
     private static final int DEFAULT_SCHEDULE_VALUE = -1;
 
+    // Used to keep the firmware version apart in the FirmwareVersionDto objects
+    // of getFirmwareVersion
     private static final String FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION = "Functional firmware version";
-
     private static final String SECURITY_FIRMWARE_TYPE_DESCRIPTION = "Security firmware version";
 
-    /**
-     * @see DeviceService#getStatus(GetStatusDeviceRequest,
-     *      DeviceResponseHandler)
-     */
     @Override
     public void getStatus(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
@@ -205,9 +203,6 @@ public class Iec61850DeviceService implements DeviceService {
         }
     }
 
-    /**
-     * @see DeviceService#setLight(SetLightDeviceRequest)
-     */
     @Override
     public void setLight(final SetLightDeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
@@ -277,9 +272,6 @@ public class Iec61850DeviceService implements DeviceService {
         deviceResponseHandler.handleResponse(deviceResponse);
     }
 
-    /**
-     * @see DeviceService#setLight(SetLightDeviceRequest)
-     */
     @Override
     public void setConfiguration(final SetConfigurationDeviceRequest deviceRequest,
             final DeviceResponseHandler deviceResponseHandler) {
@@ -373,17 +365,6 @@ public class Iec61850DeviceService implements DeviceService {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService
-     * #
-     * setReboot(com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest
-     * ,
-     * com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler
-     * )
-     */
     @Override
     public void setReboot(final DeviceRequest deviceRequest, final DeviceResponseHandler deviceResponseHandler) {
 
@@ -929,7 +910,7 @@ public class Iec61850DeviceService implements DeviceService {
             final DateTime date = new DateTime(((BdaTimestamp) dayNode).getDate());
             final int totalMinutesOnForDate = ((BdaInt32) itvNode).getValue();
 
-            final boolean includeEntryInResponse = this.periodIncludesDateForPowerUsageHistory(timePeriod, date,
+            final boolean includeEntryInResponse = this.timePeriodContaintsDateTime(timePeriod, date,
                     deviceIdentification, relayIndex, bufferIndex);
             if (!includeEntryInResponse) {
                 continue;
@@ -946,40 +927,6 @@ public class Iec61850DeviceService implements DeviceService {
         }
 
         return powerUsageHistoryDataFromRelay;
-    }
-
-    private boolean periodIncludesDateForPowerUsageHistory(final TimePeriod timePeriod, final DateTime date,
-            final String deviceIdentification, final int relayIndex, final int bufferIndex) {
-        if (timePeriod == null) {
-            LOGGER.info(
-                    "device: {}, no TimePeriod determining power usage history for relay {}, include entry for itv{}",
-                    deviceIdentification, relayIndex, bufferIndex + 1);
-            return true;
-        }
-        if (date == null) {
-            LOGGER.info(
-                    "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, skip entry for itv{}, no date",
-                    deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex,
-                    bufferIndex + 1);
-            return false;
-        }
-        if (timePeriod.getStartTime() != null && date.isBefore(timePeriod.getStartTime())) {
-            LOGGER.info(
-                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is before start time: {}",
-                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getStartTime());
-            return false;
-        }
-        if (timePeriod.getEndTime() != null && date.isAfter(timePeriod.getEndTime())) {
-            LOGGER.info(
-                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is after end time: {}",
-                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getEndTime());
-            return false;
-        }
-        LOGGER.info(
-                "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, include entry for itv{}, date: {}",
-                deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex, bufferIndex + 1,
-                date);
-        return true;
     }
 
     private Configuration getConfigurationFromDevice(final ServerModel serverModel, final Ssld ssld)
@@ -1509,7 +1456,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
             final String deviceIdentification, final TransitionMessageDataContainer transitionMessageDataContainer)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
 
         final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
         LOGGER.info("device: {}, transition: {}", deviceIdentification, transitionType);
@@ -1650,29 +1597,6 @@ public class Iec61850DeviceService implements DeviceService {
     // ========================
     // PRIVATE HELPER METHODS =
     // ========================
-
-    // This code will be used in the future
-    private void checkRelayTypes(final DeviceOutputSetting deviceOutputSetting, final ServerModel serverModel)
-            throws InvalidConfigurationException {
-
-        final String relaySwitchTypeObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(deviceOutputSetting.getInternalId())
-                + LogicalNodeAttributeDefinitons.PROPERTY_SWITCH_TYPE;
-
-        LOGGER.info("relaySwitchTypeObjectReference: {}", relaySwitchTypeObjectReference);
-
-        final FcModelNode switchTypeState = (FcModelNode) serverModel.findModelNode(relaySwitchTypeObjectReference,
-                Fc.ST);
-        final BdaInt8 state = (BdaInt8) switchTypeState.getChild("stVal");
-
-        if (DeviceRelayType.getByIndex(state.getValue()).name() != deviceOutputSetting.getRelayType().name()) {
-            // Inconsistent configuration, throwing exception
-            throw new InvalidConfigurationException(String.format(
-                    "RelayType of relay %d, {%s} is nconsisntent with the device output settings {%s}",
-                    deviceOutputSetting.getExternalId(), DeviceRelayType.getByIndex(state.getValue()),
-                    deviceOutputSetting.getRelayType()));
-        }
-    }
 
     /*
      * Returns an FcModelNode, or throws an exception if the returned node is
@@ -1881,5 +1805,42 @@ public class Iec61850DeviceService implements DeviceService {
         final int offset = timezone.getValue() / 60;
 
         return DateTime.now().withZone(DateTimeZone.forOffsetHours(offset));
+    }
+
+    /*
+     * Returns true if the given Datetime is in the given TimePeriod.
+     */
+    private boolean timePeriodContaintsDateTime(final TimePeriod timePeriod, final DateTime date,
+            final String deviceIdentification, final int relayIndex, final int bufferIndex) {
+        if (timePeriod == null) {
+            LOGGER.info(
+                    "device: {}, no TimePeriod determining power usage history for relay {}, include entry for itv{}",
+                    deviceIdentification, relayIndex, bufferIndex + 1);
+            return true;
+        }
+        if (date == null) {
+            LOGGER.info(
+                    "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, skip entry for itv{}, no date",
+                    deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex,
+                    bufferIndex + 1);
+            return false;
+        }
+        if (timePeriod.getStartTime() != null && date.isBefore(timePeriod.getStartTime())) {
+            LOGGER.info(
+                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is before start time: {}",
+                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getStartTime());
+            return false;
+        }
+        if (timePeriod.getEndTime() != null && date.isAfter(timePeriod.getEndTime())) {
+            LOGGER.info(
+                    "device: {}, determining power usage history for relay {}, skip entry for itv{}, date: {} is after end time: {}",
+                    deviceIdentification, relayIndex, bufferIndex + 1, date, timePeriod.getEndTime());
+            return false;
+        }
+        LOGGER.info(
+                "device: {}, TimePeriod ({} - {}), determining power usage history for relay {}, include entry for itv{}, date: {}",
+                deviceIdentification, timePeriod.getStartTime(), timePeriod.getEndTime(), relayIndex, bufferIndex + 1,
+                date);
+        return true;
     }
 }
