@@ -119,7 +119,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
          *
          * {8,0-0:1.0.0.255,2,0};                                    position 0
          * {3,1-0:1.8.1.255,2,0};                                    position 1
-         * {3,1-0:1.8.2.255,2,0};                                    position 2
+         * {3,1-0:1.8.2.255,2,0};                                    position 2GetPeriodicMeterReadsGasCommandExecutor
          * {3,1-0:2.8.1.255,2,0};                                    position 3
          * {3,1-0:2.8.2.255,2,0};                                    position 4
          * {4,0-1:24.2.1.255,2,0};   value channel 1                 position 5
@@ -153,7 +153,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
          * When no specific capture_objects are selected with selective access:
          *
          * {8,0-0:1.0.0.255,2,0};                                    position 0
-         * {1,0-0:96.10.2.255,2,0}                                   position 1
+         * {1,0-0:96.10.2.255,2,0}                                   position 1GetPeriodicMeterReadsGasCommandExecutor
          * {3,1-0:1.8.1.255,2,0};                                    position 2
          * {3,1-0:1.8.2.255,2,0};                                    position 3
          * {3,1-0:2.8.1.255,2,0};                                    position 4
@@ -608,5 +608,4 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
                         DataObject.newUInteger16Data(0))));
     }
-
 }

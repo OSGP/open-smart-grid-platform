@@ -64,5 +64,4 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
             throw new ConnectionException(e);
         }
     }
-
 }
