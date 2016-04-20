@@ -17,9 +17,9 @@ public class AssociationLnListElementDto implements Serializable {
 
     private int version;
 
-    private String logicalName;
+    private CosemObisCodeDto logicalName;
 
-    public AssociationLnListElementDto(final long classId, final int version, final String logicalName) {
+    public AssociationLnListElementDto(final long classId, final int version, final CosemObisCodeDto logicalName) {
         this.classId = classId;
         this.version = version;
         this.logicalName = logicalName;
@@ -33,7 +33,7 @@ public class AssociationLnListElementDto implements Serializable {
         return this.version;
     }
 
-    public String getLogicalName() {
+    public CosemObisCodeDto getLogicalName() {
         return this.logicalName;
     }
 }
