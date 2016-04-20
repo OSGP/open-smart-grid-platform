@@ -263,6 +263,21 @@ public class DlmsHelperService {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
+    public String readObisCode(final DataObject resultData) throws ProtocolAdapterException {
+        final byte[] bytes = this.readByteArray(resultData, "OBIS code", "String");
+        if (bytes == null) {
+            return null;
+        }
+
+        final StringBuilder result = new StringBuilder();
+        for (final byte b : bytes) {
+            result.append(new Integer(b & 0xFF).toString());
+            result.append(".");
+        }
+        result.setLength(result.length() - 1);
+        return result.toString();
+    }
+
     public CosemDateTimeDto readDateTime(final GetResult getResult, final String description)
             throws ProtocolAdapterException {
         this.checkResultCode(getResult, description);

@@ -16,7 +16,7 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ObjectListTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
@@ -45,7 +45,7 @@ public class AdhocService {
         return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
     }
 
-    public ObjectListTypeDto getAssociationLnObjects(final ClientConnection conn, final DlmsDevice device)
+    public AssociationLnListTypeDto getAssociationLnObjects(final ClientConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
         return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
     }
