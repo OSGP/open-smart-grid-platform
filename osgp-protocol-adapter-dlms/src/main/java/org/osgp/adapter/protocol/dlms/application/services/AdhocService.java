@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
@@ -34,13 +32,12 @@ public class AdhocService {
 
     // === REQUEST Synchronize Time DATA ===
 
-    public void synchronizeTime(final ClientConnection conn, final DlmsDevice device,
-            final SynchronizeTimeRequestDto synchronizeTimeRequest) throws ProtocolAdapterException {
+    public void synchronizeTime(final ClientConnection conn, final DlmsDevice device) throws ProtocolAdapterException {
         this.synchronizeTimeCommandExecutor.execute(conn, device, null);
     }
 
-    public String retrieveConfigurationObjects(final ClientConnection conn, final DlmsDevice device,
-            final RetrieveConfigurationObjectsRequestDto request) throws ProtocolAdapterException {
+    public String retrieveConfigurationObjects(final ClientConnection conn, final DlmsDevice device)
+            throws ProtocolAdapterException {
 
         return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
     }
