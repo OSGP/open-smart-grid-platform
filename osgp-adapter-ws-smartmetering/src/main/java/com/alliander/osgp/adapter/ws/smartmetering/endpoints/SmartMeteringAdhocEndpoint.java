@@ -101,7 +101,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final RetrieveConfigurationObjectsRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-            throws OsgpException {
+                    throws OsgpException {
 
         final RetrieveConfigurationObjectsAsyncResponse response = new RetrieveConfigurationObjectsAsyncResponse();
 
@@ -147,7 +147,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
             @OrganisationIdentification final String organisationIdentification,
             @RequestPayload final GetAssociationLnObjectsRequest request,
             @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
-            throws OsgpException {
+                    throws OsgpException {
 
         final GetAssociationLnObjectsAsyncResponse response = new GetAssociationLnObjectsAsyncResponse();
 
@@ -178,7 +178,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof AssociationLnListType) {
-                response.setAsscociationLnList(this.adhocMapper.map(meterResponseData.getMessageData(),
+                response.setAssociationLnList(this.adhocMapper.map(meterResponseData.getMessageData(),
                         com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.AssociationLnListType.class));
             }
 

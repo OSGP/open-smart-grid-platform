@@ -13,11 +13,11 @@ public class AssociationLnListElement implements Serializable {
 
     private static final long serialVersionUID = 2432320129309477392L;
 
-    private long classId;
+    private final long classId;
 
-    private int version;
+    private final int version;
 
-    private CosemObisCode logicalName;
+    private final CosemObisCode logicalName;
 
     private final AccessRight accessRights;
 

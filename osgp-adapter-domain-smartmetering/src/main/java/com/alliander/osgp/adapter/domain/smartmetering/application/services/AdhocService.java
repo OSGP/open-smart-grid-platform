@@ -160,12 +160,12 @@ public class AdhocService {
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final AssociationLnListType objectListValueDomain = this.mapperFactory.getMapperFacade().map(resultData,
+        final AssociationLnListType associationLnListValueDomain = this.mapperFactory.getMapperFacade().map(resultData,
                 AssociationLnListType.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
-                result, exception, objectListValueDomain, deviceMessageMetadata.getMessagePriority()),
+                result, exception, associationLnListValueDomain, deviceMessageMetadata.getMessagePriority()),
                 deviceMessageMetadata.getMessageType());
 
     }
