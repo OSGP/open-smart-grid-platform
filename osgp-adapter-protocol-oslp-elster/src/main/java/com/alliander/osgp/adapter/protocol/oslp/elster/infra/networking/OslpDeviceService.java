@@ -350,7 +350,7 @@ public class OslpDeviceService implements DeviceService {
 
         this.buildAndSignEnvelope(deviceRequest,
                 Oslp.Message.newBuilder().setUpdateDeviceSslCertificationRequest(updateDeviceSslCertificationRequest)
-                        .build(), deviceRequest.getCertification());
+                .build(), deviceRequest.getCertification());
 
     }
 
@@ -607,8 +607,8 @@ public class OslpDeviceService implements DeviceService {
                 .addAllSchedules(oslpSchedules)
                 .setScheduleType(
                         this.mapper.map(deviceRequest.getRelayType(), com.alliander.osgp.oslp.Oslp.RelayType.class))
-                .setPageInfo(
-                        Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
+                        .setPageInfo(
+                                Oslp.PageInfo.newBuilder().setCurrentPage(pager.getCurrentPage())
                                 .setPageSize(pager.getPageSize()).setTotalPages(pager.getNumberOfPages()));
 
         final PageInfo pageInfo = new PageInfo(pager.getCurrentPage(), pager.getPageSize(), pager.getNumberOfPages());
@@ -908,7 +908,7 @@ public class OslpDeviceService implements DeviceService {
             final Pager pager, final List<PowerUsageData> powerUsageHistoryData,
             final DeviceResponseHandler deviceResponseHandler, final String ipAddress, final String domain,
             final String domainVersion, final String messageType, final int retryCount, final boolean isScheduled)
-            throws IOException {
+                    throws IOException {
         LOGGER.info("GetPowerUsageHistory() for device: {}, page: {}", deviceRequest.getDeviceIdentification(),
                 pager.getCurrentPage());
 
@@ -992,7 +992,7 @@ public class OslpDeviceService implements DeviceService {
         powerUsageHistoryResponseMessageDataContainer.setHistoryTermType(deviceRequest.getPowerUsageHistoryContainer()
                 .getHistoryTermType());
         powerUsageHistoryResponseMessageDataContainer
-                .setRequestContainer(deviceRequest.getPowerUsageHistoryContainer());
+        .setRequestContainer(deviceRequest.getPowerUsageHistoryContainer());
 
         this.buildAndSignEnvelope(deviceRequest,
                 Oslp.Message.newBuilder().setGetPowerUsageHistoryRequest(getPowerUsageHistoryRequest).build(),
@@ -1330,7 +1330,7 @@ public class OslpDeviceService implements DeviceService {
                                 com.alliander.osgp.oslp.Oslp.TransitionType.class));
         if (deviceRequest.getTransitionTypeContainer().getDateTime() != null) {
             setTransitionBuilder
-                    .setTime(deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
+            .setTime(deviceRequest.getTransitionTypeContainer().getDateTime().toString(TIME_FORMAT));
         }
 
         this.buildAndSignEnvelope(deviceRequest,
@@ -1480,10 +1480,10 @@ public class OslpDeviceService implements DeviceService {
                         LightValue.class);
                 final LinkType preferredType = getStatusResponse.getPreferredLinktype().equals(
                         Oslp.LinkType.LINK_NOT_SET) ? null : this.mapper.map(getStatusResponse.getPreferredLinktype(),
-                                LinkType.class);
+                        LinkType.class);
                 final LinkType actualLinkType = getStatusResponse.getActualLinktype()
                         .equals(Oslp.LinkType.LINK_NOT_SET) ? null : this.mapper.map(
-                                getStatusResponse.getActualLinktype(), LinkType.class);
+                        getStatusResponse.getActualLinktype(), LinkType.class);
                 final LightType lightType = getStatusResponse.getLightType().equals(Oslp.LightType.LT_NOT_SET) ? null
                         : this.mapper.map(getStatusResponse.getLightType(), LightType.class);
                 final int eventNotificationMask = getStatusResponse.getEventNotificationMask();
@@ -1580,7 +1580,7 @@ public class OslpDeviceService implements DeviceService {
         }
         final StringBuilder stringBuilder = new StringBuilder();
         for (final byte b : byteString.toByteArray()) {
-            stringBuilder.append(b);
+            stringBuilder.append(String.format("%02X", b));
         }
         return stringBuilder.toString();
     }
