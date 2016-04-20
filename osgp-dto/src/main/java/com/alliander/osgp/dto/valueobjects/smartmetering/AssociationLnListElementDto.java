@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class ObjectListElementDto implements Serializable {
+public class AssociationLnListElementDto implements Serializable {
 
     private static final long serialVersionUID = 2432320129309477392L;
 
@@ -19,7 +19,7 @@ public class ObjectListElementDto implements Serializable {
 
     private String logicalName;
 
-    public ObjectListElementDto(final long classId, final int version, final String logicalName) {
+    public AssociationLnListElementDto(final long classId, final int version, final String logicalName) {
         this.classId = classId;
         this.version = version;
         this.logicalName = logicalName;

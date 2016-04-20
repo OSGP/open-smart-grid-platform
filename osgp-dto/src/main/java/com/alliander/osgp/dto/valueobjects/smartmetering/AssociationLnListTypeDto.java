@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ObjectListTypeDto implements Serializable {
+public class AssociationLnListTypeDto implements Serializable {
     private static final long serialVersionUID = 5540577793697751858L;
 
-    private List<ObjectListElementDto> objectListElement;
+    private List<AssociationLnListElementDto> associationLnListElement;
 
-    public ObjectListTypeDto(final List<ObjectListElementDto> objectListElement) {
-        this.objectListElement = Collections.unmodifiableList(objectListElement);
+    public AssociationLnListTypeDto(final List<AssociationLnListElementDto> objectListElement) {
+        this.associationLnListElement = Collections.unmodifiableList(objectListElement);
     }
 
-    public List<ObjectListElementDto> getObjectListElement() {
-        return new ArrayList<>(this.objectListElement);
+    public List<AssociationLnListElementDto> getAssociationLnListElement() {
+        return new ArrayList<>(this.associationLnListElement);
     }
 }

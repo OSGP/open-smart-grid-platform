@@ -10,13 +10,13 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 public class GetAssociationLnObjectsResponseDto extends ActionResponseDto {
     private static final long serialVersionUID = 1164423597435802735L;
 
-    private ObjectListTypeDto objectListType;
+    private AssociationLnListTypeDto objectListType;
 
-    public GetAssociationLnObjectsResponseDto(final ObjectListTypeDto objectListType) {
+    public GetAssociationLnObjectsResponseDto(final AssociationLnListTypeDto objectListType) {
         this.objectListType = objectListType;
     }
 
-    public ObjectListTypeDto getObjectListType() {
+    public AssociationLnListTypeDto getObjectListType() {
         return this.objectListType;
     }
 }
