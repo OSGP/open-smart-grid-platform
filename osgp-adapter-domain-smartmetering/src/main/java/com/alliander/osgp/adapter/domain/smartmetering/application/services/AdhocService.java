@@ -22,9 +22,9 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRe
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObjectListType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ObjectListTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -153,15 +153,15 @@ public class AdhocService {
     }
 
     public void handleGetAssocationLnObjectsResponse(final DeviceMessageMetadata deviceMessageMetadata,
-            ResponseMessageResultType result, final OsgpException exception, final ObjectListTypeDto resultData) {
+            ResponseMessageResultType result, final OsgpException exception, final AssociationLnListTypeDto resultData) {
 
         if (exception != null) {
             LOGGER.error(DEVICE_RESPONSE_NOT_OK_UNEXPECTED_EXCEPTION, exception);
             result = ResponseMessageResultType.NOT_OK;
         }
 
-        final ObjectListType objectListValueDomain = this.mapperFactory.getMapperFacade().map(resultData,
-                ObjectListType.class);
+        final AssociationLnListType objectListValueDomain = this.mapperFactory.getMapperFacade().map(resultData,
+                AssociationLnListType.class);
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),

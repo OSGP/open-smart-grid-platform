@@ -34,7 +34,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpResultType;
 import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapper;
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObjectListType;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -154,7 +154,6 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest getAssociationLnObjectsRequest = new com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequest(
                 request.getDeviceIdentification());
 
-        // TODO fix adhocService call.
         final String correlationUid = this.adhocService.enqueueGetAssociationLnObjectsRequest(
                 organisationIdentification, getAssociationLnObjectsRequest.getDeviceIdentification(),
                 getAssociationLnObjectsRequest, MessagePriorityEnum.getMessagePriority(messagePriority),
@@ -178,9 +177,9 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
                     .dequeueGetAssociationLnObjectsResponse(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
-            if (meterResponseData.getMessageData() instanceof ObjectListType) {
-                response.setObjectList(this.adhocMapper.map(meterResponseData.getMessageData(),
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.ObjectListType.class));
+            if (meterResponseData.getMessageData() instanceof AssociationLnListType) {
+                response.setAsscociationLnList(this.adhocMapper.map(meterResponseData.getMessageData(),
+                        com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.AssociationLnListType.class));
             }
 
         } catch (final Exception e) {
