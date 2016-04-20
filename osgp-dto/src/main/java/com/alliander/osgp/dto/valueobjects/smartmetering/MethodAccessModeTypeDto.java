@@ -7,21 +7,17 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public enum AttributeAccessTypeDto {
+public enum MethodAccessModeTypeDto {
 
     NO_ACCESS,
-    READ_ONLY,
-    WRITE_ONLY,
-    READ_AND_WRITE,
-    AUTHENTICATED_READ_ONLY,
-    AUTHENTICATED_WRITE_ONLY,
-    AUTHENTICATED_READ_AND_WRITE;
+    ACCESS,
+    AUTHENTICATED_ACCESS;
 
     public String value() {
         return this.name();
     }
 
-    public static AttributeAccessTypeDto fromValue(final String v) {
+    public static MethodAccessModeTypeDto fromValue(final String v) {
         return valueOf(v);
     }
 

@@ -13,10 +13,10 @@ public class AttributeAccessItemDto implements Serializable {
     private static final long serialVersionUID = -6806206173336735187L;
 
     private final int attributeId;
-    private final AttributeAccessTypeDto accessMode;
+    private final AttributeAccessModeTypeDto accessMode;
     private final AccessSelectorListDto accessSelectors;
 
-    public AttributeAccessItemDto(final int attributeId, final AttributeAccessTypeDto accessMode,
+    public AttributeAccessItemDto(final int attributeId, final AttributeAccessModeTypeDto accessMode,
             final AccessSelectorListDto accessSelectors) {
         this.attributeId = attributeId;
         this.accessMode = accessMode;
@@ -27,7 +27,7 @@ public class AttributeAccessItemDto implements Serializable {
         return this.attributeId;
     }
 
-    public AttributeAccessTypeDto getAccessMode() {
+    public AttributeAccessModeTypeDto getAccessMode() {
         return this.accessMode;
     }
 
