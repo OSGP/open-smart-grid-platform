@@ -13,16 +13,20 @@ public class AssociationLnListElementDto implements Serializable {
 
     private static final long serialVersionUID = 2432320129309477392L;
 
-    private long classId;
+    private final long classId;
 
-    private int version;
+    private final int version;
 
-    private CosemObisCodeDto logicalName;
+    private final CosemObisCodeDto logicalName;
 
-    public AssociationLnListElementDto(final long classId, final int version, final CosemObisCodeDto logicalName) {
+    private final AccessRightDto accessRights;
+
+    public AssociationLnListElementDto(final long classId, final int version, final CosemObisCodeDto logicalName,
+            final AccessRightDto accessRights) {
         this.classId = classId;
         this.version = version;
         this.logicalName = logicalName;
+        this.accessRights = accessRights;
     }
 
     public long getClassId() {
@@ -35,5 +39,9 @@ public class AssociationLnListElementDto implements Serializable {
 
     public CosemObisCodeDto getLogicalName() {
         return this.logicalName;
+    }
+
+    public AccessRightDto getAccessRights() {
+        return this.accessRights;
     }
 }
