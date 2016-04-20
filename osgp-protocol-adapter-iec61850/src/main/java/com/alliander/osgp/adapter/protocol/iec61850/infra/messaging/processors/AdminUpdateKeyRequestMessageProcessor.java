@@ -67,19 +67,13 @@ public class AdminUpdateKeyRequestMessageProcessor extends DeviceRequestMessageP
             return;
         }
 
-        try {
-            final String publicKey = (String) message.getObject();
+        // final String publicKey = (String) message.getObject();
+        //
+        LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            LOGGER.info("Calling application service function: {} for domain: {} {}", messageType, domain,
-                    domainVersion);
-
-            // this.deviceManagementService.updateKey(organisationIdentification,
-            // deviceIdentification, correlationUid,
-            // this.responseMessageSender, domain, domainVersion, messageType,
-            // publicKey);
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType);
-        }
+        // this.deviceManagementService.updateKey(organisationIdentification,
+        // deviceIdentification, correlationUid,
+        // this.responseMessageSender, domain, domainVersion, messageType,
+        // publicKey);
     }
 }

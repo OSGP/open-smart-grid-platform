@@ -20,6 +20,10 @@ public class DeviceResponseService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeviceResponseService.class);
 
+    /**
+     * Processes the given {@link DeviceMessageStatus} and throws appropriate
+     * exceptions if the status is not OK.
+     */
     public void handleDeviceMessageStatus(final DeviceMessageStatus status) throws DeviceMessageRejectedException,
             DeviceMessageFailedException {
         switch (status) {

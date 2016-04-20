@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
-import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
@@ -71,24 +70,21 @@ public class CommonSetEventNotificationsRequestMessageProcessor extends DeviceRe
             return;
         }
 
-        try {
-            final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = (EventNotificationMessageDataContainer) message
-                    .getObject();
+        // final EventNotificationMessageDataContainer
+        // eventNotificationMessageDataContainer =
+        // (EventNotificationMessageDataContainer) message
+        // .getObject();
 
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-            // final SetEventNotificationsDeviceRequest deviceRequest = new
-            // SetEventNotificationsDeviceRequest(
-            // organisationIdentification, deviceIdentification, correlationUid,
-            // eventNotificationMessageDataContainer, domain, domainVersion,
-            // messageType, ipAddress, retryCount,
-            // isScheduled);
-            //
-            // this.deviceService.setEventNotifications(deviceRequest);
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
+        // final SetEventNotificationsDeviceRequest deviceRequest = new
+        // SetEventNotificationsDeviceRequest(
+        // organisationIdentification, deviceIdentification, correlationUid,
+        // eventNotificationMessageDataContainer, domain, domainVersion,
+        // messageType, ipAddress, retryCount,
+        // isScheduled);
+        //
+        // this.deviceService.setEventNotifications(deviceRequest);
     }
 
 }

@@ -8,7 +8,7 @@
 package com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects;
 
 /**
- * Value object, containing all data that is written to a raley schedule
+ * Value object, containing all data that is written to a relay schedule
  */
 public class ScheduleEntry {
 

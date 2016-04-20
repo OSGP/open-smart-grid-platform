@@ -53,6 +53,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
         String ipAddress = null;
         int retryCount = 0;
         boolean isScheduled = false;
+        TransitionMessageDataContainer transitionMessageDataContainer = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -65,6 +66,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                     .getBooleanProperty(Constants.IS_SCHEDULED) : false;
+                    transitionMessageDataContainer = (TransitionMessageDataContainer) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);
@@ -77,57 +79,44 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
             return;
         }
 
-        try {
-            final TransitionMessageDataContainer transitionMessageDataContainer = (TransitionMessageDataContainer) message
-                    .getObject();
+        final RequestMessageData requestMessageData = new RequestMessageData(transitionMessageDataContainer, domain,
+                domainVersion, messageType, retryCount, isScheduled, correlationUid, organisationIdentification,
+                deviceIdentification);
 
-            final RequestMessageData requestMessageData = new RequestMessageData(transitionMessageDataContainer,
-                    domain, domainVersion, messageType, retryCount, isScheduled, correlationUid,
-                    organisationIdentification, deviceIdentification);
+        final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
 
-            final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
+            @Override
+            public void handleResponse(final DeviceResponse deviceResponse) {
+                PublicLightingSetTransitionRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
+                        PublicLightingSetTransitionRequestMessageProcessor.this.responseMessageSender,
+                        requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
+                        requestMessageData.getMessageType(), requestMessageData.getRetryCount());
+            }
 
-                @Override
-                public void handleResponse(final DeviceResponse deviceResponse) {
-                    PublicLightingSetTransitionRequestMessageProcessor.this.handleEmptyDeviceResponse(deviceResponse,
-                            PublicLightingSetTransitionRequestMessageProcessor.this.responseMessageSender,
-                            requestMessageData.getDomain(), requestMessageData.getDomainVersion(),
-                            requestMessageData.getMessageType(), requestMessageData.getRetryCount());
+            @Override
+            public void handleException(final Throwable t, final DeviceResponse deviceResponse, final boolean expected) {
+
+                if (expected) {
+                    PublicLightingSetTransitionRequestMessageProcessor.this.handleExpectedError(
+                            new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
+                            requestMessageData.getCorrelationUid(), requestMessageData.getOrganisationIdentification(),
+                            requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
+                } else {
+                    PublicLightingSetTransitionRequestMessageProcessor.this.handleUnExpectedError(deviceResponse, t,
+                            requestMessageData.getMessageData(), requestMessageData.getDomain(),
+                            requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
+                            requestMessageData.isScheduled(), requestMessageData.getRetryCount());
                 }
+            }
+        };
 
-                @Override
-                public void handleException(final Throwable t, final DeviceResponse deviceResponse,
-                        final boolean expected) {
+        LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
-                    if (expected) {
-                        PublicLightingSetTransitionRequestMessageProcessor.this.handleExpectedError(
-                                new ConnectionFailureException(ComponentType.PROTOCOL_IEC61850, t.getMessage()),
-                                requestMessageData.getCorrelationUid(),
-                                requestMessageData.getOrganisationIdentification(),
-                                requestMessageData.getDeviceIdentification(), requestMessageData.getDomain(),
-                                requestMessageData.getDomainVersion(), requestMessageData.getMessageType());
-                    } else {
-                        PublicLightingSetTransitionRequestMessageProcessor.this.handleUnExpectedError(deviceResponse,
-                                t,
-                                requestMessageData.getMessageData(), requestMessageData.getDomain(),
-                                requestMessageData.getDomainVersion(), requestMessageData.getMessageType(),
-                                requestMessageData.isScheduled(), requestMessageData.getRetryCount());
-                    }
-                }
-            };
+        final SetTransitionDeviceRequest deviceRequest = new SetTransitionDeviceRequest(organisationIdentification,
+                deviceIdentification, correlationUid, transitionMessageDataContainer, domain, domainVersion,
+                messageType, ipAddress, retryCount, isScheduled);
 
-            LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
-
-            final SetTransitionDeviceRequest deviceRequest = new SetTransitionDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, transitionMessageDataContainer, domain, domainVersion,
-                    messageType, ipAddress, retryCount, isScheduled);
-
-            this.deviceService.setTransition(deviceRequest, deviceResponseHandler);
-
-        } catch (final Exception e) {
-            this.handleError(e, correlationUid, organisationIdentification, deviceIdentification, domain,
-                    domainVersion, messageType, retryCount);
-        }
+        this.deviceService.setTransition(deviceRequest, deviceResponseHandler);
     }
-
 }
