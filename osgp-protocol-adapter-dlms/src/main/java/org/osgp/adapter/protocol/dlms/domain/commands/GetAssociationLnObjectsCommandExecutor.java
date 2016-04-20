@@ -1,8 +1,14 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -45,6 +51,15 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
     private static final int OBIS_CODE_INDEX = 2;
     private static final int ACCESS_RIGHTS_INDEX = 3;
 
+    private static final int ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX = 0;
+    private static final int ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ATTRIBUTE_ID_INDEX = 0;
+    private static final int ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_MODE_INDEX = 1;
+    private static final int ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX = 2;
+
+    private static final int ACCESS_RIGHTS_METHOD_ACCESS_INDEX = 1;
+    private static final int ACCESS_RIGHTS_METHOD_ACCESS_METHOD_ID_INDEX = 0;
+    private static final int ACCESS_RIGHTS_METHOD_ACCESS_ACCESS_MODE_INDEX = 1;
+
     @Autowired
     private DlmsHelperService dlmsHelperService;
 
@@ -65,11 +80,11 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
         }
 
         if (getResultList.isEmpty()) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving configuration objects.");
+            throw new ProtocolAdapterException("No GetResult received while retrieving Association LN objects.");
         }
 
         if (getResultList.size() > 1 || getResultList.get(0) == null) {
-            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving configuration objects, got "
+            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving Association LN objects, got "
                     + getResultList.size());
         }
 
@@ -78,10 +93,17 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
             throw new ProtocolAdapterException("Unexpected type of element");
         }
 
+        @SuppressWarnings("unchecked")
+        final List<AssociationLnListElementDto> elements = this
+        .convertAssociationLnList((List<DataObject>) getResultList.get(0).resultData().value());
+
+        return new AssociationLnListTypeDto(elements);
+    }
+
+    private List<AssociationLnListElementDto> convertAssociationLnList(final List<DataObject> resultDataValue)
+            throws ProtocolAdapterException {
         final List<AssociationLnListElementDto> elements = new ArrayList<>();
 
-        @SuppressWarnings("unchecked")
-        final List<DataObject> resultDataValue = (List<DataObject>) getResultList.get(0).resultData().value();
         for (final DataObject obisCodeMetaData : resultDataValue) {
             @SuppressWarnings("unchecked")
             final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.value();
@@ -89,56 +111,76 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
                     this.dlmsHelperService.readLong(obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), new Integer(
                             (short) obisCodeMetaDataList.get(VERSION_INDEX).value()),
                             this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
-                            "AssociationLN Element"), this.readAccessRights(obisCodeMetaDataList
+                            "AssociationLN Element"), this.convertAccessRights(obisCodeMetaDataList
                                             .get(ACCESS_RIGHTS_INDEX)));
 
             elements.add(element);
         }
 
-        return new AssociationLnListTypeDto(elements);
+        return elements;
     }
 
-    private AccessRightDto readAccessRights(final DataObject dataObject) throws ProtocolAdapterException {
+    private AccessRightDto convertAccessRights(final DataObject dataObject) throws ProtocolAdapterException {
         if (!dataObject.isComplex()) {
             return null;
         }
 
+        @SuppressWarnings("unchecked")
         final List<DataObject> accessRights = (List<DataObject>) dataObject.value();
 
-        final List<DataObject> attributeAccessDescriptor = (List<DataObject>) accessRights.get(0).value();
+        @SuppressWarnings("unchecked")
+        final AttributeAccessDescriptorDto attributeAccessDescriptor = this
+                .convertAttributeAccessDescriptor((List<DataObject>) accessRights.get(
+                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX).value());
+
+        @SuppressWarnings("unchecked")
+        final MethodAccessDescriptorDto methodAccessDescriptor = this
+                .convertMethodAttributeAccessDescriptor((List<DataObject>) accessRights.get(
+                        ACCESS_RIGHTS_METHOD_ACCESS_INDEX).value());
+
+        return new AccessRightDto(attributeAccessDescriptor, methodAccessDescriptor);
+    }
+
+    private AttributeAccessDescriptorDto convertAttributeAccessDescriptor(
+            final List<DataObject> attributeAccessDescriptor) throws ProtocolAdapterException {
         final List<AttributeAccessItemDto> attributeAccessItems = new ArrayList<>();
+
         for (final DataObject attributeAccessItemRaw : attributeAccessDescriptor) {
+            @SuppressWarnings("unchecked")
             final List<DataObject> attributeAccessItem = (List<DataObject>) attributeAccessItemRaw.value();
 
             AccessSelectorListDto asl = null;
-            if (attributeAccessItem.get(2).isNull()) {
-                asl = new AccessSelectorListDto(Collections.EMPTY_LIST);
+            if (attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).isNull()) {
+                asl = new AccessSelectorListDto(Collections.<Integer> emptyList());
             } else {
-                // TODO conversion.
-                asl = new AccessSelectorListDto(Arrays.asList(1, 2, 3));
+                final DataObject accessSelectors = attributeAccessItem
+                        .get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX);
+                asl = new AccessSelectorListDto((List<Integer>) accessSelectors.value());
             }
 
             attributeAccessItems.add(new AttributeAccessItemDto(this.dlmsHelperService.readLong(
-                    attributeAccessItem.get(0), "").intValue(),
-                    AttributeAccessModeTypeDto.values()[this.dlmsHelperService.readLong(attributeAccessItem.get(1), "")
-                                                        .intValue()], asl));
+                    attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ATTRIBUTE_ID_INDEX), "").intValue(),
+                    AttributeAccessModeTypeDto.values()[this.dlmsHelperService.readLong(
+                            attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_MODE_INDEX), "").intValue()],
+                    asl));
         }
 
-        final AttributeAccessDescriptorDto d = new AttributeAccessDescriptorDto(attributeAccessItems);
+        return new AttributeAccessDescriptorDto(attributeAccessItems);
+    }
 
-        final List<DataObject> methodAccessDescriptor = (List<DataObject>) accessRights.get(1).value();
+    private MethodAccessDescriptorDto convertMethodAttributeAccessDescriptor(
+            final List<DataObject> methodAccessDescriptor) throws ProtocolAdapterException {
         final List<MethodAccessItemDto> methodAccessItems = new ArrayList<>();
+
         for (final DataObject methodAccessItemRaw : methodAccessDescriptor) {
+            @SuppressWarnings("unchecked")
             final List<DataObject> methodAccessItem = (List<DataObject>) methodAccessItemRaw.value();
-            methodAccessItems.add(new MethodAccessItemDto(this.dlmsHelperService.readLong(methodAccessItem.get(0), "")
-                    .intValue(), MethodAccessModeTypeDto.values()[this.dlmsHelperService.readLong(
-                            methodAccessItem.get(1), "").intValue()]));
+            methodAccessItems.add(new MethodAccessItemDto(this.dlmsHelperService.readLong(
+                    methodAccessItem.get(ACCESS_RIGHTS_METHOD_ACCESS_METHOD_ID_INDEX), "").intValue(),
+                    MethodAccessModeTypeDto.values()[this.dlmsHelperService.readLong(
+                            methodAccessItem.get(ACCESS_RIGHTS_METHOD_ACCESS_ACCESS_MODE_INDEX), "").intValue()]));
         }
 
-        final MethodAccessDescriptorDto f = new MethodAccessDescriptorDto(methodAccessItems);
-
-        final AccessRightDto g = new AccessRightDto(d, f);
-
-        return g;
+        return new MethodAccessDescriptorDto(methodAccessItems);
     }
 }
