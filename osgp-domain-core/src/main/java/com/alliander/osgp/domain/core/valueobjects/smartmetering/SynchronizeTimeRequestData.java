@@ -12,9 +12,11 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 import java.io.Serializable;
 import java.util.Date;
 
-public class SynchronizeTimeRequestData implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
-    private static final long serialVersionUID = -1483665562035897062L;
+public class SynchronizeTimeRequestData implements Serializable, ActionRequest {
+
+    private static final long serialVersionUID = -7197837365579237374L;
 
     private Date date;
 
@@ -24,5 +26,10 @@ public class SynchronizeTimeRequestData implements Serializable {
 
     public void setDate(final Date date) {
         this.date = date;
+    }
+
+    @Override
+    public void validate() throws FunctionalException {
+        // No validation needed
     }
 }

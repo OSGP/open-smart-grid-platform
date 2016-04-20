@@ -12,4 +12,6 @@ import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
 public interface ProtocolRequestService {
     public void send(ProtocolRequestMessage message, ProtocolInfo protocolInfo);
+
+    public boolean isSupported(ProtocolInfo protocolInfo);
 }

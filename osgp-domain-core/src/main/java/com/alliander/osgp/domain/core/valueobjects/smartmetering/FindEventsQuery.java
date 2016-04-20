@@ -11,7 +11,11 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
-public class FindEventsQuery implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.ComponentType;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
+
+public class FindEventsQuery implements Serializable, ActionRequest {
 
     /**
      * Serial Version UID.
@@ -39,4 +43,21 @@ public class FindEventsQuery implements Serializable {
     public DateTime getUntil() {
         return this.until;
     }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionValueObject
+     * #validate()
+     */
+    @Override
+    public void validate() throws FunctionalException {
+
+        if (!this.from.isBefore(this.until)) {
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, ComponentType.WS_SMART_METERING,
+                    new Exception("The 'from' timestamp designates a time after 'until' timestamp."));
+        }
+    }
+
 }

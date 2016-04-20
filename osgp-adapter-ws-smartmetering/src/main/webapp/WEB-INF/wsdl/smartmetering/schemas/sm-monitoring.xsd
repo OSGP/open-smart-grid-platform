@@ -51,6 +51,17 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:complexType name="PeriodicMeterReadsResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="PeriodType" type="tns:PeriodType" />
+					<xsd:element name="PeriodicMeterReads" type="tns:PeriodicMeterReads" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- gas meter periodic -->
 	<xsd:element name="PeriodicMeterReadsGasRequest">
 		<xsd:complexType>
@@ -86,6 +97,17 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:complexType name="PeriodicMeterReadsGasResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="PeriodType" type="tns:PeriodType" />
+					<xsd:element name="PeriodicMeterReadsGas" type="tns:PeriodicMeterReadsGas" minOccurs="0" maxOccurs="unbounded" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<!-- smart meter actual -->
 	<xsd:element name="ActualMeterReadsRequest">
 		<xsd:complexType>
@@ -94,7 +116,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
-
+	
+	<!-- This is a special type so that ActualMeterReads is supported in bundle requests -->
+	<xsd:complexType name="ActualMeterReadsData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<xsd:element name="ActualMeterReadsAsyncResponse">
 		<xsd:complexType>
 			<xsd:complexContent>
@@ -125,6 +157,22 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:complexType name="ActualMeterReadsResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="LogTime" type="xsd:dateTime" />
+					<xsd:element name="ActiveEnergyImport" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyExport" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyImportTariffOne" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyImportTariffTwo" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyExportTariffOne" type="tns:MeterValue" />
+					<xsd:element name="ActiveEnergyExportTariffTwo" type="tns:MeterValue" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<!-- gas meter actual -->
 	<xsd:element name="ActualMeterReadsGasRequest">
 		<xsd:complexType>
@@ -133,6 +181,17 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+	
+	<!-- This is a special type so that ActualMeterReads is supported in bundle requests -->
+	<xsd:complexType name="ActualMeterReadsGasData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification"></xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 	<xsd:element name="ActualMeterReadsGasAsyncResponse">
 		<xsd:complexType>
@@ -160,6 +219,18 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:complexType name="ActualMeterReadsGasResponseData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence>
+					<xsd:element name="LogTime" type="xsd:dateTime" />
+					<xsd:element name="Consumption" type="tns:MeterValue" />
+					<xsd:element name="CaptureTime" type="xsd:dateTime" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<xsd:element name="ReadAlarmRegisterRequest">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -167,6 +238,16 @@
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
+	
+	<!-- This is a special type so that ReadAlarmRigister is supported in bundle requests -->
+	<xsd:complexType name="ReadAlarmRegisterData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 	
 	<xsd:element name="ReadAlarmRegisterAsyncResponse">
 		<xsd:complexType>
@@ -210,15 +291,40 @@
 		</xsd:complexType>
 	</xsd:element>
 
-
 	<!-- DATATYPES -->
-	
 	<xsd:complexType name="AlarmRegister">
-		<xsd:sequence maxOccurs="unbounded">
-			<xsd:element name="AlarmTypes" type="common:AlarmType" />
-		</xsd:sequence>
+		<xsd:complexContent>
+			<xsd:extension base="common:Response">
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="AlarmTypes" type="common:AlarmType" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
-		
+
+	<!-- This is a special type so that PeriodicReadsRequestQuery is supported in bundle requests -->
+	<xsd:complexType name="PeriodicReadsRequestQuery">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+					<xsd:element name="PeriodicReadsRequestData" type="tns:PeriodicReadsRequestData" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<!-- This is a special type so that PeriodicReadsRequestGasQuery is supported in bundle requests -->
+	<xsd:complexType name="PeriodicReadsRequestGasQuery">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+					<xsd:element name="PeriodicReadsRequestData" type="tns:PeriodicReadsRequestData" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="PeriodicReadsRequest">
             <xsd:annotation>
                 <xsd:documentation>
@@ -244,6 +350,28 @@
                     <xsd:element name="BeginDate" type="xsd:date" />
                     <xsd:element name="EndDate" type="xsd:date" />
             </xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="PeriodicMeterReadsRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Query">
+				<xsd:sequence>
+					<xsd:element name="PeriodType" type="tns:PeriodType" />
+					<xsd:element name="BeginDate" type="xsd:date" />
+					<xsd:element name="EndDate" type="xsd:date" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="PeriodicMeterReadsGasRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="tns:PeriodicMeterReadsRequestData">
+				<xsd:sequence>
+					<xsd:element name="DeviceIdentification" type="common:DeviceIdentification" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:simpleType name="PeriodType">

@@ -16,17 +16,20 @@ import org.springframework.stereotype.Component;
 public class MonitoringMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
+        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsResponseConverter());
         mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsConverter());
         mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsGasConverter());
         mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ReadAlarmRegisterDataConverter());
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseConverter());
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseGasConverter());
         mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushNotificationsAlarmConverter());
         mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
+        mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestQueryConverter());
+        mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestGasQueryConverter());
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
-
     }
 
 }

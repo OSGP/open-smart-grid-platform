@@ -19,7 +19,7 @@
 				schemaLocation="schemas/devicemanagement.xsd" />
 		</xsd:schema>
 	</wsdl:types>
-	<wsdl:message name="FindMessageLogsHeader">
+	<wsdl:message name="SoapHeaders">
 		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
 		<wsdl:part element="common:UserName" name="UserName" />
 		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
@@ -32,11 +32,6 @@
 		<wsdl:part element="dman:FindMessageLogsRequest" name="FindMessageLogsRequest">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="FindDeviceAuthorisationsHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
 	<wsdl:message name="FindDeviceAuthorisationsRequest">
 		<wsdl:part element="dman:FindDeviceAuthorisationsRequest"
 			name="FindDeviceAuthorisationsRequest">
@@ -47,11 +42,6 @@
 			name="FindDeviceAuthorisationsResponse">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="FindDevicesWhichHaveNoOwnerHeader">
-        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-        <wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-    </wsdl:message>   
     <wsdl:message name="FindDevicesWhichHaveNoOwnerRequest">
         <wsdl:part element="dman:FindDevicesWhichHaveNoOwnerRequest"
             name="FindDevicesWhichHaveNoOwnerRequest">
@@ -62,11 +52,6 @@
             name="FindDevicesWhichHaveNoOwnerResponse">
         </wsdl:part>
     </wsdl:message>		
-	<wsdl:message name="RemoveOrganisationHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
 	<wsdl:message name="RemoveOrganisationRequest">
 		<wsdl:part element="dman:RemoveOrganisationRequest" name="RemoveOrganisationRequest">
 		</wsdl:part>
@@ -76,11 +61,6 @@
 		</wsdl:part>
 	</wsdl:message>
 	
-	<wsdl:message name="ActivateOrganisationHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
 	<wsdl:message name="ActivateOrganisationRequest">
 		<wsdl:part element="dman:ActivateOrganisationRequest" name="ActivateOrganisationRequest">
 		</wsdl:part>
@@ -88,11 +68,6 @@
 	<wsdl:message name="ActivateOrganisationResponse">
 		<wsdl:part element="dman:ActivateOrganisationResponse" name="ActivateOrganisationResponse">
 		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="ChangeOrganisationHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
 	</wsdl:message>
 	<wsdl:message name="ChangeOrganisationRequest">
 		<wsdl:part element="dman:ChangeOrganisationRequest" name="ChangeOrganisationRequest">
@@ -102,20 +77,10 @@
 		<wsdl:part element="dman:ChangeOrganisationResponse" name="ChangeOrganisationResponse">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="UpdateDeviceAuthorisationsHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
 	<wsdl:message name="UpdateDeviceAuthorisationsRequest">
 		<wsdl:part element="dman:UpdateDeviceAuthorisationsRequest"
 			name="UpdateDeviceAuthorisationsRequest">
 		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="CreateOrganisationHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
 	</wsdl:message>
 	<wsdl:message name="CreateOrganisationRequest">
 		<wsdl:part element="dman:CreateOrganisationRequest" name="CreateOrganisationRequest">
@@ -131,11 +96,6 @@
 		</wsdl:part>
 	</wsdl:message>
 
-	<wsdl:message name="RemoveDeviceHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
 	<wsdl:message name="RemoveDeviceRequest">
 		<wsdl:part element="dman:RemoveDeviceRequest"
 			name="RemoveDeviceRequest">
@@ -146,11 +106,14 @@
 			name="RemoveDeviceResponse">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="SetOwnerHeader">
-		<wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-		<wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-	</wsdl:message>
+    <wsdl:message name="DeactivateDeviceRequest">
+        <wsdl:part element="dman:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="DeactivateDeviceResponse">
+        <wsdl:part element="dman:DeactivateDeviceResponse" name="DeactivateDeviceResponse">
+        </wsdl:part>
+    </wsdl:message>
 	<wsdl:message name="SetOwnerRequest">
 		<wsdl:part element="dman:SetOwnerRequest"
 			name="SetOwnerRequest">
@@ -162,11 +125,6 @@
 		</wsdl:part>
 	</wsdl:message>
 
-    <wsdl:message name="UpdateKeyHeader">
-        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-        <wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-    </wsdl:message>
     <wsdl:message name="UpdateKeyRequest">
         <wsdl:part element="dman:UpdateKeyRequest"
             name="UpdateKeyRequest">
@@ -177,12 +135,7 @@
             name="UpdateKeyResponse">
         </wsdl:part>
     </wsdl:message>
-    
-    <wsdl:message name="RevokeKeyHeader">
-        <wsdl:part element="common:OrganisationIdentification" name="OrganisationIdentification" />		
-        <wsdl:part element="common:UserName" name="UserName" />
-		<wsdl:part element="common:ApplicationName" name="ApplicationName" />
-    </wsdl:message>
+
     <wsdl:message name="RevokeKeyRequest">
         <wsdl:part element="dman:RevokeKeyRequest"
             name="RevokeKeyRequest">
@@ -259,7 +212,14 @@
 				name="RemoveDeviceResponse">
 			</wsdl:output>
 		</wsdl:operation>
-		<wsdl:operation name="SetOwner">
+
+        <wsdl:operation name="DeactivateDevice">
+            <wsdl:input message="tns:DeactivateDeviceRequest" name="DeactivateDeviceRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:DeactivateDeviceResponse" name="DeactivateDeviceResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="SetOwner">
 			<wsdl:input message="tns:SetOwnerRequest"
 				name="SetOwnerRequest">
 			</wsdl:input>
@@ -294,9 +254,9 @@
 		<wsdl:operation name="FindMessageLogs">
 			<soap:operation soapAction="" />
 			<wsdl:input name="FindMessageLogsRequest">
-				<soap:header message="tns:FindMessageLogsHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:FindMessageLogsHeader" part="UserName" use="literal" />
-				<soap:header message="tns:FindMessageLogsHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="FindMessageLogsResponse">
@@ -306,9 +266,9 @@
 		<wsdl:operation name="FindDeviceAuthorisations">
 			<soap:operation soapAction="" />
 			<wsdl:input name="FindDeviceAuthorisationsRequest">
-				<soap:header message="tns:FindDeviceAuthorisationsHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:FindDeviceAuthorisationsHeader" part="UserName" use="literal" />
-				<soap:header message="tns:FindDeviceAuthorisationsHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="FindDeviceAuthorisationsResponse">
@@ -318,9 +278,9 @@
 		        <wsdl:operation name="FindDevicesWhichHaveNoOwner">
             <soap:operation soapAction="" />
             <wsdl:input name="FindDevicesWhichHaveNoOwnerRequest">
-                <soap:header message="tns:FindDevicesWhichHaveNoOwnerHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:FindDevicesWhichHaveNoOwnerHeader" part="UserName" use="literal" />
-				<soap:header message="tns:FindDevicesWhichHaveNoOwnerHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="FindDevicesWhichHaveNoOwnerResponse">
@@ -331,9 +291,9 @@
 		<wsdl:operation name="CreateOrganisation">
 			<soap:operation soapAction="" />
 			<wsdl:input name="CreateOrganisationRequest">
-				<soap:header message="tns:CreateOrganisationHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:CreateOrganisationHeader" part="UserName" use="literal" />
-				<soap:header message="tns:CreateOrganisationHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="CreateOrganisationResponse">
@@ -344,9 +304,9 @@
 		<wsdl:operation name="RemoveOrganisation">
 			<soap:operation soapAction="" />
 			<wsdl:input name="RemoveOrganisationRequest">
-				<soap:header message="tns:RemoveOrganisationHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:RemoveOrganisationHeader" part="UserName" use="literal" />
-				<soap:header message="tns:RemoveOrganisationHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="RemoveOrganisationResponse">
@@ -357,9 +317,9 @@
 		<wsdl:operation name="ActivateOrganisation">
 			<soap:operation soapAction="" />
 			<wsdl:input name="ActivateOrganisationRequest">
-				<soap:header message="tns:ActivateOrganisationHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:ActivateOrganisationHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ActivateOrganisationHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="ActivateOrganisationResponse">
@@ -370,9 +330,9 @@
 		<wsdl:operation name="ChangeOrganisation">
 			<soap:operation soapAction="" />
 			<wsdl:input name="ChangeOrganisationRequest">
-				<soap:header message="tns:ChangeOrganisationHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:ChangeOrganisationHeader" part="UserName" use="literal" />
-				<soap:header message="tns:ChangeOrganisationHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="ChangeOrganisationResponse">
@@ -382,9 +342,9 @@
 		<wsdl:operation name="UpdateDeviceAuthorisations">
 			<soap:operation soapAction="" />
 			<wsdl:input name="UpdateDeviceAuthorisationsRequest">
-				<soap:header message="tns:UpdateDeviceAuthorisationsHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:UpdateDeviceAuthorisationsHeader" part="UserName" use="literal" />
-				<soap:header message="tns:UpdateDeviceAuthorisationsHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="UpdateDeviceAuthorisationsResponse">
@@ -395,21 +355,35 @@
 		<wsdl:operation name="RemoveDevice">
 			<soap:operation soapAction="" />
 			<wsdl:input name="RemoveDeviceRequest">
-				<soap:header message="tns:RemoveDeviceHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:RemoveDeviceHeader" part="UserName" use="literal" />
-				<soap:header message="tns:RemoveDeviceHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="RemoveDeviceResponse">
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
-		<wsdl:operation name="SetOwner">
+
+        <wsdl:operation name="DeactivateDevice">
+            <soap:operation soapAction="" />
+            <wsdl:input name="DeactivateDeviceRequest">
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="DeactivateDeviceResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SetOwner">
 			<soap:operation soapAction="" />
 			<wsdl:input name="SetOwnerRequest">
-				<soap:header message="tns:SetOwnerHeader" part="OrganisationIdentification" use="literal" />
-				<soap:header message="tns:SetOwnerHeader" part="UserName" use="literal" />
-				<soap:header message="tns:SetOwnerHeader" part="ApplicationName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
 				<soap:body use="literal" />
 			</wsdl:input>
 			<wsdl:output name="SetOwnerResponse">
@@ -420,9 +394,9 @@
         <wsdl:operation name="UpdateKey">
             <soap:operation soapAction="" />
             <wsdl:input name="UpdateKeyRequest">
-                <soap:header message="tns:UpdateKeyHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:UpdateKeyHeader" part="UserName" use="literal" />
-				<soap:header message="tns:UpdateKeyHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="UpdateKeyResponse">
@@ -433,9 +407,9 @@
         <wsdl:operation name="RevokeKey">
             <soap:operation soapAction="" />
             <wsdl:input name="RevokeKeyRequest">
-                <soap:header message="tns:RevokeKeyHeader" part="OrganisationIdentification" use="literal" />
-                <soap:header message="tns:RevokeKeyHeader" part="UserName" use="literal" />
-				<soap:header message="tns:RevokeKeyHeader" part="ApplicationName" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+				<soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="RevokeKeyResponse">

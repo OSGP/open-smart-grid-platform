@@ -345,7 +345,7 @@ public class DeviceManagementService {
 
     public Page<DeviceLogItem> findOslpMessages(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Min(value = 0) final int pageNumber)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.debug("findOslpMessage called with organisation {}, device {} and pagenumber {}", new Object[] {
                 organisationIdentification, deviceIdentification, pageNumber });
@@ -464,7 +464,7 @@ public class DeviceManagementService {
      */
     public void setOwner(@Identification final String organisationIdentification,
             @Identification final String deviceIdentification, @Identification final String newOwner)
-            throws FunctionalException {
+                    throws FunctionalException {
         Organisation organisation = this.findOrganisation(organisationIdentification);
         final Device device = this.findDevice(deviceIdentification);
         this.isAllowed(organisation, PlatformFunction.SET_OWNER);
@@ -575,6 +575,37 @@ public class DeviceManagementService {
     public ResponseMessage dequeueRevokeKeyResponse(final String correlationUid) throws OsgpException {
 
         return this.adminResponseMessageFinder.findMessage(correlationUid);
+    }
+
+    public String enqueueDeactivateDeviceRequest(final String organisationIdentification,
+            final String deviceIdentification) {
+
+        // TODO: bypassing authorization logic for now, needs to be fixed.
+
+        LOGGER.debug("enqueueDeactivateDevice called with organisation {} and device {}", organisationIdentification,
+                deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final AdminRequestMessage message = new AdminRequestMessage(AdminRequestMessageType.DEACTIVATE_DEVICE,
+                correlationUid, organisationIdentification, deviceIdentification, null);
+
+        this.adminRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public void deactivateDeviceRequest(final String organisationIdentification,
+            @Identification final String deviceIdentification) throws FunctionalException {
+
+        LOGGER.debug("Deactivating device [{}] on behalf of organisation [{}]", deviceIdentification,
+                organisationIdentification);
+
+        final Organisation organisation = this.findOrganisation(organisationIdentification);
+        this.isAllowed(organisation, PlatformFunction.DEACTIVATE_DEVICE);
+
+        this.enqueueDeactivateDeviceRequest(organisationIdentification, deviceIdentification);
     }
 
     private Device findDevice(final String deviceIdentification) throws FunctionalException {

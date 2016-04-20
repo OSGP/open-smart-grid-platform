@@ -21,6 +21,6 @@ public class ConfigurationMapper extends ConfigurableMapper {
         // This mapper needs a converter for CosemDateTime objects because
         // Orika sometimes throws an exception if mapping by default is tried
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter(this));
-
+        mapperFactory.getConverterFactory().registerConverter(new AdministrativeStatusResponseConverter());
     }
 }
