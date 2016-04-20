@@ -316,7 +316,7 @@
       <xsd:element name="Street" type="xsd:string" minOccurs="0" />
       <xsd:element name="Number" type="xsd:string" minOccurs="0" />
       <xsd:element name="Municipality" type="xsd:string" minOccurs="0" />
-      <xsd:element name="DeviceMunicipalityManaged" type="tns:DeviceMunicipalityManagedFilterType" minOccurs="0" />
+      <xsd:element name="DeviceExternallyManaged" type="tns:DeviceExternallyManagedFilterType" minOccurs="0" />
       <xsd:element name="DeviceActivated" type="tns:DeviceActivatedFilterType" minOccurs="0" />
       <xsd:element name="DeviceInMaintenance" type="tns:DeviceInMaintetanceFilterType" minOccurs="0" />
       <xsd:element name="SortDir" type="xsd:string" minOccurs="0" />
@@ -324,7 +324,7 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:simpleType name="DeviceMunicipalityManagedFilterType">
+  <xsd:simpleType name="DeviceExternallyManagedFilterType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="BOTH" />
       <xsd:enumeration value="EXTMGT" />

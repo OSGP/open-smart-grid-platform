@@ -8,16 +8,16 @@
 package com.alliander.osgp.domain.core.valueobjects;
 
 /**
- * An Enum used to filter on Device managed by municipality.
+ * An Enum used to filter on Device managed externally or internally.
  */
-public enum DeviceMunicipalityManagedFilterType {
+public enum DeviceExternallyManagedFilterType {
     BOTH(null),
     EXTMGT(true),
     INTMGT(false);
 
     private Boolean value;
 
-    private DeviceMunicipalityManagedFilterType(final Boolean value) {
+    private DeviceExternallyManagedFilterType(final Boolean value) {
         this.value = value;
     }
 

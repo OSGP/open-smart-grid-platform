@@ -168,10 +168,10 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     }
 
     @Override
-    public Specification<Device> isManagedByMunicipality(final Boolean isManagedByMunicipality)
+    public Specification<Device> isManagedExternally(final Boolean isManagedExternally)
             throws ArgumentNullOrEmptyException {
-        if (isManagedByMunicipality == null) {
-            throw new ArgumentNullOrEmptyException("isManagedByMunicipality");
+        if (isManagedExternally == null) {
+            throw new ArgumentNullOrEmptyException("isManagedExternally");
         }
 
         return new Specification<Device>() {
@@ -183,7 +183,7 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
                 final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
                 subquery.select(cb.countDistinct(deviceAuthorizationRoot));
                 subquery.where(cb.equal(deviceAuthorizationRoot.get("device"), deviceRoot.<Long> get("id")));
-                if (isManagedByMunicipality) {
+                if (isManagedExternally) {
                     return cb.greaterThan(subquery, Long.valueOf(1));
                 } else {
                     return cb.lessThanOrEqualTo(subquery, Long.valueOf(1));

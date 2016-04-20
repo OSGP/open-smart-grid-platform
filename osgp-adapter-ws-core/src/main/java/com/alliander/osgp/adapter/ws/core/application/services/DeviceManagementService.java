@@ -57,11 +57,11 @@ import com.alliander.osgp.domain.core.specifications.EventSpecifications;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceActivatedFilterType;
+import com.alliander.osgp.domain.core.valueobjects.DeviceExternallyManagedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.DeviceInMaintenanceFilterType;
-import com.alliander.osgp.domain.core.valueobjects.DeviceMunicipalityManagedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
@@ -262,7 +262,7 @@ public class DeviceManagementService {
         if (!this.netManagementOrganisation.equals(organisationIdentification)) {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
-                        null, null, DeviceMunicipalityManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
+                        null, null, DeviceExternallyManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
                         DeviceInMaintenanceFilterType.BOTH, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
@@ -332,9 +332,9 @@ public class DeviceManagementService {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
                             .getMunicipality() + "%"));
                 }
-                if (!DeviceMunicipalityManagedFilterType.BOTH.equals(deviceFilter.getDeviceMunicipalityManaged())) {
-                    specifications = specifications.and(this.deviceSpecifications.isManagedByMunicipality(deviceFilter
-                            .getDeviceMunicipalityManaged().getValue()));
+                if (!DeviceExternallyManagedFilterType.BOTH.equals(deviceFilter.getDeviceExternallyManaged())) {
+                    specifications = specifications.and(this.deviceSpecifications.isManagedExternally(deviceFilter
+                            .getDeviceExternallyManaged().getValue()));
                 }
                 if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
                     specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
