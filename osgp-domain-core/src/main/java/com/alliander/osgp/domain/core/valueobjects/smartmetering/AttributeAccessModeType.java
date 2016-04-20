@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public enum AttributeAccessType {
+public enum AttributeAccessModeType {
 
     NO_ACCESS,
     READ_ONLY,
@@ -21,7 +21,7 @@ public enum AttributeAccessType {
         return this.name();
     }
 
-    public static AttributeAccessType fromValue(final String v) {
+    public static AttributeAccessModeType fromValue(final String v) {
         return valueOf(v);
     }
 

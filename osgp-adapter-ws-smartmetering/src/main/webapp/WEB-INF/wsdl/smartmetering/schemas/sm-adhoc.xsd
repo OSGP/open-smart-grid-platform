@@ -196,11 +196,11 @@
   <xsd:complexType name="MethodAccessItem">
     <xsd:sequence>
       <xsd:element type="xsd:integer" name="MethodId" />
-      <xsd:element type="tns:MethodAccesModeType" name="AccessMode" />
+      <xsd:element type="tns:MethodAccessModeType" name="AccessMode" />
     </xsd:sequence>
   </xsd:complexType>
   
-  <xsd:simpleType name="MethodAccesModeType">
+  <xsd:simpleType name="MethodAccessModeType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="NO_ACCESS" />
       <xsd:enumeration value="ACCESS" />

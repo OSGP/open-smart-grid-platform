@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-public enum MethodAccesModeType {
+public enum MethodAccessModeType {
 
     NO_ACCESS,
     ACCESS,
@@ -17,7 +17,7 @@ public enum MethodAccesModeType {
         return this.name();
     }
 
-    public static MethodAccesModeType fromValue(final String v) {
+    public static MethodAccessModeType fromValue(final String v) {
         return valueOf(v);
     }
 

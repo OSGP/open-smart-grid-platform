@@ -13,9 +13,9 @@ public class MethodAccessItem implements Serializable {
     private static final long serialVersionUID = -4754883636623267158L;
 
     private final int methodId;
-    private final MethodAccesModeType accessMode;
+    private final MethodAccessModeType accessMode;
 
-    public MethodAccessItem(final int methodId, final MethodAccesModeType accessMode) {
+    public MethodAccessItem(final int methodId, final MethodAccessModeType accessMode) {
         this.methodId = methodId;
         this.accessMode = accessMode;
     }
@@ -24,7 +24,7 @@ public class MethodAccessItem implements Serializable {
         return this.methodId;
     }
 
-    public MethodAccesModeType getAccessMode() {
+    public MethodAccessModeType getAccessMode() {
         return this.accessMode;
     }
 }
