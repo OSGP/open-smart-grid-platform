@@ -61,6 +61,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFilter;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunctionGroup;
 import com.alliander.osgp.domain.core.valueobjects.DeviceInMaintenanceFilterType;
+import com.alliander.osgp.domain.core.valueobjects.DeviceMunicipalityManagedFilterType;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
 import com.alliander.osgp.domain.core.valueobjects.PlatformFunction;
@@ -261,7 +262,8 @@ public class DeviceManagementService {
         if (!this.netManagementOrganisation.equals(organisationIdentification)) {
             if (deviceFilter == null) {
                 final DeviceFilter df = new DeviceFilter(organisationIdentification, null, null, null, null, null,
-                        null, null, DeviceActivatedFilterType.BOTH, DeviceInMaintenanceFilterType.BOTH, null, null);
+                        null, null, DeviceMunicipalityManagedFilterType.BOTH, DeviceActivatedFilterType.BOTH,
+                        DeviceInMaintenanceFilterType.BOTH, null, null);
                 devices = this.applyFilter(df, organisation, request);
             } else {
                 deviceFilter.updateOrganisationIdentification(organisationIdentification);
@@ -329,6 +331,10 @@ public class DeviceManagementService {
                 if (!StringUtils.isEmpty(deviceFilter.getMunicipality())) {
                     specifications = specifications.and(this.deviceSpecifications.hasMunicipality(deviceFilter
                             .getMunicipality() + "%"));
+                }
+                if (!DeviceMunicipalityManagedFilterType.BOTH.equals(deviceFilter.getDeviceMunicipalityManaged())) {
+                    specifications = specifications.and(this.deviceSpecifications.isManagedByMunicipality(deviceFilter
+                            .getDeviceMunicipalityManaged().getValue()));
                 }
                 if (!DeviceActivatedFilterType.BOTH.equals(deviceFilter.getDeviceActivated())) {
                     specifications = specifications.and(this.deviceSpecifications.isActived(deviceFilter
