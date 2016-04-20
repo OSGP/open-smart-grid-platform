@@ -245,4 +245,10 @@
             <xsd:length value="12" />
         </xsd:restriction>
     </xsd:simpleType>
+    
+    <xsd:simpleType name="CosemObisCode">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="6" />
+        </xsd:restriction>
+    </xsd:simpleType>
 </xsd:schema>

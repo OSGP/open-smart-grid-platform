@@ -143,14 +143,8 @@
     <xsd:sequence>
       <xsd:element type="xsd:long" name="ClassId" />
       <xsd:element type="xsd:integer" name="Version" />
-      <xsd:element type="tns:ObisCode" name="LogicalName" />
+      <xsd:element type="common:CosemObisCode" name="LogicalName" />
     </xsd:sequence>
   </xsd:complexType>
-
-  <xsd:simpleType name="ObisCode">
-    <xsd:restriction base="xsd:string">
-      <xsd:pattern value="[0-9]{1,2}-[0-9]{1,2}:[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}.[0-9]{1,2}"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 
 </xsd:schema>
