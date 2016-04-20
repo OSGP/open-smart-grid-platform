@@ -14,6 +14,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigura
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitionDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateDeviceSslCertificationDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.UpdateFirmwareDeviceRequest;
 import com.alliander.osgp.dto.valueobjects.DeviceStatus;
 
@@ -57,4 +58,7 @@ public interface DeviceService {
     void setSchedule(SetScheduleDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
 
     void setTransition(SetTransitionDeviceRequest deviceRequest, DeviceResponseHandler deviceResponseHandler);
+
+    void updateDeviceSslCertification(UpdateDeviceSslCertificationDeviceRequest deviceRequest,
+            DeviceResponseHandler deviceResponseHandler);
 }

@@ -171,6 +171,11 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_SECURITY_FIRMWARE_CONFIGURATION = ".ScyFwDw";
 
     /**
+     * Property of CSLC Node, Certificate authority replacement.
+     */
+    public static final String PROPERTY_CERTIFICATE_AUTHORITY_REPLACE = ".CARepl";
+
+    /**
      * Property of CSLC Node, IP configuration.
      */
     public static final String PROPERTY_IP_CONFIGURATION = ".IPCf";
@@ -239,16 +244,18 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_FIRMWARE_CONFIG_CURRENT_VERSION = "curVer";
 
     /**
-     * Attribute of both firmware configuration nodes, used to read the value of
-     * the firmware download url
+     * Attribute of both firmware configuration nodes and the certificate
+     * authority replacement node, this url is the location of the url that will
+     * be downloaded from
      */
-    public static final String PROPERTY_FIRMWARE_CONFIG_DOWNLOAD_URL = "url";
+    public static final String PROPERTY_DOWNLOAD_URL = "url";
 
     /**
-     * Attribute of both firmware configuration nodes, used to read the value of
-     * the startTime of the firmware download
+     * Attribute of both firmware configuration nodes and the certificate
+     * authority replacement node, used to read the value of the startTime of
+     * the download
      */
-    public static final String PROPERTY_FIRMWARE_CONFIG_START_TIME = "startT";
+    public static final String PROPERTY_DOWNLOAD_START_TIME = "startT";
 
     /**
      * Attribute of Property SWCf, used to read the value of fixed ip address
