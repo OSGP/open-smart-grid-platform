@@ -32,8 +32,8 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmuc.jdlms.AccessResultCode;
 import org.openmuc.jdlms.AttributeAddress;
+import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
-import org.openmuc.jdlms.LnClientConnection;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.SetParameter;
 import org.openmuc.jdlms.datatypes.BitString;
@@ -70,7 +70,7 @@ public class SetConfigurationObjectCommandExecutorTest {
     }
 
     @Mock
-    private LnClientConnection connMock;
+    private ClientConnection connMock;
 
     @Mock
     private List<GetResult> resultListMock;
@@ -109,8 +109,8 @@ public class SetConfigurationObjectCommandExecutorTest {
         // Prepare new configuration object list to be set
         final List<ConfigurationFlagDto> configurationFlagList = this.getAllForbiddenFlags();
         final ConfigurationFlagsDto configurationFlags = new ConfigurationFlagsDto(configurationFlagList);
-        final ConfigurationObjectDto configurationObject = new ConfigurationObjectDto(GprsOperationModeTypeDto.ALWAYS_ON,
-                configurationFlags);
+        final ConfigurationObjectDto configurationObject = new ConfigurationObjectDto(
+                GprsOperationModeTypeDto.ALWAYS_ON, configurationFlags);
 
         // Mock the retrieval of the current ConfigurationObject
         this.mockRetrievalOfCurrentConfigurationObject();

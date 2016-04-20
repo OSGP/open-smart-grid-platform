@@ -109,7 +109,11 @@ public class RecoverKeyProcess implements Runnable {
             return false;
         } finally {
             if (connection != null) {
-                connection.close();
+                try {
+                    connection.close();
+                } catch (final IOException e) {
+                    LOGGER.warn("Connection exception: {}", e.getMessage(), e);
+                }
             }
         }
     }
