@@ -74,10 +74,11 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
         for (final DataObject obisCodeMetaData : resultDataValue) {
             @SuppressWarnings("unchecked")
             final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.value();
-            final AssociationLnListElementDto element = new AssociationLnListElementDto(this.dlmsHelperService.readLong(
-                    obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), new Integer((short) obisCodeMetaDataList.get(
-                    VERSION_INDEX).value()), this.dlmsHelperService.readObisCode(obisCodeMetaDataList
-                    .get(OBIS_CODE_INDEX)));
+            final AssociationLnListElementDto element = new AssociationLnListElementDto(
+                    this.dlmsHelperService.readLong(obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), new Integer(
+                            (short) obisCodeMetaDataList.get(VERSION_INDEX).value()),
+                            this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
+                            "AssociationLN Element"));
 
             elements.add(element);
         }
