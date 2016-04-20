@@ -15,7 +15,7 @@ import java.util.List;
 public class AssociationLnListType implements Serializable {
     private static final long serialVersionUID = 5540577793697751858L;
 
-    private List<AssociationLnListElement> associationLnListElement;
+    private final List<AssociationLnListElement> associationLnListElement;
 
     public AssociationLnListType(final List<AssociationLnListElement> associationLnListElement) {
         this.associationLnListElement = Collections.unmodifiableList(associationLnListElement);

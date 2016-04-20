@@ -19,10 +19,14 @@ public class AssociationLnListElement implements Serializable {
 
     private CosemObisCode logicalName;
 
-    public AssociationLnListElement(final long classId, final int version, final CosemObisCode logicalName) {
+    private final AccessRight accessRights;
+
+    public AssociationLnListElement(final long classId, final int version, final CosemObisCode logicalName,
+            final AccessRight accessRights) {
         this.classId = classId;
         this.version = version;
         this.logicalName = logicalName;
+        this.accessRights = accessRights;
     }
 
     public long getClassId() {
@@ -35,5 +39,9 @@ public class AssociationLnListElement implements Serializable {
 
     public CosemObisCode getLogicalName() {
         return this.logicalName;
+    }
+
+    public AccessRight getAccessRights() {
+        return this.accessRights;
     }
 }

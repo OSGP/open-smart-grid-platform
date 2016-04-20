@@ -144,7 +144,68 @@
       <xsd:element type="xsd:long" name="ClassId" />
       <xsd:element type="xsd:integer" name="Version" />
       <xsd:element type="common:CosemObisCode" name="LogicalName" />
+      <xsd:element type="tns:AccessRight" name="AccessRights" />
     </xsd:sequence>
   </xsd:complexType>
+  
+  <xsd:complexType name="AccessRight">
+    <xsd:sequence>
+      <xsd:element type="tns:AttributeAccessDescriptor" name="AttributeAccess" />
+      <xsd:element type="tns:MethodAccessDescriptor" name="MethodAccess" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AttributeAccessDescriptor">
+    <xsd:sequence>
+      <xsd:element name="AttributeAccessItem" type="tns:AttributeAccessItem" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="AttributeAccessItem">
+    <xsd:sequence>
+      <xsd:element type="xsd:integer" name="AttributeId" />
+      <xsd:element type="tns:AttributeAccesModeType" name="AccessMode" />
+      <xsd:element name="AccessSelectors" type="tns:AccessSelectorList" />
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="AccessSelectorList">
+    <xsd:sequence>
+      <xsd:element name="AccessSelector" type="xsd:int" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:simpleType name="AttributeAccesModeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NO_ACCESS" />
+      <xsd:enumeration value="READ_ONLY" />
+      <xsd:enumeration value="WRITE_ONLY" />
+      <xsd:enumeration value="READ_AND_WRITE" />
+      <xsd:enumeration value="AUTHENTICATED_READ_ONLY" />
+      <xsd:enumeration value="AUTHENTICATED_WRITE_ONLY" />
+      <xsd:enumeration value="AUTHENTICATED_READ_AND_WRITE" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:complexType name="MethodAccessDescriptor">
+    <xsd:sequence>
+      <xsd:element name="MethodAccesItem" type="tns:MethodAccessItem" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="MethodAccessItem">
+    <xsd:sequence>
+      <xsd:element type="xsd:integer" name="MethodId" />
+      <xsd:element type="tns:MethodAccesModeType" name="AccessMode" />
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:simpleType name="MethodAccesModeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NO_ACCESS" />
+      <xsd:enumeration value="ACCESS" />
+      <xsd:enumeration value="AUTHENTICATED_ACCESS" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
 </xsd:schema>
