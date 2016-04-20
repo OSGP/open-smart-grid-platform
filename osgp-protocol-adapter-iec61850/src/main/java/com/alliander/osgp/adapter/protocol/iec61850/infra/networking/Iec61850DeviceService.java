@@ -57,7 +57,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.Schedule
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.ConnectionContainer;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
@@ -555,8 +555,8 @@ public class Iec61850DeviceService implements DeviceService {
 
             // Getting the data with retries
             final List<FirmwareVersionDto> firmwareVersions = this
-                    .getFirmwareVersionFromDevice(new ConnectionContainer(clientAssociation, serverModel, deviceRequest
-                            .getDeviceIdentification()));
+                    .getFirmwareVersionFromDevice(new DeviceConnection(new Iec61850Connection(clientAssociation,
+                            serverModel), deviceRequest.getDeviceIdentification()));
 
             final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -632,10 +632,9 @@ public class Iec61850DeviceService implements DeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.pushFirmwareToDevice(
-                    new ConnectionContainer(clientAssociation, serverModel, deviceRequest.getDeviceIdentification()),
-                    serverModel, clientAssociation,
-                    deviceRequest.getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
+            this.pushFirmwareToDevice(new DeviceConnection(new Iec61850Connection(clientAssociation, serverModel),
+                    deviceRequest.getDeviceIdentification()), serverModel, clientAssociation, deviceRequest
+                    .getFirmwareDomain().concat(deviceRequest.getFirmwareUrl()));
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -1317,7 +1316,7 @@ public class Iec61850DeviceService implements DeviceService {
 
     }
 
-    private List<FirmwareVersionDto> getFirmwareVersionFromDevice(final ConnectionContainer connection)
+    private List<FirmwareVersionDto> getFirmwareVersionFromDevice(final DeviceConnection connection)
             throws ProtocolAdapterException {
 
         final List<FirmwareVersionDto> output = new ArrayList<>();
@@ -1339,11 +1338,10 @@ public class Iec61850DeviceService implements DeviceService {
         // functionalFirmwareConfiguration
         // .getChild(LogicalNodeAttributeDefinitons.PROPERTY_FIRMWARE_CONFIG_CURRENT_VERSION);
 
-        final NodeContainer functionalFirmwareConfiguration = connection.GetFcModelNode(
-                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE, Fc.ST);
+        final NodeContainer functionalFirmwareNode = connection.getFcModelNode(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                DataAttribute.FUNCTIONAL_FIRMWARE, Fc.ST);
 
-        final String functionalFirmwareVersion = functionalFirmwareConfiguration
-                .getString(SubDataAttribute.CURRENT_VERSION);
+        final String functionalFirmwareVersion = functionalFirmwareNode.getString(SubDataAttribute.CURRENT_VERSION);
 
         // Adding it to the list
         output.add(new FirmwareVersionDto(Iec61850DeviceService.FUNCTIONAL_FIRMWARE_TYPE_DESCRIPTION,
@@ -1352,17 +1350,24 @@ public class Iec61850DeviceService implements DeviceService {
         // Getting the security firmware version
         LOGGER.info("Reading the security firmware version");
 
-        final NodeContainer securityFirmwareConfiguration = connection.GetFcModelNode(
-                LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SECURITY_FIRMWARE, Fc.ST);
+        final NodeContainer securityFirmwareNode = connection.getFcModelNode(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                DataAttribute.SECURITY_FIRMWARE, Fc.ST);
 
-        final String securityFirmwareVersion = securityFirmwareConfiguration
-                .getString(SubDataAttribute.CURRENT_VERSION);
+        final String securityFirmwareVersion = securityFirmwareNode.getString(SubDataAttribute.CURRENT_VERSION);
 
         // Adding it to the list
         output.add(new FirmwareVersionDto(Iec61850DeviceService.SECURITY_FIRMWARE_TYPE_DESCRIPTION,
                 securityFirmwareVersion));
 
         return output;
+    }
+
+    private FirmwareVersionDto getFirmwareData(final NodeContainer nodeContainer, final String description) {
+
+        final String firmwareVersion = nodeContainer.getString(SubDataAttribute.CURRENT_VERSION);
+
+        return new FirmwareVersionDto(description, firmwareVersion);
+
     }
 
     private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
@@ -1411,69 +1416,81 @@ public class Iec61850DeviceService implements DeviceService {
         this.iec61850Client.sendCommandWithRetry(function);
     }
 
-    private void pushFirmwareToDevice(final ConnectionContainer connection, final ServerModel serverModel,
+    private void pushFirmwareToDevice(final DeviceConnection connection, final ServerModel serverModel,
             final ClientAssociation clientAssociation, final String fullUrl) throws ProtocolAdapterException,
             FunctionalException {
 
+        // creating a Date one minute from now
+        final Date oneMinuteFromNow = this.getLocalTimeForDevice(connection.getConnection().getServerModel())
+                .plusMinutes(1).toDate();
+
+        // Getting the functional firmware version
+        LOGGER.info("Reading the functional firmware version");
+
+        final NodeContainer functionalFirmwareNode = connection.getFcModelNode(LogicalNode.STREET_LIGHT_CONFIGURATION,
+                DataAttribute.FUNCTIONAL_FIRMWARE, Fc.CF);
+
+        LOGGER.info("Updating the firmware download url");
+        functionalFirmwareNode.writeString(SubDataAttribute.URL, fullUrl);
+
+        LOGGER.info("Updating the firmware download start time");
+        functionalFirmwareNode.writeDate(SubDataAttribute.START_TIME, oneMinuteFromNow);
+
         // creating the function that will be retried, if necessary
-        final Function<Void> function = new Function<Void>() {
+        // final Function<Void> function = new Function<Void>() {
 
-            @Override
-            public Void apply() throws Exception {
+        // @Override
+        // public Void apply() throws Exception {
 
-                // Getting the functional firmware version
-                LOGGER.info("Reading the functional firmware version");
+        // final String functionalFirmwareConfigurationObjectReference =
+        // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+        // + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+        // +
+        // LogicalNodeAttributeDefinitons.PROPERTY_FUNCTIONAL_FIRMWARE_CONFIGURATION;
+        //
+        // final FcModelNode functionalFirmwareConfiguration =
+        // (FcModelNode) serverModel.findModelNode(
+        // functionalFirmwareConfigurationObjectReference, Fc.CF);
+        //
+        // final BdaVisibleString functionalFirmwareDownloadUrl =
+        // (BdaVisibleString) functionalFirmwareConfiguration
+        // .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_URL);
+        //
+        // LOGGER.info("Updating the firmware download url to {}",
+        // fullUrl);
+        //
+        // functionalFirmwareDownloadUrl.setValue(fullUrl);
+        // clientAssociation.setDataValues(functionalFirmwareDownloadUrl);
 
-                final NodeContainer functionalFirmwareNode = connection.GetFcModelNode(
-                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.FUNCTIONAL_FIRMWARE, Fc.CF);
+        // final String functionalFirmwareConfigurationObjectReference =
+        // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+        // + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+        // +
+        // LogicalNodeAttributeDefinitons.PROPERTY_FUNCTIONAL_FIRMWARE_CONFIGURATION;
+        //
+        // final FcModelNode functionalFirmwareConfiguration =
+        // (FcModelNode) serverModel.findModelNode(
+        // functionalFirmwareConfigurationObjectReference, Fc.CF);
+        //
+        // final BdaTimestamp functionalFirmwareDownloadStartTime =
+        // (BdaTimestamp) functionalFirmwareConfiguration
+        // .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_START_TIME);
+        //
+        // final Date oneMinuteFromNow =
+        // Iec61850DeviceService.this.getLocalTimeForDevice(serverModel)
+        // .plusMinutes(1).toDate();
+        //
+        // LOGGER.info("Updating the firmware download start time to {}",
+        // oneMinuteFromNow);
+        //
+        // functionalFirmwareDownloadStartTime.setDate(oneMinuteFromNow);
+        // clientAssociation.setDataValues(functionalFirmwareDownloadStartTime);
 
-                LOGGER.info("Updating the firmware download url");
+        // return null;
+        // }
+        // };
 
-                functionalFirmwareNode.writeString(SubDataAttribute.URL, fullUrl);
-
-                // final String functionalFirmwareConfigurationObjectReference =
-                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                // + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                // +
-                // LogicalNodeAttributeDefinitons.PROPERTY_FUNCTIONAL_FIRMWARE_CONFIGURATION;
-                //
-                // final FcModelNode functionalFirmwareConfiguration =
-                // (FcModelNode) serverModel.findModelNode(
-                // functionalFirmwareConfigurationObjectReference, Fc.CF);
-                //
-                // final BdaVisibleString functionalFirmwareDownloadUrl =
-                // (BdaVisibleString) functionalFirmwareConfiguration
-                // .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_URL);
-                //
-                // LOGGER.info("Updating the firmware download url to {}",
-                // fullUrl);
-                //
-                // functionalFirmwareDownloadUrl.setValue(fullUrl);
-                // clientAssociation.setDataValues(functionalFirmwareDownloadUrl);
-
-                final String functionalFirmwareConfigurationObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                        + LogicalNodeAttributeDefinitons.PROPERTY_FUNCTIONAL_FIRMWARE_CONFIGURATION;
-
-                final FcModelNode functionalFirmwareConfiguration = (FcModelNode) serverModel.findModelNode(
-                        functionalFirmwareConfigurationObjectReference, Fc.CF);
-
-                final BdaTimestamp functionalFirmwareDownloadStartTime = (BdaTimestamp) functionalFirmwareConfiguration
-                        .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_START_TIME);
-
-                final Date oneMinuteFromNow = Iec61850DeviceService.this.getLocalTimeForDevice(serverModel)
-                        .plusMinutes(1).toDate();
-
-                LOGGER.info("Updating the firmware download start time to {}", oneMinuteFromNow);
-
-                functionalFirmwareDownloadStartTime.setDate(oneMinuteFromNow);
-                clientAssociation.setDataValues(functionalFirmwareDownloadStartTime);
-
-                return null;
-            }
-        };
-
-        this.iec61850Client.sendCommandWithRetry(function);
+        // this.iec61850Client.sendCommandWithRetry(function);
 
     }
 

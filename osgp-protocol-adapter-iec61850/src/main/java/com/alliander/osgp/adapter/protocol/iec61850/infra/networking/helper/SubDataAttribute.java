@@ -13,7 +13,8 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 public enum SubDataAttribute {
 
     CURRENT_VERSION("curVer"),
-    URL("url");
+    URL("url"),
+    START_TIME("startT");
 
     private String description;
 

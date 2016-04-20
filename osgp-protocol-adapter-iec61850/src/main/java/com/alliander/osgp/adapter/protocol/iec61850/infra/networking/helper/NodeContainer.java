@@ -1,7 +1,9 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
 import java.io.IOException;
+import java.util.Date;
 
+import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ServiceError;
@@ -12,16 +14,16 @@ public class NodeContainer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeContainer.class);
 
-    private final ConnectionContainer connection;
+    private final DeviceConnection connection;
     private final FcModelNode parent;
 
-    public NodeContainer(final ConnectionContainer connection, final FcModelNode fcmodelNode) {
+    public NodeContainer(final DeviceConnection connection, final FcModelNode fcmodelNode) {
         this.connection = connection;
         this.parent = fcmodelNode;
     }
 
     /**
-     * returns a String for {@link BdaVisibleString} values
+     * Returns a String for {@link BdaVisibleString} values
      */
     public String getString(final SubDataAttribute child) {
 
@@ -55,6 +57,42 @@ public class NodeContainer {
 
     }
 
+    /**
+     * Returns a {@link Date} for {@link BdaTimestamp} values
+     */
+    public Date getDate(final SubDataAttribute child) {
+
+        // TODO check to see if it's a BdaVisibleString
+        final BdaTimestamp dBdaTimestamp = (BdaTimestamp) this.parent.getChild(child.getDescription());
+
+        if (dBdaTimestamp == null) {
+            // TODO exceptionHandling, null probably means the node doesn't
+            // exist
+        }
+
+        LOGGER.info("device: {}, {} has value {}", this.connection.getDeviceIdentification(), child.getDescription(),
+                dBdaTimestamp.getDate());
+
+        return dBdaTimestamp.getDate();
+
+    }
+
+    /**
+     * Writes a Date value to the given child on the device
+     */
+    public void writeDate(final SubDataAttribute child, final Date value) {
+
+        final BdaTimestamp dBdaTimestamp = (BdaTimestamp) this.parent.getChild(child.getDescription());
+
+        LOGGER.info("device: {}, writing {} to {}", this.connection.getDeviceIdentification(), value,
+                child.getDescription());
+
+        dBdaTimestamp.setDate(value);
+
+        this.writeNode(dBdaTimestamp);
+
+    }
+
     // TODO Int, Boolean, Date
 
     /*
@@ -64,7 +102,7 @@ public class NodeContainer {
         // TODO move retry mechanism here
 
         try {
-            this.connection.getClientAssociation().setDataValues(node);
+            this.connection.getConnection().getClientAssociation().setDataValues(node);
         } catch (final ServiceError e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

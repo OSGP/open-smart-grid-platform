@@ -1,29 +1,28 @@
 package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 
-import org.openmuc.openiec61850.ClientAssociation;
 import org.openmuc.openiec61850.Fc;
 import org.openmuc.openiec61850.FcModelNode;
 import org.openmuc.openiec61850.ObjectReference;
-import org.openmuc.openiec61850.ServerModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConnectionContainer {
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.Iec61850Connection;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionContainer.class);
+public class DeviceConnection {
 
-    private final ClientAssociation clientAssociation;
-    private final ServerModel serverModel;
+    // TODO move this to a service or client and use Iec61850 client
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceConnection.class);
+
+    private final Iec61850Connection connection;
     private final String deviceIdentification;
 
     public static final String LOGICAL_DEVICE_PREFIX = "SWDeviceGenericIO";
     public static final String LOGICAL_NODE_SEPARATOR = "/";
     public static final String DATA_ATTRIBUTE_SEPARATOR = ".";
 
-    public ConnectionContainer(final ClientAssociation clientAssociation, final ServerModel serverModel,
-            final String deviceIdentification) {
-        this.clientAssociation = clientAssociation;
-        this.serverModel = serverModel;
+    public DeviceConnection(final Iec61850Connection connection, final String deviceIdentification) {
+        this.connection = connection;
         this.deviceIdentification = deviceIdentification;
     }
 
@@ -31,9 +30,9 @@ public class ConnectionContainer {
      * Returns a {@link NodeContainer} for the given {@link ObjectReference}
      * data and the Functional constraint.
      */
-    public NodeContainer GetFcModelNode(final LogicalNode logicalNode, final DataAttribute dataAttribute, final Fc fc) {
+    public NodeContainer getFcModelNode(final LogicalNode logicalNode, final DataAttribute dataAttribute, final Fc fc) {
 
-        final FcModelNode fcModelNode = (FcModelNode) this.serverModel.findModelNode(
+        final FcModelNode fcModelNode = (FcModelNode) this.connection.getServerModel().findModelNode(
                 this.createObjectReference(logicalNode, dataAttribute), fc);
         if (fcModelNode == null) {
             // TODO exceptionHandling, null probably means the node doesn't
@@ -60,15 +59,11 @@ public class ConnectionContainer {
 
     // GETTERS AND SETTERS
 
-    public ClientAssociation getClientAssociation() {
-        return this.clientAssociation;
-    }
-
-    public ServerModel getServerModel() {
-        return this.serverModel;
-    }
-
     public String getDeviceIdentification() {
         return this.deviceIdentification;
+    }
+
+    public Iec61850Connection getConnection() {
+        return this.connection;
     }
 }
