@@ -26,7 +26,8 @@ public class GetFirmwareVersion {
     private TestCase testCase;
 
     private String response;
-    private String path = "/Envelope/Body/GetFirmwareVersionResponse/Result/text()";
+    private static final String PATH_RESULT = "/Envelope/Body/GetFirmwareVersionResponse/Result/text()";
+    private static final String XPATH_MATCHER_RESULT = "OK";
 
     private static final String SOAP_PROJECT_XML = "src/test/resources/FirmwareManagement-soapui-project.xml";
     private static final String TEST_SUITE_XML = "FirmwareManagementPortSoap11 TestSuite";
@@ -94,10 +95,10 @@ public class GetFirmwareVersion {
             System.out.println(this.response);
         }
 
-        final MyXpathResult xpathResult = this.xpathresult.runXPathExpression(this.response, this.path);
+        final MyXpathResult xpathResult = this.xpathresult.runXPathExpression(this.response, PATH_RESULT);
         final XPathExpression expr = xpathResult.getXpathExpression();
 
-        Assert.assertEquals("OK", expr.evaluate(xpathResult.getDocument(), XPathConstants.STRING));
+        Assert.assertEquals(XPATH_MATCHER_RESULT, expr.evaluate(xpathResult.getDocument(), XPathConstants.STRING));
         Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
     }
 }
