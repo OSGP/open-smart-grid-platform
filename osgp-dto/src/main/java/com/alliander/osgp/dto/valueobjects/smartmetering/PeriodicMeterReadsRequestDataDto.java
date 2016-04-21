@@ -14,7 +14,7 @@ import java.util.Date;
  *
  * @author dev
  */
-public class PeriodicMeterReadsRequestDataDto implements ActionDto {
+public class PeriodicMeterReadsRequestDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -2483665562035897062L;
 
