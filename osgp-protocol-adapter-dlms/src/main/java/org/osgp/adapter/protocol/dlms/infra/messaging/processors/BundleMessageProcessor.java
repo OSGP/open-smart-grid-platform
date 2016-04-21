@@ -8,7 +8,6 @@
 package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.application.services.BundleService;
@@ -19,9 +18,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
 
 /**
  * Class for processing find events request messages
@@ -47,9 +44,6 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
         }
         final BundleMessageDataContainerDto bundleMessageDataContainerDto = (BundleMessageDataContainerDto) requestObject;
 
-        final List<ActionResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(conn, device,
-                bundleMessageDataContainerDto);
-
-        return new BundleResponseMessageDataContainerDto(actionValueObjectResponseDtoList);
+        return this.bundleService.callExecutors(conn, device, bundleMessageDataContainerDto);
     }
 }

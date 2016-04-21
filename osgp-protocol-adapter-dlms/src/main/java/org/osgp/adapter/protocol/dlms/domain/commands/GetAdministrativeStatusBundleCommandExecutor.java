@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 
 @Component()
 public class GetAdministrativeStatusBundleCommandExecutor implements
-        CommandExecutor<ActionDto, ActionResponseDto> {
+        CommandExecutor<ActionRequestDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusBundleCommandExecutor.class);
 
@@ -34,7 +34,7 @@ public class GetAdministrativeStatusBundleCommandExecutor implements
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActionDto useless) {
+            final ActionRequestDto useless) {
 
         try {
             return new AdministrativeStatusTypeResponseDto(this.getAdministrativeStatusCommandExecutor.execute(conn,

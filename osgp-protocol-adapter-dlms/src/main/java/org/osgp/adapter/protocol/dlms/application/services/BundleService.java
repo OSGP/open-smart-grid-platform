@@ -7,9 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -42,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
@@ -126,7 +125,7 @@ public class BundleService {
     @Autowired
     private ReplaceKeyBundleCommandExecutor replaceKeyBundleCommandExecutor;
 
-    private final static Map<Class<? extends ActionDto>, CommandExecutor<? extends ActionDto, ? extends ActionResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
+    private final static Map<Class<? extends ActionRequestDto>, CommandExecutor<? extends ActionRequestDto, ? extends ActionResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
     private void postConstruct() {
@@ -140,7 +139,7 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsGasRequestDataDto.class,
                 this.getPeriodicMeterReadsGasBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP
-        .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
+                .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActivityCalendarDataDto.class, this.setActivityCalendarBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GMeterInfoDto.class, this.setEncryptionKeyExchangeOnGMeterBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetAlarmNotificationsRequestDataDto.class,
@@ -156,31 +155,32 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(KeySetDto.class, this.replaceKeyBundleCommandExecutor);
     }
 
-    public List<ActionResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
+    public BundleMessageDataContainerDto callExecutors(final ClientConnection conn, final DlmsDevice device,
             final BundleMessageDataContainerDto bundleMessageDataContainerDto) {
-        final List<ActionResponseDto> actionValueObjectResponseDtoList = new ArrayList<>();
 
-        for (final ActionDto actionValueObjectDto : bundleMessageDataContainerDto.getActionList()) {
+        for (final ActionDto actionDto : bundleMessageDataContainerDto.getActionList()) {
 
-            // suppress else the compiler will complain
-            @SuppressWarnings({ "unchecked" })
-            final CommandExecutor<ActionDto, ActionResponseDto> executor = (CommandExecutor<ActionDto, ActionResponseDto>) CLAZZ_EXECUTOR_MAP
-            .get(actionValueObjectDto.getClass());
+            // Only execute the request when there is no response available yet.
+            // Becausae it could be a retry.
+            if (actionDto.getResponse() == null) {
 
-            try {
-                LOGGER.info("Calling executor in bundle {}", executor.getClass());
-                final ActionResponseDto actionResult = executor.execute(conn, device, actionValueObjectDto);
-                actionValueObjectResponseDtoList.add(actionResult);
-            } catch (final Exception e) {
-                LOGGER.error("Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                        + " and executor " + executor.getClass(), e);
-                final ActionResponseDto actionValueObjectResponseDto = new ActionResponseDto(e,
-                        "Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                        + " and executor " + executor.getClass());
-                actionValueObjectResponseDtoList.add(actionValueObjectResponseDto);
+                // suppress else the compiler will complain
+                @SuppressWarnings({ "unchecked" })
+                final CommandExecutor<ActionRequestDto, ActionResponseDto> executor = (CommandExecutor<ActionRequestDto, ActionResponseDto>) CLAZZ_EXECUTOR_MAP
+                        .get(actionDto.getRequest().getClass());
+
+                try {
+                    LOGGER.info("Calling executor in bundle {}", executor.getClass());
+                    actionDto.setResponse(executor.execute(conn, device, actionDto.getRequest()));
+                } catch (final Exception e) {
+                    LOGGER.error("Error while executing bundle action for class " + actionDto.getRequest().getClass()
+                            + " and executor " + executor.getClass(), e);
+                    actionDto.setResponse(new ActionResponseDto(e, "Error while executing bundle action for class "
+                            + actionDto.getRequest().getClass() + " and executor " + executor.getClass()));
+                }
             }
         }
 
-        return actionValueObjectResponseDtoList;
+        return bundleMessageDataContainerDto;
     }
 }
