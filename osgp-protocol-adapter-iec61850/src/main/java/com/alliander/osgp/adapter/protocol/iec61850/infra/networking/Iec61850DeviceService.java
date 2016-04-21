@@ -1463,9 +1463,19 @@ public class Iec61850DeviceService implements DeviceService {
                 final BdaTimestamp certificateUrlDownloadStartTime = (BdaTimestamp) certificateConfiguration
                         .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_START_TIME);
 
-                final String separator = certification.getCertificateUrl().startsWith("/") ? "" : "/";
-                final String fullUrl = certification.getCertificateDomain().concat(separator)
-                        .concat(certification.getCertificateUrl());
+                // removing trailing and leading slashes (if present) from the
+                // domain and the url
+                String adjustedDomain = certification.getCertificateDomain();
+                if (adjustedDomain.endsWith("/")) {
+                    adjustedDomain = adjustedDomain.substring(0, adjustedDomain.length() - 1);
+                }
+
+                String adjustedUrl = certification.getCertificateUrl();
+                if (adjustedUrl.startsWith("/")) {
+                    adjustedUrl = adjustedUrl.substring(1, adjustedUrl.length());
+                }
+
+                final String fullUrl = adjustedDomain.concat("/").concat(adjustedUrl);
 
                 LOGGER.info("Updating the certificate download url to {}", fullUrl);
 
