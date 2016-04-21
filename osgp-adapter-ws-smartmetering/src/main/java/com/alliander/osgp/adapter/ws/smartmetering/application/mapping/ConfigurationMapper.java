@@ -29,14 +29,19 @@ public class ConfigurationMapper extends ConfigurableMapper {
         // This classMap replaces the AlarmNotificationsConverter, is needed
         // because of different field names.
         mapperFactory
-        .classMap(AlarmNotifications.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
+                .classMap(AlarmNotifications.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
                 .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
 
         // These two converters are needed because they combine two fields
         // into one SendDestinationAndMethod object (or split the object into
         // two fields)
+        mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
+        mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
+
+        // These converters are necessary to enable correct mapping of dates and
+        // times.
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());
