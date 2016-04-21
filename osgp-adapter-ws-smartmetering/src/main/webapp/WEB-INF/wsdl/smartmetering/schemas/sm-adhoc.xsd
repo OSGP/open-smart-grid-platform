@@ -164,7 +164,7 @@
   <xsd:complexType name="AttributeAccessItem">
     <xsd:sequence>
       <xsd:element type="xsd:integer" name="AttributeId" />
-      <xsd:element type="tns:AttributeAccesModeType" name="AccessMode" />
+      <xsd:element type="tns:AttributeAccessModeType" name="AccessMode" />
       <xsd:element name="AccessSelectors" type="tns:AccessSelectorList" />
     </xsd:sequence>
   </xsd:complexType>
@@ -175,7 +175,7 @@
     </xsd:sequence>
   </xsd:complexType>
   
-  <xsd:simpleType name="AttributeAccesModeType">
+  <xsd:simpleType name="AttributeAccessModeType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="NO_ACCESS" />
       <xsd:enumeration value="READ_ONLY" />
@@ -189,7 +189,7 @@
   
   <xsd:complexType name="MethodAccessDescriptor">
     <xsd:sequence>
-      <xsd:element name="MethodAccesItem" type="tns:MethodAccessItem" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="MethodAccessItem" type="tns:MethodAccessItem" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
   

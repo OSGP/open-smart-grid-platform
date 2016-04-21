@@ -15,13 +15,13 @@ import java.util.List;
 public class MethodAccessDescriptor implements Serializable {
     private static final long serialVersionUID = 8227300665604316411L;
 
-    private final List<MethodAccessItem> methodAccesItem;
+    private final List<MethodAccessItem> methodAccessItem;
 
-    public MethodAccessDescriptor(final List<MethodAccessItem> methodAccesItem) {
-        this.methodAccesItem = Collections.unmodifiableList(methodAccesItem);
+    public MethodAccessDescriptor(final List<MethodAccessItem> methodAccessItem) {
+        this.methodAccessItem = Collections.unmodifiableList(methodAccessItem);
     }
 
-    public List<MethodAccessItem> getMethodAccesItem() {
-        return new ArrayList<>(this.methodAccesItem);
+    public List<MethodAccessItem> getMethodAccessItem() {
+        return new ArrayList<>(this.methodAccessItem);
     }
 }
