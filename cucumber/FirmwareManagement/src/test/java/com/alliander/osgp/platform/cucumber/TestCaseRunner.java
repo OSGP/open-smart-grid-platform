@@ -15,7 +15,7 @@ import com.eviware.soapui.support.SoapUIException;
 public class TestCaseRunner {
     public MyTestCaseResult runWsdlTestCase(final TestCase testCase, final String deviceId,
             final String organisationId, final String correlationUid, final String TEST_CASE_NAME_REQUEST)
-                    throws XmlException, IOException, SoapUIException {
+            throws XmlException, IOException, SoapUIException {
 
         final WsdlTestCase wsdlTestCase = (WsdlTestCase) testCase;
         wsdlTestCase.setPropertyValue("DeviceIdentificationE", deviceId);
@@ -28,8 +28,6 @@ public class TestCaseRunner {
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-        // connect to osgp_adapter_ws_smartmetering - meter_response_data and
-        // check correlationUid
 
         return new MyTestCaseResult(wsdlTestCaseRunner.runTestStepByName(TEST_CASE_NAME_REQUEST), wsdlTestCaseRunner);
     }
