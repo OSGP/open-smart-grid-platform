@@ -29,11 +29,11 @@ public class GetFirmwareVersion {
     private static final String PATH_RESULT = "/Envelope/Body/GetFirmwareVersionResponse/Result/text()";
     private static final String XPATH_MATCHER_RESULT = "OK";
 
-    private static final String SOAP_PROJECT_XML = "src/test/resources/FirmwareManagement-soapui-project.xml";
-    private static final String TEST_SUITE_XML = "FirmwareManagementPortSoap11 TestSuite";
-    private static final String TEST_CASE_XML = "GetFirmwareVersion TestCase";
-    private static final String TEST_CASE_NAME_REQUEST = "GetFirmwareVersion";
-    private static final String TEST_CASE_NAME_RESPONSE = "GetGetFirmwareVersionResponse";
+    private static final String SOAP_PROJECT_XML = "../soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
+    private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
+    private static final String TEST_CASE_XML = "261 Retrieve firmware version";
+    private static final String TEST_CASE_NAME_REQUEST = "GetFirmwareVersion - Request 1";
+    private static final String TEST_CASE_NAME_RESPONSE = "GetGetFirmwareVersionResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
 
@@ -92,7 +92,6 @@ public class GetFirmwareVersion {
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
             LOGGER.info(TEST_CASE_NAME_RESPONSE + " response {}",
                     this.response = ((MessageExchange) tcr).getResponseContent());
-            System.out.println(this.response);
         }
 
         final MyXpathResult xpathResult = this.xpathresult.runXPathExpression(this.response, PATH_RESULT);
