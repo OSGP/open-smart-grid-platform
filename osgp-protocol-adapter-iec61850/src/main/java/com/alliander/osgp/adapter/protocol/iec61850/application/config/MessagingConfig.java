@@ -29,6 +29,7 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceResponseMessageSender;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.Iec61850LogItemRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpRequestMessageSender;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.OsgpResponseMessageListener;
 
@@ -311,6 +312,11 @@ public class MessagingConfig {
         redeliveryPolicy.setUseExponentialBackOff(Boolean.parseBoolean(this.environment
                 .getRequiredProperty(PROPERTY_NAME_JMS_IEC61850_LOG_ITEM_REQUESTS_USE_EXPONENTIAL_BACK_OFF)));
         return redeliveryPolicy;
+    }
+
+    @Bean
+    public Iec61850LogItemRequestMessageSender iec61850LogItemRequestMessageSender() {
+        return new Iec61850LogItemRequestMessageSender();
     }
 
     // === OSGP REQUESTS ===

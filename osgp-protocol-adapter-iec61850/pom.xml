@@ -61,6 +61,10 @@
     </dependency>
     <dependency>
       <groupId>com.alliander.osgp</groupId>
+      <artifactId>osgp-iec61850</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.alliander.osgp</groupId>
       <artifactId>osgp-core-db-api-iec61850</artifactId>
     </dependency>
 
@@ -181,6 +185,12 @@
     <dependency>
       <groupId>ma.glasnost.orika</groupId>
       <artifactId>orika-core</artifactId>
+    </dependency>
+
+    <!-- Netty -->
+    <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty</artifactId>
     </dependency>
 
     <!-- Apache ActiveMQ -->

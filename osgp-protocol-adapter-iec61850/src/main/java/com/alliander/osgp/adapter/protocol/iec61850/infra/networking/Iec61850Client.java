@@ -225,6 +225,41 @@ public class Iec61850Client implements ClientEventListener {
         }
     }
 
+    public void disableRegistration(final String deviceIdentification, final InetAddress ipAddress)
+            throws ProtocolAdapterException {
+
+        final ClientAssociation clientAssociation;
+        try {
+            clientAssociation = this.connect(deviceIdentification, ipAddress);
+        } catch (final ServiceError e) {
+            throw new ProtocolAdapterException("Unexpected error connecting to device to disable registration.", e);
+        }
+        if (clientAssociation == null) {
+            throw new ProtocolAdapterException("Unable to connect to device to disable registration.");
+        }
+
+        final Function<Void> function = new Function<Void>() {
+
+            @Override
+            public Void apply() throws Exception {
+
+                final ServerModel serverModel = Iec61850Client.this.readServerModelFromDevice(clientAssociation);
+                final String objectReferenceRegNode = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                        + LogicalNodeAttributeDefinitons.PROPERTY_REG_CONFIGURATION;
+                final FcModelNode registrationNode = (FcModelNode) serverModel.findModelNode(objectReferenceRegNode,
+                        Fc.CF);
+                final BdaBoolean notificationEnabledNode = (BdaBoolean) registrationNode.getChild("ntfEnb");
+                notificationEnabledNode.setValue(false);
+                clientAssociation.setDataValues(notificationEnabledNode);
+
+                return null;
+            }
+        };
+
+        this.sendCommandWithRetry(function);
+    }
+
     public boolean readAllDataValues(final ClientAssociation clientAssociation) {
         // get the values of all data attributes in the model:
         try {
