@@ -17,12 +17,4 @@ public enum AttributeAccessModeType {
     AUTHENTICATED_WRITE_ONLY,
     AUTHENTICATED_READ_AND_WRITE;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static AttributeAccessModeType fromValue(final String v) {
-        return valueOf(v);
-    }
-
 }
