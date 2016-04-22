@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.util.ArrayList;
@@ -81,30 +88,9 @@ public class BundleServiceTest {
     @InjectMocks
     private BundleService bundleService;
 
-//    private static final Class<?> ACTION_DTOS[] = new Class<?>[] {
-//        FindEventsQueryDto.class, 
-//        ActualMeterReadsDataDto.class, 
-//        ActualMeterReadsDataGasDto.class, 
-//        SpecialDaysRequestDataDto.class, 
-//        ReadAlarmRegisterDataDto.class, 
-//        GetAdministrativeStatusDataDto.class, 
-//        PeriodicMeterReadsRequestDataDto.class, 
-//        PeriodicMeterReadsGasRequestDataDto.class, 
-//        AdministrativeStatusTypeDataDto.class, 
-//        ActivityCalendarDataDto.class, 
-//        GMeterInfoDto.class, 
-//        SetAlarmNotificationsRequestDataDto.class,
-//        SetConfigurationObjectRequestDataDto.class, 
-//        SetPushSetupAlarmRequestDataDto.class, 
-//        SetPushSetupSmsRequestDataDto.class, 
-//        SynchronizeTimeRequestDataDto.class, 
-//        GetConfigurationRequestDataDto.class,
-//        GetFirmwareVersionRequestDataDto.class 
-//    };
-
     private ActionDtoBuilder builder = new ActionDtoBuilder();
  
-    private static Map<Class<?>, AbstractCommandExecutorStub> stubs = new HashMap<Class<?>, AbstractCommandExecutorStub>();
+    private static Map<Class<? extends ActionDto>, AbstractCommandExecutorStub> stubs = new HashMap<Class<? extends ActionDto>, AbstractCommandExecutorStub>();
 
     @Spy
     private RetrieveEventsBundleCommandExecutor retrieveEventsBundleCommandExecutor = new RetrieveEventsBundleCommandExecutorStub();
@@ -182,17 +168,21 @@ public class BundleServiceTest {
 
     @Test
     public void testHappyFlow() throws ProtocolAdapterException {
-        BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(makeActions());
+        final List<ActionDto> actionDtoList = this.makeActions();
+        BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
         List<ActionResponseDto> result = callExecutors(dto);
         Assert.assertTrue(result != null);
+        Assert.assertEquals(actionDtoList.size(), result.size());
     }
 
     @Test
     public void testException() {
-        BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(makeActions());
+        final List<ActionDto> actionDtoList = this.makeActions();
+        BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
         getStub(FindEventsQueryDto.class).failWith(new ProtocolAdapterException("simulate error"));
         List<ActionResponseDto> result = callExecutors(dto);
         Assert.assertTrue(result != null);
+        Assert.assertEquals(actionDtoList.size(), result.size());
     }
 
     private List<ActionResponseDto> callExecutors(BundleMessageDataContainerDto dto) {
