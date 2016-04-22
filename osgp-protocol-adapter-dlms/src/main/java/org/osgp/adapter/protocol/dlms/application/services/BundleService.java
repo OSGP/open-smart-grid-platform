@@ -22,6 +22,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusBun
 import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
@@ -53,6 +54,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetSpecificConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
@@ -126,6 +128,9 @@ public class BundleService {
     @Autowired
     private ReplaceKeyBundleCommandExecutorImpl replaceKeyBundleCommandExecutor;
 
+    @Autowired
+    private GetSpecificConfigurationObjectCommandExecutor getSpecificConfigurationObjectCommandExecutor;
+    
     private final static Map<Class<? extends ActionDto>, CommandExecutor<? extends ActionDto, ? extends ActionResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
     @PostConstruct
@@ -154,6 +159,7 @@ public class BundleService {
                 this.retrieveConfigurationObjectsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GetFirmwareVersionRequestDataDto.class, this.getFirmwareVersionsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(KeySetDto.class, this.replaceKeyBundleCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(GetSpecificConfigurationObjectRequestDataDto.class, this.getSpecificConfigurationObjectCommandExecutor);
     }
 
     public List<ActionResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
@@ -176,11 +182,12 @@ public class BundleService {
                 final ActionResponseDto actionResult = executor.execute(conn, device, actionValueObjectDto);
                 actionValueObjectResponseDtoList.add(actionResult);
             } catch (final Exception e) {
+                final String strexec = (executor==null) ? " = null " : executor.getClass().getName();
                 LOGGER.error("Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                        + " and executor " + executor.getClass(), e);
+                        + " and executor " + strexec, e);
                 final ActionResponseDto actionValueObjectResponseDto = new ActionResponseDto(e,
                         "Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                        + " and executor " + executor.getClass());
+                        + " and executor " + strexec);
                 actionValueObjectResponseDtoList.add(actionValueObjectResponseDto);
             }
         }
