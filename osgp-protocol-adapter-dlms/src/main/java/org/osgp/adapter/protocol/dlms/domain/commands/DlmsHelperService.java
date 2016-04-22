@@ -27,7 +27,6 @@ import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.datatypes.BitString;
 import org.openmuc.jdlms.datatypes.CosemDate;
-import org.openmuc.jdlms.datatypes.CosemDateFormat;
 import org.openmuc.jdlms.datatypes.CosemDateTime;
 import org.openmuc.jdlms.datatypes.CosemDateTime.ClockStatus;
 import org.openmuc.jdlms.datatypes.CosemTime;
@@ -286,49 +285,6 @@ public class DlmsHelperService {
         }
     }
 
-    public CosemDateTimeDto readCosemDateTime(final DataObject resultData, final String description)
-            throws ProtocolAdapterException {
-        this.logDebugResultData(resultData, description);
-        if (resultData == null || resultData.isNull()) {
-            return null;
-        }
-        CosemDateTime jdlmsCosemDateTime = null;
-        if (resultData.isByteArray()) {
-            jdlmsCosemDateTime = CosemDateTime.decode((byte[]) resultData.value());
-        } else if (resultData.isCosemDateFormat()) {
-            jdlmsCosemDateTime = (CosemDateTime) resultData.value();
-        } else {
-            this.logAndThrowExceptionForUnexpectedResultData(resultData, "ByteArray or CosemDateFormat");
-        }
-        return this.getDtoDateTimeForJdlmsDateTime(jdlmsCosemDateTime);
-    }
-
-    private CosemDateTimeDto getDtoDateTimeForJdlmsDateTime(final CosemDateTime jdlmsCosemDateTime) {
-        if (jdlmsCosemDateTime == null) {
-            return null;
-        }
-
-        final int year = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.YEAR);
-        // valueFor makes the month start at 0, cosemdate month starts at 1
-        final int month = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MONTH) + 1;
-        final int dayOfMonth = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_MONTH);
-        final int dayOfWeek = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DAY_OF_WEEK);
-        final CosemDateDto date = new CosemDateDto(year, month, dayOfMonth, dayOfWeek);
-
-        final int hour = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HOUR);
-        final int minute = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.MINUTE);
-        final int second = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.SECOND);
-        final int hundredths = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.HUNDREDTHS);
-        final CosemTimeDto time = new CosemTimeDto(hour, minute, second, hundredths);
-
-        final int deviation = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.DEVIATION);
-
-        final int clockStatusValue = jdlmsCosemDateTime.valueFor(CosemDateFormat.Field.CLOCK_STATUS);
-        final ClockStatusDto clockStatus = new ClockStatusDto(clockStatusValue);
-
-        return new CosemDateTimeDto(date, time, deviation, clockStatus);
-    }
-
     public CosemDateTimeDto convertDataObjectToDateTime(final DataObject object) throws ProtocolAdapterException {
         CosemDateTimeDto dateTime = null;
         if (object.isByteArray()) {
@@ -543,8 +499,8 @@ public class DlmsHelperService {
                     + elements.size());
         }
 
-        final CosemDateTimeDto startTime = this.readCosemDateTime(elements.get(0), "Start Time from " + description);
-        final CosemDateTimeDto endTime = this.readCosemDateTime(elements.get(1), "End Time from " + description);
+        final CosemDateTimeDto startTime = this.readDateTime(elements.get(0), "Start Time from " + description);
+        final CosemDateTimeDto endTime = this.readDateTime(elements.get(1), "End Time from " + description);
 
         return new WindowElementDto(startTime, endTime);
     }

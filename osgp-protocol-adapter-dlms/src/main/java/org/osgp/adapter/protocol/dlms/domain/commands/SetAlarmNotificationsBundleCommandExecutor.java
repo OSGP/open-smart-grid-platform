@@ -7,47 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
 
-@Component()
-public class SetAlarmNotificationsBundleCommandExecutor implements
-        CommandExecutor<SetAlarmNotificationsRequestDataDto, ActionResponseDto> {
+public interface SetAlarmNotificationsBundleCommandExecutor extends CommandExecutor<SetAlarmNotificationsRequestDataDto, ActionResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsBundleCommandExecutor.class);
-
-    @Autowired
-    private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetAlarmNotificationsRequestDataDto alarmNotificationsRequestDataDto) {
-
-        AccessResultCode accessResultCode = null;
-        try {
-
-            accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
-                    alarmNotificationsRequestDataDto.getAlarmNotifications());
-            if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Set alarm notification on meter "
-                        + device.getDeviceIdentification() + " was successful");
-            } else {
-                return new ActionResponseDto("Set alarm notification on meter "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
-            }
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Error while setting alarm notifications", e);
-            return new ActionResponseDto(e, "Error while setting alarm notifications");
-        }
-
-    }
 }

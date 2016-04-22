@@ -23,7 +23,6 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsBundleC
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarBundleCommandExecutor;
@@ -35,6 +34,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmBundleCom
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyBundleCommandExecutorImpl;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +124,7 @@ public class BundleService {
     private GetFirmwareVersionsBundleCommandExecutor getFirmwareVersionsBundleCommandExecutor;
 
     @Autowired
-    private ReplaceKeyBundleCommandExecutor replaceKeyBundleCommandExecutor;
+    private ReplaceKeyBundleCommandExecutorImpl replaceKeyBundleCommandExecutor;
 
     private final static Map<Class<? extends ActionDto>, CommandExecutor<? extends ActionDto, ? extends ActionResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
@@ -140,7 +140,7 @@ public class BundleService {
         CLAZZ_EXECUTOR_MAP.put(PeriodicMeterReadsGasRequestDataDto.class,
                 this.getPeriodicMeterReadsGasBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP
-        .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
+                .put(AdministrativeStatusTypeDataDto.class, this.setAdministrativeStatusBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(ActivityCalendarDataDto.class, this.setActivityCalendarBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GMeterInfoDto.class, this.setEncryptionKeyExchangeOnGMeterBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(SetAlarmNotificationsRequestDataDto.class,
@@ -159,6 +159,10 @@ public class BundleService {
     public List<ActionResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
             final BundleMessageDataContainerDto bundleMessageDataContainerDto) {
         final List<ActionResponseDto> actionValueObjectResponseDtoList = new ArrayList<>();
+        
+        if (CLAZZ_EXECUTOR_MAP.isEmpty()) {
+            postConstruct();
+        }
 
         for (final ActionDto actionValueObjectDto : bundleMessageDataContainerDto.getActionList()) {
 
@@ -183,4 +187,5 @@ public class BundleService {
 
         return actionValueObjectResponseDtoList;
     }
+ 
 }

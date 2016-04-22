@@ -457,5 +457,4 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsContainerDto> {
                 DataObject.newOctetStringData(OBIS_BYTES_ACTIVE_ENERGY_EXPORT_RATE_2),
                 DataObject.newInteger8Data(ATTRIBUTE_ID_VALUE), DataObject.newUInteger16Data(0))));
     }
-
 }
