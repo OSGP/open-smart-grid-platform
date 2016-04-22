@@ -1,3 +1,12 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.platform.cucumber;
 
 import java.util.regex.Matcher;
@@ -40,8 +49,8 @@ public class GetFirmwareVersion {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
 
-    private Pattern patternCorrelationUid = null;
-    private Matcher matcherCorrelationUid = null;
+    private Pattern correlationUidPattern;
+    private Matcher correlationUidMatcher;
 
     @Autowired
     private WsdlProjectFactory wsdlProjectFactory;
@@ -59,9 +68,9 @@ public class GetFirmwareVersion {
     }
 
     @And("^an organisation with OrganisationID \"([^\"]*)\"$")
-    public void an_organisation_with_OrganisationID(final String organisationID) throws Throwable {
+    public void anOrganisationWithOrganisationId(final String organisationID) throws Throwable {
         this.organisationId = organisationID;
-        this.patternCorrelationUid = Pattern.compile(this.organisationId + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
+        this.correlationUidPattern = Pattern.compile(this.organisationId + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
     }
 
     @When("^the get firmware version request is received$")
@@ -74,10 +83,10 @@ public class GetFirmwareVersion {
 
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
             this.response = ((MessageExchange) tcr).getResponseContent();
-            this.matcherCorrelationUid = this.patternCorrelationUid.matcher(this.response);
+            this.correlationUidMatcher = this.correlationUidPattern.matcher(this.response);
         }
-        this.matcherCorrelationUid.find();
-        this.correlationUid = this.matcherCorrelationUid.group();
+        this.correlationUidMatcher.find();
+        this.correlationUid = this.correlationUidMatcher.group();
 
         Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
     }
