@@ -20,14 +20,18 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequest
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationResponseDataDto;
 
 @Component
-public class RetrieveConfigurationObjectsBundleCommandExecutor implements
-        CommandExecutor<GetConfigurationRequestDataDto, ActionResponseDto> {
+public class RetrieveConfigurationObjectsBundleCommandExecutor extends
+BundleCommandExecutor<GetConfigurationRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RetrieveConfigurationObjectsBundleCommandExecutor.class);
 
     @Autowired
     private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
+
+    public RetrieveConfigurationObjectsBundleCommandExecutor() {
+        super(GetConfigurationRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

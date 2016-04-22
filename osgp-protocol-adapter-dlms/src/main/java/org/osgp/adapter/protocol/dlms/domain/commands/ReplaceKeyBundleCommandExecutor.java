@@ -21,16 +21,19 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 
 @Component
-public class ReplaceKeyBundleCommandExecutor implements CommandExecutor<KeySetDto, ActionResponseDto> {
+public class ReplaceKeyBundleCommandExecutor extends BundleCommandExecutor<KeySetDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyBundleCommandExecutor.class);
 
     @Autowired
     ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
+    public ReplaceKeyBundleCommandExecutor() {
+        super(KeySetDto.class);
+    }
+
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final KeySetDto keySetDto) {
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device, final KeySetDto keySetDto) {
 
         // Add the // Change AUTHENTICATION key.
         LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySetDto);
@@ -52,7 +55,6 @@ public class ReplaceKeyBundleCommandExecutor implements CommandExecutor<KeySetDt
                     + " was not successful");
         }
 
-        return new ActionResponseDto("Replace keys for device: " + device.getDeviceIdentification()
-                + " was successful");
+        return new ActionResponseDto("Replace keys for device: " + device.getDeviceIdentification() + " was successful");
     }
 }

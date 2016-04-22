@@ -20,8 +20,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 
 @Component()
-public class SetPushSetupAlarmBundleCommandExecutor implements
-        CommandExecutor<SetPushSetupAlarmRequestDataDto, ActionResponseDto> {
+public class SetPushSetupAlarmBundleCommandExecutor extends
+BundleCommandExecutor<SetPushSetupAlarmRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmBundleCommandExecutor.class);
 
@@ -29,6 +29,10 @@ public class SetPushSetupAlarmBundleCommandExecutor implements
 
     @Autowired
     private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
+
+    public SetPushSetupAlarmBundleCommandExecutor() {
+        super(SetPushSetupAlarmRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -40,17 +44,16 @@ public class SetPushSetupAlarmBundleCommandExecutor implements
                     setPushSetupAlarmRequestDataDto.getPushSetupAlarm());
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Setting push setup alarm for device: "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Setting push setup alarm for device: " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Setting push setup alarm for device: "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Setting push setup alarm for device: " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(ERROR_WHILE_PUSHING_SETUP_ALARM + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, ERROR_WHILE_PUSHING_SETUP_ALARM
-                    + device.getDeviceIdentification());
+            return new ActionResponseDto(e, ERROR_WHILE_PUSHING_SETUP_ALARM + device.getDeviceIdentification());
         }
     }
 

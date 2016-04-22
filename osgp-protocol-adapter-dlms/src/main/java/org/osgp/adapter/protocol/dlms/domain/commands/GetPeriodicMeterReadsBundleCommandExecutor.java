@@ -20,13 +20,17 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 
 @Component()
-public class GetPeriodicMeterReadsBundleCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsRequestDataDto, ActionResponseDto> {
+public class GetPeriodicMeterReadsBundleCommandExecutor extends
+BundleCommandExecutor<PeriodicMeterReadsRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsBundleCommandExecutor.class);
 
     @Autowired
     GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+
+    public GetPeriodicMeterReadsBundleCommandExecutor() {
+        super(PeriodicMeterReadsRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

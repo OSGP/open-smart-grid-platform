@@ -20,13 +20,17 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponse
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
 
 @Component
-public class GetFirmwareVersionsBundleCommandExecutor implements
-        CommandExecutor<GetFirmwareVersionRequestDataDto, ActionResponseDto> {
+public class GetFirmwareVersionsBundleCommandExecutor extends
+BundleCommandExecutor<GetFirmwareVersionRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionsBundleCommandExecutor.class);
 
     @Autowired
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
+
+    public GetFirmwareVersionsBundleCommandExecutor() {
+        super(GetFirmwareVersionRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

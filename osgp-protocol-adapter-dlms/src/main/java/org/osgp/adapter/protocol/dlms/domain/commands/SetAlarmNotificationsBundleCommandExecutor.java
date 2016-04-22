@@ -20,13 +20,17 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
 
 @Component()
-public class SetAlarmNotificationsBundleCommandExecutor implements
-        CommandExecutor<SetAlarmNotificationsRequestDataDto, ActionResponseDto> {
+public class SetAlarmNotificationsBundleCommandExecutor extends
+BundleCommandExecutor<SetAlarmNotificationsRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsBundleCommandExecutor.class);
 
     @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+
+    public SetAlarmNotificationsBundleCommandExecutor() {
+        super(SetAlarmNotificationsRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -38,11 +42,11 @@ public class SetAlarmNotificationsBundleCommandExecutor implements
             accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
                     alarmNotificationsRequestDataDto.getAlarmNotifications());
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Set alarm notification on meter "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Set alarm notification on meter " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Set alarm notification on meter "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Set alarm notification on meter " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while setting alarm notifications", e);

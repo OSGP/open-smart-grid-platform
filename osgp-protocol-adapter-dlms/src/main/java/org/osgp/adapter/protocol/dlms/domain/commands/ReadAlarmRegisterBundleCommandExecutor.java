@@ -20,13 +20,17 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Component
-public class ReadAlarmRegisterBundleCommandExecutor implements
-        CommandExecutor<ReadAlarmRegisterDataDto, ActionResponseDto> {
+public class ReadAlarmRegisterBundleCommandExecutor extends
+BundleCommandExecutor<ReadAlarmRegisterDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterBundleCommandExecutor.class);
 
     @Autowired
     private ReadAlarmRegisterCommandExecutor readAlarmRegisterCommandExecutor;
+
+    public ReadAlarmRegisterBundleCommandExecutor() {
+        super(ReadAlarmRegisterDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

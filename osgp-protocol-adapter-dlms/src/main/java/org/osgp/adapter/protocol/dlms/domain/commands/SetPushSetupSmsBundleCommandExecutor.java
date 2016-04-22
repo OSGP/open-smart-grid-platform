@@ -20,8 +20,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 
 @Component()
-public class SetPushSetupSmsBundleCommandExecutor extends SetPushSetupCommandExecutor implements
-        CommandExecutor<SetPushSetupSmsRequestDataDto, ActionResponseDto> {
+public class SetPushSetupSmsBundleCommandExecutor extends
+BundleCommandExecutor<SetPushSetupSmsRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsBundleCommandExecutor.class);
 
@@ -29,6 +29,10 @@ public class SetPushSetupSmsBundleCommandExecutor extends SetPushSetupCommandExe
 
     @Autowired
     private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
+
+    public SetPushSetupSmsBundleCommandExecutor() {
+        super(SetPushSetupSmsRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -40,11 +44,11 @@ public class SetPushSetupSmsBundleCommandExecutor extends SetPushSetupCommandExe
                     setPushSetupSmsRequestDataDto.getPushSetupSms());
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Setting push setup sms for device: "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Setting push setup sms for device: " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Setting push setup alarm for device: "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Setting push setup alarm for device: " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
@@ -52,5 +56,4 @@ public class SetPushSetupSmsBundleCommandExecutor extends SetPushSetupCommandExe
             return new ActionResponseDto(e, ERROR_WHILE_PUSHING_SETUP_SMS + device.getDeviceIdentification());
         }
     }
-
 }

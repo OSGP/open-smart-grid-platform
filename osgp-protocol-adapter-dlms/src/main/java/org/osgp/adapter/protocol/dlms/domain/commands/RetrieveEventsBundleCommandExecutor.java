@@ -20,7 +20,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContain
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 
 @Component()
-public class RetrieveEventsBundleCommandExecutor implements CommandExecutor<FindEventsQueryDto, ActionResponseDto> {
+public class RetrieveEventsBundleCommandExecutor extends BundleCommandExecutor<FindEventsQueryDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsBundleCommandExecutor.class);
 
@@ -29,6 +29,10 @@ public class RetrieveEventsBundleCommandExecutor implements CommandExecutor<Find
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public RetrieveEventsBundleCommandExecutor() {
+        super(FindEventsQueryDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

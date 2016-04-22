@@ -20,13 +20,17 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
 @Component()
-public class SetSpecialDaysBundleCommandExecutor implements
-        CommandExecutor<SpecialDaysRequestDataDto, ActionResponseDto> {
+public class SetSpecialDaysBundleCommandExecutor extends
+BundleCommandExecutor<SpecialDaysRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetSpecialDaysBundleCommandExecutor.class);
 
     @Autowired
     SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
+
+    public SetSpecialDaysBundleCommandExecutor() {
+        super(SpecialDaysRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -38,8 +42,7 @@ public class SetSpecialDaysBundleCommandExecutor implements
             if (AccessResultCode.SUCCESS.equals(resultCode)) {
                 return new ActionResponseDto("Set special days was successful");
             } else {
-                return new ActionResponseDto("Set special days was not successful. Result code: "
-                        + resultCode);
+                return new ActionResponseDto("Set special days was not successful. Result code: " + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Set special days was not successful", e);

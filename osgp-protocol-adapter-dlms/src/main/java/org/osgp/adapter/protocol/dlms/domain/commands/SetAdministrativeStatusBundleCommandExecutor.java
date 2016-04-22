@@ -21,8 +21,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
 @Component()
-public class SetAdministrativeStatusBundleCommandExecutor implements
-        CommandExecutor<AdministrativeStatusTypeDataDto, ActionResponseDto> {
+public class SetAdministrativeStatusBundleCommandExecutor extends
+BundleCommandExecutor<AdministrativeStatusTypeDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusBundleCommandExecutor.class);
     private static final String WAS_NOT_SUCCESSFUL = " was not successful";
@@ -30,6 +30,10 @@ public class SetAdministrativeStatusBundleCommandExecutor implements
 
     @Autowired
     private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
+
+    public SetAdministrativeStatusBundleCommandExecutor() {
+        super(AdministrativeStatusTypeDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

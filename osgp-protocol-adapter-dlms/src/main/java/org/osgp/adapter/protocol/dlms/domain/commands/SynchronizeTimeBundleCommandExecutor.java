@@ -20,8 +20,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
 
 @Component()
-public class SynchronizeTimeBundleCommandExecutor implements
-        CommandExecutor<SynchronizeTimeRequestDataDto, ActionResponseDto> {
+public class SynchronizeTimeBundleCommandExecutor extends
+BundleCommandExecutor<SynchronizeTimeRequestDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeBundleCommandExecutor.class);
 
@@ -29,6 +29,10 @@ public class SynchronizeTimeBundleCommandExecutor implements
 
     @Autowired
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
+
+    public SynchronizeTimeBundleCommandExecutor() {
+        super(SynchronizeTimeRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -39,17 +43,16 @@ public class SynchronizeTimeBundleCommandExecutor implements
             accessResultCode = this.synchronizeTimeCommandExecutor.execute(conn, device, null);
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Synchronizing time for device: "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Synchronizing time for device: " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Synchronizing time for device: "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Synchronizing time for device: " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(ERROR_WHILE_SYNCHRONIZING_TIME + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, ERROR_WHILE_SYNCHRONIZING_TIME
-                    + device.getDeviceIdentification());
+            return new ActionResponseDto(e, ERROR_WHILE_SYNCHRONIZING_TIME + device.getDeviceIdentification());
         }
     }
 }

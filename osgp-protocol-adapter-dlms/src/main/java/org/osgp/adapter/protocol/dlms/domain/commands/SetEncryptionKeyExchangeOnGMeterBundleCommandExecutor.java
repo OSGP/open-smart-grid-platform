@@ -24,8 +24,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component()
-public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor implements
-CommandExecutor<GMeterInfoDto, ActionResponseDto> {
+public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor extends
+        BundleCommandExecutor<GMeterInfoDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor.class);
@@ -35,6 +35,10 @@ CommandExecutor<GMeterInfoDto, ActionResponseDto> {
 
     @Autowired
     private DomainHelperService domainHelperService;
+
+    public SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor() {
+        super(GMeterInfoDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -46,7 +50,7 @@ CommandExecutor<GMeterInfoDto, ActionResponseDto> {
             final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                     gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                             SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                    SecurityKeyType.G_METER_MASTER).getKey());
+                            SecurityKeyType.G_METER_MASTER).getKey());
 
             final MethodResultCode methodResultCode = this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(
                     conn, device, protocolMeterInfo);
@@ -66,8 +70,7 @@ CommandExecutor<GMeterInfoDto, ActionResponseDto> {
                     + gMeterInfo.getDeviceIdentification());
         } catch (final FunctionalException e) {
             LOGGER.error("Error while looking up G-Meter " + gMeterInfo.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, "Error while looking up G-Meter "
-                    + gMeterInfo.getDeviceIdentification());
+            return new ActionResponseDto(e, "Error while looking up G-Meter " + gMeterInfo.getDeviceIdentification());
         }
 
     }

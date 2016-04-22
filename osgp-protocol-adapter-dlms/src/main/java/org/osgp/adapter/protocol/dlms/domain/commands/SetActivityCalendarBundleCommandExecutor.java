@@ -20,8 +20,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 
 @Component()
-public class SetActivityCalendarBundleCommandExecutor implements
-CommandExecutor<ActivityCalendarDataDto, ActionResponseDto> {
+public class SetActivityCalendarBundleCommandExecutor extends
+        BundleCommandExecutor<ActivityCalendarDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarBundleCommandExecutor.class);
 
@@ -30,6 +30,10 @@ CommandExecutor<ActivityCalendarDataDto, ActionResponseDto> {
 
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
+
+    public SetActivityCalendarBundleCommandExecutor() {
+        super(ActivityCalendarDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

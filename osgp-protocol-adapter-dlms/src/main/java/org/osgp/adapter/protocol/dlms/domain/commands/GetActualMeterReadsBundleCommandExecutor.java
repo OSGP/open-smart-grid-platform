@@ -20,13 +20,17 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 
 @Component()
-public class GetActualMeterReadsBundleCommandExecutor implements
-        CommandExecutor<ActualMeterReadsDataDto, ActionResponseDto> {
+public class GetActualMeterReadsBundleCommandExecutor extends
+BundleCommandExecutor<ActualMeterReadsDataDto, ActionResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsBundleCommandExecutor.class);
 
     @Autowired
     GetActualMeterReadsCommandExecutor getActualMeterReadsCommandExecutor;
+
+    public GetActualMeterReadsBundleCommandExecutor() {
+        super(ActualMeterReadsDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -41,6 +45,5 @@ public class GetActualMeterReadsBundleCommandExecutor implements
             return new ActionResponseDto(e, "Error while getting actual meter reads from device: "
                     + device.getDeviceIdentification());
         }
-
     }
 }
