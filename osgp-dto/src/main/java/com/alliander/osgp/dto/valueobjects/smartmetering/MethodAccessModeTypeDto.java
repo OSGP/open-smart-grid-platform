@@ -13,12 +13,4 @@ public enum MethodAccessModeTypeDto {
     ACCESS,
     AUTHENTICATED_ACCESS;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static MethodAccessModeTypeDto fromValue(final String v) {
-        return valueOf(v);
-    }
-
 }
