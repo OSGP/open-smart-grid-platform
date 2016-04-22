@@ -7,6 +7,7 @@
  */
 package org.osgp.adapter.protocol.dlms.infra.messaging;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.annotation.PostConstruct;
@@ -146,11 +147,15 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
             LOGGER.error("Unexpected exception during {}", this.deviceRequestMessageType.name(), exception);
 
             this.sendResponseMessage(messageMetadata, ResponseMessageResultType.NOT_OK, exception,
-                            this.responseMessageSender, message.getObject(), isScheduled);
+                    this.responseMessageSender, message.getObject(), isScheduled);
         } finally {
             if (conn != null) {
                 LOGGER.info("Closing connection with {}", device.getDeviceIdentification());
-                conn.close();
+                try {
+                    conn.close();
+                } catch (final IOException e) {
+                    LOGGER.error("Error while closing connection", e);
+                }
             }
         }
     }
@@ -179,7 +184,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
     }
 
     protected Serializable handleMessage(final Serializable requestObject) throws OsgpException,
-    ProtocolAdapterException {
+            ProtocolAdapterException {
         throw new UnsupportedOperationException(
                 "handleMessage(Serializable) should be overriden by a subclass, or usesDeviceConnection should return true.");
     }
@@ -207,10 +212,11 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
                 .domainVersion(dlmsDeviceMessageMetadata.getDomainVersion()).result(result)
                 .osgpException(osgpException).dataObject(responseObject)
                 .retryCount(dlmsDeviceMessageMetadata.getRetryCount()).retryHeader(retryHeader).scheduled(isScheduled)
-        .build();
+                .build();
 
         responseMessageSender.send(responseMessage);
     }
+
     /**
      * Used to determine if the handleMessage needs a device connection or not.
      * Default value is true, override to alter behaviour of subclasses.
