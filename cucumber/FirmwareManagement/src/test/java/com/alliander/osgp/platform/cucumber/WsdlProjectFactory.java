@@ -11,8 +11,8 @@ import com.eviware.soapui.support.SoapUIException;
 
 @Component
 public class WsdlProjectFactory {
-    public WsdlTestCase createWsdlTestCase(final String SOAP_PROJECT_XML, final String TEST_SUITE_XML,
-            final String TEST_CASE_XML) throws XmlException, IOException, SoapUIException {
-        return new WsdlProject(SOAP_PROJECT_XML).getTestSuiteByName(TEST_SUITE_XML).getTestCaseByName(TEST_CASE_XML);
+    public WsdlTestCase createWsdlTestCase(final String soapProjectXml, final String testSuiteXml,
+            final String testCaseXml) throws XmlException, IOException, SoapUIException {
+        return new WsdlProject(soapProjectXml).getTestSuiteByName(testSuiteXml).getTestCaseByName(testCaseXml);
     }
 }

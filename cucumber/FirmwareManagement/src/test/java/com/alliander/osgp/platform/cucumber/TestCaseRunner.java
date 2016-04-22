@@ -13,8 +13,8 @@ import com.eviware.soapui.support.SoapUIException;
 
 @Component
 public class TestCaseRunner {
-    public MyTestCaseResult runWsdlTestCase(final TestCase testCase, final String deviceId,
-            final String organisationId, final String correlationUid, final String TEST_CASE_NAME_REQUEST)
+    public TestCaseResult runWsdlTestCase(final TestCase testCase, final String deviceId,
+            final String organisationId, final String correlationUid, final String testCaseNameRequest)
             throws XmlException, IOException, SoapUIException {
 
         final WsdlTestCase wsdlTestCase = (WsdlTestCase) testCase;
@@ -29,6 +29,6 @@ public class TestCaseRunner {
             Thread.currentThread().interrupt();
         }
 
-        return new MyTestCaseResult(wsdlTestCaseRunner.runTestStepByName(TEST_CASE_NAME_REQUEST), wsdlTestCaseRunner);
+        return new TestCaseResult(wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest), wsdlTestCaseRunner);
     }
 }
