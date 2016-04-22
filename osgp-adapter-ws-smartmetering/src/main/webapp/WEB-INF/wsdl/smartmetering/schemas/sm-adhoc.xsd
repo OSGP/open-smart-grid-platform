@@ -26,7 +26,6 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-
   <xsd:element name="SynchronizeTimeRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -96,6 +95,15 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+  
+  <xsd:complexType name="GetAssociationLnObjectsRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
   
   <xsd:element name="GetAssociationLnObjectsRequest">
     <xsd:complexType>
