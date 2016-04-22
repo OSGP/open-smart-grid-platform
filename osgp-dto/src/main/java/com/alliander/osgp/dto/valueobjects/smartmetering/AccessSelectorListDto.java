@@ -15,7 +15,7 @@ import java.util.List;
 public class AccessSelectorListDto implements Serializable {
     private static final long serialVersionUID = 6844148787752579231L;
 
-    protected final List<Integer> accessSelector;
+    private final List<Integer> accessSelector;
 
     public AccessSelectorListDto(final List<Integer> accessSelector) {
         this.accessSelector = Collections.unmodifiableList(accessSelector);
