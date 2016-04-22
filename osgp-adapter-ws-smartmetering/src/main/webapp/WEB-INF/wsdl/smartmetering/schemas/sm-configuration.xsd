@@ -85,6 +85,16 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="GetSpecificConfigurationObjectRequestData">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="SpecificConfigurationObject" type="tns:SpecificConfigurationObject" minOccurs="1" maxOccurs="1"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
 	<xsd:complexType name="FirmwareVersion">
 		<xsd:sequence>
 			<xsd:element name="version" type="xsd:string"/>
@@ -657,4 +667,28 @@
         	</xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+    
+	<xsd:complexType name="SpecificConfigurationObject">
+		<xsd:complexContent>
+			<xsd:extension base="common:Command">
+				<xsd:sequence>
+					<xsd:element name="ClassId" type="xsd:int" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="Attribute" type="xsd:int" minOccurs="1" maxOccurs="1" />
+					<xsd:element name="ObisCode" type="tns:ObisCodeValues" minOccurs="1" maxOccurs="1" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+    
+	<xsd:complexType name="ObisCodeValues">
+		<xsd:sequence>
+			<xsd:element name="a" type="xsd:byte" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="b" type="xsd:byte" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="c" type="xsd:byte" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="d" type="xsd:byte" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="e" type="xsd:byte" minOccurs="1" maxOccurs="1" />
+			<xsd:element name="f" type="xsd:byte" minOccurs="1" maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
+    
 </xsd:schema>
