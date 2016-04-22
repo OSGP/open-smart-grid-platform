@@ -153,7 +153,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
          * When no specific capture_objects are selected with selective access:
          *
          * {8,0-0:1.0.0.255,2,0};                                    position 0
-         * {1,0-0:96.10.2.255,2,0}                                   position 1GetPeriodicMeterReadsGasCommandExecutor
+         * {1,0-0:96.10.2.255,2,0}                                   position 1
          * {3,1-0:1.8.1.255,2,0};                                    position 2
          * {3,1-0:1.8.2.255,2,0};                                    position 3
          * {3,1-0:2.8.1.255,2,0};                                    position 4
@@ -322,7 +322,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         final PeriodicMeterReadsGasDto nextPeriodicMeterReads = new PeriodicMeterReadsGasDto(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).resultData(), "gasValue"), captureTime,
-                        amrProfileStatusCode);
+                amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
@@ -606,6 +606,6 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         objectDefinitions.add(DataObject.newStructureData(Arrays.asList(DataObject.newUInteger16Data(CLASS_ID_MBUS),
                 DataObject.newOctetStringData(OBIS_BYTES_M_BUS_MASTER_VALUE_1_CHANNEL_MAP.get(channel
                         .getChannelNumber())), DataObject.newInteger8Data(ATTRIBUTE_M_BUS_MASTER_VALUE_CAPTURE_TIME),
-                        DataObject.newUInteger16Data(0))));
+                DataObject.newUInteger16Data(0))));
     }
 }

@@ -22,8 +22,7 @@ import org.joda.time.DateTime;
 public class ActionDtoBuilder {
 
     public FindEventsQueryDto makeFindEventsQueryDto() {
-        return new FindEventsQueryDto(EventLogCategoryDto.STANDARD_EVENT_LOG, 
-                new DateTime(), new DateTime());
+        return new FindEventsQueryDto(EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
     }
 
     public ActualMeterReadsDataDto makeActualMeterReadsDataDtoAction() {
@@ -37,7 +36,7 @@ public class ActionDtoBuilder {
     public SpecialDaysRequestDataDto makeSpecialDaysRequestDataDto() {
         final List<SpecialDayDto> specialDays = new ArrayList<>();
         specialDays.add(new SpecialDayDto(new CosemDateDto(2016, 1, 1), 1));
-        SpecialDaysRequestDataDto result = new SpecialDaysRequestDataDto(specialDays);
+        final SpecialDaysRequestDataDto result = new SpecialDaysRequestDataDto(specialDays);
         return result;
     }
 
@@ -59,11 +58,12 @@ public class ActionDtoBuilder {
 
     public ActivityCalendarDataDto makeActivityCalendarDataDto() {
         final List<SeasonProfileDto> profiles = new ArrayList<>();
-        final ActivityCalendarDto activity = new ActivityCalendarDto("todo", makeCosemDateTimeDto(), profiles);
+        final ActivityCalendarDto activity = new ActivityCalendarDto("calenderName", this.makeCosemDateTimeDto(),
+                profiles);
         final ActivityCalendarDataDto result = new ActivityCalendarDataDto(activity);
         return result;
     }
-    
+
     public GMeterInfoDto makeGMeterInfoDto() {
         return new GMeterInfoDto(1, "EXXXX001692675614");
     }
@@ -88,7 +88,7 @@ public class ActionDtoBuilder {
         final CosemObisCodeDto cosemCode = new CosemObisCodeDto(1, 1, 1, 1, 1, 1);
         final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
-                TransportServiceTypeDto.TCP, "todo", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
+                TransportServiceTypeDto.TCP, "destination", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
         final PushSetupAlarmDto pushAlarm = new PushSetupAlarmDto(cosemCode, objectDefinitions, destinationAndMethod,
                 windowElemenents, 1, 1, 1);
@@ -100,7 +100,7 @@ public class ActionDtoBuilder {
         final CosemObisCodeDto cosemCode = new CosemObisCodeDto(1, 1, 1, 1, 1, 1);
         final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
-                TransportServiceTypeDto.TCP, "todo", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
+                TransportServiceTypeDto.TCP, "destination", MessageTypeDto.XML_ENCODED_X_DLMS_APDU);
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
         final PushSetupSmsDto setupSms = new PushSetupSmsDto(cosemCode, objectDefinitions, destinationAndMethod,
                 windowElemenents, 1, 1, 1);
@@ -119,10 +119,9 @@ public class ActionDtoBuilder {
     public GetFirmwareVersionRequestDataDto makeGetFirmwareVersionRequestDataDto() {
         return new GetFirmwareVersionRequestDataDto();
     }
-    
+
     public CosemDateTimeDto makeCosemDateTimeDto() {
         return new CosemDateTimeDto(new DateTime());
     }
-
 
 }

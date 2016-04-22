@@ -116,7 +116,7 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
     }
 
     public AlarmNotificationsDto retrieveCurrentAlarmNotifications(final ClientConnection conn) throws IOException,
-    TimeoutException, ProtocolAdapterException {
+            TimeoutException, ProtocolAdapterException {
 
         final AttributeAddress alarmFilterValue = new AttributeAddress(CLASS_ID, OBIS_CODE, ATTRIBUTE_ID);
 
@@ -173,18 +173,19 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
         /*
          * Create a new (modifyable) set of alarm notifications, based on the
          * notifications to set.
-         *
+         * 
          * Next, add all notifications on the device. These will only really be
          * added to the new set of notifications if it did not contain a
          * notification for the alarm type for which the notification is added.
-         *
+         * 
          * This works because of the specification of addAll for the set,
          * claiming elements will only be added if not already present, and the
          * defintion of equals on the AlarmNotification, ensuring only a simgle
          * setting per AlarmType.
          */
 
-        final Set<AlarmNotificationDto> notificationsToSet = new TreeSet<>(alarmNotificationsToSet.getAlarmNotificationsSet());
+        final Set<AlarmNotificationDto> notificationsToSet = new TreeSet<>(
+                alarmNotificationsToSet.getAlarmNotificationsSet());
 
         notificationsToSet.addAll(alarmNotificationsOnDevice.getAlarmNotificationsSet());
 
@@ -216,6 +217,5 @@ public class SetAlarmNotificationsCommandExecutor implements CommandExecutor<Ala
 
         return bitSet.toLongArray()[0];
     }
-    
-    
+
 }
