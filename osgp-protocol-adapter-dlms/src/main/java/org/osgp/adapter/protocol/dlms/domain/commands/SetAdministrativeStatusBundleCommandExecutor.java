@@ -7,50 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
-@Component()
-public class SetAdministrativeStatusBundleCommandExecutor implements
-        CommandExecutor<AdministrativeStatusTypeDataDto, ActionResponseDto> {
+public interface SetAdministrativeStatusBundleCommandExecutor extends CommandExecutor<AdministrativeStatusTypeDataDto, ActionResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusBundleCommandExecutor.class);
-    private static final String WAS_NOT_SUCCESSFUL = " was not successful";
-    private static final String SET_ADMINISTRATIVE_STATUS_TO = "Set administrative status to ";
-
-    @Autowired
-    private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final AdministrativeStatusTypeDataDto administrativeStatusType) {
-
-        final AdministrativeStatusTypeDto adminStatusType = administrativeStatusType.getAdministrativeStatusType();
-
-        try {
-
-            final AccessResultCode resultCode = this.setAdministrativeStatusCommandExecutor.execute(conn, device,
-                    adminStatusType);
-            if (AccessResultCode.SUCCESS.equals(resultCode)) {
-                return new ActionResponseDto(SET_ADMINISTRATIVE_STATUS_TO + adminStatusType + " was successful");
-            } else {
-                return new ActionResponseDto(SET_ADMINISTRATIVE_STATUS_TO + adminStatusType
-                        + " was not successful. Result code: " + resultCode);
-            }
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error(SET_ADMINISTRATIVE_STATUS_TO + adminStatusType + WAS_NOT_SUCCESSFUL, e);
-            return new ActionResponseDto(e, SET_ADMINISTRATIVE_STATUS_TO + adminStatusType + WAS_NOT_SUCCESSFUL);
-        }
-
-    }
 }
