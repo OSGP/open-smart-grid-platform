@@ -7,41 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 
-@Component()
-public class RetrieveEventsBundleCommandExecutor implements CommandExecutor<FindEventsQueryDto, ActionResponseDto> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsBundleCommandExecutor.class);
-
-    @Autowired
-    RetrieveEventsCommandExecutor retrieveEventsCommandExecutor;
-
-    @Autowired
-    private DlmsHelperService dlmsHelperService;
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsQueryDto findEventsQuery) {
-
-        try {
-            return new EventMessageDataContainerDto(this.retrieveEventsCommandExecutor.execute(conn, device,
-                    findEventsQuery));
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Error while retrieving " + findEventsQuery.getEventLogCategory() + "events from device: "
-                    + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, "Error while retrieving " + findEventsQuery.getEventLogCategory()
-                    + "events from device: " + device.getDeviceIdentification());
-        }
-    }
+public interface RetrieveEventsBundleCommandExecutor extends CommandExecutor<FindEventsQueryDto, ActionResponseDto> {
 }

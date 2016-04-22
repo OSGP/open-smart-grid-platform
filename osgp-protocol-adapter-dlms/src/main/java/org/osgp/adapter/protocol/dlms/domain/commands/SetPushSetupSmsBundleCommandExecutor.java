@@ -7,50 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.AccessResultCode;
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 
-@Component()
-public class SetPushSetupSmsBundleCommandExecutor extends SetPushSetupCommandExecutor implements
-        CommandExecutor<SetPushSetupSmsRequestDataDto, ActionResponseDto> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsBundleCommandExecutor.class);
-
-    private static final String ERROR_WHILE_PUSHING_SETUP_SMS = "Error while setting push setup sms for device: ";
-
-    @Autowired
-    private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetPushSetupSmsRequestDataDto setPushSetupSmsRequestDataDto) {
-
-        AccessResultCode accessResultCode;
-        try {
-            accessResultCode = this.setPushSetupSmsCommandExecutor.execute(conn, device,
-                    setPushSetupSmsRequestDataDto.getPushSetupSms());
-
-            if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Setting push setup sms for device: "
-                        + device.getDeviceIdentification() + " was successful");
-            } else {
-                return new ActionResponseDto("Setting push setup alarm for device: "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
-            }
-
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error(ERROR_WHILE_PUSHING_SETUP_SMS + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, ERROR_WHILE_PUSHING_SETUP_SMS + device.getDeviceIdentification());
-        }
-    }
+public interface SetPushSetupSmsBundleCommandExecutor extends  CommandExecutor<SetPushSetupSmsRequestDataDto, ActionResponseDto>  {
 
 }

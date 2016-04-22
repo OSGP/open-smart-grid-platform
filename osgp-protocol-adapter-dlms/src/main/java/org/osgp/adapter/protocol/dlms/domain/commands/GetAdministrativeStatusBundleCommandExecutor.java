@@ -7,41 +7,10 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.mapping.ConfigurationMapper;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 
-@Component()
-public class GetAdministrativeStatusBundleCommandExecutor implements
+public interface GetAdministrativeStatusBundleCommandExecutor extends
         CommandExecutor<ActionRequestDto, ActionResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusBundleCommandExecutor.class);
-
-    @Autowired
-    GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
-
-    @Autowired
-    private ConfigurationMapper configurationMapper;
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActionRequestDto useless) {
-
-        try {
-            return new AdministrativeStatusTypeResponseDto(this.getAdministrativeStatusCommandExecutor.execute(conn,
-                    device, null));
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Error while getting administrative status type", e);
-            return new ActionResponseDto(e, "Error while getting administrative status type");
-        }
-    }
 }

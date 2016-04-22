@@ -7,39 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
 
-@Component
-public class GetFirmwareVersionsBundleCommandExecutor implements
-        CommandExecutor<GetFirmwareVersionRequestDataDto, ActionResponseDto> {
+public interface GetFirmwareVersionsBundleCommandExecutor extends CommandExecutor<GetFirmwareVersionRequestDataDto, ActionResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionsBundleCommandExecutor.class);
-
-    @Autowired
-    private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetFirmwareVersionRequestDataDto getFirmwareVersionRequestDataDto) {
-
-        try {
-            return new FirmwareVersionResponseDataDto(this.getFirmwareVersionsCommandExecutor.execute(conn, device,
-                    null));
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Error while getting firmware versions from device: " + device.getDeviceIdentification(), e);
-
-            return new ActionResponseDto(e, "Error while getting firmware versions from device: "
-                    + device.getDeviceIdentification());
-        }
-    }
 }

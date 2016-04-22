@@ -21,7 +21,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetFirmwareVersionsBundleC
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyBundleCommandExecutorImpl;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarBundleCommandExecutor;
@@ -123,7 +123,7 @@ public class BundleService {
     private GetFirmwareVersionsBundleCommandExecutor getFirmwareVersionsBundleCommandExecutor;
 
     @Autowired
-    private ReplaceKeyBundleCommandExecutor replaceKeyBundleCommandExecutor;
+    private ReplaceKeyBundleCommandExecutorImpl replaceKeyBundleCommandExecutor;
 
     private final static Map<Class<? extends ActionRequestDto>, CommandExecutor<? extends ActionRequestDto, ? extends ActionResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
 
@@ -158,6 +158,10 @@ public class BundleService {
     public BundleMessageDataContainerDto callExecutors(final ClientConnection conn, final DlmsDevice device,
             final BundleMessageDataContainerDto bundleMessageDataContainerDto) {
 
+        if (CLAZZ_EXECUTOR_MAP.isEmpty()) {
+            this.postConstruct();
+        }
+
         for (final ActionDto actionDto : bundleMessageDataContainerDto.getActionList()) {
 
             // Only execute the request when there is no response available yet.
@@ -183,4 +187,5 @@ public class BundleService {
 
         return bundleMessageDataContainerDto;
     }
+
 }
