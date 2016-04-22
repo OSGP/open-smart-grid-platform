@@ -1,3 +1,10 @@
+/**
+ * Copyright 2016 Smart Society Services B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.util.ArrayList;
@@ -10,25 +17,21 @@ import org.joda.time.DateTime;
 
 /**
  * Helper class to create ActionDto objects.
- * @author dev
  *
  */
 public class ActionDtoBuilder {
 
     public FindEventsQueryDto makeFindEventsQueryDto() {
-        FindEventsQueryDto result = new FindEventsQueryDto(EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(),
-                new DateTime());
-        return result;
+        return new FindEventsQueryDto(EventLogCategoryDto.STANDARD_EVENT_LOG, 
+                new DateTime(), new DateTime());
     }
 
     public ActualMeterReadsDataDto makeActualMeterReadsDataDtoAction() {
-        ActualMeterReadsDataDto result = new ActualMeterReadsDataDto();
-        return result;
+        return new ActualMeterReadsDataDto();
     }
 
     public GetAdministrativeStatusDataDto makeGetAdministrativeStatusDataDto() {
-        final GetAdministrativeStatusDataDto result = new GetAdministrativeStatusDataDto();
-        return result;
+        return new GetAdministrativeStatusDataDto();
     }
 
     public SpecialDaysRequestDataDto makeSpecialDaysRequestDataDto() {
@@ -39,26 +42,19 @@ public class ActionDtoBuilder {
     }
 
     public ReadAlarmRegisterDataDto makeReadAlarmRegisterDataDto() {
-        final ReadAlarmRegisterDataDto result = new ReadAlarmRegisterDataDto();
-        return result;
+        return new ReadAlarmRegisterDataDto();
     }
 
     public PeriodicMeterReadsRequestDataDto makePeriodicMeterReadsRequestDataDto() {
-        PeriodicMeterReadsRequestDataDto result = new PeriodicMeterReadsRequestDataDto(PeriodTypeDto.DAILY, new Date(),
-                new Date());
-        return result;
+        return new PeriodicMeterReadsRequestDataDto(PeriodTypeDto.DAILY, new Date(), new Date());
     }
 
     public PeriodicMeterReadsGasRequestDataDto makePeriodicMeterReadsGasRequestDataDto() {
-        PeriodicMeterReadsGasRequestDataDto result = new PeriodicMeterReadsGasRequestDataDto(PeriodTypeDto.DAILY,
-                new Date(), new Date(), ChannelDto.ONE);
-        return result;
+        return new PeriodicMeterReadsGasRequestDataDto(PeriodTypeDto.DAILY, new Date(), new Date(), ChannelDto.ONE);
     }
 
     public AdministrativeStatusTypeDataDto makeAdministrativeStatusTypeDataDto() {
-        final AdministrativeStatusTypeDataDto result = new AdministrativeStatusTypeDataDto(
-                AdministrativeStatusTypeDto.ON);
-        return result;
+        return new AdministrativeStatusTypeDataDto(AdministrativeStatusTypeDto.ON);
     }
 
     public ActivityCalendarDataDto makeActivityCalendarDataDto() {
@@ -69,8 +65,7 @@ public class ActionDtoBuilder {
     }
     
     public GMeterInfoDto makeGMeterInfoDto() {
-        final GMeterInfoDto result = new GMeterInfoDto(1, "todo");
-        return result;
+        return new GMeterInfoDto(1, "EXXXX001692675614");
     }
 
     public SetAlarmNotificationsRequestDataDto makeSetAlarmNotificationsRequestDataDto() {
@@ -114,18 +109,15 @@ public class ActionDtoBuilder {
     }
 
     public SynchronizeTimeRequestDataDto makeSynchronizeTimeRequestDataDto() {
-        final SynchronizeTimeRequestDataDto result = new SynchronizeTimeRequestDataDto();
-        return result;
+        return new SynchronizeTimeRequestDataDto();
     }
 
     public GetConfigurationRequestDataDto makeGetConfigurationRequestDataDto() {
-        final GetConfigurationRequestDataDto result = new GetConfigurationRequestDataDto();
-        return result;
+        return new GetConfigurationRequestDataDto();
     }
 
     public GetFirmwareVersionRequestDataDto makeGetFirmwareVersionRequestDataDto() {
-        final GetFirmwareVersionRequestDataDto result = new GetFirmwareVersionRequestDataDto();
-        return result;
+        return new GetFirmwareVersionRequestDataDto();
     }
     
     public CosemDateTimeDto makeCosemDateTimeDto() {
