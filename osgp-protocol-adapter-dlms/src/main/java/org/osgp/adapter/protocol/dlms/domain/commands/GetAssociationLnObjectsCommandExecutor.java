@@ -7,11 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import org.openmuc.jdlms.AttributeAddress;
 import org.openmuc.jdlms.ClientConnection;
@@ -19,7 +17,6 @@ import org.openmuc.jdlms.GetResult;
 import org.openmuc.jdlms.ObisCode;
 import org.openmuc.jdlms.datatypes.DataObject;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,21 +69,8 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
         LOGGER.debug("Retrieving Association LN objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        List<GetResult> getResultList;
-        try {
-            getResultList = conn.get(attributeAddress);
-        } catch (IOException | TimeoutException e) {
-            throw new ConnectionException(e);
-        }
-
-        if (getResultList.isEmpty()) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving Association LN objects.");
-        }
-
-        if (getResultList.size() > 1 || getResultList.get(0) == null) {
-            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving Association LN objects, got "
-                    + getResultList.size());
-        }
+        final List<GetResult> getResultList = this.dlmsHelperService.getAndCheck(conn, device,
+                "Association LN Objects", attributeAddress);
 
         final DataObject resultData = getResultList.get(0).resultData();
         if (!resultData.isComplex()) {
@@ -95,7 +79,7 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
 
         @SuppressWarnings("unchecked")
         final List<AssociationLnListElementDto> elements = this
-        .convertAssociationLnList((List<DataObject>) getResultList.get(0).resultData().value());
+                .convertAssociationLnList((List<DataObject>) getResultList.get(0).resultData().value());
 
         return new AssociationLnListTypeDto(elements);
     }
@@ -110,9 +94,9 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
             final AssociationLnListElementDto element = new AssociationLnListElementDto(
                     this.dlmsHelperService.readLong(obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), new Integer(
                             (short) obisCodeMetaDataList.get(VERSION_INDEX).value()),
-                            this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
-                            "AssociationLN Element"), this.convertAccessRights(obisCodeMetaDataList
-                                            .get(ACCESS_RIGHTS_INDEX)));
+                    this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
+                                    "AssociationLN Element"), this.convertAccessRights(obisCodeMetaDataList
+                            .get(ACCESS_RIGHTS_INDEX)));
 
             elements.add(element);
         }
@@ -130,13 +114,13 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
 
         @SuppressWarnings("unchecked")
         final AttributeAccessDescriptorDto attributeAccessDescriptor = this
-                .convertAttributeAccessDescriptor((List<DataObject>) accessRights.get(
-                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX).value());
+        .convertAttributeAccessDescriptor((List<DataObject>) accessRights.get(
+                ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX).value());
 
         @SuppressWarnings("unchecked")
         final MethodAccessDescriptorDto methodAccessDescriptor = this
-                .convertMethodAttributeAccessDescriptor((List<DataObject>) accessRights.get(
-                        ACCESS_RIGHTS_METHOD_ACCESS_INDEX).value());
+        .convertMethodAttributeAccessDescriptor((List<DataObject>) accessRights.get(
+                ACCESS_RIGHTS_METHOD_ACCESS_INDEX).value());
 
         return new AccessRightDto(attributeAccessDescriptor, methodAccessDescriptor);
     }
@@ -162,7 +146,7 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
                     attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ATTRIBUTE_ID_INDEX), "").intValue(),
                     AttributeAccessModeTypeDto.values()[this.dlmsHelperService.readLong(
                             attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_MODE_INDEX), "").intValue()],
-                    asl));
+                            asl));
         }
 
         return new AttributeAccessDescriptorDto(attributeAccessItems);
