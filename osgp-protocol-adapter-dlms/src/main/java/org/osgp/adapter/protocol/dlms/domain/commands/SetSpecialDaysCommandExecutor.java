@@ -39,11 +39,11 @@ public class SetSpecialDaysCommandExecutor implements CommandExecutor<List<Speci
     public AccessResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final List<SpecialDayDto> specialDays) throws ProtocolAdapterException {
 
-        final List<DataObject> specialDayEntries = new ArrayList<DataObject>();
+        final List<DataObject> specialDayEntries = new ArrayList<>();
         int i = 0;
         for (final SpecialDayDto specialDay : specialDays) {
 
-            final List<DataObject> specDayEntry = new ArrayList<DataObject>();
+            final List<DataObject> specDayEntry = new ArrayList<>();
             specDayEntry.add(DataObject.newUInteger16Data(i));
             specDayEntry.add(this.dlmsHelperService.asDataObject(specialDay.getSpecialDayDate()));
             specDayEntry.add(DataObject.newUInteger8Data((short) specialDay.getDayId()));
