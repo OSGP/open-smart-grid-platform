@@ -35,9 +35,7 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
     @Autowired
     private DlmsHelperService dlmsHelper;
 
-    private static final String DATA_UNAVAILABLE = "DATA UNAVAILABLE";
-    
-    private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveConfigurationObjectsCommandExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetSpecificConfigurationObjectCommandExecutorImpl.class);
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -55,7 +53,7 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
                 final DataObject dataObject = getResultList.get(0).resultData();
                 return new ActionResponseDto(this.dlmsHelper.getDebugInfo(dataObject));
             } else {
-                return new ActionResponseDto(DATA_UNAVAILABLE);               
+                return new ActionResponseDto(getResultList.get(0).resultCode().toString());               
             }
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
@@ -72,7 +70,7 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
                     + getResultList.size());
         }
 
-        return getResultList.get(0).resultData() != null && getResultList.get(0).resultData().isNumber();
+        return getResultList.get(0).resultData() != null;
     }
 
     private AttributeAddress getAttributeAddress(final GetSpecificConfigurationObjectRequestDataDto requestData) {
