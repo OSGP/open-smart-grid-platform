@@ -7,9 +7,8 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
-import java.io.Serializable;
-
 import org.openmuc.jdlms.ClientConnection;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -17,8 +16,7 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.RetrieveConfigurationObjectsRequestDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
@@ -29,16 +27,23 @@ public class AdhocService {
     @Autowired
     private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
 
+    @Autowired
+    private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
+
     // === REQUEST Synchronize Time DATA ===
 
-    public void synchronizeTime(final ClientConnection conn, final DlmsDevice device,
-            final SynchronizeTimeRequestDto synchronizeTimeRequest) throws ProtocolAdapterException {
+    public void synchronizeTime(final ClientConnection conn, final DlmsDevice device) throws ProtocolAdapterException {
         this.synchronizeTimeCommandExecutor.execute(conn, device, null);
     }
 
-    public Serializable retrieveConfigurationObjects(final ClientConnection conn, final DlmsDevice device,
-            final RetrieveConfigurationObjectsRequestDto request) throws ProtocolAdapterException {
+    public String retrieveConfigurationObjects(final ClientConnection conn, final DlmsDevice device)
+            throws ProtocolAdapterException {
 
         return this.retrieveConfigurationObjectsCommandExecutor.execute(conn, device, null);
+    }
+
+    public AssociationLnListTypeDto getAssociationLnObjects(final ClientConnection conn, final DlmsDevice device)
+            throws ProtocolAdapterException {
+        return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
     }
 }
