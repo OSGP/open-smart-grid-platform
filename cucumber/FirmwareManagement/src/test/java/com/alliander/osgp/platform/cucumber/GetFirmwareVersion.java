@@ -24,8 +24,11 @@ import cucumber.api.java.en.When;
 
 public class GetFirmwareVersion {
     private TestCase testCase;
-
     private String response;
+    private String correlationUid;
+    private String organisationId;
+    private String deviceId;
+
     private static final String PATH_RESULT = "/Envelope/Body/GetFirmwareVersionResponse/Result/text()";
     private static final String XPATH_MATCHER_RESULT = "OK";
 
@@ -37,35 +40,33 @@ public class GetFirmwareVersion {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersion.class);
 
-    private String correlationUid;
-    private String organisationId;
-    private String deviceId;
-
-    Pattern pCorrelationUid = Pattern.compile("");
-    Matcher mCorrelationUid = this.pCorrelationUid.matcher("");
+    private Pattern patternCorrelationUid = null;
+    private Matcher matcherCorrelationUid = null;
 
     @Autowired
-    WsdlProjectFactory wsdlprojectfactory;
+    private WsdlProjectFactory wsdlProjectFactory;
+
     @Autowired
-    TestCaseRunner testcaserunner;
+    private TestCaseRunner testCaseRunner;
+
     @Autowired
-    XpathResult xpathresult;
+    private RunXpathResult xpathResult;
 
     @Given("^a device with DeviceID \"([^\"]*)\"$")
     public void aDeviceWithDeviceID(final String deviceId) throws Throwable {
         this.deviceId = deviceId;
-        this.testCase = this.wsdlprojectfactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
+        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
     }
 
     @And("^an organisation with OrganisationID \"([^\"]*)\"$")
     public void an_organisation_with_OrganisationID(final String organisationID) throws Throwable {
         this.organisationId = organisationID;
-        this.pCorrelationUid = Pattern.compile(this.organisationId + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
+        this.patternCorrelationUid = Pattern.compile(this.organisationId + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
     }
 
     @When("^the get firmware version request is received$")
     public void theGetFirmwareVersionRequestIsReceived() throws Throwable {
-        final MyTestCaseResult runTestStepByName = this.testcaserunner.runWsdlTestCase(this.testCase, this.deviceId,
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, this.deviceId,
                 this.organisationId, this.correlationUid, TEST_CASE_NAME_REQUEST);
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
@@ -73,17 +74,17 @@ public class GetFirmwareVersion {
 
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
             this.response = ((MessageExchange) tcr).getResponseContent();
-            this.mCorrelationUid = this.pCorrelationUid.matcher(this.response);
+            this.matcherCorrelationUid = this.patternCorrelationUid.matcher(this.response);
         }
-        this.mCorrelationUid.find();
-        this.correlationUid = this.mCorrelationUid.group();
+        this.matcherCorrelationUid.find();
+        this.correlationUid = this.matcherCorrelationUid.group();
 
         Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
     }
 
     @Then("^the firmware version result should be returned$")
     public void theFirmwareVersionResultShouldBeReturned() throws Throwable {
-        final MyTestCaseResult runTestStepByName = this.testcaserunner.runWsdlTestCase(this.testCase, this.deviceId,
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, this.deviceId,
                 this.organisationId, this.correlationUid, TEST_CASE_NAME_RESPONSE);
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
@@ -94,7 +95,7 @@ public class GetFirmwareVersion {
                     this.response = ((MessageExchange) tcr).getResponseContent());
         }
 
-        final MyXpathResult xpathResult = this.xpathresult.runXPathExpression(this.response, PATH_RESULT);
+        final XpathResult xpathResult = this.xpathResult.runXPathExpression(this.response, PATH_RESULT);
         final XPathExpression expr = xpathResult.getXpathExpression();
 
         Assert.assertEquals(XPATH_MATCHER_RESULT, expr.evaluate(xpathResult.getDocument(), XPathConstants.STRING));
