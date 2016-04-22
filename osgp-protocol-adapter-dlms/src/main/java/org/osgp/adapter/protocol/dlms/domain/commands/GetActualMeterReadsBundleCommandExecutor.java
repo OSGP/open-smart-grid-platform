@@ -7,43 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 
-@Component()
-public class GetActualMeterReadsBundleCommandExecutor extends
-BundleCommandExecutor<ActualMeterReadsDataDto, ActionResponseDto> {
+public interface GetActualMeterReadsBundleCommandExecutor extends CommandExecutor<ActualMeterReadsDataDto, ActionResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsBundleCommandExecutor.class);
-
-    @Autowired
-    GetActualMeterReadsCommandExecutor getActualMeterReadsCommandExecutor;
-
-    public GetActualMeterReadsBundleCommandExecutor() {
-        super(ActualMeterReadsDataDto.class);
-    }
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActualMeterReadsDataDto actualMeterReadsDataDto) {
-
-        final ActualMeterReadsQueryDto actualMeterReadsQuery = new ActualMeterReadsQueryDto();
-
-        try {
-            return this.getActualMeterReadsCommandExecutor.execute(conn, device, actualMeterReadsQuery);
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Error while getting actual meter reads from device: " + device.getDeviceIdentification());
-            return new ActionResponseDto(e, "Error while getting actual meter reads from device: "
-                    + device.getDeviceIdentification());
-        }
-    }
 }

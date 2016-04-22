@@ -7,48 +7,9 @@
  */
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
-import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
-import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 
-@Component()
-public class GetPeriodicMeterReadsGasBundleCommandExecutor extends
-BundleCommandExecutor<PeriodicMeterReadsGasRequestDataDto, ActionResponseDto> {
+public interface GetPeriodicMeterReadsGasBundleCommandExecutor extends CommandExecutor<PeriodicMeterReadsGasRequestDataDto, ActionResponseDto> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasBundleCommandExecutor.class);
-
-    @Autowired
-    GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
-
-    public GetPeriodicMeterReadsGasBundleCommandExecutor() {
-        super(PeriodicMeterReadsGasRequestDataDto.class);
-    }
-
-    @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsGasRequestDataDto periodicMeterReadsGasRequestDataDto) {
-
-        final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = new PeriodicMeterReadsQueryDto(
-                periodicMeterReadsGasRequestDataDto.getPeriodType(),
-                periodicMeterReadsGasRequestDataDto.getBeginDate(), periodicMeterReadsGasRequestDataDto.getEndDate(),
-                periodicMeterReadsGasRequestDataDto.getChannel());
-
-        try {
-            return this.getPeriodicMeterReadsGasCommandExecutor.execute(conn, device, periodicMeterReadsQueryDto);
-        } catch (final ProtocolAdapterException e) {
-            LOGGER.error(
-                    "Error while getting periodic meter reads gas from device: " + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, "Error while getting periodic meter reads gas from device: "
-                    + device.getDeviceIdentification());
-        }
-
-    }
 }

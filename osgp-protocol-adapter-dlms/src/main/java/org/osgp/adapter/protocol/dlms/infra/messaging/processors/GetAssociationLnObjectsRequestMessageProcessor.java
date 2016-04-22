@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
-@Component("dlmsGetAssociationLnObjectsRequestMessageProcessor")
+@Component
 public class GetAssociationLnObjectsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

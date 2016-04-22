@@ -18,7 +18,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("dlmsRetrieveConfigurationObjectsRequestMessageProcessor")
+@Component
 public class RetrieveConfigurationObjectsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
