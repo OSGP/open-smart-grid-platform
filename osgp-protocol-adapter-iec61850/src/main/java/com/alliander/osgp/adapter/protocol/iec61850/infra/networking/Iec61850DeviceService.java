@@ -1517,9 +1517,19 @@ public class Iec61850DeviceService implements DeviceService {
                 final BdaTimestamp certificateUrlDownloadStartTime = (BdaTimestamp) certificateConfiguration
                         .getChild(LogicalNodeAttributeDefinitons.PROPERTY_DOWNLOAD_START_TIME);
 
-                final String separator = certification.getCertificateUrl().startsWith("/") ? "" : "/";
-                final String fullUrl = certification.getCertificateDomain().concat(separator)
-                        .concat(certification.getCertificateUrl());
+                // removing trailing and leading slashes (if present) from the
+                // domain and the url
+                String adjustedDomain = certification.getCertificateDomain();
+                if (adjustedDomain.endsWith("/")) {
+                    adjustedDomain = adjustedDomain.substring(0, adjustedDomain.length() - 1);
+                }
+
+                String adjustedUrl = certification.getCertificateUrl();
+                if (adjustedUrl.startsWith("/")) {
+                    adjustedUrl = adjustedUrl.substring(1, adjustedUrl.length());
+                }
+
+                final String fullUrl = adjustedDomain.concat("/").concat(adjustedUrl);
 
                 LOGGER.info("Updating the certificate download url to {}", fullUrl);
 
@@ -1755,9 +1765,6 @@ public class Iec61850DeviceService implements DeviceService {
         return DateTime.now().withZone(DateTimeZone.forOffsetHours(offset));
     }
 
-    /*
-     * Reads all PowerUsageData of the given relay.
-     */
     private List<PowerUsageData> getPowerUsageHistoryDataFromRelay(final ServerModel serverModel,
             final String deviceIdentification, final TimePeriod timePeriod,
             final DeviceOutputSetting deviceOutputSetting) throws TechnicalException {
@@ -1801,7 +1808,7 @@ public class Iec61850DeviceService implements DeviceService {
             final DateTime date = new DateTime(((BdaTimestamp) dayNode).getDate());
             final int totalMinutesOnForDate = ((BdaInt32) itvNode).getValue();
 
-            final boolean includeEntryInResponse = this.timePeriodContaintsDateTime(timePeriod, date,
+            final boolean includeEntryInResponse = this.timePeriodContainsDateTime(timePeriod, date,
                     deviceIdentification, relayIndex, bufferIndex);
             if (!includeEntryInResponse) {
                 continue;
@@ -1820,10 +1827,7 @@ public class Iec61850DeviceService implements DeviceService {
         return powerUsageHistoryDataFromRelay;
     }
 
-    /*
-     * Returns true if the given Datetime is in the given TimePeriod.
-     */
-    private boolean timePeriodContaintsDateTime(final TimePeriod timePeriod, final DateTime date,
+    private boolean timePeriodContainsDateTime(final TimePeriod timePeriod, final DateTime date,
             final String deviceIdentification, final int relayIndex, final int bufferIndex) {
         if (timePeriod == null) {
             LOGGER.info(
