@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.commands.BundleCommandExecutorMap;
+import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutorMap;
 import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class BundleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
 
     @Autowired
-    private BundleCommandExecutorMap bundleCommandExecutorMap;
+    private CommandExecutorMap bundleCommandExecutorMap;
 
     public List<ActionResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,
             final BundleMessageDataContainerDto bundleMessageDataContainerDto) {
@@ -38,7 +38,7 @@ public class BundleService {
         for (final ActionDto actionValueObjectDto : bundleMessageDataContainerDto.getActionList()) {
 
             final CommandExecutor<ActionDto, ActionResponseDto> executor = this.bundleCommandExecutorMap
-                    .getBundleCommandExecutor(actionValueObjectDto.getClass());
+                    .getCommandExecutor(actionValueObjectDto.getClass());
 
             try {
                 LOGGER.info("Calling executor in bundle {}", executor.getClass());

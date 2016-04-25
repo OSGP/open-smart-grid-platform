@@ -11,7 +11,7 @@ public abstract class BundleCommandExecutor<T extends ActionDto, R extends Actio
 CommandExecutor<T, R> {
 
     @Autowired
-    private BundleCommandExecutorMap bundleCommandExecutorMap;
+    private CommandExecutorMap bundleCommandExecutorMap;
 
     private Class<T> actionDtoType;
 
@@ -21,6 +21,6 @@ CommandExecutor<T, R> {
 
     @PostConstruct
     public void init() {
-        this.bundleCommandExecutorMap.addBundleCommandExector(this.actionDtoType, this);
+        this.bundleCommandExecutorMap.addCommandExecutor(this.actionDtoType, this);
     }
 }
