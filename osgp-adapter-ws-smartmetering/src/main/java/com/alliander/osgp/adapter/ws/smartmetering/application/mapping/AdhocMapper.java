@@ -17,5 +17,6 @@ public class AdhocMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
+        mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeConverter());
     }
 }
