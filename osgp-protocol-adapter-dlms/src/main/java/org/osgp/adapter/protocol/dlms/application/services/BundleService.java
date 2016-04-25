@@ -8,6 +8,7 @@
 package org.osgp.adapter.protocol.dlms.application.services;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +35,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsBundleComma
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,10 +164,11 @@ public class BundleService {
             this.postConstruct();
         }
 
-        for (final ActionDto actionDto : bundleMessageDataContainerDto.getActionList()) {
+        final List<ActionDto> actionList = bundleMessageDataContainerDto.getActionList();
+        for (final ActionDto actionDto : actionList) {
 
             // Only execute the request when there is no response available yet.
-            // Becausae it could be a retry.
+            // Because it could be a retry.
             if (actionDto.getResponse() == null) {
 
                 // suppress else the compiler will complain
@@ -174,18 +177,35 @@ public class BundleService {
                         .get(actionDto.getRequest().getClass());
 
                 try {
-                    LOGGER.info("Calling executor in bundle {}", executor.getClass());
+                    LOGGER.debug("**************************************************");
+                    LOGGER.info("Calling executor in bundle {}", executor.getClass().getSimpleName());
+                    LOGGER.debug("**************************************************");
                     actionDto.setResponse(executor.execute(conn, device, actionDto.getRequest()));
-                } catch (final Exception e) {
-                    LOGGER.error("Error while executing bundle action for class " + actionDto.getRequest().getClass()
-                            + " and executor " + executor.getClass(), e);
-                    actionDto.setResponse(new ActionResponseDto(e, "Error while executing bundle action for class "
-                            + actionDto.getRequest().getClass() + " and executor " + executor.getClass()));
+                } catch (final ConnectionException connectionException) {
+                    LOGGER.error("Warning: A connection exception occurred while executing "
+                            + executor.getClass().getSimpleName(), connectionException);
+
+                    final List<ActionDto> remainingActionDtoList = actionList.subList(actionList.indexOf(actionDto),
+                            actionList.size());
+
+                    for (final ActionDto remainingActionDto : remainingActionDtoList) {
+                        LOGGER.debug("Skipping: {}", remainingActionDto.getRequest().getClass().getSimpleName());
+                    }
+
+                    actionDto.setResponse(null);
+                    throw connectionException;
+                } catch (final Exception exception) {
+                    LOGGER.error("Error while executing bundle action "
+                            + actionDto.getRequest().getClass().getSimpleName() + " for class "
+                            + actionDto.getRequest().getClass().getSimpleName() + " and executor "
+                            + executor.getClass().getSimpleName(), exception);
+                    actionDto.setResponse(new ActionResponseDto(exception, "Error while executing bundle action for class "
+                            + actionDto.getRequest().getClass().getSimpleName() + " and executor "
+                            + executor.getClass().getSimpleName()));
                 }
             }
         }
 
         return bundleMessageDataContainerDto;
     }
-
 }
