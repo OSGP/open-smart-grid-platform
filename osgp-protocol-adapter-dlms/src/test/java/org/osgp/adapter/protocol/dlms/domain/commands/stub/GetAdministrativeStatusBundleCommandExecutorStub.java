@@ -12,15 +12,15 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusBun
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 
 public class GetAdministrativeStatusBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
-        GetAdministrativeStatusBundleCommandExecutor {
+GetAdministrativeStatusBundleCommandExecutor {
 
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device, final ActionDto object)
-            throws ProtocolAdapterException {
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final GetAdministrativeStatusDataDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

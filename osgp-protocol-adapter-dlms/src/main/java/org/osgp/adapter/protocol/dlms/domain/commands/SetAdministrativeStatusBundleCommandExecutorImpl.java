@@ -21,14 +21,21 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDto;
 
 @Component()
-public class SetAdministrativeStatusBundleCommandExecutorImpl implements SetAdministrativeStatusBundleCommandExecutor {
+public class SetAdministrativeStatusBundleCommandExecutorImpl extends
+        BundleCommandExecutor<AdministrativeStatusTypeDataDto, ActionResponseDto> implements
+        SetAdministrativeStatusBundleCommandExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetAdministrativeStatusBundleCommandExecutorImpl.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(SetAdministrativeStatusBundleCommandExecutorImpl.class);
     private static final String WAS_NOT_SUCCESSFUL = " was not successful";
     private static final String SET_ADMINISTRATIVE_STATUS_TO = "Set administrative status to ";
 
     @Autowired
     private SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor;
+
+    public SetAdministrativeStatusBundleCommandExecutorImpl() {
+        super(AdministrativeStatusTypeDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -53,11 +60,11 @@ public class SetAdministrativeStatusBundleCommandExecutorImpl implements SetAdmi
     }
 
     public SetAdministrativeStatusCommandExecutor getSetAdministrativeStatusCommandExecutor() {
-        return setAdministrativeStatusCommandExecutor;
+        return this.setAdministrativeStatusCommandExecutor;
     }
 
     public void setSetAdministrativeStatusCommandExecutor(
-            SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor) {
+            final SetAdministrativeStatusCommandExecutor setAdministrativeStatusCommandExecutor) {
         this.setAdministrativeStatusCommandExecutor = setAdministrativeStatusCommandExecutor;
     }
 }

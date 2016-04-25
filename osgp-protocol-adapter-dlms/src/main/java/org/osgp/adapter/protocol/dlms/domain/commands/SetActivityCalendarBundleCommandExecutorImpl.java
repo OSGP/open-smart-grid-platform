@@ -20,7 +20,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
 
 @Component()
-public class SetActivityCalendarBundleCommandExecutorImpl implements SetActivityCalendarBundleCommandExecutor  {
+public class SetActivityCalendarBundleCommandExecutorImpl extends
+        BundleCommandExecutor<ActivityCalendarDataDto, ActionResponseDto> implements
+        SetActivityCalendarBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetActivityCalendarBundleCommandExecutorImpl.class);
 
@@ -29,6 +31,10 @@ public class SetActivityCalendarBundleCommandExecutorImpl implements SetActivity
 
     @Autowired
     private SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor;
+
+    public SetActivityCalendarBundleCommandExecutorImpl() {
+        super(ActivityCalendarDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -55,19 +61,20 @@ public class SetActivityCalendarBundleCommandExecutorImpl implements SetActivity
     }
 
     public SetActivityCalendarCommandExecutor getSetActivityCalendarCommandExecutor() {
-        return setActivityCalendarCommandExecutor;
+        return this.setActivityCalendarCommandExecutor;
     }
 
-    public void setSetActivityCalendarCommandExecutor(SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor) {
+    public void setSetActivityCalendarCommandExecutor(
+            final SetActivityCalendarCommandExecutor setActivityCalendarCommandExecutor) {
         this.setActivityCalendarCommandExecutor = setActivityCalendarCommandExecutor;
     }
 
     public SetActivityCalendarCommandActivationExecutor getSetActivityCalendarCommandActivationExecutor() {
-        return setActivityCalendarCommandActivationExecutor;
+        return this.setActivityCalendarCommandActivationExecutor;
     }
 
     public void setSetActivityCalendarCommandActivationExecutor(
-            SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor) {
+            final SetActivityCalendarCommandActivationExecutor setActivityCalendarCommandActivationExecutor) {
         this.setActivityCalendarCommandActivationExecutor = setActivityCalendarCommandActivationExecutor;
     }
 }

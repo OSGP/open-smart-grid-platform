@@ -24,7 +24,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Component()
-public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorImpl implements SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor {
+public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorImpl extends
+BundleCommandExecutor<GMeterInfoDto, ActionResponseDto> implements
+SetEncryptionKeyExchangeOnGMeterBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorImpl.class);
@@ -34,6 +36,10 @@ public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorImpl implement
 
     @Autowired
     private DomainHelperService domainHelperService;
+
+    public SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorImpl() {
+        super(GMeterInfoDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -65,25 +71,24 @@ public class SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorImpl implement
                     + gMeterInfo.getDeviceIdentification());
         } catch (final FunctionalException e) {
             LOGGER.error("Error while looking up G-Meter " + gMeterInfo.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, "Error while looking up G-Meter "
-                    + gMeterInfo.getDeviceIdentification());
+            return new ActionResponseDto(e, "Error while looking up G-Meter " + gMeterInfo.getDeviceIdentification());
         }
     }
 
     public SetEncryptionKeyExchangeOnGMeterCommandExecutor getSetEncryptionKeyExchangeOnGMeterCommandExecutor() {
-        return setEncryptionKeyExchangeOnGMeterCommandExecutor;
+        return this.setEncryptionKeyExchangeOnGMeterCommandExecutor;
     }
 
     public void setSetEncryptionKeyExchangeOnGMeterCommandExecutor(
-            SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor) {
+            final SetEncryptionKeyExchangeOnGMeterCommandExecutor setEncryptionKeyExchangeOnGMeterCommandExecutor) {
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor = setEncryptionKeyExchangeOnGMeterCommandExecutor;
     }
 
     public DomainHelperService getDomainHelperService() {
-        return domainHelperService;
+        return this.domainHelperService;
     }
 
-    public void setDomainHelperService(DomainHelperService domainHelperService) {
+    public void setDomainHelperService(final DomainHelperService domainHelperService) {
         this.domainHelperService = domainHelperService;
     }
 }

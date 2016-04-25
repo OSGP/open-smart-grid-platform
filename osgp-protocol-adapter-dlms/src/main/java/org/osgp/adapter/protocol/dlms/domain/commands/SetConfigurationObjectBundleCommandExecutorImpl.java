@@ -24,7 +24,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
 
 @Component()
-public class SetConfigurationObjectBundleCommandExecutorImpl implements SetConfigurationObjectBundleCommandExecutor {
+public class SetConfigurationObjectBundleCommandExecutorImpl extends
+        BundleCommandExecutor<SetConfigurationObjectRequestDataDto, ActionResponseDto> implements
+        SetConfigurationObjectBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectBundleCommandExecutorImpl.class);
 
@@ -33,6 +35,10 @@ public class SetConfigurationObjectBundleCommandExecutorImpl implements SetConfi
 
     @Autowired
     private SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor;
+
+    public SetConfigurationObjectBundleCommandExecutorImpl() {
+        super(SetConfigurationObjectRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -77,11 +83,11 @@ public class SetConfigurationObjectBundleCommandExecutorImpl implements SetConfi
     }
 
     public SetConfigurationObjectCommandExecutor getSetConfigurationObjectCommandExecutor() {
-        return setConfigurationObjectCommandExecutor;
+        return this.setConfigurationObjectCommandExecutor;
     }
 
     public void setSetConfigurationObjectCommandExecutor(
-            SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor) {
+            final SetConfigurationObjectCommandExecutor setConfigurationObjectCommandExecutor) {
         this.setConfigurationObjectCommandExecutor = setConfigurationObjectCommandExecutor;
     }
 }
