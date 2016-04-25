@@ -16,11 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDataDto;
 
 @Component
 public class GetAssociationLnObjectsBundleCommandExecutorImpl extends
-BundleCommandExecutor<GetAssociationLnObjectsRequestDto, ActionResponseDto> implements
+BundleCommandExecutor<GetAssociationLnObjectsRequestDataDto, ActionResponseDto> implements
         GetAssociationLnObjectsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory
@@ -30,15 +31,16 @@ BundleCommandExecutor<GetAssociationLnObjectsRequestDto, ActionResponseDto> impl
     private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
 
     public GetAssociationLnObjectsBundleCommandExecutorImpl() {
-        super(GetAssociationLnObjectsRequestDto.class);
+        super(GetAssociationLnObjectsRequestDataDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetAssociationLnObjectsRequestDto getAssociationLnObjectsRequestDataDto) {
+            final GetAssociationLnObjectsRequestDataDto getAssociationLnObjectsRequestDataDto) {
 
         try {
-            return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
+            return new AssociationLnObjectsResponseDataDto(this.getAssociationLnObjectsCommandExecutor.execute(conn,
+                    device, null));
         } catch (final ProtocolAdapterException e) {
 
             LOGGER.error("Error retrieving association ln objects for device: " + device.getDeviceIdentification(), e);
