@@ -86,7 +86,6 @@ public class ActionMapperResponseService {
         CLASS_TO_MAPPER_MAP.put(GetConfigurationResponseContainer.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponseContainer.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
-
     }
 
     /**
