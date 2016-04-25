@@ -105,6 +105,17 @@
     </xsd:complexContent>
   </xsd:complexType>
   
+  <xsd:complexType name="AssociationLnObjectsResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="AssociationLnList" type="tns:AssociationLnListType"
+            minOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
   <xsd:element name="GetAssociationLnObjectsRequest">
     <xsd:complexType>
       <xsd:sequence>
