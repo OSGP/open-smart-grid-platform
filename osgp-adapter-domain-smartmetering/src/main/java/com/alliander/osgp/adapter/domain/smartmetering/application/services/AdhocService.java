@@ -129,8 +129,8 @@ public class AdhocService {
         }
 
         this.webServiceResponseMessageSender.send(new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),
-                deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata.getDeviceIdentification(), result,
-                exception, resultData, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
+                deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
+                result, exception, resultData, deviceMessageMetadata.getMessagePriority()), deviceMessageMetadata
                 .getMessageType());
 
     }
