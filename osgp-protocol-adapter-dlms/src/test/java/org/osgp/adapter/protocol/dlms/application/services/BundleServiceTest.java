@@ -57,6 +57,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.stub.SetPushSetupSmsBundle
 import org.osgp.adapter.protocol.dlms.domain.commands.stub.SetSpecialDaysBundleCommandExecutorStub;
 import org.osgp.adapter.protocol.dlms.domain.commands.stub.SynchronizeTimeBundleCommandExecutorStub;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
@@ -90,7 +91,7 @@ public class BundleServiceTest {
 
     private ActionDtoBuilder builder = new ActionDtoBuilder();
 
-    private static Map<Class<? extends ActionRequestDto>, AbstractCommandExecutorStub> stubs = new HashMap<Class<? extends ActionRequestDto>, AbstractCommandExecutorStub>();
+    private static Map<Class<? extends ActionRequestDto>, AbstractCommandExecutorStub> STUBS = new HashMap<Class<? extends ActionRequestDto>, AbstractCommandExecutorStub>();
 
     @Spy
     private RetrieveEventsBundleCommandExecutor retrieveEventsBundleCommandExecutor = new RetrieveEventsBundleCommandExecutorStub();
@@ -133,41 +134,9 @@ public class BundleServiceTest {
 
     @Before
     public void setup() {
-        stubs.put(FindEventsQueryDto.class, (AbstractCommandExecutorStub) this.retrieveEventsBundleCommandExecutor);
-        stubs.put(ActualMeterReadsDataDto.class,
-                (AbstractCommandExecutorStub) this.actualMeterReadsBundleCommandExecutor);
-        stubs.put(ActualMeterReadsDataGasDto.class,
-                (AbstractCommandExecutorStub) this.actualMeterReadsBundleGasCommandExecutor);
-        stubs.put(SpecialDaysRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.setSpecialDaysBundleCommandExecutor);
-        stubs.put(ReadAlarmRegisterDataDto.class,
-                (AbstractCommandExecutorStub) this.readAlarmRegisterBundleCommandExecutor);
-        stubs.put(GetAdministrativeStatusDataDto.class,
-                (AbstractCommandExecutorStub) this.getAdministrativeStatusBundleCommandExecutor);
-        stubs.put(PeriodicMeterReadsRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.getPeriodicMeterReadsBundleCommandExecutor);
-        stubs.put(PeriodicMeterReadsGasRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.getPeriodicMeterReadsGasBundleCommandExecutor);
-        stubs.put(AdministrativeStatusTypeDataDto.class,
-                (AbstractCommandExecutorStub) this.setAdministrativeStatusBundleCommandExecutor);
-        stubs.put(ActivityCalendarDataDto.class,
-                (AbstractCommandExecutorStub) this.setActivityCalendarBundleCommandExecutor);
-        stubs.put(GMeterInfoDto.class,
-                (AbstractCommandExecutorStub) this.setEncryptionKeyExchangeOnGMeterBundleCommandExecutor);
-        stubs.put(SetAlarmNotificationsRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.setAlarmNotificationsBundleCommandExecutor);
-        stubs.put(SetConfigurationObjectRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.setConfigurationObjectBundleCommandExecutor);
-        stubs.put(SetPushSetupAlarmRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.setPushSetupAlarmBundleCommandExecutor);
-        stubs.put(SetPushSetupSmsRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.setPushSetupSmsBundleCommandExecutor);
-        stubs.put(SynchronizeTimeRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.synchronizeTimeBundleCommandExecutor);
-        stubs.put(GetConfigurationRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.retrieveConfigurationObjectsBundleCommandExecutor);
-        stubs.put(GetFirmwareVersionRequestDataDto.class,
-                (AbstractCommandExecutorStub) this.getFirmwareVersionsBundleCommandExecutor);
+        if (STUBS.isEmpty()) {
+            this.fillStubs();
+        }
     }
 
     @Test
@@ -185,6 +154,48 @@ public class BundleServiceTest {
         this.getStub(FindEventsQueryDto.class).failWith(new ProtocolAdapterException("simulate error"));
         final BundleMessageDataContainerDto result = this.callExecutors(dto);
         this.assertResult(result);
+    }
+
+    /**
+     * Tests the retry mechanism works in the adapter-protocol. In the first run
+     * a ConnectionException is thrown while executing the
+     * {@link FindEventsQueryDto}. In the second attempt (when the connection is
+     * restored again) the rest of the actions are executed.
+     *
+     * @throws ProtocolAdapterException
+     *             is not thrown in this test
+     */
+    @Test
+    public void testConnectionException() throws ProtocolAdapterException {
+        final List<ActionDto> actionDtoList = this.makeActions();
+        final BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
+
+        // Set the point where to throw the ConnectionException
+        this.getStub(FindEventsQueryDto.class).failWithRuntimeException(
+                new ConnectionException("Connection Exception thrown!"));
+
+        try {
+            // Execute all the actions
+            this.callExecutors(dto);
+            Assert.fail("A ConnectionException should be thrown");
+        } catch (final ConnectionException connectionException) {
+            // The execution is stopped. The number of responses is equal to the
+            // actions performed before the point the exception is thrown. See
+            // also the order of the ArrayList in method 'makeActions'.
+            Assert.assertEquals(dto.getAllResponses().size(), 8);
+        }
+
+        // Reset the point where the exception was thrown.
+        this.getStub(FindEventsQueryDto.class).failWithRuntimeException(null);
+
+        try {
+            // Execute the remaining actions
+            this.callExecutors(dto);
+            Assert.assertEquals(dto.getAllResponses().size(), actionDtoList.size());
+        } catch (final ConnectionException connectionException) {
+            Assert.fail("A ConnectionException should not have been thrown.");
+        }
+
     }
 
     private void assertResult(final BundleMessageDataContainerDto result) {
@@ -206,12 +217,11 @@ public class BundleServiceTest {
     // ---- private helper methods
 
     private AbstractCommandExecutorStub getStub(final Class<?> aActionDto) {
-        return stubs.get(aActionDto);
+        return STUBS.get(aActionDto);
     }
 
     private List<ActionDto> makeActions() {
         final List<ActionDto> actions = new ArrayList<>();
-        actions.add(new ActionDto(this.builder.makeFindEventsQueryDto()));
         actions.add(new ActionDto(this.builder.makeActualMeterReadsDataDtoAction()));
         actions.add(new ActionDto(this.builder.makePeriodicMeterReadsGasRequestDataDto()));
         actions.add(new ActionDto(this.builder.makePeriodicMeterReadsRequestDataDto()));
@@ -220,14 +230,53 @@ public class BundleServiceTest {
         actions.add(new ActionDto(this.builder.makeGetAdministrativeStatusDataDto()));
         actions.add(new ActionDto(this.builder.makeAdministrativeStatusTypeDataDto()));
         actions.add(new ActionDto(this.builder.makeActivityCalendarDataDto()));
+        actions.add(new ActionDto(this.builder.makeFindEventsQueryDto()));
         actions.add(new ActionDto(this.builder.makeGMeterInfoDto()));
         actions.add(new ActionDto(this.builder.makeSetAlarmNotificationsRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeSetConfigurationObjectRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeSetPushSetupAlarmRequestDataDto()));
-        actions.add(new ActionDto(this.builder.mkeSetPushSetupSmsRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeSetPushSetupSmsRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeSynchronizeTimeRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeGetConfigurationRequestDataDto()));
         actions.add(new ActionDto(this.builder.makeGetFirmwareVersionRequestDataDto()));
         return actions;
+    }
+
+    private void fillStubs() {
+        STUBS.put(FindEventsQueryDto.class, (AbstractCommandExecutorStub) this.retrieveEventsBundleCommandExecutor);
+        STUBS.put(ActualMeterReadsDataDto.class,
+                (AbstractCommandExecutorStub) this.actualMeterReadsBundleCommandExecutor);
+        STUBS.put(ActualMeterReadsDataGasDto.class,
+                (AbstractCommandExecutorStub) this.actualMeterReadsBundleGasCommandExecutor);
+        STUBS.put(SpecialDaysRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.setSpecialDaysBundleCommandExecutor);
+        STUBS.put(ReadAlarmRegisterDataDto.class,
+                (AbstractCommandExecutorStub) this.readAlarmRegisterBundleCommandExecutor);
+        STUBS.put(GetAdministrativeStatusDataDto.class,
+                (AbstractCommandExecutorStub) this.getAdministrativeStatusBundleCommandExecutor);
+        STUBS.put(PeriodicMeterReadsRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.getPeriodicMeterReadsBundleCommandExecutor);
+        STUBS.put(PeriodicMeterReadsGasRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.getPeriodicMeterReadsGasBundleCommandExecutor);
+        STUBS.put(AdministrativeStatusTypeDataDto.class,
+                (AbstractCommandExecutorStub) this.setAdministrativeStatusBundleCommandExecutor);
+        STUBS.put(ActivityCalendarDataDto.class,
+                (AbstractCommandExecutorStub) this.setActivityCalendarBundleCommandExecutor);
+        STUBS.put(GMeterInfoDto.class,
+                (AbstractCommandExecutorStub) this.setEncryptionKeyExchangeOnGMeterBundleCommandExecutor);
+        STUBS.put(SetAlarmNotificationsRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.setAlarmNotificationsBundleCommandExecutor);
+        STUBS.put(SetConfigurationObjectRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.setConfigurationObjectBundleCommandExecutor);
+        STUBS.put(SetPushSetupAlarmRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.setPushSetupAlarmBundleCommandExecutor);
+        STUBS.put(SetPushSetupSmsRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.setPushSetupSmsBundleCommandExecutor);
+        STUBS.put(SynchronizeTimeRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.synchronizeTimeBundleCommandExecutor);
+        STUBS.put(GetConfigurationRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.retrieveConfigurationObjectsBundleCommandExecutor);
+        STUBS.put(GetFirmwareVersionRequestDataDto.class,
+                (AbstractCommandExecutorStub) this.getFirmwareVersionsBundleCommandExecutor);
     }
 }
