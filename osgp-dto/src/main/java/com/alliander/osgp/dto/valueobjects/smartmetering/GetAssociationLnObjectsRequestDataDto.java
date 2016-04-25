@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Smart Society Services B.V.
+ * Copyright 2015 Smart Society Services B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
@@ -7,17 +7,19 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class GetAssociationLnObjectsRequestDto implements ActionDto {
 
-    private static final long serialVersionUID = 162131176516698220L;
+public class GetAssociationLnObjectsRequestDataDto implements ActionDto {
 
-    private final String deviceIdentification;
+    private static final long serialVersionUID = 2569975731784782614L;
 
-    public GetAssociationLnObjectsRequestDto(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
+    private String deviceIdentification;
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
+
+    public void setDeviceIdentification(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+    }
+
 }
