@@ -20,12 +20,18 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDataDto;
 
 @Component()
-public class SetAlarmNotificationsBundleCommandExecutorImpl implements SetAlarmNotificationsBundleCommandExecutor {
+public class SetAlarmNotificationsBundleCommandExecutorImpl extends
+        BundleCommandExecutor<SetAlarmNotificationsRequestDataDto, ActionResponseDto> implements
+        SetAlarmNotificationsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsBundleCommandExecutorImpl.class);
 
     @Autowired
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
+
+    public SetAlarmNotificationsBundleCommandExecutorImpl() {
+        super(SetAlarmNotificationsRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -37,11 +43,11 @@ public class SetAlarmNotificationsBundleCommandExecutorImpl implements SetAlarmN
             accessResultCode = this.setAlarmNotificationsCommandExecutor.execute(conn, device,
                     alarmNotificationsRequestDataDto.getAlarmNotifications());
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Set alarm notification on meter "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Set alarm notification on meter " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Set alarm notification on meter "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Set alarm notification on meter " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while setting alarm notifications", e);
@@ -50,11 +56,11 @@ public class SetAlarmNotificationsBundleCommandExecutorImpl implements SetAlarmN
     }
 
     public SetAlarmNotificationsCommandExecutor getSetAlarmNotificationsCommandExecutor() {
-        return setAlarmNotificationsCommandExecutor;
+        return this.setAlarmNotificationsCommandExecutor;
     }
 
     public void setSetAlarmNotificationsCommandExecutor(
-            SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor) {
+            final SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor) {
         this.setAlarmNotificationsCommandExecutor = setAlarmNotificationsCommandExecutor;
     }
 }

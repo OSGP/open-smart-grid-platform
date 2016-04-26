@@ -20,12 +20,19 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 
 @Component()
-public class GetPeriodicMeterReadsGasBundleCommandExecutorImpl implements GetPeriodicMeterReadsGasBundleCommandExecutor {
+public class GetPeriodicMeterReadsGasBundleCommandExecutorImpl extends
+BundleCommandExecutor<PeriodicMeterReadsGasRequestDataDto, ActionResponseDto> implements
+GetPeriodicMeterReadsGasBundleCommandExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasBundleCommandExecutorImpl.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(GetPeriodicMeterReadsGasBundleCommandExecutorImpl.class);
 
     @Autowired
     GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
+
+    public GetPeriodicMeterReadsGasBundleCommandExecutorImpl() {
+        super(PeriodicMeterReadsGasRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -47,11 +54,11 @@ public class GetPeriodicMeterReadsGasBundleCommandExecutorImpl implements GetPer
     }
 
     public GetPeriodicMeterReadsGasCommandExecutor getGetPeriodicMeterReadsGasCommandExecutor() {
-        return getPeriodicMeterReadsGasCommandExecutor;
+        return this.getPeriodicMeterReadsGasCommandExecutor;
     }
 
     public void setGetPeriodicMeterReadsGasCommandExecutor(
-            GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor) {
+            final GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor) {
         this.getPeriodicMeterReadsGasCommandExecutor = getPeriodicMeterReadsGasCommandExecutor;
     }
 }

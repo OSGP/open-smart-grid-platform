@@ -20,12 +20,18 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGas
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 
 @Component()
-public class GetActualMeterReadsBundleGasCommandExecutorImpl implements GetActualMeterReadsBundleGasCommandExecutor {
+public class GetActualMeterReadsBundleGasCommandExecutorImpl extends
+        BundleCommandExecutor<ActualMeterReadsDataGasDto, ActionResponseDto> implements
+        GetActualMeterReadsBundleGasCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsBundleGasCommandExecutorImpl.class);
 
     @Autowired
     private GetActualMeterReadsGasCommandExecutor getActualMeterReadsGasCommandExecutor;
+
+    public GetActualMeterReadsBundleGasCommandExecutorImpl() {
+        super(ActualMeterReadsDataGasDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

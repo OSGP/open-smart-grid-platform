@@ -20,7 +20,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 
 @Component()
-public class SetPushSetupSmsBundleCommandExecutorImpl extends SetPushSetupCommandExecutor implements SetPushSetupSmsBundleCommandExecutor  {
+public class SetPushSetupSmsBundleCommandExecutorImpl extends
+        BundleCommandExecutor<SetPushSetupSmsRequestDataDto, ActionResponseDto> implements
+        SetPushSetupSmsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsBundleCommandExecutorImpl.class);
 
@@ -28,6 +30,10 @@ public class SetPushSetupSmsBundleCommandExecutorImpl extends SetPushSetupComman
 
     @Autowired
     private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
+
+    public SetPushSetupSmsBundleCommandExecutorImpl() {
+        super(SetPushSetupSmsRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -39,11 +45,11 @@ public class SetPushSetupSmsBundleCommandExecutorImpl extends SetPushSetupComman
                     setPushSetupSmsRequestDataDto.getPushSetupSms());
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Setting push setup sms for device: "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Setting push setup sms for device: " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Setting push setup alarm for device: "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Setting push setup alarm for device: " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
@@ -52,10 +58,8 @@ public class SetPushSetupSmsBundleCommandExecutorImpl extends SetPushSetupComman
         }
     }
 
-    public void setSetPushSetupSmsCommandExecutor(SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor) {
+    public void setSetPushSetupSmsCommandExecutor(final SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor) {
         this.setPushSetupSmsCommandExecutor = setPushSetupSmsCommandExecutor;
     }
 
-    
-    
 }

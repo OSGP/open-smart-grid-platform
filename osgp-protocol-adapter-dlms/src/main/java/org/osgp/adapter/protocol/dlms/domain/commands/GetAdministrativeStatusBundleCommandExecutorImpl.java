@@ -16,14 +16,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 
 @Component()
-public class GetAdministrativeStatusBundleCommandExecutorImpl implements GetAdministrativeStatusBundleCommandExecutor  {
+public class GetAdministrativeStatusBundleCommandExecutorImpl extends
+BundleCommandExecutor<GetAdministrativeStatusDataDto, ActionResponseDto> implements
+        GetAdministrativeStatusBundleCommandExecutor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetAdministrativeStatusBundleCommandExecutorImpl.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(GetAdministrativeStatusBundleCommandExecutorImpl.class);
 
     @Autowired
     GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor;
@@ -31,9 +34,13 @@ public class GetAdministrativeStatusBundleCommandExecutorImpl implements GetAdmi
     @Autowired
     private ConfigurationMapper configurationMapper;
 
+    public GetAdministrativeStatusBundleCommandExecutorImpl() {
+        super(GetAdministrativeStatusDataDto.class);
+    }
+
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final ActionDto useless) {
+            final GetAdministrativeStatusDataDto useless) {
 
         try {
             return new AdministrativeStatusTypeResponseDto(this.getAdministrativeStatusCommandExecutor.execute(conn,
@@ -45,11 +52,11 @@ public class GetAdministrativeStatusBundleCommandExecutorImpl implements GetAdmi
     }
 
     public GetAdministrativeStatusCommandExecutor getGetAdministrativeStatusCommandExecutor() {
-        return getAdministrativeStatusCommandExecutor;
+        return this.getAdministrativeStatusCommandExecutor;
     }
 
     public void setGetAdministrativeStatusCommandExecutor(
-            GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor) {
+            final GetAdministrativeStatusCommandExecutor getAdministrativeStatusCommandExecutor) {
         this.getAdministrativeStatusCommandExecutor = getAdministrativeStatusCommandExecutor;
     }
 }

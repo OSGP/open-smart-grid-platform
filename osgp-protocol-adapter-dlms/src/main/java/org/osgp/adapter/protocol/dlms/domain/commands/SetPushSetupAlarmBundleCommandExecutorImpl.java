@@ -20,7 +20,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 
 @Component()
-public class SetPushSetupAlarmBundleCommandExecutorImpl implements SetPushSetupAlarmBundleCommandExecutor {
+public class SetPushSetupAlarmBundleCommandExecutorImpl extends
+        BundleCommandExecutor<SetPushSetupAlarmRequestDataDto, ActionResponseDto> implements
+        SetPushSetupAlarmBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmBundleCommandExecutorImpl.class);
 
@@ -28,6 +30,10 @@ public class SetPushSetupAlarmBundleCommandExecutorImpl implements SetPushSetupA
 
     @Autowired
     private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
+
+    public SetPushSetupAlarmBundleCommandExecutorImpl() {
+        super(SetPushSetupAlarmRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -39,25 +45,25 @@ public class SetPushSetupAlarmBundleCommandExecutorImpl implements SetPushSetupA
                     setPushSetupAlarmRequestDataDto.getPushSetupAlarm());
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Setting push setup alarm for device: "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Setting push setup alarm for device: " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Setting push setup alarm for device: "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Setting push setup alarm for device: " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(ERROR_WHILE_PUSHING_SETUP_ALARM + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, ERROR_WHILE_PUSHING_SETUP_ALARM
-                    + device.getDeviceIdentification());
+            return new ActionResponseDto(e, ERROR_WHILE_PUSHING_SETUP_ALARM + device.getDeviceIdentification());
         }
     }
 
     public SetPushSetupAlarmCommandExecutor getSetPushSetupAlarmCommandExecutor() {
-        return setPushSetupAlarmCommandExecutor;
+        return this.setPushSetupAlarmCommandExecutor;
     }
 
-    public void setSetPushSetupAlarmCommandExecutor(SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor) {
+    public void setSetPushSetupAlarmCommandExecutor(
+            final SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor) {
         this.setPushSetupAlarmCommandExecutor = setPushSetupAlarmCommandExecutor;
     }
 }

@@ -23,7 +23,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContain
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 
 @Component()
-public class RetrieveEventsBundleCommandExecutorImpl implements RetrieveEventsBundleCommandExecutor {
+public class RetrieveEventsBundleCommandExecutorImpl extends
+BundleCommandExecutor<FindEventsQueryDto, ActionResponseDto> implements RetrieveEventsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsBundleCommandExecutorImpl.class);
 
@@ -32,6 +33,10 @@ public class RetrieveEventsBundleCommandExecutorImpl implements RetrieveEventsBu
 
     @Autowired
     private DlmsHelperService dlmsHelperService;
+
+    public RetrieveEventsBundleCommandExecutorImpl() {
+        super(FindEventsQueryDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -43,16 +48,14 @@ public class RetrieveEventsBundleCommandExecutorImpl implements RetrieveEventsBu
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Error while retrieving " + findEventsQuery.getEventLogCategory() + "events from device: "
                     + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, "Error while retrieving "
-                    + findEventsQuery.getEventLogCategory() + "events from device: " + device.getDeviceIdentification());
+            return new ActionResponseDto(e, "Error while retrieving " + findEventsQuery.getEventLogCategory()
+                    + "events from device: " + device.getDeviceIdentification());
         }
         return new EventMessageDataContainerDto(eventDtoList);
     }
 
-    public void setRetrieveEventsCommandExecutor(RetrieveEventsCommandExecutor retrieveEventsCommandExecutor) {
+    public void setRetrieveEventsCommandExecutor(final RetrieveEventsCommandExecutor retrieveEventsCommandExecutor) {
         this.retrieveEventsCommandExecutor = retrieveEventsCommandExecutor;
     }
-    
-    
-    
+
 }
