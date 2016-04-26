@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutorMap;
 import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.CommandExecutorMap;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,11 +45,12 @@ public class BundleService {
                 final ActionResponseDto actionResult = executor.execute(conn, device, actionValueObjectDto);
                 actionValueObjectResponseDtoList.add(actionResult);
             } catch (final Exception e) {
+                final String strexec = (executor==null) ? " = null " : executor.getClass().getName();
                 LOGGER.error("Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                        + " and executor " + executor.getClass(), e);
+                        + " and executor " + strexec, e);
                 final ActionResponseDto actionValueObjectResponseDto = new ActionResponseDto(e,
                         "Error while executing bundle action for class " + actionValueObjectDto.getClass()
-                        + " and executor " + executor.getClass());
+                        + " and executor " + strexec);
                 actionValueObjectResponseDtoList.add(actionValueObjectResponseDto);
             }
         }

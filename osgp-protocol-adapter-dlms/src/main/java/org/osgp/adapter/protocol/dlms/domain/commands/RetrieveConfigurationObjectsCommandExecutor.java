@@ -158,7 +158,7 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
 
     private List<ClassIdObisAttr> getAllObisCodes(final List<DataObject> obisCodeMetaDataTree)
             throws ProtocolAdapterException {
-        final List<ClassIdObisAttr> allObisCodes = new ArrayList<ClassIdObisAttr>();
+        final List<ClassIdObisAttr> allObisCodes = new ArrayList<>();
 
         for (final DataObject obisCodeMetaData : obisCodeMetaDataTree) {
             final List<DataObject> obisCodeMetaDataList = (List<DataObject>) obisCodeMetaData.value();
