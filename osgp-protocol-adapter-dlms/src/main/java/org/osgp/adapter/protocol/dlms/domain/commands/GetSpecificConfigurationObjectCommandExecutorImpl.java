@@ -29,12 +29,20 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
 
 @Component
-public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpecificConfigurationObjectCommandExecutor {
+public class GetSpecificConfigurationObjectCommandExecutorImpl extends
+        BundleCommandExecutor<SpecificConfigurationObjectRequestDataDto, ActionResponseDto> implements
+        GetSpecificConfigurationObjectCommandExecutor {
 
     @Autowired
     private DlmsHelperService dlmsHelper;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSpecificConfigurationObjectCommandExecutorImpl.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(GetSpecificConfigurationObjectCommandExecutorImpl.class);
+
+    
+    public GetSpecificConfigurationObjectCommandExecutorImpl() {
+        super(SpecificConfigurationObjectRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -51,7 +59,7 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
                 final DataObject dataObject = getResultList.get(0).resultData();
                 return new ActionResponseDto(this.dlmsHelper.getDebugInfo(dataObject));
             } else {
-                return new ActionResponseDto(getResultList.get(0).resultCode().toString());               
+                return new ActionResponseDto(getResultList.get(0).resultCode().toString());
             }
         } catch (IOException | TimeoutException e) {
             throw new ConnectionException(e);
@@ -74,7 +82,6 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
     private AttributeAddress getAttributeAddress(final SpecificConfigurationObjectRequestDataDto requestData) {
         return new AttributeAddress(requestData.getClassId(), this.getObisCode(requestData), requestData.getAttribute());
     }
-
 
     private ObisCode getObisCode(final SpecificConfigurationObjectRequestDataDto requestData) {
         final ObisCodeValuesDto obisDto = requestData.getObisCode();
