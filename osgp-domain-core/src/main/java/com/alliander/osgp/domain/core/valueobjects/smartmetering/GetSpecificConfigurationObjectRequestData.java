@@ -29,8 +29,32 @@ public class GetSpecificConfigurationObjectRequestData implements Serializable, 
 
     @Override
     public void validate() throws FunctionalException {
-        // No validation needed
+        // 
+    }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((specificConfigurationObject == null) ? 0 : specificConfigurationObject.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        GetSpecificConfigurationObjectRequestData other = (GetSpecificConfigurationObjectRequestData) obj;
+        if (specificConfigurationObject == null) {
+            if (other.specificConfigurationObject != null)
+                return false;
+        } else if (!specificConfigurationObject.equals(other.specificConfigurationObject))
+            return false;
+        return true;
     }
 }
 

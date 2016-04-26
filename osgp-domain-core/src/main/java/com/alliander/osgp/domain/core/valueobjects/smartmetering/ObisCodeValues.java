@@ -32,10 +32,6 @@ public class ObisCodeValues implements Serializable {
         this.f = f;
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public byte getA() {
         return a;
     }
@@ -59,6 +55,41 @@ public class ObisCodeValues implements Serializable {
     public byte getF() {
         return f;
     }
-    
-    
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + a;
+        result = prime * result + b;
+        result = prime * result + c;
+        result = prime * result + d;
+        result = prime * result + e;
+        result = prime * result + f;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ObisCodeValues other = (ObisCodeValues) obj;
+        if (a != other.a)
+            return false;
+        if (b != other.b)
+            return false;
+        if (c != other.c)
+            return false;
+        if (d != other.d)
+            return false;
+        if (e != other.e)
+            return false;
+        if (f != other.f)
+            return false;
+        return true;
+    }
 }

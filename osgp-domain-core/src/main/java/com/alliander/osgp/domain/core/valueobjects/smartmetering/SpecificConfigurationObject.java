@@ -41,5 +41,34 @@ public class SpecificConfigurationObject implements Serializable {
         return obisCode;
     }
 
-    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + attribute;
+        result = prime * result + classId;
+        result = prime * result + ((obisCode == null) ? 0 : obisCode.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SpecificConfigurationObject other = (SpecificConfigurationObject) obj;
+        if (attribute != other.attribute)
+            return false;
+        if (classId != other.classId)
+            return false;
+        if (obisCode == null) {
+            if (other.obisCode != null)
+                return false;
+        } else if (!obisCode.equals(other.obisCode))
+            return false;
+        return true;
+    }
 }

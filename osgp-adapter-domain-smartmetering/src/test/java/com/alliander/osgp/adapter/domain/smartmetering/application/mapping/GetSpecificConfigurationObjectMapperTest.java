@@ -22,15 +22,18 @@ public class GetSpecificConfigurationObjectMapperTest {
 
     @Test
     public void test() {
-        GetSpecificConfigurationObjectRequestData reqData = makeRequestDatareqData();
-        Object obj = commonMapper.map(reqData, GetSpecificConfigurationObjectRequestDataDto.class);
+        GetSpecificConfigurationObjectRequestData reqData1 = makeRequestDatareqData();
+        Object obj = commonMapper.map(reqData1, GetSpecificConfigurationObjectRequestDataDto.class);
         assertTrue(obj != null && obj instanceof GetSpecificConfigurationObjectRequestDataDto);
+        Object reqData2 = commonMapper.map(obj, GetSpecificConfigurationObjectRequestData.class);
+        assertTrue(reqData2 != null && reqData2 instanceof GetSpecificConfigurationObjectRequestData);
+        assertTrue(reqData1.equals(reqData2));
     }
 
 
     private GetSpecificConfigurationObjectRequestData makeRequestDatareqData() {
-        final ObisCodeValues obiscode = new ObisCodeValues((byte)1,(byte)1,(byte)1,(byte)1,(byte)1,(byte)1);
-        final SpecificConfigurationObject configObj = new SpecificConfigurationObject(1, 1, obiscode);
+        final ObisCodeValues obiscode = new ObisCodeValues((byte)2,(byte)3,(byte)4,(byte)5,(byte)6,(byte)7);
+        final SpecificConfigurationObject configObj = new SpecificConfigurationObject(21, 1, obiscode);
         return new GetSpecificConfigurationObjectRequestData(configObj);
     }
     
