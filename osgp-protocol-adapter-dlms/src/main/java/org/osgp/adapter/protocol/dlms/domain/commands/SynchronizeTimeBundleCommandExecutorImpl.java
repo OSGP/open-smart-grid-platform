@@ -20,7 +20,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
 
 @Component()
-public class SynchronizeTimeBundleCommandExecutorImpl implements SynchronizeTimeBundleCommandExecutor {
+public class SynchronizeTimeBundleCommandExecutorImpl extends
+        BundleCommandExecutor<SynchronizeTimeRequestDataDto, ActionResponseDto> implements
+        SynchronizeTimeBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeBundleCommandExecutorImpl.class);
 
@@ -28,6 +30,10 @@ public class SynchronizeTimeBundleCommandExecutorImpl implements SynchronizeTime
 
     @Autowired
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
+
+    public SynchronizeTimeBundleCommandExecutorImpl() {
+        super(SynchronizeTimeRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -38,23 +44,21 @@ public class SynchronizeTimeBundleCommandExecutorImpl implements SynchronizeTime
             accessResultCode = this.synchronizeTimeCommandExecutor.execute(conn, device, null);
 
             if (AccessResultCode.SUCCESS.equals(accessResultCode)) {
-                return new ActionResponseDto("Synchronizing time for device: "
-                        + device.getDeviceIdentification() + " was successful");
+                return new ActionResponseDto("Synchronizing time for device: " + device.getDeviceIdentification()
+                        + " was successful");
             } else {
-                return new ActionResponseDto("Synchronizing time for device: "
-                        + device.getDeviceIdentification() + " was not successful. Resultcode: " + accessResultCode);
+                return new ActionResponseDto("Synchronizing time for device: " + device.getDeviceIdentification()
+                        + " was not successful. Resultcode: " + accessResultCode);
             }
 
         } catch (final ProtocolAdapterException e) {
             LOGGER.error(ERROR_WHILE_SYNCHRONIZING_TIME + device.getDeviceIdentification(), e);
-            return new ActionResponseDto(e, ERROR_WHILE_SYNCHRONIZING_TIME
-                    + device.getDeviceIdentification());
+            return new ActionResponseDto(e, ERROR_WHILE_SYNCHRONIZING_TIME + device.getDeviceIdentification());
         }
     }
 
-    public void setSynchronizeTimeCommandExecutor(SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor) {
+    public void setSynchronizeTimeCommandExecutor(final SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor) {
         this.synchronizeTimeCommandExecutor = synchronizeTimeCommandExecutor;
     }
-    
-    
+
 }
