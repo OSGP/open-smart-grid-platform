@@ -23,10 +23,6 @@ public class SpecificConfigurationObjectDto implements Serializable {
         this.obisCode = obisCode;
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public int getClassId() {
         return classId;
     }
