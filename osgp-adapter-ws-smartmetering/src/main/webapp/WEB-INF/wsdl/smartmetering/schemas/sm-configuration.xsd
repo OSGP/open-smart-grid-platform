@@ -711,19 +711,9 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-  <xsd:complexType name="GetSpecificConfigurationObjectRequestData">
-      <xsd:complexContent>
-          <xsd:extension base="common:Command">
-              <xsd:sequence>
-                  <xsd:element name="SpecificConfigurationObject" type="tns:SpecificConfigurationObject" minOccurs="1" maxOccurs="1"/>
-              </xsd:sequence>
-          </xsd:extension>
-      </xsd:complexContent>
-  </xsd:complexType>
-
-  <xsd:complexType name="SpecificConfigurationObject">
+  <xsd:complexType name="SpecificConfigurationObjectRequestData">
     <xsd:complexContent>
-      <xsd:extension base="common:Command">
+      <xsd:extension base="common:Query">
         <xsd:sequence>
           <xsd:element name="ClassId" type="xsd:integer" />
           <xsd:element name="Attribute" type="xsd:integer" />

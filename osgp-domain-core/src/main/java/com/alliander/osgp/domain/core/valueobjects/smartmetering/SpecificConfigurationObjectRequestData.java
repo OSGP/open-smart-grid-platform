@@ -11,7 +11,9 @@ package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class SpecificConfigurationObject implements Serializable {
+import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
+
+public class SpecificConfigurationObjectRequestData implements Serializable, ActionRequest  {
 
     private static final long serialVersionUID = 2732162650167261497L;
 
@@ -20,7 +22,7 @@ public class SpecificConfigurationObject implements Serializable {
     private ObisCodeValues obisCode;
     
     
-    public SpecificConfigurationObject(int classId, int attribute, ObisCodeValues obisCode) {
+    public SpecificConfigurationObjectRequestData(int classId, int attribute, ObisCodeValues obisCode) {
         super();
         this.classId = classId;
         this.attribute = attribute;
@@ -40,6 +42,11 @@ public class SpecificConfigurationObject implements Serializable {
     public ObisCodeValues getObisCode() {
         return obisCode;
     }
+    
+    @Override
+    public void validate() throws FunctionalException {
+    }
+
 
     @Override
     public int hashCode() {
@@ -59,7 +66,7 @@ public class SpecificConfigurationObject implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SpecificConfigurationObject other = (SpecificConfigurationObject) obj;
+        SpecificConfigurationObjectRequestData other = (SpecificConfigurationObjectRequestData) obj;
         if (attribute != other.attribute)
             return false;
         if (classId != other.classId)
@@ -71,4 +78,5 @@ public class SpecificConfigurationObject implements Serializable {
             return false;
         return true;
     }
+
 }

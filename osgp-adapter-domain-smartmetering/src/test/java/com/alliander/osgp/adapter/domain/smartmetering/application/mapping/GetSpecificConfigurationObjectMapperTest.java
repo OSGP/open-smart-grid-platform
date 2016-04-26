@@ -11,10 +11,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetSpecificConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ObisCodeValues;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObject;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetSpecificConfigurationObjectRequestDataDto;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequestData;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
 
 public class GetSpecificConfigurationObjectMapperTest {
 
@@ -22,19 +21,18 @@ public class GetSpecificConfigurationObjectMapperTest {
 
     @Test
     public void test() {
-        GetSpecificConfigurationObjectRequestData reqData1 = makeRequestDatareqData();
-        Object obj = commonMapper.map(reqData1, GetSpecificConfigurationObjectRequestDataDto.class);
-        assertTrue(obj != null && obj instanceof GetSpecificConfigurationObjectRequestDataDto);
-        Object reqData2 = commonMapper.map(obj, GetSpecificConfigurationObjectRequestData.class);
-        assertTrue(reqData2 != null && reqData2 instanceof GetSpecificConfigurationObjectRequestData);
+        SpecificConfigurationObjectRequestData reqData1 = makeRequestData();
+        Object obj = commonMapper.map(reqData1, SpecificConfigurationObjectRequestDataDto.class);
+        assertTrue(obj != null && obj instanceof SpecificConfigurationObjectRequestDataDto);
+        Object reqData2 = commonMapper.map(obj, SpecificConfigurationObjectRequestData.class);
+        assertTrue(reqData2 != null && reqData2 instanceof SpecificConfigurationObjectRequestData);
         assertTrue(reqData1.equals(reqData2));
     }
 
 
-    private GetSpecificConfigurationObjectRequestData makeRequestDatareqData() {
+    private SpecificConfigurationObjectRequestData makeRequestData() {
         final ObisCodeValues obiscode = new ObisCodeValues((byte)2,(byte)3,(byte)4,(byte)5,(byte)6,(byte)7);
-        final SpecificConfigurationObject configObj = new SpecificConfigurationObject(21, 1, obiscode);
-        return new GetSpecificConfigurationObjectRequestData(configObj);
+        return new SpecificConfigurationObjectRequestData(21, 1, obiscode);
     }
     
 }
