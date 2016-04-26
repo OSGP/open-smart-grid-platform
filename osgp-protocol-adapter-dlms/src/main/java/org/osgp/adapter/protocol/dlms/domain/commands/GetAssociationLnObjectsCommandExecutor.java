@@ -79,7 +79,7 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
 
         @SuppressWarnings("unchecked")
         final List<AssociationLnListElementDto> elements = this
-                .convertAssociationLnList((List<DataObject>) getResultList.get(0).resultData().value());
+        .convertAssociationLnList((List<DataObject>) getResultList.get(0).resultData().value());
 
         return new AssociationLnListTypeDto(elements);
     }
@@ -94,9 +94,9 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
             final AssociationLnListElementDto element = new AssociationLnListElementDto(
                     this.dlmsHelperService.readLong(obisCodeMetaDataList.get(CLASS_ID_INDEX), "classId"), new Integer(
                             (short) obisCodeMetaDataList.get(VERSION_INDEX).value()),
-                    this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
-                                    "AssociationLN Element"), this.convertAccessRights(obisCodeMetaDataList
-                            .get(ACCESS_RIGHTS_INDEX)));
+                            this.dlmsHelperService.readLogicalName(obisCodeMetaDataList.get(OBIS_CODE_INDEX),
+                            "AssociationLN Element"), this.convertAccessRights(obisCodeMetaDataList
+                                            .get(ACCESS_RIGHTS_INDEX)));
 
             elements.add(element);
         }
@@ -114,42 +114,50 @@ public class GetAssociationLnObjectsCommandExecutor implements CommandExecutor<V
 
         @SuppressWarnings("unchecked")
         final AttributeAccessDescriptorDto attributeAccessDescriptor = this
-        .convertAttributeAccessDescriptor((List<DataObject>) accessRights.get(
-                ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX).value());
+                .convertAttributeAccessDescriptor((List<DataObject>) accessRights.get(
+                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_INDEX).value());
 
         @SuppressWarnings("unchecked")
         final MethodAccessDescriptorDto methodAccessDescriptor = this
-        .convertMethodAttributeAccessDescriptor((List<DataObject>) accessRights.get(
-                ACCESS_RIGHTS_METHOD_ACCESS_INDEX).value());
+                .convertMethodAttributeAccessDescriptor((List<DataObject>) accessRights.get(
+                        ACCESS_RIGHTS_METHOD_ACCESS_INDEX).value());
 
         return new AccessRightDto(attributeAccessDescriptor, methodAccessDescriptor);
     }
 
+    @SuppressWarnings("unchecked")
     private AttributeAccessDescriptorDto convertAttributeAccessDescriptor(
             final List<DataObject> attributeAccessDescriptor) throws ProtocolAdapterException {
         final List<AttributeAccessItemDto> attributeAccessItems = new ArrayList<>();
 
         for (final DataObject attributeAccessItemRaw : attributeAccessDescriptor) {
-            @SuppressWarnings("unchecked")
             final List<DataObject> attributeAccessItem = (List<DataObject>) attributeAccessItemRaw.value();
 
             AccessSelectorListDto asl = null;
             if (attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).isNull()) {
                 asl = new AccessSelectorListDto(Collections.<Integer> emptyList());
             } else {
-                final DataObject accessSelectors = attributeAccessItem
-                        .get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX);
-                asl = new AccessSelectorListDto((List<Integer>) accessSelectors.value());
+                asl = new AccessSelectorListDto(this.convertAccessSelectors((List<DataObject>) attributeAccessItem.get(
+                        ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_SELECTORS_INDEX).value()));
             }
 
             attributeAccessItems.add(new AttributeAccessItemDto(this.dlmsHelperService.readLong(
                     attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ATTRIBUTE_ID_INDEX), "").intValue(),
                     AttributeAccessModeTypeDto.values()[this.dlmsHelperService.readLong(
                             attributeAccessItem.get(ACCESS_RIGHTS_ATTRIBUTE_ACCESS_ACCESS_MODE_INDEX), "").intValue()],
-                            asl));
+                    asl));
         }
 
         return new AttributeAccessDescriptorDto(attributeAccessItems);
+    }
+
+    private List<Integer> convertAccessSelectors(final List<DataObject> accessSelectors)
+            throws ProtocolAdapterException {
+        final List<Integer> convertedAccessSelectors = new ArrayList<>();
+        for (final DataObject accessSelectorRaw : accessSelectors) {
+            convertedAccessSelectors.add(this.dlmsHelperService.readLong(accessSelectorRaw, "").intValue());
+        }
+        return convertedAccessSelectors;
     }
 
     private MethodAccessDescriptorDto convertMethodAttributeAccessDescriptor(
