@@ -42,14 +42,13 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
             final GetSpecificConfigurationObjectRequestDataDto requestData) throws ProtocolAdapterException {
 
         LOGGER.debug("Get specific configuration object for class id: {}, obis code: {}, attribute id: {}",
-                getClassId(requestData), getObisCode(requestData), getAttr(requestData));
+                this.getClassId(requestData), this.getObisCode(requestData), this.getAttr(requestData));
 
-        final AttributeAddress attributeAddress = getAttributeAddress(requestData);
+        final AttributeAddress attributeAddress = this.getAttributeAddress(requestData);
 
-        List<GetResult> getResultList;
         try {
-            getResultList = conn.get(attributeAddress);
-            if (checkResult(getResultList)) {
+            List<GetResult> getResultList = conn.get(attributeAddress);
+            if (this.checkResult(getResultList)) {
                 final DataObject dataObject = getResultList.get(0).resultData();
                 return new ActionResponseDto(this.dlmsHelper.getDebugInfo(dataObject));
             } else {
@@ -74,7 +73,7 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
     }
 
     private AttributeAddress getAttributeAddress(final GetSpecificConfigurationObjectRequestDataDto requestData) {
-        return new AttributeAddress(getClassId(requestData), getObisCode(requestData), getAttr(requestData));
+        return new AttributeAddress(this.getClassId(requestData), this.getObisCode(requestData), this.getAttr(requestData));
     }
 
     private int getClassId(final GetSpecificConfigurationObjectRequestDataDto requestData) {

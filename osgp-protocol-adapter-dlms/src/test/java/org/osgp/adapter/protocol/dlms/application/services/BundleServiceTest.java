@@ -133,6 +133,12 @@ public class BundleServiceTest {
 
     @Before
     public void setup() {
+        if (stubs.isEmpty()) {
+            fillStubs();
+        }
+    }
+
+    private void fillStubs() {
         stubs.put(FindEventsQueryDto.class, (AbstractCommandExecutorStub) retrieveEventsBundleCommandExecutor);
         stubs.put(ActualMeterReadsDataDto.class, (AbstractCommandExecutorStub) actualMeterReadsBundleCommandExecutor);
         stubs.put(ActualMeterReadsDataGasDto.class,
@@ -173,17 +179,28 @@ public class BundleServiceTest {
         List<ActionResponseDto> result = callExecutors(dto);
         Assert.assertTrue(result != null);
         Assert.assertEquals(actionDtoList.size(), result.size());
-    }
-
-    @Test
-    public void testException() {
-        final List<ActionDto> actionDtoList = this.makeActions();
-        BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
+        System.out.println(" run 2 ");
         getStub(FindEventsQueryDto.class).failWith(new ProtocolAdapterException("simulate error"));
-        List<ActionResponseDto> result = callExecutors(dto);
+        result = callExecutors(dto);
         Assert.assertTrue(result != null);
         Assert.assertEquals(actionDtoList.size(), result.size());
+        System.out.println(" run 3 ");
+        getStub(FindEventsQueryDto.class).failWith(null);
+        result = callExecutors(dto);
+        Assert.assertTrue(result != null);
+        Assert.assertEquals(actionDtoList.size(), result.size());
+        System.out.println("done");
     }
+
+//    @Test
+//    public void testException() {
+//        final List<ActionDto> actionDtoList = this.makeActions();
+//        BundleMessageDataContainerDto dto = new BundleMessageDataContainerDto(actionDtoList);
+//        getStub(FindEventsQueryDto.class).failWith(new ProtocolAdapterException("simulate error"));
+//        List<ActionResponseDto> result = callExecutors(dto);
+//        Assert.assertTrue(result != null);
+//        Assert.assertEquals(actionDtoList.size(), result.size());
+//    }
 
     private List<ActionResponseDto> callExecutors(BundleMessageDataContainerDto dto) {
         final DlmsDevice device = new DlmsDevice();

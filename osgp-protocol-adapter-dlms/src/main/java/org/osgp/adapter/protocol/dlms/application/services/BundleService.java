@@ -69,6 +69,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestD
 @Service(value = "dlmsBundleService")
 public class BundleService {
 
+    private final static Map<Class<? extends ActionDto>, CommandExecutor<? extends ActionDto, ? extends ActionResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
+
     private static final Logger LOGGER = LoggerFactory.getLogger(BundleService.class);
 
     @Autowired
@@ -131,8 +133,6 @@ public class BundleService {
     @Autowired
     private GetSpecificConfigurationObjectCommandExecutor getSpecificConfigurationObjectCommandExecutor;
     
-    private final static Map<Class<? extends ActionDto>, CommandExecutor<? extends ActionDto, ? extends ActionResponseDto>> CLAZZ_EXECUTOR_MAP = new HashMap<>();
-
     @PostConstruct
     private void postConstruct() {
         CLAZZ_EXECUTOR_MAP.put(FindEventsQueryDto.class, this.retrieveEventsBundleCommandExecutor);
