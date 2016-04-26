@@ -8,19 +8,19 @@
 package org.osgp.adapter.protocol.dlms.domain.commands.stub;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetAdministrativeStatusBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDataDto;
 
-public class GetAdministrativeStatusBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
-        GetAdministrativeStatusBundleCommandExecutor {
+public class GetAssociationLnObjectsBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
+GetAssociationLnObjectsBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetAdministrativeStatusDataDto object) throws ProtocolAdapterException {
+            final GetAssociationLnObjectsRequestDataDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

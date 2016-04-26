@@ -20,12 +20,18 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 
 @Component()
-public class SetSpecialDaysBundleCommandExecutorImpl implements SetSpecialDaysBundleCommandExecutor {
+public class SetSpecialDaysBundleCommandExecutorImpl extends
+        BundleCommandExecutor<SpecialDaysRequestDataDto, ActionResponseDto> implements
+        SetSpecialDaysBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetSpecialDaysBundleCommandExecutorImpl.class);
 
     @Autowired
     SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor;
+
+    public SetSpecialDaysBundleCommandExecutorImpl() {
+        super(SpecialDaysRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -37,8 +43,7 @@ public class SetSpecialDaysBundleCommandExecutorImpl implements SetSpecialDaysBu
             if (AccessResultCode.SUCCESS.equals(resultCode)) {
                 return new ActionResponseDto("Set special days was successful");
             } else {
-                return new ActionResponseDto("Set special days was not successful. Result code: "
-                        + resultCode);
+                return new ActionResponseDto("Set special days was not successful. Result code: " + resultCode);
             }
         } catch (final ProtocolAdapterException e) {
             LOGGER.error("Set special days was not successful", e);
@@ -47,10 +52,10 @@ public class SetSpecialDaysBundleCommandExecutorImpl implements SetSpecialDaysBu
     }
 
     public SetSpecialDaysCommandExecutor getSetSpecialDaysCommandExecutor() {
-        return setSpecialDaysCommandExecutor;
+        return this.setSpecialDaysCommandExecutor;
     }
 
-    public void setSetSpecialDaysCommandExecutor(SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor) {
+    public void setSetSpecialDaysCommandExecutor(final SetSpecialDaysCommandExecutor setSpecialDaysCommandExecutor) {
         this.setSpecialDaysCommandExecutor = setSpecialDaysCommandExecutor;
     }
 }

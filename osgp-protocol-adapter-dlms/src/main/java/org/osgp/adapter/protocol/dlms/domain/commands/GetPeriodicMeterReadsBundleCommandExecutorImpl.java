@@ -20,12 +20,18 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQuery
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 
 @Component()
-public class GetPeriodicMeterReadsBundleCommandExecutorImpl implements GetPeriodicMeterReadsBundleCommandExecutor {
+public class GetPeriodicMeterReadsBundleCommandExecutorImpl extends
+BundleCommandExecutor<PeriodicMeterReadsRequestDataDto, ActionResponseDto> implements
+GetPeriodicMeterReadsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsBundleCommandExecutorImpl.class);
 
     @Autowired
     GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor;
+
+    public GetPeriodicMeterReadsBundleCommandExecutorImpl() {
+        super(PeriodicMeterReadsRequestDataDto.class);
+    }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
@@ -45,11 +51,11 @@ public class GetPeriodicMeterReadsBundleCommandExecutorImpl implements GetPeriod
     }
 
     public GetPeriodicMeterReadsCommandExecutor getGetPeriodicMeterReadsCommandExecutor() {
-        return getPeriodicMeterReadsCommandExecutor;
+        return this.getPeriodicMeterReadsCommandExecutor;
     }
 
     public void setGetPeriodicMeterReadsCommandExecutor(
-            GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor) {
+            final GetPeriodicMeterReadsCommandExecutor getPeriodicMeterReadsCommandExecutor) {
         this.getPeriodicMeterReadsCommandExecutor = getPeriodicMeterReadsCommandExecutor;
     }
 }
