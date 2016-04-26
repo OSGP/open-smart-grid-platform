@@ -46,6 +46,7 @@
 				<xsd:element name="GetFirmwareVersionRequestData" type="smconf:GetFirmwareVersionRequestData" />
 				<xsd:element name="SpecificConfigurationObjectRequestData" type="smconf:SpecificConfigurationObjectRequestData" />
 				<xsd:element name="KeySet" type="smconf:KeySet" />
+                <xsd:element name="GetAssociationLnObjectsRequestData" type="adhoc:GetAssociationLnObjectsRequestData" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
@@ -92,6 +93,7 @@
 					<xsd:element name="PeriodicMeterReadsGasResponseData" type="smmon:PeriodicMeterReadsGasResponseData" maxOccurs="unbounded" />
 					<xsd:element name="GetConfigurationResponseData" type="smconf:GetConfigurationResponseData" maxOccurs="unbounded" />
 					<xsd:element name="GetFirmwareVersionResponseData" type="smconf:GetFirmwareVersionResponseData" maxOccurs="unbounded" />
+                    <xsd:element name="AssociationLnObjectsResponseData" type="adhoc:AssociationLnObjectsResponseData" maxOccurs="unbounded" />
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>
