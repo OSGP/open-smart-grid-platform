@@ -26,7 +26,6 @@
     </xsd:complexContent>
   </xsd:complexType>
 
-
   <xsd:element name="SynchronizeTimeRequest">
     <xsd:complexType>
       <xsd:sequence>
@@ -96,6 +95,26 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+  
+  <xsd:complexType name="GetAssociationLnObjectsRequestData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Command">
+        <xsd:sequence>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  <xsd:complexType name="AssociationLnObjectsResponseData">
+    <xsd:complexContent>
+      <xsd:extension base="common:Response">
+        <xsd:sequence>
+          <xsd:element name="AssociationLnList" type="tns:AssociationLnListType"
+            minOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
   
   <xsd:element name="GetAssociationLnObjectsRequest">
     <xsd:complexType>
@@ -171,7 +190,7 @@
   
   <xsd:complexType name="AccessSelectorList">
     <xsd:sequence>
-      <xsd:element name="AccessSelector" type="xsd:int" maxOccurs="unbounded" />
+      <xsd:element name="AccessSelector" type="xsd:int" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
   

@@ -31,6 +31,8 @@ public interface DeviceSpecifications {
 
     Specification<Device> hasMunicipality(final String municipality) throws ArgumentNullOrEmptyException;
 
+    Specification<Device> isManagedExternally(final Boolean isManagedExternally) throws ArgumentNullOrEmptyException;
+
     Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException;
 
     Specification<Device> isInMaintetance(final Boolean inMaintenance) throws ArgumentNullOrEmptyException;
