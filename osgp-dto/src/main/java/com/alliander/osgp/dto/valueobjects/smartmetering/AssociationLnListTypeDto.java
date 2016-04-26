@@ -7,12 +7,11 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AssociationLnListTypeDto implements Serializable {
+public class AssociationLnListTypeDto extends ActionResponseDto {
     private static final long serialVersionUID = 5540577793697751858L;
 
     private List<AssociationLnListElementDto> associationLnListElement;
