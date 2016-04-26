@@ -190,7 +190,7 @@
   
   <xsd:complexType name="AccessSelectorList">
     <xsd:sequence>
-      <xsd:element name="AccessSelector" type="xsd:int" maxOccurs="unbounded" />
+      <xsd:element name="AccessSelector" type="xsd:int" minOccurs="0" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
   
