@@ -24,6 +24,7 @@ import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsBundl
 import org.osgp.adapter.protocol.dlms.domain.commands.GetPeriodicMeterReadsGasBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.ReadAlarmRegisterBundleCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyBundleCommandExecutorImpl;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveEventsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetActivityCalendarBundleCommandExecutor;
@@ -35,7 +36,6 @@ import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupAlarmBundleCom
 import org.osgp.adapter.protocol.dlms.domain.commands.SetPushSetupSmsBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SetSpecialDaysBundleCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeBundleCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.ReplaceKeyBundleCommandExecutorImpl;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,6 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetSpecificConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
@@ -64,6 +63,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
 
 @Service(value = "dlmsBundleService")
@@ -159,7 +159,7 @@ public class BundleService {
                 this.retrieveConfigurationObjectsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(GetFirmwareVersionRequestDataDto.class, this.getFirmwareVersionsBundleCommandExecutor);
         CLAZZ_EXECUTOR_MAP.put(KeySetDto.class, this.replaceKeyBundleCommandExecutor);
-        CLAZZ_EXECUTOR_MAP.put(GetSpecificConfigurationObjectRequestDataDto.class, this.getSpecificConfigurationObjectCommandExecutor);
+        CLAZZ_EXECUTOR_MAP.put(SpecificConfigurationObjectRequestDataDto.class, this.getSpecificConfigurationObjectCommandExecutor);
     }
 
     public List<ActionResponseDto> callExecutors(final ClientConnection conn, final DlmsDevice device,

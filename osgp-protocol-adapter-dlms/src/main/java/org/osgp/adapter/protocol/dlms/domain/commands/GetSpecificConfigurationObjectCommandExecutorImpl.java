@@ -25,9 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetSpecificConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ObisCodeValuesDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
 
 @Component
 public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpecificConfigurationObjectCommandExecutor {
@@ -39,10 +38,10 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetSpecificConfigurationObjectRequestDataDto requestData) throws ProtocolAdapterException {
+            final SpecificConfigurationObjectRequestDataDto requestData) throws ProtocolAdapterException {
 
         LOGGER.debug("Get specific configuration object for class id: {}, obis code: {}, attribute id: {}",
-                this.getClassId(requestData), this.getObisCode(requestData), this.getAttr(requestData));
+                requestData.getClassId(), this.getObisCode(requestData), requestData.getAttribute());
 
         final AttributeAddress attributeAddress = this.getAttributeAddress(requestData);
 
@@ -72,21 +71,13 @@ public class GetSpecificConfigurationObjectCommandExecutorImpl implements GetSpe
         return getResultList.get(0).resultData() != null;
     }
 
-    private AttributeAddress getAttributeAddress(final GetSpecificConfigurationObjectRequestDataDto requestData) {
-        return new AttributeAddress(this.getClassId(requestData), this.getObisCode(requestData), this.getAttr(requestData));
+    private AttributeAddress getAttributeAddress(final SpecificConfigurationObjectRequestDataDto requestData) {
+        return new AttributeAddress(requestData.getClassId(), this.getObisCode(requestData), requestData.getAttribute());
     }
 
-    private int getClassId(final GetSpecificConfigurationObjectRequestDataDto requestData) {
-        return requestData.getSpecificConfigurationObject().getClassId();
-    }
 
-    private int getAttr(final GetSpecificConfigurationObjectRequestDataDto requestData) {
-        return requestData.getSpecificConfigurationObject().getAttribute();
-    }
-
-    private ObisCode getObisCode(final GetSpecificConfigurationObjectRequestDataDto requestData) {
-        final SpecificConfigurationObjectDto specConfig = requestData.getSpecificConfigurationObject();
-        final ObisCodeValuesDto obisDto = specConfig.getObisCode();
+    private ObisCode getObisCode(final SpecificConfigurationObjectRequestDataDto requestData) {
+        final ObisCodeValuesDto obisDto = requestData.getObisCode();
         return new ObisCode((int) obisDto.getA(), (int) obisDto.getB(), (int) obisDto.getC(), (int) obisDto.getD(),
                 (int) obisDto.getE(), (int) obisDto.getF());
     }
