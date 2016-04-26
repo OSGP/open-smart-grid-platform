@@ -64,14 +64,15 @@ public class BundleService {
                     actionDto.setResponse(null);
                     throw connectionException;
                 } catch (final Exception exception) {
+
+                    final String strexec = (executor == null) ? " = null " : executor.getClass().getSimpleName();
+
                     LOGGER.error("Error while executing bundle action "
                             + actionDto.getRequest().getClass().getSimpleName() + " for class "
-                            + actionDto.getRequest().getClass().getSimpleName() + " and executor "
-                            + executor.getClass().getSimpleName(), exception);
+                            + actionDto.getRequest().getClass().getSimpleName() + " and executor " + strexec, exception);
                     actionDto.setResponse(new ActionResponseDto(exception,
                             "Error while executing bundle action for class "
-                                    + actionDto.getRequest().getClass().getSimpleName() + " and executor "
-                                    + executor.getClass().getSimpleName()));
+                                    + actionDto.getRequest().getClass().getSimpleName() + " and executor " + strexec));
                 }
             }
         }
