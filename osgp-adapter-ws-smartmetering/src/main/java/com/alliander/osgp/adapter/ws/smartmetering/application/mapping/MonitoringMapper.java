@@ -23,10 +23,10 @@ public class MonitoringMapper extends ConfigurableMapper {
 
         // These classMaps are needed because of different names for fields.
         mapperFactory.classMap(PeriodicMeterReadsContainerGas.class, PeriodicMeterReadsGasResponse.class)
-                .field("meterReadsGas", "periodicMeterReadsGas").byDefault().register();
+        .field("meterReadsGas", "periodicMeterReadsGas").byDefault().register();
         mapperFactory
-                .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
-                        AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
+        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
+                AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
                 .byDefault().register();
 
         // Converter is needed because of instanceOf check to set boolean
@@ -46,6 +46,9 @@ public class MonitoringMapper extends ConfigurableMapper {
         // This converter is needed to ensure correct mapping of dates and
         // times.
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
+
+        // This converter is needed because it contains logic.
+        mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestGasQueryConverter());
     }
 
 }
