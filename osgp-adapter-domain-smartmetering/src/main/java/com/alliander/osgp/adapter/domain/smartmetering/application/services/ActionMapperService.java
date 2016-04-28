@@ -38,6 +38,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetFirmwareVersionRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet;
@@ -50,6 +51,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetEncryptionKe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupAlarmRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetPushSetupSmsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SynchronizeTimeRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto;
@@ -58,6 +60,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTyp
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
@@ -68,6 +71,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -134,7 +138,8 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(GetConfigurationRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetFirmwareVersionRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(KeySet.class, this.configurationMapper);
-
+        CLASS_TO_MAPPER_MAP.put(SpecificConfigurationObjectRequestData.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
     }
 
     /**
@@ -158,7 +163,8 @@ public class ActionMapperService {
         CLASS_MAP.put(GetConfigurationRequestData.class, GetConfigurationRequestDataDto.class);
         CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDataDto.class);
         CLASS_MAP.put(KeySet.class, KeySetDto.class);
-
+        CLASS_MAP.put(SpecificConfigurationObjectRequestData.class, SpecificConfigurationObjectRequestDataDto.class);
+        CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDataDto.class);
     }
 
     public BundleMessageDataContainerDto mapAllActions(final BundleMessageDataContainer bundleMessageDataContainer,

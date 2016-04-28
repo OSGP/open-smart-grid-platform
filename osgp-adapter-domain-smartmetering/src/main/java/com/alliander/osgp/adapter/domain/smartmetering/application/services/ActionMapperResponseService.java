@@ -27,6 +27,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Monit
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponseContainer;
@@ -38,6 +39,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDataDto;
@@ -83,7 +85,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(PeriodicMeterReadsContainerGasDto.class, this.monitoringMapper);
         classToMapperMap.put(GetConfigurationResponseDataDto.class, this.configurationMapper);
         classToMapperMap.put(FirmwareVersionResponseDataDto.class, this.configurationMapper);
-
+        classToMapperMap.put(AssociationLnObjectsResponseDataDto.class, this.commonMapper);
     }
 
     /**
@@ -101,12 +103,12 @@ public class ActionMapperResponseService {
         classMap.put(PeriodicMeterReadsContainerGasDto.class, PeriodicMeterReadsContainerGas.class);
         classMap.put(GetConfigurationResponseDataDto.class, GetConfigurationResponseContainer.class);
         classMap.put(FirmwareVersionResponseDataDto.class, FirmwareVersionResponseContainer.class);
-
+        classMap.put(AssociationLnObjectsResponseDataDto.class, AssociationLnObjectsResponseData.class);
     }
 
     public BundleResponseMessageDataContainer mapAllActions(
             final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
-                    throws FunctionalException {
+            throws FunctionalException {
 
         final List<ActionResponse> actionResponseList = new ArrayList<ActionResponse>();
 

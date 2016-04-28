@@ -168,6 +168,31 @@ public class JpaDeviceSpecifications implements DeviceSpecifications {
     }
 
     @Override
+    public Specification<Device> isManagedExternally(final Boolean isManagedExternally)
+            throws ArgumentNullOrEmptyException {
+        if (isManagedExternally == null) {
+            throw new ArgumentNullOrEmptyException("isManagedExternally");
+        }
+
+        return new Specification<Device>() {
+
+            @Override
+            public Predicate toPredicate(final Root<Device> deviceRoot, final CriteriaQuery<?> query,
+                    final CriteriaBuilder cb) {
+                final Subquery<Long> subquery = query.subquery(Long.class);
+                final Root<DeviceAuthorization> deviceAuthorizationRoot = subquery.from(DeviceAuthorization.class);
+                subquery.select(cb.countDistinct(deviceAuthorizationRoot));
+                subquery.where(cb.equal(deviceAuthorizationRoot.get("device"), deviceRoot.<Long> get("id")));
+                if (isManagedExternally) {
+                    return cb.greaterThan(subquery, Long.valueOf(1));
+                } else {
+                    return cb.lessThanOrEqualTo(subquery, Long.valueOf(1));
+                }
+            }
+        };
+    }
+
+    @Override
     public Specification<Device> isActived(final Boolean activated) throws ArgumentNullOrEmptyException {
 
         if (activated == null) {
