@@ -14,10 +14,6 @@ import static org.junit.Assert.assertNull;
 
 import java.math.BigInteger;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupSms;
@@ -26,31 +22,33 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.TransportServic
 
 public class PushSetupSmsMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private static final String HOST = "host";
+    private static final BigInteger PORT = BigInteger.TEN;
+    private static final String DESTINATION = "host:10";
+    private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
+    private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
 
-    // This mapping needs it's converter.
-    @Before
-    public void init() {
-        this.mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
-    }
-
-    // Test if mapping a PushSetupSms object succeeds.
+    /** Tests if a PushSetupSms object can be mapped successfully. */
     @Test
     public void testPushSetupSmsMapping() {
+
         // build test data
-        final String host = "host";
-        final BigInteger port = BigInteger.TEN;
         final PushSetupSms pushSetupSmsOriginal = new PushSetupSms();
-        pushSetupSmsOriginal.setHost(host);
-        pushSetupSmsOriginal.setPort(port);
+        pushSetupSmsOriginal.setHost(HOST);
+        pushSetupSmsOriginal.setPort(PORT);
 
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSmsMapped = this.mapperFactory
-                .getMapperFacade().map(pushSetupSmsOriginal,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms pushSetupSmsMapped = this.configurationMapper
+                .map(pushSetupSmsOriginal, com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms.class);
 
         // check mapping
         assertNotNull(pushSetupSmsMapped);
+        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod());
+        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod().getDestination());
+        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod().getTransportService());
+        assertNotNull(pushSetupSmsMapped.getSendDestinationAndMethod().getMessage());
+
         // Only a SendDestinationAndMethod is mapped:
         assertNull(pushSetupSmsMapped.getLogicalName());
         assertNull(pushSetupSmsMapped.getCommunicationWindow());
@@ -62,11 +60,10 @@ public class PushSetupSmsMappingTest {
         // port and host are combined into destination. The converter sets
         // default values for the other two variables of a
         // SendDestinationAndMethod.
-        assertEquals(host + ":" + port, pushSetupSmsMapped.getSendDestinationAndMethod().getDestination());
-        assertEquals(TransportServiceType.TCP.name(), pushSetupSmsMapped.getSendDestinationAndMethod()
+        assertEquals(DESTINATION, pushSetupSmsMapped.getSendDestinationAndMethod().getDestination());
+        assertEquals(TRANSPORTSERVICETYPE.name(), pushSetupSmsMapped.getSendDestinationAndMethod()
                 .getTransportService().name());
-        assertEquals(MessageType.MANUFACTURER_SPECIFIC.name(), pushSetupSmsMapped.getSendDestinationAndMethod()
-                .getMessage().name());
+        assertEquals(MESSAGETYPE.name(), pushSetupSmsMapped.getSendDestinationAndMethod().getMessage().name());
 
     }
 

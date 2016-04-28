@@ -10,36 +10,27 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
-import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter;
 
 public class ListEventMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ManagementMapper managementMapper = new ManagementMapper();
 
-    // Mapping a List<Event> needs these converters: orika has trouble mapping
-    // dates/calendars by default, and cannot map from object to enum by
-    // default.
-    @Before
-    public void init() {
-        this.mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
-        this.mapperFactory.getConverterFactory().registerConverter(new EventConverter());
-    }
-
-    // Test to see if mapping a List<Event> succeeds
+    /**
+     * Tests if mapping a List, typed to Event, succeeds if the List is filled
+     * (1 entry).
+     */
     @Test
-    public void testListEventMapping() {
+    public void testFilledListEventMapping() {
+
         // build test data
         final DateTime timestamp = new DateTime();
         final Integer eventCode = new Integer(10);
@@ -49,12 +40,15 @@ public class ListEventMappingTest {
         listOriginal.add(event);
 
         // actual mapping
-        final List<com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> listMapped = this.mapperFactory
-                .getMapperFacade().mapAsList(listOriginal,
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class);
+        final List<com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> listMapped = this.managementMapper
+                .mapAsList(listOriginal, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class);
 
         // check mapping
         assertNotNull(listMapped);
+        assertNotNull(listMapped.get(0));
+        assertNotNull(listMapped.get(0).getEventCounter());
+        assertNotNull(listMapped.get(0).getEventType());
+        assertNotNull(listMapped.get(0).getTimestamp());
 
         assertEquals(timestamp.getYear(), listMapped.get(0).getTimestamp().getYear());
         assertEquals(timestamp.getMonthOfYear(), listMapped.get(0).getTimestamp().getMonth());
@@ -68,6 +62,34 @@ public class ListEventMappingTest {
         assertEquals((int) eventCode, listMapped.get(0).getEventType().ordinal());
 
         assertEquals(eventCounter, listMapped.get(0).getEventCounter());
+    }
+
+    /** Tests if mapping a List, typed to Event, succeeds if the List is empty. */
+    @Test
+    public void testEmptyListEventMapping() {
+
+        // build test data
+        final List<Event> listOriginal = new ArrayList<>();
+
+        // actual mapping
+        final List<com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event> listMapped = this.managementMapper
+                .mapAsList(listOriginal, com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class);
+
+        // check mapping
+        assertNotNull(listMapped);
+        assertTrue(listMapped.isEmpty());
+    }
+
+    /** Tests if mapping a List, typed to Event, succeeds if the List is null. */
+    @Test(expected = NullPointerException.class)
+    public void testNullListEventMapping() {
+
+        // build test data
+        final List<Event> listOriginal = null;
+
+        // actual mapping
+        this.managementMapper.mapAsList(listOriginal,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.management.Event.class);
 
     }
 }

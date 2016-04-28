@@ -15,9 +15,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 import java.util.TreeSet;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.junit.Test;
 
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
@@ -25,32 +22,37 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType;
 
 public class AlarmRegisterMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private static final AlarmType ALARMTYPE = AlarmType.CLOCK_INVALID;
 
-    // Test to see if a AlarmRegisterObject is mapped correctly with a filled
-    // set (1 entry)
+    /**
+     * Test to see if an AlarmRegister object is mapped correctly with a filled
+     * Set (1 entry).
+     */
     @Test
     public void testWithFilledSet() {
 
         // build test data
-        final AlarmType alarmType = AlarmType.CLOCK_INVALID;
         final Set<AlarmType> alarmTypeSet = new TreeSet<>();
-        alarmTypeSet.add(alarmType);
+        alarmTypeSet.add(ALARMTYPE);
         final AlarmRegister original = new AlarmRegister(alarmTypeSet);
 
         // actual mapping
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister mapped = this.mapperFactory
-                .getMapperFacade().map(original,
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister mapped = this.monitoringMapper
+                .map(original, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
 
         // check mapping
         assertNotNull(mapped);
+        assertNotNull(mapped.getAlarmTypes());
+        assertNotNull(mapped.getAlarmTypes().get(0));
         assertEquals(original.getAlarmTypes().size(), mapped.getAlarmTypes().size());
-        assertEquals(alarmType.name(), mapped.getAlarmTypes().get(0).name());
+        assertEquals(ALARMTYPE.name(), mapped.getAlarmTypes().get(0).name());
     }
 
-    // Test to see if a AlarmRegisterObject is mapped correctly with an empty
-    // Set.
+    /**
+     * Test to see if an AlarmRegister object is mapped correctly with an empty
+     * Set.
+     */
     @Test
     public void testWithEmptySet() {
 
@@ -59,12 +61,12 @@ public class AlarmRegisterMappingTest {
         final AlarmRegister original = new AlarmRegister(alarmTypeSet);
 
         // actual mapping
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister mapped = this.mapperFactory
-                .getMapperFacade().map(original,
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister mapped = this.monitoringMapper
+                .map(original, com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
 
         // check mapping
         assertNotNull(mapped);
+        assertNotNull(mapped.getAlarmTypes());
         assertTrue(mapped.getAlarmTypes().isEmpty());
 
     }

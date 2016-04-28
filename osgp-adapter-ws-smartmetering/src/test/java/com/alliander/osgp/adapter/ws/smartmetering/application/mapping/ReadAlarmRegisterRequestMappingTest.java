@@ -10,8 +10,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.junit.Test;
 
@@ -19,9 +17,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ReadAlarmRe
 
 public class ReadAlarmRegisterRequestMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
-    // Test to see if a ReadAlarmRegisterRequest is mapped correctly.
+    /** Tests if a ReadAlarmRegisterRequest is mapped correctly. */
     @Test
     public void testReadAlarmRegisterRequestMapping() {
 
@@ -30,12 +28,12 @@ public class ReadAlarmRegisterRequestMappingTest {
         original.setDeviceIdentification("id");
 
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest mapped = this.mapperFactory
-                .getMapperFacade().map(original,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest mapped = this.monitoringMapper
+                .map(original, com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest.class);
 
         // check mapping
         assertNotNull(mapped);
+        assertNotNull(mapped.getDeviceIdentification());
         assertEquals(original.getDeviceIdentification(), mapped.getDeviceIdentification());
     }
 

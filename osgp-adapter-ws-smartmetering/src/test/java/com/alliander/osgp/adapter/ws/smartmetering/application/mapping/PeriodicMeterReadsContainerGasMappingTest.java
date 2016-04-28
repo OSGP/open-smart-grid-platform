@@ -21,11 +21,7 @@ import java.util.TreeSet;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
@@ -40,87 +36,98 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 
 public class PeriodicMeterReadsContainerGasMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private static final PeriodType PERIODTYPE = PeriodType.DAILY;
+    private static final Date DATE = new Date();
+    private static final BigDecimal VALUE = new BigDecimal(1.0);
+    private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
+    private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
+    private static final AmrProfileStatusCodeFlag AMRCODEFLAG = AmrProfileStatusCodeFlag.CLOCK_INVALID;
 
-    // classmap is needed because of different variable names
-    @Before
-    public void init() {
-        this.mapperFactory.classMap(PeriodicMeterReadsContainerGas.class, PeriodicMeterReadsGasResponse.class)
-                .field("meterReadsGas", "periodicMeterReadsGas").byDefault().register();
-        this.mapperFactory
-                .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
-                        AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
-                .byDefault().register();
-        // Converter is needed because of difference in names for values in
-        // enums OsgpUnitType and OsgpUnit
-        this.mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
-    }
-
-    // Test to see if mapping succeeds with an empty List.
+    /**
+     * Tests if mapping a PeriodicMeterReadsContainerGas object with an empty
+     * list succeeds.
+     */
     @Test
     public void testWithEmptyList() {
+
         // build test data
-        final PeriodType periodType = PeriodType.DAILY;
         final List<PeriodicMeterReadsGas> periodicMeterReadsGasList = new ArrayList<>();
         final PeriodicMeterReadsContainerGas periodicMeterReadsContainerGas = new PeriodicMeterReadsContainerGas(
-                periodType, periodicMeterReadsGasList);
+                PERIODTYPE, periodicMeterReadsGasList);
 
         // actual mapping
-        final PeriodicMeterReadsGasResponse periodicMeterReadsGasResponse = this.mapperFactory.getMapperFacade().map(
+        final PeriodicMeterReadsGasResponse periodicMeterReadsGasResponse = this.monitoringMapper.map(
                 periodicMeterReadsContainerGas, PeriodicMeterReadsGasResponse.class);
 
         // check mapping
         assertNotNull(periodicMeterReadsGasResponse);
+        assertNotNull(periodicMeterReadsGasResponse.getPeriodicMeterReadsGas());
+        assertNotNull(periodicMeterReadsGasResponse.getPeriodType());
+
         assertTrue(periodicMeterReadsGasResponse.getPeriodicMeterReadsGas().isEmpty());
-        assertEquals(periodType.name(), periodicMeterReadsGasResponse.getPeriodType().name());
+        assertEquals(PERIODTYPE.name(), periodicMeterReadsGasResponse.getPeriodType().name());
     }
 
-    // Test to see if mapping succeeds with a filled List and Set.
+    /**
+     * Tests if mapping a PeriodicMeterReadsContainerGas object with a filled
+     * List and Set succeeds.
+     */
     @Test
     public void testWithFilledList() {
 
         // build test data
-        final Date date = new Date();
-        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.M3);
+        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(VALUE, OSGP_UNIT);
         final Set<AmrProfileStatusCodeFlag> flagSet = new TreeSet<>();
-        flagSet.add(AmrProfileStatusCodeFlag.CLOCK_INVALID);
+        flagSet.add(AMRCODEFLAG);
         final AmrProfileStatusCode amrProfileStatusCode = new AmrProfileStatusCode(flagSet);
 
-        final PeriodType periodType = PeriodType.DAILY;
-        final PeriodicMeterReadsGas periodicMeterReadsGas = new PeriodicMeterReadsGas(date, osgpMeterValue, date,
+        final PeriodicMeterReadsGas periodicMeterReadsGas = new PeriodicMeterReadsGas(DATE, osgpMeterValue, DATE,
                 amrProfileStatusCode);
         final List<PeriodicMeterReadsGas> periodicMeterReadsList = new ArrayList<>();
         periodicMeterReadsList.add(periodicMeterReadsGas);
         final PeriodicMeterReadsContainerGas periodicMeterReadsContainer = new PeriodicMeterReadsContainerGas(
-                periodType, periodicMeterReadsList);
+                PERIODTYPE, periodicMeterReadsList);
 
         // actual mapping
-        final PeriodicMeterReadsGasResponse periodicMeterReadsResponseGas = this.mapperFactory.getMapperFacade().map(
+        final PeriodicMeterReadsGasResponse periodicMeterReadsResponseGas = this.monitoringMapper.map(
                 periodicMeterReadsContainer, PeriodicMeterReadsGasResponse.class);
 
         // check mapping
+
         assertNotNull(periodicMeterReadsResponseGas);
-        assertEquals(periodType.name(), periodicMeterReadsResponseGas.getPeriodType().name());
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas());
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0));
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode());
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlag());
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode()
+                .getAmrProfileStatusCodeFlag().get(0));
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption());
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getUnit());
+        assertNotNull(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getValue());
+
+        assertEquals(PERIODTYPE.name(), periodicMeterReadsResponseGas.getPeriodType().name());
         assertEquals(periodicMeterReadsList.size(), periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().size());
-        assertEquals(periodicMeterReadsGas.getConsumption().getValue(), periodicMeterReadsResponseGas
-                .getPeriodicMeterReadsGas().get(0).getConsumption().getValue());
-        assertEquals(OsgpUnitType.M_3, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption()
+        assertEquals(VALUE, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption().getValue());
+        assertEquals(OSGP_UNITTYPE, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getConsumption()
                 .getUnit());
+        assertEquals(AMRCODEFLAG.name(), periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0)
+                .getAmrProfileStatusCode().getAmrProfileStatusCodeFlag().get(0).name());
 
-        this.checkDateMapping(date, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getCaptureTime());
-        this.checkDateMapping(date, periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getLogTime());
+        this.checkDateMapping(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getCaptureTime());
+        this.checkDateMapping(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getLogTime());
 
-        assertEquals(AmrProfileStatusCodeFlag.CLOCK_INVALID.name(), periodicMeterReadsResponseGas
-                .getPeriodicMeterReadsGas().get(0).getAmrProfileStatusCode().getAmrProfileStatusCodeFlag().get(0)
-                .name());
     }
 
-    // method to check the mapping of Date objects
-    private void checkDateMapping(final Date date, final XMLGregorianCalendar calendar) {
+    /** Method checks the mapping of Date objects. */
+    private void checkDateMapping(final XMLGregorianCalendar calendar) {
+
+        assertNotNull(calendar);
 
         // convert Date to a DateTime to enable comparison (Date has deprecated
         // method and test fails if these are used).
-        final DateTime dateTime = new DateTime(date);
+        final DateTime dateTime = new DateTime(DATE);
 
         assertEquals(dateTime.getYear(), calendar.getYear());
         assertEquals(dateTime.getMonthOfYear(), calendar.getMonth());

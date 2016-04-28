@@ -12,10 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.AlarmType;
@@ -24,30 +21,27 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNot
 
 public class AlarmNotificationsMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private static final AlarmType ALARMTYPE = AlarmType.CLOCK_INVALID;
+    private static final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType ALARMTYPEMAPPED = com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType.CLOCK_INVALID;
+    private static final boolean ENABLED = true;
 
-    // ClassMap needed because of different fieldnames
-    @Before
-    public void init() {
-        this.mapperFactory
-        .classMap(AlarmNotifications.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
-                .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
-    }
-
-    // Test to see if AlarmNotifications can be mapped.
+    /** Test to see if AlarmNotifications can be mapped. */
     @Test
     public void testAlarmNotificationsMapping() {
+
         // build test data
         final AlarmNotification alarmNotification = new AlarmNotification();
-        alarmNotification.setAlarmType(AlarmType.CLOCK_INVALID);
-        alarmNotification.setEnabled(true);
+        alarmNotification.setAlarmType(ALARMTYPE);
+        alarmNotification.setEnabled(ENABLED);
         final AlarmNotifications alarmNotificationsOriginal = new AlarmNotifications();
         alarmNotificationsOriginal.getAlarmNotification().add(alarmNotification);
+
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications alarmNotificationsMapped = this.mapperFactory
-                .getMapperFacade().map(alarmNotificationsOriginal,
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications alarmNotificationsMapped = this.configurationMapper
+                .map(alarmNotificationsOriginal,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class);
+
         // check mapping
         assertNotNull(alarmNotificationsMapped);
         assertNotNull(alarmNotificationsMapped.getAlarmNotificationsSet());
@@ -55,7 +49,7 @@ public class AlarmNotificationsMappingTest {
         assertEquals(alarmNotificationsOriginal.getAlarmNotification().size(), alarmNotificationsMapped
                 .getAlarmNotificationsSet().size());
         final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotification alarmNotificationMapped = new com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotification(
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType.CLOCK_INVALID, true);
+                ALARMTYPEMAPPED, ENABLED);
         assertTrue(alarmNotificationsMapped.getAlarmNotificationsSet().contains(alarmNotificationMapped));
 
     }

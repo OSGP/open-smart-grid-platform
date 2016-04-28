@@ -11,15 +11,14 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -33,22 +32,24 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 public class PeriodicReadsRequestMappingTest {
 
     private XMLGregorianCalendar xmlCalendar;
-    private MapperFactory mapperFactory;
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private static final PeriodType PERIODTYPE = PeriodType.DAILY;
 
+    /** Needed to initialize a XMLGregorianCalendar object. */
     @Before
     public void init() {
-        this.mapperFactory = new DefaultMapperFactory.Builder().build();
         final GregorianCalendar gregorianCalendar = new GregorianCalendar();
         try {
             this.xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
         } catch (final DatatypeConfigurationException e) {
             e.printStackTrace();
         }
-        // converter is needed because of instanceOf check to set boolean
-        // mbusDevice
-        this.mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
     }
 
+    /**
+     * Tests if a NullPointerException is thrown when a PeriodicReadsRequest -
+     * with a PeriodicReadsRequestData that is null - is mapped.
+     */
     @Test(expected = NullPointerException.class)
     public void testWithNullPeriodicReadsRequestData() {
 
@@ -57,49 +58,59 @@ public class PeriodicReadsRequestMappingTest {
         periodicReadsRequest.setPeriodicReadsRequestData(null);
 
         // actual mapping
-        this.mapperFactory.getMapperFacade().map(periodicReadsRequest, PeriodicMeterReadsQuery.class);
+        this.monitoringMapper.map(periodicReadsRequest, PeriodicMeterReadsQuery.class);
 
     }
 
-    // Test to see if mapping succeeds when a PeriodicReadsRequest is completely
-    // initialized.
+    /**
+     * Tests if a PeriodicReadsRequest object is mapped successfully when it is
+     * completely initialized.
+     */
     @Test
     public void testCompletePeriodicReadsRequestMapping() {
 
         // build test data
-        final PeriodType periodType = PeriodType.DAILY;
         final PeriodicReadsRequestData periodicReadsRequestData = new PeriodicReadsRequestData();
         periodicReadsRequestData.setBeginDate(this.xmlCalendar);
         periodicReadsRequestData.setEndDate(this.xmlCalendar);
-        periodicReadsRequestData.setPeriodType(periodType);
+        periodicReadsRequestData.setPeriodType(PERIODTYPE);
         final PeriodicReadsRequest periodicReadsRequest = new PeriodicReadsRequest();
         periodicReadsRequest.setPeriodicReadsRequestData(periodicReadsRequestData);
 
         // actual mapping
-        final PeriodicMeterReadsQuery periodicMeterReadsQuery = this.mapperFactory.getMapperFacade().map(
-                periodicReadsRequest, PeriodicMeterReadsQuery.class);
+        final PeriodicMeterReadsQuery periodicMeterReadsQuery = this.monitoringMapper.map(periodicReadsRequest,
+                PeriodicMeterReadsQuery.class);
 
         // check mapping
         assertNotNull(periodicMeterReadsQuery);
-        assertEquals(periodType.name(), periodicMeterReadsQuery.getPeriodType().name());
-        final DateTime beginDateTime = new DateTime(periodicMeterReadsQuery.getBeginDate());
-        assertEquals(this.xmlCalendar.getYear(), beginDateTime.getYear());
-        assertEquals(this.xmlCalendar.getMonth(), beginDateTime.getMonthOfYear());
-        assertEquals(this.xmlCalendar.getDay(), beginDateTime.getDayOfMonth());
-        assertEquals(this.xmlCalendar.getHour(), beginDateTime.getHourOfDay());
-        assertEquals(this.xmlCalendar.getMinute(), beginDateTime.getMinuteOfHour());
-        assertEquals(this.xmlCalendar.getSecond(), beginDateTime.getSecondOfMinute());
-        assertEquals(this.xmlCalendar.getMillisecond(), beginDateTime.getMillisOfSecond());
-        final DateTime endDateTime = new DateTime(periodicMeterReadsQuery.getEndDate());
-        assertEquals(this.xmlCalendar.getYear(), endDateTime.getYear());
-        assertEquals(this.xmlCalendar.getMonth(), endDateTime.getMonthOfYear());
-        assertEquals(this.xmlCalendar.getDay(), endDateTime.getDayOfMonth());
-        assertEquals(this.xmlCalendar.getHour(), endDateTime.getHourOfDay());
-        assertEquals(this.xmlCalendar.getMinute(), endDateTime.getMinuteOfHour());
-        assertEquals(this.xmlCalendar.getSecond(), endDateTime.getSecondOfMinute());
-        assertEquals(this.xmlCalendar.getMillisecond(), endDateTime.getMillisOfSecond());
-        assertFalse(periodicMeterReadsQuery.isMbusDevice());
+        assertNotNull(periodicMeterReadsQuery.getDeviceIdentification());
+        assertNotNull(periodicMeterReadsQuery.getPeriodType());
 
+        assertEquals(PERIODTYPE.name(), periodicMeterReadsQuery.getPeriodType().name());
+        this.checkDateTimeMapping(periodicMeterReadsQuery.getBeginDate());
+        this.checkDateTimeMapping(periodicMeterReadsQuery.getEndDate());
+        assertFalse(periodicMeterReadsQuery.isMbusDevice());
+        assertTrue(periodicMeterReadsQuery.getDeviceIdentification().isEmpty());
+
+    }
+
+    /**
+     * Method checks the mapping of XMLGregorianCalendar objects to Date objects
+     */
+    private void checkDateTimeMapping(final Date date) {
+
+        assertNotNull(date);
+
+        // Cast to DateTime to enable comparison.
+        final DateTime dateTime = new DateTime(date);
+
+        assertEquals(this.xmlCalendar.getYear(), dateTime.getYear());
+        assertEquals(this.xmlCalendar.getMonth(), dateTime.getMonthOfYear());
+        assertEquals(this.xmlCalendar.getDay(), dateTime.getDayOfMonth());
+        assertEquals(this.xmlCalendar.getHour(), dateTime.getHourOfDay());
+        assertEquals(this.xmlCalendar.getMinute(), dateTime.getMinuteOfHour());
+        assertEquals(this.xmlCalendar.getSecond(), dateTime.getSecondOfMinute());
+        assertEquals(this.xmlCalendar.getMillisecond(), dateTime.getMillisOfSecond());
     }
 
 }

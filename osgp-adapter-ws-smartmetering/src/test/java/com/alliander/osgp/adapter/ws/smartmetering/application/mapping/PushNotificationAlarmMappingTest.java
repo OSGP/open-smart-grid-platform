@@ -15,10 +15,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Set;
 import java.util.TreeSet;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.RetrievePushNotificationAlarmResponse;
@@ -27,76 +23,82 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushNotificatio
 
 public class PushNotificationAlarmMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private static final String DEVICE_ID = "id1";
+    private static final AlarmType ALARMTYPE = AlarmType.CLOCK_INVALID;
 
-    // This converter is needed because RetrievePushNotificationAlarmResponse
-    // doesn't have a List<AlarmType>, but an AlarmRegister. The
-    // List<AlarmType> is in that class.
-    @Before
-    public void init() {
-        this.mapperFactory.getConverterFactory().registerConverter(new PushNotificationsAlarmConverter());
-    }
-
-    // Test to see if a PushNotificationAlarm object is mapped correctly with a
-    // filled Set.
+    /**
+     * Tests if a PushNotificationAlarm object is mapped correctly with a filled
+     * Set (1 entry).
+     */
     @Test
     public void testPushNotificationAlarmMappingWithFilledSet() {
 
         // build test data
-        final String deviceIdentification = "id1";
-        final AlarmType alarmType = AlarmType.CLOCK_INVALID;
         final Set<AlarmType> alarms = new TreeSet<>();
-        alarms.add(alarmType);
-        final PushNotificationAlarm original = new PushNotificationAlarm(deviceIdentification, alarms);
+        alarms.add(ALARMTYPE);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms);
 
         // actual mapping
-        final RetrievePushNotificationAlarmResponse mapped = this.mapperFactory.getMapperFacade().map(original,
+        final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,
                 RetrievePushNotificationAlarmResponse.class);
 
         // check mapping
         assertNotNull(mapped);
-        assertEquals(original.getDeviceIdentification(), mapped.getDeviceIdentification());
-        assertEquals(alarmType.name(), mapped.getAlarmRegister().getAlarmTypes().get(0).name());
+        assertNotNull(mapped.getDeviceIdentification());
+        assertNotNull(mapped.getAlarmRegister());
+        assertNotNull(mapped.getAlarmRegister().getAlarmTypes());
+        assertNotNull(mapped.getAlarmRegister().getAlarmTypes().get(0));
+
+        assertEquals(DEVICE_ID, mapped.getDeviceIdentification());
+        assertEquals(ALARMTYPE.name(), mapped.getAlarmRegister().getAlarmTypes().get(0).name());
     }
 
-    // Test to see if a PushNotificationAlarm can be mapped with an empty Set
+    /** Tests if a PushNotificationAlarm is mapped correctly with an empty Set. */
     @Test
     public void testPushNotificationAlarmMappingWithEmptySet() {
 
         // build test data
-        final String deviceIdentification = "id1";
         final Set<AlarmType> alarms = new TreeSet<>();
-        final PushNotificationAlarm original = new PushNotificationAlarm(deviceIdentification, alarms);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms);
 
         // actual mapping
-        final RetrievePushNotificationAlarmResponse mapped = this.mapperFactory.getMapperFacade().map(original,
+        final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,
                 RetrievePushNotificationAlarmResponse.class);
 
         // check mapping
         assertNotNull(mapped);
-        assertEquals(deviceIdentification, mapped.getDeviceIdentification());
+        assertNotNull(mapped.getDeviceIdentification());
+        assertNotNull(mapped.getAlarmRegister());
+        assertNotNull(mapped.getAlarmRegister().getAlarmTypes());
+
+        assertEquals(DEVICE_ID, mapped.getDeviceIdentification());
         assertTrue(mapped.getAlarmRegister().getAlarmTypes().isEmpty());
     }
 
-    // Test to see if mapping a PushNotificationAlarm object succeeds with a
-    // null Set.
+    /**
+     * Tests if mapping a PushNotificationAlarm object succeeds with a null Set.
+     */
     @Test
     public void testPushNotificiationAlarmMappingWithNullSet() {
 
         // build test data
-        final String deviceIdentification = "id1";
         final Set<AlarmType> alarms = null;
-        final PushNotificationAlarm original = new PushNotificationAlarm(deviceIdentification, alarms);
+        final PushNotificationAlarm original = new PushNotificationAlarm(DEVICE_ID, alarms);
 
         // actual mapping
-        final RetrievePushNotificationAlarmResponse mapped = this.mapperFactory.getMapperFacade().map(original,
+        final RetrievePushNotificationAlarmResponse mapped = this.monitoringMapper.map(original,
                 RetrievePushNotificationAlarmResponse.class);
 
         // check mapping
         assertNotNull(mapped);
-        assertEquals(deviceIdentification, mapped.getDeviceIdentification());
+        assertNotNull(mapped.getDeviceIdentification());
+        assertEquals(DEVICE_ID, mapped.getDeviceIdentification());
+
         // constructor for PushNotificationAlarm creates a new Set when passed a
         // null value, so we should check for an empty List
+        assertNotNull(mapped.getAlarmRegister());
+        assertNotNull(mapped.getAlarmRegister().getAlarmTypes());
         assertTrue(mapped.getAlarmRegister().getAlarmTypes().isEmpty());
     }
 }

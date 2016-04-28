@@ -14,10 +14,6 @@ import static org.junit.Assert.assertNull;
 
 import java.math.BigInteger;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.PushSetupAlarm;
@@ -26,31 +22,34 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.TransportServic
 
 public class PushSetupAlarmMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private static final String HOST = "host";
+    private static final BigInteger PORT = BigInteger.TEN;
+    private static final String DESTINATION = "host:10";
+    private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
+    private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
 
-    // This mapping needs it's converter.
-    @Before
-    public void init() {
-        this.mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
-    }
-
-    // Test if mapping a PushSetupAlarm object succeeds.
+    /** Tests if mapping a PushSetupAlarm object succeeds. */
     @Test
     public void testPushSetupAlarmMapping() {
+
         // build test data
-        final String host = "host";
-        final BigInteger port = BigInteger.TEN;
         final PushSetupAlarm pushSetupAlarmOriginal = new PushSetupAlarm();
-        pushSetupAlarmOriginal.setHost(host);
-        pushSetupAlarmOriginal.setPort(port);
+        pushSetupAlarmOriginal.setHost(HOST);
+        pushSetupAlarmOriginal.setPort(PORT);
 
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarmMapped = this.mapperFactory
-                .getMapperFacade().map(pushSetupAlarmOriginal,
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm pushSetupAlarmMapped = this.configurationMapper
+                .map(pushSetupAlarmOriginal,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupAlarm.class);
 
         // check mapping
         assertNotNull(pushSetupAlarmMapped);
+        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod());
+        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination());
+        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod().getTransportService());
+        assertNotNull(pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage());
+
         // Only a SendDestinationAndMethod is mapped:
         assertNull(pushSetupAlarmMapped.getLogicalName());
         assertNull(pushSetupAlarmMapped.getCommunicationWindow());
@@ -62,11 +61,10 @@ public class PushSetupAlarmMappingTest {
         // port and host are combined into destination. The converter sets
         // default values for the other two variables of a
         // SendDestinationAndMethod.
-        assertEquals(host + ":" + port, pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination());
-        assertEquals(TransportServiceType.TCP.name(), pushSetupAlarmMapped.getSendDestinationAndMethod()
+        assertEquals(DESTINATION, pushSetupAlarmMapped.getSendDestinationAndMethod().getDestination());
+        assertEquals(TRANSPORTSERVICETYPE.name(), pushSetupAlarmMapped.getSendDestinationAndMethod()
                 .getTransportService().name());
-        assertEquals(MessageType.MANUFACTURER_SPECIFIC.name(), pushSetupAlarmMapped.getSendDestinationAndMethod()
-                .getMessage().name());
+        assertEquals(MESSAGETYPE.name(), pushSetupAlarmMapped.getSendDestinationAndMethod().getMessage().name());
 
     }
 }

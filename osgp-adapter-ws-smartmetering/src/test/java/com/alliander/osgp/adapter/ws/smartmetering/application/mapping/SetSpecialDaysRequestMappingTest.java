@@ -12,10 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
@@ -25,112 +22,142 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequ
 
 public class SetSpecialDaysRequestMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private static final String DEVICE_ID = "nr1";
+    private static final int DAY_ID = 1;
+    private static final byte FIRST_BYTE_FOR_YEAR = (byte) 0x07;
+    private static final byte SECOND_BYTE_FOR_YEAR = (byte) 0xE0;
+    private static final byte BYTE_FOR_MONTH = 4;
+    private static final byte BYTE_FOR_DAY_OF_MONTH = 6;
+    private static final byte BYTE_FOR_DAY_OF_WEEK = 4;
 
-    // Tests only work with Orika if a CosemDateConverter is registered.
-    @Before
-    public void init() {
-        this.mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());
-    }
+    // @formatter:off
+    private static final byte[] COSEMDATE_BYTE_ARRAY = {
+        FIRST_BYTE_FOR_YEAR,
+        SECOND_BYTE_FOR_YEAR,
+        BYTE_FOR_MONTH,
+        BYTE_FOR_DAY_OF_MONTH,
+        BYTE_FOR_DAY_OF_WEEK };
+    // @formatter:on
 
-    // To check mapping of SetSpecialDaysRequest, when its
-    // SpecialDaysRequestData is null
+    /**
+     * Tests mapping of a SetSpecialDaysReqeust object, when its
+     * SpecialDaysReqeustData object is null.
+     */
     @Test
     public void testSpecialDaysRequestMappingNull() {
-        final String deviceIdentification = "nr1";
+
+        // build test data
         final SpecialDaysRequestData specialDaysRequestData = null;
         final SetSpecialDaysRequest setSpecialDaysRequest = new SetSpecialDaysRequest();
-        setSpecialDaysRequest.setDeviceIdentification(deviceIdentification);
+        setSpecialDaysRequest.setDeviceIdentification(DEVICE_ID);
         setSpecialDaysRequest.setSpecialDaysRequestData(specialDaysRequestData);
 
-        final SpecialDaysRequest specialDaysRequest = this.mapperFactory.getMapperFacade().map(setSpecialDaysRequest,
+        // actual mapping
+        final SpecialDaysRequest specialDaysRequest = this.configurationMapper.map(setSpecialDaysRequest,
                 SpecialDaysRequest.class);
 
+        // check mapping
         assertNotNull(specialDaysRequest);
-        assertEquals(deviceIdentification, specialDaysRequest.getDeviceIdentification());
+        assertNotNull(specialDaysRequest.getDeviceIdentification());
+        assertEquals(DEVICE_ID, specialDaysRequest.getDeviceIdentification());
         assertNull(specialDaysRequest.getSpecialDaysRequestData());
 
     }
 
-    // To check mapping of SetSpecialDaysRequest, when its
-    // SpecialDaysRequestData has an empty List.
+    /**
+     * Tests mapping of a SetSpecialDaysRequest, when its SpecialDaysRequestData
+     * object has an empty List.
+     */
     @Test
     public void testSpecialDaysRequestMappingEmptyList() {
-        final String deviceIdentification = "nr1";
-        // If i'm correct, the SpecialDaysRequestData no-arg constructor will
-        // result in an empty list being mapped
+
+        // build test data
+        // No-arg constructor for SpecialDaysRequestData takes care of creating
+        // a empty List.
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestData();
         final SetSpecialDaysRequest setSpecialDaysRequest = new SetSpecialDaysRequest();
-        setSpecialDaysRequest.setDeviceIdentification(deviceIdentification);
+        setSpecialDaysRequest.setDeviceIdentification(DEVICE_ID);
         setSpecialDaysRequest.setSpecialDaysRequestData(specialDaysRequestData);
+
         // actual mapping
-        final SpecialDaysRequest specialDaysRequest = this.mapperFactory.getMapperFacade().map(setSpecialDaysRequest,
+        final SpecialDaysRequest specialDaysRequest = this.configurationMapper.map(setSpecialDaysRequest,
                 SpecialDaysRequest.class);
+
         // check mapping
         assertNotNull(specialDaysRequest);
-        assertEquals(deviceIdentification, specialDaysRequest.getDeviceIdentification());
+        assertNotNull(specialDaysRequest.getDeviceIdentification());
+        assertNotNull(specialDaysRequest.getSpecialDaysRequestData());
+        assertNotNull(specialDaysRequest.getSpecialDaysRequestData().getSpecialDays());
+        assertEquals(DEVICE_ID, specialDaysRequest.getDeviceIdentification());
         assertTrue(specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().isEmpty());
     }
 
-    // To check mapping of SetSpecialDaysRequest, when its
-    // SpecialDaysRequestData has a filled List (1 entry)
+    /**
+     * Tests mapping of a SetSpecialDaysRequest object, when its
+     * SpecialDaysRequestData object has a filled List (1 entry).
+     */
     @Test
     public void testSetSpecialDaysRequestMappingFilledList() {
+
         // build test data
-        final String deviceIdentification = "nr1";
-        final int dayId = 1;
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestData();
         final SpecialDay specialDay = new SpecialDay();
-        final byte[] cosemDate = { (byte) 0x07, (byte) 0xE0, 4, 6, 4 };
-        specialDay.setDayId(dayId);
-        specialDay.setSpecialDayDate(cosemDate);
+        specialDay.setDayId(DAY_ID);
+        specialDay.setSpecialDayDate(COSEMDATE_BYTE_ARRAY);
         // To add a SpecialDay to the List, you need to use the getter in
         // combination with add()
         specialDaysRequestData.getSpecialDays().add(specialDay);
         final SetSpecialDaysRequest setSpecialDaysRequest = new SetSpecialDaysRequest();
-        setSpecialDaysRequest.setDeviceIdentification(deviceIdentification);
+        setSpecialDaysRequest.setDeviceIdentification(DEVICE_ID);
         setSpecialDaysRequest.setSpecialDaysRequestData(specialDaysRequestData);
+
         // actual mapping
-        final SpecialDaysRequest specialDaysRequest = this.mapperFactory.getMapperFacade().map(setSpecialDaysRequest,
+        final SpecialDaysRequest specialDaysRequest = this.configurationMapper.map(setSpecialDaysRequest,
                 SpecialDaysRequest.class);
+
         // check mapping
         assertNotNull(specialDaysRequest);
-        assertEquals(deviceIdentification, specialDaysRequest.getDeviceIdentification());
-
+        assertNotNull(specialDaysRequest.getDeviceIdentification());
         assertNotNull(specialDaysRequest.getSpecialDaysRequestData());
+        assertNotNull(specialDaysRequest.getSpecialDaysRequestData().getSpecialDays());
+        assertNotNull(specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0));
+        assertNotNull(specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getSpecialDayDate());
+
+        assertEquals(DEVICE_ID, specialDaysRequest.getDeviceIdentification());
         assertEquals(specialDaysRequestData.getSpecialDays().size(), specialDaysRequest.getSpecialDaysRequestData()
                 .getSpecialDays().size());
-
         assertEquals(2016, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getSpecialDayDate()
                 .getYear());
-        assertEquals(4, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getSpecialDayDate()
-                .getMonth());
-        assertEquals(6, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getSpecialDayDate()
-                .getDayOfMonth());
-        assertEquals(4, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getSpecialDayDate()
-                .getDayOfWeek());
-
-        assertEquals(dayId, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getDayId());
+        assertEquals(BYTE_FOR_MONTH, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0)
+                .getSpecialDayDate().getMonth());
+        assertEquals(BYTE_FOR_DAY_OF_MONTH, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0)
+                .getSpecialDayDate().getDayOfMonth());
+        assertEquals(BYTE_FOR_DAY_OF_WEEK, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0)
+                .getSpecialDayDate().getDayOfWeek());
+        assertEquals(DAY_ID, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getDayId());
     }
 
-    // Test mapping. If no byte[] is specified for SpecialDay, mapping should
-    // fail.
+    /**
+     * Tests mapping of a SpecialDaysRequesData object. A NullPointerException
+     * should be thrown when no byte[] is specified for SpecialDay.
+     */
     @Test(expected = NullPointerException.class)
     public void testWithoutByteArray() {
+
         // build test data
-        final String deviceIdentification = "nr1";
-        final int dayId = 1;
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestData();
         final SpecialDay specialDay = new SpecialDay();
-        specialDay.setDayId(dayId);
+        specialDay.setDayId(DAY_ID);
         // To add a SpecialDay to the List, you need to use the getter in
         // combination with add()
         specialDaysRequestData.getSpecialDays().add(specialDay);
         final SetSpecialDaysRequest setSpecialDaysRequest = new SetSpecialDaysRequest();
-        setSpecialDaysRequest.setDeviceIdentification(deviceIdentification);
+        setSpecialDaysRequest.setDeviceIdentification(DEVICE_ID);
         setSpecialDaysRequest.setSpecialDaysRequestData(specialDaysRequestData);
+
         // actual mapping
-        this.mapperFactory.getMapperFacade().map(setSpecialDaysRequest, SpecialDaysRequest.class);
+        this.configurationMapper.map(setSpecialDaysRequest, SpecialDaysRequest.class);
 
     }
 

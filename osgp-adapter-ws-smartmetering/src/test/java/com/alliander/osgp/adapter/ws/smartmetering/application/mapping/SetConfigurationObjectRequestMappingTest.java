@@ -11,8 +11,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.junit.Test;
 
@@ -26,88 +24,106 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfi
 
 public class SetConfigurationObjectRequestMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private static final String DEVICE_ID = "id1";
+    private static final ConfigurationFlagType FLAGTYPE = ConfigurationFlagType.DISCOVER_ON_OPEN_COVER;
+    private static final GprsOperationModeType GPRSTYPE = GprsOperationModeType.ALWAYS_ON;
+    private static final boolean ISENABLED = true;
 
-    // Test if mapping succeeds when SetConfigurationObjectRequestData is null
+    /**
+     * Tests if mapping succeeds when SetConfigurationObjectRequestData is null.
+     */
     @Test
     public void testWithNullSetConfigurationObjectRequestData() {
+
         // build test data
-        final String deviceIdentification = "nr1";
         final SetConfigurationObjectRequestData setConfigurationObjectRequestData = null;
         final SetConfigurationObjectRequest requestOriginal = new SetConfigurationObjectRequest();
-        requestOriginal.setDeviceIdentification(deviceIdentification);
+        requestOriginal.setDeviceIdentification(DEVICE_ID);
         requestOriginal.setSetConfigurationObjectRequestData(setConfigurationObjectRequestData);
 
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.mapperFactory
-                .getMapperFacade().map(requestOriginal,
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.configurationMapper
+                .map(requestOriginal,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
         // check mapping
         assertNotNull(requestMapped);
-        assertEquals(deviceIdentification, requestMapped.getDeviceIdentification());
+        assertNotNull(requestMapped.getDeviceIdentification());
+        assertEquals(DEVICE_ID, requestMapped.getDeviceIdentification());
         assertNull(requestMapped.getSetConfigurationObjectRequestData());
     }
 
-    // Test if mapping succeeds when ConfigurationObject is null
+    /** Tests if mapping succeeds when ConfigurationObject is null. */
     @Test
     public void testWithNullConfigurationObject() {
         // build test data
-        final String deviceIdentification = "nr1";
         final ConfigurationObject configurationObject = null;
         final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData();
         setConfigurationObjectRequestData.setConfigurationObject(configurationObject);
         final SetConfigurationObjectRequest requestOriginal = new SetConfigurationObjectRequest();
-        requestOriginal.setDeviceIdentification(deviceIdentification);
+        requestOriginal.setDeviceIdentification(DEVICE_ID);
         requestOriginal.setSetConfigurationObjectRequestData(setConfigurationObjectRequestData);
 
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.mapperFactory
-                .getMapperFacade().map(requestOriginal,
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.configurationMapper
+                .map(requestOriginal,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
         // check mapping
         assertNotNull(requestMapped);
-        assertEquals(deviceIdentification, requestMapped.getDeviceIdentification());
+        assertNotNull(requestMapped.getDeviceIdentification());
+        assertEquals(DEVICE_ID, requestMapped.getDeviceIdentification());
         assertNotNull(requestMapped.getSetConfigurationObjectRequestData());
         assertNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject());
     }
 
-    // Test if mapping succeeds with a complete SetConfigurationRequestData
-    // object.
+    /**
+     * Tests if mapping succeeds with a complete SetConfigurationRequestData
+     * object.
+     */
     @Test
     public void testWithCompleteObject() {
+
         // build test data
-        final String deviceIdentification = "nr1";
         final ConfigurationObject configurationObject = new ConfigurationObject();
         final ConfigurationFlag configurationFlag = new ConfigurationFlag();
-        configurationFlag.setConfigurationFlagType(ConfigurationFlagType.DISCOVER_ON_OPEN_COVER);
-        configurationFlag.setEnabled(true);
+        configurationFlag.setConfigurationFlagType(FLAGTYPE);
+        configurationFlag.setEnabled(ISENABLED);
         final ConfigurationFlags configurationFlags = new ConfigurationFlags();
         configurationFlags.getConfigurationFlag().add(configurationFlag);
         configurationObject.setConfigurationFlags(configurationFlags);
-        configurationObject.setGprsOperationMode(GprsOperationModeType.ALWAYS_ON);
+        configurationObject.setGprsOperationMode(GPRSTYPE);
         final SetConfigurationObjectRequestData setConfigurationObjectRequestData = new SetConfigurationObjectRequestData();
         setConfigurationObjectRequestData.setConfigurationObject(configurationObject);
         final SetConfigurationObjectRequest requestOriginal = new SetConfigurationObjectRequest();
-        requestOriginal.setDeviceIdentification(deviceIdentification);
+        requestOriginal.setDeviceIdentification(DEVICE_ID);
         requestOriginal.setSetConfigurationObjectRequestData(setConfigurationObjectRequestData);
 
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.mapperFactory
-                .getMapperFacade().map(requestOriginal,
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest requestMapped = this.configurationMapper
+                .map(requestOriginal,
                         com.alliander.osgp.domain.core.valueobjects.smartmetering.SetConfigurationObjectRequest.class);
 
         // check mapping
         assertNotNull(requestMapped);
-        assertEquals(deviceIdentification, requestMapped.getDeviceIdentification());
+        assertEquals(DEVICE_ID, requestMapped.getDeviceIdentification());
         assertNotNull(requestMapped.getSetConfigurationObjectRequestData());
-        assertEquals(configurationObject.getGprsOperationMode().name(), requestMapped
-                .getSetConfigurationObjectRequestData().getConfigurationObject().getGprsOperationMode().name());
-        assertEquals(configurationObject.getConfigurationFlags().getConfigurationFlag().get(0)
-                .getConfigurationFlagType().name(), requestMapped.getSetConfigurationObjectRequestData()
-                .getConfigurationObject().getConfigurationFlags().getConfigurationFlag().get(0)
-                .getConfigurationFlagType().name());
+        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject());
+        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
+                .getGprsOperationMode());
+        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
+                .getConfigurationFlags());
+        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
+                .getConfigurationFlags().getConfigurationFlag());
+        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
+                .getConfigurationFlags().getConfigurationFlag().get(0));
+        assertNotNull(requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
+                .getConfigurationFlags().getConfigurationFlag().get(0).getConfigurationFlagType());
+        assertEquals(GPRSTYPE.name(), requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
+                .getGprsOperationMode().name());
+        assertEquals(FLAGTYPE.name(), requestMapped.getSetConfigurationObjectRequestData().getConfigurationObject()
+                .getConfigurationFlags().getConfigurationFlag().get(0).getConfigurationFlagType().name());
 
     }
 

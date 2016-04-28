@@ -24,7 +24,9 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SeasonsT
 import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.WeekType;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalendar;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatus;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemTime;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.DayProfile;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.WeekProfile;
 
@@ -46,12 +48,29 @@ public class ActivityCalendarTypeMappingTest {
     private static final byte FIRST_BYTE_FOR_DEVIATION = -1;
     private static final byte SECOND_BYTE_FOR_DEVIATION = -120;
     private static final byte BYTE_FOR_CLOCKSTATUS = (byte) 0xFF;
-    private static final byte[] COSEMDATETIME_BYTE_ARRAY = { FIRST_BYTE_FOR_YEAR, SECOND_BYTE_FOR_YEAR, BYTE_FOR_MONTH,
-        BYTE_FOR_DAY_OF_MONTH, BYTE_FOR_DAY_OF_WEEK, BYTE_FOR_HOUR_OF_DAY, BYTE_FOR_MINUTE_OF_HOUR,
-            BYTE_FOR_SECOND_OF_MINUTE, BYTE_FOR_HUNDREDS_0F_SECONDS, FIRST_BYTE_FOR_DEVIATION,
-            SECOND_BYTE_FOR_DEVIATION, BYTE_FOR_CLOCKSTATUS };
-    private static final byte[] COSEMTIME_BYTE_ARRAY = { BYTE_FOR_HOUR_OF_DAY, BYTE_FOR_MINUTE_OF_HOUR,
-        BYTE_FOR_SECOND_OF_MINUTE, BYTE_FOR_HUNDREDS_0F_SECONDS };
+
+    // @formatter:off
+    private static final byte[] COSEMDATETIME_BYTE_ARRAY = {
+        FIRST_BYTE_FOR_YEAR,
+        SECOND_BYTE_FOR_YEAR,
+        BYTE_FOR_MONTH,
+        BYTE_FOR_DAY_OF_MONTH,
+        BYTE_FOR_DAY_OF_WEEK,
+        BYTE_FOR_HOUR_OF_DAY,
+        BYTE_FOR_MINUTE_OF_HOUR,
+        BYTE_FOR_SECOND_OF_MINUTE,
+        BYTE_FOR_HUNDREDS_0F_SECONDS,
+        FIRST_BYTE_FOR_DEVIATION,
+        SECOND_BYTE_FOR_DEVIATION,
+        BYTE_FOR_CLOCKSTATUS
+    };
+    private static final byte[] COSEMTIME_BYTE_ARRAY = {
+        BYTE_FOR_HOUR_OF_DAY,
+        BYTE_FOR_MINUTE_OF_HOUR,
+        BYTE_FOR_SECOND_OF_MINUTE,
+        BYTE_FOR_HUNDREDS_0F_SECONDS
+    };
+    // @formatter:on
 
     /**
      * Method to test mapping from ActivityCalendarType to ActivityCalendar.
@@ -71,9 +90,11 @@ public class ActivityCalendarTypeMappingTest {
         assertNotNull(activityCalendar);
         assertNotNull(activityCalendar.getSeasonProfileList());
         assertNotNull(activityCalendar.getSeasonProfileList().get(0));
+
         assertEquals(CALENDARNAME, activityCalendar.getCalendarName());
-        this.checkByteArrayToCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime());
         assertEquals(SEASONPROFILENAME, activityCalendar.getSeasonProfileList().get(0).getSeasonProfileName());
+
+        this.checkByteArrayToCosemDateTimeMapping(activityCalendar.getActivatePassiveCalendarTime());
         this.checkByteArrayToCosemDateTimeMapping(activityCalendar.getSeasonProfileList().get(0).getSeasonStart());
         this.checkWeekProfileMapping(activityCalendar.getSeasonProfileList().get(0).getWeekProfile());
     }
@@ -144,14 +165,21 @@ public class ActivityCalendarTypeMappingTest {
      */
 
     private void checkDayTypeMapping(final DayProfile dayProfile) {
+
+        assertNotNull(dayProfile);
+        assertNotNull(dayProfile.getDayId());
+        assertNotNull(dayProfile.getDayProfileActionList());
+        assertNotNull(dayProfile.getDayProfileActionList().get(0));
+
         assertEquals(new Integer(BigInteger.TEN.intValue()), dayProfile.getDayId());
         assertEquals(new Integer(BigInteger.ZERO.intValue()), dayProfile.getDayProfileActionList().get(0)
                 .getScriptSelector());
-        assertEquals(BYTE_FOR_HOUR_OF_DAY, dayProfile.getDayProfileActionList().get(0).getStartTime().getHour());
-        assertEquals(BYTE_FOR_MINUTE_OF_HOUR, dayProfile.getDayProfileActionList().get(0).getStartTime().getMinute());
-        assertEquals(BYTE_FOR_SECOND_OF_MINUTE, dayProfile.getDayProfileActionList().get(0).getStartTime().getSecond());
-        assertEquals(BYTE_FOR_HUNDREDS_0F_SECONDS, dayProfile.getDayProfileActionList().get(0).getStartTime()
-                .getHundredths());
+
+        final CosemTime startTime = dayProfile.getDayProfileActionList().get(0).getStartTime();
+        assertEquals(BYTE_FOR_HOUR_OF_DAY, startTime.getHour());
+        assertEquals(BYTE_FOR_MINUTE_OF_HOUR, startTime.getMinute());
+        assertEquals(BYTE_FOR_SECOND_OF_MINUTE, startTime.getSecond());
+        assertEquals(BYTE_FOR_HUNDREDS_0F_SECONDS, startTime.getHundredths());
 
     }
 
@@ -161,18 +189,27 @@ public class ActivityCalendarTypeMappingTest {
 
     private void checkByteArrayToCosemDateTimeMapping(final CosemDateTime cosemDateTime) {
 
-        assertEquals(FIRST_BYTE_FOR_YEAR, ((byte) (cosemDateTime.getDate().getYear() >> 8)));
-        assertEquals(SECOND_BYTE_FOR_YEAR, ((byte) (cosemDateTime.getDate().getYear() & 0xFF)));
-        assertEquals(BYTE_FOR_MONTH, cosemDateTime.getDate().getMonth());
-        assertEquals(BYTE_FOR_DAY_OF_MONTH, cosemDateTime.getDate().getDayOfMonth());
-        assertEquals(BYTE_FOR_DAY_OF_WEEK, ((byte) cosemDateTime.getDate().getDayOfWeek()));
+        assertNotNull(cosemDateTime);
+        assertNotNull(cosemDateTime.getDate());
+        assertNotNull(cosemDateTime.getTime());
+        assertNotNull(cosemDateTime.getClockStatus());
 
-        assertEquals(BYTE_FOR_HOUR_OF_DAY, cosemDateTime.getTime().getHour());
-        assertEquals(BYTE_FOR_MINUTE_OF_HOUR, cosemDateTime.getTime().getMinute());
-        assertEquals(BYTE_FOR_SECOND_OF_MINUTE, cosemDateTime.getTime().getSecond());
-        assertEquals(BYTE_FOR_HUNDREDS_0F_SECONDS, cosemDateTime.getTime().getHundredths());
-        assertEquals(FIRST_BYTE_FOR_DEVIATION, ((byte) (cosemDateTime.getDeviation() >> 8)));
-        assertEquals(SECOND_BYTE_FOR_DEVIATION, ((byte) (cosemDateTime.getDeviation() & 0xFF)));
+        final CosemDate cosemDate = cosemDateTime.getDate();
+        assertEquals(FIRST_BYTE_FOR_YEAR, ((byte) (cosemDate.getYear() >> 8)));
+        assertEquals(SECOND_BYTE_FOR_YEAR, ((byte) (cosemDate.getYear() & 0xFF)));
+        assertEquals(BYTE_FOR_MONTH, cosemDate.getMonth());
+        assertEquals(BYTE_FOR_DAY_OF_MONTH, cosemDate.getDayOfMonth());
+        assertEquals(BYTE_FOR_DAY_OF_WEEK, ((byte) cosemDate.getDayOfWeek()));
+
+        final CosemTime cosemTime = cosemDateTime.getTime();
+        assertEquals(BYTE_FOR_HOUR_OF_DAY, cosemTime.getHour());
+        assertEquals(BYTE_FOR_MINUTE_OF_HOUR, cosemTime.getMinute());
+        assertEquals(BYTE_FOR_SECOND_OF_MINUTE, cosemTime.getSecond());
+        assertEquals(BYTE_FOR_HUNDREDS_0F_SECONDS, cosemTime.getHundredths());
+
+        final int deviation = cosemDateTime.getDeviation();
+        assertEquals(FIRST_BYTE_FOR_DEVIATION, ((byte) (deviation >> 8)));
+        assertEquals(SECOND_BYTE_FOR_DEVIATION, ((byte) (deviation & 0xFF)));
 
         assertEquals(BYTE_FOR_CLOCKSTATUS, ((byte) ClockStatus.STATUS_NOT_SPECIFIED));
 

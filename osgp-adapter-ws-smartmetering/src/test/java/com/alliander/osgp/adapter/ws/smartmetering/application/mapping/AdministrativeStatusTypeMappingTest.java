@@ -10,8 +10,6 @@ package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.junit.Test;
 
@@ -19,70 +17,68 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeS
 
 public class AdministrativeStatusTypeMappingTest {
 
-    // private ConfigurationMapper configurationMapper = new
-    // ConfigurationMapper();
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
 
-    // Both objects have the same name, but are in different packages. This test
-    // tests mapping one way.
+    /**
+     * Both objects have the same name, but are in different packages. Mapping
+     * needs to be bidirectional, so this tests mapping one way.
+     */
     @Test
     public void testMappingOneWay() {
 
-        // build test data, AdministrativeStatusType is an enum with three
-        // possible values.
-        final AdministrativeStatusType type1 = AdministrativeStatusType.UNDEFINED;
-        final AdministrativeStatusType type2 = AdministrativeStatusType.OFF;
-        final AdministrativeStatusType type3 = AdministrativeStatusType.ON;
-
         // actual mapping
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType type1Mapped = this.mapperFactory
-                .getMapperFacade()
-                .map(type1,
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType undefined = this.configurationMapper
+                .map(AdministrativeStatusType.UNDEFINED,
                         com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class);
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType type2Mapped = this.mapperFactory
-                .getMapperFacade()
-                .map(type2,
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType off = this.configurationMapper
+                .map(AdministrativeStatusType.OFF,
                         com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class);
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType type3Mapped = this.mapperFactory
-                .getMapperFacade()
-                .map(type3,
+        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType on = this.configurationMapper
+                .map(AdministrativeStatusType.ON,
                         com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.class);
 
         // check mapping
-        assertNotNull(type1Mapped);
-        assertNotNull(type2Mapped);
-        assertNotNull(type3Mapped);
+        assertNotNull(undefined);
+        assertNotNull(off);
+        assertNotNull(on);
 
-        assertEquals(type1.value(), type1Mapped.value());
-        assertEquals(type2.value(), type2Mapped.value());
-        assertEquals(type3.value(), type3Mapped.value());
+        assertEquals(AdministrativeStatusType.UNDEFINED.value(), undefined.value());
+        assertEquals(AdministrativeStatusType.OFF.value(), off.value());
+        assertEquals(AdministrativeStatusType.ON.value(), on.value());
     }
 
-    // Both objects have the same name, but are in different packages. This test
-    // tests mapping the other way around.
+    /**
+     * Both objects have the same name, but are in different packages. Mapping
+     * needs to be bidirectional, so this tests mapping the other way round.
+     */
     @Test
     public void testMappingTheOtherWay() {
-        // build test data, AdministrativeStatusType is an enum with three
-        // possible values.
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType type1 = com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.UNDEFINED;
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType type2 = com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF;
-        final com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType type3 = com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON;
 
         // actual mapping
-        final AdministrativeStatusType type1Mapped = this.mapperFactory.getMapperFacade().map(type1,
+        final AdministrativeStatusType undefined = this.configurationMapper.map(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.UNDEFINED,
                 AdministrativeStatusType.class);
-        final AdministrativeStatusType type2Mapped = this.mapperFactory.getMapperFacade().map(type2,
+        final AdministrativeStatusType off = this.configurationMapper.map(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF,
                 AdministrativeStatusType.class);
-        final AdministrativeStatusType type3Mapped = this.mapperFactory.getMapperFacade().map(type3,
+        final AdministrativeStatusType on = this.configurationMapper.map(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON,
                 AdministrativeStatusType.class);
 
         // check mapping
-        assertNotNull(type1Mapped);
-        assertNotNull(type2Mapped);
-        assertNotNull(type3Mapped);
+        assertNotNull(undefined);
+        assertNotNull(off);
+        assertNotNull(on);
 
-        assertEquals(type1.value(), type1Mapped.value());
-        assertEquals(type2.value(), type2Mapped.value());
-        assertEquals(type3.value(), type3Mapped.value());
+        assertEquals(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.UNDEFINED
+                .value(),
+                undefined.value());
+        assertEquals(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF.value(),
+                off.value());
+        assertEquals(
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON.value(),
+                on.value());
     }
 }

@@ -19,12 +19,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-
-import org.junit.Before;
 import org.junit.Test;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCodeFlag;
@@ -36,78 +33,73 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 
 public class PeriodicMeterReadsContainerMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private MonitoringMapper monitoringMapper = new MonitoringMapper();
+    private static final PeriodType PERIODTYPE = PeriodType.DAILY;
+    private static final Date DATE = new Date();
+    private static final BigDecimal VALUE = new BigDecimal(1.0);
+    private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
+    private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
+    private static final AmrProfileStatusCodeFlag AMRCODEFLAG = AmrProfileStatusCodeFlag.CLOCK_INVALID;
 
-    // The registering below is needed because the same variables have different
-    // names in these classes. The converter is needed because of the M_3 in the
-    // OsgpUnitType enum and the M3 in the OsgpUnit enum.
-    @Before
-    public void init() {
-
-        this.mapperFactory
-        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
-                        AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
-                .byDefault().register();
-        this.mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
-    }
-
-    // Test to check mapping when the List is empty.
+    /**
+     * Tests the mapping of a PeriodMeterReadsContainer object with an empty
+     * List.
+     */
     @Test
     public void testWithEmptyList() {
 
         // build test data
-        final PeriodType periodType = PeriodType.DAILY;
         final List<PeriodicMeterReads> periodicMeterReadsList = new ArrayList<>();
-        final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer(periodType,
+        final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer(PERIODTYPE,
                 periodicMeterReadsList);
 
         // actual mapping
-        final PeriodicMeterReadsResponse periodicMeterReadsResponse = this.mapperFactory.getMapperFacade().map(
+        final PeriodicMeterReadsResponse periodicMeterReadsResponse = this.monitoringMapper.map(
                 periodicMeterReadsContainer, PeriodicMeterReadsResponse.class);
 
         // check mapping
         assertNotNull(periodicMeterReadsResponse);
         assertTrue(periodicMeterReadsResponse.getPeriodicMeterReads().isEmpty());
-        assertEquals(PeriodType.DAILY.name(), periodicMeterReadsResponse.getPeriodType().name());
+        assertEquals(PERIODTYPE.name(), periodicMeterReadsResponse.getPeriodType().name());
     }
 
-    // Test to check mapping when the List (and Set) are filled.
+    /**
+     * Tests the mapping of a PeriodicMeterReadsContainer object with a filled
+     * List and Set (both 1 entry).
+     */
     @Test
     public void testMappingWithFilledListAndSet() {
 
         // build test data
-        final Date date = new Date();
-        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(new BigDecimal(1.0), OsgpUnit.KWH);
+        final OsgpMeterValue osgpMeterValue = new OsgpMeterValue(VALUE, OSGP_UNIT);
         final Set<AmrProfileStatusCodeFlag> flagSet = new TreeSet<>();
-        flagSet.add(AmrProfileStatusCodeFlag.CLOCK_INVALID);
+        flagSet.add(AMRCODEFLAG);
         final AmrProfileStatusCode amrProfileStatusCode = new AmrProfileStatusCode(flagSet);
 
-        final PeriodType periodType = PeriodType.DAILY;
-        final PeriodicMeterReads periodicMeterReads = new PeriodicMeterReads(date, osgpMeterValue, osgpMeterValue,
+        final PeriodicMeterReads periodicMeterReads = new PeriodicMeterReads(DATE, osgpMeterValue, osgpMeterValue,
                 amrProfileStatusCode);
         final List<PeriodicMeterReads> periodicMeterReadsList = new ArrayList<>();
         periodicMeterReadsList.add(periodicMeterReads);
-        final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer(periodType,
+        final PeriodicMeterReadsContainer periodicMeterReadsContainer = new PeriodicMeterReadsContainer(PERIODTYPE,
                 periodicMeterReadsList);
 
         // actual mapping
-        final PeriodicMeterReadsResponse periodicMeterReadsResponse = this.mapperFactory.getMapperFacade().map(
+        final PeriodicMeterReadsResponse periodicMeterReadsResponse = this.monitoringMapper.map(
                 periodicMeterReadsContainer, PeriodicMeterReadsResponse.class);
 
         // check mapping
         assertNotNull(periodicMeterReadsResponse);
-        assertEquals(periodType.name(), periodicMeterReadsResponse.getPeriodType().name());
+        assertEquals(PERIODTYPE.name(), periodicMeterReadsResponse.getPeriodType().name());
         assertEquals(periodicMeterReadsList.size(), periodicMeterReadsResponse.getPeriodicMeterReads().size());
-        assertEquals(periodicMeterReads.getActiveEnergyImport().getValue(), periodicMeterReadsResponse
-                .getPeriodicMeterReads().get(0).getActiveEnergyImport().getValue());
-        // NullPointerException?? value isn't mapped bydefault?
-        assertEquals(periodicMeterReads.getActiveEnergyImport().getOsgpUnit().name(), periodicMeterReadsResponse
-                .getPeriodicMeterReads().get(0).getActiveEnergyImport().getUnit().name());
-        assertEquals(periodicMeterReads.getActiveEnergyExport().getValue(), periodicMeterReadsResponse
-                .getPeriodicMeterReads().get(0).getActiveEnergyExport().getValue());
-        assertEquals(periodicMeterReads.getActiveEnergyExport().getOsgpUnit().name(), periodicMeterReadsResponse
-                .getPeriodicMeterReads().get(0).getActiveEnergyExport().getUnit().name());
-        assertEquals(AmrProfileStatusCodeFlag.CLOCK_INVALID.name(), periodicMeterReadsResponse.getPeriodicMeterReads()
-                .get(0).getAmrProfileStatusCode().getAmrProfileStatusCodeFlag().get(0).name());
+        assertEquals(VALUE, periodicMeterReadsResponse.getPeriodicMeterReads().get(0).getActiveEnergyImport()
+                .getValue());
+        assertEquals(OSGP_UNITTYPE.name(), periodicMeterReadsResponse.getPeriodicMeterReads().get(0)
+                .getActiveEnergyImport().getUnit().name());
+        assertEquals(VALUE, periodicMeterReadsResponse.getPeriodicMeterReads().get(0).getActiveEnergyExport()
+                .getValue());
+        assertEquals(OSGP_UNITTYPE.name(), periodicMeterReadsResponse.getPeriodicMeterReads().get(0)
+                .getActiveEnergyExport().getUnit().name());
+        assertEquals(AMRCODEFLAG.name(), periodicMeterReadsResponse.getPeriodicMeterReads().get(0)
+                .getAmrProfileStatusCode().getAmrProfileStatusCodeFlag().get(0).name());
     }
 }

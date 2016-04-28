@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 
 import org.junit.Test;
 
@@ -21,70 +19,86 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet;
 
 public class KeySetMappingTest {
 
-    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
+    private ConfigurationMapper configurationMapper = new ConfigurationMapper();
+    private static final byte BYTE_0 = 1;
+    private static final byte BYTE_1 = 64;
+    private static final byte BYTE_2 = 127;
+    private static final byte[] BYTE_ARRAY = { BYTE_0, BYTE_1, BYTE_2 };
 
-    // Test mapping with filled arrays.
+    /** Tests the mapping of a KeySet object with filled byte arrays. */
     @Test
     public void testWithFilledArrays() {
+
         // build test data
         final KeySet keySetOriginal = new KeySet();
-        final byte[] authenticationKey = { 1, 64, 127 };
+        final byte[] authenticationKey = BYTE_ARRAY;
         keySetOriginal.setAuthenticationKey(authenticationKey);
-        final byte[] encryptionKey = { 127, 63, 0 };
+        final byte[] encryptionKey = BYTE_ARRAY;
         keySetOriginal.setEncryptionKey(encryptionKey);
+
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySetMapped = this.mapperFactory
-                .getMapperFacade().map(keySetOriginal,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySetMapped = this.configurationMapper
+                .map(keySetOriginal, com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+
         // check mapping
         assertNotNull(keySetMapped);
-
-        assertEquals(1, keySetMapped.getAuthenticationKey()[0]);
-        assertEquals(64, keySetMapped.getAuthenticationKey()[1]);
-        assertEquals(127, keySetMapped.getAuthenticationKey()[2]);
-
-        assertEquals(127, keySetMapped.getEncryptionKey()[0]);
-        assertEquals(63, keySetMapped.getEncryptionKey()[1]);
-        assertEquals(0, keySetMapped.getEncryptionKey()[2]);
+        this.checkMappingFilledArray(keySetMapped.getAuthenticationKey());
+        this.checkMappingFilledArray(keySetMapped.getEncryptionKey());
 
     }
 
-    // Test mapping with empty arrays
+    /** Tests the mapping of a KeySet object with empty byte arrays. */
     @Test
     public void testWithEmptyArrays() {
+
         // build test data
         final KeySet keySetOriginal = new KeySet();
         final byte[] authenticationKey = {};
         keySetOriginal.setAuthenticationKey(authenticationKey);
         final byte[] encryptionKey = {};
         keySetOriginal.setEncryptionKey(encryptionKey);
+
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySetMapped = this.mapperFactory
-                .getMapperFacade().map(keySetOriginal,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySetMapped = this.configurationMapper
+                .map(keySetOriginal, com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+
         // check mapping
         assertNotNull(keySetMapped);
-
+        assertNotNull(keySetMapped.getAuthenticationKey());
         assertTrue(keySetMapped.getAuthenticationKey().length == 0);
+        assertNotNull(keySetMapped.getEncryptionKey());
         assertTrue(keySetMapped.getEncryptionKey().length == 0);
     }
 
+    /** Tests the mapping of a KeySet object with byte arrays that are null. */
     // Test mapping with null arrays
     @Test
     public void testWithNullArrays() {
+
         // build test data
         final KeySet keySetOriginal = new KeySet();
         final byte[] authenticationKey = null;
         keySetOriginal.setAuthenticationKey(authenticationKey);
         final byte[] encryptionKey = null;
         keySetOriginal.setEncryptionKey(encryptionKey);
+
         // actual mapping
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySetMapped = this.mapperFactory
-                .getMapperFacade().map(keySetOriginal,
-                        com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet keySetMapped = this.configurationMapper
+                .map(keySetOriginal, com.alliander.osgp.domain.core.valueobjects.smartmetering.KeySet.class);
+
         // check mapping
         assertNotNull(keySetMapped);
         assertNull(keySetMapped.getAuthenticationKey());
         assertNull(keySetMapped.getEncryptionKey());
+    }
+
+    /** Method to check mapping of filled byte arrays. */
+    private void checkMappingFilledArray(final byte[] byteArray) {
+
+        assertNotNull(byteArray);
+        assertEquals(BYTE_ARRAY[0], byteArray[0]);
+        assertEquals(BYTE_ARRAY[1], byteArray[1]);
+        assertEquals(BYTE_ARRAY[2], byteArray[2]);
+
     }
 }
