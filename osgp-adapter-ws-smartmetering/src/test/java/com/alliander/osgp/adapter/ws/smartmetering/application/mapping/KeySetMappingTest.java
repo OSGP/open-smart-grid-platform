@@ -20,10 +20,7 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.KeySet;
 public class KeySetMappingTest {
 
     private ConfigurationMapper configurationMapper = new ConfigurationMapper();
-    private static final byte BYTE_0 = 1;
-    private static final byte BYTE_1 = 64;
-    private static final byte BYTE_2 = 127;
-    private static final byte[] BYTE_ARRAY = { BYTE_0, BYTE_1, BYTE_2 };
+    private static final byte[] BYTE_ARRAY = { 1, 64, 127 };
 
     /** Tests the mapping of a KeySet object with filled byte arrays. */
     @Test

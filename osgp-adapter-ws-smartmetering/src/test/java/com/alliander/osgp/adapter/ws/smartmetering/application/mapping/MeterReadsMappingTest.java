@@ -14,9 +14,6 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
@@ -34,7 +31,9 @@ public class MeterReadsMappingTest {
     private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
     private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
 
-    /** Tests if a MeterReads object can be mapped. */
+    /**
+     * Tests if a MeterReads object can be mapped.
+     */
     @Test
     public void testMeterReadsMapping() {
 
@@ -50,17 +49,20 @@ public class MeterReadsMappingTest {
         // check mapping
         assertNotNull(actualMeterReadsResponse);
         assertNotNull(actualMeterReadsResponse.getLogTime());
-        this.checkDateMapping(actualMeterReadsResponse.getLogTime());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyExport());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyExportTariffOne());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyExportTariffTwo());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyImport());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyImportTariffOne());
         this.checkOsgpMeterValueMapping(actualMeterReadsResponse.getActiveEnergyImportTariffTwo());
+        // For more information on the mapping of Date to XmlGregorianCalendar
+        // objects, refer to the DateMappingTest
 
     }
 
-    /** Method checks mapping of OsgpMeterValue objects to MeterValue objects. */
+    /**
+     * Method checks mapping of OsgpMeterValue objects to MeterValue objects.
+     */
     private void checkOsgpMeterValueMapping(final MeterValue meterValue) {
 
         assertNotNull(meterValue);
@@ -69,19 +71,4 @@ public class MeterReadsMappingTest {
 
     }
 
-    /** Method check mapping of Date objects to XMLGregorianCalendar objects. */
-    private void checkDateMapping(final XMLGregorianCalendar calendar) {
-
-        // convert Date to a DateTime to enable comparison (Date has deprecated
-        // method and test fails if these are used).
-        final DateTime dateTime = new DateTime(DATE);
-
-        assertEquals(dateTime.getYear(), calendar.getYear());
-        assertEquals(dateTime.getMonthOfYear(), calendar.getMonth());
-        assertEquals(dateTime.getDayOfMonth(), calendar.getDay());
-        assertEquals(dateTime.getHourOfDay(), calendar.getHour());
-        assertEquals(dateTime.getMinuteOfHour(), calendar.getMinute());
-        assertEquals(dateTime.getSecondOfMinute(), calendar.getSecond());
-        assertEquals(dateTime.getMillisOfSecond(), calendar.getMillisecond());
-    }
 }

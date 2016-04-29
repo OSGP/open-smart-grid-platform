@@ -29,7 +29,7 @@ public class PushNotificationAlarmMappingTest {
 
     /**
      * Tests if a PushNotificationAlarm object is mapped correctly with a filled
-     * Set (1 entry).
+     * Set.
      */
     @Test
     public void testPushNotificationAlarmMappingWithFilledSet() {
@@ -54,7 +54,9 @@ public class PushNotificationAlarmMappingTest {
         assertEquals(ALARMTYPE.name(), mapped.getAlarmRegister().getAlarmTypes().get(0).name());
     }
 
-    /** Tests if a PushNotificationAlarm is mapped correctly with an empty Set. */
+    /**
+     * Tests if a PushNotificationAlarm is mapped correctly with an empty Set.
+     */
     @Test
     public void testPushNotificationAlarmMappingWithEmptySet() {
 

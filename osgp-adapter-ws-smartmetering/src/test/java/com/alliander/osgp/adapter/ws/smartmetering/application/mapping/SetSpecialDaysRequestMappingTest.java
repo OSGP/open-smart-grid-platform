@@ -25,20 +25,7 @@ public class SetSpecialDaysRequestMappingTest {
     private ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private static final String DEVICE_ID = "nr1";
     private static final int DAY_ID = 1;
-    private static final byte FIRST_BYTE_FOR_YEAR = (byte) 0x07;
-    private static final byte SECOND_BYTE_FOR_YEAR = (byte) 0xE0;
-    private static final byte BYTE_FOR_MONTH = 4;
-    private static final byte BYTE_FOR_DAY_OF_MONTH = 6;
-    private static final byte BYTE_FOR_DAY_OF_WEEK = 4;
-
-    // @formatter:off
-    private static final byte[] COSEMDATE_BYTE_ARRAY = {
-        FIRST_BYTE_FOR_YEAR,
-        SECOND_BYTE_FOR_YEAR,
-        BYTE_FOR_MONTH,
-        BYTE_FOR_DAY_OF_MONTH,
-        BYTE_FOR_DAY_OF_WEEK };
-    // @formatter:on
+    private static final byte[] COSEMDATE_BYTE_ARRAY = { (byte) 0x07, (byte) 0xE0, 4, 6, 4 };
 
     /**
      * Tests mapping of a SetSpecialDaysReqeust object, when its
@@ -127,15 +114,10 @@ public class SetSpecialDaysRequestMappingTest {
         assertEquals(DEVICE_ID, specialDaysRequest.getDeviceIdentification());
         assertEquals(specialDaysRequestData.getSpecialDays().size(), specialDaysRequest.getSpecialDaysRequestData()
                 .getSpecialDays().size());
-        assertEquals(2016, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getSpecialDayDate()
-                .getYear());
-        assertEquals(BYTE_FOR_MONTH, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0)
-                .getSpecialDayDate().getMonth());
-        assertEquals(BYTE_FOR_DAY_OF_MONTH, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0)
-                .getSpecialDayDate().getDayOfMonth());
-        assertEquals(BYTE_FOR_DAY_OF_WEEK, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0)
-                .getSpecialDayDate().getDayOfWeek());
         assertEquals(DAY_ID, specialDaysRequest.getSpecialDaysRequestData().getSpecialDays().get(0).getDayId());
+
+        // For more info on the mapping of byte[] to CosemDate object, see the
+        // CosemDateConverterTest.
     }
 
     /**

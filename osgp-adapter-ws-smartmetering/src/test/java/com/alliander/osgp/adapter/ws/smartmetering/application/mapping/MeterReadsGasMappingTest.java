@@ -14,9 +14,6 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
@@ -33,7 +30,9 @@ public class MeterReadsGasMappingTest {
     private static final OsgpUnit OSGP_UNIT = OsgpUnit.M3;
     private static final OsgpUnitType OSGP_UNITTYPE = OsgpUnitType.M_3;
 
-    /** Tests if a MeterReadsGas object can be mapped */
+    /**
+     * Tests if a MeterReadsGas object can be mapped
+     */
     @Test
     public void testMeterReadsGasMapping() {
 
@@ -50,28 +49,10 @@ public class MeterReadsGasMappingTest {
         assertNotNull(actualMeterReadsGasResponse.getConsumption());
         assertNotNull(actualMeterReadsGasResponse.getConsumption().getUnit());
         assertNotNull(actualMeterReadsGasResponse.getConsumption().getValue());
-
-        this.checkDateMapping(actualMeterReadsGasResponse.getCaptureTime());
-        this.checkDateMapping(actualMeterReadsGasResponse.getLogTime());
         assertEquals(OSGP_UNITTYPE, actualMeterReadsGasResponse.getConsumption().getUnit());
         assertEquals(VALUE, actualMeterReadsGasResponse.getConsumption().getValue());
+        // For more information on the mapping of Date to XmlGregorianCalendar
+        // objects, refer to the DateMappingTest
     }
 
-    /** Method to check the mapping of Date objects */
-    private void checkDateMapping(final XMLGregorianCalendar calendar) {
-
-        assertNotNull(calendar);
-
-        // convert Date to a DateTime to enable comparison (Date has deprecated
-        // method and test fails if these are used).
-        final DateTime dateTime = new DateTime(DATE);
-
-        assertEquals(dateTime.getYear(), calendar.getYear());
-        assertEquals(dateTime.getMonthOfYear(), calendar.getMonth());
-        assertEquals(dateTime.getDayOfMonth(), calendar.getDay());
-        assertEquals(dateTime.getHourOfDay(), calendar.getHour());
-        assertEquals(dateTime.getMinuteOfHour(), calendar.getMinute());
-        assertEquals(dateTime.getSecondOfMinute(), calendar.getSecond());
-        assertEquals(dateTime.getMillisOfSecond(), calendar.getMillisecond());
-    }
 }

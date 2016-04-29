@@ -19,7 +19,9 @@ public class ReadAlarmRegisterRequestMappingTest {
 
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
 
-    /** Tests if a ReadAlarmRegisterRequest is mapped correctly. */
+    /**
+     * Tests if a ReadAlarmRegisterRequest is mapped correctly.
+     */
     @Test
     public void testReadAlarmRegisterRequestMapping() {
 

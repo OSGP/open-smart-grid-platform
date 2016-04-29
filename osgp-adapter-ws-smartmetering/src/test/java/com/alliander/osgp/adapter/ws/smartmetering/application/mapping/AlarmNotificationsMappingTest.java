@@ -26,7 +26,9 @@ public class AlarmNotificationsMappingTest {
     private static final com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType ALARMTYPEMAPPED = com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmType.CLOCK_INVALID;
     private static final boolean ENABLED = true;
 
-    /** Test to see if AlarmNotifications can be mapped. */
+    /**
+     * Test to see if AlarmNotifications can be mapped.
+     */
     @Test
     public void testAlarmNotificationsMapping() {
 

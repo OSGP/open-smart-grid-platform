@@ -13,14 +13,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,12 +33,13 @@ public class PeriodicReadsRequestMappingTest {
     private MonitoringMapper monitoringMapper = new MonitoringMapper();
     private static final PeriodType PERIODTYPE = PeriodType.DAILY;
 
-    /** Needed to initialize a XMLGregorianCalendar object. */
+    /**
+     * Needed to initialize a XMLGregorianCalendar object.
+     */
     @Before
     public void init() {
-        final GregorianCalendar gregorianCalendar = new GregorianCalendar();
         try {
-            this.xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);
+            this.xmlCalendar = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
         } catch (final DatatypeConfigurationException e) {
             e.printStackTrace();
         }
@@ -85,32 +84,14 @@ public class PeriodicReadsRequestMappingTest {
         assertNotNull(periodicMeterReadsQuery);
         assertNotNull(periodicMeterReadsQuery.getDeviceIdentification());
         assertNotNull(periodicMeterReadsQuery.getPeriodType());
+        assertNotNull(periodicMeterReadsQuery.getBeginDate());
+        assertNotNull(periodicMeterReadsQuery.getEndDate());
 
         assertEquals(PERIODTYPE.name(), periodicMeterReadsQuery.getPeriodType().name());
-        this.checkDateTimeMapping(periodicMeterReadsQuery.getBeginDate());
-        this.checkDateTimeMapping(periodicMeterReadsQuery.getEndDate());
         assertFalse(periodicMeterReadsQuery.isMbusDevice());
         assertTrue(periodicMeterReadsQuery.getDeviceIdentification().isEmpty());
+        // For more information on the mapping of Date to XmlGregorianCalendar
+        // objects, refer to the DateMappingTest
 
     }
-
-    /**
-     * Method checks the mapping of XMLGregorianCalendar objects to Date objects
-     */
-    private void checkDateTimeMapping(final Date date) {
-
-        assertNotNull(date);
-
-        // Cast to DateTime to enable comparison.
-        final DateTime dateTime = new DateTime(date);
-
-        assertEquals(this.xmlCalendar.getYear(), dateTime.getYear());
-        assertEquals(this.xmlCalendar.getMonth(), dateTime.getMonthOfYear());
-        assertEquals(this.xmlCalendar.getDay(), dateTime.getDayOfMonth());
-        assertEquals(this.xmlCalendar.getHour(), dateTime.getHourOfDay());
-        assertEquals(this.xmlCalendar.getMinute(), dateTime.getMinuteOfHour());
-        assertEquals(this.xmlCalendar.getSecond(), dateTime.getSecondOfMinute());
-        assertEquals(this.xmlCalendar.getMillisecond(), dateTime.getMillisOfSecond());
-    }
-
 }

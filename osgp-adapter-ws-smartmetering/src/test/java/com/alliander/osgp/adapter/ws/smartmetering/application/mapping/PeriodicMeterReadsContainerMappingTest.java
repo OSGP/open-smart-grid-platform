@@ -65,7 +65,7 @@ public class PeriodicMeterReadsContainerMappingTest {
 
     /**
      * Tests the mapping of a PeriodicMeterReadsContainer object with a filled
-     * List and Set (both 1 entry).
+     * List and Set.
      */
     @Test
     public void testMappingWithFilledListAndSet() {
@@ -89,6 +89,13 @@ public class PeriodicMeterReadsContainerMappingTest {
 
         // check mapping
         assertNotNull(periodicMeterReadsResponse);
+        assertNotNull(periodicMeterReadsResponse.getPeriodicMeterReads());
+        assertNotNull(periodicMeterReadsResponse.getPeriodType());
+        assertNotNull(periodicMeterReadsResponse.getPeriodicMeterReads().get(0));
+        assertNotNull(periodicMeterReadsResponse.getPeriodicMeterReads().get(0).getActiveEnergyExport());
+        assertNotNull(periodicMeterReadsResponse.getPeriodicMeterReads().get(0).getActiveEnergyImport());
+        assertNotNull(periodicMeterReadsResponse.getPeriodicMeterReads().get(0).getAmrProfileStatusCode());
+
         assertEquals(PERIODTYPE.name(), periodicMeterReadsResponse.getPeriodType().name());
         assertEquals(periodicMeterReadsList.size(), periodicMeterReadsResponse.getPeriodicMeterReads().size());
         assertEquals(VALUE, periodicMeterReadsResponse.getPeriodicMeterReads().get(0).getActiveEnergyImport()
@@ -101,5 +108,7 @@ public class PeriodicMeterReadsContainerMappingTest {
                 .getActiveEnergyExport().getUnit().name());
         assertEquals(AMRCODEFLAG.name(), periodicMeterReadsResponse.getPeriodicMeterReads().get(0)
                 .getAmrProfileStatusCode().getAmrProfileStatusCodeFlag().get(0).name());
+        // For more information on the mapping of Date to XmlGregorianCalendar
+        // objects, refer to the DateMappingTest
     }
 }

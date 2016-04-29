@@ -32,6 +32,7 @@ import com.alliander.osgp.adapter.ws.endpointinterceptors.AnnotationMethodArgume
 import com.alliander.osgp.adapter.ws.endpointinterceptors.CertificateAndSoapHeaderAuthorizationEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.MessagePriority;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.OrganisationIdentification;
+import com.alliander.osgp.adapter.ws.endpointinterceptors.ScheduleTime;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderMessagePriorityEndpointInterceptor;
 import com.alliander.osgp.adapter.ws.endpointinterceptors.SoapHeaderScheduleTimeEndpointInterceptor;
@@ -320,6 +321,8 @@ public class WebServiceConfig {
                 OrganisationIdentification.class));
         methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_PRIORITY_CONTEXT,
                 MessagePriority.class));
+        methodArgumentResolvers.add(new AnnotationMethodArgumentResolver(MESSAGE_SCHEDULETIME_HEADER,
+                ScheduleTime.class));
         defaultMethodEndpointAdapter.setMethodArgumentResolvers(methodArgumentResolvers);
 
         final List<MethodReturnValueHandler> methodReturnValueHandlers = new ArrayList<MethodReturnValueHandler>();

@@ -29,7 +29,9 @@ public class PushSetupSmsMappingTest {
     private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
     private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
 
-    /** Tests if a PushSetupSms object can be mapped successfully. */
+    /**
+     * Tests if a PushSetupSms object can be mapped successfully.
+     */
     @Test
     public void testPushSetupSmsMapping() {
 

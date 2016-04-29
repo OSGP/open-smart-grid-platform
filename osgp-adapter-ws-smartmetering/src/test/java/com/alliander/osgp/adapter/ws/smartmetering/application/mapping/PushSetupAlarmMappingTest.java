@@ -29,7 +29,9 @@ public class PushSetupAlarmMappingTest {
     private static final TransportServiceType TRANSPORTSERVICETYPE = TransportServiceType.TCP;
     private static final MessageType MESSAGETYPE = MessageType.MANUFACTURER_SPECIFIC;
 
-    /** Tests if mapping a PushSetupAlarm object succeeds. */
+    /**
+     * Tests if mapping a PushSetupAlarm object succeeds.
+     */
     @Test
     public void testPushSetupAlarmMapping() {
 

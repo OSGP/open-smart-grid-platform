@@ -27,7 +27,7 @@ public class AlarmRegisterMappingTest {
 
     /**
      * Test to see if an AlarmRegister object is mapped correctly with a filled
-     * Set (1 entry).
+     * Set.
      */
     @Test
     public void testWithFilledSet() {

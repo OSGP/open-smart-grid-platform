@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.common.OsgpUnitType;
@@ -114,28 +111,7 @@ public class PeriodicMeterReadsContainerGasMappingTest {
                 .getUnit());
         assertEquals(AMRCODEFLAG.name(), periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0)
                 .getAmrProfileStatusCode().getAmrProfileStatusCodeFlag().get(0).name());
-
-        this.checkDateMapping(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getCaptureTime());
-        this.checkDateMapping(periodicMeterReadsResponseGas.getPeriodicMeterReadsGas().get(0).getLogTime());
-
+        // For more information on the mapping of Date to XmlGregorianCalendar
+        // objects, refer to the DateMappingTest
     }
-
-    /** Method checks the mapping of Date objects. */
-    private void checkDateMapping(final XMLGregorianCalendar calendar) {
-
-        assertNotNull(calendar);
-
-        // convert Date to a DateTime to enable comparison (Date has deprecated
-        // method and test fails if these are used).
-        final DateTime dateTime = new DateTime(DATE);
-
-        assertEquals(dateTime.getYear(), calendar.getYear());
-        assertEquals(dateTime.getMonthOfYear(), calendar.getMonth());
-        assertEquals(dateTime.getDayOfMonth(), calendar.getDay());
-        assertEquals(dateTime.getHourOfDay(), calendar.getHour());
-        assertEquals(dateTime.getMinuteOfHour(), calendar.getMinute());
-        assertEquals(dateTime.getSecondOfMinute(), calendar.getSecond());
-        assertEquals(dateTime.getMillisOfSecond(), calendar.getMillisecond());
-    }
-
 }

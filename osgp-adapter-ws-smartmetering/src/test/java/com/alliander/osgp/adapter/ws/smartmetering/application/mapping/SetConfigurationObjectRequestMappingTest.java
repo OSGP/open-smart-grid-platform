@@ -54,7 +54,9 @@ public class SetConfigurationObjectRequestMappingTest {
         assertNull(requestMapped.getSetConfigurationObjectRequestData());
     }
 
-    /** Tests if mapping succeeds when ConfigurationObject is null. */
+    /**
+     * Tests if mapping succeeds when ConfigurationObject is null.
+     */
     @Test
     public void testWithNullConfigurationObject() {
         // build test data

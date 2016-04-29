@@ -23,19 +23,18 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
 public class ListEventMappingTest {
 
     private ManagementMapper managementMapper = new ManagementMapper();
+    private static final Integer EVENTCODE = new Integer(10);
+    private static final Integer EVENTCOUNTER = new Integer(1);
 
     /**
-     * Tests if mapping a List, typed to Event, succeeds if the List is filled
-     * (1 entry).
+     * Tests if mapping a List, typed to Event, succeeds if the List is filled.
      */
     @Test
     public void testFilledListEventMapping() {
 
         // build test data
         final DateTime timestamp = new DateTime();
-        final Integer eventCode = new Integer(10);
-        final Integer eventCounter = new Integer(1);
-        final Event event = new Event(timestamp, eventCode, eventCounter);
+        final Event event = new Event(timestamp, EVENTCODE, EVENTCOUNTER);
         final List<Event> listOriginal = new ArrayList<>();
         listOriginal.add(event);
 
@@ -58,13 +57,14 @@ public class ListEventMappingTest {
         assertEquals(timestamp.getMinuteOfHour(), listMapped.get(0).getTimestamp().getMinute());
         assertEquals(timestamp.getSecondOfMinute(), listMapped.get(0).getTimestamp().getSecond());
 
-        // casting to int necessary to avoid ambiguous calling.
-        assertEquals((int) eventCode, listMapped.get(0).getEventType().ordinal());
+        assertEquals((int) EVENTCODE, listMapped.get(0).getEventType().ordinal());
 
-        assertEquals(eventCounter, listMapped.get(0).getEventCounter());
+        assertEquals(EVENTCOUNTER, listMapped.get(0).getEventCounter());
     }
 
-    /** Tests if mapping a List, typed to Event, succeeds if the List is empty. */
+    /**
+     * Tests if mapping a List, typed to Event, succeeds if the List is empty.
+     */
     @Test
     public void testEmptyListEventMapping() {
 
@@ -80,7 +80,9 @@ public class ListEventMappingTest {
         assertTrue(listMapped.isEmpty());
     }
 
-    /** Tests if mapping a List, typed to Event, succeeds if the List is null. */
+    /**
+     * Tests if mapping a List, typed to Event, succeeds if the List is null.
+     */
     @Test(expected = NullPointerException.class)
     public void testNullListEventMapping() {
 
