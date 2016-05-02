@@ -12,25 +12,43 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
+import com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.AmrProfileStatusCode;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainerGas;
+
 @Component(value = "monitoringMapper")
 public class MonitoringMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsResponseConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ActualMeterReadsGasConverter());
-        mapperFactory.getConverterFactory().registerConverter(new AlarmRegisterConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ReadAlarmRegisterDataConverter());
+
+        // These classMaps are needed because of different names for fields.
+        mapperFactory.classMap(PeriodicMeterReadsContainerGas.class, PeriodicMeterReadsGasResponse.class)
+        .field("meterReadsGas", "periodicMeterReadsGas").byDefault().register();
+        mapperFactory
+        .classMap(com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AmrProfileStatusCode.class,
+                AmrProfileStatusCode.class).field("amrProfileStatusCodeFlag", "amrProfileStatusCodeFlags")
+                .byDefault().register();
+
+        // Converter is needed because of instanceOf check to set boolean
+        // mbusDevice for a PeriodicMeterReadsQuery object
         mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsRequestConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsResponseGasConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicMeterReadsGasResponseDataConverter());
-        mapperFactory.getConverterFactory().registerConverter(new AmrProfileStatusCodeConverter());
+
+        // This converter is needed because
+        // RetrievePushNotificationAlarmResponse
+        // doesn't have a List<AlarmType>, but an AlarmRegister. The
+        // List<AlarmType> is in that class.
         mapperFactory.getConverterFactory().registerConverter(new PushNotificationsAlarmConverter());
+
+        // This converter is needed because of the M_3 in the OsgpUnitType enum
+        // and the M3 in the OsgpUnit enum.
         mapperFactory.getConverterFactory().registerConverter(new MeterValueConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestQueryConverter());
-        mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestGasQueryConverter());
+
+        // This converter is needed to ensure correct mapping of dates and
+        // times.
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
+
+        // This converter is needed because it contains logic.
+        mapperFactory.getConverterFactory().registerConverter(new PeriodicReadsRequestGasQueryConverter());
     }
 
 }
