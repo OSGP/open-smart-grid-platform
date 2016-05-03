@@ -12,9 +12,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
  */
 public enum SubDataAttribute {
 
-    CURRENT_VERSION("curVer"),
-    URL("url"),
-    START_TIME("startT");
+    CONTROL_VALUE("ctlVal"), CURRENT_VERSION("curVer"), OPERATION("Oper"), URL("url"), START_TIME("startT");
 
     private String description;
 

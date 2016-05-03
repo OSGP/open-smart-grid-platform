@@ -57,8 +57,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.Schedule
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ConnectionFailureException;
 import com.alliander.osgp.adapter.protocol.iec61850.exceptions.ProtocolAdapterException;
-import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DataAttribute;
+import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.DeviceConnection;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.Function;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.LogicalNode;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.NodeContainer;
@@ -377,7 +377,10 @@ public class Iec61850DeviceService implements DeviceService {
             final ServerModel serverModel = this.connectAndRetrieveServerModel(deviceRequest);
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
-            this.rebootDevice(serverModel, clientAssociation, deviceRequest.getDeviceIdentification());
+            // this.rebootDevice(serverModel, clientAssociation,
+            // deviceRequest.getDeviceIdentification());
+            this.rebootDevice(new DeviceConnection(new Iec61850Connection(clientAssociation, serverModel),
+                    deviceRequest.getDeviceIdentification()));
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -554,9 +557,8 @@ public class Iec61850DeviceService implements DeviceService {
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
             // Getting the data with retries
-            final List<FirmwareVersionDto> firmwareVersions = this
-                    .getFirmwareVersionFromDevice(new DeviceConnection(new Iec61850Connection(clientAssociation,
-                            serverModel), deviceRequest.getDeviceIdentification()));
+            final List<FirmwareVersionDto> firmwareVersions = this.getFirmwareVersionFromDevice(new DeviceConnection(
+                    new Iec61850Connection(clientAssociation, serverModel), deviceRequest.getDeviceIdentification()));
 
             final GetFirmwareVersionDeviceResponse deviceResponse = new GetFirmwareVersionDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -582,7 +584,6 @@ public class Iec61850DeviceService implements DeviceService {
 
             deviceResponseHandler.handleException(e, deviceResponse, true);
         }
-
     }
 
     @Override
@@ -594,8 +595,8 @@ public class Iec61850DeviceService implements DeviceService {
             final ClientAssociation clientAssociation = this.iec61850DeviceConnectionService
                     .getClientAssociation(deviceRequest.getDeviceIdentification());
 
-            this.transitionDevice(serverModel, clientAssociation, deviceRequest.getDeviceIdentification(),
-                    deviceRequest.getTransitionTypeContainer());
+            this.transitionDevice(new DeviceConnection(new Iec61850Connection(clientAssociation, serverModel),
+                    deviceRequest.getDeviceIdentification()), deviceRequest.getTransitionTypeContainer());
 
             final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
                     deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
@@ -1186,34 +1187,62 @@ public class Iec61850DeviceService implements DeviceService {
 
     }
 
-    private void rebootDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
-            final String deviceIdentification) throws ProtocolAdapterException {
+    // private void rebootDevice(final ServerModel serverModel, final
+    // ClientAssociation clientAssociation,
+    // final String deviceIdentification) throws ProtocolAdapterException {
+    private void rebootDevice(final DeviceConnection deviceConnection) throws ProtocolAdapterException {
 
         final Function<Void> function = new Function<Void>() {
 
             @Override
             public Void apply() throws Exception {
-                final String rbOperObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                        + LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER;
-                LOGGER.info("device: {}, rbOperObjectReference: {}", deviceIdentification, rbOperObjectReference);
+                // final String rbOperObjectReference =
+                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                // + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                // + LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER;
+                // LOGGER.info("device: {}, rbOperObjectReference: {}",
+                // deviceIdentification, rbOperObjectReference);
 
-                final FcModelNode rebootConfiguration = (FcModelNode) serverModel.findModelNode(rbOperObjectReference,
-                        Fc.CO);
-                LOGGER.info("device: {}, rebootConfiguration: {}", deviceIdentification, rebootConfiguration);
+                final NodeContainer rebootOperationNode = deviceConnection.getFcModelNode(
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.REBOOT_OPERATION, Fc.CO);
+                LOGGER.info("device: {}, rebootOperationNode: {}", deviceConnection.getDeviceIdentification(),
+                        rebootOperationNode);
 
-                final FcModelNode oper = (FcModelNode) rebootConfiguration.getChild(
-                        LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER_ATTRIBUTE_OPER, Fc.CO);
-                LOGGER.info("device: {}, oper: {}", deviceIdentification, oper);
+                // final FcModelNode rebootConfiguration = (FcModelNode)
+                // serverModel.findModelNode(rbOperObjectReference,
+                // Fc.CO);
+                // LOGGER.info("device: {}, rebootConfiguration: {}",
+                // deviceIdentification, rebootConfiguration);
 
-                final BdaBoolean ctlVal = (BdaBoolean) oper.getChild(
-                        LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER_ATTRIBUTE_CONTROL, Fc.CO);
-                LOGGER.info("device: {}, ctlVal: {}", deviceIdentification, ctlVal);
+                // final FcModelNode oper = (FcModelNode)
+                // rebootConfiguration.getChild(
+                // LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER_ATTRIBUTE_OPER,
+                // Fc.CO);
+                // LOGGER.info("device: {}, oper: {}", deviceIdentification,
+                // oper);
+
+                final NodeContainer oper = rebootOperationNode.getChild(SubDataAttribute.OPERATION);
+                LOGGER.info("device: {}, oper: {}", deviceConnection.getDeviceIdentification(), oper);
+
+                // final BdaBoolean ctlVal = (BdaBoolean) oper.getChild(
+                // LogicalNodeAttributeDefinitons.PROPERTY_RB_OPER_ATTRIBUTE_CONTROL,
+                // Fc.CO);
+                // LOGGER.info("device: {}, ctlVal: {}", deviceIdentification,
+                // ctlVal);
+
+                final BdaBoolean ctlVal = oper.getBoolean(SubDataAttribute.CONTROL_VALUE);
+                LOGGER.info("device: {}, ctlVal: {}", deviceConnection.getDeviceIdentification(), ctlVal);
 
                 ctlVal.setValue(true);
-                LOGGER.info("device: {}, set ctlVal to true in order to reboot the device", deviceIdentification);
+                LOGGER.info("device: {}, set ctlVal to true in order to reboot the device",
+                        deviceConnection.getDeviceIdentification());
 
-                clientAssociation.setDataValues(oper);
+                // clientAssociation.setDataValues(oper);
+                // oper.writeBoolean(SubDataAttribute.CONTROL_VALUE, true);
+                // LOGGER.info("device: {}, set ctlVal to true in order to reboot the device",
+                // deviceConnection.getDeviceIdentification());
+
+                oper.write();
                 return null;
             }
         };
@@ -1370,45 +1399,70 @@ public class Iec61850DeviceService implements DeviceService {
 
     }
 
-    private void transitionDevice(final ServerModel serverModel, final ClientAssociation clientAssociation,
-            final String deviceIdentification, final TransitionMessageDataContainer transitionMessageDataContainer)
-            throws ProtocolAdapterException {
+    private void transitionDevice(final DeviceConnection deviceConnection,
+            final TransitionMessageDataContainer transitionMessageDataContainer) throws ProtocolAdapterException {
 
         final TransitionType transitionType = transitionMessageDataContainer.getTransitionType();
-        LOGGER.info("device: {}, transition: {}", deviceIdentification, transitionType);
+        LOGGER.info("device: {}, transition: {}", deviceConnection.getDeviceIdentification(), transitionType);
         final boolean controlValueForTransition = transitionType.equals(TransitionType.DAY_NIGHT);
 
         final DateTime dateTime = transitionMessageDataContainer.getDateTime();
         if (dateTime != null) {
-            LOGGER.warn("device: {}, setting date/time {} for transition {} not supported", deviceIdentification,
-                    dateTime, transitionType);
+            LOGGER.warn("device: {}, setting date/time {} for transition {} not supported",
+                    deviceConnection.getDeviceIdentification(), dateTime, transitionType);
         }
 
         final Function<Void> function = new Function<Void>() {
             @Override
             public Void apply() throws Exception {
-                final String sensorObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                        + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                        + LogicalNodeAttributeDefinitons.PROPERTY_SENSOR;
-                LOGGER.info("device: {}, sensorObjectReference: {}", deviceIdentification, sensorObjectReference);
+                /*
+                 * final String sensorObjectReference =
+                 * LogicalNodeAttributeDefinitons.LOGICAL_DEVICE +
+                 * LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC +
+                 * LogicalNodeAttributeDefinitons.PROPERTY_SENSOR;
+                 * LOGGER.info("device: {}, sensorObjectReference: {}",
+                 * deviceIdentification, sensorObjectReference);
+                 * 
+                 * final FcModelNode sensorConfiguration = (FcModelNode)
+                 * serverModel.findModelNode(sensorObjectReference, Fc.CO);
+                 * LOGGER.info("device: {}, sensorConfiguration: {}",
+                 * deviceIdentification, sensorConfiguration);
+                 * 
+                 * final FcModelNode oper = (FcModelNode)
+                 * sensorConfiguration.getChild(
+                 * LogicalNodeAttributeDefinitons.PROPERTY_SENSOR_ATTRIBUTE_OPER
+                 * , Fc.CO); LOGGER.info("device: {}, oper: {}",
+                 * deviceIdentification, oper);
+                 * 
+                 * final BdaBoolean ctlVal = (BdaBoolean) oper.getChild(
+                 * LogicalNodeAttributeDefinitons
+                 * .PROPERTY_SENSOR_ATTRIBUTE_CONTROL, Fc.CO);
+                 * LOGGER.info("device: {}, ctlVal: {}", deviceIdentification,
+                 * ctlVal);
+                 * 
+                 * ctlVal.setValue(controlValueForTransition);
+                 * LOGGER.info("device: {}, set ctlVal to {} means {} message",
+                 * deviceIdentification, controlValueForTransition,
+                 * controlValueForTransition ? "Evening" : "Morning");
+                 * 
+                 * clientAssociation.setDataValues(oper); return null;
+                 */
 
-                final FcModelNode sensorConfiguration = (FcModelNode) serverModel.findModelNode(sensorObjectReference,
-                        Fc.CO);
-                LOGGER.info("device: {}, sensorConfiguration: {}", deviceIdentification, sensorConfiguration);
+                final NodeContainer sensorNode = deviceConnection.getFcModelNode(
+                        LogicalNode.STREET_LIGHT_CONFIGURATION, DataAttribute.SENSOR, Fc.CO);
+                LOGGER.info("device: {}, sensorNode: {}", deviceConnection.getDeviceIdentification(), sensorNode);
 
-                final FcModelNode oper = (FcModelNode) sensorConfiguration.getChild(
-                        LogicalNodeAttributeDefinitons.PROPERTY_SENSOR_ATTRIBUTE_OPER, Fc.CO);
-                LOGGER.info("device: {}, oper: {}", deviceIdentification, oper);
+                final NodeContainer oper = sensorNode.getChild(SubDataAttribute.OPERATION);
+                LOGGER.info("device: {}, oper: {}", deviceConnection.getDeviceIdentification(), oper);
 
-                final BdaBoolean ctlVal = (BdaBoolean) oper.getChild(
-                        LogicalNodeAttributeDefinitons.PROPERTY_SENSOR_ATTRIBUTE_CONTROL, Fc.CO);
-                LOGGER.info("device: {}, ctlVal: {}", deviceIdentification, ctlVal);
+                final BdaBoolean ctlVal = oper.getBoolean(SubDataAttribute.CONTROL_VALUE);
+                LOGGER.info("device: {}, ctlVal: {}", deviceConnection.getDeviceIdentification(), ctlVal);
 
                 ctlVal.setValue(controlValueForTransition);
-                LOGGER.info("device: {}, set ctlVal to {} means {} message", deviceIdentification,
-                        controlValueForTransition, controlValueForTransition ? "Evening" : "Morning");
+                LOGGER.info("device: {}, set ctlVal to {} in order to transition the device",
+                        deviceConnection.getDeviceIdentification(), controlValueForTransition);
 
-                clientAssociation.setDataValues(oper);
+                oper.write();
                 return null;
             }
         };

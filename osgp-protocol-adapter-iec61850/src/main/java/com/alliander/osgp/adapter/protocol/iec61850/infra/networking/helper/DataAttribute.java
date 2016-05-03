@@ -12,8 +12,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
  */
 public enum DataAttribute {
 
-    FUNCTIONAL_FIRMWARE("FuncFwDw"),
-    SECURITY_FIRMWARE("ScyFwDw");
+    FUNCTIONAL_FIRMWARE("FuncFwDw"), REBOOT_OPERATION("RbOper"), SECURITY_FIRMWARE("ScyFwDw"), SENSOR("Sensor");
 
     private String description;
 

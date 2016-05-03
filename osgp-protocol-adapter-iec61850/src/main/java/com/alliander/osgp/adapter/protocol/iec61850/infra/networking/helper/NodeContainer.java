@@ -3,6 +3,7 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper;
 import java.io.IOException;
 import java.util.Date;
 
+import org.openmuc.openiec61850.BdaBoolean;
 import org.openmuc.openiec61850.BdaTimestamp;
 import org.openmuc.openiec61850.BdaVisibleString;
 import org.openmuc.openiec61850.FcModelNode;
@@ -20,6 +21,23 @@ public class NodeContainer {
     public NodeContainer(final DeviceConnection connection, final FcModelNode fcmodelNode) {
         this.connection = connection;
         this.parent = fcmodelNode;
+    }
+
+    public void write() {
+        try {
+            this.connection.getConnection().getClientAssociation().setDataValues(this.parent);
+        } catch (final ServiceError e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IOException e) {
+
+            // "if a fatal association error occurs. The association object will be closed and can no longer be used after this exception is thrown."
+
+            // so reconnect?
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -74,7 +92,6 @@ public class NodeContainer {
                 dBdaTimestamp.getDate());
 
         return dBdaTimestamp.getDate();
-
     }
 
     /**
@@ -90,12 +107,21 @@ public class NodeContainer {
         dBdaTimestamp.setDate(value);
 
         this.writeNode(dBdaTimestamp);
-
     }
 
-    // TODO Int, Boolean, Date
+    public BdaBoolean getBoolean(final SubDataAttribute child) {
 
-    /*
+        return (BdaBoolean) this.parent.getChild(child.getDescription());
+    }
+
+    public void writeBoolean(final SubDataAttribute child, final boolean value) {
+
+        final BdaBoolean bdaBoolean = (BdaBoolean) this.parent.getChild(child.getDescription());
+        bdaBoolean.setValue(value);
+        this.writeNode(bdaBoolean);
+    }
+
+    /**
      * Writes the new data of the node to the device
      */
     private void writeNode(final FcModelNode node) {
@@ -115,7 +141,6 @@ public class NodeContainer {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     // GETTERS AND SETTERS
@@ -123,4 +148,13 @@ public class NodeContainer {
         return this.parent;
     }
 
+    /**
+     * Return a child or sub-data-attribute for this node.
+     *
+     * @param child
+     *            The name of the child to fetch.
+     */
+    public NodeContainer getChild(final SubDataAttribute child) {
+        return new NodeContainer(this.connection, (FcModelNode) this.parent.getChild(child.getDescription()));
+    }
 }
