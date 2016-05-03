@@ -156,9 +156,9 @@ public class PushSetupSmsMappingTest {
         assertNotNull(sendDestinationAndMethodDto);
 
         // make sure all instance variables are equal
-        assertEquals(sendDestinationAndMethod.getTransportService().value(), sendDestinationAndMethodDto
-                .getTransportService().value());
-        assertEquals(sendDestinationAndMethod.getMessage().value(), sendDestinationAndMethodDto.getMessage().value());
+        assertEquals(sendDestinationAndMethod.getTransportService().name(), sendDestinationAndMethodDto
+                .getTransportService().name());
+        assertEquals(sendDestinationAndMethod.getMessage().name(), sendDestinationAndMethodDto.getMessage().name());
         assertEquals(sendDestinationAndMethod.getDestination(), sendDestinationAndMethodDto.getDestination());
     }
 

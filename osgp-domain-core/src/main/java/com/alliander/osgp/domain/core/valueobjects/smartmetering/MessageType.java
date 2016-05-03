@@ -13,11 +13,4 @@ public enum MessageType {
     XML_ENCODED_X_DLMS_APDU,
     MANUFACTURER_SPECIFIC;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static MessageType fromValue(final String v) {
-        return valueOf(v);
-    }
 }

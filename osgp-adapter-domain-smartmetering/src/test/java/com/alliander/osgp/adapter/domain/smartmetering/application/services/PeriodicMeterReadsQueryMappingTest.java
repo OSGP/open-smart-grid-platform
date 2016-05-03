@@ -65,8 +65,7 @@ public class PeriodicMeterReadsQueryMappingTest {
                 periodicMeterReadsQuery, PeriodicMeterReadsQueryDto.class);
         // test mapping
         assertNotNull(periodicMeterReadsQueryDto);
-        assertEquals(periodicMeterReadsQuery.getPeriodType().value(), periodicMeterReadsQueryDto.getPeriodType()
-                .value());
+        assertEquals(periodicMeterReadsQuery.getPeriodType().name(), periodicMeterReadsQueryDto.getPeriodType().name());
         assertEquals(periodicMeterReadsQuery.getBeginDate(), periodicMeterReadsQueryDto.getBeginDate());
         assertEquals(periodicMeterReadsQuery.getEndDate(), periodicMeterReadsQueryDto.getEndDate());
         assertEquals(periodicMeterReadsQuery.isMbusDevice(), periodicMeterReadsQueryDto.isMbusQuery());

@@ -35,7 +35,7 @@ public class AdministrativeStatusTypeMappingTest {
 
         // check if value is mapped correctly
         assertNotNull(administrativeStatusTypeDto);
-        assertEquals(administrativeStatusType.value(), administrativeStatusTypeDto.value());
+        assertEquals(administrativeStatusType.name(), administrativeStatusTypeDto.name());
     }
 
     // To see if mapping succeeds when a value is set to On.
@@ -51,7 +51,7 @@ public class AdministrativeStatusTypeMappingTest {
 
         // check if value is mapped correctly
         assertNotNull(administrativeStatusTypeDto);
-        assertEquals(administrativeStatusType.value(), administrativeStatusTypeDto.value());
+        assertEquals(administrativeStatusType.name(), administrativeStatusTypeDto.name());
     }
 
     // To see if mapping succeeds when a value is set to Off.
@@ -67,7 +67,7 @@ public class AdministrativeStatusTypeMappingTest {
 
         // check if value is mapped correctly
         assertNotNull(administrativeStatusTypeDto);
-        assertEquals(administrativeStatusType.value(), administrativeStatusTypeDto.value());
+        assertEquals(administrativeStatusType.name(), administrativeStatusTypeDto.name());
     }
 
     // check if mapping succeeds if the object is null.
