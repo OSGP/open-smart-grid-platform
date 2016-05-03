@@ -10,7 +10,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpecialDaysRequestDataDto implements ActionDto {
+public class SpecialDaysRequestDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 2733945253731054997L;
 

@@ -8,7 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 
-public class ActivityCalendarDataDto implements ActionDto {
+public class ActivityCalendarDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -4254902895916399366L;
 
