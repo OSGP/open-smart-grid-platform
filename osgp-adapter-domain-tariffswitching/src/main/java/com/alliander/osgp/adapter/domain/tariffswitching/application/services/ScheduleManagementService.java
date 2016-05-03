@@ -21,7 +21,7 @@ import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.LightValue;
 import com.alliander.osgp.domain.core.valueobjects.RelayType;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -75,9 +75,9 @@ public class ScheduleManagementService extends AbstractService {
 
         LOGGER.info("Mapping to schedule DTO");
 
-        final List<com.alliander.osgp.dto.valueobjects.Schedule> schedulesDto = this.domainCoreMapper.mapAsList(
-                schedules, com.alliander.osgp.dto.valueobjects.Schedule.class);
-        final ScheduleMessageDataContainer scheduleMessageDataContainerDto = new ScheduleMessageDataContainer(
+        final List<com.alliander.osgp.dto.valueobjects.ScheduleDto> schedulesDto = this.domainCoreMapper.mapAsList(
+                schedules, com.alliander.osgp.dto.valueobjects.ScheduleDto.class);
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainerDto = new ScheduleMessageDataContainerDto(
                 schedulesDto);
 
         LOGGER.info("Sending message");

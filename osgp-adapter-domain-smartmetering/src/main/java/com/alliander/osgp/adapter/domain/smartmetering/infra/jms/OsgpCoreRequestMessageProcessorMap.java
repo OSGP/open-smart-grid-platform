@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.shared.infra.jms.BaseMessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 
@@ -37,7 +37,7 @@ public class OsgpCoreRequestMessageProcessorMap extends BaseMessageProcessorMap 
 
         try {
 
-            final DeviceFunction messageType = DeviceFunction.valueOf(message.getJMSType());
+            final DeviceFunctionDto messageType = DeviceFunctionDto.valueOf(message.getJMSType());
             final MessageProcessor messageProcessor = this.messageProcessors.get(messageType.ordinal());
             if (messageProcessor == null) {
                 throw new IllegalArgumentException("No message processor registered for type " + messageType.name()

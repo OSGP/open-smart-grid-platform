@@ -65,7 +65,7 @@ public class DeviceInstallationService extends AbstractService {
                 deviceIdentification, null), messageType, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatus deviceStatusDto,
+    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 

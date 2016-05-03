@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.valueobjects.Certification;
 import com.alliander.osgp.domain.core.valueobjects.EventNotificationType;
-import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -46,9 +46,9 @@ public class DeviceManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.EventNotificationType> eventNotificationsDto = this.domainCoreMapper
-                .mapAsList(eventNotifications, com.alliander.osgp.dto.valueobjects.EventNotificationType.class);
-        final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = new EventNotificationMessageDataContainer(
+        final List<com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto> eventNotificationsDto = this.domainCoreMapper
+                .mapAsList(eventNotifications, com.alliander.osgp.dto.valueobjects.EventNotificationTypeDto.class);
+        final EventNotificationMessageDataContainerDto eventNotificationMessageDataContainer = new EventNotificationMessageDataContainerDto(
                 eventNotificationsDto);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
@@ -70,8 +70,8 @@ public class DeviceManagementService extends AbstractService {
             return;
         }
 
-        final com.alliander.osgp.dto.valueobjects.Certification certificationDto = this.domainCoreMapper.map(
-                certification, com.alliander.osgp.dto.valueobjects.Certification.class);
+        final com.alliander.osgp.dto.valueobjects.CertificationDto certificationDto = this.domainCoreMapper.map(
+                certification, com.alliander.osgp.dto.valueobjects.CertificationDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, certificationDto), messageType, device.getIpAddress());

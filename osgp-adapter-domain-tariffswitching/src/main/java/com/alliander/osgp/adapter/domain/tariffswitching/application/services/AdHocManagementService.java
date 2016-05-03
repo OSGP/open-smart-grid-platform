@@ -76,14 +76,14 @@ public class AdHocManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.DomainType allowedDomainTypeDto = this.domainCoreMapper.map(
-                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainType.class);
+        final com.alliander.osgp.dto.valueobjects.DomainTypeDto allowedDomainTypeDto = this.domainCoreMapper.map(
+                allowedDomainType, com.alliander.osgp.dto.valueobjects.DomainTypeDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, allowedDomainTypeDto), messageType, device.getIpAddress());
     }
 
-    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatus deviceStatusDto,
+    public void handleGetStatusResponse(final com.alliander.osgp.dto.valueobjects.DeviceStatusDto deviceStatusDto,
             final DomainType allowedDomainType, final String deviceIdentification,
             final String organisationIdentification, final String correlationUid, final String messageType,
             final ResponseMessageResultType deviceResult, final OsgpException exception) {

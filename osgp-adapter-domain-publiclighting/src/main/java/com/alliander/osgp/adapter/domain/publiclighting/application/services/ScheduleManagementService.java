@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.entities.Ssld;
 import com.alliander.osgp.domain.core.exceptions.ValidationException;
 import com.alliander.osgp.domain.core.valueobjects.Schedule;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -53,9 +53,9 @@ public class ScheduleManagementService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final List<com.alliander.osgp.dto.valueobjects.Schedule> schedulesDto = this.domainCoreMapper.mapAsList(
-                schedules, com.alliander.osgp.dto.valueobjects.Schedule.class);
-        final ScheduleMessageDataContainer scheduleMessageDataContainerDto = new ScheduleMessageDataContainer(
+        final List<com.alliander.osgp.dto.valueobjects.ScheduleDto> schedulesDto = this.domainCoreMapper.mapAsList(
+                schedules, com.alliander.osgp.dto.valueobjects.ScheduleDto.class);
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainerDto = new ScheduleMessageDataContainerDto(
                 schedulesDto);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
