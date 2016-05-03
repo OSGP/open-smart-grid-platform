@@ -15,7 +15,9 @@ import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -39,7 +41,7 @@ import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
  */
 public final class RsaEncrypterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RsaEncrypterService.class);
-    private static final String ALGORITHM = "RSA";
+    private static final String ALGORITHM = "RSA/NONE/NoPadding";
 
     private RsaEncrypterService() {
         /*
@@ -53,6 +55,10 @@ public final class RsaEncrypterService {
      */
     public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath) {
         final PrivateKey privateKey = getPrivateKey(devicePrivateKeyPath);
+        final Provider[] pa = Security.getProviders();
+
+        // Security.addProvider(new BouncyCastleProvider());
+
         Cipher cipher;
         try {
             cipher = Cipher.getInstance(ALGORITHM);

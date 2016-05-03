@@ -7,15 +7,15 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-
-public class SpecificConfigurationObjectRequestDataDto implements ActionDto {
+public class SpecificConfigurationObjectRequestDataDto implements ActionRequestDto {
     private static final long serialVersionUID = 2506458162101143461L;
 
     private int classId;
     private int attribute;
     private ObisCodeValuesDto obisCode;
-    
-    public SpecificConfigurationObjectRequestDataDto(int classId, int attribute, ObisCodeValuesDto obisCode) {
+
+    public SpecificConfigurationObjectRequestDataDto(final int classId, final int attribute,
+            final ObisCodeValuesDto obisCode) {
         super();
         this.classId = classId;
         this.attribute = attribute;
@@ -23,16 +23,15 @@ public class SpecificConfigurationObjectRequestDataDto implements ActionDto {
     }
 
     public int getClassId() {
-        return classId;
+        return this.classId;
     }
 
     public int getAttribute() {
-        return attribute;
+        return this.attribute;
     }
 
     public ObisCodeValuesDto getObisCode() {
-        return obisCode;
+        return this.obisCode;
     }
 
-    
 }
