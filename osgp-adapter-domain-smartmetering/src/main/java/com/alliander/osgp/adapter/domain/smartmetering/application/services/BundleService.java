@@ -21,7 +21,6 @@ import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageDataContainer;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -80,12 +79,11 @@ public class BundleService {
 
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
-            throws FunctionalException {
+            final BundleMessageDataContainerDto bundleMessageDataContainerDto) throws FunctionalException {
 
         // convert bundleResponseMessageDataContainerDto back to core object
         final BundleResponseMessageDataContainer bundleResponseMessageDataContainer = this.actionMapperResponseService
-                .mapAllActions(bundleResponseMessageDataContainerDto);
+                .mapAllActions(bundleMessageDataContainerDto);
 
         // Send the response final containing the events final to the
         // webservice-adapter

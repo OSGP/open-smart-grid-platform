@@ -40,7 +40,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationResponseDataDto;
@@ -107,12 +107,11 @@ public class ActionMapperResponseService {
     }
 
     public BundleResponseMessageDataContainer mapAllActions(
-            final BundleResponseMessageDataContainerDto bundleResponseMessageDataContainerDto)
-            throws FunctionalException {
+            final BundleMessageDataContainerDto bundleMessageDataContainerDto) throws FunctionalException {
 
         final List<ActionResponse> actionResponseList = new ArrayList<ActionResponse>();
 
-        for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getActionValueObjectResponseDto()) {
+        for (final ActionResponseDto action : bundleMessageDataContainerDto.getAllResponses()) {
 
             final ConfigurableMapper mapper = this.getMapper(action);
             final Class<? extends ActionResponse> clazz = this.getClazz(action);
