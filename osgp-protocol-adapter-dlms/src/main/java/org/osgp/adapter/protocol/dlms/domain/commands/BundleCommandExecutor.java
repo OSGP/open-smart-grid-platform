@@ -11,10 +11,10 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 
-public abstract class BundleCommandExecutor<T extends ActionDto, R extends ActionResponseDto> implements
+public abstract class BundleCommandExecutor<T extends ActionRequestDto, R extends ActionResponseDto> implements
         CommandExecutor<T, R> {
 
     @Autowired
