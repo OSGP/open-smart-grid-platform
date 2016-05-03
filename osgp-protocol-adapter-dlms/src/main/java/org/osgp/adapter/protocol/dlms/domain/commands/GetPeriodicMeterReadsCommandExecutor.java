@@ -103,7 +103,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsContainerDto> {
          * workaround for a problem when using with_list and retrieving a
          * profile buffer, this will be returned erroneously.
          */
-        final List<GetResult> getResultList = new ArrayList<GetResult>(profileBufferAndScalerUnit.length);
+        final List<GetResult> getResultList = new ArrayList<>(profileBufferAndScalerUnit.length);
         for (final AttributeAddress address : profileBufferAndScalerUnit) {
             getResultList.addAll(this.dlmsHelperService.getAndCheck(conn, device, "retrieve periodic meter reads for "
                     + periodType, address));
@@ -221,7 +221,6 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsContainerDto> {
      */
     private AmrProfileStatusCodeDto readAmrProfileStatusCode(final DataObject amrProfileStatusData)
             throws ProtocolAdapterException {
-        AmrProfileStatusCodeDto amrProfileStatusCode = null;
 
         if (!amrProfileStatusData.isNumber()) {
             throw new ProtocolAdapterException("Could not read AMR profile register data. Invalid data type.");
@@ -229,9 +228,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsContainerDto> {
 
         final Set<AmrProfileStatusCodeFlagDto> flags = this.amrProfileStatusCodeHelperService
                 .toAmrProfileStatusCodeFlags((Number) amrProfileStatusData.value());
-        amrProfileStatusCode = new AmrProfileStatusCodeDto(flags);
-
-        return amrProfileStatusCode;
+        return new AmrProfileStatusCodeDto(flags);
     }
 
     private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsDto> periodicMeterReads,
@@ -267,7 +264,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsContainerDto> {
         final SelectiveAccessDescription access = this.getSelectiveAccessDescription(periodType, beginDateTime,
                 endDateTime, isSelectingValuesSupported);
 
-        final List<AttributeAddress> profileBuffer = new ArrayList<AttributeAddress>();
+        final List<AttributeAddress> profileBuffer = new ArrayList<>();
         switch (periodType) {
         case INTERVAL:
             profileBuffer.add(new AttributeAddress(CLASS_ID_PROFILE_GENERIC, OBIS_CODE_INTERVAL_BILLING,
@@ -290,7 +287,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsContainerDto> {
 
     private List<AttributeAddress> getScalerUnit(final PeriodTypeDto periodType) throws ProtocolAdapterException {
 
-        final List<AttributeAddress> scalerUnit = new ArrayList<AttributeAddress>();
+        final List<AttributeAddress> scalerUnit = new ArrayList<>();
         switch (periodType) {
         case INTERVAL:
             scalerUnit.add(new AttributeAddress(CLASS_ID_REGISTER, OBIS_CODE_INTERVAL_IMPORT_SCALER_UNIT,
