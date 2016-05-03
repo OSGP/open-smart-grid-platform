@@ -41,7 +41,7 @@ import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
  */
 public final class RsaEncrypterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RsaEncrypterService.class);
-    private static final String ALGORITHM = "RSA/NONE/NoPadding";
+    private static final String ALGORITHM = "RSA";
 
     private RsaEncrypterService() {
         /*
