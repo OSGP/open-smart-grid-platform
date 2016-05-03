@@ -14,29 +14,37 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetSpecialDaysRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AlarmNotifications;
 
 @Component(value = "configurationMapper")
 public class ConfigurationMapper extends ConfigurableMapper {
 
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory
-        .classMap(SetSpecialDaysRequest.class,
-                com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest.class).byDefault()
-                .register();
 
+        // This converter is necessary because of the SeasonsType object in
+        // ActivityCalendarType.
         mapperFactory.getConverterFactory().registerConverter(new ActivityCalendarConverter());
+
+        // This classMap replaces the AlarmNotificationsConverter, is needed
+        // because of different field names.
+        mapperFactory
+                .classMap(AlarmNotifications.class,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotifications.class)
+                .field("alarmNotification", "alarmNotificationsSet").byDefault().register();
         mapperFactory.getConverterFactory().registerConverter(new AlarmNotificationsConverter());
-        mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
+
+        // These two converters are needed because they combine two fields
+        // into one SendDestinationAndMethod object (or split the object into
+        // two fields)
         mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
-        mapperFactory.getConverterFactory().registerConverter(new KeySetConverter());
+
+        // These converters are necessary to enable correct mapping of dates and
+        // times.
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());
-        mapperFactory.getConverterFactory().registerConverter(new SpecialDaysDataConverter());
-        mapperFactory.getConverterFactory().registerConverter(new SpecialDayConverter());
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
     }
 }

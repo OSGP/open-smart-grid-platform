@@ -44,6 +44,7 @@
 				<xsd:element name="SynchronizeTimeRequestData" type="adhoc:SynchronizeTimeRequestData" />
 				<xsd:element name="GetConfigurationRequestData" type="smconf:GetConfigurationRequestData" />
 				<xsd:element name="GetFirmwareVersionRequestData" type="smconf:GetFirmwareVersionRequestData" />
+				<xsd:element name="SpecificConfigurationObjectRequestData" type="smconf:SpecificConfigurationObjectRequestData" />
 				<xsd:element name="KeySet" type="smconf:KeySet" />
                 <xsd:element name="GetAssociationLnObjectsRequestData" type="adhoc:GetAssociationLnObjectsRequestData" />
 			</xsd:choice>

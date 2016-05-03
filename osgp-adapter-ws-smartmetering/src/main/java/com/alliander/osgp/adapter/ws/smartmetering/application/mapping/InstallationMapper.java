@@ -12,14 +12,13 @@ import ma.glasnost.orika.impl.ConfigurableMapper;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.adapter.ws.schema.smartmetering.installation.Device;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SmartMeteringDevice;
-
 @Component(value = "installationMapper")
 public class InstallationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.classMap(Device.class, SmartMeteringDevice.class).byDefault().register();
+
+        // this converter is needed to ensure correct mapping of dates and
+        // times.
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
     }
 }

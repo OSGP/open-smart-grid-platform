@@ -18,9 +18,17 @@ import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter
 public class ManagementMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
+
+        // This converter is needed because Orika can't map byDefault from
+        // object to enum or vice versa.
         mapperFactory.getConverterFactory().registerConverter(new EventConverter());
-        mapperFactory.getConverterFactory().registerConverter(new EventMessageDataContainerConverter());
+
+        // The following 2 converters are needed to ensure correct mapping of
+        // dates and times.
+        mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
+        
+        mapperFactory.getConverterFactory().registerConverter(new EventMessageDataContainerConverter());
+        
     }
 }

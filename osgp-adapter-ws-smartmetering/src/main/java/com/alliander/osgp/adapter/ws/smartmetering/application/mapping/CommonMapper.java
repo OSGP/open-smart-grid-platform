@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class CommonMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
-        // Only default mapping neede at this time
+        // Only default mapping needed at this time
     }
 
 }
