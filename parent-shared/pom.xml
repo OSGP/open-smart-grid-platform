@@ -14,7 +14,7 @@
 
   <artifactId>parent-shared</artifactId>
   <groupId>com.alliander.osgp</groupId>
-  <version>3.4.0-SNAPSHOT</version>
+  <version>3.5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>parent-shared</name>
     <!-- Description, Organization, Licences, URL and Distribution Management elements are needed for the maven-jxr-plugin to generate a maven site -->
@@ -58,7 +58,7 @@
 
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
-    <osgp.version>3.4.0-SNAPSHOT</osgp.version>
+    <osgp.version>3.5.0-SNAPSHOT</osgp.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.2.0.RELEASE</spring.version>
