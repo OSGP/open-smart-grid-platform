@@ -18,9 +18,9 @@ import com.alliander.osgp.adapter.protocol.oslp.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OsgpRequestMessageSender;
-import com.alliander.osgp.dto.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.EventNotification;
-import com.alliander.osgp.dto.valueobjects.EventType;
+import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
+import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
+import com.alliander.osgp.dto.valueobjects.EventTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -70,12 +70,12 @@ public class DeviceManagementService {
         LOGGER.info("addEventNotification called for device: {} with eventType: {}, description: {} and index: {}",
                 oslpDevice.getDeviceIdentification(), eventType, description, index);
 
-        final EventNotification eventNotification = new EventNotification(deviceUid, EventType.valueOf(eventType),
+        final EventNotificationDto eventNotification = new EventNotificationDto(deviceUid, EventTypeDto.valueOf(eventType),
                 description, index);
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",
                 oslpDevice.getDeviceIdentification(), eventNotification);
 
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.ADD_EVENT_NOTIFICATION.name());
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.ADD_EVENT_NOTIFICATION.name());
     }
 
     // === UPDATE KEY ===

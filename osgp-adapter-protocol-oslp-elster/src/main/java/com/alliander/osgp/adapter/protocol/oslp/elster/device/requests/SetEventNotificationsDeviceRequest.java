@@ -8,22 +8,22 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainerDto;
 
 public class SetEventNotificationsDeviceRequest extends DeviceRequest {
 
-    private EventNotificationMessageDataContainer eventNotificationsContainer;
+    private EventNotificationMessageDataContainerDto eventNotificationsContainer;
 
     public SetEventNotificationsDeviceRequest(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final EventNotificationMessageDataContainer eventNotificationsContainer) {
+            final EventNotificationMessageDataContainerDto eventNotificationsContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
         this.eventNotificationsContainer = eventNotificationsContainer;
     }
 
     public SetEventNotificationsDeviceRequest(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final EventNotificationMessageDataContainer eventNotificationsContainer, final String domain,
+            final EventNotificationMessageDataContainerDto eventNotificationsContainer, final String domain,
             final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
             final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
@@ -31,7 +31,7 @@ public class SetEventNotificationsDeviceRequest extends DeviceRequest {
         this.eventNotificationsContainer = eventNotificationsContainer;
     }
 
-    public EventNotificationMessageDataContainer getEventNotificationsContainer() {
+    public EventNotificationMessageDataContainerDto getEventNotificationsContainer() {
         return this.eventNotificationsContainer;
     }
 }

@@ -23,7 +23,7 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetLightDeviceRe
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -82,7 +82,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
         }
 
         try {
-            final LightValueMessageDataContainer lightValueMessageDataContainer = (LightValueMessageDataContainer) message
+            final LightValueMessageDataContainerDto lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);

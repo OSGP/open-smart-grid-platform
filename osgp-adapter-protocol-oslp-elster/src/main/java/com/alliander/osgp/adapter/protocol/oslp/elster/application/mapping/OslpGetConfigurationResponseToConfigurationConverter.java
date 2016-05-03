@@ -16,50 +16,50 @@ import org.joda.time.MutableDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.dto.valueobjects.Configuration;
-import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
-import com.alliander.osgp.dto.valueobjects.LightType;
-import com.alliander.osgp.dto.valueobjects.LinkType;
-import com.alliander.osgp.dto.valueobjects.LongTermIntervalType;
-import com.alliander.osgp.dto.valueobjects.MeterType;
-import com.alliander.osgp.dto.valueobjects.RelayConfiguration;
-import com.alliander.osgp.dto.valueobjects.RelayMatrix;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.LightTypeDto;
+import com.alliander.osgp.dto.valueobjects.LinkTypeDto;
+import com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto;
+import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
+import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.RelayMatrixDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
 public class OslpGetConfigurationResponseToConfigurationConverter extends
-        CustomConverter<Oslp.GetConfigurationResponse, Configuration> {
+        CustomConverter<Oslp.GetConfigurationResponse, ConfigurationDto> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(OslpGetConfigurationResponseToConfigurationConverter.class);
 
     @Override
-    public Configuration convert(final Oslp.GetConfigurationResponse source,
-            final Type<? extends Configuration> destinationType) {
+    public ConfigurationDto convert(final Oslp.GetConfigurationResponse source,
+            final Type<? extends ConfigurationDto> destinationType) {
 
         // @formatter:off
         // Convert the required values for the constructor of Configuration.
-        final LightType lightType = source.hasLightType() ? this.mapperFacade.map(source.getLightType(),
-                LightType.class) : null;
-        final DaliConfiguration daliConfiguration = source.hasDaliConfiguration() ? this.mapperFacade.map(
-                source.getDaliConfiguration(), DaliConfiguration.class) : null;
+        final LightTypeDto lightType = source.hasLightType() ? this.mapperFacade.map(source.getLightType(),
+                LightTypeDto.class) : null;
+        final DaliConfigurationDto daliConfiguration = source.hasDaliConfiguration() ? this.mapperFacade.map(
+                source.getDaliConfiguration(), DaliConfigurationDto.class) : null;
         final Integer shortTermHistoryIntervalMinutes = source.hasShortTermHistoryIntervalMinutes() ? this.mapperFacade
                 .map(source.getShortTermHistoryIntervalMinutes(), Integer.class) : null;
-        final RelayConfiguration relayConfiguration = source.hasRelayConfiguration() ? this.mapperFacade.map(
-                source.getRelayConfiguration(), RelayConfiguration.class) : null;
-        final LinkType preferredLinkType = source.hasPreferredLinkType()
+        final RelayConfigurationDto relayConfiguration = source.hasRelayConfiguration() ? this.mapperFacade.map(
+                source.getRelayConfiguration(), RelayConfigurationDto.class) : null;
+        final LinkTypeDto preferredLinkType = source.hasPreferredLinkType()
                 && !source.getPreferredLinkType().equals(Oslp.LinkType.LINK_NOT_SET) ? this.mapperFacade.map(
-                source.getPreferredLinkType(), LinkType.class) : null;
-        final MeterType meterType = source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET) ? this.mapperFacade
-                .map(source.getMeterType(), MeterType.class) : null;
+                source.getPreferredLinkType(), LinkTypeDto.class) : null;
+        final MeterTypeDto meterType = source.hasMeterType() && !source.getMeterType().equals(Oslp.MeterType.MT_NOT_SET) ? this.mapperFacade
+                .map(source.getMeterType(), MeterTypeDto.class) : null;
         final Integer longTermHistoryInterval = source.hasLongTermHistoryInterval() ? this.mapperFacade.map(
                 source.getLongTermHistoryInterval(), Integer.class) : null;
-        final LongTermIntervalType longTermIntervalType = source.hasLongTermHistoryIntervalType()
+        final LongTermIntervalTypeDto longTermIntervalType = source.hasLongTermHistoryIntervalType()
                 && !source.getLongTermHistoryIntervalType().equals(Oslp.LongTermIntervalType.LT_INT_NOT_SET) ? this.mapperFacade
-                .map(source.getLongTermHistoryIntervalType(), LongTermIntervalType.class) : null;
+                .map(source.getLongTermHistoryIntervalType(), LongTermIntervalTypeDto.class) : null;
 
         // Create an Configuration instance.
-        final Configuration configuration = new Configuration(lightType, daliConfiguration, relayConfiguration,
+        final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
                 shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
                 longTermIntervalType);
 
@@ -83,7 +83,7 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         configuration.setAstroGateSunSetOffset(source.getAstroGateSunSetOffset());
         configuration.setSwitchingDelays(source.getSwitchingDelayList());
         if (source.getRelayLinkingList() != null) {
-            configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinkingList(), RelayMatrix.class));
+            configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinkingList(), RelayMatrixDto.class));
         }
         configuration.setRelayRefreshing(source.getRelayRefreshing());
 

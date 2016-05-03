@@ -13,16 +13,16 @@ import java.util.Map;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.DaliConfiguration;
+import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.IndexAddressMap;
 import com.alliander.osgp.oslp.Oslp.RelayType;
 import com.google.protobuf.ByteString;
 
 public class DaliConfigurationToOslpDaliConfigurationConverter extends
-        BidirectionalConverter<DaliConfiguration, Oslp.DaliConfiguration> {
+        BidirectionalConverter<DaliConfigurationDto, Oslp.DaliConfiguration> {
     @Override
-    public com.alliander.osgp.oslp.Oslp.DaliConfiguration convertTo(final DaliConfiguration source,
+    public com.alliander.osgp.oslp.Oslp.DaliConfiguration convertTo(final DaliConfigurationDto source,
             final Type<com.alliander.osgp.oslp.Oslp.DaliConfiguration> destinationType) {
         final Oslp.DaliConfiguration.Builder daliConfiguration = Oslp.DaliConfiguration.newBuilder();
 
@@ -49,8 +49,8 @@ public class DaliConfigurationToOslpDaliConfigurationConverter extends
     }
 
     @Override
-    public DaliConfiguration convertFrom(final com.alliander.osgp.oslp.Oslp.DaliConfiguration source,
-            final Type<DaliConfiguration> destinationType) {
+    public DaliConfigurationDto convertFrom(final com.alliander.osgp.oslp.Oslp.DaliConfiguration source,
+            final Type<DaliConfigurationDto> destinationType) {
 
         if (source == null) {
             return null;
@@ -66,7 +66,7 @@ public class DaliConfigurationToOslpDaliConfigurationConverter extends
 
         final Map<Integer, Integer> adresMap = new HashMap<Integer, Integer>();
 
-        return new DaliConfiguration(source.hasNumberOfLights() ? this.mapperFacade.map(source.getNumberOfLights(),
+        return new DaliConfigurationDto(source.hasNumberOfLights() ? this.mapperFacade.map(source.getNumberOfLights(),
                 Integer.class) : numberOfLights, !indexAddressMap.isEmpty() ? indexAddressMap : adresMap);
     }
 }

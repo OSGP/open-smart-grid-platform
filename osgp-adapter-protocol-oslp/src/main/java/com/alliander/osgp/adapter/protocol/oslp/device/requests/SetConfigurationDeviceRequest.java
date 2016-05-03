@@ -8,21 +8,21 @@
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 
 public class SetConfigurationDeviceRequest extends DeviceRequest {
 
-    private Configuration configuration;
+    private ConfigurationDto configuration;
 
     public SetConfigurationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Configuration configuration) {
+            final String correlationUid, final ConfigurationDto configuration) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
         this.configuration = configuration;
     }
 
     public SetConfigurationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Configuration configuration, final String domain,
+            final String correlationUid, final ConfigurationDto configuration, final String domain,
             final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
             final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
@@ -31,7 +31,7 @@ public class SetConfigurationDeviceRequest extends DeviceRequest {
         this.configuration = configuration;
     }
 
-    public Configuration getConfiguration() {
+    public ConfigurationDto getConfiguration() {
         return this.configuration;
     }
 }

@@ -10,13 +10,13 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.RelayType;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
 import com.alliander.osgp.oslp.Oslp;
 
-public class RelayTypeConverter extends BidirectionalConverter<RelayType, Oslp.RelayType> {
+public class RelayTypeConverter extends BidirectionalConverter<RelayTypeDto, Oslp.RelayType> {
 
     @Override
-    public com.alliander.osgp.oslp.Oslp.RelayType convertTo(final RelayType source,
+    public com.alliander.osgp.oslp.Oslp.RelayType convertTo(final RelayTypeDto source,
             final Type<com.alliander.osgp.oslp.Oslp.RelayType> destinationType) {
         if (source == null) {
             return null;
@@ -26,13 +26,13 @@ public class RelayTypeConverter extends BidirectionalConverter<RelayType, Oslp.R
     }
 
     @Override
-    public RelayType convertFrom(final com.alliander.osgp.oslp.Oslp.RelayType source,
-            final Type<RelayType> destinationType) {
+    public RelayTypeDto convertFrom(final com.alliander.osgp.oslp.Oslp.RelayType source,
+            final Type<RelayTypeDto> destinationType) {
         if (source == null || source == Oslp.RelayType.RT_NOT_SET) {
             return null;
         }
 
-        return RelayType.valueOf(source.toString());
+        return RelayTypeDto.valueOf(source.toString());
     }
 
 }

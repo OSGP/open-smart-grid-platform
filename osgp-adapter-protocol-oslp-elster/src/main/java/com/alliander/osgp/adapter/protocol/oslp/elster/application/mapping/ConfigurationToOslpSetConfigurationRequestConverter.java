@@ -17,19 +17,19 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
 import com.google.protobuf.ByteString;
 
 public class ConfigurationToOslpSetConfigurationRequestConverter extends
-        CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
+        CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ConfigurationToOslpSetConfigurationRequestConverter.class);
 
     @Override
-    public SetConfigurationRequest convert(final Configuration source,
+    public SetConfigurationRequest convert(final ConfigurationDto source,
             final Type<? extends Oslp.SetConfigurationRequest> destinationType) {
 
         final Oslp.SetConfigurationRequest.Builder setConfigurationRequest = Oslp.SetConfigurationRequest.newBuilder();

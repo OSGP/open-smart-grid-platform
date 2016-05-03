@@ -8,21 +8,21 @@
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
 
 public class ResumeScheduleDeviceRequest extends DeviceRequest {
 
-    private ResumeScheduleMessageDataContainer resumeScheduleContainer;
+    private ResumeScheduleMessageDataContainerDto resumeScheduleContainer;
 
     public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResumeScheduleMessageDataContainer resumeScheduleContainer) {
+            final String correlationUid, final ResumeScheduleMessageDataContainerDto resumeScheduleContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
         this.resumeScheduleContainer = resumeScheduleContainer;
     }
 
     public ResumeScheduleDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final ResumeScheduleMessageDataContainer resumeScheduleContainer,
+            final String correlationUid, final ResumeScheduleMessageDataContainerDto resumeScheduleContainer,
             final String domain, final String domainVersion, final String messageType, final String ipAddress,
             final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
@@ -31,7 +31,7 @@ public class ResumeScheduleDeviceRequest extends DeviceRequest {
         this.resumeScheduleContainer = resumeScheduleContainer;
     }
 
-    public ResumeScheduleMessageDataContainer getResumeScheduleContainer() {
+    public ResumeScheduleMessageDataContainerDto getResumeScheduleContainer() {
         return this.resumeScheduleContainer;
     }
 }

@@ -82,7 +82,7 @@ OslpEnvelopeProcessor {
         }
 
         try {
-            final com.alliander.osgp.dto.valueobjects.Certification certification = (com.alliander.osgp.dto.valueobjects.Certification) message
+            final com.alliander.osgp.dto.valueobjects.CertificationDto certification = (com.alliander.osgp.dto.valueobjects.CertificationDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);

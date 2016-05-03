@@ -10,14 +10,14 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.RelayData;
+import com.alliander.osgp.dto.valueobjects.RelayDataDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
-public class RelayDataConverter extends BidirectionalConverter<RelayData, Oslp.RelayData> {
+public class RelayDataConverter extends BidirectionalConverter<RelayDataDto, Oslp.RelayData> {
 
     @Override
-    public RelayData convertFrom(final Oslp.RelayData source, final Type<RelayData> destinationType) {
+    public RelayDataDto convertFrom(final Oslp.RelayData source, final Type<RelayDataDto> destinationType) {
 
         int index = 0;
         if (source.hasIndex()) {
@@ -29,11 +29,11 @@ public class RelayDataConverter extends BidirectionalConverter<RelayData, Oslp.R
             totalLightingMinutes = source.getTotalLightingMinutes();
         }
 
-        return new RelayData(index, totalLightingMinutes);
+        return new RelayDataDto(index, totalLightingMinutes);
     }
 
     @Override
-    public Oslp.RelayData convertTo(final RelayData source, final Type<Oslp.RelayData> destinationType) {
+    public Oslp.RelayData convertTo(final RelayDataDto source, final Type<Oslp.RelayData> destinationType) {
 
         final ByteString index = this.mapperFacade.map(Integer.valueOf(source.getIndex()), ByteString.class);
         final int totalLightingMinutes = source.getTotalLightingMinutes();

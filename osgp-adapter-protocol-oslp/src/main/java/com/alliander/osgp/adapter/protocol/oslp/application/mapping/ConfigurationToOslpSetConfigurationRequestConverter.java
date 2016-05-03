@@ -10,13 +10,13 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.oslp.Oslp;
 
 public class ConfigurationToOslpSetConfigurationRequestConverter extends
-        CustomConverter<Configuration, Oslp.SetConfigurationRequest> {
+        CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
     @Override
-    public Oslp.SetConfigurationRequest convert(final Configuration source,
+    public Oslp.SetConfigurationRequest convert(final ConfigurationDto source,
             final Type<? extends Oslp.SetConfigurationRequest> destinationType) {
         final Oslp.SetConfigurationRequest.Builder setConfigurationRequest = Oslp.SetConfigurationRequest.newBuilder();
 

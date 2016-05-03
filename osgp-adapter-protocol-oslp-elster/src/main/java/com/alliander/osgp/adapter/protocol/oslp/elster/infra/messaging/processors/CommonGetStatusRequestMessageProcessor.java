@@ -23,7 +23,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.GetStatu
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.DeviceStatus;
+import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -146,7 +146,7 @@ public class CommonGetStatusRequestMessageProcessor extends DeviceRequestMessage
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        DeviceStatus status = null;
+        DeviceStatusDto status = null;
 
         try {
             final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;

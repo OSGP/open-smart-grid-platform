@@ -23,8 +23,8 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.ResumeSch
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.DomainType;
-import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
+import com.alliander.osgp.dto.valueobjects.ResumeScheduleMessageDataContainerDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -84,7 +84,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         }
 
         try {
-            final ResumeScheduleMessageDataContainer resumeScheduleMessageDataContainer = (ResumeScheduleMessageDataContainer) message
+            final ResumeScheduleMessageDataContainerDto resumeScheduleMessageDataContainer = (ResumeScheduleMessageDataContainerDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
@@ -136,7 +136,7 @@ public class PublicLightingResumeScheduleRequestMessageProcessor extends DeviceR
         };
 
         final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, DomainType.PUBLIC_LIGHTING);
+                deviceIdentification, correlationUid, DomainTypeDto.PUBLIC_LIGHTING);
 
         try {
             this.deviceService.doResumeSchedule(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);

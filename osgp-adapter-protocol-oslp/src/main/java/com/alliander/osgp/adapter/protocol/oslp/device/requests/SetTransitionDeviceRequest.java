@@ -8,21 +8,21 @@
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 
 public class SetTransitionDeviceRequest extends DeviceRequest {
 
-    private TransitionMessageDataContainer transitionTypeContainer;
+    private TransitionMessageDataContainerDto transitionTypeContainer;
 
     public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionMessageDataContainer transitionTypeContainer) {
+            final String correlationUid, final TransitionMessageDataContainerDto transitionTypeContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
         this.transitionTypeContainer = transitionTypeContainer;
     }
 
     public SetTransitionDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final TransitionMessageDataContainer transitionTypeContainer,
+            final String correlationUid, final TransitionMessageDataContainerDto transitionTypeContainer,
             final String domain, final String domainVersion, final String messageType, final String ipAddress,
             final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
@@ -31,7 +31,7 @@ public class SetTransitionDeviceRequest extends DeviceRequest {
         this.transitionTypeContainer = transitionTypeContainer;
     }
 
-    public TransitionMessageDataContainer getTransitionTypeContainer() {
+    public TransitionMessageDataContainerDto getTransitionTypeContainer() {
         return this.transitionTypeContainer;
     }
 }

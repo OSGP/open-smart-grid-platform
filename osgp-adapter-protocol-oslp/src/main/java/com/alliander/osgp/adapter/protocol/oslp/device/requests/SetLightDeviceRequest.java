@@ -8,21 +8,21 @@
 package com.alliander.osgp.adapter.protocol.oslp.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
 
 public class SetLightDeviceRequest extends DeviceRequest {
 
-    private LightValueMessageDataContainer lightValuesContainer;
+    private LightValueMessageDataContainerDto lightValuesContainer;
 
     public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final LightValueMessageDataContainer lightValuesContainer) {
+            final String correlationUid, final LightValueMessageDataContainerDto lightValuesContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
         this.lightValuesContainer = lightValuesContainer;
     }
 
     public SetLightDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final LightValueMessageDataContainer lightValuesContainer,
+            final String correlationUid, final LightValueMessageDataContainerDto lightValuesContainer,
             final String domain, final String domainVersion, final String messageType, final String ipAddress,
             final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
@@ -31,7 +31,7 @@ public class SetLightDeviceRequest extends DeviceRequest {
         this.lightValuesContainer = lightValuesContainer;
     }
 
-    public LightValueMessageDataContainer getLightValuesContainer() {
+    public LightValueMessageDataContainerDto getLightValuesContainer() {
         return this.lightValuesContainer;
     }
 }

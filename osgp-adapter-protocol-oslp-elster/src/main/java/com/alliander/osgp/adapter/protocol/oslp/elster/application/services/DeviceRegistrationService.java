@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.oslp
 import com.alliander.osgp.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OsgpRequestMessageSender;
-import com.alliander.osgp.dto.valueobjects.DeviceRegistrationData;
+import com.alliander.osgp.dto.valueobjects.DeviceRegistrationDataDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
 @Service(value = "oslpDeviceRegistrationService")
@@ -72,7 +72,7 @@ public class DeviceRegistrationService {
     public void sendDeviceRegisterRequest(final InetAddress inetAddress, final String deviceType,
             final boolean hasSchedule, final String deviceIdentification) {
 
-        final DeviceRegistrationData deviceRegistrationData = new DeviceRegistrationData(inetAddress.getHostAddress()
+        final DeviceRegistrationDataDto deviceRegistrationData = new DeviceRegistrationDataDto(inetAddress.getHostAddress()
                 .toString(), deviceType, hasSchedule);
 
         final RequestMessage requestMessage = new RequestMessage("no-correlationUid", "no-organisation",

@@ -8,19 +8,19 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.device.responses;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceMessageStatus;
-import com.alliander.osgp.dto.valueobjects.Configuration;
+import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 
 public class GetConfigurationDeviceResponse extends EmptyDeviceResponse {
 
-    Configuration configuration;
+    ConfigurationDto configuration;
 
     public GetConfigurationDeviceResponse(final String organisation, final String device, final String correlationUid,
-            final DeviceMessageStatus status, final Configuration configuration) {
+            final DeviceMessageStatus status, final ConfigurationDto configuration) {
         super(organisation, device, correlationUid, status);
         this.configuration = configuration;
     }
 
-    public Configuration getConfiguration() {
+    public ConfigurationDto getConfiguration() {
         return this.configuration;
     }
 

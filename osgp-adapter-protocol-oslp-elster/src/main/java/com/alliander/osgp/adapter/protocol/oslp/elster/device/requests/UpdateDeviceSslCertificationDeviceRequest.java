@@ -8,21 +8,21 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.Certification;
+import com.alliander.osgp.dto.valueobjects.CertificationDto;
 
 public class UpdateDeviceSslCertificationDeviceRequest extends DeviceRequest {
 
-    private Certification certification;
+    private CertificationDto certification;
 
     public UpdateDeviceSslCertificationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Certification certification) {
+            final String correlationUid, final CertificationDto certification) {
         super(organisationIdentification, deviceIdentification, correlationUid);
 
         this.certification = certification;
     }
 
     public UpdateDeviceSslCertificationDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final Certification certification, final String domain, final String domainVersion,
+            final String correlationUid, final CertificationDto certification, final String domain, final String domainVersion,
             final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
@@ -30,7 +30,7 @@ public class UpdateDeviceSslCertificationDeviceRequest extends DeviceRequest {
         this.certification = certification;
     }
 
-    public Certification getCertification() {
+    public CertificationDto getCertification() {
         return this.certification;
     }
 }

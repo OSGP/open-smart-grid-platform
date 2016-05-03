@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.adapter.protocol.oslp.exceptions.ProtocolAdapterException;
-import com.alliander.osgp.dto.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -39,7 +39,7 @@ public class OsgpResponseMessageListener implements MessageListener {
             final String result = responseMessage == null ? null : responseMessage.getResult().toString();
             final OsgpException osgpException = responseMessage == null ? null : responseMessage.getOsgpException();
 
-            switch (DeviceFunction.valueOf(messageType)) {
+            switch (DeviceFunctionDto.valueOf(messageType)) {
             case REGISTER_DEVICE:
                 if (ResponseMessageResultType.valueOf(result).equals(ResponseMessageResultType.NOT_OK)) {
                     throw new ProtocolAdapterException(String.format(

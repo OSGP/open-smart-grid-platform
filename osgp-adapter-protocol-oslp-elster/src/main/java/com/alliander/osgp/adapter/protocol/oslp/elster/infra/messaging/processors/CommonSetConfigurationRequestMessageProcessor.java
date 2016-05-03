@@ -81,7 +81,7 @@ public class CommonSetConfigurationRequestMessageProcessor extends DeviceRequest
         }
 
         try {
-            final com.alliander.osgp.dto.valueobjects.Configuration configuration = (com.alliander.osgp.dto.valueobjects.Configuration) message
+            final com.alliander.osgp.dto.valueobjects.ConfigurationDto configuration = (com.alliander.osgp.dto.valueobjects.ConfigurationDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);

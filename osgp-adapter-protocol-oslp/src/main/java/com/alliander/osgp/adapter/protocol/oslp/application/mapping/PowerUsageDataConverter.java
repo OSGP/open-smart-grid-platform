@@ -14,21 +14,21 @@ import ma.glasnost.orika.metadata.Type;
 
 import org.joda.time.DateTime;
 
-import com.alliander.osgp.dto.valueobjects.MeterType;
-import com.alliander.osgp.dto.valueobjects.PowerUsageData;
-import com.alliander.osgp.dto.valueobjects.PsldData;
-import com.alliander.osgp.dto.valueobjects.RelayData;
-import com.alliander.osgp.dto.valueobjects.SsldData;
+import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
+import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
+import com.alliander.osgp.dto.valueobjects.PsldDataDto;
+import com.alliander.osgp.dto.valueobjects.RelayDataDto;
+import com.alliander.osgp.dto.valueobjects.SsldDataDto;
 import com.alliander.osgp.oslp.Oslp;
 
-public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageData, Oslp.PowerUsageData> {
+public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDataDto, Oslp.PowerUsageData> {
 
     public PowerUsageDataConverter() {
         // Empty constructor.
     }
 
     @Override
-    public Oslp.PowerUsageData convertTo(final PowerUsageData source, final Type<Oslp.PowerUsageData> destinationType) {
+    public Oslp.PowerUsageData convertTo(final PowerUsageDataDto source, final Type<Oslp.PowerUsageData> destinationType) {
 
         // Check the input parameter.
         if (source == null) {
@@ -46,7 +46,7 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
         // Check SsldData.
         if (source.getSsldData() != null) {
             // Get SsldData.
-            final SsldData ssldData = source.getSsldData();
+            final SsldDataDto ssldData = source.getSsldData();
 
             // Create builder for Oslp.SsldData and set the values from source.
             final Oslp.SsldData.Builder ssldDataBuilder = Oslp.SsldData.newBuilder();
@@ -85,7 +85,7 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
     }
 
     @Override
-    public PowerUsageData convertFrom(final Oslp.PowerUsageData source, final Type<PowerUsageData> destinationType) {
+    public PowerUsageDataDto convertFrom(final Oslp.PowerUsageData source, final Type<PowerUsageDataDto> destinationType) {
 
         // Check the input parameter.
         if (source == null) {
@@ -96,12 +96,12 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
         final DateTime recordTime = this.mapperFacade.map(source.getRecordTime(), DateTime.class);
 
         // Get the other values.
-        final MeterType meterType = MeterType.valueOf(source.getMeterType().name());
+        final MeterTypeDto meterType = MeterTypeDto.valueOf(source.getMeterType().name());
         final long totalConsumedEnergy = source.getTotalConsumedEnergy();
         final long actualConsumedPower = source.getActualConsumedPower();
 
         // Construct PowerUsageData instance.
-        final PowerUsageData powerUsageData = new PowerUsageData(recordTime, meterType, totalConsumedEnergy,
+        final PowerUsageDataDto powerUsageData = new PowerUsageDataDto(recordTime, meterType, totalConsumedEnergy,
                 actualConsumedPower);
 
         // Check SsldData.
@@ -109,11 +109,11 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
             final Oslp.SsldData oslpSsldData = source.getSsldData();
 
             // Map the RelayData list.
-            final List<RelayData> list = this.mapperFacade.mapAsList(oslpSsldData.getRelayDataList(), RelayData.class);
+            final List<RelayDataDto> list = this.mapperFacade.mapAsList(oslpSsldData.getRelayDataList(), RelayDataDto.class);
 
             // Construct SsldData instance using the RelayData list and the
             // other values.
-            final SsldData ssldData = new SsldData(oslpSsldData.getActualCurrent1(), oslpSsldData.getActualCurrent2(),
+            final SsldDataDto ssldData = new SsldDataDto(oslpSsldData.getActualCurrent1(), oslpSsldData.getActualCurrent2(),
                     oslpSsldData.getActualCurrent3(), oslpSsldData.getActualPower1(), oslpSsldData.getActualPower2(),
                     oslpSsldData.getActualPower3(), oslpSsldData.getAveragePowerFactor1(),
                     oslpSsldData.getAveragePowerFactor2(), oslpSsldData.getAveragePowerFactor3(), list);
@@ -126,7 +126,7 @@ public class PowerUsageDataConverter extends BidirectionalConverter<PowerUsageDa
             final Oslp.PsldData oslpPsldData = source.getPsldData();
 
             // Construct PsldData instance using the value.
-            final PsldData psldData = new PsldData(oslpPsldData.getTotalLightingHours());
+            final PsldDataDto psldData = new PsldDataDto(oslpPsldData.getTotalLightingHours());
 
             // Set PsldData instance in the PowerUsageData instance.
             powerUsageData.setPsldData(psldData);

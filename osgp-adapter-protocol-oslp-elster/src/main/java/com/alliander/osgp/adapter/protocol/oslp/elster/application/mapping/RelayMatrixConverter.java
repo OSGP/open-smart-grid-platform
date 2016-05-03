@@ -13,14 +13,14 @@ import java.util.List;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.RelayMatrix;
+import com.alliander.osgp.dto.valueobjects.RelayMatrixDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
-public class RelayMatrixConverter extends BidirectionalConverter<RelayMatrix, Oslp.RelayMatrix> {
+public class RelayMatrixConverter extends BidirectionalConverter<RelayMatrixDto, Oslp.RelayMatrix> {
 
     @Override
-    public com.alliander.osgp.oslp.Oslp.RelayMatrix convertTo(final RelayMatrix source,
+    public com.alliander.osgp.oslp.Oslp.RelayMatrix convertTo(final RelayMatrixDto source,
             final Type<com.alliander.osgp.oslp.Oslp.RelayMatrix> destinationType) {
 
         final ByteString masterRelayIndex = this.mapperFacade.map(source.getMasterRelayIndex(), ByteString.class);
@@ -36,8 +36,8 @@ public class RelayMatrixConverter extends BidirectionalConverter<RelayMatrix, Os
     }
 
     @Override
-    public RelayMatrix convertFrom(final com.alliander.osgp.oslp.Oslp.RelayMatrix source,
-            final Type<RelayMatrix> destinationType) {
+    public RelayMatrixDto convertFrom(final com.alliander.osgp.oslp.Oslp.RelayMatrix source,
+            final Type<RelayMatrixDto> destinationType) {
 
         final Integer masterRelayIndex = this.mapperFacade.map(source.getMasterRelayIndex(), Integer.class);
         final boolean isMasterRelayOn = source.getMasterRelayOn();
@@ -46,7 +46,7 @@ public class RelayMatrixConverter extends BidirectionalConverter<RelayMatrix, Os
         final List<Integer> indicesOfControlledRelaysOff = this.convertByteStringToListOfIntegers(source
                 .getIndicesOfControlledRelaysOff());
 
-        final RelayMatrix relayMatrix = new RelayMatrix(masterRelayIndex, isMasterRelayOn);
+        final RelayMatrixDto relayMatrix = new RelayMatrixDto(masterRelayIndex, isMasterRelayOn);
         relayMatrix.setIndicesOfControlledRelaysOn(indicesOfControlledRelaysOn);
         relayMatrix.setIndicesOfControlledRelaysOff(indicesOfControlledRelaysOff);
         return relayMatrix;

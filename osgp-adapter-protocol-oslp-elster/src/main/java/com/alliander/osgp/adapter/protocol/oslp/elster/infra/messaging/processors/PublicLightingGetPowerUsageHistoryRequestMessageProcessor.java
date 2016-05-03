@@ -25,10 +25,10 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceReq
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.HistoryTermType;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.TimePeriod;
+import com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.TimePeriodDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -93,7 +93,7 @@ OslpEnvelopeProcessor {
         }
 
         try {
-            final PowerUsageHistoryMessageDataContainer powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainer) message
+            final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryMessageDataContainerDto = (PowerUsageHistoryMessageDataContainerDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
@@ -138,7 +138,7 @@ OslpEnvelopeProcessor {
             @Override
             public void handleException(final Throwable t, final DeviceResponse deviceResponse) {
                 PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.handleUnableToConnectDeviceResponse(
-                        deviceResponse, t, ((PowerUsageHistoryResponseMessageDataContainer) unsignedOslpEnvelopeDto
+                        deviceResponse, t, ((PowerUsageHistoryResponseMessageDataContainerDto) unsignedOslpEnvelopeDto
                                 .getExtraData()).getRequestContainer(),
                         PublicLightingGetPowerUsageHistoryRequestMessageProcessor.this.responseMessageSender,
                         deviceResponse, domain, domainVersion, messageType, isScheduled, retryCount);
@@ -146,15 +146,15 @@ OslpEnvelopeProcessor {
         };
 
         try {
-            final PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainer = (PowerUsageHistoryResponseMessageDataContainer) unsignedOslpEnvelopeDto
+            final PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainer = (PowerUsageHistoryResponseMessageDataContainerDto) unsignedOslpEnvelopeDto
                     .getExtraData();
-            final TimePeriod timePeriod = new TimePeriod(powerUsageHistoryResponseMessageDataContainer.getStartTime(),
+            final TimePeriodDto timePeriod = new TimePeriodDto(powerUsageHistoryResponseMessageDataContainer.getStartTime(),
                     powerUsageHistoryResponseMessageDataContainer.getEndTime());
-            final HistoryTermType historyTermType = powerUsageHistoryResponseMessageDataContainer.getHistoryTermType();
+            final HistoryTermTypeDto historyTermType = powerUsageHistoryResponseMessageDataContainer.getHistoryTermType();
 
             final GetPowerUsageHistoryDeviceRequest deviceRequest = new GetPowerUsageHistoryDeviceRequest(
                     organisationIdentification, deviceIdentification, correlationUid,
-                    new PowerUsageHistoryMessageDataContainer(timePeriod, historyTermType), domain, domainVersion,
+                    new PowerUsageHistoryMessageDataContainerDto(timePeriod, historyTermType), domain, domainVersion,
                     messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.doGetPowerUsageHistory(oslpEnvelope, powerUsageHistoryResponseMessageDataContainer,
@@ -167,19 +167,19 @@ OslpEnvelopeProcessor {
     }
 
     protected void handleGetPowerUsageHistoryDeviceResponse(final DeviceResponse deviceResponse,
-            final PowerUsageHistoryMessageDataContainer messageData,
+            final PowerUsageHistoryMessageDataContainerDto messageData,
             final DeviceResponseMessageSender responseMessageSender, final String domain, final String domainVersion,
             final String messageType, final boolean isScheduled, final int retryCount) {
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainerDto = null;
+        PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainerDto = null;
         Serializable dataObject;
 
         try {
             final GetPowerUsageHistoryDeviceResponse response = (GetPowerUsageHistoryDeviceResponse) deviceResponse;
             this.deviceResponseService.handleDeviceMessageStatus(response.getStatus());
-            powerUsageHistoryResponseMessageDataContainerDto = new PowerUsageHistoryResponseMessageDataContainer(
+            powerUsageHistoryResponseMessageDataContainerDto = new PowerUsageHistoryResponseMessageDataContainerDto(
                     response.getPowerUsageHistoryData());
             dataObject = powerUsageHistoryResponseMessageDataContainerDto;
         } catch (final Exception e) {

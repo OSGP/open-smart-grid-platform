@@ -8,27 +8,27 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.DomainType;
+import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 
 public class GetStatusDeviceRequest extends DeviceRequest {
 
-    private DomainType domainType;
+    private DomainTypeDto domainType;
 
     public GetStatusDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DomainType domainType) {
+            final String correlationUid, final DomainTypeDto domainType) {
         super(organisationIdentification, deviceIdentification, correlationUid);
         this.domainType = domainType;
     }
 
     public GetStatusDeviceRequest(final String organisationIdentification, final String deviceIdentification,
-            final String correlationUid, final DomainType domainType, final String domain, final String domainVersion,
+            final String correlationUid, final DomainTypeDto domainType, final String domain, final String domainVersion,
             final String messageType, final String ipAddress, final int retryCount, final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
         this.domainType = domainType;
     }
 
-    public DomainType getDomainType() {
+    public DomainTypeDto getDomainType() {
         return this.domainType;
     }
 }

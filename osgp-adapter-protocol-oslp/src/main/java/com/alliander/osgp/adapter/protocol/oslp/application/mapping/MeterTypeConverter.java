@@ -10,13 +10,13 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.MeterType;
+import com.alliander.osgp.dto.valueobjects.MeterTypeDto;
 import com.alliander.osgp.oslp.Oslp;
 
-public class MeterTypeConverter extends BidirectionalConverter<MeterType, Oslp.MeterType> {
+public class MeterTypeConverter extends BidirectionalConverter<MeterTypeDto, Oslp.MeterType> {
 
     @Override
-    public com.alliander.osgp.oslp.Oslp.MeterType convertTo(final MeterType source,
+    public com.alliander.osgp.oslp.Oslp.MeterType convertTo(final MeterTypeDto source,
             final Type<com.alliander.osgp.oslp.Oslp.MeterType> destinationType) {
         if (source == null) {
             return null;
@@ -26,13 +26,13 @@ public class MeterTypeConverter extends BidirectionalConverter<MeterType, Oslp.M
     }
 
     @Override
-    public MeterType convertFrom(final com.alliander.osgp.oslp.Oslp.MeterType source,
-            final Type<MeterType> destinationType) {
+    public MeterTypeDto convertFrom(final com.alliander.osgp.oslp.Oslp.MeterType source,
+            final Type<MeterTypeDto> destinationType) {
         if (source == null || source == Oslp.MeterType.MT_NOT_SET) {
             return null;
         }
 
-        return MeterType.valueOf(source.toString());
+        return MeterTypeDto.valueOf(source.toString());
     }
 
 }

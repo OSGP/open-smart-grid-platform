@@ -24,7 +24,7 @@ import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMes
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceResponseMessageSender;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.PowerUsageData;
+import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -102,7 +102,7 @@ public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends De
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        PowerUsageData powerUsageData = null;
+        PowerUsageDataDto powerUsageData = null;
 
         try {
             final GetActualPowerUsageDeviceResponse response = (GetActualPowerUsageDeviceResponse) deviceResponse;

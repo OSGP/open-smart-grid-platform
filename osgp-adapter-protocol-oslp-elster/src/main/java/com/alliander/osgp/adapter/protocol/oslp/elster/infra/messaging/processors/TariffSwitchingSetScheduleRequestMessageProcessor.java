@@ -22,8 +22,8 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.SetSchedu
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.RelayType;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -83,13 +83,13 @@ OslpEnvelopeProcessor {
         }
 
         try {
-            final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) message
+            final ScheduleMessageDataContainerDto scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.TARIFF, domain,
+                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.TARIFF, domain,
                     domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setSchedule(deviceRequest);
@@ -113,7 +113,7 @@ OslpEnvelopeProcessor {
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-        final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) unsignedOslpEnvelopeDto
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
                 .getExtraData();
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
@@ -136,7 +136,7 @@ OslpEnvelopeProcessor {
         };
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.TARIFF, domain,
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.TARIFF, domain,
                 domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         try {

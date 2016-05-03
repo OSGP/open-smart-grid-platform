@@ -23,8 +23,8 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.responses.GetStatu
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.DeviceStatus;
-import com.alliander.osgp.dto.valueobjects.DomainType;
+import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
+import com.alliander.osgp.dto.valueobjects.DomainTypeDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -91,7 +91,7 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
         final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, DomainType.PUBLIC_LIGHTING, domain, domainVersion, messageType,
+                deviceIdentification, correlationUid, DomainTypeDto.PUBLIC_LIGHTING, domain, domainVersion, messageType,
                 ipAddress, retryCount, isScheduled);
 
         this.deviceService.getStatus(deviceRequest);
@@ -131,7 +131,7 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
         };
 
         final GetStatusDeviceRequest deviceRequest = new GetStatusDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, DomainType.PUBLIC_LIGHTING);
+                deviceIdentification, correlationUid, DomainTypeDto.PUBLIC_LIGHTING);
 
         try {
             this.deviceService.doGetStatus(oslpEnvelope, deviceRequest, deviceResponseHandler, ipAddress);
@@ -147,7 +147,7 @@ public class PublicLightingGetStatusRequestMessageProcessor extends DeviceReques
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        DeviceStatus status = null;
+        DeviceStatusDto status = null;
 
         try {
             final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;

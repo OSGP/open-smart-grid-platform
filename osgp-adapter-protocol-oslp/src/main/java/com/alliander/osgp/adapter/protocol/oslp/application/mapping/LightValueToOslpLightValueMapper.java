@@ -10,14 +10,14 @@ package com.alliander.osgp.adapter.protocol.oslp.application.mapping;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 
-import com.alliander.osgp.dto.valueobjects.LightValue;
+import com.alliander.osgp.dto.valueobjects.LightValueDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.google.protobuf.ByteString;
 
-public class LightValueToOslpLightValueMapper extends BidirectionalConverter<LightValue, Oslp.LightValue> {
+public class LightValueToOslpLightValueMapper extends BidirectionalConverter<LightValueDto, Oslp.LightValue> {
 
     @Override
-    public LightValue convertFrom(final Oslp.LightValue source, final Type<LightValue> destinationType) {
+    public LightValueDto convertFrom(final Oslp.LightValue source, final Type<LightValueDto> destinationType) {
         int index = 0;
         if (source.hasIndex()) {
             index = source.getIndex().byteAt(0);
@@ -28,11 +28,11 @@ public class LightValueToOslpLightValueMapper extends BidirectionalConverter<Lig
             dimValue = source.getDimValue().byteAt(0);
         }
 
-        return new LightValue(index, source.hasOn(), dimValue);
+        return new LightValueDto(index, source.hasOn(), dimValue);
     }
 
     @Override
-    public Oslp.LightValue convertTo(final LightValue source, final Type<Oslp.LightValue> desitnationType) {
+    public Oslp.LightValue convertTo(final LightValueDto source, final Type<Oslp.LightValue> desitnationType) {
         final Oslp.LightValue.Builder builder = Oslp.LightValue.newBuilder();
         builder.setIndex(this.mapperFacade.map(source.getIndex(), ByteString.class));
         builder.setDimValue(this.mapperFacade.map(source.getDimValue(), ByteString.class));

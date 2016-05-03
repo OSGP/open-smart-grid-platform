@@ -8,22 +8,22 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.device.requests;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceRequest;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
 
 public class GetPowerUsageHistoryDeviceRequest extends DeviceRequest {
 
-    private PowerUsageHistoryMessageDataContainer powerUsageHistoryContainer;
+    private PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer;
 
     public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final PowerUsageHistoryMessageDataContainer powerUsageHistoryContainer) {
+            final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer) {
         super(organisationIdentification, deviceIdentification, correlationUid);
         this.powerUsageHistoryContainer = powerUsageHistoryContainer;
     }
 
     public GetPowerUsageHistoryDeviceRequest(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid,
-            final PowerUsageHistoryMessageDataContainer powerUsageHistoryContainer, final String domain,
+            final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryContainer, final String domain,
             final String domainVersion, final String messageType, final String ipAddress, final int retryCount,
             final boolean isScheduled) {
         super(organisationIdentification, deviceIdentification, correlationUid, domain, domainVersion, messageType,
@@ -31,7 +31,7 @@ public class GetPowerUsageHistoryDeviceRequest extends DeviceRequest {
         this.powerUsageHistoryContainer = powerUsageHistoryContainer;
     }
 
-    public PowerUsageHistoryMessageDataContainer getPowerUsageHistoryContainer() {
+    public PowerUsageHistoryMessageDataContainerDto getPowerUsageHistoryContainer() {
         return this.powerUsageHistoryContainer;
     }
 }

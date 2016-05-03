@@ -23,7 +23,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.device.requests.SetEventN
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.elster.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.EventNotificationMessageDataContainerDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -83,7 +83,7 @@ OslpEnvelopeProcessor {
         }
 
         try {
-            final EventNotificationMessageDataContainer eventNotificationMessageDataContainer = (EventNotificationMessageDataContainer) message
+            final EventNotificationMessageDataContainerDto eventNotificationMessageDataContainer = (EventNotificationMessageDataContainerDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);

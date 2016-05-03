@@ -32,7 +32,7 @@ import com.alliander.osgp.adapter.protocol.oslp.elster.application.services.oslp
 import com.alliander.osgp.adapter.protocol.oslp.elster.domain.entities.OslpDevice;
 import com.alliander.osgp.adapter.protocol.oslp.elster.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.core.db.api.application.services.DeviceDataService;
-import com.alliander.osgp.dto.valueobjects.GpsCoordinates;
+import com.alliander.osgp.dto.valueobjects.GpsCoordinatesDto;
 import com.alliander.osgp.oslp.Oslp;
 import com.alliander.osgp.oslp.Oslp.EventNotification;
 import com.alliander.osgp.oslp.Oslp.EventNotificationRequest;
@@ -204,7 +204,7 @@ public class OslpChannelHandlerServer extends OslpChannelHandler {
         locationInfo.setTimeOffset(this.timeZoneOffsetMinutes);
 
         // Get the GPS values from OSGP-CORE database.
-        final GpsCoordinates gpsCoordinates = this.deviceDataService.getGpsCoordinatesForDevice(deviceIdentification);
+        final GpsCoordinatesDto gpsCoordinates = this.deviceDataService.getGpsCoordinatesForDevice(deviceIdentification);
 
         // Add GPS information when available in meta data.
         if (gpsCoordinates != null && gpsCoordinates.getLatitude() != null && gpsCoordinates.getLongitude() != null) {

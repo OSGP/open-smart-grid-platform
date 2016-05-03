@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alliander.osgp.core.db.api.entities.Device;
 import com.alliander.osgp.core.db.api.repositories.DeviceDataRepository;
-import com.alliander.osgp.dto.valueobjects.GpsCoordinates;
+import com.alliander.osgp.dto.valueobjects.GpsCoordinatesDto;
 
 @Service
 @Transactional(value = "osgpCoreDbApiTransactionManager", readOnly = true)
@@ -27,12 +27,12 @@ public class DeviceDataService {
         return this.deviceDataRepository.findByDeviceIdentification(deviceIdentification);
     }
 
-    public GpsCoordinates getGpsCoordinatesForDevice(final String deviceIdentification) {
+    public GpsCoordinatesDto getGpsCoordinatesForDevice(final String deviceIdentification) {
 
         final Device device = this.findDevice(deviceIdentification);
 
         if (device != null) {
-            return new GpsCoordinates(device.getGpsLatitude(), device.getGpsLongitude());
+            return new GpsCoordinatesDto(device.getGpsLatitude(), device.getGpsLongitude());
         }
 
         return null;

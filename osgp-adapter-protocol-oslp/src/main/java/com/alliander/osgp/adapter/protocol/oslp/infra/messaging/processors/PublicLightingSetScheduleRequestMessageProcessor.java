@@ -22,8 +22,8 @@ import com.alliander.osgp.adapter.protocol.oslp.device.requests.SetScheduleDevic
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.oslp.infra.messaging.OslpEnvelopeProcessor;
-import com.alliander.osgp.dto.valueobjects.RelayType;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 import com.alliander.osgp.oslp.OslpEnvelope;
 import com.alliander.osgp.oslp.SignedOslpEnvelopeDto;
 import com.alliander.osgp.oslp.UnsignedOslpEnvelopeDto;
@@ -83,13 +83,13 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         }
 
         try {
-            final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) message
+            final ScheduleMessageDataContainerDto scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) message
                     .getObject();
 
             LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
             final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.LIGHT, domain,
+                    deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain,
                     domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
             this.deviceService.setSchedule(deviceRequest);
@@ -113,7 +113,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         final String ipAddress = unsignedOslpEnvelopeDto.getIpAddress();
         final int retryCount = unsignedOslpEnvelopeDto.getRetryCount();
         final boolean isScheduled = unsignedOslpEnvelopeDto.isScheduled();
-        final ScheduleMessageDataContainer scheduleMessageDataContainer = (ScheduleMessageDataContainer) unsignedOslpEnvelopeDto
+        final ScheduleMessageDataContainerDto scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) unsignedOslpEnvelopeDto
                 .getExtraData();
 
         final DeviceResponseHandler deviceResponseHandler = new DeviceResponseHandler() {
@@ -136,7 +136,7 @@ public class PublicLightingSetScheduleRequestMessageProcessor extends DeviceRequ
         };
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.LIGHT, domain,
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain,
                 domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         try {

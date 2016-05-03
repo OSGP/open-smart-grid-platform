@@ -8,20 +8,20 @@
 package com.alliander.osgp.adapter.protocol.oslp.elster.device.responses;
 
 import com.alliander.osgp.adapter.protocol.oslp.elster.device.DeviceMessageStatus;
-import com.alliander.osgp.dto.valueobjects.PowerUsageData;
+import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
 
 public class GetActualPowerUsageDeviceResponse extends EmptyDeviceResponse {
 
-    private PowerUsageData actualPowerUsageData;
+    private PowerUsageDataDto actualPowerUsageData;
 
     public GetActualPowerUsageDeviceResponse(final String organisationIdentification,
             final String deviceIdentification, final String correlationUid, final DeviceMessageStatus status,
-            final PowerUsageData actualPowerUsageData) {
+            final PowerUsageDataDto actualPowerUsageData) {
         super(organisationIdentification, deviceIdentification, correlationUid, status);
         this.actualPowerUsageData = actualPowerUsageData;
     }
 
-    public PowerUsageData getActualPowerUsageData() {
+    public PowerUsageDataDto getActualPowerUsageData() {
         return this.actualPowerUsageData;
     }
 }
