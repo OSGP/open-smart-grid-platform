@@ -9,7 +9,6 @@ package com.alliander.osgp.adapter.protocol.iec61850.infra.networking;
 
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.ScheduleWeekday;
 import com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects.TriggerType;
-import com.alliander.osgp.dto.valueobjects.LightType;
 
 /**
  * Definitions of Logical Device, Logical Nodes and Attributes.
@@ -29,6 +28,29 @@ public final class LogicalNodeAttributeDefinitons {
      * CSLC, configuration Logical Node.
      */
     public static final String LOGICAL_NODE_CSLC = "/CSLC";
+
+    /**
+     * LLN0, configuration Logical Node zero.
+     */
+    public static final String LOGICAL_NODE_LLN0 = "/LLN0";
+
+    /**
+     * Property of LLN0 Node, evn_rpn01, contains the reporting information
+     */
+    public static final String PROPERTY_REPORTING = ".evn_rpn01";
+
+    /**
+     * Property of LLN0's Node, evn_rpn01. Enables reporting. This boolean is
+     * reset to false by the device once the reports are sent.
+     */
+    public static final String PROPERTY_ENABLE_REPORTING = "RptEna";
+
+    /**
+     * Property of LLN0's Node, evn_rpn01. Next SqNum for a report not yet
+     * reported. This value is updated by the device when newer reports have
+     * been sent.
+     */
+    public static final String PROPERTY_SEQUENCE_NUMBER = "SqNum";
 
     /*
      * XSWC, prefix of the relays' Logical Node.

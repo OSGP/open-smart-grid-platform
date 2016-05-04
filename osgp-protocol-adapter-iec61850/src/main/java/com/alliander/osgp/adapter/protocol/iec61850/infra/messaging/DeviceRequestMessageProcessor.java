@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.EmptyDevice
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.DeviceService;
 import com.alliander.osgp.adapter.protocol.iec61850.services.DeviceResponseService;
-import com.alliander.osgp.dto.valueobjects.DeviceStatus;
+import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
@@ -115,7 +115,7 @@ public abstract class DeviceRequestMessageProcessor implements MessageProcessor 
 
         ResponseMessageResultType result = ResponseMessageResultType.OK;
         OsgpException osgpException = null;
-        DeviceStatus status = null;
+        DeviceStatusDto status = null;
 
         try {
             final GetStatusDeviceResponse response = (GetStatusDeviceResponse) deviceResponse;

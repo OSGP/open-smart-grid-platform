@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDevi
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.LightValueMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -52,7 +52,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
         String ipAddress = null;
         int retryCount = 0;
         boolean isScheduled = false;
-        LightValueMessageDataContainer lightValueMessageDataContainer = null;
+        LightValueMessageDataContainerDto lightValueMessageDataContainer = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -66,7 +66,7 @@ public class PublicLightingSetLightRequestMessageProcessor extends DeviceRequest
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                     .getBooleanProperty(Constants.IS_SCHEDULED) : false;
 
-            lightValueMessageDataContainer = (LightValueMessageDataContainer) message.getObject();
+                    lightValueMessageDataContainer = (LightValueMessageDataContainerDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);

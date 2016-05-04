@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitio
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -53,7 +53,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
         String ipAddress = null;
         int retryCount = 0;
         boolean isScheduled = false;
-        TransitionMessageDataContainer transitionMessageDataContainer = null;
+        TransitionMessageDataContainerDto transitionMessageDataContainer = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -66,7 +66,7 @@ public class PublicLightingSetTransitionRequestMessageProcessor extends DeviceRe
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
             isScheduled = message.propertyExists(Constants.IS_SCHEDULED) ? message
                     .getBooleanProperty(Constants.IS_SCHEDULED) : false;
-                    transitionMessageDataContainer = (TransitionMessageDataContainer) message.getObject();
+            transitionMessageDataContainer = (TransitionMessageDataContainerDto) message.getObject();
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
             LOGGER.debug("correlationUid: {}", correlationUid);

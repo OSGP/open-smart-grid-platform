@@ -20,8 +20,8 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleD
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageProcessor;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.messaging.DeviceRequestMessageType;
 import com.alliander.osgp.adapter.protocol.iec61850.infra.networking.helper.RequestMessageData;
-import com.alliander.osgp.dto.valueobjects.RelayType;
-import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
+import com.alliander.osgp.dto.valueobjects.ScheduleMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.ConnectionFailureException;
 import com.alliander.osgp.shared.infra.jms.Constants;
@@ -54,7 +54,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         String ipAddress = null;
         Boolean isScheduled = null;
         int retryCount = 0;
-        ScheduleMessageDataContainer scheduleMessageDataContainer = null;
+        ScheduleMessageDataContainerDto scheduleMessageDataContainer = null;
 
         try {
             correlationUid = message.getJMSCorrelationID();
@@ -66,7 +66,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
             ipAddress = message.getStringProperty(Constants.IP_ADDRESS);
             isScheduled = message.getBooleanProperty(Constants.IS_SCHEDULED);
             retryCount = message.getIntProperty(Constants.RETRY_COUNT);
-            scheduleMessageDataContainer = (ScheduleMessageDataContainer) message.getObject();
+            scheduleMessageDataContainer = (ScheduleMessageDataContainerDto) message.getObject();
 
         } catch (final JMSException e) {
             LOGGER.error("UNRECOVERABLE ERROR, unable to read ObjectMessage instance, giving up.", e);
@@ -116,7 +116,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayType.LIGHT, domain,
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain,
                 domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         this.deviceService.setSchedule(deviceRequest, deviceResponseHandler);

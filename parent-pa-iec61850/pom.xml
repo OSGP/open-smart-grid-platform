@@ -57,7 +57,7 @@
   <properties>
     <module.baseUri>${project.baseUri}/../</module.baseUri>
     <osgp.version>${project.version}</osgp.version>
-    <osgp.shared.version>3.4.0-SNAPSHOT</osgp.shared.version>
+    <osgp.shared.version>3.5.0-SNAPSHOT</osgp.shared.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring.version>4.2.0.RELEASE</spring.version>

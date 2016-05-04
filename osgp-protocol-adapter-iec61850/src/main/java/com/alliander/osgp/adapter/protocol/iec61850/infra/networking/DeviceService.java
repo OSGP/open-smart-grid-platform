@@ -21,12 +21,6 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetConfigur
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetFirmwareVersionDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetPowerUsageHistoryDeviceResponse;
 import com.alliander.osgp.adapter.protocol.iec61850.device.responses.GetStatusDeviceResponse;
-import com.alliander.osgp.dto.valueobjects.Configuration;
-import com.alliander.osgp.dto.valueobjects.DeviceStatus;
-import com.alliander.osgp.dto.valueobjects.LightValue;
-import com.alliander.osgp.dto.valueobjects.PowerUsageData;
-import com.alliander.osgp.dto.valueobjects.Schedule;
-import com.alliander.osgp.dto.valueobjects.TransitionType;
 
 public interface DeviceService {
 

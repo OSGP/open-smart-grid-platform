@@ -12,17 +12,21 @@ import org.openmuc.openiec61850.ServerModel;
 
 public class Iec61850Connection {
 
-    private ClientAssociation clientAssociation;
+    private Iec61850ClientAssociation clientAssociation;
 
     private ServerModel serverModel;
 
-    public Iec61850Connection(final ClientAssociation clientAssociation, final ServerModel serverModel) {
+    public Iec61850Connection(final Iec61850ClientAssociation clientAssociation, final ServerModel serverModel) {
         this.clientAssociation = clientAssociation;
         this.serverModel = serverModel;
     }
 
-    public ClientAssociation getClientAssociation() {
+    public Iec61850ClientAssociation getIec61850ClientAssociation() {
         return this.clientAssociation;
+    }
+
+    public ClientAssociation getClientAssociation() {
+        return this.clientAssociation == null ? null : this.clientAssociation.getClientAssociation();
     }
 
     public ServerModel getServerModel() {
