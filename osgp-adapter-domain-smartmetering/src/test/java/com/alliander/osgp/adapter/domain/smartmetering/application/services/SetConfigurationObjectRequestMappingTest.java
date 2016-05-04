@@ -165,7 +165,7 @@ public class SetConfigurationObjectRequestMappingTest {
 
         // check the GprsOperationModeTypeDto value
         final GprsOperationModeTypeDto gprsOperationModeTypeDto = configurationObjectDto.getGprsOperationMode();
-        assertEquals(gprsOperationModeType.value(), gprsOperationModeTypeDto.value());
+        assertEquals(gprsOperationModeType.name(), gprsOperationModeTypeDto.name());
 
         // check if ConfigurationFlagsDto object is present, and if its List is
         // of an equal size.
@@ -177,7 +177,7 @@ public class SetConfigurationObjectRequestMappingTest {
         // check ConfigurationObjectFlagTypeDto value.
         final ConfigurationFlagDto configurationFlagDto = configurationFlagsDto.getConfigurationFlag().get(0);
         final ConfigurationFlagTypeDto configurationFlagTypeDto = configurationFlagDto.getConfigurationFlagType();
-        assertEquals(configurationFlagType.value(), configurationFlagTypeDto.value());
+        assertEquals(configurationFlagType.name(), configurationFlagTypeDto.name());
     }
 
 }

@@ -24,7 +24,7 @@ import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProce
 import com.alliander.osgp.domain.core.entities.Device;
 import com.alliander.osgp.domain.core.repositories.DeviceRepository;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.DeviceRegistrationData;
+import com.alliander.osgp.dto.valueobjects.DeviceRegistrationDataDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -56,7 +56,7 @@ public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProces
         final Object dataObject = requestMessage.getRequest();
 
         try {
-            final DeviceRegistrationData deviceRegistrationData = (DeviceRegistrationData) dataObject;
+            final DeviceRegistrationDataDto deviceRegistrationData = (DeviceRegistrationDataDto) dataObject;
 
             this.updateRegistrationData(deviceIdentification, deviceRegistrationData.getIpAddress(),
                     deviceRegistrationData.getDeviceType(), deviceRegistrationData.isHasSchedule());

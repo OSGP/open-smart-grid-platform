@@ -20,7 +20,7 @@ import org.springframework.jms.core.MessageCreator;
 
 import com.alliander.osgp.core.domain.model.protocol.ProtocolRequestService;
 import com.alliander.osgp.domain.core.entities.ProtocolInfo;
-import com.alliander.osgp.dto.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ProtocolRequestMessage;
 
@@ -62,7 +62,7 @@ public class ProtocolRequestMessageSender implements ProtocolRequestService {
 
         final Long originalTimeToLive = jmsTemplate.getTimeToLive();
         boolean isCustomTimeToLiveSet = false;
-        if (requestMessage.getMessageType().equals(DeviceFunction.GET_POWER_USAGE_HISTORY.toString())) {
+        if (requestMessage.getMessageType().equals(DeviceFunctionDto.GET_POWER_USAGE_HISTORY.toString())) {
             jmsTemplate.setTimeToLive(this.getPowerUsageHistoryRequestTimeToLive);
             isCustomTimeToLiveSet = true;
         }

@@ -209,7 +209,7 @@
 
   <xsd:complexType name="RelayConfiguration">
     <xsd:sequence>
-      <xsd:element name="RelayMap" type="tns:RelayMap" minOccurs="0" maxOccurs="6" />
+      <xsd:element name="RelayMap" type="tns:RelayMap" minOccurs="1" maxOccurs="6" />
     </xsd:sequence>
   </xsd:complexType>
 

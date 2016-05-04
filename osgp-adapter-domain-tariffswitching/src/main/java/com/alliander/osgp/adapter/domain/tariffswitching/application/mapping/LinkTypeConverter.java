@@ -12,10 +12,10 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.LinkType;
 
-public class LinkTypeConverter extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LinkType, LinkType> {
+public class LinkTypeConverter extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LinkTypeDto, LinkType> {
 
     @Override
-    public LinkType convertTo(final com.alliander.osgp.dto.valueobjects.LinkType source,
+    public LinkType convertTo(final com.alliander.osgp.dto.valueobjects.LinkTypeDto source,
             final Type<LinkType> destinationType) {
         if (source == null) {
             return null;
@@ -25,13 +25,13 @@ public class LinkTypeConverter extends BidirectionalConverter<com.alliander.osgp
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.LinkType convertFrom(final LinkType source,
-            final Type<com.alliander.osgp.dto.valueobjects.LinkType> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.LinkTypeDto convertFrom(final LinkType source,
+            final Type<com.alliander.osgp.dto.valueobjects.LinkTypeDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return com.alliander.osgp.dto.valueobjects.LinkType.valueOf(source.toString());
+        return com.alliander.osgp.dto.valueobjects.LinkTypeDto.valueOf(source.toString());
     }
 
 }

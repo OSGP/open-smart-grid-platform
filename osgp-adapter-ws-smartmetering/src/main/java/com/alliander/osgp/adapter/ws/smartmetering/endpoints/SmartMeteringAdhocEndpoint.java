@@ -39,7 +39,6 @@ import com.alliander.osgp.adapter.ws.smartmetering.application.mapping.AdhocMapp
 import com.alliander.osgp.adapter.ws.smartmetering.application.services.AdhocService;
 import com.alliander.osgp.adapter.ws.smartmetering.domain.entities.MeterResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnListType;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequestData;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.wsheaderattribute.priority.MessagePriorityEnum;
 
@@ -154,12 +153,13 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
 
         final SpecificConfigurationObjectAsyncResponse response = new SpecificConfigurationObjectAsyncResponse();
 
-        final SpecificConfigurationObjectRequestData retrieveConfigurationObjectsRequest = this.adhocMapper.map(
-                request, SpecificConfigurationObjectRequestData.class);
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest getSpecificConfigurationObjectRequest = this.adhocMapper
+                .map(request,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest.class);
 
         final String correlationUid = this.adhocService
-                .enqueueRetrieveConfigurationObjectsRequest(organisationIdentification,
-                        request.getDeviceIdentification(), retrieveConfigurationObjectsRequest,
+                .enqueueSpecificConfigurationObjectRequest(organisationIdentification,
+                        request.getDeviceIdentification(), getSpecificConfigurationObjectRequest,
                         MessagePriorityEnum.getMessagePriority(messagePriority),
                         this.adhocMapper.map(scheduleTime, Long.class));
 

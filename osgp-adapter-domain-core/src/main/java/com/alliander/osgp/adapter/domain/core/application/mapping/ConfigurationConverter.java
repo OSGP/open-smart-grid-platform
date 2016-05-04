@@ -19,10 +19,10 @@ import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.RelayConfiguration;
 
 public class ConfigurationConverter extends
-BidirectionalConverter<com.alliander.osgp.dto.valueobjects.Configuration, Configuration> {
+BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Configuration> {
 
     @Override
-    public Configuration convertTo(final com.alliander.osgp.dto.valueobjects.Configuration source,
+    public Configuration convertTo(final com.alliander.osgp.dto.valueobjects.ConfigurationDto source,
             final Type<Configuration> destinationType) {
 
         final LightType lightType = this.mapperFacade.map(source.getLightType(), LightType.class);
@@ -76,35 +76,35 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.Configuration, Config
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.Configuration convertFrom(final Configuration source,
-            final Type<com.alliander.osgp.dto.valueobjects.Configuration> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.ConfigurationDto convertFrom(final Configuration source,
+            final Type<com.alliander.osgp.dto.valueobjects.ConfigurationDto> destinationType) {
 
-        final com.alliander.osgp.dto.valueobjects.LightType lightType = this.mapperFacade.map(source.getLightType(),
-                com.alliander.osgp.dto.valueobjects.LightType.class);
+        final com.alliander.osgp.dto.valueobjects.LightTypeDto lightType = this.mapperFacade.map(source.getLightType(),
+                com.alliander.osgp.dto.valueobjects.LightTypeDto.class);
 
-        final com.alliander.osgp.dto.valueobjects.DaliConfiguration daliConfiguration = this.mapperFacade.map(
-                source.getDaliConfiguration(), com.alliander.osgp.dto.valueobjects.DaliConfiguration.class);
+        final com.alliander.osgp.dto.valueobjects.DaliConfigurationDto daliConfiguration = this.mapperFacade.map(
+                source.getDaliConfiguration(), com.alliander.osgp.dto.valueobjects.DaliConfigurationDto.class);
 
-        final com.alliander.osgp.dto.valueobjects.RelayConfiguration relayConfiguration = this.mapperFacade.map(
-                source.getRelayConfiguration(), com.alliander.osgp.dto.valueobjects.RelayConfiguration.class);
+        final com.alliander.osgp.dto.valueobjects.RelayConfigurationDto relayConfiguration = this.mapperFacade.map(
+                source.getRelayConfiguration(), com.alliander.osgp.dto.valueobjects.RelayConfigurationDto.class);
 
         final Integer shortTermHistoryIntervalMinutes = this.mapperFacade.map(
                 source.getShortTermHistoryIntervalMinutes(), Integer.class);
 
-        final com.alliander.osgp.dto.valueobjects.LinkType preferredLinkType = this.mapperFacade.map(
-                source.getPreferredLinkType(), com.alliander.osgp.dto.valueobjects.LinkType.class);
+        final com.alliander.osgp.dto.valueobjects.LinkTypeDto preferredLinkType = this.mapperFacade.map(
+                source.getPreferredLinkType(), com.alliander.osgp.dto.valueobjects.LinkTypeDto.class);
 
-        final com.alliander.osgp.dto.valueobjects.MeterType meterType = this.mapperFacade.map(source.getMeterType(),
-                com.alliander.osgp.dto.valueobjects.MeterType.class);
+        final com.alliander.osgp.dto.valueobjects.MeterTypeDto meterType = this.mapperFacade.map(source.getMeterType(),
+                com.alliander.osgp.dto.valueobjects.MeterTypeDto.class);
 
         final Integer longTermHistoryInterval = this.mapperFacade.map(source.getLongTermHistoryInterval(),
                 Integer.class);
 
-        final com.alliander.osgp.dto.valueobjects.LongTermIntervalType longTermHistoryIntervalType = this.mapperFacade
+        final com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto longTermHistoryIntervalType = this.mapperFacade
                 .map(source.getLongTermHistoryIntervalType(),
-                        com.alliander.osgp.dto.valueobjects.LongTermIntervalType.class);
+                        com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto.class);
 
-        final com.alliander.osgp.dto.valueobjects.Configuration configuration = new com.alliander.osgp.dto.valueobjects.Configuration(
+        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configuration = new com.alliander.osgp.dto.valueobjects.ConfigurationDto(
                 lightType, daliConfiguration, relayConfiguration, shortTermHistoryIntervalMinutes, preferredLinkType,
                 meterType, longTermHistoryInterval, longTermHistoryIntervalType);
 
@@ -127,7 +127,7 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.Configuration, Config
         configuration.setWinterTimeDetails(source.getWinterTimeDetails());
         if (source.getRelayLinking() != null) {
             configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(),
-                    com.alliander.osgp.dto.valueobjects.RelayMatrix.class));
+                    com.alliander.osgp.dto.valueobjects.RelayMatrixDto.class));
         }
         return configuration;
     }

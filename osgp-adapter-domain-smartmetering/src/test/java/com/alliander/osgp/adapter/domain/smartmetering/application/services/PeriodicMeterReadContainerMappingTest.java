@@ -64,8 +64,8 @@ public class PeriodicMeterReadContainerMappingTest {
         assertNotNull(periodicMeterReadContainer);
 
         assertTrue(periodicMeterReadContainer.getPeriodicMeterReads().isEmpty());
-        assertEquals(periodicMeterReadsContainerDto.getPeriodType().value(), periodicMeterReadContainer.getPeriodType()
-                .value());
+        assertEquals(periodicMeterReadsContainerDto.getPeriodType().name(), periodicMeterReadContainer.getPeriodType()
+                .name());
     }
 
     // Test if mapping with a non-empty List succeeds
@@ -94,8 +94,8 @@ public class PeriodicMeterReadContainerMappingTest {
         // test mapping
         assertNotNull(periodicMeterReadsContainer);
 
-        assertEquals(periodicMeterReadsContainerDto.getPeriodType().value(), periodicMeterReadsContainer
-                .getPeriodType().value());
+        assertEquals(periodicMeterReadsContainerDto.getPeriodType().name(), periodicMeterReadsContainer.getPeriodType()
+                .name());
 
         assertEquals(periodicMeterReadsContainerDto.getPeriodicMeterReads().size(), periodicMeterReadsContainer
                 .getPeriodicMeterReads().size());

@@ -17,10 +17,10 @@ import com.alliander.osgp.domain.core.valueobjects.TriggerType;
 import com.alliander.osgp.domain.core.valueobjects.WeekDayType;
 import com.alliander.osgp.domain.core.valueobjects.WindowType;
 
-public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.Schedule, Schedule> {
+public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ScheduleDto, Schedule> {
 
     @Override
-    public Schedule convertTo(final com.alliander.osgp.dto.valueobjects.Schedule source,
+    public Schedule convertTo(final com.alliander.osgp.dto.valueobjects.ScheduleDto source,
             final Type<Schedule> destinationType) {
 
         final Schedule schedule = new Schedule();
@@ -40,23 +40,23 @@ public class ScheduleConverter extends BidirectionalConverter<com.alliander.osgp
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.Schedule convertFrom(final Schedule source,
-            final Type<com.alliander.osgp.dto.valueobjects.Schedule> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.ScheduleDto convertFrom(final Schedule source,
+            final Type<com.alliander.osgp.dto.valueobjects.ScheduleDto> destinationType) {
 
-        final com.alliander.osgp.dto.valueobjects.Schedule schedule = new com.alliander.osgp.dto.valueobjects.Schedule();
+        final com.alliander.osgp.dto.valueobjects.ScheduleDto schedule = new com.alliander.osgp.dto.valueobjects.ScheduleDto();
         schedule.setActionTime(this.mapperFacade.map(source.getActionTime(),
-                com.alliander.osgp.dto.valueobjects.ActionTimeType.class));
+                com.alliander.osgp.dto.valueobjects.ActionTimeTypeDto.class));
         schedule.setEndDay(source.getEndDay());
         schedule.setLightValue(this.mapperFacade.mapAsList(source.getLightValue(),
-                com.alliander.osgp.dto.valueobjects.LightValue.class));
+                com.alliander.osgp.dto.valueobjects.LightValueDto.class));
         schedule.setStartDay(source.getStartDay());
         schedule.setTime(source.getTime());
         schedule.setTriggerType(this.mapperFacade.map(source.getTriggerType(),
-                com.alliander.osgp.dto.valueobjects.TriggerType.class));
+                com.alliander.osgp.dto.valueobjects.TriggerTypeDto.class));
         schedule.setTriggerWindow(this.mapperFacade.map(source.getTriggerWindow(),
-                com.alliander.osgp.dto.valueobjects.WindowType.class));
+                com.alliander.osgp.dto.valueobjects.WindowTypeDto.class));
         schedule.setWeekDay(this.mapperFacade.map(source.getWeekDay(),
-                com.alliander.osgp.dto.valueobjects.WeekDayType.class));
+                com.alliander.osgp.dto.valueobjects.WeekDayTypeDto.class));
         schedule.setIndex(source.getIndex());
         schedule.setIsEnabled(source.getIsEnabled());
         schedule.setMinimumLightsOn(source.getMinimumLightsOn());

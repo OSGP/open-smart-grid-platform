@@ -14,11 +14,4 @@ public enum GprsOperationModeType {
     ALWAYS_ON,
     TRIGGERED;
 
-    public String value() {
-        return name();
-    }
-
-    public static GprsOperationModeType fromValue(String v) {
-        return valueOf(v);
-    }
 }

@@ -78,8 +78,8 @@ public class ConfigurationManagementService extends AbstractService {
             }
         }
 
-        final com.alliander.osgp.dto.valueobjects.Configuration configurationDto = this.domainCoreMapper.map(
-                configuration, com.alliander.osgp.dto.valueobjects.Configuration.class);
+        final com.alliander.osgp.dto.valueobjects.ConfigurationDto configurationDto = this.domainCoreMapper.map(
+                configuration, com.alliander.osgp.dto.valueobjects.ConfigurationDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
                 deviceIdentification, configurationDto), messageType, device.getIpAddress(), scheduleTime);
@@ -125,7 +125,7 @@ public class ConfigurationManagementService extends AbstractService {
     }
 
     public void handleGetConfigurationResponse(
-            final com.alliander.osgp.dto.valueobjects.Configuration configurationDto,
+            final com.alliander.osgp.dto.valueobjects.ConfigurationDto configurationDto,
             final String deviceIdentification, final String organisationIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
@@ -142,15 +142,15 @@ public class ConfigurationManagementService extends AbstractService {
             final Device device = this.deviceRepository.findByDeviceIdentification(deviceIdentification);
             final List<DeviceOutputSetting> outputSettings = this.findSsldForDevice(device).getOutputSettings();
 
-            final List<com.alliander.osgp.dto.valueobjects.RelayMap> newRelayMap = new ArrayList<com.alliander.osgp.dto.valueobjects.RelayMap>();
-            final List<com.alliander.osgp.dto.valueobjects.RelayMap> relayMapDto = configurationDto
+            final List<com.alliander.osgp.dto.valueobjects.RelayMapDto> newRelayMap = new ArrayList<com.alliander.osgp.dto.valueobjects.RelayMapDto>();
+            final List<com.alliander.osgp.dto.valueobjects.RelayMapDto> relayMapDto = configurationDto
                     .getRelayConfiguration().getRelayMap();
             for (final DeviceOutputSetting ouputSetting : outputSettings) {
-                for (final com.alliander.osgp.dto.valueobjects.RelayMap relaySettingDto : relayMapDto) {
+                for (final com.alliander.osgp.dto.valueobjects.RelayMapDto relaySettingDto : relayMapDto) {
                     if (relaySettingDto.getIndex() == ouputSetting.getExternalId()) {
-                        final com.alliander.osgp.dto.valueobjects.RelayMap newRelayMapDto = new com.alliander.osgp.dto.valueobjects.RelayMap(
+                        final com.alliander.osgp.dto.valueobjects.RelayMapDto newRelayMapDto = new com.alliander.osgp.dto.valueobjects.RelayMapDto(
                                 ouputSetting.getExternalId(), ouputSetting.getInternalId(),
-                                com.alliander.osgp.dto.valueobjects.RelayType.valueOf(ouputSetting.getOutputType()
+                                com.alliander.osgp.dto.valueobjects.RelayTypeDto.valueOf(ouputSetting.getOutputType()
                                         .name()), ouputSetting.getAlias());
                         newRelayMap.add(newRelayMapDto);
                     }
