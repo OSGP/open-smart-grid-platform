@@ -67,7 +67,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -99,22 +99,16 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public MeterResponseData dequeueRetrieveConfigurationObjectsResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
+    public MeterResponseData dequeueResponse(final String correlationUid) throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
 
-    }
-
-    public MeterResponseData dequeueGetAssociationLnObjectsResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueGetAssociationLnObjectsRequest(@Identification final String organisationIdentification,
@@ -137,7 +131,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_ASSOCIATION_LN_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

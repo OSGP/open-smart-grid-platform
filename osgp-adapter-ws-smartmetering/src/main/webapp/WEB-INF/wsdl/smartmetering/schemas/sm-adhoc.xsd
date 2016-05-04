@@ -115,7 +115,12 @@
         <xsd:complexType>
             <xsd:complexContent>
                 <xsd:extension
-                    base="tns:SpecificConfigurationObjectRequestData"></xsd:extension>
+                    base="tns:SpecificConfigurationObjectRequestData">
+                    <xsd:sequence>
+                        <xsd:element name="DeviceIdentification"
+                            type="common:DeviceIdentification" />
+                    </xsd:sequence>
+                </xsd:extension>
             </xsd:complexContent>
         </xsd:complexType>
     </xsd:element>
