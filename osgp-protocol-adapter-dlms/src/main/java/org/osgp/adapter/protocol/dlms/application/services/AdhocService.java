@@ -7,8 +7,11 @@
  */
 package org.osgp.adapter.protocol.dlms.application.services;
 
+import java.io.Serializable;
+
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificConfigurationObjectCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
@@ -26,6 +30,9 @@ public class AdhocService {
 
     @Autowired
     private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
+
+    @Autowired
+    private GetSpecificConfigurationObjectCommandExecutor getSpecificConfigurationObjectCommandExecutor;
 
     @Autowired
     private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
@@ -45,5 +52,12 @@ public class AdhocService {
     public AssociationLnListTypeDto getAssociationLnObjects(final ClientConnection conn, final DlmsDevice device)
             throws ProtocolAdapterException {
         return this.getAssociationLnObjectsCommandExecutor.execute(conn, device, null);
+    }
+
+    public Serializable getSpecificConfigurationObject(final ClientConnection conn, final DlmsDevice device,
+            final SpecificConfigurationObjectRequestDataDto specificConfigurationObjectRequestDataDto)
+            throws ProtocolAdapterException {
+        return this.getSpecificConfigurationObjectCommandExecutor.execute(conn, device,
+                specificConfigurationObjectRequestDataDto);
     }
 }
