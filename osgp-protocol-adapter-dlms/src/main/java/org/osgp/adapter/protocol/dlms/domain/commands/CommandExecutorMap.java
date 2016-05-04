@@ -12,22 +12,23 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 
 @Component
 public class CommandExecutorMap {
 
-    private final Map<Class<? extends ActionDto>, CommandExecutor<? extends ActionDto, ? extends ActionResponseDto>> commandExecutors = new HashMap<>();
+    private final Map<Class<? extends ActionRequestDto>, CommandExecutor<? extends ActionRequestDto, ? extends ActionResponseDto>> commandExecutors = new HashMap<>();
 
-    public void addCommandExecutor(final Class<? extends ActionDto> clazz,
-            final CommandExecutor<? extends ActionDto, ? extends ActionResponseDto> commandExecutor) {
+    public void addCommandExecutor(final Class<? extends ActionRequestDto> clazz,
+            final CommandExecutor<? extends ActionRequestDto, ? extends ActionResponseDto> commandExecutor) {
 
         this.commandExecutors.put(clazz, commandExecutor);
     }
 
     @SuppressWarnings("unchecked")
-    public CommandExecutor<ActionDto, ActionResponseDto> getCommandExecutor(final Class<? extends ActionDto> clazz) {
-        return (CommandExecutor<ActionDto, ActionResponseDto>) this.commandExecutors.get(clazz);
+    public CommandExecutor<ActionRequestDto, ActionResponseDto> getCommandExecutor(
+            final Class<? extends ActionRequestDto> clazz) {
+        return (CommandExecutor<ActionRequestDto, ActionResponseDto>) this.commandExecutors.get(clazz);
     }
 }

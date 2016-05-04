@@ -16,7 +16,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 
 public class GetAdministrativeStatusBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
-GetAdministrativeStatusBundleCommandExecutor {
+        GetAdministrativeStatusBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,

@@ -11,18 +11,21 @@ import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 
 public abstract class AbstractCommandExecutorStub {
 
     private ActionResponseDto actionResponse;
     private ProtocolAdapterException protocolAdapterException;
+    private RuntimeException runtimeException;
 
-    protected ActionResponseDto doExecute(final ClientConnection conn, final DlmsDevice device, final ActionDto object)
-            throws ProtocolAdapterException {
+    protected ActionResponseDto doExecute(final ClientConnection conn, final DlmsDevice device,
+            final ActionRequestDto object) throws ProtocolAdapterException {
 
-        if (this.protocolAdapterException != null) {
+        if (this.runtimeException != null) {
+            throw this.runtimeException;
+        } else if (this.protocolAdapterException != null) {
             throw this.protocolAdapterException;
         } else if (this.actionResponse == null) {
             return new ActionResponseDto();
@@ -41,6 +44,10 @@ public abstract class AbstractCommandExecutorStub {
 
     public void failWith(final ProtocolAdapterException protocolAdapterException) {
         this.protocolAdapterException = protocolAdapterException;
+    }
+
+    public void failWithRuntimeException(final RuntimeException runtimeException) {
+        this.runtimeException = runtimeException;
     }
 
     public ProtocolAdapterException getProtocolAdapterException() {
