@@ -8,6 +8,7 @@
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
 import java.net.InetAddress;
+import java.util.Date;
 
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -104,9 +105,13 @@ public class PushNotificationSmsMessageProcessor extends ProtocolRequestMessageP
 
     private void storeSmsAsEvent(final PushNotificationSmsDto pushNotificationSms) {
         try {
-            this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(),
+            /*
+             * Push notifications for SMS don't contain date/time info, use new
+             * Date() as time with the notification.
+             */
+            this.eventNotificationMessageService.handleEvent(pushNotificationSms.getDeviceIdentification(), new Date(),
                     com.alliander.osgp.domain.core.valueobjects.EventType.SMS_NOTIFICATION, pushNotificationSms
-                    .getIpAddress().toString(), 0);
+                            .getIpAddress().toString(), 0);
         } catch (final UnknownEntityException uee) {
             LOGGER.warn("Unable to store event for Push Notification Sms from unknown device: {}", pushNotificationSms,
                     uee);

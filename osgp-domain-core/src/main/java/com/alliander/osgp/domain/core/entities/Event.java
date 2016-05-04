@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.domain.core.entities;
 
+import java.util.Date;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -23,11 +24,14 @@ public class Event extends AbstractEntity {
     /**
      * Serial Version UID.
      */
-    private static final long serialVersionUID = 5498420959323116237L;
+    private static final long serialVersionUID = 5987663923796632312L;
 
     @ManyToOne()
     @JoinColumn()
     private Device device;
+
+    @Column(nullable = false)
+    private Date dateTime;
 
     @Column(nullable = false, name = "event")
     private EventType eventType;
@@ -42,8 +46,23 @@ public class Event extends AbstractEntity {
         // Default constructor
     }
 
+    /**
+     * Earlier constructor without the Date the event occurred. For lack of a
+     * better default this will use {@code new Date()} as the moment registered
+     * with the event.
+     *
+     * @deprecated Use {@link #Event(String, Date, EventType, String, Integer)}
+     *             if the time the event occurred is known.
+     */
+    @Deprecated
     public Event(final Device device, final EventType eventType, final String description, final Integer index) {
+        this(device, new Date(), eventType, description, index);
+    }
+
+    public Event(final Device device, final Date dateTime, final EventType eventType, final String description,
+            final Integer index) {
         this.device = device;
+        this.dateTime = dateTime;
         this.eventType = eventType;
         this.description = description;
         this.index = index;
@@ -51,6 +70,10 @@ public class Event extends AbstractEntity {
 
     public Device getDevice() {
         return this.device;
+    }
+
+    public Date getDateTime() {
+        return this.dateTime;
     }
 
     public EventType getEventType() {
@@ -75,15 +98,16 @@ public class Event extends AbstractEntity {
         }
         final Event other = (Event) o;
         final boolean isDeviceEqual = Objects.equals(this.device, other.device);
+        final boolean isDateTimeEqual = Objects.equals(this.dateTime, other.dateTime);
         final boolean isEventTypeEqual = Objects.equals(this.eventType, other.eventType);
         final boolean isDescriptionEqual = Objects.equals(this.description, other.description);
         final boolean isIndexEqual = Objects.equals(this.index, other.index);
 
-        return isDeviceEqual && isEventTypeEqual && isDescriptionEqual && isIndexEqual;
+        return isDeviceEqual && isDateTimeEqual && isEventTypeEqual && isDescriptionEqual && isIndexEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.device, this.eventType, this.description, this.index);
+        return Objects.hash(this.device, this.dateTime, this.eventType, this.description, this.index);
     }
 }

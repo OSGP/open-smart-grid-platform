@@ -63,7 +63,7 @@ public class DeviceManagementMapper extends ConfigurableMapper {
         mapperFactory.registerClassMap(mapperFactory
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.core.devicemanagement.Event.class)
-                .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
+                .field("device.deviceIdentification", "deviceIdentification").field("dateTime", "timestamp")
                 .byDefault().toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
