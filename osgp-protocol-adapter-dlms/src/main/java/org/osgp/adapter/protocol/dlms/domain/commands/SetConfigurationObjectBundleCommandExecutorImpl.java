@@ -25,8 +25,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectR
 
 @Component()
 public class SetConfigurationObjectBundleCommandExecutorImpl extends
-        BundleCommandExecutor<SetConfigurationObjectRequestDataDto, ActionResponseDto> implements
-        SetConfigurationObjectBundleCommandExecutor {
+BundleCommandExecutor<SetConfigurationObjectRequestDataDto, ActionResponseDto> implements
+SetConfigurationObjectBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetConfigurationObjectBundleCommandExecutorImpl.class);
 
@@ -54,7 +54,7 @@ public class SetConfigurationObjectBundleCommandExecutorImpl extends
         LOGGER.info(VISUAL_SEPARATOR);
         LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
         LOGGER.info(VISUAL_SEPARATOR);
-        LOGGER.info("Operation mode:{} ", gprsOperationModeType.value());
+        LOGGER.info("Operation mode:{} ", gprsOperationModeType.name());
         LOGGER.info("Flags:");
 
         for (final ConfigurationFlagDto configurationFlag : configurationFlags.getConfigurationFlag()) {
