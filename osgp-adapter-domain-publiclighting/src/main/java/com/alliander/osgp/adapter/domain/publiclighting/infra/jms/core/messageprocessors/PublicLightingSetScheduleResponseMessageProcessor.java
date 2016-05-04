@@ -28,7 +28,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing public lighting set schedule response messages
  */
-@Component("domainPublicLightingSetScheduleResponseMessageProcessor")
+@Component
 public class PublicLightingSetScheduleResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class

@@ -25,14 +25,13 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing common switch firmware request messages
  *
  */
-@Component("domainCoreCommonSwitchFirmwareRequestMessageProcessor")
+@Component
 public class CommonSwitchFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(CommonSwitchFirmwareRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommonSwitchFirmwareRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreFirmwareManagementService")

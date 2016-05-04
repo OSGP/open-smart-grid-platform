@@ -21,7 +21,7 @@ import com.alliander.osgp.shared.infra.jms.RequestMessage;
 /**
  * Class for processing smart metering push notification alarm request messages.
  */
-@Component("domainSmartMeteringPushNotificationAlarmRequestMessageProcessor")
+@Component
 public class PushNotificationAlarmRequestMessageProcessor extends OsgpCoreRequestMessageProcessor {
 
     @Autowired
@@ -35,7 +35,7 @@ public class PushNotificationAlarmRequestMessageProcessor extends OsgpCoreReques
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata, final Object dataObject)
             throws FunctionalException {
 
-       this.notificationService.handlePushNotificationAlarm(deviceMessageMetadata,
+        this.notificationService.handlePushNotificationAlarm(deviceMessageMetadata,
                 (PushNotificationAlarmDto) ((RequestMessage) dataObject).getRequest());
     }
 }

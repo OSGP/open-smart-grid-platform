@@ -29,7 +29,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing public lighting get status response messages
  */
-@Component("domainPublicLightingGetStatusResponseMessageProcessor")
+@Component
 public class PublicLightingGetStatusResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class

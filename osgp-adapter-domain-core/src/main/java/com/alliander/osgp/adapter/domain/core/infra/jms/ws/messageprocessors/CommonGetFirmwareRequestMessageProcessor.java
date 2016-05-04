@@ -23,11 +23,11 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common get firmware request messages
- * 
+ *
  * @author CGI
- * 
+ *
  */
-@Component("domainCoreCommonGetFirmwareRequestMessageProcessor")
+@Component
 public class CommonGetFirmwareRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

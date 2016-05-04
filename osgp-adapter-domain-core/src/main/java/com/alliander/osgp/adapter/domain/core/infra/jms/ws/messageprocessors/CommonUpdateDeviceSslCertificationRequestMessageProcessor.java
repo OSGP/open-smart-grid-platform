@@ -26,13 +26,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing common update device ssl certification request messages
  *
  */
-@Component("domainCoreCommonUpdateDeviceSslCertificationRequestMessageProcessor")
+@Component
 public class CommonUpdateDeviceSslCertificationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonUpdateDeviceSslCertificationRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CommonUpdateDeviceSslCertificationRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreDeviceManagementService")

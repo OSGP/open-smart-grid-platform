@@ -21,7 +21,7 @@ import com.alliander.osgp.adapter.domain.admin.infra.jms.ws.WebServiceRequestMes
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.Constants;
 
-@Component("domainSmartmeteringDeactivateDeviceRequestMessageProcessor")
+@Component
 public class DeactivateDeviceRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeactivateDeviceRequestMessageProcessor.class);

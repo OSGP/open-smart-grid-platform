@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 /**
  * Class for processing tariff switching set schedule request messages
  */
-@Component("domainTariffSwitchingSetScheduleRequestMessageProcessor")
+@Component
 public class TariffSwitchingSetScheduleRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

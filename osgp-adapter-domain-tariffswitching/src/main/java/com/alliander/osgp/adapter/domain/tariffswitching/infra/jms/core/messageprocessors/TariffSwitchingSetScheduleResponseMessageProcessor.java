@@ -27,7 +27,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing tariff switching set schedule response messages
  */
-@Component("domainTariffSwitchingSetScheduleResponseMessageProcessor")
+@Component
 public class TariffSwitchingSetScheduleResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class

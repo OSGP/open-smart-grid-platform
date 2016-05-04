@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 /**
  * Class for processing public lighting resume schedule request messages
  */
-@Component("domainPublicLightingResumeScheduleRequestMessageProcessor")
+@Component
 public class PublicLightingResumeScheduleRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

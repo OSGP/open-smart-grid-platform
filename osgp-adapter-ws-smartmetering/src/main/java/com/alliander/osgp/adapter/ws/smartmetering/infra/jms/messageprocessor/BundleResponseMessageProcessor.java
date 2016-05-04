@@ -14,7 +14,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 /**
  * Class for processing smart metering bundle response messages
  */
-@Component("domainSmartMeteringBundleResponseMessageProcessor")
+@Component
 public class BundleResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public BundleResponseMessageProcessor() {

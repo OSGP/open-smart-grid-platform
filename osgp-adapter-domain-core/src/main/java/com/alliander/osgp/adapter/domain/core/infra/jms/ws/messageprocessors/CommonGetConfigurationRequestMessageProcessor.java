@@ -23,11 +23,11 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common get configuration request messages
- * 
+ *
  * @author CGI
- * 
+ *
  */
-@Component("domainCoreCommonGetConfigurationRequestMessageProcessor")
+@Component
 public class CommonGetConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

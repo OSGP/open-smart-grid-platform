@@ -28,7 +28,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing common get configuration response messages
  */
-@Component("domainCoreCommonGetConfigurationResponseMessageProcessor")
+@Component
 public class CommonGetConfigurationResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class

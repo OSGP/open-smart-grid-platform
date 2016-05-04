@@ -20,7 +20,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 /**
  * Class for processing smart metering default response messages
  */
-@Component("domainSmartMeteringDefaultResponseMessageProcessor")
+@Component
 public class AddMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired

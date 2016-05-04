@@ -27,7 +27,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing admin revoke key messages
  */
-@Component("domainAdminUpdateKeyResponseMessageProcessor")
+@Component
 public class AdminUpdateKeyResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class

@@ -23,11 +23,11 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common start device test request messages
- * 
+ *
  * @author CGI
- * 
+ *
  */
-@Component("domainCoreCommonStartDeviceTestRequestMessageProcessor")
+@Component
 public class CommonStartDeviceTestRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

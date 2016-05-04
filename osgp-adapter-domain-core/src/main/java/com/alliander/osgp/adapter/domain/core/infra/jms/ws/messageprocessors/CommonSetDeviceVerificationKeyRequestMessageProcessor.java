@@ -25,13 +25,14 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing common set device verification key request messages
  *
  */
-@Component("domainCoreCommonSetDeviceVerificationKeyRequestMessageProcessor")
+@Component
 public class CommonSetDeviceVerificationKeyRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     /**
      * Logger for this class
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonSetDeviceVerificationKeyRequestMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(CommonSetDeviceVerificationKeyRequestMessageProcessor.class);
 
     @Autowired
     @Qualifier("domainCoreDeviceManagementService")

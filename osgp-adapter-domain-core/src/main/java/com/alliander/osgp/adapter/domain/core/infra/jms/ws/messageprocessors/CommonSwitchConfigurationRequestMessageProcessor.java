@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * Class for processing common switch configuration request messages
  *
  */
-@Component("domainCoreCommonSwitchConfigurationRequestMessageProcessor")
+@Component
 public class CommonSwitchConfigurationRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class
