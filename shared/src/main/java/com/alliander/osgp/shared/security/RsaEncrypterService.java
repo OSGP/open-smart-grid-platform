@@ -53,6 +53,7 @@ public final class RsaEncrypterService {
      */
     public static byte[] decrypt(final byte[] inputData, final String devicePrivateKeyPath) {
         final PrivateKey privateKey = getPrivateKey(devicePrivateKeyPath);
+
         Cipher cipher;
         try {
             cipher = Cipher.getInstance(ALGORITHM);

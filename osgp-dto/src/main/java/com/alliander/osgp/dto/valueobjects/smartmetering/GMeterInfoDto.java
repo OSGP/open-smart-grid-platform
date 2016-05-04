@@ -11,7 +11,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 /**
  * Class to pass G-Meter information to the protocol adapter
  */
-public class GMeterInfoDto implements ActionDto {
+public class GMeterInfoDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -4321438772672309715L;
     private final int channel;
