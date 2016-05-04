@@ -19,7 +19,7 @@ import com.alliander.osgp.core.application.services.EventNotificationMessageServ
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.EventNotification;
+import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -48,7 +48,7 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
         final Object dataObject = requestMessage.getRequest();
 
         try {
-            final EventNotification eventNotification = (EventNotification) dataObject;
+            final EventNotificationDto eventNotification = (EventNotificationDto) dataObject;
 
             this.eventNotificationMessageService.handleEvent(deviceIdentification,
                     com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()

@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.shared.infra.jms.BaseMessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 
@@ -35,7 +35,7 @@ public class WebServiceRequestMessageProcessorMap extends BaseMessageProcessorMa
             throw new JMSException("Unknown message type");
         }
 
-        final DeviceFunction messageType = DeviceFunction.valueOf(message.getJMSType());
+        final DeviceFunctionDto messageType = DeviceFunctionDto.valueOf(message.getJMSType());
 
         if (messageType.name() == null) {
             LOGGER.error("No message processor found for message type: {}", message.getJMSType());

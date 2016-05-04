@@ -117,8 +117,8 @@ public class ActionMapperService {
                 .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetAlarmNotificationsRequestData.class,
                         this.configurationMapper);
         CLASS_TO_MAPPER_MAP
-        .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
-                this.configurationMapper);
+                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetConfigurationObjectRequestData.class,
+                        this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SetPushSetupAlarmRequestData.class,
                 this.configurationMapper);
@@ -139,8 +139,9 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequestData.class,
                 this.adhocMapper);
-        CLASS_TO_MAPPER_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecificConfigurationObjectRequestData.class,
-                this.configurationMapper);
+        CLASS_TO_MAPPER_MAP
+                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecificConfigurationObjectRequestData.class,
+                        this.configurationMapper);
     }
 
     /**
@@ -199,8 +200,9 @@ public class ActionMapperService {
         CLASS_MAP.put(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetAssociationLnObjectsRequestData.class,
                 GetAssociationLnObjectsRequestData.class);
-        CLASS_MAP.put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecificConfigurationObjectRequestData.class, 
-                SpecificConfigurationObjectRequestData.class);
+        CLASS_MAP
+                .put(com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.SpecificConfigurationObjectRequestData.class,
+                        SpecificConfigurationObjectRequestData.class);
 
     }
 

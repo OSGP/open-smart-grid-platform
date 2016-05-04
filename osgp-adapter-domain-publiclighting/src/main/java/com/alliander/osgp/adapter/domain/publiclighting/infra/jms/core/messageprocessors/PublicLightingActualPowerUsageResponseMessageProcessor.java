@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.publiclighting.application.services.DeviceMonitoringService;
 import com.alliander.osgp.adapter.domain.publiclighting.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.PowerUsageData;
+import com.alliander.osgp.dto.valueobjects.PowerUsageDataDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -83,7 +83,7 @@ public class PublicLightingActualPowerUsageResponseMessageProcessor extends Osgp
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final PowerUsageData actualPowerUsageData = (PowerUsageData) dataObject;
+            final PowerUsageDataDto actualPowerUsageData = (PowerUsageDataDto) dataObject;
 
             this.deviceMonitoringService.handleGetActualPowerUsageResponse(actualPowerUsageData,
                     organisationIdentification, deviceIdentification, correlationUid, messageType,

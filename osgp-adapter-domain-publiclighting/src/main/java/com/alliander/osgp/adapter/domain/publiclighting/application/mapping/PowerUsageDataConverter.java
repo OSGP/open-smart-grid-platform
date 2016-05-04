@@ -21,10 +21,10 @@ import com.alliander.osgp.domain.core.valueobjects.RelayData;
 import com.alliander.osgp.domain.core.valueobjects.SsldData;
 
 public class PowerUsageDataConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.PowerUsageData, PowerUsageData> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.PowerUsageDataDto, PowerUsageData> {
 
     @Override
-    public PowerUsageData convertTo(final com.alliander.osgp.dto.valueobjects.PowerUsageData source,
+    public PowerUsageData convertTo(final com.alliander.osgp.dto.valueobjects.PowerUsageDataDto source,
             final Type<PowerUsageData> destinationType) {
 
         // Check the input parameter.
@@ -42,7 +42,7 @@ public class PowerUsageDataConverter extends
         // Check SsldData.
         if (source.getSsldData() != null) {
             // Get SsldData.
-            final com.alliander.osgp.dto.valueobjects.SsldData ssldData = source.getSsldData();
+            final com.alliander.osgp.dto.valueobjects.SsldDataDto ssldData = source.getSsldData();
 
             final int actualCurrent1 = ssldData.getActualCurrent1();
             final int actualCurrent2 = ssldData.getActualCurrent2();
@@ -69,7 +69,7 @@ public class PowerUsageDataConverter extends
 
         // Check PsldData.
         if (source.getPsldData() != null) {
-            final com.alliander.osgp.dto.valueobjects.PsldData psldData = source.getPsldData();
+            final com.alliander.osgp.dto.valueobjects.PsldDataDto psldData = source.getPsldData();
 
             psldDataCopy = new PsldData(psldData.getTotalLightingHours());
         }
@@ -83,8 +83,8 @@ public class PowerUsageDataConverter extends
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.PowerUsageData convertFrom(final PowerUsageData source,
-            final Type<com.alliander.osgp.dto.valueobjects.PowerUsageData> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.PowerUsageDataDto convertFrom(final PowerUsageData source,
+            final Type<com.alliander.osgp.dto.valueobjects.PowerUsageDataDto> destinationType) {
 
         // Check the input parameter.
         if (source == null) {
@@ -92,12 +92,12 @@ public class PowerUsageDataConverter extends
         }
 
         final Long actualConsumedPower = source.getActualConsumedPower();
-        final com.alliander.osgp.dto.valueobjects.MeterType meterType = this.mapperFacade.map(source.getMeterType(),
-                com.alliander.osgp.dto.valueobjects.MeterType.class);
+        final com.alliander.osgp.dto.valueobjects.MeterTypeDto meterType = this.mapperFacade.map(source.getMeterType(),
+                com.alliander.osgp.dto.valueobjects.MeterTypeDto.class);
         final DateTime recordTime = source.getRecordTime();
         final Long totalConsumedEnergy = source.getTotalConsumedEnergy();
 
-        com.alliander.osgp.dto.valueobjects.SsldData ssldDataCopy = null;
+        com.alliander.osgp.dto.valueobjects.SsldDataDto ssldDataCopy = null;
 
         // Check SsldData.
         if (source.getSsldData() != null) {
@@ -114,29 +114,29 @@ public class PowerUsageDataConverter extends
             final int averagePowerFactor2 = ssldData.getAveragePowerFactor2();
             final int averagePowerFactor3 = ssldData.getAveragePowerFactor3();
 
-            List<com.alliander.osgp.dto.valueobjects.RelayData> relayData = null;
+            List<com.alliander.osgp.dto.valueobjects.RelayDataDto> relayData = null;
 
             // Check RelayData list.
             if (ssldData.getRelayData() != null) {
                 relayData = this.mapperFacade.mapAsList(ssldData.getRelayData(),
-                        com.alliander.osgp.dto.valueobjects.RelayData.class);
+                        com.alliander.osgp.dto.valueobjects.RelayDataDto.class);
             }
 
-            ssldDataCopy = new com.alliander.osgp.dto.valueobjects.SsldData(actualCurrent1, actualCurrent2,
+            ssldDataCopy = new com.alliander.osgp.dto.valueobjects.SsldDataDto(actualCurrent1, actualCurrent2,
                     actualCurrent3, actualPower1, actualPower2, actualPower3, averagePowerFactor1, averagePowerFactor2,
                     averagePowerFactor3, relayData);
         }
 
-        com.alliander.osgp.dto.valueobjects.PsldData psldDataCopy = null;
+        com.alliander.osgp.dto.valueobjects.PsldDataDto psldDataCopy = null;
 
         // Check PsldData.
         if (source.getPsldData() != null) {
             final PsldData psldData = source.getPsldData();
 
-            psldDataCopy = new com.alliander.osgp.dto.valueobjects.PsldData(psldData.getTotalLightingHours());
+            psldDataCopy = new com.alliander.osgp.dto.valueobjects.PsldDataDto(psldData.getTotalLightingHours());
         }
 
-        final com.alliander.osgp.dto.valueobjects.PowerUsageData powerUsageData = new com.alliander.osgp.dto.valueobjects.PowerUsageData(
+        final com.alliander.osgp.dto.valueobjects.PowerUsageDataDto powerUsageData = new com.alliander.osgp.dto.valueobjects.PowerUsageDataDto(
                 recordTime, meterType, totalConsumedEnergy, actualConsumedPower);
         powerUsageData.setPsldData(psldDataCopy);
         powerUsageData.setSsldData(ssldDataCopy);

@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.domain.tariffswitching.application.services.Ad
 import com.alliander.osgp.adapter.domain.tariffswitching.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.DomainType;
-import com.alliander.osgp.dto.valueobjects.DeviceStatus;
+import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -84,7 +84,7 @@ public class TariffSwitchingGetStatusResponseMessageProcessor extends OsgpCoreRe
         try {
             LOGGER.info("Calling application service function to handle response: {}", messageType);
 
-            final DeviceStatus deviceLightStatus = (DeviceStatus) dataObject;
+            final DeviceStatusDto deviceLightStatus = (DeviceStatusDto) dataObject;
 
             this.adHocManagementService.handleGetStatusResponse(deviceLightStatus, DomainType.TARIFF_SWITCHING,
                     deviceIdentification, organisationIdentification, correlationUid, messageType,
