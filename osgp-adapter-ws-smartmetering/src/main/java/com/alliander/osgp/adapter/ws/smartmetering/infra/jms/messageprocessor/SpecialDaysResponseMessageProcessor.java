@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component
+@Component("domainSmartMeteringSpecialDaysResponseMessageProcessor")
 public class SpecialDaysResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SpecialDaysResponseMessageProcessor() {

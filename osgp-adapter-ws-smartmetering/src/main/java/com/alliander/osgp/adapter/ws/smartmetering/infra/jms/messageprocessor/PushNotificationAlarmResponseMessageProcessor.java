@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component
+@Component("domainSmartMeteringPushNotificationAlarmResponseMessageProcessor")
 public class PushNotificationAlarmResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected PushNotificationAlarmResponseMessageProcessor() {

@@ -27,7 +27,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
  * @author CGI
  *
  */
-@Component
+@Component("domainCoreCommonStopDeviceTestRequestMessageProcessor")
 public class CommonStopDeviceTestRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

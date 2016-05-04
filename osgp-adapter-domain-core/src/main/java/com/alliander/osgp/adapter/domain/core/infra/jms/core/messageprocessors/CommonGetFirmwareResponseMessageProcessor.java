@@ -30,7 +30,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing common get firmware response messages
  */
-@Component
+@Component("domainCoreCommonGetFirmwareResponseMessageProcessor")
 public class CommonGetFirmwareResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class

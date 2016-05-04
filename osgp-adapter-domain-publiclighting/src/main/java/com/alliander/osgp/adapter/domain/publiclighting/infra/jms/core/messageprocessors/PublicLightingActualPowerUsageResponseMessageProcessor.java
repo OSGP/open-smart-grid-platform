@@ -28,7 +28,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessageResultType;
 /**
  * Class for processing public lighting actual power usage response messages
  */
-@Component
+@Component("domainPublicLightingActualPowerUsageResponseMessageProcessor")
 public class PublicLightingActualPowerUsageResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
     /**
      * Logger for this class

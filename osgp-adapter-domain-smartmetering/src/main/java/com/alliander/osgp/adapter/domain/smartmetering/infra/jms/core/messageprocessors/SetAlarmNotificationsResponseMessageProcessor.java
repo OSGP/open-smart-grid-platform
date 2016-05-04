@@ -20,7 +20,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 /**
  * Class for processing smart metering set alarm notifications response messages
  */
-@Component
+@Component("domainSmartMeteringSetAlarmNotificationsResponseMessageProcessor")
 public class SetAlarmNotificationsResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired

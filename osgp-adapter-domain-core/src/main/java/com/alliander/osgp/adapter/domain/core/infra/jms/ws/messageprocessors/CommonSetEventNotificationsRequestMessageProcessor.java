@@ -24,11 +24,11 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common set event notifications request messages
- *
+ * 
  * @author CGI
- *
+ * 
  */
-@Component
+@Component("domainCoreCommonSetEventNotificationsRequestMessageProcessor")
 public class CommonSetEventNotificationsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

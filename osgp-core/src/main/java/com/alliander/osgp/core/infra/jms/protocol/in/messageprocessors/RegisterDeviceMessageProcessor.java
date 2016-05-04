@@ -28,7 +28,7 @@ import com.alliander.osgp.dto.valueobjects.DeviceRegistrationDataDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
-@Component
+@Component("oslpRegisterDeviceMessageProcessor")
 @Transactional(value = "transactionManager")
 public class RegisterDeviceMessageProcessor extends ProtocolRequestMessageProcessor {
 

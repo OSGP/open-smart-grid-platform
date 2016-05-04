@@ -20,7 +20,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
-@Component
+@Component("domainSmartMeteringSetConfigurationObjectResponseMessageProcessor")
 public class SetConfigurationObjectResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired

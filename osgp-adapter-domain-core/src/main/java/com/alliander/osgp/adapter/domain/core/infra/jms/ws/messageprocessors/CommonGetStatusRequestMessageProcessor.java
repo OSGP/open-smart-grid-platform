@@ -23,11 +23,11 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 
 /**
  * Class for processing common get status request messages
- *
+ * 
  * @author CGI
- *
+ * 
  */
-@Component
+@Component("domainCoreCommonGetStatusRequestMessageProcessor")
 public class CommonGetStatusRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

@@ -23,7 +23,7 @@ import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
-@Component
+@Component("oslpEventNotificationMessageProcessor")
 public class EventNotificationMessageProcessor extends ProtocolRequestMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventNotificationMessageProcessor.class);

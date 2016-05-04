@@ -24,7 +24,7 @@ import com.alliander.osgp.shared.infra.jms.Constants;
 /**
  * Class for processing public lighting get power usage request messages
  */
-@Component
+@Component("domainPublicLightingGetActualPowerUsageRequestMessageProcessor")
 public class PublicLightingGetActualPowerUsageRequestMessageProcessor extends WebServiceRequestMessageProcessor {
     /**
      * Logger for this class

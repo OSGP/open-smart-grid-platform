@@ -14,7 +14,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 /**
  * Class for processing smart metering find events response messages
  */
-@Component
+@Component("domainSmartMeteringFindEventsResponseMessageProcessor")
 public class FindEventsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public FindEventsResponseMessageProcessor() {
