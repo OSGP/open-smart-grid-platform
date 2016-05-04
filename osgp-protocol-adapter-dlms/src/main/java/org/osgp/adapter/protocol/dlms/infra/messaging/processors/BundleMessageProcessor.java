@@ -20,8 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleResponseMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesActionListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseListDto;
 
 /**
  * Class for processing find events request messages
@@ -40,16 +40,16 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
 
-        if (!(requestObject instanceof BundleMessageDataContainerDto)) {
+        if (!(requestObject instanceof BundleMessagesActionListDto)) {
             throw new ProtocolAdapterException(
                     "Expected request object of type BundleMessageDataContainer. In stead of "
                             + requestObject.getClass());
         }
-        final BundleMessageDataContainerDto bundleMessageDataContainerDto = (BundleMessageDataContainerDto) requestObject;
+        final BundleMessagesActionListDto bundleMessageDataContainerDto = (BundleMessagesActionListDto) requestObject;
 
         final List<ActionResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(conn, device,
                 bundleMessageDataContainerDto);
 
-        return new BundleResponseMessageDataContainerDto(actionValueObjectResponseDtoList);
+        return new BundleMessagesResponseListDto(actionValueObjectResponseDtoList);
     }
 }

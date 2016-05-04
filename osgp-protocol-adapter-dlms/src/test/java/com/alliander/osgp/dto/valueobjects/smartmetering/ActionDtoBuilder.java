@@ -21,8 +21,8 @@ import org.joda.time.DateTime;
  */
 public class ActionDtoBuilder {
 
-    public FindEventsQueryDto makeFindEventsQueryDto() {
-        return new FindEventsQueryDto(EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
+    public FindEventsRequestDataDto makeFindEventsQueryDto() {
+        return new FindEventsRequestDataDto(EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
     }
 
     public ActualMeterReadsDataDto makeActualMeterReadsDataDtoAction() {

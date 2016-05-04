@@ -13,7 +13,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDataDto;
@@ -33,7 +33,7 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
 
     public CommandExecutorMapStub() {
 
-        this.addCommandExecutor(FindEventsQueryDto.class, new RetrieveEventsBundleCommandExecutorStub());
+        this.addCommandExecutor(FindEventsRequestDataDto.class, new RetrieveEventsBundleCommandExecutorStub());
         this.addCommandExecutor(ActualMeterReadsDataDto.class, new GetActualMeterReadsBundleCommandExecutorStub());
         this.addCommandExecutor(ActualMeterReadsDataGasDto.class, new GetActualMeterReadsBundleGasCommandExecutorStub());
         this.addCommandExecutor(SpecialDaysRequestDataDto.class, new SetSpecialDaysBundleCommandExecutorStub());

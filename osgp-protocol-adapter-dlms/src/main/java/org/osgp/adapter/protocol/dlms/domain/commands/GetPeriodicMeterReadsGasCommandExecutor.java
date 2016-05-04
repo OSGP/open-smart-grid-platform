@@ -36,13 +36,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFla
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 
 @Component()
 public class GetPeriodicMeterReadsGasCommandExecutor implements
-        CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsContainerGasDto> {
+        CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadGasResponseListDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsGasCommandExecutor.class);
 
@@ -214,7 +214,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadsContainerGasDto execute(final ClientConnection conn, final DlmsDevice device,
+    public PeriodicMeterReadGasResponseListDto execute(final ClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsQueryDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType;
@@ -245,7 +245,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
                     + periodType + ", channel " + periodicMeterReadsQuery.getChannel(), address));
         }
 
-        final List<PeriodicMeterReadsGasDto> periodicMeterReads = new ArrayList<>();
+        final List<PeriodicMeterReadsGasResponseDto> periodicMeterReads = new ArrayList<>();
 
         final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
                 "Periodic G-Meter Reads");
@@ -258,11 +258,11 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
                     getResultList);
         }
 
-        return new PeriodicMeterReadsContainerGasDto(periodType, periodicMeterReads);
+        return new PeriodicMeterReadGasResponseListDto(periodType, periodicMeterReads);
     }
 
     private void processNextPeriodicMeterReads(final PeriodTypeDto periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final List<PeriodicMeterReadsGasDto> periodicMeterReads,
+            final DateTime endDateTime, final List<PeriodicMeterReadsGasResponseDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final ChannelDto channel, final boolean isSelectiveAccessSupported,
             final List<GetResult> results) throws ProtocolAdapterException {
 
@@ -304,7 +304,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         }
     }
 
-    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsGasDto> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsGasResponseDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
             throws ProtocolAdapterException {
 
@@ -322,14 +322,14 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         } else {
             throw new ProtocolAdapterException(UNEXPECTED_VALUE);
         }
-        final PeriodicMeterReadsGasDto nextPeriodicMeterReads = new PeriodicMeterReadsGasDto(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsGasResponseDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseDto(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).resultData(), GAS_VALUE), captureTime,
                 amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReadsGasDto> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReadsGasResponseDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final ChannelDto channel,
             final boolean isSelectiveAccessSupported, final List<GetResult> results) throws ProtocolAdapterException {
 
@@ -359,14 +359,14 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         } else {
             throw new ProtocolAdapterException(UNEXPECTED_VALUE);
         }
-        final PeriodicMeterReadsGasDto nextPeriodicMeterReads = new PeriodicMeterReadsGasDto(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsGasResponseDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseDto(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).resultData(), GAS_VALUE), captureTime,
                 amrProfileStatusCode);
         periodicMeterReads.add(nextPeriodicMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsGasDto> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsGasResponseDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final ChannelDto channel,
             final boolean isSelectiveAccessSupported, final List<GetResult> results) throws ProtocolAdapterException {
 
@@ -394,7 +394,7 @@ public class GetPeriodicMeterReadsGasCommandExecutor implements
         } else {
             throw new ProtocolAdapterException(UNEXPECTED_VALUE);
         }
-        final PeriodicMeterReadsGasDto nextPeriodicMeterReads = new PeriodicMeterReadsGasDto(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsGasResponseDto nextPeriodicMeterReads = new PeriodicMeterReadsGasResponseDto(bufferedDateTime.toDate(),
                 this.dlmsHelperService.getScaledMeterValue(gasValue,
                         results.get(RESULT_INDEX_SCALER_UNIT).resultData(), GAS_VALUE), captureTime);
         periodicMeterReads.add(nextPeriodicMeterReads);

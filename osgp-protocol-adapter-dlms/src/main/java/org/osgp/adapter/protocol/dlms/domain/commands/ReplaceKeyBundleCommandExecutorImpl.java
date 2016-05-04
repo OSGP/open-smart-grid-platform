@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 
 @Component
-public class ReplaceKeyBundleCommandExecutorImpl extends BundleCommandExecutor<KeySetDto, ActionResponseDto> implements
+public class ReplaceKeyBundleCommandExecutorImpl extends BundleCommandExecutor<SetKeysRequestDto, ActionResponseDto> implements
         ReplaceKeyBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyBundleCommandExecutorImpl.class);
@@ -30,11 +30,11 @@ public class ReplaceKeyBundleCommandExecutorImpl extends BundleCommandExecutor<K
     ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     public ReplaceKeyBundleCommandExecutorImpl() {
-        super(KeySetDto.class);
+        super(SetKeysRequestDto.class);
     }
 
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device, final KeySetDto keySetDto) {
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySetDto) {
 
         // Add the // Change AUTHENTICATION key.
         LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySetDto);

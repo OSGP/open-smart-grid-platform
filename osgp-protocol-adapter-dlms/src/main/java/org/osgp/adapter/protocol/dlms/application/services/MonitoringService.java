@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
@@ -79,7 +79,7 @@ public class MonitoringService {
         return response;
     }
 
-    public AlarmRegisterDto requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);
