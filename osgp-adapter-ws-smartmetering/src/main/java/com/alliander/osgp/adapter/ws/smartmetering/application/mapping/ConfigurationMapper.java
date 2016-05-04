@@ -31,7 +31,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
         mapperFactory.getConverterFactory().registerConverter(new ConfigurationObjectConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
-        mapperFactory.getConverterFactory().registerConverter(new KeySetConverter());
+        mapperFactory.getConverterFactory().registerConverter(new SetKeysRequestConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemDateConverter());

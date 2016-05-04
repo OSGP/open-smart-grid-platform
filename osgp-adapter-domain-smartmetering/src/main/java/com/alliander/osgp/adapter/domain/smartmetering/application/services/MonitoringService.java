@@ -27,13 +27,13 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsQuery;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegisterRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsContainerGasDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseListDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -127,7 +127,7 @@ public class MonitoringService {
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final PeriodicMeterReadsContainerDto periodMeterReadsValueDTO) {
+            final PeriodicMeterReadsResponseListDto periodMeterReadsValueDTO) {
 
         LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -147,7 +147,7 @@ public class MonitoringService {
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final PeriodicMeterReadsContainerGasDto periodMeterReadsValueDTO) {
+            final PeriodicMeterReadGasResponseListDto periodMeterReadsValueDTO) {
 
         LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -218,7 +218,7 @@ public class MonitoringService {
 
     public void handleActualMeterReadsResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final MeterReadsDto actualMeterReadsDto) {
+            final MeterReadsResponseDto actualMeterReadsDto) {
 
         LOGGER.info("handleActualMeterReadsResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -236,7 +236,7 @@ public class MonitoringService {
 
     public void handleActualMeterReadsResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final MeterReadsGasDto actualMeterReadsGas) {
+            final MeterReadsGasResponseDto actualMeterReadsGas) {
 
         LOGGER.info("handleActualMeterReadsResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -272,7 +272,7 @@ public class MonitoringService {
 
     public void handleReadAlarmRegisterResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final AlarmRegisterDto alarmRegisterDto) {
+            final AlarmRegisterResponseDto alarmRegisterDto) {
 
         LOGGER.info("handleReadAlarmRegisterResponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 

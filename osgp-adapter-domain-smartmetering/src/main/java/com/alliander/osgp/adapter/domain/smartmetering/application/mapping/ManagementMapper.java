@@ -19,7 +19,7 @@ public class ManagementMapper extends ConfigurableMapper {
 
         // These two converters are needed. Otherwise mapping will lead to
         // strange exceptions when mapping DateTime fields
-        mapperFactory.getConverterFactory().registerConverter(new FindEventsQueryConverter());
+        mapperFactory.getConverterFactory().registerConverter(new FindEventsRequestDataConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventsConverter());
     }
 }
