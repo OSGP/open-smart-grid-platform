@@ -50,25 +50,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="GetConfigurationRequestData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Command">
-        <xsd:sequence>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
-  <xsd:complexType name="GetConfigurationResponseData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Response">
-        <xsd:sequence>
-          <xsd:element name="configurationData" type="xsd:string" />
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
   <xsd:complexType name="GetFirmwareVersionRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Command">
@@ -710,27 +691,6 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-
-  <xsd:complexType name="SpecificConfigurationObjectRequestData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Query">
-        <xsd:sequence>
-          <xsd:element name="ClassId" type="xsd:integer" />
-          <xsd:element name="Attribute" type="xsd:integer" />
-          <xsd:element name="ObisCode" type="tns:ObisCodeValues" />
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
      
-  <xsd:complexType name="ObisCodeValues">
-    <xsd:sequence>
-      <xsd:element name="a" type="xsd:byte" />
-      <xsd:element name="b" type="xsd:byte" />
-      <xsd:element name="c" type="xsd:byte" />
-      <xsd:element name="d" type="xsd:byte" />
-      <xsd:element name="e" type="xsd:byte" />
-      <xsd:element name="f" type="xsd:byte" />
-    </xsd:sequence>
-  </xsd:complexType>
+
 </xsd:schema>
