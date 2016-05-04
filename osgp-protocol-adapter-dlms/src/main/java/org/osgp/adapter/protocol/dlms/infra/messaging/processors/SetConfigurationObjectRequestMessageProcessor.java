@@ -26,7 +26,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing Set Configuration Request messages
  */
-@Component("dlmsSetConfigurationObjectRequestMessageProcessor")
+@Component
 public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

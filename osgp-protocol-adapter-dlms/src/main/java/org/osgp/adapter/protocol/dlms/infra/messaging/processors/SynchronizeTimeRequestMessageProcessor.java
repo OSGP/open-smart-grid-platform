@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 /**
  * Class for processing Synchronize Time Request messages
  */
-@Component("dlmsSynchronizeTimeRequestMessageProcessor")
+@Component
 public class SynchronizeTimeRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

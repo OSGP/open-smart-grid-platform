@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing set Activity Calendar request messages
  */
-@Component("dlmsSetEncryptionKeyExchangeOnGMeterRequestMessageProcessor")
+@Component
 public class SetEncryptionKeyExchangeOnGMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
-@Component("dlmsReplaceKeysRequestMessageProcessor")
+@Component
 public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing Special Days Request messages
  */
-@Component("dlmsSpecialDaysRequestMessageProcessor")
+@Component
 public class SpecialDaysRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
