@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringSetEncryptionKeyExchangeOnGMeterResponseMessageProcessor")
+@Component
 public class SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor() {

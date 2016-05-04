@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringGetAssociationLnObjectsResponseMessageProcessor")
+@Component
 public class GetAssociationLnObjectsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public GetAssociationLnObjectsResponseMessageProcessor() {

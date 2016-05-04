@@ -20,7 +20,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 /**
  * Class for processing smart metering set Activity Calendar response messages
  */
-@Component("domainSmartMeteringSetActivityCalendarResponseMessageProcessor")
+@Component
 public class SetActivityCalendarResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired

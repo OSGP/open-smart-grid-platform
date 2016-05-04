@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ReadAlarmRegist
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-@Component("domainSmartmeteringReadAlarmRegisterRequestMessageProcessor")
+@Component
 public class ReadAlarmRegisterRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired

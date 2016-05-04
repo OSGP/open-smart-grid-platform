@@ -20,7 +20,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequ
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-@Component("domainSmartmeteringSpecialDaysRequestMessageProcessor")
+@Component
 public class SpecialDaysRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired

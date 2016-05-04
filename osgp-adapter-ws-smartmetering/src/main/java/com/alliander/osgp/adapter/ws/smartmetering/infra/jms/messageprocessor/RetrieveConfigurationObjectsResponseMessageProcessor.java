@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringRetrieveConfigurationObjectsResponseMessageProcessor")
+@Component
 public class RetrieveConfigurationObjectsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     public RetrieveConfigurationObjectsResponseMessageProcessor() {

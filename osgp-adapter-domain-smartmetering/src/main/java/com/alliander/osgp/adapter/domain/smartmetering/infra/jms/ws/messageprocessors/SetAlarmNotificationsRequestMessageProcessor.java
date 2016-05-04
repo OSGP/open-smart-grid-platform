@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmNotificati
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-@Component("domainSmartmeteringSetAlarmNotificationsRequestMessageProcessor")
+@Component
 public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired
@@ -31,7 +31,7 @@ public class SetAlarmNotificationsRequestMessageProcessor extends WebServiceRequ
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * com.alliander.osgp.shared.infra.jms.MessageProcessor#processMessage(javax
      * .jms.ObjectMessage)

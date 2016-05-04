@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringSynchronizeTimeResponseMessageProcessor")
+@Component
 public class SynchronizeTimeResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SynchronizeTimeResponseMessageProcessor() {
