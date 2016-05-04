@@ -16,11 +16,4 @@ public enum AmrProfileStatusCodeFlag {
     CLOCK_ADJUSTED,
     POWER_DOWN;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static AmrProfileStatusCodeFlag fromValue(final String v) {
-        return valueOf(v);
-    }
 }

@@ -22,12 +22,4 @@ public enum ConfigurationFlagType {
     HLS_4_ON_PO_ENABLE,
     HLS_5_ON_PO_ENABLE;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static ConfigurationFlagType fromValue(final String v) {
-        return valueOf(v);
-    }
-
 }

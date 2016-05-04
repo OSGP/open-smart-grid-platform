@@ -42,9 +42,9 @@ public class AdministrativeStatusTypeMappingTest {
         assertNotNull(off);
         assertNotNull(on);
 
-        assertEquals(AdministrativeStatusType.UNDEFINED.value(), undefined.value());
-        assertEquals(AdministrativeStatusType.OFF.value(), off.value());
-        assertEquals(AdministrativeStatusType.ON.value(), on.value());
+        assertEquals(AdministrativeStatusType.UNDEFINED.name(), undefined.name());
+        assertEquals(AdministrativeStatusType.OFF.name(), off.name());
+        assertEquals(AdministrativeStatusType.ON.name(), on.name());
     }
 
     /**
@@ -72,13 +72,13 @@ public class AdministrativeStatusTypeMappingTest {
 
         assertEquals(
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.UNDEFINED
-                .value(),
-                undefined.value());
+                .name(),
+                undefined.name());
         assertEquals(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF.value(),
-                off.value());
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.OFF.name(),
+                off.name());
         assertEquals(
-                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON.value(),
-                on.value());
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusType.ON.name(),
+                on.name());
     }
 }

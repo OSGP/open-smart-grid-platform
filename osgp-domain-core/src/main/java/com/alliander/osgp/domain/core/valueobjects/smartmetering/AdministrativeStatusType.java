@@ -7,18 +7,8 @@
  */
 package com.alliander.osgp.domain.core.valueobjects.smartmetering;
 
-
 public enum AdministrativeStatusType {
     UNDEFINED,
     OFF,
     ON;
-
-    public String value() {
-        return this.name();
-    }
-
-    public static AdministrativeStatusType fromValue(final String v) {
-        return valueOf(v);
-    }
-
 }
