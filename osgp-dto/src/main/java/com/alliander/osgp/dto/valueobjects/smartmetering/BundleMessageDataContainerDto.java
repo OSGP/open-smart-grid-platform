@@ -28,4 +28,17 @@ public class BundleMessageDataContainerDto implements Serializable {
         return new ArrayList<ActionDto>(this.actionList);
     }
 
+    public List<ActionResponseDto> getAllResponses() {
+        final List<ActionResponseDto> responseDtoList = new ArrayList<>();
+
+        for (final ActionDto actionDto : this.actionList) {
+            final ActionResponseDto actionResponseDto = actionDto.getResponse();
+            if (actionResponseDto != null) {
+                responseDtoList.add(actionResponseDto);
+            }
+        }
+
+        return responseDtoList;
+    }
+
 }

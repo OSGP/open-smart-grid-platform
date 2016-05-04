@@ -12,12 +12,4 @@ public enum AdministrativeStatusTypeDto {
     OFF,
     ON;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static AdministrativeStatusTypeDto fromValue(final String v) {
-        return valueOf(v);
-    }
-
 }

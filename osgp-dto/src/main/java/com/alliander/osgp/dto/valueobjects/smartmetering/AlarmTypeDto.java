@@ -31,12 +31,4 @@ public enum AlarmTypeDto {
     NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3,
     NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static AlarmTypeDto fromValue(final String v) {
-        return valueOf(v);
-    }
-
 }

@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class GetAssociationLnObjectsRequestDataDto implements ActionDto {
+public class GetAssociationLnObjectsRequestDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 2569975731784782614L;
 
