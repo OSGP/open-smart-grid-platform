@@ -1,0 +1,3 @@
+DeviceIdentificationE=EXXXX001692675614
+OrganisationIdentification=LianderNetManagement
+CorrelationUid=
