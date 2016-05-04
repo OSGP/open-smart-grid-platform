@@ -6,25 +6,20 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package smartmeteringmonitoring;
+package com.alliander.osgp.platform.cucumber.smartmeteringmonitoring;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
 
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import support.RunXpathResult;
-import support.TestCaseResult;
-import support.TestCaseRunner;
-import support.WsdlProjectFactory;
-import support.XpathResult;
-
+import com.alliander.osgp.platform.cucumber.support.RunXpathResult;
+import com.alliander.osgp.platform.cucumber.support.TestCaseResult;
+import com.alliander.osgp.platform.cucumber.support.TestCaseRunner;
+import com.alliander.osgp.platform.cucumber.support.WsdlProjectFactory;
 import com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner;
 import com.eviware.soapui.model.iface.MessageExchange;
 import com.eviware.soapui.model.testsuite.TestCase;
@@ -52,7 +47,7 @@ public class ActualMeterReads {
     private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyExportTariffOne/text()";
     private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyExportTariffTwo/text()";
 
-    private static final String XPATH_MATCHER_RESULT_LOGTIME = "\\d+\\.\\d+";
+    private static final String XPATH_MATCHER_RESULT_LOGTIME = "\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z";
     private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT = "\\d+\\.\\d+";
     private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT = "\\d+\\.\\d+";
     private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE = "\\d+\\.\\d+";
@@ -78,7 +73,10 @@ public class ActualMeterReads {
     private TestCaseRunner testCaseRunner;
 
     @Autowired
-    private RunXpathResult xpathResult;
+    private RunXpathResult runXpathResult;
+
+    // @Autowired
+    // private XpathResult xpathResult;
 
     @Given("^a device with DeviceID \"([^\"]*)\"$")
     public void aDeviceWithDeviceID(final String deviceId) throws Throwable {
@@ -99,6 +97,7 @@ public class ActualMeterReads {
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
+        Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
 
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
             this.response = ((MessageExchange) tcr).getResponseContent();
@@ -106,8 +105,6 @@ public class ActualMeterReads {
         }
         this.correlationUidMatcher.find();
         this.correlationUid = this.correlationUidMatcher.group();
-
-        Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
     }
 
     @Then("^the actual meter reads result should be returned$")
@@ -117,17 +114,26 @@ public class ActualMeterReads {
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
+        Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
 
         for (final TestStepResult tcr : wsdlTestCaseRunner.getResults()) {
             LOGGER.info(TEST_CASE_NAME_RESPONSE + " response {}",
                     this.response = ((MessageExchange) tcr).getResponseContent());
         }
 
-        final XpathResult xpathResult = this.xpathResult.runXPathExpression(this.response, PATH_RESULT_LOGTIME);
-        final XPathExpression expr = xpathResult.getXpathExpression();
-
-        Assert.assertEquals(XPATH_MATCHER_RESULT_LOGTIME,
-                expr.evaluate(xpathResult.getDocument(), XPathConstants.STRING));
-        Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME,
+                XPATH_MATCHER_RESULT_LOGTIME));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT,
+                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT,
+                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE,
+                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO,
+                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE,
+                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO,
+                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO));
     }
 }

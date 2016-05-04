@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package support;
+package com.alliander.osgp.platform.cucumber.support;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public class TestCaseRunner {
         final WsdlTestCaseRunner wsdlTestCaseRunner = new WsdlTestCaseRunner(wsdlTestCase, new PropertiesMap());
 
         try {
-            Thread.sleep(15000);
+            Thread.sleep(25000);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }

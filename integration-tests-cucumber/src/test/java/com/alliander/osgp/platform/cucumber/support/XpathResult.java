@@ -7,7 +7,7 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package support;
+package com.alliander.osgp.platform.cucumber.support;
 
 import javax.xml.xpath.XPathExpression;
 

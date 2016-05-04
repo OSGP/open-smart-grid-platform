@@ -7,15 +7,18 @@
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  */
-package support;
+package com.alliander.osgp.platform.cucumber.support;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
@@ -26,6 +29,8 @@ import org.xml.sax.SAXException;
 
 @Component
 public class RunXpathResult {
+    private Pattern responsePattern;
+    private Matcher responseMatcher;
 
     public XpathResult runXPathExpression(final String response, final String path)
             throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
@@ -39,5 +44,16 @@ public class RunXpathResult {
         final XPath xpath = xPathfactory.newXPath();
 
         return new XpathResult(xpath.compile(path), doc);
+    }
+
+    public boolean assertXpath(final String response, final String PATH_RESULT_LOGTIME,
+            final String XPATH_MATCHER_RESULT_LOGTIME) throws XPathExpressionException, ParserConfigurationException,
+            SAXException, IOException {
+        final XpathResult xpathResult = this.runXPathExpression(response, PATH_RESULT_LOGTIME);
+        final XPathExpression expr = xpathResult.getXpathExpression();
+        this.responsePattern = Pattern.compile(XPATH_MATCHER_RESULT_LOGTIME);
+        this.responseMatcher = this.responsePattern.matcher(expr.evaluate(xpathResult.getDocument()));
+
+        return this.responseMatcher.find();
     }
 }
