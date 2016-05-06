@@ -189,7 +189,7 @@ public class DeviceManagementService {
         this.pagingSettings.updatePagingSettings(pageSize, pageNumber);
 
         final PageRequest request = new PageRequest(this.pagingSettings.getPageNumber(),
-                this.pagingSettings.getPageSize(), Sort.Direction.DESC, "creationTime");
+                this.pagingSettings.getPageSize(), Sort.Direction.DESC, "dateTime");
 
         Specifications<Event> specifications = null;
 

@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.shared.infra.jms.BaseMessageProcessorMap;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
 
-@Component("wsAdapterSmartMeteringDomainMessageProcessorMap")
+@Component
 public class DomainResponseMessageProcessorMap extends BaseMessageProcessorMap {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomainResponseMessageProcessorMap.class);

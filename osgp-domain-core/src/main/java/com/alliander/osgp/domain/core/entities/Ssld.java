@@ -11,6 +11,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -176,6 +178,20 @@ public class Ssld extends Device {
                 this.relayStatusses.add(relayStatus);
             }
         }
+    }
+
+    public void updateRelayStatusses(final Map<Integer, RelayStatus> relayStatusByIndex) {
+        if (this.relayStatusses == null) {
+            this.relayStatusses = new ArrayList<>();
+        }
+        final Map<Integer, RelayStatus> unhandledStatussesByIndex = new TreeMap<>(relayStatusByIndex);
+        for (final RelayStatus r : this.relayStatusses) {
+            final RelayStatus newStatus = unhandledStatussesByIndex.remove(r.getIndex());
+            if (newStatus != null && newStatus.getLastKnowSwitchingTime().after(r.getLastKnowSwitchingTime())) {
+                r.updateStatus(newStatus.isLastKnownState(), newStatus.getLastKnowSwitchingTime());
+            }
+        }
+        this.relayStatusses.addAll(unhandledStatussesByIndex.values());
     }
 
     /**

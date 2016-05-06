@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringReplaceKeysResponseMessageProcessor")
+@Component
 public class ReplaceKeysResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected ReplaceKeysResponseMessageProcessor() {

@@ -14,7 +14,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 /**
  * Class for processing smart metering set push setup alarm response messages
  */
-@Component("domainSmartMeteringSetPushSetupAlarmResponseMessageProcessor")
+@Component
 public class SetPushSetupAlarmResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetPushSetupAlarmResponseMessageProcessor() {

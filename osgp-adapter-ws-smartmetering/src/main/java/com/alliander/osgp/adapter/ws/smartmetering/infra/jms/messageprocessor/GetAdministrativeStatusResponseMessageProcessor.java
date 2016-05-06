@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringGetAdministrativeStatusResponseMessageProcessor")
+@Component
 public class GetAdministrativeStatusResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected GetAdministrativeStatusResponseMessageProcessor() {
