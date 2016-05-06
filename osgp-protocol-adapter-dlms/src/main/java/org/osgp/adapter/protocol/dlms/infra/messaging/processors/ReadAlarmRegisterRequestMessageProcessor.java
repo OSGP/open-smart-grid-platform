@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
-@Component("dlmsReadAlarmRegisterRequestMessageProcessor")
+@Component
 public class ReadAlarmRegisterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing find events request messages
  */
-@Component("dlmsFindEventsRequestMessageProcessor")
+@Component
 public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

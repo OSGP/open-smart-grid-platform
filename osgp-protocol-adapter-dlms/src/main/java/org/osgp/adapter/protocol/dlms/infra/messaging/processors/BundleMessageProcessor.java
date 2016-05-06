@@ -23,7 +23,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContai
 /**
  * Class for processing find events request messages
  */
-@Component("dlmsBundleMessageProcessor")
+@Component
 public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
