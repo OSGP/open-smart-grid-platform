@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing set alarm notifications request messages
  */
-@Component("dlmsSetAlarmNotificationsRequestMessageProcessor")
+@Component
 public class SetAlarmNotificationsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

@@ -25,7 +25,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing Periodic Meter Request messages
  */
-@Component("dlmsPeriodicMeterRequestMessageProcessor")
+@Component
 public class PeriodicMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

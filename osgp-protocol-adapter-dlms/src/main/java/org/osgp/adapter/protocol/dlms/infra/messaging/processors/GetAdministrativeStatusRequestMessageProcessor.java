@@ -24,7 +24,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing the Get Administrative Status request message
  */
-@Component("dlmsGetAdministrationStatusRequestMessageProcessor")
+@Component
 public class GetAdministrativeStatusRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
