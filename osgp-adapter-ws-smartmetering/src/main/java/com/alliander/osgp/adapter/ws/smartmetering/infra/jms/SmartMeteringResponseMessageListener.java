@@ -15,7 +15,6 @@ import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.notification.NotificationType;
 import com.alliander.osgp.shared.infra.jms.MessageProcessor;
@@ -26,7 +25,6 @@ public class SmartMeteringResponseMessageListener implements MessageListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(SmartMeteringResponseMessageListener.class);
 
     @Autowired
-    @Qualifier("wsAdapterSmartMeteringDomainMessageProcessorMap")
     private MessageProcessorMap domainResponseMessageProcessorMap;
 
     public SmartMeteringResponseMessageListener() {
