@@ -11,7 +11,7 @@ import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
 import org.osgp.adapter.protocol.dlms.domain.commands.GetAssociationLnObjectsCommandExecutor;
-import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificConfigurationObjectCommandExecutor;
+import org.osgp.adapter.protocol.dlms.domain.commands.GetSpecificConfigurationObjectCommandExecutorImpl;
 import org.osgp.adapter.protocol.dlms.domain.commands.RetrieveConfigurationObjectsCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.commands.SynchronizeTimeCommandExecutor;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
@@ -32,7 +32,7 @@ public class AdhocService {
     private RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor;
 
     @Autowired
-    private GetSpecificConfigurationObjectCommandExecutor getSpecificConfigurationObjectCommandExecutor;
+    private GetSpecificConfigurationObjectCommandExecutorImpl getSpecificConfigurationObjectCommandExecutor;
 
     @Autowired
     private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
@@ -56,7 +56,7 @@ public class AdhocService {
 
     public Serializable getSpecificConfigurationObject(final ClientConnection conn, final DlmsDevice device,
             final SpecificConfigurationObjectRequestDataDto specificConfigurationObjectRequestDataDto)
-            throws ProtocolAdapterException {
+                    throws ProtocolAdapterException {
         return this.getSpecificConfigurationObjectCommandExecutor.execute(conn, device,
                 specificConfigurationObjectRequestDataDto);
     }
