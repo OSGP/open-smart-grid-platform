@@ -19,7 +19,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigu
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-@Component("domainSmartmeteringRetrieveConfigurationObjectsRequestMessageProcessor")
+@Component
 public class GetSpecificConfigurationObjectRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired

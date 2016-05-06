@@ -272,12 +272,12 @@
     </xsd:simpleType>
     <xsd:complexType name="ObisCodeValues">
         <xsd:sequence>
-            <xsd:element name="a" type="xsd:byte" />
-            <xsd:element name="b" type="xsd:byte" />
-            <xsd:element name="c" type="xsd:byte" />
-            <xsd:element name="d" type="xsd:byte" />
-            <xsd:element name="e" type="xsd:byte" />
-            <xsd:element name="f" type="xsd:byte" />
+            <xsd:element name="a" type="xsd:unsignedByte" />
+            <xsd:element name="b" type="xsd:unsignedByte" />
+            <xsd:element name="c" type="xsd:unsignedByte" />
+            <xsd:element name="d" type="xsd:unsignedByte" />
+            <xsd:element name="e" type="xsd:unsignedByte" />
+            <xsd:element name="f" type="xsd:unsignedByte" />
         </xsd:sequence>
     </xsd:complexType>
 </xsd:schema>
