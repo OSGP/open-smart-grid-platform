@@ -11,7 +11,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class SetConfigurationObjectRequestDto implements Serializable {
+public class SetConfigurationObjectRequest implements Serializable {
 
     private static final long serialVersionUID = -8295596279285780413L;
 
@@ -19,7 +19,7 @@ public class SetConfigurationObjectRequestDto implements Serializable {
 
     private final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestData;
 
-    public SetConfigurationObjectRequestDto(final String deviceIdentification,
+    public SetConfigurationObjectRequest(final String deviceIdentification,
             final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestData) {
         this.deviceIdentification = deviceIdentification;
         this.setConfigurationObjectRequestData = setConfigurationObjectRequestData;

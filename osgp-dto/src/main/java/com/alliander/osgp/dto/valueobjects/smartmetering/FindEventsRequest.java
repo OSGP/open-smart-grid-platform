@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import org.joda.time.DateTime;
 
-public class FindEventsRequestDataDto implements ActionDto {
+public class FindEventsRequest implements ActionDto {
 
     /**
      * Serial Version UID.
@@ -20,7 +20,7 @@ public class FindEventsRequestDataDto implements ActionDto {
     private final DateTime from;
     private final DateTime until;
 
-    public FindEventsRequestDataDto(final EventLogCategoryDto eventLogCategory, final DateTime from, final DateTime until) {
+    public FindEventsRequest(final EventLogCategoryDto eventLogCategory, final DateTime from, final DateTime until) {
         this.eventLogCategory = eventLogCategory;
         this.from = from;
         this.until = until;

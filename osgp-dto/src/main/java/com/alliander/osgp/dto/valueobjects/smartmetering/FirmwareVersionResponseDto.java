@@ -11,17 +11,17 @@ import java.util.List;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 
-public class FirmwareVersionResponseDataDto extends ActionResponseDto {
+public class FirmwareVersionResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = 4779593744529504287L;
 
     private List<FirmwareVersionDto> firmwareVersions;
 
-    public FirmwareVersionResponseDataDto() {
+    public FirmwareVersionResponseDto() {
         // Default constructor
     }
 
-    public FirmwareVersionResponseDataDto(final List<FirmwareVersionDto> firmwareVersions) {
+    public FirmwareVersionResponseDto(final List<FirmwareVersionDto> firmwareVersions) {
         super();
         this.firmwareVersions = firmwareVersions;
     }

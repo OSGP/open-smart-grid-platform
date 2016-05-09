@@ -9,18 +9,18 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.util.Date;
 
-public class PeriodicMeterReadsGasResponseDto extends MeterReadsGasResponseDto {
+public class PeriodicMeterReadsGasResponseItemDto extends MeterReadsGasResponseDto {
 
     private static final long serialVersionUID = -3180493284656180074L;
 
     final AmrProfileStatusCodeDto amrProfileStatusCode;
 
-    public PeriodicMeterReadsGasResponseDto(final Date logTime, final DlmsMeterValueDto consumption, final Date captureTime) {
+    public PeriodicMeterReadsGasResponseItemDto(final Date logTime, final DlmsMeterValueDto consumption, final Date captureTime) {
         super(logTime, consumption, captureTime);
         this.amrProfileStatusCode = null;
     }
 
-    public PeriodicMeterReadsGasResponseDto(final Date logTime, final DlmsMeterValueDto consumption, final Date captureTime,
+    public PeriodicMeterReadsGasResponseItemDto(final Date logTime, final DlmsMeterValueDto consumption, final Date captureTime,
             final AmrProfileStatusCodeDto amrProfileStatusCode) {
         super(logTime, consumption, captureTime);
         this.amrProfileStatusCode = amrProfileStatusCode;

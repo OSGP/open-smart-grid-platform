@@ -10,12 +10,12 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.io.Serializable;
 
-public class RetrieveConfigurationObjectsRequestDto implements Serializable {
+public class RetrieveConfigurationObjectsRequest implements Serializable {
 
     private static final long serialVersionUID = -8095383777073559173L;
     private final String deviceIdentification;
 
-    public RetrieveConfigurationObjectsRequestDto(final String deviceIdentification) {
+    public RetrieveConfigurationObjectsRequest(final String deviceIdentification) {
         super();
         this.deviceIdentification = deviceIdentification;
     }

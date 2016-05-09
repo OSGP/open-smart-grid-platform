@@ -7,88 +7,28 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
-public class PeriodicMeterReadsResponseDto extends MeterReadsResponseDto {
+public class PeriodicMeterReadsResponseDto extends ActionResponseDto {
 
-    private static final long serialVersionUID = 2123390296585369208L;
+    private static final long serialVersionUID = -156966569210717654L;
 
-    final AmrProfileStatusCodeDto amrProfileStatusCode;
+    private final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads;
+    private final PeriodTypeDto periodType;
 
-    /**
-     * Constructor taking all data. Use for conversion purposes, when all fields
-     * need to be copied.
-     *
-     * @param logTime
-     * @param activeEnergyImport
-     * @param activeEnergyExport
-     * @param activeEnergyImportTariffOne
-     * @param activeEnergyImportTariffTwo
-     * @param activeEnergyExportTariffOne
-     * @param activeEnergyExportTariffTwo
-     * @param amrProfileStatusCode
-     */
-    public PeriodicMeterReadsResponseDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
-            final DlmsMeterValueDto activeEnergyExport, final DlmsMeterValueDto activeEnergyImportTariffOne,
-            final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
-            final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        super(logTime, activeEnergyImport, activeEnergyExport, activeEnergyImportTariffOne,
-                activeEnergyImportTariffTwo, activeEnergyExportTariffOne, activeEnergyExportTariffTwo);
-
-        this.amrProfileStatusCode = amrProfileStatusCode;
+    public PeriodicMeterReadsResponseDto(final PeriodTypeDto periodType,
+            final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads) {
+        this.periodicMeterReads = new ArrayList<PeriodicMeterReadsResponseItemDto>(periodicMeterReads);
+        this.periodType = periodType;
     }
 
-    /**
-     * Constructor for monthly reads. Does not hold a AMR profile status.
-     *
-     * @param logTime
-     * @param activeEnergyImportTariffOne
-     * @param activeEnergyImportTariffTwo
-     * @param activeEnergyExportTariffOne
-     * @param activeEnergyExportTariffTwo
-     */
-    public PeriodicMeterReadsResponseDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
-            final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
-            final DlmsMeterValueDto activeEnergyExportTariffTwo) {
-
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, null);
+    public List<PeriodicMeterReadsResponseItemDto> getPeriodicMeterReads() {
+        return new ArrayList<PeriodicMeterReadsResponseItemDto>(this.periodicMeterReads);
     }
 
-    /**
-     * Constructor for daily reads. Holds tariff values and AMR profile status.
-     *
-     * @param logTime
-     * @param activeEnergyImportTariffOne
-     * @param activeEnergyImportTariffTwo
-     * @param activeEnergyExportTariffOne
-     * @param activeEnergyExportTariffTwo
-     * @param amrProfileStatusCode
-     */
-    public PeriodicMeterReadsResponseDto(final Date logTime, final DlmsMeterValueDto activeEnergyImportTariffOne,
-            final DlmsMeterValueDto activeEnergyImportTariffTwo, final DlmsMeterValueDto activeEnergyExportTariffOne,
-            final DlmsMeterValueDto activeEnergyExportTariffTwo, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        this(logTime, null, null, activeEnergyImportTariffOne, activeEnergyImportTariffTwo,
-                activeEnergyExportTariffOne, activeEnergyExportTariffTwo, amrProfileStatusCode);
-    }
-
-    /**
-     * Constructor for interval reads.
-     *
-     * @param logTime
-     * @param activeEnergyImport
-     * @param activeEnergyExport
-     * @param amrProfileStatusCode
-     */
-    public PeriodicMeterReadsResponseDto(final Date logTime, final DlmsMeterValueDto activeEnergyImport,
-            final DlmsMeterValueDto activeEnergyExport, final AmrProfileStatusCodeDto amrProfileStatusCode) {
-        super(logTime, activeEnergyImport, activeEnergyExport, null, null, null, null);
-
-        this.amrProfileStatusCode = amrProfileStatusCode;
-    }
-
-    public AmrProfileStatusCodeDto getAmrProfileStatusCode() {
-        return this.amrProfileStatusCode;
+    public PeriodTypeDto getPeriodType() {
+        return this.periodType;
     }
 
 }
