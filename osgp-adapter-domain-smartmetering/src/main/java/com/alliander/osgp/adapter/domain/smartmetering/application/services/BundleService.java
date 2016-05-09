@@ -18,10 +18,10 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Manag
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequestDataList;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessagesResponseListDto;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesActionListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -59,7 +59,7 @@ public class BundleService {
     }
 
     public void handleBundle(final DeviceMessageMetadata deviceMessageMetadata,
-            final BundleMessageRequestDataList bundleMessageDataContainer) throws FunctionalException {
+            final BundleMessageRequest bundleMessageDataContainer) throws FunctionalException {
 
         LOGGER.info("handleBundle for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -80,11 +80,11 @@ public class BundleService {
 
     public void handleBundleResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final BundleMessagesResponseListDto bundleResponseMessageDataContainerDto)
+            final BundleMessagesResponseDto bundleResponseMessageDataContainerDto)
             throws FunctionalException {
 
         // convert bundleResponseMessageDataContainerDto back to core object
-        final BundleResponseMessagesResponseListDto bundleResponseMessageDataContainer = this.actionMapperResponseService
+        final BundleMessagesResponse bundleResponseMessageDataContainer = this.actionMapperResponseService
                 .mapAllActions(bundleResponseMessageDataContainerDto);
 
         // Send the response final containing the events final to the

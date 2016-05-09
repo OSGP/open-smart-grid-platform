@@ -12,14 +12,14 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageResponseListDto;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 
 public class EventMessageDataContainerConverter
         extends
-        CustomConverter<EventMessageResponseListDto, com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData> {
+        CustomConverter<EventMessagesResponse, com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData> {
 
     @Override
-    public FindEventsResponseData convert(final EventMessageResponseListDto source,
+    public FindEventsResponseData convert(final EventMessagesResponse source,
             final Type<? extends FindEventsResponseData> destinationType) {
         if (source == null) {
             return null;

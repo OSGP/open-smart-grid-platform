@@ -33,7 +33,7 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageResponseListDto;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
@@ -122,8 +122,8 @@ public class ManagementService {
         for (final MeterResponseData meterResponseData : meterResponseDataList) {
             final Serializable messageData = meterResponseData.getMessageData();
 
-            if (messageData instanceof EventMessageResponseListDto) {
-                events.addAll(((EventMessageResponseListDto) messageData).getEvents());
+            if (messageData instanceof EventMessagesResponse) {
+                events.addAll(((EventMessagesResponse) messageData).getEvents());
                 meterResponseDataToDeleteList.add(meterResponseData);
             } else {
                 /**

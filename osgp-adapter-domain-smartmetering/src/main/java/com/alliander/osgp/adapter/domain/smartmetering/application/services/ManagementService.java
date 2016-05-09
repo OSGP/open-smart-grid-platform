@@ -18,7 +18,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Manag
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreRequestMessageSender;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceResponseMessageSender;
 import com.alliander.osgp.domain.core.entities.SmartMeter;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageResponseListDto;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseListDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestListDto;
@@ -76,8 +76,8 @@ public class ManagementService {
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
             final EventMessageDataResponseListDto eventMessageDataContainerDto) {
 
-        final EventMessageResponseListDto eventMessageDataContainer = this.managementMapper.map(
-                eventMessageDataContainerDto, EventMessageResponseListDto.class);
+        final EventMessagesResponse eventMessageDataContainer = this.managementMapper.map(
+                eventMessageDataContainerDto, EventMessagesResponse.class);
 
         // Send the response containing the events to the webservice-adapter
         final ResponseMessage responseMessage = new ResponseMessage(deviceMessageMetadata.getCorrelationUid(),

@@ -35,7 +35,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalenda
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsGasRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequestDataList;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAdministrativeStatusData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetAssociationLnObjectsRequestData;
@@ -167,7 +167,7 @@ public class ActionMapperService {
         CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDataDto.class);
     }
 
-    public BundleMessagesActionListDto mapAllActions(final BundleMessageRequestDataList bundleMessageDataContainer,
+    public BundleMessagesActionListDto mapAllActions(final BundleMessageRequest bundleMessageDataContainer,
             final SmartMeter smartMeter) throws FunctionalException {
 
         final List<ActionDto> actionValueObjectDtoList = new ArrayList<ActionDto>();
