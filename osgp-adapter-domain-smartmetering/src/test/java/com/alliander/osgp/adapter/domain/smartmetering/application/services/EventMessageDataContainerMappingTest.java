@@ -21,7 +21,7 @@ import org.junit.Test;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 
 public class EventMessageDataContainerMappingTest {
 
@@ -31,7 +31,7 @@ public class EventMessageDataContainerMappingTest {
     @Test
     public void testWithNullList() {
         // build test data
-        final EventMessageDataResponseListDto containerDto = new EventMessageDataResponseListDto(null);
+        final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(null);
         // actual mapping
         final EventMessagesResponse container = this.managementMapper.map(containerDto,
                 EventMessagesResponse.class);
@@ -45,7 +45,7 @@ public class EventMessageDataContainerMappingTest {
     @Test
     public void testWithEmptyList() {
         // build test data
-        final EventMessageDataResponseListDto containerDto = new EventMessageDataResponseListDto(new ArrayList<EventDto>());
+        final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(new ArrayList<EventDto>());
         // actual mapping
         final EventMessagesResponse container = this.managementMapper.map(containerDto,
                 EventMessagesResponse.class);
@@ -63,7 +63,7 @@ public class EventMessageDataContainerMappingTest {
         final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2));
         final ArrayList<EventDto> events = new ArrayList<EventDto>();
         events.add(event);
-        final EventMessageDataResponseListDto containerDto = new EventMessageDataResponseListDto(events);
+        final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(events);
         // actual mapping
         final EventMessagesResponse container = this.managementMapper.map(containerDto,
                 EventMessagesResponse.class);

@@ -32,9 +32,9 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -94,7 +94,7 @@ public class MonitoringService {
                         ComponentType.DOMAIN_SMART_METERING, new AssertionError(
                                 "Meter for gas reads should have a channel configured."));
             }
-            final PeriodicMeterReadsQueryDto periodicMeterReadsQuery = new PeriodicMeterReadsQueryDto(
+            final PeriodicMeterReadsRequest periodicMeterReadsQuery = new PeriodicMeterReadsRequest(
                     PeriodTypeDto.valueOf(periodicMeterReadsValueQuery.getPeriodType().name()),
                     periodicMeterReadsValueQuery.getBeginDate(), periodicMeterReadsValueQuery.getEndDate(),
                     ChannelDto.fromNumber(smartMeter.getChannel()));
@@ -120,14 +120,14 @@ public class MonitoringService {
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                             .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                             smartMeter.getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
-                                    PeriodicMeterReadsQueryDto.class)), deviceMessageMetadata.getMessageType(),
+                                    PeriodicMeterReadsRequest.class)), deviceMessageMetadata.getMessageType(),
                     deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
     }
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final PeriodicMeterReadsResponseListDto periodMeterReadsValueDTO) {
+            final PeriodicMeterReadsResponseDto periodMeterReadsValueDTO) {
 
         LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 
@@ -147,7 +147,7 @@ public class MonitoringService {
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType deviceResult, final OsgpException exception,
-            final PeriodicMeterReadGasResponseListDto periodMeterReadsValueDTO) {
+            final PeriodicMeterReadGasResponseDto periodMeterReadsValueDTO) {
 
         LOGGER.info("handlePeriodicMeterReadsresponse for MessageType: {}", deviceMessageMetadata.getMessageType());
 

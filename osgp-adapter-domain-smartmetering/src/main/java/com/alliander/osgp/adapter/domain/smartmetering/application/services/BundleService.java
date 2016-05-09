@@ -20,7 +20,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessageRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesActionListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -67,7 +67,7 @@ public class BundleService {
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
-        final BundleMessagesActionListDto bundleMessageDataContainerDto = this.actionMapperService.mapAllActions(
+        final BundleMessagesRequest bundleMessageDataContainerDto = this.actionMapperService.mapAllActions(
                 bundleMessageDataContainer, smartMeter);
 
         LOGGER.info("Sending request message to core.");

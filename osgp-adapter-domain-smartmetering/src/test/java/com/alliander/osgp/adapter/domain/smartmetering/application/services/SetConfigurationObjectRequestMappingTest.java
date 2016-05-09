@@ -32,7 +32,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 
 // Testing the mapping of ConfigurationObjectRequest objects in ConfigurationService.
 public class SetConfigurationObjectRequestMappingTest {
@@ -51,8 +51,8 @@ public class SetConfigurationObjectRequestMappingTest {
         // actual mapping
         final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequest, SetConfigurationObjectRequest.class);
 
         // check values
         assertNotNull(setConfigurationObjectRequestDto);
@@ -74,8 +74,8 @@ public class SetConfigurationObjectRequestMappingTest {
         // actual mapping
         final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequest, SetConfigurationObjectRequest.class);
 
         // check values
         assertNotNull(setConfigurationObjectRequestDto);
@@ -100,8 +100,8 @@ public class SetConfigurationObjectRequestMappingTest {
         // actual mapping
         final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequest, SetConfigurationObjectRequest.class);
 
         // check values
         assertNotNull(setConfigurationObjectRequestDto);
@@ -136,8 +136,8 @@ public class SetConfigurationObjectRequestMappingTest {
         // actual mapping
         final SetConfigurationObjectRequest setConfigurationObjectRequest = new SetConfigurationObjectRequest(
                 deviceIdentification, setConfigurationObjectRequestData);
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequest, SetConfigurationObjectRequestDto.class);
+        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequest, SetConfigurationObjectRequest.class);
 
         // check values
         assertNotNull(setConfigurationObjectRequestDto);
@@ -151,7 +151,7 @@ public class SetConfigurationObjectRequestMappingTest {
     // SetConfigurationObjectRequest is mapped.
     private void checkSetConfigurationObjectRequestData(final GprsOperationModeType gprsOperationModeType,
             final ConfigurationFlagType configurationFlagType, final ConfigurationFlags configurationFlags,
-            final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto) {
+            final SetConfigurationObjectRequest setConfigurationObjectRequestDto) {
 
         // check if SetConfigurationObjectRequesDataDto object is present
         final SetConfigurationObjectRequestDataDto setConfigurationObjectRequestDataDto = setConfigurationObjectRequestDto

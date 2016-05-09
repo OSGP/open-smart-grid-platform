@@ -22,7 +22,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequ
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 
 // Tests the mapping of SpecialDaysRequest objects in ConfigurationService.
 public class SpecialDaysRequestMappingTest {
@@ -38,8 +38,8 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequestDto.class);
+        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequest.class);
 
         assertNotNull(specialDaysRequestDto);
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
@@ -56,8 +56,8 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequestDto.class);
+        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequest.class);
 
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
         assertNotNull(specialDaysRequestDto.getSpecialDaysRequestData());
@@ -78,8 +78,8 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequestDto.class);
+        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequest.class);
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
 
         final SpecialDaysRequestDataDto requestDataDto = specialDaysRequestDto.getSpecialDaysRequestData();
@@ -108,8 +108,8 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequestDto.class);
+        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequest.class);
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
 
         final SpecialDaysRequestDataDto requestDataDto = specialDaysRequestDto.getSpecialDaysRequestData();

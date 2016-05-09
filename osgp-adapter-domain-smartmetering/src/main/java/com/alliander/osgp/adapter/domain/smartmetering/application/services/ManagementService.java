@@ -20,8 +20,8 @@ import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.ws.WebServiceRe
 import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
@@ -67,14 +67,14 @@ public class ManagementService {
         final RequestMessage requestMessage = new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                 smartMeter.getIpAddress(), this.managementMapper.map(findEventsQueryMessageDataContainer,
-                        FindEventsRequestListDto.class));
+                        FindEventsRequestList.class));
         this.osgpCoreRequestMessageSender.send(requestMessage, deviceMessageMetadata.getMessageType(),
                 deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
     }
 
     public void handleFindEventsResponse(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessageResultType responseMessageResultType, final OsgpException osgpException,
-            final EventMessageDataResponseListDto eventMessageDataContainerDto) {
+            final EventMessageDataResponseDto eventMessageDataContainerDto) {
 
         final EventMessagesResponse eventMessageDataContainer = this.managementMapper.map(
                 eventMessageDataContainerDto, EventMessagesResponse.class);

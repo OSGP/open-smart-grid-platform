@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.MonitoringService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
@@ -34,22 +34,22 @@ public class PeriodicMeterReadsresponseMessageProcessor extends OsgpCoreResponse
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
         final Object dataObject = responseMessage.getDataObject();
-        return dataObject instanceof PeriodicMeterReadsResponseListDto
-                || dataObject instanceof PeriodicMeterReadGasResponseListDto;
+        return dataObject instanceof PeriodicMeterReadsResponseDto
+                || dataObject instanceof PeriodicMeterReadGasResponseDto;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) {
 
-        if (responseMessage.getDataObject() instanceof PeriodicMeterReadsResponseListDto) {
-            final PeriodicMeterReadsResponseListDto periodicMeterReadsContainer = (PeriodicMeterReadsResponseListDto) responseMessage
+        if (responseMessage.getDataObject() instanceof PeriodicMeterReadsResponseDto) {
+            final PeriodicMeterReadsResponseDto periodicMeterReadsContainer = (PeriodicMeterReadsResponseDto) responseMessage
                     .getDataObject();
 
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceMessageMetadata, responseMessage.getResult(),
                     osgpException, periodicMeterReadsContainer);
-        } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadGasResponseListDto) {
-            final PeriodicMeterReadGasResponseListDto periodicMeterReadsContainerGas = (PeriodicMeterReadGasResponseListDto) responseMessage
+        } else if (responseMessage.getDataObject() instanceof PeriodicMeterReadGasResponseDto) {
+            final PeriodicMeterReadGasResponseDto periodicMeterReadsContainerGas = (PeriodicMeterReadGasResponseDto) responseMessage
                     .getDataObject();
 
             this.monitoringService.handlePeriodicMeterReadsresponse(deviceMessageMetadata, responseMessage.getResult(),

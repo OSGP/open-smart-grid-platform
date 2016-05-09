@@ -22,7 +22,7 @@ import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.Manag
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventLogCategory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
 
 public class FindEventsRequestMessageDataContainerMappingTest {
 
@@ -34,8 +34,8 @@ public class FindEventsRequestMessageDataContainerMappingTest {
         // build test data
         final FindEventsRequestDataList container = new FindEventsRequestDataList(null);
         // actual mapping
-        final FindEventsRequestListDto containerDto = this.managementMapper.map(container,
-                FindEventsRequestListDto.class);
+        final FindEventsRequestList containerDto = this.managementMapper.map(container,
+                FindEventsRequestList.class);
         // test mapping
         assertNotNull(containerDto);
         assertNull(containerDto.getFindEventsQueryList());
@@ -48,8 +48,8 @@ public class FindEventsRequestMessageDataContainerMappingTest {
         final FindEventsRequestDataList container = new FindEventsRequestDataList(
                 new ArrayList<FindEventsRequestData>());
         // actual mapping
-        final FindEventsRequestListDto containerDto = this.managementMapper.map(container,
-                FindEventsRequestListDto.class);
+        final FindEventsRequestList containerDto = this.managementMapper.map(container,
+                FindEventsRequestList.class);
         // test mapping
         assertNotNull(containerDto);
         assertNotNull(containerDto.getFindEventsQueryList());
@@ -67,8 +67,8 @@ public class FindEventsRequestMessageDataContainerMappingTest {
         final FindEventsRequestDataList container = new FindEventsRequestDataList(
                 findEventsQueryList);
         // actual mapping
-        final FindEventsRequestListDto containerDto = this.managementMapper.map(container,
-                FindEventsRequestListDto.class);
+        final FindEventsRequestList containerDto = this.managementMapper.map(container,
+                FindEventsRequestList.class);
         // test mapping
         assertNotNull(containerDto);
         assertNotNull(containerDto.getFindEventsQueryList());
