@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesActionListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseDto;
 
 /**
  * Class for processing find events request messages
@@ -50,6 +50,6 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
         final List<ActionResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(conn, device,
                 bundleMessageDataContainerDto);
 
-        return new BundleMessagesResponseListDto(actionValueObjectResponseDtoList);
+        return new BundleMessagesResponseDto(actionValueObjectResponseDtoList);
     }
 }

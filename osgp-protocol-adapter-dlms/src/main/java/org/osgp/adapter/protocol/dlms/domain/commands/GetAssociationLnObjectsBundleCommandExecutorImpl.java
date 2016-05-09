@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDataDto;
 
 @Component
@@ -39,7 +39,7 @@ BundleCommandExecutor<GetAssociationLnObjectsRequestDataDto, ActionResponseDto> 
             final GetAssociationLnObjectsRequestDataDto getAssociationLnObjectsRequestDataDto) {
 
         try {
-            return new AssociationLnObjectsResponseDataDto(this.getAssociationLnObjectsCommandExecutor.execute(conn,
+            return new AssociationLnObjectsResponseDto(this.getAssociationLnObjectsCommandExecutor.execute(conn,
                     device, null));
         } catch (final ProtocolAdapterException e) {
 
