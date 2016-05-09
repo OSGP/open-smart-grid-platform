@@ -21,13 +21,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationOb
 @Component
 public class GetSpecificConfigurationObjectBundleCommandExecutorImpl extends
         BundleCommandExecutor<SpecificConfigurationObjectRequestDataDto, ActionResponseDto> implements
-        GetSpecificConfigurationObjectCommandExecutor {
+        GetSpecificConfigurationObjectBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(GetSpecificConfigurationObjectBundleCommandExecutorImpl.class);
 
     @Autowired
-    private GetSpecificConfigurationObjectCommandExecutorImpl getSpecificConfigurationObjectCommandExecutorImpl;
+    private GetSpecificConfigurationObjectCommandExecutor getSpecificConfigurationObjectCommandExecutorImpl;
 
     public GetSpecificConfigurationObjectBundleCommandExecutorImpl() {
         super(SpecificConfigurationObjectRequestDataDto.class);
