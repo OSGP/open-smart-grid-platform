@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BundleMessagesResponseListDto implements Serializable {
+public class BundleMessagesResponseDto implements Serializable {
 
     /**
      * Serial Version UID.
@@ -20,7 +20,7 @@ public class BundleMessagesResponseListDto implements Serializable {
 
     private List<ActionResponseDto> actionValueObjectResponseDtoList;
 
-    public BundleMessagesResponseListDto(
+    public BundleMessagesResponseDto(
             final List<ActionResponseDto> actionValueObjectResponseDtoList) {
         this.actionValueObjectResponseDtoList = actionValueObjectResponseDtoList;
     }
