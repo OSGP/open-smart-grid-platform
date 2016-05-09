@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -41,7 +40,9 @@ import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
 public final class RsaEncrypterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RsaEncrypterService.class);
     private static final String ALGORITHM = "RSA";
-    // private static final String ALGORITHM = "RSA/NONE/NoPadding"; // you may need to use this line
+
+    // private static final String ALGORITHM = "RSA/NONE/NoPadding"; // you may
+    // need to use this line
 
     private RsaEncrypterService() {
         /*
@@ -59,7 +60,9 @@ public final class RsaEncrypterService {
         Cipher cipher;
         try {
             cipher = Cipher.getInstance(ALGORITHM);
-            //cipher = Cipher.getInstance(ALGORITHM, "BC"); // you may need this line when bouncy castle is required but not loaded as security provider
+            // cipher = Cipher.getInstance(ALGORITHM, "BC"); // you may need
+            // this line when bouncy castle is required but not loaded as
+            // security provider
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             return cipher.doFinal(inputData);
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
