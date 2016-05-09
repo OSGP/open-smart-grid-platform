@@ -21,8 +21,8 @@ import org.joda.time.DateTime;
  */
 public class ActionDtoBuilder {
 
-    public FindEventsRequestDataDto makeFindEventsQueryDto() {
-        return new FindEventsRequestDataDto(EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
+    public FindEventsRequest makeFindEventsQueryDto() {
+        return new FindEventsRequest(EventLogCategoryDto.STANDARD_EVENT_LOG, new DateTime(), new DateTime());
     }
 
     public ActualMeterReadsDataDto makeActualMeterReadsDataDtoAction() {
@@ -48,8 +48,8 @@ public class ActionDtoBuilder {
         return new PeriodicMeterReadsRequestDataDto(PeriodTypeDto.DAILY, new Date(), new Date());
     }
 
-    public PeriodicMeterReadsGasRequestDataDto makePeriodicMeterReadsGasRequestDataDto() {
-        return new PeriodicMeterReadsGasRequestDataDto(PeriodTypeDto.DAILY, new Date(), new Date(), ChannelDto.ONE);
+    public PeriodicMeterReadsGasRequest makePeriodicMeterReadsGasRequestDataDto() {
+        return new PeriodicMeterReadsGasRequest(PeriodTypeDto.DAILY, new Date(), new Date(), ChannelDto.ONE);
     }
 
     public AdministrativeStatusTypeDataDto makeAdministrativeStatusTypeDataDto() {
@@ -68,10 +68,10 @@ public class ActionDtoBuilder {
         return new GMeterInfoDto(1, "EXXXX001692675614");
     }
 
-    public SetAlarmNotificationsRequestDataDto makeSetAlarmNotificationsRequestDataDto() {
+    public SetAlarmNotificationsRequest makeSetAlarmNotificationsRequestDataDto() {
         final Set<AlarmNotificationDto> notifications = new HashSet<>();
         final AlarmNotificationsDto notification = new AlarmNotificationsDto(notifications);
-        final SetAlarmNotificationsRequestDataDto result = new SetAlarmNotificationsRequestDataDto(notification);
+        final SetAlarmNotificationsRequest result = new SetAlarmNotificationsRequest(notification);
         return result;
     }
 
@@ -84,7 +84,7 @@ public class ActionDtoBuilder {
         return result;
     }
 
-    public SetPushSetupAlarmRequestDataDto makeSetPushSetupAlarmRequestDataDto() {
+    public SetPushSetupAlarmRequest makeSetPushSetupAlarmRequestDataDto() {
         final CosemObisCodeDto cosemCode = new CosemObisCodeDto(1, 1, 1, 1, 1, 1);
         final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
@@ -92,11 +92,11 @@ public class ActionDtoBuilder {
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
         final PushSetupAlarmDto pushAlarm = new PushSetupAlarmDto(cosemCode, objectDefinitions, destinationAndMethod,
                 windowElemenents, 1, 1, 1);
-        final SetPushSetupAlarmRequestDataDto result = new SetPushSetupAlarmRequestDataDto(pushAlarm);
+        final SetPushSetupAlarmRequest result = new SetPushSetupAlarmRequest(pushAlarm);
         return result;
     }
 
-    public SetPushSetupSmsRequestDataDto mkeSetPushSetupSmsRequestDataDto() {
+    public SetPushSetupSmsRequest mkeSetPushSetupSmsRequestDataDto() {
         final CosemObisCodeDto cosemCode = new CosemObisCodeDto(1, 1, 1, 1, 1, 1);
         final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(
@@ -104,20 +104,20 @@ public class ActionDtoBuilder {
         final List<WindowElementDto> windowElemenents = new ArrayList<>();
         final PushSetupSmsDto setupSms = new PushSetupSmsDto(cosemCode, objectDefinitions, destinationAndMethod,
                 windowElemenents, 1, 1, 1);
-        final SetPushSetupSmsRequestDataDto result = new SetPushSetupSmsRequestDataDto(setupSms);
+        final SetPushSetupSmsRequest result = new SetPushSetupSmsRequest(setupSms);
         return result;
     }
 
-    public SynchronizeTimeRequestDataDto makeSynchronizeTimeRequestDataDto() {
-        return new SynchronizeTimeRequestDataDto();
+    public SynchronizeTimeRequestDto makeSynchronizeTimeRequestDataDto() {
+        return new SynchronizeTimeRequestDto();
     }
 
-    public GetConfigurationRequestDataDto makeGetConfigurationRequestDataDto() {
-        return new GetConfigurationRequestDataDto();
+    public GetConfigurationRequest makeGetConfigurationRequestDataDto() {
+        return new GetConfigurationRequest();
     }
 
-    public GetFirmwareVersionRequestDataDto makeGetFirmwareVersionRequestDataDto() {
-        return new GetFirmwareVersionRequestDataDto();
+    public GetFirmwareVersionRequest makeGetFirmwareVersionRequestDataDto() {
+        return new GetFirmwareVersionRequest();
     }
 
     public CosemDateTimeDto makeCosemDateTimeDto() {

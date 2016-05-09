@@ -45,13 +45,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 
 @Service(value = "dlmsConfigurationService")
@@ -106,7 +106,7 @@ public class ConfigurationService {
     private ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     public void requestSpecialDays(final ClientConnection conn, final DlmsDevice device,
-            final SpecialDaysRequestDto specialDaysRequest) throws ProtocolAdapterException {
+            final SpecialDaysRequest specialDaysRequest) throws ProtocolAdapterException {
 
         // The Special days towards the Smart Meter
         final SpecialDaysRequestDataDto specialDaysRequestData = specialDaysRequest.getSpecialDaysRequestData();
@@ -129,7 +129,7 @@ public class ConfigurationService {
     // === REQUEST Configuration Object DATA ===
 
     public void requestSetConfiguration(final ClientConnection conn, final DlmsDevice device,
-            final SetConfigurationObjectRequestDto setConfigurationObjectRequest) throws ProtocolAdapterException {
+            final SetConfigurationObjectRequest setConfigurationObjectRequest) throws ProtocolAdapterException {
 
         // Configuration Object towards the Smart Meter
         final ConfigurationObjectDto configurationObject = setConfigurationObjectRequest
@@ -266,13 +266,13 @@ public class ConfigurationService {
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
-    public void replaceKeys(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
+    public void replaceKeys(final ClientConnection conn, final DlmsDevice device, final SetKeysRequest keySet)
             throws ProtocolAdapterException {
 
         this.replaceKeySet(conn, device, keySet);
     }
 
-    private void replaceKeySet(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
+    private void replaceKeySet(final ClientConnection conn, final DlmsDevice device, final SetKeysRequest keySet)
             throws ProtocolAdapterException {
 
         try {

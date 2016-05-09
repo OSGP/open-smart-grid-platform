@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequest;
 
 @Component()
 public class SetPushSetupSmsBundleCommandExecutorImpl extends
-        BundleCommandExecutor<SetPushSetupSmsRequestDataDto, ActionResponseDto> implements
+        BundleCommandExecutor<SetPushSetupSmsRequest, ActionResponseDto> implements
         SetPushSetupSmsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupSmsBundleCommandExecutorImpl.class);
@@ -32,12 +32,12 @@ public class SetPushSetupSmsBundleCommandExecutorImpl extends
     private SetPushSetupSmsCommandExecutor setPushSetupSmsCommandExecutor;
 
     public SetPushSetupSmsBundleCommandExecutorImpl() {
-        super(SetPushSetupSmsRequestDataDto.class);
+        super(SetPushSetupSmsRequest.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetPushSetupSmsRequestDataDto setPushSetupSmsRequestDataDto) {
+            final SetPushSetupSmsRequest setPushSetupSmsRequestDataDto) {
 
         AccessResultCode accessResultCode;
         try {

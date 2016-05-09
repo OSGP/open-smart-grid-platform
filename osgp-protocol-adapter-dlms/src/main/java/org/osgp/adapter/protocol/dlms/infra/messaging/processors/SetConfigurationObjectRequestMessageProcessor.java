@@ -20,7 +20,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -39,7 +39,7 @@ public class SetConfigurationObjectRequestMessageProcessor extends DeviceRequest
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final SetConfigurationObjectRequestDto setConfigurationObjectRequest = (SetConfigurationObjectRequestDto) requestObject;
+        final SetConfigurationObjectRequest setConfigurationObjectRequest = (SetConfigurationObjectRequest) requestObject;
 
         this.configurationService.requestSetConfiguration(conn, device, setConfigurationObjectRequest);
         return null;

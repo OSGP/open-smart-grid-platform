@@ -19,12 +19,12 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequest;
 
 @Component
 public class GetFirmwareVersionsBundleCommandExecutorImpl extends
-        BundleCommandExecutor<GetFirmwareVersionRequestDataDto, ActionResponseDto> implements
+        BundleCommandExecutor<GetFirmwareVersionRequest, ActionResponseDto> implements
         GetFirmwareVersionsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionsBundleCommandExecutorImpl.class);
@@ -33,12 +33,12 @@ public class GetFirmwareVersionsBundleCommandExecutorImpl extends
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
     public GetFirmwareVersionsBundleCommandExecutorImpl() {
-        super(GetFirmwareVersionRequestDataDto.class);
+        super(GetFirmwareVersionRequest.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetFirmwareVersionRequestDataDto getFirmwareVersionRequestDataDto) {
+            final GetFirmwareVersionRequest getFirmwareVersionRequestDataDto) {
 
         List<FirmwareVersionDto> resultList;
         try {
@@ -50,7 +50,7 @@ public class GetFirmwareVersionsBundleCommandExecutorImpl extends
                     + device.getDeviceIdentification());
         }
 
-        return new FirmwareVersionResponseDataDto(resultList);
+        return new FirmwareVersionResponseDto(resultList);
     }
 
     public void setGetFirmwareVersionsCommandExecutor(

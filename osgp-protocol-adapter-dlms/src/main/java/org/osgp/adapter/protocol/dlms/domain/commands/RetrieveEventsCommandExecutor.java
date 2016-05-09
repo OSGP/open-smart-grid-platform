@@ -33,10 +33,10 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
 
 @Component()
-public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEventsRequestDataDto, List<EventDto>> {
+public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEventsRequest, List<EventDto>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsCommandExecutor.class);
 
@@ -68,7 +68,7 @@ public class RetrieveEventsCommandExecutor implements CommandExecutor<FindEvents
 
     @Override
     public List<EventDto> execute(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsRequestDataDto findEventsQuery) throws ProtocolAdapterException {
+            final FindEventsRequest findEventsQuery) throws ProtocolAdapterException {
 
         final SelectiveAccessDescription selectiveAccessDescription = this.getSelectiveAccessDescription(
                 findEventsQuery.getFrom(), findEventsQuery.getUntil());

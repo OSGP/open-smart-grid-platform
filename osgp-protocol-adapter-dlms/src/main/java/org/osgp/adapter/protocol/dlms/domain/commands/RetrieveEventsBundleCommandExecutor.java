@@ -8,7 +8,7 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
 
-public interface RetrieveEventsBundleCommandExecutor extends CommandExecutor<FindEventsRequestDataDto, ActionResponseDto> {
+public interface RetrieveEventsBundleCommandExecutor extends CommandExecutor<FindEventsRequest, ActionResponseDto> {
 }

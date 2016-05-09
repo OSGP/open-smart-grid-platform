@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesActionListDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseDto;
 
 /**
@@ -40,12 +40,12 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
 
-        if (!(requestObject instanceof BundleMessagesActionListDto)) {
+        if (!(requestObject instanceof BundleMessagesRequest)) {
             throw new ProtocolAdapterException(
                     "Expected request object of type BundleMessageDataContainer. In stead of "
                             + requestObject.getClass());
         }
-        final BundleMessagesActionListDto bundleMessageDataContainerDto = (BundleMessagesActionListDto) requestObject;
+        final BundleMessagesRequest bundleMessageDataContainerDto = (BundleMessagesRequest) requestObject;
 
         final List<ActionResponseDto> actionValueObjectResponseDtoList = this.bundleService.callExecutors(conn, device,
                 bundleMessageDataContainerDto);

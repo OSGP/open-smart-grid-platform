@@ -13,14 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequest;
 
 public class SetPushSetupAlarmBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
         SetPushSetupAlarmBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetPushSetupAlarmRequestDataDto object) throws ProtocolAdapterException {
+            final SetPushSetupAlarmRequest object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

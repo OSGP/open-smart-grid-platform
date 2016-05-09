@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
 @Component()
 public class SynchronizeTimeBundleCommandExecutorImpl extends
-        BundleCommandExecutor<SynchronizeTimeRequestDataDto, ActionResponseDto> implements
+        BundleCommandExecutor<SynchronizeTimeRequestDto, ActionResponseDto> implements
         SynchronizeTimeBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SynchronizeTimeBundleCommandExecutorImpl.class);
@@ -32,12 +32,12 @@ public class SynchronizeTimeBundleCommandExecutorImpl extends
     private SynchronizeTimeCommandExecutor synchronizeTimeCommandExecutor;
 
     public SynchronizeTimeBundleCommandExecutorImpl() {
-        super(SynchronizeTimeRequestDataDto.class);
+        super(SynchronizeTimeRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SynchronizeTimeRequestDataDto synchronizeTimeRequestDataDto) {
+            final SynchronizeTimeRequestDto synchronizeTimeRequestDataDto) {
 
         AccessResultCode accessResultCode;
         try {

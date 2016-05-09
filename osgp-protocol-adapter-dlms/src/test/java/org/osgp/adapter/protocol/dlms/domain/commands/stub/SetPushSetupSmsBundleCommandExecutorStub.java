@@ -13,14 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequest;
 
 public class SetPushSetupSmsBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
         SetPushSetupSmsBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetPushSetupSmsRequestDataDto object) throws ProtocolAdapterException {
+            final SetPushSetupSmsRequest object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

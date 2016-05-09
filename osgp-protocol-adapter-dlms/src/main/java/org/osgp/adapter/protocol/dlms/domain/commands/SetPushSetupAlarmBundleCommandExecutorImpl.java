@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequest;
 
 @Component()
 public class SetPushSetupAlarmBundleCommandExecutorImpl extends
-        BundleCommandExecutor<SetPushSetupAlarmRequestDataDto, ActionResponseDto> implements
+        BundleCommandExecutor<SetPushSetupAlarmRequest, ActionResponseDto> implements
         SetPushSetupAlarmBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetPushSetupAlarmBundleCommandExecutorImpl.class);
@@ -32,12 +32,12 @@ public class SetPushSetupAlarmBundleCommandExecutorImpl extends
     private SetPushSetupAlarmCommandExecutor setPushSetupAlarmCommandExecutor;
 
     public SetPushSetupAlarmBundleCommandExecutorImpl() {
-        super(SetPushSetupAlarmRequestDataDto.class);
+        super(SetPushSetupAlarmRequest.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetPushSetupAlarmRequestDataDto setPushSetupAlarmRequestDataDto) {
+            final SetPushSetupAlarmRequest setPushSetupAlarmRequestDataDto) {
 
         AccessResultCode accessResultCode;
         try {

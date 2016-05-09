@@ -25,8 +25,8 @@ import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDtoBuilder;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesActionListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BundleServiceTest {
@@ -48,7 +48,7 @@ public class BundleServiceTest {
     @Test
     public void testHappyFlow() throws ProtocolAdapterException {
         final List<ActionDto> actionDtoList = this.makeActions();
-        final BundleMessagesActionListDto dto = new BundleMessagesActionListDto(actionDtoList);
+        final BundleMessagesRequest dto = new BundleMessagesRequest(actionDtoList);
         final List<ActionResponseDto> result = this.callExecutors(dto);
         Assert.assertTrue(result != null);
         Assert.assertEquals(actionDtoList.size(), result.size());
@@ -57,14 +57,14 @@ public class BundleServiceTest {
     @Test
     public void testException() {
         final List<ActionDto> actionDtoList = this.makeActions();
-        final BundleMessagesActionListDto dto = new BundleMessagesActionListDto(actionDtoList);
-        this.getStub(FindEventsRequestDataDto.class).failWith(new ProtocolAdapterException("simulate error"));
+        final BundleMessagesRequest dto = new BundleMessagesRequest(actionDtoList);
+        this.getStub(FindEventsRequest.class).failWith(new ProtocolAdapterException("simulate error"));
         final List<ActionResponseDto> result = this.callExecutors(dto);
         Assert.assertTrue(result != null);
         Assert.assertEquals(actionDtoList.size(), result.size());
     }
 
-    private List<ActionResponseDto> callExecutors(final BundleMessagesActionListDto dto) {
+    private List<ActionResponseDto> callExecutors(final BundleMessagesRequest dto) {
         final DlmsDevice device = new DlmsDevice();
         return this.bundleService.callExecutors(null, device, dto);
     }

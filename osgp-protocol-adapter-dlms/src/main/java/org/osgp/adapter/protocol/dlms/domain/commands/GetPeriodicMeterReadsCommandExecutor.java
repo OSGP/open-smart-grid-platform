@@ -33,13 +33,13 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.AmrProfileStatusCodeFla
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseListDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
+CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -86,8 +86,8 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
     private AmrProfileStatusCodeHelperService amrProfileStatusCodeHelperService;
 
     @Override
-    public PeriodicMeterReadsResponseListDto execute(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQueryDto periodicMeterReadsRequest) throws ProtocolAdapterException {
+    public PeriodicMeterReadsResponseDto execute(final ClientConnection conn, final DlmsDevice device,
+            final PeriodicMeterReadsRequest periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
         final DateTime beginDateTime = new DateTime(periodicMeterReadsRequest.getBeginDate());
@@ -109,7 +109,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
                     + periodType, address));
         }
 
-        final List<PeriodicMeterReadsResponseDto> periodicMeterReads = new ArrayList<>();
+        final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads = new ArrayList<>();
 
         final DataObject resultData = this.dlmsHelperService.readDataObject(getResultList.get(0),
                 "Periodic E-Meter Reads");
@@ -121,11 +121,11 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
                     bufferedObjects, getResultList);
         }
 
-        return new PeriodicMeterReadsResponseListDto(periodType, periodicMeterReads);
+        return new PeriodicMeterReadsResponseDto(periodType, periodicMeterReads);
     }
 
     private void processNextPeriodicMeterReads(final PeriodTypeDto periodType, final DateTime beginDateTime,
-            final DateTime endDateTime, final List<PeriodicMeterReadsResponseDto> periodicMeterReads,
+            final DateTime endDateTime, final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final List<GetResult> results) throws ProtocolAdapterException {
 
         final CosemDateTimeDto cosemDateTime = this.dlmsHelperService.readDateTime(
@@ -164,7 +164,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
         }
     }
 
-    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsResponseDto> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForInterval(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
                     throws ProtocolAdapterException {
 
@@ -178,12 +178,12 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
                 bufferedObjects.get(BUFFER_INDEX_A_NEG), results.get(RESULT_INDEX_IMPORT_2_OR_EXPORT).resultData(),
                 "negativeActiveEnergy");
 
-        final PeriodicMeterReadsResponseDto nextMeterReads = new PeriodicMeterReadsResponseDto(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
                 positiveActiveEnergy, negativeActiveEnergy, amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
     }
 
-    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReadsResponseDto> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForDaily(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
                     throws ProtocolAdapterException {
 
@@ -203,7 +203,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2), results.get(RESULT_INDEX_EXPORT_2).resultData(),
                 "negativeActiveEnergyTariff2");
 
-        final PeriodicMeterReadsResponseDto nextMeterReads = new PeriodicMeterReadsResponseDto(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
                 positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
                 negativeActiveEnergyTariff2, amrProfileStatusCode);
         periodicMeterReads.add(nextMeterReads);
@@ -231,7 +231,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
         return new AmrProfileStatusCodeDto(flags);
     }
 
-    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsResponseDto> periodicMeterReads,
+    private void processNextPeriodicMeterReadsForMonthly(final List<PeriodicMeterReadsResponseItemDto> periodicMeterReads,
             final List<DataObject> bufferedObjects, final DateTime bufferedDateTime, final List<GetResult> results)
                     throws ProtocolAdapterException {
 
@@ -252,7 +252,7 @@ CommandExecutor<PeriodicMeterReadsQueryDto, PeriodicMeterReadsResponseListDto> {
                 bufferedObjects.get(BUFFER_INDEX_A_NEG_RATE_2 - 1), results.get(RESULT_INDEX_EXPORT_2).resultData(),
                 "negativeActiveEnergyTariff2");
 
-        final PeriodicMeterReadsResponseDto nextMeterReads = new PeriodicMeterReadsResponseDto(bufferedDateTime.toDate(),
+        final PeriodicMeterReadsResponseItemDto nextMeterReads = new PeriodicMeterReadsResponseItemDto(bufferedDateTime.toDate(),
                 positiveActiveEnergyTariff1, positiveActiveEnergyTariff2, negativeActiveEnergyTariff1,
                 negativeActiveEnergyTariff2);
         periodicMeterReads.add(nextMeterReads);
