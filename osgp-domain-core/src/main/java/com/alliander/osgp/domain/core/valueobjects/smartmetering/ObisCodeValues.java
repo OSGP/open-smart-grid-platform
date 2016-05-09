@@ -15,14 +15,14 @@ public class ObisCodeValues implements Serializable {
 
     private static final long serialVersionUID = 7600691210538237856L;
 
-    private short a;
-    private short b;
-    private short c;
-    private short d;
-    private short e;
-    private short f;
+    private byte a;
+    private byte b;
+    private byte c;
+    private byte d;
+    private byte e;
+    private byte f;
 
-    public ObisCodeValues(final short a, final short b, final short c, final short d, final short e, final short f) {
+    public ObisCodeValues(final byte a, final byte b, final byte c, final byte d, final byte e, final byte f) {
         super();
         this.a = a;
         this.b = b;
@@ -32,27 +32,27 @@ public class ObisCodeValues implements Serializable {
         this.f = f;
     }
 
-    public short getA() {
+    public byte getA() {
         return this.a;
     }
 
-    public short getB() {
+    public byte getB() {
         return this.b;
     }
 
-    public short getC() {
+    public byte getC() {
         return this.c;
     }
 
-    public short getD() {
+    public byte getD() {
         return this.d;
     }
 
-    public short getE() {
+    public byte getE() {
         return this.e;
     }
 
-    public short getF() {
+    public byte getF() {
         return this.f;
     }
 
