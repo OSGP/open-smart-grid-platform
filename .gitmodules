@@ -1,5 +1,5 @@
 [submodule "Shared"]
 	path = Shared
 	url = https://github.com/OSGP/Shared.git
-	branch = SLIM-534-retrieve-specific-single
+	branch = development
 
