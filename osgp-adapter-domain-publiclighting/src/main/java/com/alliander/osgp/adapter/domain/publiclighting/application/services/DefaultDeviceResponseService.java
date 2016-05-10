@@ -48,8 +48,7 @@ public class DefaultDeviceResponseService {
             if (e instanceof OsgpException) {
                 osgpException = (OsgpException) e;
             } else {
-                osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                        "Unexpected exception while retrieving response message", e);
+                osgpException = new TechnicalException(ComponentType.UNKNOWN, "An unknown error occurred", e);
             }
         }
 
