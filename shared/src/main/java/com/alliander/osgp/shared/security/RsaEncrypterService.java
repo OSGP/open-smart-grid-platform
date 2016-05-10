@@ -41,6 +41,9 @@ public final class RsaEncrypterService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RsaEncrypterService.class);
     private static final String ALGORITHM = "RSA";
 
+    // private static final String ALGORITHM = "RSA/NONE/NoPadding"; // you may
+    // need to use this line
+
     private RsaEncrypterService() {
         /*
          * Private Constructor will prevent the instantiation of this class
@@ -57,6 +60,9 @@ public final class RsaEncrypterService {
         Cipher cipher;
         try {
             cipher = Cipher.getInstance(ALGORITHM);
+            // cipher = Cipher.getInstance(ALGORITHM, "BC"); // you may need
+            // this line when bouncy castle is required but not loaded as
+            // security provider
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             return cipher.doFinal(inputData);
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
