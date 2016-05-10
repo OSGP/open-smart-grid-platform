@@ -32,8 +32,8 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -82,8 +82,8 @@ public class ConfigurationService {
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
-        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequest.class);
+        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
@@ -104,8 +104,8 @@ public class ConfigurationService {
 
         LOGGER.info(SENDING_REQUEST_MESSAGE_TO_CORE_LOG_MSG);
 
-        final SetConfigurationObjectRequest setConfigurationObjectRequestDto = this.configurationMapper.map(
-                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequest.class);
+        final SetConfigurationObjectRequestDto setConfigurationObjectRequestDto = this.configurationMapper.map(
+                setConfigurationObjectRequestValueObject, SetConfigurationObjectRequestDto.class);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(deviceMessageMetadata.getCorrelationUid(),
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),

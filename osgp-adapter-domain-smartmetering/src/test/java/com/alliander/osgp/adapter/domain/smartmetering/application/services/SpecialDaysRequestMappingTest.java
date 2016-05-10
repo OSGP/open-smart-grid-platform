@@ -17,11 +17,12 @@ import org.junit.Test;
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDay;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDayDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDto;
 
 // Tests the mapping of SpecialDaysRequest objects in ConfigurationService.
 public class SpecialDaysRequestMappingTest {
@@ -34,12 +35,12 @@ public class SpecialDaysRequestMappingTest {
     public void testSpecialDaysRequestMappingNull() {
         final String deviceIdentification = "nr1";
         final SpecialDaysRequestData specialDaysRequestData = null;
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject = 
-                new com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequest.class);
+        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequestDto.class);
 
         assertNotNull(specialDaysRequestDto);
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
@@ -53,12 +54,12 @@ public class SpecialDaysRequestMappingTest {
     public void testSpecialDaysRequestMappingEmptyList() {
         final String deviceIdentification = "nr1";
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().build();
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject = 
-                new com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequest.class);
+        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequestDto.class);
 
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
         assertNotNull(specialDaysRequestDto.getSpecialDaysRequestData());
@@ -76,12 +77,12 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDay specialDay = new SpecialDay(new CosemDate(year, month, dayOfMonth), dayId);
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().addSpecialDay(
                 specialDay).build();
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject = 
-                new com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequest.class);
+        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequestDto.class);
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
 
         final SpecialDaysRequestDataDto requestDataDto = specialDaysRequestDto.getSpecialDaysRequestData();
@@ -107,12 +108,12 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDay specialDay = new SpecialDay(new CosemDate(), dayId);
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().addSpecialDay(
                 specialDay).build();
-        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest specialDaysRequestValueObject = 
-                new com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
-        final SpecialDaysRequest specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
-                SpecialDaysRequest.class);
+        final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
+                SpecialDaysRequestDto.class);
         assertEquals(deviceIdentification, specialDaysRequestDto.getDeviceIdentification());
 
         final SpecialDaysRequestDataDto requestDataDto = specialDaysRequestDto.getSpecialDaysRequestData();
