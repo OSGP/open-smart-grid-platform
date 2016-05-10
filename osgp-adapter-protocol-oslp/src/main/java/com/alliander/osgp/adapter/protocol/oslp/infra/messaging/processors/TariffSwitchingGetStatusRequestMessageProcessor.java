@@ -158,7 +158,7 @@ public class TariffSwitchingGetStatusRequestMessageProcessor extends DeviceReque
             LOGGER.error("Device Response Exception", e);
             result = ResponseMessageResultType.NOT_OK;
             osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+                    "Exception occurred while getting device status", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,

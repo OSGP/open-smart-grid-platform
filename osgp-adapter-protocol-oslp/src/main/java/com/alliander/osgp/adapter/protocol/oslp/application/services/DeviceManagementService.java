@@ -106,7 +106,7 @@ public class DeviceManagementService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during updateKey", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+                    "Exception occurred while updating key", e);
 
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
@@ -138,7 +138,7 @@ public class DeviceManagementService {
         } catch (final Exception e) {
             LOGGER.error("Unexpected exception during revokeKey", e);
             final TechnicalException ex = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+                    "Exception occurred while revoking key", e);
             this.sendResponseMessage(domain, domainVersion, messageType, correlationUid, organisationIdentification,
                     deviceIdentification, ResponseMessageResultType.NOT_OK, ex, responseMessageSender);
         }

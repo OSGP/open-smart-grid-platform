@@ -187,7 +187,7 @@ OslpEnvelopeProcessor {
             result = ResponseMessageResultType.NOT_OK;
             dataObject = messageData;
             osgpException = new TechnicalException(ComponentType.UNKNOWN,
-                    "Unexpected exception while retrieving response message", e);
+                    "Exception occurred while getting device power usage history", e);
         }
 
         final ProtocolResponseMessage responseMessage = new ProtocolResponseMessage(domain, domainVersion, messageType,
