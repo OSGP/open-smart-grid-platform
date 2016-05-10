@@ -53,21 +53,8 @@ public class RetrieveConfigurationObjectsCommandExecutor implements CommandExecu
         LOGGER.debug("Retrieving configuration objects for class id: {}, obis code: {}, attribute id: {}", CLASS_ID,
                 OBIS_CODE, ATTRIBUTE_ID);
 
-        List<GetResult> getResultList;
-        try {
-            getResultList = conn.get(attributeAddress);
-        } catch (IOException | TimeoutException e) {
-            throw new ConnectionException(e);
-        }
-
-        if (getResultList.isEmpty()) {
-            throw new ProtocolAdapterException("No GetResult received while retrieving configuration objects.");
-        }
-
-        if (getResultList.size() > 1 || getResultList.get(0) == null) {
-            throw new ProtocolAdapterException("Expected 1 GetResult while retrieving configuration objects, got "
-                    + getResultList.size());
-        }
+        final List<GetResult> getResultList = this.dlmsHelper.getAndCheck(conn, device,
+                "Retrieving configuration objects for class", attributeAddress);
 
         final DataObject resultData = getResultList.get(0).resultData();
         if (!resultData.isComplex()) {
