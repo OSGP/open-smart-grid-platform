@@ -14,15 +14,15 @@ import java.io.Serializable;
 public class ObisCodeValues implements Serializable {
 
     private static final long serialVersionUID = 7600691210538237856L;
-    
+
     private byte a;
     private byte b;
     private byte c;
     private byte d;
     private byte e;
     private byte f;
-    
-    public ObisCodeValues(byte a, byte b, byte c, byte d, byte e, byte f) {
+
+    public ObisCodeValues(final byte a, final byte b, final byte c, final byte d, final byte e, final byte f) {
         super();
         this.a = a;
         this.b = b;
@@ -33,63 +33,72 @@ public class ObisCodeValues implements Serializable {
     }
 
     public byte getA() {
-        return a;
+        return this.a;
     }
 
     public byte getB() {
-        return b;
+        return this.b;
     }
 
     public byte getC() {
-        return c;
+        return this.c;
     }
 
     public byte getD() {
-        return d;
+        return this.d;
     }
 
     public byte getE() {
-        return e;
+        return this.e;
     }
 
     public byte getF() {
-        return f;
+        return this.f;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + a;
-        result = prime * result + b;
-        result = prime * result + c;
-        result = prime * result + d;
-        result = prime * result + e;
-        result = prime * result + f;
+        result = prime * result + this.a;
+        result = prime * result + this.b;
+        result = prime * result + this.c;
+        result = prime * result + this.d;
+        result = prime * result + this.e;
+        result = prime * result + this.f;
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (this.getClass() != obj.getClass()) {
             return false;
-        ObisCodeValues other = (ObisCodeValues) obj;
-        if (a != other.a)
+        }
+        final ObisCodeValues other = (ObisCodeValues) obj;
+        if (this.a != other.a) {
             return false;
-        if (b != other.b)
+        }
+        if (this.b != other.b) {
             return false;
-        if (c != other.c)
+        }
+        if (this.c != other.c) {
             return false;
-        if (d != other.d)
+        }
+        if (this.d != other.d) {
             return false;
-        if (e != other.e)
+        }
+        if (this.e != other.e) {
             return false;
-        if (f != other.f)
+        }
+        if (this.f != other.f) {
             return false;
+        }
         return true;
     }
 }

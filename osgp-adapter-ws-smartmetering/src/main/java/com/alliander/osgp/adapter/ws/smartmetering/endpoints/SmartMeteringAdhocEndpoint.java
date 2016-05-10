@@ -26,6 +26,10 @@ import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigur
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigurationObjectsAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigurationObjectsRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.RetrieveConfigurationObjectsResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectAsyncRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectAsyncResponse;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectRequest;
+import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SpecificConfigurationObjectResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncRequest;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeAsyncResponse;
 import com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.SynchronizeTimeRequest;
@@ -119,6 +123,52 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "SpecificConfigurationObjectAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @ResponsePayload
+    public SpecificConfigurationObjectResponse getSpecificConfigurationObjectResponse(
+            @RequestPayload final SpecificConfigurationObjectAsyncRequest request) throws OsgpException {
+
+        SpecificConfigurationObjectResponse response = null;
+        try {
+            response = new SpecificConfigurationObjectResponse();
+            final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
+
+            if (meterResponseData.getMessageData() instanceof String) {
+                response.setConfigurationData((String) meterResponseData.getMessageData());
+            }
+
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SpecificConfigurationObjectRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
+    @ResponsePayload
+    public SpecificConfigurationObjectAsyncResponse getSpecificConfigurationObject(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final SpecificConfigurationObjectRequest request,
+            @MessagePriority final String messagePriority, @ScheduleTime final String scheduleTime)
+                    throws OsgpException {
+
+        final SpecificConfigurationObjectAsyncResponse response = new SpecificConfigurationObjectAsyncResponse();
+
+        final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest getSpecificConfigurationObjectRequest = this.adhocMapper
+                .map(request,
+                        com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest.class);
+
+        final String correlationUid = this.adhocService
+                .enqueueSpecificConfigurationObjectRequest(organisationIdentification,
+                        request.getDeviceIdentification(), getSpecificConfigurationObjectRequest,
+                        MessagePriorityEnum.getMessagePriority(messagePriority),
+                        this.adhocMapper.map(scheduleTime, Long.class));
+
+        response.setCorrelationUid(correlationUid);
+        response.setDeviceIdentification(request.getDeviceIdentification());
+
+        return response;
+    }
+
     @PayloadRoot(localPart = "RetrieveConfigurationObjectsAsyncRequest", namespace = SMARTMETER_ADHOC_NAMESPACE)
     @ResponsePayload
     public RetrieveConfigurationObjectsResponse getRetrieveConfigurationObjectsResponse(
@@ -127,8 +177,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         RetrieveConfigurationObjectsResponse response = null;
         try {
             response = new RetrieveConfigurationObjectsResponse();
-            final MeterResponseData meterResponseData = this.adhocService
-                    .dequeueRetrieveConfigurationObjectsResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof String) {
@@ -173,8 +222,7 @@ public class SmartMeteringAdhocEndpoint extends SmartMeteringEndpoint {
         GetAssociationLnObjectsResponse response = null;
         try {
             response = new GetAssociationLnObjectsResponse();
-            final MeterResponseData meterResponseData = this.adhocService
-                    .dequeueGetAssociationLnObjectsResponse(request.getCorrelationUid());
+            final MeterResponseData meterResponseData = this.adhocService.dequeueResponse(request.getCorrelationUid());
 
             response.setResult(OsgpResultType.fromValue(meterResponseData.getResultType().getValue()));
             if (meterResponseData.getMessageData() instanceof AssociationLnListType) {

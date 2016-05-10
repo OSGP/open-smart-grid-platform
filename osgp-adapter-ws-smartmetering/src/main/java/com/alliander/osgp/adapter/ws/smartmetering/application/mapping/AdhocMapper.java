@@ -20,6 +20,7 @@ public class AdhocMapper extends ConfigurableMapper {
         // This converter is needed to ensure correct mapping of dates and times
         mapperFactory.getConverterFactory().registerConverter(new XsdDateTimeToLongConverter());
         mapperFactory.getConverterFactory().registerConverter(new CosemObisCodeConverter());
+        mapperFactory.getConverterFactory().registerConverter(new ObisCodeValuesConverter());
     }
 
 }
