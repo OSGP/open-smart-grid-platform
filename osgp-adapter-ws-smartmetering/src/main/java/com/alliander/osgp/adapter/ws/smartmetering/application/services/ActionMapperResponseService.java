@@ -104,14 +104,14 @@ public class ActionMapperResponseService {
         CLASS_MAP.put(AlarmRegister.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.AlarmRegister.class);
         CLASS_MAP
-                .put(AdministrativeStatusTypeResponse.class,
-                        com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
+        .put(AdministrativeStatusTypeResponse.class,
+                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.AdministrativeStatusResponseData.class);
         CLASS_MAP.put(PeriodicMeterReadsContainer.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponseData.class);
         CLASS_MAP.put(PeriodicMeterReadsContainerGas.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponseData.class);
         CLASS_MAP.put(GetConfigurationResponseContainer.class,
-                com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetConfigurationResponseData.class);
+                com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetConfigurationResponseData.class);
         CLASS_MAP.put(FirmwareVersionResponseContainer.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponseData.class);
         CLASS_MAP.put(AssociationLnObjectsResponseData.class,
