@@ -76,8 +76,6 @@ public class InstallationService {
         LOGGER.info("addMeter for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        // TODO: bypassing authorization, this should be fixed.
-
         SmartMeter device = this.smartMeteringDeviceRepository.findByDeviceIdentification(deviceMessageMetadata
                 .getDeviceIdentification());
         if (device == null) {

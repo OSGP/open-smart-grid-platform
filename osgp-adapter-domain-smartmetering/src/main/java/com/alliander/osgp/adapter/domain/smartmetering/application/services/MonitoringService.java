@@ -76,8 +76,6 @@ public class MonitoringService {
         LOGGER.info("requestPeriodicMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        // TODO: bypassing authorization, this should be fixed.
-
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
@@ -121,7 +119,7 @@ public class MonitoringService {
                             .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                             smartMeter.getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
                                     PeriodicMeterReadsQueryDto.class)), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
     }
 
@@ -142,7 +140,7 @@ public class MonitoringService {
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(periodMeterReadsValueDTO,
                                 PeriodicMeterReadsContainer.class), deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+                                deviceMessageMetadata.getMessageType());
     }
 
     public void handlePeriodicMeterReadsresponse(final DeviceMessageMetadata deviceMessageMetadata,
@@ -162,12 +160,12 @@ public class MonitoringService {
                         .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(), result,
                         exception, this.monitoringMapper.map(periodMeterReadsValueDTO,
                                 PeriodicMeterReadsContainerGas.class), deviceMessageMetadata.getMessagePriority()),
-                deviceMessageMetadata.getMessageType());
+                                deviceMessageMetadata.getMessageType());
     }
 
     public void requestActualMeterReads(final DeviceMessageMetadata deviceMessageMetadata,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.ActualMeterReadsQuery actualMeterReadsQuery)
-            throws FunctionalException {
+                    throws FunctionalException {
 
         LOGGER.info("requestActualMeterReads for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
@@ -204,8 +202,8 @@ public class MonitoringService {
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                             .getOrganisationIdentification(), gatewayDevice.getDeviceIdentification(), gatewayDevice
                             .getIpAddress(), new ActualMeterReadsQueryDto(
-                            ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
-                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
+                                    ChannelDto.fromNumber(smartMeter.getChannel()))), deviceMessageMetadata.getMessageType(),
+                                    deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         } else {
             this.osgpCoreRequestMessageSender.send(
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
