@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.shared.exceptionhandling.RsaEncrypterException;
-import com.alliander.osgp.shared.security.RsaEncrypterService;
+import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
+import com.alliander.osgp.shared.security.EncrypterService;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -59,8 +59,8 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
         OBIS_HASHMAP.put(4, OBIS_CODE_INTERVAL_MBUS_4);
     }
 
-    @Value("${device.security.key.path.priv}")
-    private String privateKeyPath;
+    @Value("${device.security.key.path.decrypt}")
+    private String keyPath;
 
     @Override
     public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,
@@ -69,10 +69,10 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedEncryptionKey = RsaEncrypterService.decrypt(
-                    Hex.decode(protocolMeterInfo.getEncryptionKey()), this.privateKeyPath);
-            final byte[] decryptedMasterKey = RsaEncrypterService.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()),
-                    this.privateKeyPath);
+            final byte[] decryptedEncryptionKey = EncrypterService.decrypt(
+                    Hex.decode(protocolMeterInfo.getEncryptionKey()), this.keyPath);
+            final byte[] decryptedMasterKey = EncrypterService.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()),
+                    this.keyPath);
 
             final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
@@ -94,7 +94,7 @@ CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
         } catch (final IOException e) {
             LOGGER.error("Unexpected exception while connecting with device", e);
             throw new ConnectionException(e);
-        } catch (final RsaEncrypterException e) {
+        } catch (final EncrypterException e) {
             LOGGER.error("Unexpected exception during decryption of security keys", e);
             throw new ProtocolAdapterException("Unexpected exception during decryption of security keys, reason = "
                     + e.getMessage());
