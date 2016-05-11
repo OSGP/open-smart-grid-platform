@@ -42,8 +42,8 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
                     "Expected request object of type BundleMessageDataContainer. In stead of "
                             + requestObject.getClass());
         }
-        final BundleMessagesRequest bundleMessageDataContainerDto = (BundleMessagesRequest) requestObject;
+        final BundleMessagesRequest bundleMessagesRequest = (BundleMessagesRequest) requestObject;
 
-        return this.bundleService.callExecutors(conn, device, bundleMessageDataContainerDto);
+        return this.bundleService.callExecutors(conn, device, bundleMessagesRequest);
     }
 }

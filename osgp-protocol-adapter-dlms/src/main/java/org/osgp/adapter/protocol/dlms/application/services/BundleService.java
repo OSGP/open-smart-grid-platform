@@ -33,9 +33,9 @@ public class BundleService {
     private CommandExecutorMap bundleCommandExecutorMap;
 
     public BundleMessagesRequest callExecutors(final ClientConnection conn, final DlmsDevice device,
-            final BundleMessagesRequest bundleMessageDataContainerDto) {
+            final BundleMessagesRequest bundleMessagesRequest) {
 
-        final List<ActionDto> actionList = bundleMessageDataContainerDto.getActionList();
+        final List<ActionDto> actionList = bundleMessagesRequest.getActionList();
         for (final ActionDto actionDto : actionList) {
 
             // Only execute the request when there is no response available yet.
@@ -77,6 +77,6 @@ public class BundleService {
             }
         }
 
-        return bundleMessageDataContainerDto;
+        return bundleMessagesRequest;
     }
 }
