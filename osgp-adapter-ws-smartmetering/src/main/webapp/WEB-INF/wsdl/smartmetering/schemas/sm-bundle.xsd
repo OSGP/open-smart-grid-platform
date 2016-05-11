@@ -42,7 +42,7 @@
 				<xsd:element name="SetPushSetupAlarmRequest" type="smconf:SetPushSetupAlarmRequestData" />
 				<xsd:element name="SetPushSetupSmsRequest" type="smconf:SetPushSetupSmsRequestData" />
 				<xsd:element name="SynchronizeTimeRequest" type="adhoc:SynchronizeTimeRequestData" />
-				<xsd:element name="GetConfigurationRequest" type="smconf:GetConfigurationRequestData" />
+				<xsd:element name="GetConfigurationRequest" type="adhoc:GetConfigurationRequestData" />
 				<xsd:element name="GetFirmwareVersionRequest" type="smconf:GetFirmwareVersionRequestData" />
 				<xsd:element name="GetSpecificConfigurationObjectRequest" type="adhoc:SpecificConfigurationObjectRequestData" />
 				<xsd:element name="SetKeysRequest" type="smconf:SetKeysRequestData" />

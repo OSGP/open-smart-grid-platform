@@ -50,25 +50,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:complexType name="GetConfigurationRequestData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Query">
-        <xsd:sequence>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
-  <xsd:complexType name="GetConfigurationResponseData">
-    <xsd:complexContent>
-      <xsd:extension base="common:Response">
-        <xsd:sequence>
-          <xsd:element name="configurationData" type="xsd:string" />
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
   <xsd:complexType name="GetFirmwareVersionRequestData">
     <xsd:complexContent>
       <xsd:extension base="common:Query">
