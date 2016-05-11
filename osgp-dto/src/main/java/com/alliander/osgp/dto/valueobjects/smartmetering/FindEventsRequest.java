@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import org.joda.time.DateTime;
 
-public class FindEventsRequest implements ActionDto {
+public class FindEventsRequest implements ActionRequestDto {
 
     /**
      * Serial Version UID.

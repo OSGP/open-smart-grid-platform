@@ -19,8 +19,8 @@ public class ObisCodeValuesDto implements Serializable {
     private byte d;
     private byte e;
     private byte f;
-    
-    public ObisCodeValuesDto(byte a, byte b, byte c, byte d, byte e, byte f) {
+
+    public ObisCodeValuesDto(final byte a, final byte b, final byte c, final byte d, final byte e, final byte f) {
         super();
         this.a = a;
         this.b = b;
@@ -31,26 +31,26 @@ public class ObisCodeValuesDto implements Serializable {
     }
 
     public byte getA() {
-        return a;
+        return this.a;
     }
 
     public byte getB() {
-        return b;
+        return this.b;
     }
 
     public byte getC() {
-        return c;
+        return this.c;
     }
 
     public byte getD() {
-        return d;
+        return this.d;
     }
 
     public byte getE() {
-        return e;
+        return this.e;
     }
 
     public byte getF() {
-        return f;
+        return this.f;
     }
 }

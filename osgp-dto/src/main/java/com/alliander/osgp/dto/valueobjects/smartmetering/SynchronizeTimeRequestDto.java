@@ -8,7 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 
-public class SynchronizeTimeRequestDto implements ActionDto {
+public class SynchronizeTimeRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = 2569975731784782614L;
 

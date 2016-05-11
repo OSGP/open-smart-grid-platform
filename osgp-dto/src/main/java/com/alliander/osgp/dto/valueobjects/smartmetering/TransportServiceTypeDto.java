@@ -19,11 +19,4 @@ public enum TransportServiceTypeDto {
     ZIG_BEE,
     MANUFACTURER_SPECIFIC;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static TransportServiceTypeDto fromValue(final String v) {
-        return valueOf(v);
-    }
 }

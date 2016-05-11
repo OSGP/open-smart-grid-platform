@@ -11,7 +11,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 
-public class SetAlarmNotificationsRequest implements ActionDto {
+public class SetAlarmNotificationsRequest implements ActionRequestDto {
 
     private static final long serialVersionUID = -1833812559523610412L;
 

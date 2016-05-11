@@ -13,12 +13,4 @@ public enum PeriodTypeDto {
     MONTHLY,
     INTERVAL;
 
-    public String value() {
-        return this.name();
-    }
-
-    public static PeriodTypeDto fromValue(final String v) {
-        return valueOf(v);
-    }
-
 }

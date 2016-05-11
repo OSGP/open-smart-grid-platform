@@ -8,7 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 
-public class ActualMeterReadsDataGasDto implements ActionDto {
+public class ActualMeterReadsDataGasDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -3285918794296226542L;
 

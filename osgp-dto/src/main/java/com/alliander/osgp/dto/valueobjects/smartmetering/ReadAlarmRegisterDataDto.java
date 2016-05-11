@@ -8,7 +8,7 @@
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 
-public class ReadAlarmRegisterDataDto implements ActionDto {
+public class ReadAlarmRegisterDataDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -409127537479426977L;
 

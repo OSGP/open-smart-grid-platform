@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import org.apache.commons.codec.binary.Hex;
 
-public class SetKeysRequest implements ActionDto {
+public class SetKeysRequest implements ActionRequestDto {
 
     private static final long serialVersionUID = 1573954141584647005L;
 

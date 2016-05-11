@@ -7,7 +7,7 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class SetPushSetupSmsRequest implements ActionDto {
+public class SetPushSetupSmsRequest implements ActionRequestDto {
 
     private static final long serialVersionUID = -7127981780182253661L;
 

@@ -25,7 +25,7 @@ public class BundleMessagesResponseDto implements Serializable {
         this.actionValueObjectResponseDtoList = actionValueObjectResponseDtoList;
     }
 
-    public List<ActionResponseDto> getActionValueObjectResponseDto() {
+    public List<ActionResponseDto> getAllResponses() {
         return new ArrayList<ActionResponseDto>(this.actionValueObjectResponseDtoList);
     }
 }
