@@ -10,8 +10,7 @@ package org.osgp.adapter.protocol.dlms.infra.messaging.processors;
 import java.io.Serializable;
 
 import org.openmuc.jdlms.ClientConnection;
-import org.osgp.adapter.protocol.dlms.application.jasper.sessionproviders.exceptions.SessionProviderException;
-import org.osgp.adapter.protocol.dlms.application.services.ConfigurationService;
+import org.osgp.adapter.protocol.dlms.application.services.AdhocService;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageProcessor;
@@ -19,28 +18,24 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
-import com.alliander.osgp.shared.exceptionhandling.OsgpException;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 
-/**
- * Class for processing set push setup sms request messages
- */
 @Component
-public class SetPushSetupSmsRequestMessageProcessor extends DeviceRequestMessageProcessor {
+public class GetSpecificConfigurationObjectRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
-    private ConfigurationService configurationService;
+    private AdhocService adhocService;
 
-    public SetPushSetupSmsRequestMessageProcessor() {
-        super(DeviceRequestMessageType.SET_PUSH_SETUP_SMS);
+    protected GetSpecificConfigurationObjectRequestMessageProcessor() {
+        super(DeviceRequestMessageType.GET_SPECIFIC_CONFIGURATION_OBJECT);
     }
 
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
-            final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
+            final Serializable requestObject) throws ProtocolAdapterException {
+        final SpecificConfigurationObjectRequestDto specificConfigurationObjectRequestDataDto = (SpecificConfigurationObjectRequestDto) requestObject;
 
-        final PushSetupSmsDto pushSetupSms = (PushSetupSmsDto) requestObject;
-        this.configurationService.setPushSetupSms(conn, device, pushSetupSms);
-        return null;
+        return this.adhocService
+                .getSpecificConfigurationObject(conn, device, specificConfigurationObjectRequestDataDto);
     }
 }

@@ -141,7 +141,7 @@ public class ConfigurationService {
         LOGGER.info(VISUAL_SEPARATOR);
         LOGGER.info("******** Configuration Object: 0-0:94.31.3.255 *******");
         LOGGER.info(VISUAL_SEPARATOR);
-        LOGGER.info("Operation mode:{} ", gprsOperationModeType.value());
+        LOGGER.info("Operation mode:{} ", gprsOperationModeType.name());
         LOGGER.info("Flags:");
 
         for (final ConfigurationFlagDto configurationFlag : configurationFlags.getConfigurationFlag()) {
@@ -205,7 +205,7 @@ public class ConfigurationService {
         final ProtocolMeterInfo protocolMeterInfo = new ProtocolMeterInfo(gMeterInfo.getChannel(),
                 gMeterInfo.getDeviceIdentification(), gMeterDevice.getValidSecurityKey(
                         SecurityKeyType.G_METER_ENCRYPTION).getKey(), gMeterDevice.getValidSecurityKey(
-                                SecurityKeyType.G_METER_MASTER).getKey());
+                        SecurityKeyType.G_METER_MASTER).getKey());
 
         this.setEncryptionKeyExchangeOnGMeterCommandExecutor.execute(conn, device, protocolMeterInfo);
 

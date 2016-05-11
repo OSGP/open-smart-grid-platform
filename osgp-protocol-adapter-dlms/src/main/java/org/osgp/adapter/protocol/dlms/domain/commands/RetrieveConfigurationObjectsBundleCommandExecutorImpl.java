@@ -53,9 +53,4 @@ public class RetrieveConfigurationObjectsBundleCommandExecutorImpl extends
 
     }
 
-    public void setRetrieveConfigurationObjectsCommandExecutor(
-            final RetrieveConfigurationObjectsCommandExecutor retrieveConfigurationObjectsCommandExecutor) {
-        this.retrieveConfigurationObjectsCommandExecutor = retrieveConfigurationObjectsCommandExecutor;
-    }
-
 }

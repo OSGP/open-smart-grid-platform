@@ -22,7 +22,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 /**
  * Class for processing add meter request messages
  */
-@Component("dlmsAddMeterRequestMessageProcessor")
+@Component
 public class AddMeterRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired

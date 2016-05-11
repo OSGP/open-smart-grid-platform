@@ -20,11 +20,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.osgp.adapter.protocol.dlms.domain.commands.stub.AbstractCommandExecutorStub;
 import org.osgp.adapter.protocol.dlms.domain.commands.stub.CommandExecutorMapStub;
 import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
+import org.osgp.adapter.protocol.dlms.exceptions.ConnectionException;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDtoBuilder;
-import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
 
@@ -49,9 +50,9 @@ public class BundleServiceTest {
     public void testHappyFlow() throws ProtocolAdapterException {
         final List<ActionDto> actionDtoList = this.makeActions();
         final BundleMessagesRequest dto = new BundleMessagesRequest(actionDtoList);
-        final List<ActionResponseDto> result = this.callExecutors(dto);
+        final BundleMessagesRequest result = this.callExecutors(dto);
         Assert.assertTrue(result != null);
-        Assert.assertEquals(actionDtoList.size(), result.size());
+        this.assertResult(result);
     }
 
     @Test
@@ -59,42 +60,93 @@ public class BundleServiceTest {
         final List<ActionDto> actionDtoList = this.makeActions();
         final BundleMessagesRequest dto = new BundleMessagesRequest(actionDtoList);
         this.getStub(FindEventsRequest.class).failWith(new ProtocolAdapterException("simulate error"));
-        final List<ActionResponseDto> result = this.callExecutors(dto);
-        Assert.assertTrue(result != null);
-        Assert.assertEquals(actionDtoList.size(), result.size());
+        final BundleMessagesRequest result = this.callExecutors(dto);
+        this.assertResult(result);
     }
 
-    private List<ActionResponseDto> callExecutors(final BundleMessagesRequest dto) {
+    /**
+     * Tests the retry mechanism works in the adapter-protocol. In the first run
+     * a ConnectionException is thrown while executing the
+     * {@link FindEventsQueryDto}. In the second attempt (when the connection is
+     * restored again) the rest of the actions are executed.
+     *
+     * @throws ProtocolAdapterException
+     *             is not thrown in this test
+     */
+    @Test
+    public void testConnectionException() throws ProtocolAdapterException {
+        final List<ActionDto> actionDtoList = this.makeActions();
+        final BundleMessagesRequest dto = new BundleMessagesRequest(actionDtoList);
+
+        // Set the point where to throw the ConnectionException
+        this.getStub(FindEventsRequest.class).failWithRuntimeException(
+                new ConnectionException("Connection Exception thrown!"));
+
+        try {
+            // Execute all the actions
+            this.callExecutors(dto);
+            Assert.fail("A ConnectionException should be thrown");
+        } catch (final ConnectionException connectionException) {
+            // The execution is stopped. The number of responses is equal to the
+            // actions performed before the point the exception is thrown. See
+            // also the order of the ArrayList in method 'makeActions'.
+            Assert.assertEquals(dto.getAllResponses().size(), 8);
+        }
+
+        // Reset the point where the exception was thrown.
+        this.getStub(FindEventsRequest.class).failWithRuntimeException(null);
+
+        try {
+            // Execute the remaining actions
+            this.callExecutors(dto);
+            Assert.assertEquals(dto.getAllResponses().size(), actionDtoList.size());
+        } catch (final ConnectionException connectionException) {
+            Assert.fail("A ConnectionException should not have been thrown.");
+        }
+
+    }
+
+    private void assertResult(final BundleMessagesRequest result) {
+        Assert.assertTrue(result != null);
+        Assert.assertNotNull(result != null);
+        Assert.assertNotNull(result != null);
+        Assert.assertNotNull(result.getActionList());
+        for (final ActionDto actionDto : result.getActionList()) {
+            Assert.assertNotNull(actionDto.getRequest());
+            Assert.assertNotNull(actionDto.getResponse());
+        }
+    } 
+    
+    private BundleMessagesRequest callExecutors(final BundleMessagesRequest dto) {
         final DlmsDevice device = new DlmsDevice();
         return this.bundleService.callExecutors(null, device, dto);
     }
-
+    
     // ---- private helper methods
 
-    private AbstractCommandExecutorStub getStub(final Class<? extends ActionDto> aActionDto) {
-        return (AbstractCommandExecutorStub) this.bundleCommandExecutorMap.getCommandExecutor(aActionDto);
+    private AbstractCommandExecutorStub getStub(final Class<? extends ActionRequestDto> actionRequestDto) {
+        return (AbstractCommandExecutorStub) this.bundleCommandExecutorMap.getCommandExecutor(actionRequestDto);
     }
 
     private List<ActionDto> makeActions() {
         final List<ActionDto> actions = new ArrayList<>();
-        actions.add(this.builder.makeFindEventsQueryDto());
-        actions.add(this.builder.makeActualMeterReadsDataDtoAction());
-        actions.add(this.builder.makePeriodicMeterReadsGasRequestDataDto());
-        actions.add(this.builder.makePeriodicMeterReadsRequestDataDto());
-        actions.add(this.builder.makeSpecialDaysRequestDataDto());
-        actions.add(this.builder.makeReadAlarmRegisterDataDto());
-        actions.add(this.builder.makeGetAdministrativeStatusDataDto());
-        actions.add(this.builder.makeAdministrativeStatusTypeDataDto());
-        actions.add(this.builder.makeActivityCalendarDataDto());
-        actions.add(this.builder.makeGMeterInfoDto());
-        actions.add(this.builder.makeSetAlarmNotificationsRequestDataDto());
-        actions.add(this.builder.makeSetConfigurationObjectRequestDataDto());
-        actions.add(this.builder.makeSetPushSetupAlarmRequestDataDto());
-        actions.add(this.builder.mkeSetPushSetupSmsRequestDataDto());
-        actions.add(this.builder.makeSynchronizeTimeRequestDataDto());
-        actions.add(this.builder.makeGetConfigurationRequestDataDto());
-        actions.add(this.builder.makeGetFirmwareVersionRequestDataDto());
+        actions.add(new ActionDto(this.builder.makeActualMeterReadsDataDtoAction()));
+        actions.add(new ActionDto(this.builder.makePeriodicMeterReadsGasRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makePeriodicMeterReadsRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeSpecialDaysRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeReadAlarmRegisterDataDto()));
+        actions.add(new ActionDto(this.builder.makeGetAdministrativeStatusDataDto()));
+        actions.add(new ActionDto(this.builder.makeAdministrativeStatusTypeDataDto()));
+        actions.add(new ActionDto(this.builder.makeActivityCalendarDataDto()));
+        actions.add(new ActionDto(this.builder.makeFindEventsQueryDto()));
+        actions.add(new ActionDto(this.builder.makeGMeterInfoDto()));
+        actions.add(new ActionDto(this.builder.makeSetAlarmNotificationsRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeSetConfigurationObjectRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeSetPushSetupAlarmRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeSetPushSetupSmsRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeSynchronizeTimeRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeGetConfigurationRequestDataDto()));
+        actions.add(new ActionDto(this.builder.makeGetFirmwareVersionRequestDataDto()));
         return actions;
     }
-
 }

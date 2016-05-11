@@ -96,7 +96,7 @@ public class ActionDtoBuilder {
         return result;
     }
 
-    public SetPushSetupSmsRequest mkeSetPushSetupSmsRequestDataDto() {
+    public SetPushSetupSmsRequest makeSetPushSetupSmsRequestDataDto() {
         final CosemObisCodeDto cosemCode = new CosemObisCodeDto(1, 1, 1, 1, 1, 1);
         final List<CosemObjectDefinitionDto> objectDefinitions = new ArrayList<>();
         final SendDestinationAndMethodDto destinationAndMethod = new SendDestinationAndMethodDto(

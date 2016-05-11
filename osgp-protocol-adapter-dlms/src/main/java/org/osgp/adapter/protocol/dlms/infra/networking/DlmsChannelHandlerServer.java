@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alliander.osgp.dlms.DlmsPushNotification;
-import com.alliander.osgp.dto.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.DeviceFunctionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushNotificationSmsDto;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
@@ -73,7 +73,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
                 deviceIdentification, ipAddress, pushNotificationAlarm);
 
         LOGGER.info("Sending push notification alarm to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_ALARM.name());
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_ALARM.name());
     }
 
     private void processPushedSms(final DlmsPushNotification message, final String correlationId,
@@ -86,7 +86,7 @@ public class DlmsChannelHandlerServer extends DlmsChannelHandler {
                 deviceIdentification, ipAddress, pushNotificationSms);
 
         LOGGER.info("Sending push notification sms wakeup to OSGP with correlation ID: " + correlationId);
-        this.osgpRequestMessageSender.send(requestMessage, DeviceFunction.PUSH_NOTIFICATION_SMS.name());
+        this.osgpRequestMessageSender.send(requestMessage, DeviceFunctionDto.PUSH_NOTIFICATION_SMS.name());
     }
 
     private String retrieveIpAddress(final ChannelHandlerContext ctx, final String deviceIdentification) {

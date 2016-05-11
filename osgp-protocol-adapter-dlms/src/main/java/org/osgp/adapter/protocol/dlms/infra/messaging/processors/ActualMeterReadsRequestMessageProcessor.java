@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
-@Component("dlmsActualMeterReadsRequestMessageProcessor")
+@Component
 public class ActualMeterReadsRequestMessageProcessor extends DeviceRequestMessageProcessor {
 
     @Autowired
