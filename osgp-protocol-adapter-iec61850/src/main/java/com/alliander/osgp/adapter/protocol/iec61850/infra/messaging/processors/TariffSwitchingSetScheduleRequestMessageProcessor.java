@@ -116,7 +116,7 @@ public class TariffSwitchingSetScheduleRequestMessageProcessor extends DeviceReq
         LOGGER.info("Calling DeviceService function: {} for domain: {} {}", messageType, domain, domainVersion);
 
         final SetScheduleDeviceRequest deviceRequest = new SetScheduleDeviceRequest(organisationIdentification,
-                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.LIGHT, domain,
+                deviceIdentification, correlationUid, scheduleMessageDataContainer, RelayTypeDto.TARIFF, domain,
                 domainVersion, messageType, ipAddress, retryCount, isScheduled);
 
         this.deviceService.setSchedule(deviceRequest, deviceResponseHandler);
