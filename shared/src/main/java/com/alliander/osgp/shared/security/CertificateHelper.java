@@ -7,10 +7,9 @@
  */
 package com.alliander.osgp.shared.security;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -36,7 +35,7 @@ public final class CertificateHelper {
 
     /**
      * Create private key from private key file on disk
-     * 
+     *
      * @param keyPath
      *            path to key
      * @param keyType
@@ -59,7 +58,7 @@ public final class CertificateHelper {
 
     /**
      * Create public key from public key file on disk
-     * 
+     *
      * @param keyPath
      *            path to key
      * @param keyType
@@ -102,18 +101,12 @@ public final class CertificateHelper {
 
     /**
      * Read certificate bytes from disk
-     * 
+     *
      * @param keyPath
      * @return bytes of key
      * @throws IOException
      */
     private static byte[] readKeyFromDisk(final String keyPath) throws IOException {
-        final File privKeyFile = new File(keyPath);
-        final BufferedInputStream bis = new BufferedInputStream(new FileInputStream(privKeyFile));
-        final byte[] privateKey = new byte[(int) privKeyFile.length()];
-        bis.read(privateKey);
-        bis.close();
-
-        return privateKey;
+        return Files.readAllBytes(new File(keyPath).toPath());
     }
 }

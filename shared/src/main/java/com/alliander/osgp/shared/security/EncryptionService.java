@@ -33,8 +33,8 @@ import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
  * Both methods accept a file location path, which should lead to the location
  * of the secret key.
  */
-public final class EncrypterService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EncrypterService.class);
+public final class EncryptionService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionService.class);
     /**
      * the algorithm used
      */
@@ -44,17 +44,23 @@ public final class EncrypterService {
      */
     public static final String PROVIDER = "BC";
 
-    private EncrypterService() {
+    public EncryptionService(final String keyPath) {
+        try {
+            this.cachedKey = new SecretKeySpec(Files.readAllBytes(new File(keyPath).toPath()), "AES");
+        } catch (final IOException e) {
+            LOGGER.error("Unexpected exception when reading key", e);
+            throw new EncrypterException("Unexpected exception when reading key", e);
+        }
     }
 
     /**
      * Decrypts the data using the key
      */
-    public static byte[] decrypt(final byte[] inputData, final String keyPath) {
+    public byte[] decrypt(final byte[] inputData) {
 
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
-            cipher.init(Cipher.DECRYPT_MODE, getSecretKey(keyPath));
+            cipher.init(Cipher.DECRYPT_MODE, this.cachedKey);
             return cipher.doFinal(inputData);
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException ex) {
@@ -66,10 +72,10 @@ public final class EncrypterService {
     /**
      * Encrypts the data using the key
      */
-    public static byte[] encrypt(final byte[] inputData, final String keyPath) {
+    public byte[] encrypt(final byte[] inputData) {
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
-            cipher.init(Cipher.ENCRYPT_MODE, getSecretKey(keyPath));
+            cipher.init(Cipher.ENCRYPT_MODE, this.cachedKey);
             return cipher.doFinal(inputData);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException | NoSuchProviderException e) {
@@ -78,24 +84,6 @@ public final class EncrypterService {
         }
     }
 
-    private static volatile SecretKey cachedKey;
-
-    /**
-     * Fetches the secret key file (AES format).
-     *
-     * @param filename
-     * @return PrivateKey
-     */
-    private static SecretKey getSecretKey(final String filename) {
-        if (cachedKey == null) {
-            try {
-                cachedKey = new SecretKeySpec(Files.readAllBytes(new File(filename).toPath()), "AES");
-            } catch (final IOException e) {
-                LOGGER.error("Unexpected exception while reading secret key", e);
-                throw new EncrypterException("Unexpected exception while reading secret key", e);
-            }
-        }
-        return cachedKey;
-    }
+    private final SecretKey cachedKey;
 
 }
