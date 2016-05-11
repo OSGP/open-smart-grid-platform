@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
@@ -577,6 +578,42 @@ public class DeviceManagementService {
         return this.adminResponseMessageFinder.findMessage(correlationUid);
     }
 
+    public List<ProtocolInfo> getProtocolInfos(final String organisationIdentification) throws FunctionalException {
+
+        LOGGER.debug("Retrieving all protocol infos on behalf of organisation: {}", organisationIdentification);
+
+        final Organisation organisation = this.findOrganisation(organisationIdentification);
+        this.isAllowed(organisation, PlatformFunction.GET_PROTOCOL_INFOS);
+
+        return this.protocolRepository.findAll(new Sort(Direction.ASC, "protocol", "protocolVersion"));
+    }
+
+    public void updateDeviceProtocol(final String organisationIdentification,
+            @Identification final String deviceIdentification, final String protocol, final String protocolVersion)
+                    throws FunctionalException {
+
+        LOGGER.debug("Updating protocol for device [{}] on behalf of organisation [{}] to protocol: {}, version: {}",
+                deviceIdentification, organisationIdentification, protocol, protocolVersion);
+
+        final Organisation organisation = this.findOrganisation(organisationIdentification);
+        this.isAllowed(organisation, PlatformFunction.UPDATE_DEVICE_PROTOCOL);
+
+        final Device device = this.findDevice(deviceIdentification);
+        final ProtocolInfo protocolInfo = this.findProtocolInfo(protocol, protocolVersion);
+
+        if (protocolInfo.equals(device.getProtocolInfo())) {
+            LOGGER.info("Not updating protocol: {}, version: {} on device {} since it is already configured", protocol,
+                    protocolVersion, deviceIdentification);
+            return;
+        }
+
+        device.updateProtocol(protocolInfo);
+        this.deviceRepository.save(device);
+
+        LOGGER.info("Organisation {} configured protocol: {}, version: {} on device {}", organisationIdentification,
+                protocol, protocolVersion, deviceIdentification);
+    }
+
     public String enqueueDeactivateDeviceRequest(final String organisationIdentification,
             final String deviceIdentification) {
 
@@ -616,6 +653,17 @@ public class DeviceManagementService {
             throw new FunctionalException(FunctionalExceptionType.UNKNOWN_DEVICE, ComponentType.WS_ADMIN, e);
         }
         return device;
+    }
+
+    private ProtocolInfo findProtocolInfo(final String protocol, final String protocolVersion)
+            throws FunctionalException {
+        final ProtocolInfo protocolInfo = this.protocolRepository.findByProtocolAndProtocolVersion(protocol,
+                protocolVersion);
+        if (protocolInfo == null) {
+            throw new FunctionalException(FunctionalExceptionType.UNKNOWN_PROTOCOL_NAME_OR_VERSION,
+                    ComponentType.WS_ADMIN);
+        }
+        return protocolInfo;
     }
 
     private Organisation findOrganisation(final String organisationIdentification) throws FunctionalException {

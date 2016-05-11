@@ -40,8 +40,11 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWh
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindDevicesWhichHaveNoOwnerResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindMessageLogsRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.FindMessageLogsResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.GetProtocolInfosResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.MessageLog;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.MessageLogPage;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ProtocolInfo;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveDeviceResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.RemoveOrganisationRequest;
@@ -52,6 +55,8 @@ import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerReque
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.SetOwnerResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceAuthorisationsResponse;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolRequest;
+import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateDeviceProtocolResponse;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyRequest;
 import com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.UpdateKeyResponse;
 import com.alliander.osgp.domain.core.entities.Organisation;
@@ -403,6 +408,57 @@ public class DeviceManagementEndpoint {
         }
 
         return new RevokeKeyResponse();
+    }
+
+    @PayloadRoot(localPart = "GetProtocolInfosRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public GetProtocolInfosResponse getProtocolInfos(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final GetProtocolInfosRequest request) throws OsgpException {
+
+        LOGGER.info("Get protocol infos for organisation: {}.", organisationIdentification);
+
+        final GetProtocolInfosResponse getProtocolInfosResponse = new GetProtocolInfosResponse();
+
+        try {
+            final List<com.alliander.osgp.domain.core.entities.ProtocolInfo> protocolInfos = this.deviceManagementService
+                    .getProtocolInfos(organisationIdentification);
+            getProtocolInfosResponse.getProtocolInfos().addAll(
+                    this.deviceManagementMapper.mapAsList(protocolInfos,
+                            com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class));
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error(EXCEPTION_OCCURED, e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return getProtocolInfosResponse;
+    }
+
+    @PayloadRoot(localPart = "UpdateDeviceProtocolRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)
+    @ResponsePayload
+    public UpdateDeviceProtocolResponse updateDeviceProtocol(
+            @OrganisationIdentification final String organisationIdentification,
+            @RequestPayload final UpdateDeviceProtocolRequest request) throws OsgpException {
+
+        LOGGER.info("Update device protocol for organisation: {} and device: {}.", organisationIdentification,
+                request.getDeviceIdentification());
+
+        try {
+            final ProtocolInfo protocolInfo = request.getProtocolInfo();
+            this.deviceManagementService.updateDeviceProtocol(organisationIdentification,
+                    request.getDeviceIdentification(), protocolInfo.getProtocol(), protocolInfo.getProtocolVersion());
+        } catch (final MethodConstraintViolationException e) {
+            LOGGER.error(EXCEPTION_OCCURED, e);
+            throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR, COMPONENT_TYPE_WS_ADMIN,
+                    new ValidationException(e.getConstraintViolations()));
+        } catch (final Exception e) {
+            this.handleException(e);
+        }
+
+        return new UpdateDeviceProtocolResponse();
     }
 
     @PayloadRoot(localPart = "DeactivateDeviceRequest", namespace = DEVICE_MANAGEMENT_NAMESPACE)

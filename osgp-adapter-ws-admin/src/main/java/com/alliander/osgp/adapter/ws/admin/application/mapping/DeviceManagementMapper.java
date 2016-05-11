@@ -36,7 +36,14 @@ public class DeviceManagementMapper extends ConfigurableMapper {
                 .classMap(com.alliander.osgp.domain.core.entities.Event.class,
                         com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.Event.class)
                         .field("device.deviceIdentification", "deviceIdentification").field("creationTime", "timestamp")
-                .byDefault().toClassMap());
+                        .byDefault().toClassMap());
+
+        mapperFactory.registerClassMap(mapperFactory
+                .classMap(com.alliander.osgp.domain.core.entities.ProtocolInfo.class,
+                        com.alliander.osgp.adapter.ws.schema.admin.devicemanagement.ProtocolInfo.class)
+                .exclude("outgoingProtocolRequestsQueue").exclude("incomingProtocolResponsesQueue")
+                .exclude("incomingProtocolRequestsQueue").exclude("outgoingProtocolResponsesQueue").byDefault()
+                .toClassMap());
 
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
         mapperFactory.getConverterFactory().registerConverter(new EventTypeConverter());

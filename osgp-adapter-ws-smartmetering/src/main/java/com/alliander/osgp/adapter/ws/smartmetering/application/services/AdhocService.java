@@ -67,7 +67,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -99,22 +99,16 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public MeterResponseData dequeueRetrieveConfigurationObjectsResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
+    public MeterResponseData dequeueResponse(final String correlationUid) throws UnknownCorrelationUidException {
         return this.meterResponseDataService.dequeue(correlationUid);
 
-    }
-
-    public MeterResponseData dequeueGetAssociationLnObjectsResponse(final String correlationUid)
-            throws UnknownCorrelationUidException {
-        return this.meterResponseDataService.dequeue(correlationUid);
     }
 
     public String enqueueGetAssociationLnObjectsRequest(@Identification final String organisationIdentification,
@@ -137,7 +131,35 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_ASSOCIATION_LN_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+
+        this.smartMeteringRequestMessageSender.send(message);
+
+        return correlationUid;
+    }
+
+    public String enqueueSpecificConfigurationObjectRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
+            final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest request,
+            final int messagePriority, final Long scheduleTime) throws FunctionalException {
+        final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
+        final Device device = this.domainHelperService.findActiveDevice(deviceIdentification);
+
+        this.domainHelperService.isAllowed(organisation, device, DeviceFunction.GET_SPECIFIC_CONFIGURATION_OBJECT);
+
+        LOGGER.debug("enqueueSpecificConfigurationObjectRequest called with organisation {} and device {}",
+                organisationIdentification, deviceIdentification);
+
+        final String correlationUid = this.correlationIdProviderService.getCorrelationId(organisationIdentification,
+                deviceIdentification);
+
+        final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
+                organisationIdentification, correlationUid,
+                SmartMeteringRequestMessageType.GET_SPECIFIC_CONFIGURATION_OBJECT.toString(), messagePriority,
+                scheduleTime);
+
+        final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 

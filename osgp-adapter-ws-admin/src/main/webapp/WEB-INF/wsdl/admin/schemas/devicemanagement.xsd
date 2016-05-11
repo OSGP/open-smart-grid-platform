@@ -198,6 +198,52 @@
     <xsd:element name="RevokeKeyResponse">
         <xsd:complexType />
     </xsd:element>
+
+    <xsd:element name="GetProtocolInfosRequest">
+        <xsd:complexType />
+    </xsd:element>
+
+    <xsd:element name="GetProtocolInfosResponse">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="ProtocolInfos" type="tns:ProtocolInfo" minOccurs="0" maxOccurs="unbounded" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="UpdateDeviceProtocolRequest">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="DeviceIdentification" type="common:Identification" />
+                <xsd:element name="ProtocolInfo" type="tns:ProtocolInfo" />
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:element name="UpdateDeviceProtocolResponse">
+        <xsd:complexType />
+    </xsd:element>
+
+    <xsd:complexType name="ProtocolInfo">
+      <xsd:sequence>
+        <xsd:element name="Protocol" type="tns:ProtocolType" />
+        <xsd:element name="ProtocolVersion" type="tns:ProtocolVersionType" />
+      </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="ProtocolType">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1" />
+        <xsd:maxLength value="255" />
+      </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ProtocolVersionType">
+      <xsd:restriction base="xsd:string">
+        <xsd:minLength value="1" />
+        <xsd:maxLength value="255" />
+      </xsd:restriction>
+    </xsd:simpleType>
     
 	<xsd:simpleType name="IPType">
 		<xsd:restriction base="xsd:string">
