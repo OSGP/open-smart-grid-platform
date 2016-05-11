@@ -10,6 +10,8 @@ package org.osgp.adapter.protocol.dlms.domain.commands;
 import java.io.IOException;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.openmuc.jdlms.ClientConnection;
@@ -30,13 +32,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
-import com.alliander.osgp.shared.security.EncrypterService;
+import com.alliander.osgp.shared.security.EncryptionService;
 
 @Component
 public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyCommandExecutor.KeyWrapper, DlmsDevice> {
 
     @Value("${device.security.key.path.decrypt}")
     private String keyPath;
+
+    private EncryptionService encryptionService;
+
+    @PostConstruct
+    private void initEncryption() {
+        this.encryptionService = new EncryptionService(this.keyPath);
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyCommandExecutor.class);
 
@@ -103,8 +112,8 @@ public class ReplaceKeyCommandExecutor implements CommandExecutor<ReplaceKeyComm
             final ReplaceKeyCommandExecutor.KeyWrapper keyWrapper) throws ProtocolAdapterException {
         try {
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedKey = EncrypterService.decrypt(keyWrapper.getBytes(), this.keyPath);
-            final byte[] decryptedMasterKey = EncrypterService.decrypt(this.getMasterKey(device), this.keyPath);
+            final byte[] decryptedKey = this.encryptionService.decrypt(keyWrapper.getBytes());
+            final byte[] decryptedMasterKey = this.encryptionService.decrypt(this.getMasterKey(device));
 
             final MethodParameter methodParameterAuth = SecurityUtils.globalKeyTransfer(decryptedMasterKey,
                     decryptedKey, keyWrapper.getKeyId());

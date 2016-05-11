@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.annotation.PostConstruct;
+
 import org.bouncycastle.util.encoders.Hex;
 import org.openmuc.jdlms.ClientConnection;
 import org.openmuc.jdlms.TcpConnectionBuilder;
@@ -26,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
 import com.alliander.osgp.shared.exceptionhandling.TechnicalException;
-import com.alliander.osgp.shared.security.EncrypterService;
+import com.alliander.osgp.shared.security.EncryptionService;
 
 public class Hls5Connector {
 
@@ -45,6 +47,13 @@ public class Hls5Connector {
     private DlmsDevice device;
 
     private final String keyPath;
+
+    private EncryptionService encryptionService;
+
+    @PostConstruct
+    private void initEncryption() {
+        this.encryptionService = new EncryptionService(this.keyPath);
+    }
 
     public Hls5Connector(final RecoverKeyProcessInitiator recoverKeyProcessInitiator,
             final DlmsDeviceRepository dlmsDeviceRepository, final int responseTimeout, final int logicalDeviceAddress,
@@ -122,9 +131,8 @@ public class Hls5Connector {
         final byte[] encryptionKey = Hex.decode(validEncryptionKey.getKey());
 
         // Decrypt the key
-        final byte[] decryptedAuthentication = EncrypterService
-                .decrypt(authenticationKey, this.keyPath);
-        final byte[] decryptedEncryption = EncrypterService.decrypt(encryptionKey, this.keyPath);
+        final byte[] decryptedAuthentication = this.encryptionService.decrypt(authenticationKey);
+        final byte[] decryptedEncryption = this.encryptionService.decrypt(encryptionKey);
 
         // Setup connection to device
         final TcpConnectionBuilder tcpConnectionBuilder = new TcpConnectionBuilder(InetAddress.getByName(this.device

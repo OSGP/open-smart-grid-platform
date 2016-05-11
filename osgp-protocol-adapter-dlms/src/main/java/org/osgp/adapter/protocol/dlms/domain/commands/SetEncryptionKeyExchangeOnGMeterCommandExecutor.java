@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -37,11 +38,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.shared.exceptionhandling.EncrypterException;
-import com.alliander.osgp.shared.security.EncrypterService;
+import com.alliander.osgp.shared.security.EncryptionService;
 
 @Component()
 public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
-        CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
+CommandExecutor<ProtocolMeterInfo, MethodResultCode> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetEncryptionKeyExchangeOnGMeterCommandExecutor.class);
 
@@ -62,6 +63,13 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
     @Value("${device.security.key.path.decrypt}")
     private String keyPath;
 
+    private EncryptionService encryptionService;
+
+    @PostConstruct
+    private void initEncryption() {
+        this.encryptionService = new EncryptionService(this.keyPath);
+    }
+
     @Override
     public MethodResultCode execute(final ClientConnection conn, final DlmsDevice device,
             final ProtocolMeterInfo protocolMeterInfo) throws ProtocolAdapterException {
@@ -69,10 +77,10 @@ public class SetEncryptionKeyExchangeOnGMeterCommandExecutor implements
             LOGGER.debug("SetEncryptionKeyExchangeOnGMeterCommandExecutor.execute called");
 
             // Decrypt the cipher text using the private key.
-            final byte[] decryptedEncryptionKey = EncrypterService.decrypt(
-                    Hex.decode(protocolMeterInfo.getEncryptionKey()), this.keyPath);
-            final byte[] decryptedMasterKey = EncrypterService.decrypt(Hex.decode(protocolMeterInfo.getMasterKey()),
-                    this.keyPath);
+            final byte[] decryptedEncryptionKey = this.encryptionService.decrypt(Hex.decode(protocolMeterInfo
+                    .getEncryptionKey()));
+            final byte[] decryptedMasterKey = this.encryptionService.decrypt(Hex.decode(protocolMeterInfo
+                    .getMasterKey()));
 
             final ObisCode obisCode = OBIS_HASHMAP.get(protocolMeterInfo.getChannel());
 
