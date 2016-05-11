@@ -12,11 +12,13 @@ import ma.glasnost.orika.metadata.Type;
 
 import com.alliander.osgp.domain.core.valueobjects.Configuration;
 import com.alliander.osgp.domain.core.valueobjects.DaliConfiguration;
+import com.alliander.osgp.domain.core.valueobjects.DeviceFixedIp;
 import com.alliander.osgp.domain.core.valueobjects.LightType;
 import com.alliander.osgp.domain.core.valueobjects.LinkType;
 import com.alliander.osgp.domain.core.valueobjects.LongTermIntervalType;
 import com.alliander.osgp.domain.core.valueobjects.MeterType;
 import com.alliander.osgp.domain.core.valueobjects.RelayConfiguration;
+import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
 
 public class ConfigurationConverter extends
 BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Configuration> {
@@ -57,7 +59,6 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Con
         configuration.setCommunicationPauseTimeBetweenConnectionTrials(source
                 .getCommunicationPauseTimeBetweenConnectionTrials());
         configuration.setCommunicationTimeout(source.getCommunicationTimeout());
-        configuration.setDeviceFixIpValue(source.getDeviceFixIpValue());
         configuration.setDhcpEnabled(source.isDhcpEnabled());
         configuration.setOsgpPortNumber(source.getOsgpPortNumber());
         configuration.setOspgIpAddress(source.getOspgIpAddress());
@@ -70,6 +71,10 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Con
         if (source.getRelayLinking() != null) {
             configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(),
                     com.alliander.osgp.domain.core.valueobjects.RelayMatrix.class));
+        }
+
+        if (source.getDeviceFixedIp() != null) {
+            configuration.setDeviceFixedIp(this.mapperFacade.map(source.getDeviceFixedIp(), DeviceFixedIp.class));
         }
 
         return configuration;
@@ -115,7 +120,6 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Con
         configuration.setCommunicationPauseTimeBetweenConnectionTrials(source
                 .getCommunicationPauseTimeBetweenConnectionTrials());
         configuration.setCommunicationTimeout(source.getCommunicationTimeout());
-        configuration.setDeviceFixIpValue(source.getDeviceFixIpValue());
         configuration.setDhcpEnabled(source.isDhcpEnabled());
         configuration.setOsgpPortNumber(source.getOsgpPortNumber());
         configuration.setOspgIpAddress(source.getOspgIpAddress());
@@ -129,6 +133,11 @@ BidirectionalConverter<com.alliander.osgp.dto.valueobjects.ConfigurationDto, Con
             configuration.setRelayLinking(this.mapperFacade.mapAsList(source.getRelayLinking(),
                     com.alliander.osgp.dto.valueobjects.RelayMatrixDto.class));
         }
+
+        if (source.getDeviceFixedIp() != null) {
+            configuration.setDeviceFixedIp(this.mapperFacade.map(source.getDeviceFixedIp(), DeviceFixedIpDto.class));
+        }
+
         return configuration;
     }
 

@@ -122,7 +122,7 @@
       <xsd:element name="LongTermHistoryInterval" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="LongTermHistoryIntervalType" type="tns:LongTermIntervalType" minOccurs="0" maxOccurs="1" />
       <xsd:element name="TimeSyncFrequency" type="xsd:int" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="DeviceFixIpValue" type="tns:IPType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="DeviceFixedIp" type="tns:DeviceFixedIp" minOccurs="0" maxOccurs="1" />
       <xsd:element name="IsDhcpEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationTimeout" type="xsd:int" minOccurs="0" maxOccurs="1" />
       <xsd:element name="CommunicationNumberOfRetries" type="xsd:int" minOccurs="0" maxOccurs="1" />
@@ -286,6 +286,14 @@
       <xsd:maxInclusive value="4" />
     </xsd:restriction>
   </xsd:simpleType>
+
+  <xsd:complexType name="DeviceFixedIp">
+    <xsd:sequence>
+      <xsd:element name="IpAddress" type="tns:IPType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="NetMask" type="tns:IPType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="GateWay" type="tns:IPType" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
 
   <xsd:simpleType name="IPType">
     <xsd:restriction base="xsd:string">
