@@ -55,25 +55,19 @@ public class DlmsMeterValueConverter extends CustomConverter<DlmsMeterValueDto, 
      * @return
      */
     private BigDecimal getMultiplierToOsgpUnit(final DlmsUnitDto dlmsUnit, final OsgpUnit osgpUnit) {
+    	
         switch (dlmsUnit) {
         case WH:
-            switch (osgpUnit) {
-            case KWH:
-                return BigDecimal.valueOf(0.001d);
-            default:
-                break;
+        	if(OsgpUnit.KWH.equals(osgpUnit)){
+        		return BigDecimal.valueOf(0.001d);
             }
             break;
-        case M3:
-        case M3COR:
+        case M3: // intentional fallthrough. 
+        case M3COR: // intentional fallthrough.
         case UNDEFINED:
-            switch (osgpUnit) {
-            case M3:
-            case UNDEFINED:
-                return BigDecimal.valueOf(1d);
-            default:
-                break;
-            }
+        	if(OsgpUnit.M3.equals(osgpUnit) || OsgpUnit.UNDEFINED.equals(osgpUnit)){
+        		return BigDecimal.valueOf(1d);
+        	}
             break;
         default:
             break;
