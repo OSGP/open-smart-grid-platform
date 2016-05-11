@@ -13,10 +13,10 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.LightType;
 
 public class LightTypeConverter extends
-        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LightType, LightType> {
+        BidirectionalConverter<com.alliander.osgp.dto.valueobjects.LightTypeDto, LightType> {
 
     @Override
-    public LightType convertTo(final com.alliander.osgp.dto.valueobjects.LightType source,
+    public LightType convertTo(final com.alliander.osgp.dto.valueobjects.LightTypeDto source,
             final Type<LightType> destinationType) {
         if (source == null) {
             return null;
@@ -26,13 +26,13 @@ public class LightTypeConverter extends
     }
 
     @Override
-    public com.alliander.osgp.dto.valueobjects.LightType convertFrom(final LightType source,
-            final Type<com.alliander.osgp.dto.valueobjects.LightType> destinationType) {
+    public com.alliander.osgp.dto.valueobjects.LightTypeDto convertFrom(final LightType source,
+            final Type<com.alliander.osgp.dto.valueobjects.LightTypeDto> destinationType) {
         if (source == null) {
             return null;
         }
 
-        return com.alliander.osgp.dto.valueobjects.LightType.valueOf(source.toString());
+        return com.alliander.osgp.dto.valueobjects.LightTypeDto.valueOf(source.toString());
     }
 
 }

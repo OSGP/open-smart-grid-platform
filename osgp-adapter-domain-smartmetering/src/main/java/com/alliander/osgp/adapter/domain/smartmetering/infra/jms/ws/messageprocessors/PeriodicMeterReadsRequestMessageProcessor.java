@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterRe
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-@Component("domainSmartmeteringPeriodicMeterReadsRequestMessageProcessor")
+@Component
 public class PeriodicMeterReadsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired

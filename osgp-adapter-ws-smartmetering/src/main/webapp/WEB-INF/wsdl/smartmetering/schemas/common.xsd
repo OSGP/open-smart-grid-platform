@@ -1,254 +1,283 @@
-<!--
-
-    Copyright 2015 Smart Society Services B.V.
-
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
--->
+<!-- Copyright 2015 Smart Society Services B.V. Licensed under the Apache 
+    License, Version 2.0 (the "License"); you may not use this file except in 
+    compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 -->
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10"
-	attributeFormDefault="unqualified" elementFormDefault="qualified"
-	targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10">
+    xmlns:tns="http://www.alliander.com/schemas/osgp/common/2014/10"
+    attributeFormDefault="unqualified" elementFormDefault="qualified"
+    targetNamespace="http://www.alliander.com/schemas/osgp/common/2014/10">
 
-	<xsd:element name="OrganisationIdentification" type="tns:Identification" />
-	<xsd:element name="UserName" type="tns:Identification" />
-	<xsd:element name="ApplicationName" type="tns:Identification" />
-	<xsd:element name="MessagePriority" type="tns:MessagePriority" />
+    <xsd:element name="OrganisationIdentification" type="tns:Identification" />
+    <xsd:element name="UserName" type="tns:Identification" />
+    <xsd:element name="ApplicationName" type="tns:Identification" />
+    <xsd:element name="MessagePriority" type="tns:MessagePriority" />
     <xsd:element name="ScheduleTime" type="tns:ScheduleTime" />
 
-	<xsd:simpleType name="MessagePriority">
-		<xsd:restriction base="xsd:int">
-			<xsd:minInclusive value="0" />
-			<xsd:maxInclusive value="9" />
-		</xsd:restriction>
-	</xsd:simpleType>
-
-    <xsd:simpleType name="ScheduleTime">
-        <xsd:restriction base="xsd:dateTime"/>
+    <xsd:simpleType name="MessagePriority">
+        <xsd:restriction base="xsd:int">
+            <xsd:minInclusive value="0" />
+            <xsd:maxInclusive value="9" />
+        </xsd:restriction>
     </xsd:simpleType>
 
-	<xsd:simpleType name="Identification">
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:minLength value="1" />
-			<xsd:maxLength value="40" />
-			<xsd:pattern value="[^ ]{0,40}" />
-		</xsd:restriction>
-	</xsd:simpleType>
+    <xsd:simpleType name="ScheduleTime">
+        <xsd:restriction base="xsd:dateTime" />
+    </xsd:simpleType>
 
-	<xsd:simpleType name="DeviceIdentification">
-		<xsd:restriction base="tns:AlphaNumericType">
-			<xsd:length value="17" />
-		</xsd:restriction>
-	</xsd:simpleType>
+    <xsd:simpleType name="Identification">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="1" />
+            <xsd:maxLength value="40" />
+            <xsd:pattern value="[^ ]{0,40}" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:simpleType name="AlphaNumericType">
-		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="[a-zA-Z0-9 ]+" />
-		</xsd:restriction>
-	</xsd:simpleType>
+    <xsd:simpleType name="DeviceIdentification">
+        <xsd:restriction base="tns:AlphaNumericType">
+            <xsd:length value="17" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:complexType name="Page">
-		<xsd:sequence>
-			<xsd:element name="TotalPages" type="xsd:int" />
-			<xsd:element name="PageSize" type="xsd:int" />
-			<xsd:element name="CurrentPage" type="xsd:int" />
-		</xsd:sequence>
-	</xsd:complexType>
+    <xsd:simpleType name="AlphaNumericType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="[a-zA-Z0-9 ]+" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:simpleType name="CorrelationUid">
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:minLength value="20" />
-		</xsd:restriction>
-	</xsd:simpleType>
+    <xsd:complexType name="Page">
+        <xsd:sequence>
+            <xsd:element name="TotalPages" type="xsd:int" />
+            <xsd:element name="PageSize" type="xsd:int" />
+            <xsd:element name="CurrentPage" type="xsd:int" />
+        </xsd:sequence>
+    </xsd:complexType>
 
-	<xsd:complexType name="Response" abstract="true">
-		<xsd:sequence>
-			<xsd:element name="exception" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-			<xsd:element name="resultString" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	<xsd:complexType name="ActionResponseData">
-		<xsd:complexContent>
-			<xsd:extension base="tns:Response">
-				<xsd:sequence>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
+    <xsd:simpleType name="CorrelationUid">
+        <xsd:restriction base="xsd:normalizedString">
+            <xsd:minLength value="20" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:complexType name="Action" abstract="true">
-		<xsd:sequence>
-		</xsd:sequence>
-	</xsd:complexType>
+    <xsd:complexType name="Response" abstract="true">
+        <xsd:sequence>
+            <xsd:element name="exception" type="xsd:string"
+                minOccurs="0" maxOccurs="1" />
+            <xsd:element name="resultString" type="xsd:string"
+                minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+    </xsd:complexType>
 
-	<xsd:complexType name="Query" abstract="true">
-		<xsd:complexContent>
-			<xsd:extension base="tns:Action">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
+    <xsd:complexType name="ActionResponseData">
+        <xsd:complexContent>
+            <xsd:extension base="tns:Response">
+                <xsd:sequence>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
-	<xsd:complexType name="Command" abstract="true">
-		<xsd:complexContent>
-			<xsd:extension base="tns:Action">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
+    <xsd:complexType name="Action" abstract="true">
+        <xsd:sequence>
+        </xsd:sequence>
+    </xsd:complexType>
 
-	<xsd:complexType name="AsyncRequest">
-		<xsd:annotation>
-			<xsd:documentation>for retrieving data after it becomes available
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="tns:AsyncProcessingInfo">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
+    <xsd:complexType name="Query" abstract="true">
+        <xsd:complexContent>
+            <xsd:extension base="tns:Action">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
-	<xsd:complexType name="AsyncResponse">
-		<xsd:annotation>
-			<xsd:documentation>response to a request for data, use this to
-				retrieve data
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="tns:AsyncProcessingInfo">
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
+    <xsd:complexType name="Command" abstract="true">
+        <xsd:complexContent>
+            <xsd:extension base="tns:Action">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
-	<xsd:complexType name="AsyncProcessingInfo" abstract="true">
-		<xsd:annotation>
-			<xsd:documentation>for connecting request for data to an asynchronous
-				response
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" />
-			<xsd:element name="CorrelationUid" type="tns:CorrelationUid" />
-		</xsd:sequence>
-	</xsd:complexType>
+    <xsd:complexType name="AsyncRequest">
+        <xsd:annotation>
+            <xsd:documentation>for retrieving data after it becomes
+                available
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="tns:AsyncProcessingInfo">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 
-	<!-- DSMR Alarm Codes -->
-	<xsd:simpleType name="AlarmType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="CLOCK_INVALID" />
-			<xsd:enumeration value="REPLACE_BATTERY" />
-			<xsd:enumeration value="POWER_UP" />
-			<xsd:enumeration value="PROGRAM_MEMORY_ERROR" />
-			<xsd:enumeration value="RAM_ERROR" />
-			<xsd:enumeration value="NV_MEMORY_ERROR" />
-			<xsd:enumeration value="MEASUREMENT_SYSTEM_ERROR" />
-			<xsd:enumeration value="WATCHDOG_ERROR" />
-			<xsd:enumeration value="FRAUD_ATTEMPT" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3" />
-			<xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
-			<xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
-			<xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	
+    <xsd:complexType name="AsyncResponse">
+        <xsd:annotation>
+            <xsd:documentation>response to a request for data, use this
+                to
+                retrieve data
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="tns:AsyncProcessingInfo">
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="AsyncProcessingInfo"
+        abstract="true">
+        <xsd:annotation>
+            <xsd:documentation>for connecting request for data to an
+                asynchronous
+                response
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="DeviceIdentification" type="tns:DeviceIdentification" />
+            <xsd:element name="CorrelationUid" type="tns:CorrelationUid" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- DSMR Alarm Codes -->
+    <xsd:simpleType name="AlarmType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="CLOCK_INVALID" />
+            <xsd:enumeration value="REPLACE_BATTERY" />
+            <xsd:enumeration value="POWER_UP" />
+            <xsd:enumeration value="PROGRAM_MEMORY_ERROR" />
+            <xsd:enumeration value="RAM_ERROR" />
+            <xsd:enumeration value="NV_MEMORY_ERROR" />
+            <xsd:enumeration value="MEASUREMENT_SYSTEM_ERROR" />
+            <xsd:enumeration value="WATCHDOG_ERROR" />
+            <xsd:enumeration value="FRAUD_ATTEMPT" />
+            <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_1" />
+            <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_2" />
+            <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_3" />
+            <xsd:enumeration value="COMMUNICATION_ERROR_M_BUS_CHANNEL_4" />
+            <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_1" />
+            <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_2" />
+            <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_3" />
+            <xsd:enumeration value="FRAUD_ATTEMPT_M_BUS_CHANNEL_4" />
+            <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_1" />
+            <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_2" />
+            <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_3" />
+            <xsd:enumeration value="NEW_M_BUS_DEVICE_DISCOVERED_CHANNEL_4" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
     <xsd:simpleType name="OsgpUnitType">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="M3" >
-                <xsd:annotation><xsd:documentation>cubic meter</xsd:documentation></xsd:annotation>
+            <xsd:enumeration value="M3">
+                <xsd:annotation>
+                    <xsd:documentation>cubic meter</xsd:documentation>
+                </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="KWH" >
-                <xsd:annotation><xsd:documentation>kilo watt hour</xsd:documentation></xsd:annotation>
+            <xsd:enumeration value="KWH">
+                <xsd:annotation>
+                    <xsd:documentation>kilo watt hour
+                    </xsd:documentation>
+                </xsd:annotation>
             </xsd:enumeration>
-            <xsd:enumeration value="UNDEFINED" >
-                <xsd:annotation><xsd:documentation>undefined unit</xsd:documentation></xsd:annotation>
+            <xsd:enumeration value="UNDEFINED">
+                <xsd:annotation>
+                    <xsd:documentation>undefined unit
+                    </xsd:documentation>
+                </xsd:annotation>
             </xsd:enumeration>
         </xsd:restriction>
     </xsd:simpleType>
 
-	<xsd:simpleType name="AmrProfileStatusCodeFlag">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="CRITICAL_ERROR" />
-			<xsd:enumeration value="CLOCK_INVALID" />
-			<xsd:enumeration value="DATA_NOT_VALID" />
-			<xsd:enumeration value="DAYLIGHT_SAVING" />
-			<xsd:enumeration value="CLOCK_ADJUSTED" />
-			<xsd:enumeration value="POWER_DOWN" />
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="OsgpResultType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="OK" />
-			<xsd:enumeration value="NOT FOUND" />
-			<xsd:enumeration value="NOT OK" />
-		</xsd:restriction>
-	</xsd:simpleType>
+    <xsd:simpleType name="AmrProfileStatusCodeFlag">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="CRITICAL_ERROR" />
+            <xsd:enumeration value="CLOCK_INVALID" />
+            <xsd:enumeration value="DATA_NOT_VALID" />
+            <xsd:enumeration value="DAYLIGHT_SAVING" />
+            <xsd:enumeration value="CLOCK_ADJUSTED" />
+            <xsd:enumeration value="POWER_DOWN" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:element name="FunctionalFault">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="Code" type="xsd:int"></xsd:element>
-				<xsd:element name="Message" type="xsd:string"></xsd:element>
-				<xsd:element name="Component" type="xsd:string"></xsd:element>
-				<xsd:element name="InnerException" type="xsd:string"></xsd:element>
-				<xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
+    <xsd:simpleType name="OsgpResultType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="OK" />
+            <xsd:enumeration value="NOT FOUND" />
+            <xsd:enumeration value="NOT OK" />
+        </xsd:restriction>
+    </xsd:simpleType>
 
-	<xsd:element name="TechnicalFault">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="Message" type="xsd:string"></xsd:element>
-				<xsd:element name="Component" type="xsd:string"></xsd:element>
-				<xsd:element name="InnerException" type="xsd:string"></xsd:element>
-				<xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
-    
+    <xsd:element name="FunctionalFault">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Code" type="xsd:int"></xsd:element>
+                <xsd:element name="Message" type="xsd:string"></xsd:element>
+                <xsd:element name="Component" type="xsd:string"></xsd:element>
+                <xsd:element name="InnerException" type="xsd:string"></xsd:element>
+                <xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="TechnicalFault">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="Message" type="xsd:string"></xsd:element>
+                <xsd:element name="Component" type="xsd:string"></xsd:element>
+                <xsd:element name="InnerException" type="xsd:string"></xsd:element>
+                <xsd:element name="InnerMessage" type="xsd:string"></xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:simpleType name="CosemDateType">
-        <xsd:annotation><xsd:documentation>
-        2 bytes for year (century byte and year byte, 0xFFFF = undefined).
-        1 for month, 0xFF (undefined), 0xFD (end daylight saving), 0xFE (begin daylight saving).
-        1 for day of month, 0xFF (undefined), 0xFD (2nd last day of month), 0xFE (last day of month).
-        1 for day of week, 1 is monday, 0xFF (undefined)</xsd:documentation></xsd:annotation>
+        <xsd:annotation>
+            <xsd:documentation>
+                2 bytes for year (century byte and year byte, 0xFFFF = undefined).
+                1 for month, 0xFF (undefined), 0xFD (end daylight saving), 0xFE
+                (begin daylight saving).
+                1 for day of month, 0xFF (undefined), 0xFD (2nd last day of month),
+                0xFE (last day of month).
+                1 for day of week, 1 is monday, 0xFF (undefined)
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="5" />
         </xsd:restriction>
     </xsd:simpleType>
-    
+
     <xsd:simpleType name="CosemTimeType">
-        <xsd:annotation><xsd:documentation>
-        1 byte for hour, minute, second and hundreds, 0xFF = undefined</xsd:documentation></xsd:annotation>
+        <xsd:annotation>
+            <xsd:documentation>
+                1 byte for hour, minute, second and hundreds, 0xFF = undefined
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="4" />
         </xsd:restriction>
     </xsd:simpleType>
-    
+
     <xsd:simpleType name="CosemDateTimeType">
-        <xsd:annotation><xsd:documentation>
-        CosemDate followed by CosemTime followed by deviation and clock status.
-        deviation (minutes from GMT) high byte and low byte.
-        clock status: 0x80 (daylight savings active), 0x0 (no status) 
-        </xsd:documentation></xsd:annotation>
+        <xsd:annotation>
+            <xsd:documentation>
+                CosemDate followed by CosemTime followed by deviation and clock status.
+                deviation (minutes from GMT) high byte and low byte.
+                clock status: 0x80 (daylight savings active), 0x0 (no
+                status)
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="12" />
         </xsd:restriction>
     </xsd:simpleType>
-    
+
     <xsd:simpleType name="CosemObisCode">
         <xsd:restriction base="xsd:hexBinary">
             <xsd:length value="6" />
         </xsd:restriction>
     </xsd:simpleType>
+    <xsd:complexType name="ObisCodeValues">
+        <xsd:sequence>
+            <xsd:element name="a" type="xsd:unsignedByte" />
+            <xsd:element name="b" type="xsd:unsignedByte" />
+            <xsd:element name="c" type="xsd:unsignedByte" />
+            <xsd:element name="d" type="xsd:unsignedByte" />
+            <xsd:element name="e" type="xsd:unsignedByte" />
+            <xsd:element name="f" type="xsd:unsignedByte" />
+        </xsd:sequence>
+    </xsd:complexType>
 </xsd:schema>

@@ -20,7 +20,7 @@ import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 import com.alliander.osgp.shared.infra.jms.ResponseMessage;
 
-@Component("domainSmartMeteringBundleResponseMessageProcessor")
+@Component
 public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired
@@ -40,10 +40,10 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        final BundleMessagesResponseDto bundleResponseMessageDataContainerDto = (BundleMessagesResponseDto) responseMessage
+        final BundleMessagesResponseDto bundleMessagesResponseDto = (BundleMessagesResponseDto) responseMessage
                 .getDataObject();
 
         this.bundleService.handleBundleResponse(deviceMessageMetadata, responseMessage.getResult(), osgpException,
-                bundleResponseMessageDataContainerDto);
+                bundleMessagesResponseDto);
     }
 }

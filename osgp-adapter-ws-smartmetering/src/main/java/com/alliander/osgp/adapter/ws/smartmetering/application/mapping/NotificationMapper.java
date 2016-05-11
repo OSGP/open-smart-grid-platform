@@ -18,6 +18,9 @@ import com.alliander.osgp.shared.mappers.XMLGregorianCalendarToDateTimeConverter
 public class NotificationMapper extends ConfigurableMapper {
     @Override
     public void configure(final MapperFactory mapperFactory) {
+
+        // This converter is needed to ensure correct mapping of dates and
+        // times.
         mapperFactory.getConverterFactory().registerConverter(new XMLGregorianCalendarToDateTimeConverter());
     }
 }

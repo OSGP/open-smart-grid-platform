@@ -40,7 +40,7 @@ public class JpaEventSpecifications implements EventSpecifications {
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-                return cb.greaterThanOrEqualTo(eventRoot.<Date> get("creationTime"), dateFrom);
+                return cb.greaterThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateFrom);
             }
         };
     }
@@ -55,7 +55,7 @@ public class JpaEventSpecifications implements EventSpecifications {
             @Override
             public Predicate toPredicate(final Root<Event> eventRoot, final CriteriaQuery<?> query,
                     final CriteriaBuilder cb) {
-                return cb.lessThanOrEqualTo(eventRoot.<Date> get("creationTime"), dateUntil);
+                return cb.lessThanOrEqualTo(eventRoot.<Date> get("dateTime"), dateUntil);
             }
         };
     }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringPeriodicMeterReadsResponseMessageProcessor")
+@Component
 public class PeriodicMeterReadsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected PeriodicMeterReadsResponseMessageProcessor() {

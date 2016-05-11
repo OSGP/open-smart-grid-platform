@@ -46,6 +46,23 @@
     </wsdl:message>
     
     <!-- RETRIEVE CONFIGURATION OBJECTS -->
+    <wsdl:message name="SpecificConfigurationObjectRequest">
+        <wsdl:part element="smadhoc:SpecificConfigurationObjectRequest" name="SpecificConfigurationObjectRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SpecificConfigurationObjectAsyncResponse">
+        <wsdl:part element="smadhoc:SpecificConfigurationObjectAsyncResponse" name="SpecificConfigurationObjectAsyncResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SpecificConfigurationObjectAsyncRequest">
+        <wsdl:part element="smadhoc:SpecificConfigurationObjectAsyncRequest" name="SpecificConfigurationObjectAsyncRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="SpecificConfigurationObjectResponse">
+        <wsdl:part element="smadhoc:SpecificConfigurationObjectResponse" name="SpecificConfigurationObjectResponse">
+        </wsdl:part>
+    </wsdl:message>
+    
     <wsdl:message name="RetrieveConfigurationObjectsRequest">
         <wsdl:part element="smadhoc:RetrieveConfigurationObjectsRequest" name="RetrieveConfigurationObjectsRequest">
         </wsdl:part>
@@ -62,7 +79,7 @@
         <wsdl:part element="smadhoc:RetrieveConfigurationObjectsResponse" name="RetrieveConfigurationObjectsResponse">
         </wsdl:part>
     </wsdl:message>
-    
+
     <wsdl:message name="GetAssociationLnObjectsRequest">
         <wsdl:part element="smadhoc:GetAssociationLnObjectsRequest" name="GetAssociationLnObjectsRequest">
         </wsdl:part>
@@ -101,6 +118,16 @@
             <wsdl:output message="tns:RetrieveConfigurationObjectsResponse" name="RetrieveConfigurationObjectsResponse" />
         </wsdl:operation>           
 
+        <wsdl:operation name="GetSpecificConfigurationObject">
+            <wsdl:input message="tns:SpecificConfigurationObjectRequest" name="SpecificConfigurationObjectRequest" />
+            <wsdl:output message="tns:SpecificConfigurationObjectAsyncResponse" name="SpecificConfigurationObjectAsyncResponse" />
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSpecificConfigurationObjectResponse">
+            <wsdl:input message="tns:SpecificConfigurationObjectAsyncRequest" name="SpecificConfigurationObjectAsyncRequest" />
+            <wsdl:output message="tns:SpecificConfigurationObjectResponse" name="SpecificConfigurationObjectResponse" />
+        </wsdl:operation>           
+        
         <wsdl:operation name="GetAssociationLnObjects">
             <wsdl:input message="tns:GetAssociationLnObjectsRequest" name="GetAssociationLnObjectsRequest" />
             <wsdl:output message="tns:GetAssociationLnObjectsAsyncResponse" name="GetAssociationLnObjectsAsyncResponse" />
@@ -162,6 +189,32 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="RetrieveConfigurationObjectsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetSpecificConfigurationObject">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SpecificConfigurationObjectRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SpecificConfigurationObjectAsyncResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="GetSpecificConfigurationObjectResponse">
+            <soap:operation soapAction="" />
+            <wsdl:input name="SpecificConfigurationObjectAsyncRequest">
+                <soap:header message="tns:ActionHeader" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:ActionHeader" part="UserName" use="literal" />
+                <soap:header message="tns:ActionHeader" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="SpecificConfigurationObjectResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

@@ -18,7 +18,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActivityCalenda
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-@Component("domainSmartmeteringSetActivityCalendarRequestMessageProcessor")
+@Component
 public class SetActivityCalendarRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired

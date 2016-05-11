@@ -31,10 +31,6 @@ public enum ClockStatusBit {
         return this.description;
     }
 
-    public String value() {
-        return this.name();
-    }
-
     public boolean isSet(final int clockStatus) {
         final int mask = 1 << this.ordinal();
         return mask == (mask & clockStatus);
@@ -74,10 +70,6 @@ public enum ClockStatusBit {
             status |= (1 << statusBit.ordinal());
         }
         return status;
-    }
-
-    public static ClockStatusBit fromValue(final String v) {
-        return valueOf(v);
     }
 
 }

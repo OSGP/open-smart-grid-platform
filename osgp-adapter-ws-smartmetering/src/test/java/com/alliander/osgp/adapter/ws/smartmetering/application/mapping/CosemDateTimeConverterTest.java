@@ -1,95 +1,137 @@
 package com.alliander.osgp.adapter.ws.smartmetering.application.mapping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.impl.ConfigurableMapper;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.ClockStatus;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDate;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemDateTime;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.CosemTime;
 
 public class CosemDateTimeConverterTest {
 
-    static final int BYTE_YEAR_HI = 0;
-    static final int BYTE_YEAR_LO = 1;
-    static final int BYTE_MONTH = 2;
-    static final int BYTE_DAY_OF_MONTH = 3;
-    static final int BYTE_DAY_OF_WEEK = 4;
-    static final int BYTE_HOUR = 5;
-    static final int BYTE_MINUTE = 6;
-    static final int BYTE_SECOND = 7;
-    static final int BYTE_HUNDREDTHS = 8;
-    static final int BYTE_DEVIATION_HI = 9;
-    static final int BYTE_DEVIATION_LO = 10;
-    static final int BYTE_CLOCKSTATUS = 11;
+    private MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-    static short[] dateTime;
-    static {
-        dateTime = new short[12];
-        dateTime[BYTE_YEAR_HI] = (short) (2016 >> 8) & 0xFF;
-        dateTime[BYTE_YEAR_LO] = (short) 2016 & 0xFF;
-        dateTime[BYTE_MONTH] = 2;
-        dateTime[BYTE_DAY_OF_MONTH] = 18;
-        dateTime[BYTE_DAY_OF_WEEK] = 0xFF;
-        dateTime[BYTE_HOUR] = 7;
-        dateTime[BYTE_MINUTE] = 13;
-        dateTime[BYTE_SECOND] = 32;
-        dateTime[BYTE_HUNDREDTHS] = 0;
-        dateTime[BYTE_DEVIATION_HI] = (short) (120 >> 8) & 0xFF;
-        dateTime[BYTE_DEVIATION_LO] = (short) 120 & 0xFF;
-        dateTime[BYTE_CLOCKSTATUS] = 0;
+    private static final byte FIRST_BYTE_FOR_YEAR = (byte) 0x07;
+    private static final byte SECOND_BYTE_FOR_YEAR = (byte) 0xE0;
+    private static final byte BYTE_FOR_MONTH = 4;
+    private static final byte BYTE_FOR_DAY_OF_MONTH = 7;
+    private static final byte BYTE_FOR_DAY_OF_WEEK = (byte) 0xFF;
+    private static final byte BYTE_FOR_HOUR_OF_DAY = 10;
+    private static final byte BYTE_FOR_MINUTE_OF_HOUR = 34;
+    private static final byte BYTE_FOR_SECOND_OF_MINUTE = 35;
+    private static final byte BYTE_FOR_HUNDREDS_0F_SECONDS = 10;
+    private static final byte FIRST_BYTE_FOR_DEVIATION = -1;
+    private static final byte SECOND_BYTE_FOR_DEVIATION = -120;
+    private static final byte BYTE_FOR_CLOCKSTATUS = (byte) 0xFF;
+
+    private static final byte[] COSEMDATETIME_BYTE_ARRAY_NORMAL = { FIRST_BYTE_FOR_YEAR, SECOND_BYTE_FOR_YEAR,
+        BYTE_FOR_MONTH, BYTE_FOR_DAY_OF_MONTH, BYTE_FOR_DAY_OF_WEEK, BYTE_FOR_HOUR_OF_DAY, BYTE_FOR_MINUTE_OF_HOUR,
+            BYTE_FOR_SECOND_OF_MINUTE, BYTE_FOR_HUNDREDS_0F_SECONDS, FIRST_BYTE_FOR_DEVIATION,
+            SECOND_BYTE_FOR_DEVIATION, BYTE_FOR_CLOCKSTATUS };
+
+    private static final byte FIRST_BYTE_FOR_POSITIVE_DEVIATION = 1;
+    private static final byte SECOND_BYTE_FOR_POSITIVE_DEVIATION = 120;
+
+    private static final byte[] COSEMDATETIME_BYTE_ARRAY_POSITIVE_DEVIATION = { FIRST_BYTE_FOR_YEAR,
+        SECOND_BYTE_FOR_YEAR, BYTE_FOR_MONTH, BYTE_FOR_DAY_OF_MONTH, BYTE_FOR_DAY_OF_WEEK, BYTE_FOR_HOUR_OF_DAY,
+        BYTE_FOR_MINUTE_OF_HOUR, BYTE_FOR_SECOND_OF_MINUTE, BYTE_FOR_HUNDREDS_0F_SECONDS,
+            FIRST_BYTE_FOR_POSITIVE_DEVIATION, SECOND_BYTE_FOR_POSITIVE_DEVIATION, BYTE_FOR_CLOCKSTATUS };
+
+    private static final byte FIRST_BYTE_FOR_UNSPECIFIED_YEAR = (byte) 0xFF;
+    private static final byte SECOND_BYTE_FOR_UNSPECIFIED_YEAR = (byte) 0xFF;
+
+    private static final byte[] COSEMDATETIME_BYTE_ARRAY_UNSPECIFIED_YEAR = { FIRST_BYTE_FOR_UNSPECIFIED_YEAR,
+        SECOND_BYTE_FOR_UNSPECIFIED_YEAR, BYTE_FOR_MONTH, BYTE_FOR_DAY_OF_MONTH, BYTE_FOR_DAY_OF_WEEK,
+        BYTE_FOR_HOUR_OF_DAY, BYTE_FOR_MINUTE_OF_HOUR, BYTE_FOR_SECOND_OF_MINUTE, BYTE_FOR_HUNDREDS_0F_SECONDS,
+        FIRST_BYTE_FOR_DEVIATION, SECOND_BYTE_FOR_DEVIATION, BYTE_FOR_CLOCKSTATUS };
+
+    /**
+     * Registers the CosemDateTimeConverter to be tested.
+     */
+    @Before
+    public void init() {
+        this.mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
     }
 
-    public static class Mapper extends ConfigurableMapper {
-        @Override
-        public void configure(final MapperFactory mapperFactory) {
-            mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());
-            mapperFactory.getConverterFactory().registerConverter(new CosemTimeConverter());
-        }
+    /**
+     * Tests if mapping a byte[] to a CosemDateTime object succeeds.
+     */
+    @Test
+    public void testToCosemDateTimeMapping() {
+
+        // actual mapping
+        final CosemDateTime cosemDateTime = this.mapperFactory.getMapperFacade().map(COSEMDATETIME_BYTE_ARRAY_NORMAL,
+                CosemDateTime.class);
+
+        // check mapping
+        assertNotNull(cosemDateTime);
+
+        final CosemDate cosemDate = cosemDateTime.getDate();
+        assertEquals(FIRST_BYTE_FOR_YEAR, ((byte) (cosemDate.getYear() >> 8)));
+        assertEquals(SECOND_BYTE_FOR_YEAR, ((byte) (cosemDate.getYear() & 0xFF)));
+        assertEquals(BYTE_FOR_MONTH, cosemDate.getMonth());
+        assertEquals(BYTE_FOR_DAY_OF_MONTH, cosemDate.getDayOfMonth());
+        assertEquals(BYTE_FOR_DAY_OF_WEEK, ((byte) cosemDate.getDayOfWeek()));
+
+        final CosemTime cosemTime = cosemDateTime.getTime();
+        assertEquals(BYTE_FOR_HOUR_OF_DAY, cosemTime.getHour());
+        assertEquals(BYTE_FOR_MINUTE_OF_HOUR, cosemTime.getMinute());
+        assertEquals(BYTE_FOR_SECOND_OF_MINUTE, cosemTime.getSecond());
+        assertEquals(BYTE_FOR_HUNDREDS_0F_SECONDS, cosemTime.getHundredths());
+
+        final int deviation = cosemDateTime.getDeviation();
+        assertEquals(FIRST_BYTE_FOR_DEVIATION, ((byte) (deviation >> 8)));
+        assertEquals(SECOND_BYTE_FOR_DEVIATION, ((byte) (deviation & 0xFF)));
+
+        assertEquals(BYTE_FOR_CLOCKSTATUS, ((byte) ClockStatus.STATUS_NOT_SPECIFIED));
     }
 
-    public static Mapper mapper = new Mapper();
-
-    private byte[] convertShortArray(final short[] input) {
-        final byte[] output = new byte[input.length];
-        for (int i = 0; i < input.length; ++i) {
-            output[i] = (byte) input[i];
-        }
-        return output;
-    }
-
+    /**
+     * Tests the mapping of the deviation property of a CosemDateTime object for
+     * positive and negative values.
+     */
     @Test
     public void deviationTest() {
-        CosemDateTime cdt;
+
+        CosemDateTime cosemDateTime;
 
         // Test negative
-        dateTime[BYTE_DEVIATION_HI] = (short) (-720 >> 8) & 0xFF;
-        dateTime[BYTE_DEVIATION_LO] = (short) -720 & 0xFF;
-        cdt = mapper.map(this.convertShortArray(dateTime), CosemDateTime.class);
-        assertEquals(-720, cdt.getDeviation());
+        cosemDateTime = this.mapperFactory.getMapperFacade().map(COSEMDATETIME_BYTE_ARRAY_NORMAL, CosemDateTime.class);
+
+        assertNotNull(cosemDateTime);
+        assertNotNull(cosemDateTime.getDeviation());
+        assertEquals(FIRST_BYTE_FOR_DEVIATION, (byte) (cosemDateTime.getDeviation() >> 8));
+        assertEquals(SECOND_BYTE_FOR_DEVIATION, (byte) (cosemDateTime.getDeviation() & 0xFF));
 
         // Test positive
-        dateTime[BYTE_DEVIATION_HI] = (short) (120 >> 8) & 0xFF;
-        dateTime[BYTE_DEVIATION_LO] = (short) 120 & 0xFF;
-        cdt = mapper.map(this.convertShortArray(dateTime), CosemDateTime.class);
-        assertEquals(120, cdt.getDeviation());
+        cosemDateTime = this.mapperFactory.getMapperFacade().map(COSEMDATETIME_BYTE_ARRAY_POSITIVE_DEVIATION,
+                CosemDateTime.class);
+
+        assertNotNull(cosemDateTime);
+        assertNotNull(cosemDateTime.getDeviation());
+        assertEquals(FIRST_BYTE_FOR_POSITIVE_DEVIATION, (byte) (cosemDateTime.getDeviation() >> 8));
+        assertEquals(SECOND_BYTE_FOR_POSITIVE_DEVIATION, (byte) (cosemDateTime.getDeviation() & 0xFF));
     }
 
+    /**
+     * Tests the mapping of the year property of a CosemDateTime object when it
+     * is unspecified.
+     */
     @Test
     public void yearTest() {
-        CosemDateTime cdt;
 
-        // Test positive
-        dateTime[BYTE_YEAR_HI] = (short) (2016 >> 8) & 0xFF;
-        dateTime[BYTE_YEAR_LO] = (short) 2016 & 0xFF;
-        cdt = mapper.map(this.convertShortArray(dateTime), CosemDateTime.class);
-        assertEquals(2016, cdt.getDate().getYear());
+        final CosemDateTime cosemDateTime = this.mapperFactory.getMapperFacade().map(
+                COSEMDATETIME_BYTE_ARRAY_UNSPECIFIED_YEAR, CosemDateTime.class);
 
-        // Test unspecified
-        dateTime[BYTE_YEAR_HI] = (short) (CosemDate.YEAR_NOT_SPECIFIED >> 8) & 0xFF;
-        dateTime[BYTE_YEAR_LO] = (short) CosemDate.YEAR_NOT_SPECIFIED & 0xFF;
-        cdt = mapper.map(this.convertShortArray(dateTime), CosemDateTime.class);
-        assertEquals(CosemDate.YEAR_NOT_SPECIFIED, cdt.getDate().getYear());
+        assertNotNull(cosemDateTime);
+        assertNotNull(cosemDateTime.getDate());
+        assertNotNull(cosemDateTime.getDate().getYear());
+        assertEquals(CosemDate.YEAR_NOT_SPECIFIED, cosemDateTime.getDate().getYear());
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 
-@Component("domainSmartMeteringSetActivityCalendarResponseMessageProcessor")
+@Component
 public class SetActivityCalendarResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetActivityCalendarResponseMessageProcessor() {

@@ -21,7 +21,7 @@ import com.alliander.osgp.shared.infra.jms.ResponseMessage;
  * Class for processing smart metering Set Encryption Key Exchange On G-Meter
  * response messages
  */
-@Component("domainSmartMeteringSetEncryptionKeyExchangeOnGMeterResponseMessageProcessor")
+@Component
 public class SetEncryptionKeyExchangeOnGMeterResponseMessageProcessor extends OsgpCoreResponseMessageProcessor {
 
     @Autowired

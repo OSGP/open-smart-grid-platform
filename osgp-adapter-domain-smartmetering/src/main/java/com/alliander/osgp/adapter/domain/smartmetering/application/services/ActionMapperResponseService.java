@@ -107,12 +107,12 @@ public class ActionMapperResponseService {
     }
 
     public BundleMessagesResponse mapAllActions(
-            final BundleMessagesResponseDto bundleResponseMessageDataContainerDto)
+            final BundleMessagesResponseDto bundleMessageResponseDto)
             throws FunctionalException {
 
         final List<ActionResponse> actionResponseList = new ArrayList<ActionResponse>();
 
-        for (final ActionResponseDto action : bundleResponseMessageDataContainerDto.getActionValueObjectResponseDto()) {
+        for (final ActionResponseDto action : bundleMessageResponseDto.getAllResponses()) {
 
             final ConfigurableMapper mapper = this.getMapper(action);
             final Class<? extends ActionResponse> clazz = this.getClazz(action);

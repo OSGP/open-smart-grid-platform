@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
@@ -19,7 +22,7 @@ import com.alliander.osgp.core.application.services.EventNotificationMessageServ
 import com.alliander.osgp.core.infra.jms.protocol.in.ProtocolRequestMessageProcessor;
 import com.alliander.osgp.domain.core.exceptions.UnknownEntityException;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
-import com.alliander.osgp.dto.valueobjects.EventNotification;
+import com.alliander.osgp.dto.valueobjects.EventNotificationDto;
 import com.alliander.osgp.shared.infra.jms.Constants;
 import com.alliander.osgp.shared.infra.jms.RequestMessage;
 
@@ -48,11 +51,31 @@ public class EventNotificationMessageProcessor extends ProtocolRequestMessagePro
         final Object dataObject = requestMessage.getRequest();
 
         try {
-            final EventNotification eventNotification = (EventNotification) dataObject;
 
-            this.eventNotificationMessageService.handleEvent(deviceIdentification,
-                    com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
-                            .name()), eventNotification.getDescription(), eventNotification.getIndex());
+            if (dataObject instanceof EventNotificationDto) {
+
+                final EventNotificationDto eventNotification = (EventNotificationDto) dataObject;
+
+                Date dateTime;
+                if (eventNotification.getDateTime() == null) {
+                    LOGGER.warn("Event Notification for device {} did not contain date/time, using new Date().",
+                            deviceIdentification);
+                    dateTime = new Date();
+                } else {
+                    dateTime = eventNotification.getDateTime().toDate();
+                }
+
+                this.eventNotificationMessageService.handleEvent(deviceIdentification, dateTime,
+                        com.alliander.osgp.domain.core.valueobjects.EventType.valueOf(eventNotification.getEventType()
+                                .name()), eventNotification.getDescription(), eventNotification.getIndex());
+
+            } else if (dataObject instanceof List) {
+
+                @SuppressWarnings("unchecked")
+                final List<EventNotificationDto> eventNotifications = (List<EventNotificationDto>) dataObject;
+                this.eventNotificationMessageService.handleEvents(deviceIdentification, eventNotifications);
+            }
+
         } catch (final UnknownEntityException e) {
             LOGGER.error("Exception", e);
             throw new JMSException(e.getMessage());

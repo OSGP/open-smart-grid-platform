@@ -14,7 +14,7 @@ import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 /**
  * Class for processing smart metering set push setup sms response messages
  */
-@Component("domainSmartMeteringSetPushSetupSmsResponseMessageProcessor")
+@Component
 public class SetPushSetupSmsResponseMessageProcessor extends DomainResponseMessageProcessor {
 
     protected SetPushSetupSmsResponseMessageProcessor() {

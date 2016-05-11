@@ -20,7 +20,7 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.PushSetupSms;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.infra.jms.DeviceMessageMetadata;
 
-@Component("domainSmartmeteringSetPushSetupSmsRequestMessageProcessor")
+@Component
 public class SetPushSetupSmsRequestMessageProcessor extends WebServiceRequestMessageProcessor {
 
     @Autowired

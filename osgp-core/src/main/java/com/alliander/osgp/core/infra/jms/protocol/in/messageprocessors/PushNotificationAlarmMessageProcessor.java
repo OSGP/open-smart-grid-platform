@@ -7,6 +7,7 @@
  */
 package com.alliander.osgp.core.infra.jms.protocol.in.messageprocessors;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -122,9 +123,13 @@ public class PushNotificationAlarmMessageProcessor extends ProtocolRequestMessag
 
     private void storeAlarmAsEvent(final PushNotificationAlarmDto pushNotificationAlarm) {
         try {
+            /*
+             * Push notifications for alarms don't contain date/time info, use
+             * new Date() as time with the notification.
+             */
             this.eventNotificationMessageService.handleEvent(pushNotificationAlarm.getDeviceIdentification(),
-                    com.alliander.osgp.domain.core.valueobjects.EventType.ALARM_NOTIFICATION, pushNotificationAlarm
-                    .getAlarms().toString(), 0);
+                    new Date(), com.alliander.osgp.domain.core.valueobjects.EventType.ALARM_NOTIFICATION,
+                    pushNotificationAlarm.getAlarms().toString(), 0);
         } catch (final UnknownEntityException uee) {
             LOGGER.warn("Unable to store event for Push Notification Alarm from unknown device: {}",
                     pushNotificationAlarm, uee);

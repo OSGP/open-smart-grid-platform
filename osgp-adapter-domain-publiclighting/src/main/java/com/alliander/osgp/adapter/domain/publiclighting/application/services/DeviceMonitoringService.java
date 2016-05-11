@@ -22,8 +22,8 @@ import com.alliander.osgp.domain.core.valueobjects.HistoryTermType;
 import com.alliander.osgp.domain.core.valueobjects.PowerUsageData;
 import com.alliander.osgp.domain.core.valueobjects.PowerUsageHistoryResponse;
 import com.alliander.osgp.domain.core.valueobjects.TimePeriod;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer;
-import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainer;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryResponseMessageDataContainerDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -65,7 +65,7 @@ public class DeviceMonitoringService extends AbstractService {
     }
 
     public void handleGetActualPowerUsageResponse(
-            final com.alliander.osgp.dto.valueobjects.PowerUsageData actualPowerUsageDataDto,
+            final com.alliander.osgp.dto.valueobjects.PowerUsageDataDto actualPowerUsageDataDto,
             final String organisationIdentification, final String deviceIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
@@ -112,11 +112,11 @@ public class DeviceMonitoringService extends AbstractService {
         this.findOrganisation(organisationIdentification);
         final Device device = this.findActiveDevice(deviceIdentification);
 
-        final com.alliander.osgp.dto.valueobjects.TimePeriod timePeriodDto = new com.alliander.osgp.dto.valueobjects.TimePeriod(
+        final com.alliander.osgp.dto.valueobjects.TimePeriodDto timePeriodDto = new com.alliander.osgp.dto.valueobjects.TimePeriodDto(
                 timePeriod.getStartTime(), timePeriod.getEndTime());
-        final com.alliander.osgp.dto.valueobjects.HistoryTermType historyTermTypeDto = this.domainCoreMapper.map(
-                historyTermType, com.alliander.osgp.dto.valueobjects.HistoryTermType.class);
-        final PowerUsageHistoryMessageDataContainer powerUsageHistoryMessageDataContainerDto = new PowerUsageHistoryMessageDataContainer(
+        final com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto historyTermTypeDto = this.domainCoreMapper.map(
+                historyTermType, com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto.class);
+        final PowerUsageHistoryMessageDataContainerDto powerUsageHistoryMessageDataContainerDto = new PowerUsageHistoryMessageDataContainerDto(
                 timePeriodDto, historyTermTypeDto);
 
         this.osgpCoreRequestMessageSender.send(new RequestMessage(correlationUid, organisationIdentification,
@@ -125,7 +125,7 @@ public class DeviceMonitoringService extends AbstractService {
     }
 
     public void handleGetPowerUsageHistoryResponse(
-            final PowerUsageHistoryResponseMessageDataContainer powerUsageHistoryResponseMessageDataContainerDto,
+            final PowerUsageHistoryResponseMessageDataContainerDto powerUsageHistoryResponseMessageDataContainerDto,
             final String organisationIdentification, final String deviceIdentification, final String correlationUid,
             final String messageType, final ResponseMessageResultType deviceResult, final OsgpException exception) {
 
