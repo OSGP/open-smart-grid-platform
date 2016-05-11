@@ -43,8 +43,6 @@ public class InstallationService {
             @Identification final String deviceIdentification, final SmartMeteringDevice device,
             final int messagePriority, final Long scheduleTime) {
 
-        // TODO: bypassing authorization logic for now, needs to be fixed.
-
         LOGGER.debug("enqueueAddSmartMeterRequest called with organisation {} and device {}",
                 organisationIdentification, deviceIdentification);
 
@@ -53,11 +51,11 @@ public class InstallationService {
 
         final DeviceMessageMetadata deviceMessageMetadata = new DeviceMessageMetadata(deviceIdentification,
                 organisationIdentification, correlationUid, SmartMeteringRequestMessageType.ADD_METER.toString(),
-                messagePriority,scheduleTime);
+                messagePriority, scheduleTime);
 
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(device).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);

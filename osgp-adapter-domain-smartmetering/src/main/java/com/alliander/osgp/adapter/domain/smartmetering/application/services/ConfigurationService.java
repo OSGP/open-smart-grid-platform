@@ -177,8 +177,6 @@ public class ConfigurationService {
         LOGGER.info("setAlarmNotifications for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        // TODO: bypassing authorization, this should be fixed.
-
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
@@ -278,8 +276,6 @@ public class ConfigurationService {
 
         LOGGER.info("set Activity Calendar for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
-
-        // TODO: bypassing authorization, this should be fixed.
 
         final SmartMeter smartMeteringDevice = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());

@@ -146,6 +146,28 @@
             name="RevokeKeyResponse">
         </wsdl:part>
     </wsdl:message>
+
+    <wsdl:message name="GetProtocolInfosRequest">
+        <wsdl:part element="dman:GetProtocolInfosRequest"
+            name="GetProtocolInfosRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetProtocolInfosResponse">
+        <wsdl:part element="dman:GetProtocolInfosResponse"
+            name="GetProtocolInfosResponse">
+        </wsdl:part>
+    </wsdl:message>
+
+    <wsdl:message name="UpdateDeviceProtocolRequest">
+        <wsdl:part element="dman:UpdateDeviceProtocolRequest"
+            name="UpdateDeviceProtocolRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="UpdateDeviceProtocolResponse">
+        <wsdl:part element="dman:UpdateDeviceProtocolResponse"
+            name="UpdateDeviceProtocolResponse">
+        </wsdl:part>
+    </wsdl:message>
  
 	<wsdl:portType name="DeviceManagementPort">
 		<wsdl:operation name="FindMessageLogs">
@@ -243,6 +265,24 @@
             </wsdl:input>
             <wsdl:output message="tns:RevokeKeyResponse"
                 name="RevokeKeyResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetProtocolInfos">
+            <wsdl:input message="tns:GetProtocolInfosRequest"
+                name="GetProtocolInfosRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:GetProtocolInfosResponse"
+                name="GetProtocolInfosResponse">
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpdateDeviceProtocol">
+            <wsdl:input message="tns:UpdateDeviceProtocolRequest"
+                name="UpdateDeviceProtocolRequest">
+            </wsdl:input>
+            <wsdl:output message="tns:UpdateDeviceProtocolResponse"
+                name="UpdateDeviceProtocolResponse">
             </wsdl:output>
         </wsdl:operation>
 
@@ -413,6 +453,32 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="RevokeKeyResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="GetProtocolInfos">
+            <soap:operation soapAction="" />
+            <wsdl:input name="GetProtocolInfosRequest">
+                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="GetProtocolInfosResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="UpdateDeviceProtocol">
+            <soap:operation soapAction="" />
+            <wsdl:input name="UpdateDeviceProtocolRequest">
+                <soap:header message="tns:SoapHeaders" part="OrganisationIdentification" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="UserName" use="literal" />
+                <soap:header message="tns:SoapHeaders" part="ApplicationName" use="literal" />
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="UpdateDeviceProtocolResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

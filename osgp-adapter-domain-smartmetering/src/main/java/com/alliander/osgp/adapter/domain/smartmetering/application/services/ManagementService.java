@@ -58,8 +58,6 @@ public class ManagementService {
         LOGGER.info("findEvents for organisationIdentification: {} for deviceIdentification: {}",
                 deviceMessageMetadata.getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification());
 
-        // TODO: bypassing authorization, this should be fixed.
-
         final SmartMeter smartMeter = this.domainHelperService.findSmartMeter(deviceMessageMetadata
                 .getDeviceIdentification());
 
