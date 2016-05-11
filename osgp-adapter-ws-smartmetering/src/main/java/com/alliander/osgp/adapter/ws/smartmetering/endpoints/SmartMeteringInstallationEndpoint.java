@@ -97,9 +97,8 @@ public class SmartMeteringInstallationEndpoint extends SmartMeteringEndpoint {
 
     @PayloadRoot(localPart = "AddDeviceAsyncRequest", namespace = SMARTMETER_INSTALLATION_NAMESPACE)
     @ResponsePayload
-    public AddDeviceResponse getSetConfigurationObjectResponse(
-            @OrganisationIdentification final String organisationIdentification,
-            @RequestPayload final AddDeviceAsyncRequest request) throws OsgpException {
+    public AddDeviceResponse getSetConfigurationObjectResponse(@RequestPayload final AddDeviceAsyncRequest request)
+            throws OsgpException {
 
         AddDeviceResponse response = null;
         try {
