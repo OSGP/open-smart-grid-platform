@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.adapter.domain.smartmetering.application.services.BundleService;
 import com.alliander.osgp.adapter.domain.smartmetering.infra.jms.core.OsgpCoreResponseMessageProcessor;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseDto;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
@@ -33,14 +34,14 @@ public class BundleResponseMessageProcessor extends OsgpCoreResponseMessageProce
 
     @Override
     protected boolean hasRegularResponseObject(final ResponseMessage responseMessage) {
-        return responseMessage.getDataObject() instanceof BundleMessagesResponseDto;
+        return responseMessage.getDataObject() instanceof BundleMessagesRequest;
     }
 
     @Override
     protected void handleMessage(final DeviceMessageMetadata deviceMessageMetadata,
             final ResponseMessage responseMessage, final OsgpException osgpException) throws FunctionalException {
 
-        final BundleMessagesResponseDto bundleMessagesResponseDto = (BundleMessagesResponseDto) responseMessage
+        final BundleMessagesRequest bundleMessagesResponseDto = (BundleMessagesRequest) responseMessage
                 .getDataObject();
 
         this.bundleService.handleBundleResponse(deviceMessageMetadata, responseMessage.getResult(), osgpException,

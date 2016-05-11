@@ -23,7 +23,7 @@ public class GetSpecificConfigurationObjectMapperTest {
     public void test() {
         SpecificConfigurationObjectRequestData reqData1 = makeRequestData();
         Object obj = commonMapper.map(reqData1, SpecificConfigurationObjectRequestDto.class);
-        assertTrue(obj != null && obj instanceof SpecificConfigurationObjectRequestData);
+        assertTrue(obj != null && obj instanceof SpecificConfigurationObjectRequestDto);
         Object reqData2 = commonMapper.map(obj, SpecificConfigurationObjectRequestData.class);
         assertTrue(reqData2 != null && reqData2 instanceof SpecificConfigurationObjectRequestData);
         assertTrue(reqData1.equals(reqData2));

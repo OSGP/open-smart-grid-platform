@@ -40,6 +40,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequest;
 import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
@@ -89,7 +90,7 @@ public class ActionMapperResponseService {
     }
 
     /**
-     * Specifies to which core value object the DTO object needs to be mapped.
+     * Specifies to which core value object the DTO object needs to be mapped.BundleMessagesResponseDto
      */
     private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
     static {
@@ -107,7 +108,7 @@ public class ActionMapperResponseService {
     }
 
     public BundleMessagesResponse mapAllActions(
-            final BundleMessagesResponseDto bundleMessageResponseDto)
+            final BundleMessagesRequest bundleMessageResponseDto)
             throws FunctionalException {
 
         final List<ActionResponse> actionResponseList = new ArrayList<ActionResponse>();
