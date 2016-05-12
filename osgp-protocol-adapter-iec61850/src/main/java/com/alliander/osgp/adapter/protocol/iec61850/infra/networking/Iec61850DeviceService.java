@@ -1647,29 +1647,11 @@ public class Iec61850DeviceService implements DeviceService {
         }
     }
 
-    /*
-     * Converts a {@link Schedule} to a {@link ScheduleEntry}
-     */
     private ScheduleEntry convertToScheduleEntry(final ScheduleDto schedule, final LightValueDto lightValue)
             throws ProtocolAdapterException {
 
-        // A time is formatted as hh:mm:ss, the time on the device is formatted
-        // as hhmm in int form
-        final String formattedTime = schedule.getTime();
-        if (formattedTime == null || !formattedTime.matches("\\d\\d:\\d\\d(:\\d\\d)?")) {
-            throw new ProtocolAdapterException("Schedule time (" + formattedTime + ") is not formatted as hh:mm:dd");
-        }
-        final short time = Short.valueOf(formattedTime.replace(":", "").substring(0, 4));
-
-        final TriggerType triggerType;
-        if (ActionTimeTypeDto.ABSOLUTETIME.equals(schedule.getActionTime())) {
-            triggerType = TriggerType.FIX;
-        } else if (com.alliander.osgp.dto.valueobjects.TriggerTypeDto.ASTRONOMICAL.equals(schedule.getTriggerType())) {
-            triggerType = TriggerType.AUTONOME;
-        } else {
-            triggerType = TriggerType.SENSOR;
-        }
-
+        final short time = this.convertTime(schedule.getTime());
+        final TriggerType triggerType = this.extractTriggerType(schedule);
         final boolean enabled = schedule.getIsEnabled() == null ? true : schedule.getIsEnabled();
         final WeekDayTypeDto weekDay = schedule.getWeekDay();
         if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
@@ -1681,6 +1663,35 @@ public class Iec61850DeviceService implements DeviceService {
             return new ScheduleEntry(enabled, triggerType, ScheduleWeekday.valueOf(schedule.getWeekDay().name()), time,
                     lightValue.isOn());
         }
+    }
+
+    /**
+     *
+     * @param time
+     *            a time String in the format hh:mm:ss or hh:mm.
+     * @return the short value formed by parsing the digits of hhmm from the
+     *         given time.
+     * @throws ProtocolAdapterException
+     *             if time is {@code null} or not of the format specified.
+     */
+    private short convertTime(final String time) throws ProtocolAdapterException {
+
+        if (time == null || !time.matches("\\d\\d:\\d\\d(:\\d\\d)?")) {
+            throw new ProtocolAdapterException("Schedule time (" + time + ") is not formatted as hh:mm or hh:mm:dd");
+        }
+        return Short.parseShort(time.replace(":", "").substring(0, 4));
+    }
+
+    private TriggerType extractTriggerType(final ScheduleDto schedule) {
+        final TriggerType triggerType;
+        if (ActionTimeTypeDto.ABSOLUTETIME.equals(schedule.getActionTime())) {
+            triggerType = TriggerType.FIX;
+        } else if (com.alliander.osgp.dto.valueobjects.TriggerTypeDto.ASTRONOMICAL.equals(schedule.getTriggerType())) {
+            triggerType = TriggerType.AUTONOME;
+        } else {
+            triggerType = TriggerType.SENSOR;
+        }
+        return triggerType;
     }
 
     /*
