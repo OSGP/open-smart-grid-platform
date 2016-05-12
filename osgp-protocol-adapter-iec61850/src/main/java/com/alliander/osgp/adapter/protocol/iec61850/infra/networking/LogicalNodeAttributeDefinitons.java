@@ -122,6 +122,40 @@ public final class LogicalNodeAttributeDefinitons {
     public static final String PROPERTY_SCHEDULE_TIME_OFF_TYPE = "tOffT";
 
     /**
+     * Minimum time lights on
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_MINIMUM_TIME_ON = "minOnPer";
+
+    /*
+     * A minOffPer property also exists on the devices, which is not used by
+     * OSGP, which is why it does not appear here.
+     */
+
+    /**
+     * Minutes before of the trigger window
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TRIGGER_MINUTES_BEFORE = "srBefWd";
+
+    /**
+     * Minutes after of the trigger window
+     *
+     * Property of sche node, which is a node of the schedule node of the XSWC
+     * Node
+     * */
+    public static final String PROPERTY_SCHEDULE_TRIGGER_MINUTES_AFTER = "srAftWd";
+
+    /*
+     * igBefWd / igAftWd (ignore window for fixed time schedule) are not
+     * implemented, so no schedule properties are included here.
+     */
+
+    /**
      * Attribute of Property CfSt, enbOper, enables the operation of a relay.
      */
     public static final String PROPERTY_MASTER_CONTROL_ATTRIBUTE_ENABLE_OPERATION = "enbOper";
@@ -338,9 +372,12 @@ public final class LogicalNodeAttributeDefinitons {
     }
 
     /**
-     * Returns the value of the Relay's logical node for the given index
+     * Returns the value of schedule entry for the given index.
+     *
+     * @param index
+     *            schedule entry index (1..{@value #MAX_SCHEDULE_INDEX})
      */
-    public static final String getSchedulePropertyNameForRelayIndex(final int index) {
+    public static final String getSchedulePropertyNameForIndex(final int index) {
 
         if (index < 1 || index > MAX_SCHEDULE_INDEX) {
             throw new IllegalArgumentException("Invalid index value : " + index);

@@ -1270,13 +1270,15 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(scheduleConfiguration,
-                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForRelayIndex(i + 1),
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1),
                                         Fc.CF);
 
                         final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
-                        enabled.setValue(false);
-                        clientAssociation.setDataValues(enabled);
+                        if (enabled.getValue()) {
+                            enabled.setValue(false);
+                            clientAssociation.setDataValues(enabled);
+                        }
                     }
 
                     for (int i = 0; i < numberOfScheduleEntries; i++) {
@@ -1287,7 +1289,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(scheduleConfiguration,
-                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForRelayIndex(i + 1),
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForIndex(i + 1),
                                         Fc.CF);
 
                         final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
@@ -1344,6 +1346,22 @@ public class Iec61850DeviceService implements DeviceService {
                         timeOffActionTime.setValue(timeOffTypeValue);
                         clientAssociation.setDataValues(timeOffActionTime);
 
+                        // 0-valued for tariff schedules:
+
+                        final BdaInt16U minimumTimeOn = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_MINIMUM_TIME_ON);
+                        minimumTimeOn.setValue(0);
+                        clientAssociation.setDataValues(minimumTimeOn);
+
+                        final BdaInt16U triggerMinutesBefore = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TRIGGER_MINUTES_BEFORE);
+                        triggerMinutesBefore.setValue(0);
+                        clientAssociation.setDataValues(triggerMinutesBefore);
+
+                        final BdaInt16U triggerMinutesAfter = (BdaInt16U) Iec61850DeviceService.this.getChildOfNode(
+                                scheduleNode, LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_TRIGGER_MINUTES_AFTER);
+                        triggerMinutesAfter.setValue(0);
+                        clientAssociation.setDataValues(triggerMinutesAfter);
                     }
 
                     return null;
