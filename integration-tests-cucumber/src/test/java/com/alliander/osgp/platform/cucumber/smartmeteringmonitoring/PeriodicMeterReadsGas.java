@@ -121,6 +121,10 @@ public class PeriodicMeterReadsGas {
 
     @When("^the get interval meter reads gas request is received$")
     public void theGetIntervalMeterReadsRequestIsReceived() throws Throwable {
+        this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
+                + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
+        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
+
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
                 this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
                 TEST_CASE_NAME_REQUEST);
