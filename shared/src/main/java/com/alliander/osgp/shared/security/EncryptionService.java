@@ -10,6 +10,7 @@ package com.alliander.osgp.shared.security;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -19,6 +20,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.slf4j.Logger;
@@ -44,6 +46,15 @@ public final class EncryptionService {
      */
     public static final String PROVIDER = "BC";
 
+    private final SecretKey cachedKey;
+    private static final byte[] IVBYTES = new byte[16];
+
+    static {
+        for (short s = 0; s < IVBYTES.length; s++) {
+            IVBYTES[s] = (byte) s;
+        }
+    }
+
     public EncryptionService(final String keyPath) {
         try {
             this.cachedKey = new SecretKeySpec(Files.readAllBytes(new File(keyPath).toPath()), "AES");
@@ -60,10 +71,11 @@ public final class EncryptionService {
 
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
-            cipher.init(Cipher.DECRYPT_MODE, this.cachedKey);
+            cipher.init(Cipher.DECRYPT_MODE, this.cachedKey, new IvParameterSpec(IVBYTES));
             return cipher.doFinal(inputData);
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-                | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException ex) {
+                | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
+                | InvalidAlgorithmParameterException ex) {
             LOGGER.error("Unexpected exception during decryption", ex);
             throw new EncrypterException("Unexpected exception during decryption!", ex);
         }
@@ -75,15 +87,13 @@ public final class EncryptionService {
     public byte[] encrypt(final byte[] inputData) {
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
-            cipher.init(Cipher.ENCRYPT_MODE, this.cachedKey);
+            cipher.init(Cipher.ENCRYPT_MODE, this.cachedKey, new IvParameterSpec(IVBYTES));
             return cipher.doFinal(inputData);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
-                | BadPaddingException | NoSuchProviderException e) {
+                | BadPaddingException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
             LOGGER.error("Unexpected exception during encryption", e);
             throw new EncrypterException("Unexpected exception during encryption!", e);
         }
     }
-
-    private final SecretKey cachedKey;
 
 }
