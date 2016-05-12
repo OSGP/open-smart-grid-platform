@@ -81,11 +81,13 @@ import com.alliander.osgp.dto.valueobjects.PowerUsageHistoryMessageDataContainer
 import com.alliander.osgp.dto.valueobjects.RelayConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.RelayDataDto;
 import com.alliander.osgp.dto.valueobjects.RelayMapDto;
+import com.alliander.osgp.dto.valueobjects.RelayTypeDto;
 import com.alliander.osgp.dto.valueobjects.ScheduleDto;
 import com.alliander.osgp.dto.valueobjects.SsldDataDto;
 import com.alliander.osgp.dto.valueobjects.TimePeriodDto;
 import com.alliander.osgp.dto.valueobjects.TransitionMessageDataContainerDto;
 import com.alliander.osgp.dto.valueobjects.TransitionTypeDto;
+import com.alliander.osgp.dto.valueobjects.WeekDayTypeDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -115,6 +117,8 @@ public class Iec61850DeviceService implements DeviceService {
     // The value used to indicate that the time on or time off of a schedule
     // entry is unused.
     private static final int DEFAULT_SCHEDULE_VALUE = -1;
+    // The number of schedule entries available for a relay.
+    private static final int MAX_NUMBER_OF_SCHEDULE_ENTRIES = 64;
 
     // Used to keep the firmware version apart in the FirmwareVersionDto objects
     // of getFirmwareVersion
@@ -512,6 +516,10 @@ public class Iec61850DeviceService implements DeviceService {
 
             // TODO make this method more generic once the light schedules are
             // implemented
+            if (RelayTypeDto.LIGHT == deviceRequest.getRelayType()) {
+                throw new UnsupportedOperationException(
+                        "Setting light schedules is not yet supported for Kaifa devices.");
+            }
             this.setTariffScheduleOnDevice(serverModel, clientAssociation, deviceRequest
                     .getScheduleMessageDataContainer().getScheduleList(), ssld);
 
@@ -1236,8 +1244,15 @@ public class Iec61850DeviceService implements DeviceService {
                 @Override
                 public Void apply() throws Exception {
 
-                    // TODO clear existing schedule. Do this at the end for the
-                    // remaining schedules?
+                    final List<ScheduleEntry> scheduleEntries = relaySchedulesEntries.get(relayIndex);
+                    final int numberOfScheduleEntries = scheduleEntries.size();
+
+                    if (numberOfScheduleEntries > MAX_NUMBER_OF_SCHEDULE_ENTRIES) {
+                        throw new ProtocolAdapterException("Received " + numberOfScheduleEntries
+                                + " tariff schedule entries for relay " + relayIndex + " for device "
+                                + ssld.getDeviceIdentification() + ". Setting more than "
+                                + MAX_NUMBER_OF_SCHEDULE_ENTRIES + " is not possible.");
+                    }
 
                     final String scheduleObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.getNodeNameForRelayIndex(relayIndex)
@@ -1246,18 +1261,35 @@ public class Iec61850DeviceService implements DeviceService {
                     final FcModelNode scheduleConfiguration = Iec61850DeviceService.this.getNode(serverModel,
                             scheduleObjectReference, Fc.CF);
 
-                    for (int i = 0; i < relaySchedulesEntries.get(relayIndex).size(); i++) {
+                    // Clear existing schedule by disabling schedule entries.
+                    for (int i = 0; i < MAX_NUMBER_OF_SCHEDULE_ENTRIES; i++) {
 
-                        LOGGER.info("Writing schedule entry {} for relay {}", i + 1, relayIndex);
-
-                        final ScheduleEntry scheduleEntry = relaySchedulesEntries.get(relayIndex).get(i);
+                        LOGGER.info(
+                                "Disabling schedule entry {} of {} for relay {} before setting new tariff schedule",
+                                i + 1, MAX_NUMBER_OF_SCHEDULE_ENTRIES, relayIndex);
 
                         final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
                                 .getChildOfNodeWithConstraint(scheduleConfiguration,
                                         LogicalNodeAttributeDefinitons.getSchedulePropertyNameForRelayIndex(i + 1),
                                         Fc.CF);
 
-                        // Setting enables
+                        final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
+                                LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
+                        enabled.setValue(false);
+                        clientAssociation.setDataValues(enabled);
+                    }
+
+                    for (int i = 0; i < numberOfScheduleEntries; i++) {
+
+                        LOGGER.info("Writing schedule entry {} for relay {}", i + 1, relayIndex);
+
+                        final ScheduleEntry scheduleEntry = scheduleEntries.get(i);
+
+                        final ConstructedDataAttribute scheduleNode = (ConstructedDataAttribute) Iec61850DeviceService.this
+                                .getChildOfNodeWithConstraint(scheduleConfiguration,
+                                        LogicalNodeAttributeDefinitons.getSchedulePropertyNameForRelayIndex(i + 1),
+                                        Fc.CF);
+
                         final BdaBoolean enabled = (BdaBoolean) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_ENABLE);
                         enabled.setValue(scheduleEntry.isEnabled());
@@ -1265,17 +1297,24 @@ public class Iec61850DeviceService implements DeviceService {
 
                         final BdaInt32 day = (BdaInt32) Iec61850DeviceService.this.getChildOfNode(scheduleNode,
                                 LogicalNodeAttributeDefinitons.PROPERTY_SCHEDULE_DAY);
-                        day.setValue(scheduleEntry.getWeekday().getIndex());
+                        day.setValue(scheduleEntry.getDay());
                         clientAssociation.setDataValues(day);
 
-                        // Setting the default values for all of these
+                        /*
+                         * A schedule entry on the platform is about switching
+                         * on a certain time, or on a certain trigger. The
+                         * schedule entries on the device are about a period
+                         * with a time on and a time off. To bridge these
+                         * different approaches, either the on or the off values
+                         * on the device are set to a certain default to
+                         * indicate they are not relevant to the schedule entry.
+                         */
+
                         int timeOnValue = DEFAULT_SCHEDULE_VALUE;
                         byte timeOnTypeValue = DEFAULT_SCHEDULE_VALUE;
                         int timeOffValue = DEFAULT_SCHEDULE_VALUE;
                         byte timeOffTypeValue = DEFAULT_SCHEDULE_VALUE;
 
-                        // checking to see if the timeOn of timeOff values have
-                        // to be filled
                         if (scheduleEntry.isOn()) {
                             timeOnValue = scheduleEntry.getTime();
                             timeOnTypeValue = (byte) scheduleEntry.getTriggerType().getIndex();
@@ -1611,21 +1650,18 @@ public class Iec61850DeviceService implements DeviceService {
     /*
      * Converts a {@link Schedule} to a {@link ScheduleEntry}
      */
-    private ScheduleEntry convertToScheduleEntry(final ScheduleDto schedule, final LightValueDto lightValue) {
+    private ScheduleEntry convertToScheduleEntry(final ScheduleDto schedule, final LightValueDto lightValue)
+            throws ProtocolAdapterException {
 
         // A time is formatted as hh:mm:ss, the time on the device is formatted
         // as hhmm in int form
-        final short time = Short.valueOf(schedule.getTime().replace(":", "").substring(0, 4));
+        final String formattedTime = schedule.getTime();
+        if (formattedTime == null || !formattedTime.matches("\\d\\d:\\d\\d(:\\d\\d)?")) {
+            throw new ProtocolAdapterException("Schedule time (" + formattedTime + ") is not formatted as hh:mm:dd");
+        }
+        final short time = Short.valueOf(formattedTime.replace(":", "").substring(0, 4));
 
-        // TODO what to do when weekday is ABSOLUTEDAY? Special days is not
-        // implemented yet
-        final ScheduleWeekday weekday = ScheduleWeekday.valueOf(schedule.getWeekDay().name());
-
-        // ActionTime ABSOLUTETIME --> Fix
-        // TriggerType LIGHT_TRIGGER & ActionTime SUNRISE or SUNSET --> Sensor
-        // TriggerType ASTRONOMICAL --> Autonome
         final TriggerType triggerType;
-
         if (ActionTimeTypeDto.ABSOLUTETIME.equals(schedule.getActionTime())) {
             triggerType = TriggerType.FIX;
         } else if (com.alliander.osgp.dto.valueobjects.TriggerTypeDto.ASTRONOMICAL.equals(schedule.getTriggerType())) {
@@ -1634,17 +1670,24 @@ public class Iec61850DeviceService implements DeviceService {
             triggerType = TriggerType.SENSOR;
         }
 
-        return new ScheduleEntry(schedule.getIsEnabled() == null ? true : schedule.getIsEnabled(), triggerType,
-                weekday, time, lightValue.isOn());
-
+        final boolean enabled = schedule.getIsEnabled() == null ? true : schedule.getIsEnabled();
+        final WeekDayTypeDto weekDay = schedule.getWeekDay();
+        if (WeekDayTypeDto.ABSOLUTEDAY.equals(weekDay)) {
+            if (schedule.getStartDay() == null) {
+                throw new ProtocolAdapterException("Schedule startDay must not be null when weekDay equals ABSOLUTEDAY");
+            }
+            return new ScheduleEntry(enabled, triggerType, schedule.getStartDay(), time, lightValue.isOn());
+        } else {
+            return new ScheduleEntry(enabled, triggerType, ScheduleWeekday.valueOf(schedule.getWeekDay().name()), time,
+                    lightValue.isOn());
+        }
     }
 
     /*
      * returns a map of schedule entries, grouped by the internal index
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
-            final Ssld ssld,
-            final RelayType relayType) throws FunctionalException {
+            final Ssld ssld, final RelayType relayType) throws FunctionalException {
 
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 
@@ -1653,7 +1696,8 @@ public class Iec61850DeviceService implements DeviceService {
 
                 final List<Integer> indexes = new ArrayList<>();
 
-                if (lightValue.getIndex() == 0 && RelayType.TARIFF.equals(relayType)) {
+                if (lightValue.getIndex() == 0
+                        && (RelayType.TARIFF.equals(relayType) || RelayType.TARIFF_REVERSED.equals(relayType))) {
 
                     // Index 0 is not allowed for tariff switching
                     throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
@@ -1675,7 +1719,13 @@ public class Iec61850DeviceService implements DeviceService {
                             lightValue.getIndex()));
                 }
 
-                final ScheduleEntry scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
+                ScheduleEntry scheduleEntry;
+                try {
+                    scheduleEntry = this.convertToScheduleEntry(schedule, lightValue);
+                } catch (final ProtocolAdapterException e) {
+                    throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
+                            ComponentType.PROTOCOL_IEC61850, e);
+                }
 
                 for (final Integer internalIndex : indexes) {
 

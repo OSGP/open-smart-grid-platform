@@ -7,6 +7,8 @@
  */
 package com.alliander.osgp.adapter.protocol.iec61850.domain.valueobjects;
 
+import org.joda.time.DateTime;
+
 /**
  * Value object, containing all data that is written to a relay schedule
  */
@@ -14,7 +16,7 @@ public class ScheduleEntry {
 
     private final boolean enabled;
     private final TriggerType triggerType;
-    private final ScheduleWeekday weekday;
+    private final int day;
     private final short time;
     private final boolean on;
 
@@ -22,7 +24,17 @@ public class ScheduleEntry {
             final short time, final boolean on) {
         this.enabled = enabled;
         this.triggerType = triggerType;
-        this.weekday = weekday;
+        this.day = weekday.getIndex();
+        this.time = time;
+        this.on = on;
+    }
+
+    public ScheduleEntry(final boolean enabled, final TriggerType triggerType, final DateTime specialDate,
+            final short time, final boolean on) {
+        this.enabled = enabled;
+        this.triggerType = triggerType;
+        // make weekday the int value corresponding with yyyyMMdd
+        this.day = specialDate.getDayOfMonth() + 100 * specialDate.getMonthOfYear() + 10000 * specialDate.getYear();
         this.time = time;
         this.on = on;
     }
@@ -35,8 +47,8 @@ public class ScheduleEntry {
         return this.triggerType;
     }
 
-    public ScheduleWeekday getWeekday() {
-        return this.weekday;
+    public int getDay() {
+        return this.day;
     }
 
     public short getTime() {
