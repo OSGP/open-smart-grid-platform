@@ -68,6 +68,7 @@ import com.alliander.osgp.dto.valueobjects.ActionTimeTypeDto;
 import com.alliander.osgp.dto.valueobjects.CertificationDto;
 import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
 import com.alliander.osgp.dto.valueobjects.DeviceStatusDto;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.HistoryTermTypeDto;
@@ -841,8 +842,8 @@ public class Iec61850DeviceService implements DeviceService {
         final List<PowerUsageDataDto> powerUsageHistoryData = new ArrayList<>();
         for (final DeviceOutputSetting deviceOutputSetting : deviceOutputSettingsLightRelays) {
             final List<PowerUsageDataDto> powerUsageData = Iec61850DeviceService.this
-                    .getPowerUsageHistoryDataFromRelay(
-                            serverModel, deviceIdentification, timePeriod, deviceOutputSetting);
+                    .getPowerUsageHistoryDataFromRelay(serverModel, deviceIdentification, timePeriod,
+                            deviceOutputSetting);
             powerUsageHistoryData.addAll(powerUsageData);
         }
         /*-
@@ -908,9 +909,12 @@ public class Iec61850DeviceService implements DeviceService {
                 .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
         final LightTypeDto lightType = LightTypeDto.valueOf(lightTypeValue.getStringValue());
 
+        // TODO re-add this code when firmware 01.01.33 is replaced
         // These will be used later on
-        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) softwareConfiguration.getChild("osRise");
-        final BdaInt16 astroGateSunSetOffset = (BdaInt16) softwareConfiguration.getChild("osSet");
+        // final BdaInt16 astroGateSunRiseOffset = (BdaInt16)
+        // softwareConfiguration.getChild("osRise");
+        // final BdaInt16 astroGateSunSetOffset = (BdaInt16)
+        // softwareConfiguration.getChild("osSet");
 
         final ConfigurationDto configuration = new ConfigurationDto(lightType, daliConfiguration, relayConfiguration,
                 shortTermHistoryIntervalMinutes, preferredLinkType, meterType, longTermHistoryInterval,
@@ -929,6 +933,7 @@ public class Iec61850DeviceService implements DeviceService {
         final FcModelNode regConfiguration = (FcModelNode) serverModel.findModelNode(regObjectReference, Fc.CF);
 
         final BdaVisibleString serverAddress = (BdaVisibleString) regConfiguration.getChild("svrAddr");
+
         final BdaInt32 serverPort = (BdaInt32) regConfiguration.getChild("svrPort");
 
         configuration.setOspgIpAddress(serverAddress.getStringValue());
@@ -946,16 +951,27 @@ public class Iec61850DeviceService implements DeviceService {
 
         final FcModelNode ipConfiguration = (FcModelNode) serverModel.findModelNode(ipcfObjectReference, Fc.CF);
 
-        final BdaVisibleString deviceFixIpValue = (BdaVisibleString) ipConfiguration.getChild("ipAddr");
+        final BdaVisibleString deviceFixedIpAddress = (BdaVisibleString) ipConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_ADDRESS);
+        final BdaVisibleString deviceFixedIpNetMask = (BdaVisibleString) ipConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_NETMASK);
+        final BdaVisibleString deviceFixedIpGateway = (BdaVisibleString) ipConfiguration
+                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_GATEWAY);
         final BdaBoolean dhcpEnabled = (BdaBoolean) ipConfiguration.getChild("enbDHCP");
 
-        configuration.setDeviceFixIpValue(new String(deviceFixIpValue.getValue()));
+        final DeviceFixedIpDto deviceFixedIp = new DeviceFixedIpDto(deviceFixedIpAddress.getStringValue(),
+                deviceFixedIpNetMask.getStringValue(), deviceFixedIpGateway.getStringValue());
+
+        configuration.setDeviceFixedIp(deviceFixedIp);
         configuration.setDhcpEnabled(dhcpEnabled.getValue());
 
         // setting the software configuration values
 
-        configuration.setAstroGateSunRiseOffset((int) astroGateSunRiseOffset.getValue());
-        configuration.setAstroGateSunSetOffset((int) astroGateSunSetOffset.getValue());
+        // TODO re-add this code when firmware 01.01.33 is replaced
+        // configuration.setAstroGateSunRiseOffset((int)
+        // astroGateSunRiseOffset.getValue());
+        // configuration.setAstroGateSunSetOffset((int)
+        // astroGateSunSetOffset.getValue());
 
         // getting the clock configuration values
 
@@ -1047,56 +1063,69 @@ public class Iec61850DeviceService implements DeviceService {
 
                 }
 
+                // TODO re-add this code when firmware 01.01.33 is replaced
                 // checking to see if all software config values are null, so
                 // that we don't read the values for no reason
-                if (!(configuration.getAstroGateSunRiseOffset() == null
-                        && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
-
-                    final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                            + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                            + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
-
-                    final FcModelNode softwareConfiguration = Iec61850DeviceService.this.getNode(serverModel,
-                            swcfObjectReference, Fc.CF);
-
-                    if (configuration.getAstroGateSunRiseOffset() != null) {
-
-                        final BdaInt16 astroGateSunRiseOffset = (BdaInt16) Iec61850DeviceService.this
-                                .getChildOfNodeWithConstraint(softwareConfiguration,
-                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE, Fc.CF);
-
-                        LOGGER.info("Updating AstroGateSunRiseOffset to {}", configuration.getAstroGateSunRiseOffset());
-
-                        // Get the value and send the value to the device.
-                        astroGateSunRiseOffset.setValue(configuration.getAstroGateSunRiseOffset().shortValue());
-                        clientAssociation.setDataValues(astroGateSunRiseOffset);
-                    }
-
-                    if (configuration.getAstroGateSunSetOffset() != null) {
-
-                        final BdaInt16 astroGateSunSetOffset = (BdaInt16) Iec61850DeviceService.this
-                                .getChildOfNodeWithConstraint(softwareConfiguration,
-                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET, Fc.CF);
-
-                        LOGGER.info("Updating AstroGateSunSetOffset to {}", configuration.getAstroGateSunSetOffset());
-
-                        // Get the value and send the value to the device.
-                        astroGateSunSetOffset.setValue(configuration.getAstroGateSunSetOffset().shortValue());
-                        clientAssociation.setDataValues(astroGateSunSetOffset);
-                    }
-
-                    if (configuration.getLightType() != null) {
-
-                        final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
-                                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
-
-                        LOGGER.info("Updating LightType to {}", configuration.getLightType());
-
-                        // Get the value and send the value to the device.
-                        lightTypeValue.setValue(configuration.getLightType().name());
-                        clientAssociation.setDataValues(lightTypeValue);
-                    }
-                }
+                // if (!(configuration.getAstroGateSunRiseOffset() == null
+                // && configuration.getAstroGateSunSetOffset() == null &&
+                // configuration.getLightType() == null)) {
+                //
+                // final String swcfObjectReference =
+                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                // + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                // +
+                // LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
+                //
+                // final FcModelNode softwareConfiguration =
+                // Iec61850DeviceService.this.getNode(serverModel,
+                // swcfObjectReference, Fc.CF);
+                //
+                // if (configuration.getAstroGateSunRiseOffset() != null) {
+                //
+                // final BdaInt16 astroGateSunRiseOffset = (BdaInt16)
+                // Iec61850DeviceService.this
+                // .getChildOfNodeWithConstraint(softwareConfiguration,
+                // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE,
+                // Fc.CF);
+                //
+                // LOGGER.info("Updating AstroGateSunRiseOffset to {}",
+                // configuration.getAstroGateSunRiseOffset());
+                //
+                // // Get the value and send the value to the device.
+                // astroGateSunRiseOffset.setValue(configuration.getAstroGateSunRiseOffset().shortValue());
+                // clientAssociation.setDataValues(astroGateSunRiseOffset);
+                // }
+                //
+                // if (configuration.getAstroGateSunSetOffset() != null) {
+                //
+                // final BdaInt16 astroGateSunSetOffset = (BdaInt16)
+                // Iec61850DeviceService.this
+                // .getChildOfNodeWithConstraint(softwareConfiguration,
+                // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET,
+                // Fc.CF);
+                //
+                // LOGGER.info("Updating AstroGateSunSetOffset to {}",
+                // configuration.getAstroGateSunSetOffset());
+                //
+                // // Get the value and send the value to the device.
+                // astroGateSunSetOffset.setValue(configuration.getAstroGateSunSetOffset().shortValue());
+                // clientAssociation.setDataValues(astroGateSunSetOffset);
+                // }
+                //
+                // if (configuration.getLightType() != null) {
+                //
+                // final BdaVisibleString lightTypeValue = (BdaVisibleString)
+                // softwareConfiguration
+                // .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
+                //
+                // LOGGER.info("Updating LightType to {}",
+                // configuration.getLightType());
+                //
+                // // Get the value and send the value to the device.
+                // lightTypeValue.setValue(configuration.getLightType().name());
+                // clientAssociation.setDataValues(lightTypeValue);
+                // }
+                // }
 
                 // checking to see if all register values are null, so that we
                 // don't read the values for no reason
@@ -1140,7 +1169,7 @@ public class Iec61850DeviceService implements DeviceService {
 
                 // checking to see if all network values are null, so that we
                 // don't read the values for no reason
-                if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixIpValue() == null)) {
+                if (!(configuration.isDhcpEnabled() == null && configuration.getDeviceFixedIp() == null)) {
 
                     final String networkObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
                             + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
@@ -1162,18 +1191,36 @@ public class Iec61850DeviceService implements DeviceService {
                         clientAssociation.setDataValues(dhcpEnabled);
                     }
 
-                    if (configuration.getDeviceFixIpValue() != null) {
+                    // All values in DeviceFixedIpDto are non-nullable, so no
+                    // nullchecks are needed.
+                    final DeviceFixedIpDto deviceFixedIp = configuration.getDeviceFixedIp();
 
-                        final BdaVisibleString deviceFixIpValue = (BdaVisibleString) Iec61850DeviceService.this
-                                .getChildOfNodeWithConstraint(networkConfiguration,
-                                        LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP, Fc.CF);
+                    final BdaVisibleString deviceFixedIpAddress = (BdaVisibleString) Iec61850DeviceService.this
+                            .getChildOfNodeWithConstraint(networkConfiguration,
+                                    LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_ADDRESS, Fc.CF);
 
-                        LOGGER.info("Updating DeviceFixIpValue to {}", configuration.getDeviceFixIpValue());
+                    final BdaVisibleString deviceFixedIpNetmask = (BdaVisibleString) Iec61850DeviceService.this
+                            .getChildOfNodeWithConstraint(networkConfiguration,
+                                    LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_NETMASK, Fc.CF);
 
-                        // Get the value and send the value to the device.
-                        deviceFixIpValue.setValue(configuration.getDeviceFixIpValue());
-                        clientAssociation.setDataValues(deviceFixIpValue);
-                    }
+                    final BdaVisibleString deviceFixedIpGateway = (BdaVisibleString) Iec61850DeviceService.this
+                            .getChildOfNodeWithConstraint(networkConfiguration,
+                                    LogicalNodeAttributeDefinitons.PROPERTY_POSITION_FIXED_IP_GATEWAY, Fc.CF);
+
+                    LOGGER.info("Updating deviceFixedIpAddress to {}", configuration.getDeviceFixedIp().getIpAddress());
+                    // Set the value and send the value to the device.
+                    deviceFixedIpAddress.setValue(deviceFixedIp.getIpAddress());
+                    clientAssociation.setDataValues(deviceFixedIpAddress);
+
+                    LOGGER.info("Updating deviceFixedIpNetmask to {}", configuration.getDeviceFixedIp().getGateWay());
+                    // Set the value and send the value to the device.
+                    deviceFixedIpNetmask.setValue(deviceFixedIp.getGateWay());
+                    clientAssociation.setDataValues(deviceFixedIpNetmask);
+
+                    LOGGER.info("Updating deviceFixIpGateway to {}", configuration.getDeviceFixedIp().getNetMask());
+                    // Set the value and send the value to the device.
+                    deviceFixedIpGateway.setValue(deviceFixedIp.getNetMask());
+                    clientAssociation.setDataValues(deviceFixedIpGateway);
                 }
 
                 // Disconnect from the device.
@@ -1643,8 +1690,7 @@ public class Iec61850DeviceService implements DeviceService {
      * returns a map of schedule entries, grouped by the internal index
      */
     private Map<Integer, List<ScheduleEntry>> createScheduleEntries(final List<ScheduleDto> scheduleList,
-            final Ssld ssld,
-            final RelayType relayType) throws FunctionalException {
+            final Ssld ssld, final RelayType relayType) throws FunctionalException {
 
         final Map<Integer, List<ScheduleEntry>> relaySchedulesEntries = new HashMap<>();
 

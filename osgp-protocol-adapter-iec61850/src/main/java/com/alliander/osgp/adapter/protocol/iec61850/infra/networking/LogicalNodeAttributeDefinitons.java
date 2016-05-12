@@ -282,7 +282,19 @@ public final class LogicalNodeAttributeDefinitons {
     /**
      * Attribute of Property SWCf, used to read the value of fixed ip address
      */
-    public static final String PROPERTY_POSITION_FIXED_IP = "ipAddr";
+    public static final String PROPERTY_POSITION_FIXED_IP_ADDRESS = "ipAddr";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of fixed ip address'
+     * netmask
+     */
+    public static final String PROPERTY_POSITION_FIXED_IP_NETMASK = "netmask";
+
+    /**
+     * Attribute of Property SWCf, used to read the value of fixed ip address'
+     * gateway
+     */
+    public static final String PROPERTY_POSITION_FIXED_IP_GATEWAY = "gateway";
 
     /**
      * Attribute of Property SWCf, used to enable dhcp
