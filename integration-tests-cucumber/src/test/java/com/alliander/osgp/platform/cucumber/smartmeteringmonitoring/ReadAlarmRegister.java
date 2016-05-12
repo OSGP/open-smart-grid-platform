@@ -31,32 +31,20 @@ import com.eviware.soapui.model.testsuite.TestStepResult.TestStepStatus;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-public class ActualMeterReads {
+public class ReadAlarmRegister {
     private TestCase testCase;
     private String response;
     private String correlationUid;
 
-    private static final String PATH_RESULT_LOGTIME = "/Envelope/Body/ActualMeterReadsResponse/LogTime/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_IMPORT = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyImport/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyExport/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyImportTariffOne/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyImportTariffTwo/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyExportTariffOne/text()";
-    private static final String PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO = "/Envelope/Body/ActualMeterReadsResponse/ActiveEnergyExportTariffTwo/text()";
+    private static final String PATH_RESULT_ALARMTYPES = "/Envelope/Body/ReadAlarmRegisterResponse/AlarmRegister/AlarmTypes/text()";
 
-    private static final String XPATH_MATCHER_RESULT_LOGTIME = "\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}\\:\\d{2}\\.\\d{3}Z";
-    private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT = "\\d+\\.\\d+";
-    private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT = "\\d+\\.\\d+";
-    private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE = "\\d+\\.\\d+";
-    private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO = "\\d+\\.\\d+";
-    private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE = "\\d+\\.\\d+";
-    private static final String XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO = "\\d+\\.\\d+";
+    private static final String XPATH_MATCHER_RESULT_ALARMTYPES = "\\w[A-Z]";
 
     private static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
     private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
-    private static final String TEST_CASE_XML = "392 Retrieve actual meter reads E";
-    private static final String TEST_CASE_NAME_REQUEST = "GetActualMeterReads - Request 1";
-    private static final String TEST_CASE_NAME_RESPONSE = "GetActualMeterReadsResponse - Request 1";
+    private static final String TEST_CASE_XML = "192 Read alarm register";
+    private static final String TEST_CASE_NAME_REQUEST = "ReadAlarmRegister - Request 1";
+    private static final String TEST_CASE_NAME_RESPONSE = "GetReadAlarmRegisterResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReads.class);
 
@@ -78,11 +66,12 @@ public class ActualMeterReads {
     @Autowired
     private OrganisationId organisationId;
 
-    @When("^the get actual meter reads request is received$")
+    @When("^the get read alarm register request is received$")
     public void theGetActualMeterReadsRequestIsReceived() throws Throwable {
         this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
+
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
                 this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
                 TEST_CASE_NAME_REQUEST);
@@ -99,7 +88,7 @@ public class ActualMeterReads {
         this.correlationUid = this.correlationUidMatcher.group();
     }
 
-    @Then("^the actual meter reads result should be returned$")
+    @Then("^the alarm register should be returned$")
     public void theActualMeterReadsResultShouldBeReturned() throws Throwable {
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
                 this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
@@ -114,19 +103,7 @@ public class ActualMeterReads {
                     this.response = ((MessageExchange) tcr).getResponseContent());
         }
 
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_LOGTIME,
-                XPATH_MATCHER_RESULT_LOGTIME));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_ONE));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_IMPORT_TARIFF_TWO));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_ONE));
-        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO,
-                XPATH_MATCHER_RESULT_ACTIVE_ENERGY_EXPORT_TARIFF_TWO));
+        Assert.assertTrue(this.runXpathResult.assertXpath(this.response, PATH_RESULT_ALARMTYPES,
+                XPATH_MATCHER_RESULT_ALARMTYPES));
     }
 }
