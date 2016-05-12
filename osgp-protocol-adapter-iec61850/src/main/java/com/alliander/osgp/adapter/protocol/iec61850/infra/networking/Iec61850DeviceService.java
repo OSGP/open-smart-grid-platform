@@ -44,6 +44,7 @@ import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.DeviceResponseHandler;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.GetPowerUsageHistoryDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetConfigurationDeviceRequest;
+import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetEventNotificationsDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetLightDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetScheduleDeviceRequest;
 import com.alliander.osgp.adapter.protocol.iec61850.device.requests.SetTransitionDeviceRequest;
@@ -700,6 +701,18 @@ public class Iec61850DeviceService implements DeviceService {
 
     }
 
+    @Override
+    public void setEventNotifications(final SetEventNotificationsDeviceRequest deviceRequest,
+            final DeviceResponseHandler deviceResponseHandler) {
+
+        LOGGER.info("Called setEventNotifications, doing nothing for now and returning OK");
+
+        final EmptyDeviceResponse deviceResponse = new EmptyDeviceResponse(
+                deviceRequest.getOrganisationIdentification(), deviceRequest.getDeviceIdentification(),
+                deviceRequest.getCorrelationUid(), DeviceMessageStatus.OK);
+        deviceResponseHandler.handleResponse(deviceResponse);
+    }
+
     // ======================================
     // PRIVATE DEVICE COMMUNICATION METHODS =
     // ======================================
@@ -1066,66 +1079,60 @@ public class Iec61850DeviceService implements DeviceService {
                 // TODO re-add this code when firmware 01.01.33 is replaced
                 // checking to see if all software config values are null, so
                 // that we don't read the values for no reason
-                // if (!(configuration.getAstroGateSunRiseOffset() == null
-                // && configuration.getAstroGateSunSetOffset() == null &&
-                // configuration.getLightType() == null)) {
-                //
-                // final String swcfObjectReference =
-                // LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
-                // + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
-                // +
-                // LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
-                //
-                // final FcModelNode softwareConfiguration =
-                // Iec61850DeviceService.this.getNode(serverModel,
-                // swcfObjectReference, Fc.CF);
-                //
-                // if (configuration.getAstroGateSunRiseOffset() != null) {
-                //
-                // final BdaInt16 astroGateSunRiseOffset = (BdaInt16)
-                // Iec61850DeviceService.this
-                // .getChildOfNodeWithConstraint(softwareConfiguration,
-                // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE,
-                // Fc.CF);
-                //
-                // LOGGER.info("Updating AstroGateSunRiseOffset to {}",
-                // configuration.getAstroGateSunRiseOffset());
-                //
-                // // Get the value and send the value to the device.
-                // astroGateSunRiseOffset.setValue(configuration.getAstroGateSunRiseOffset().shortValue());
-                // clientAssociation.setDataValues(astroGateSunRiseOffset);
-                // }
-                //
-                // if (configuration.getAstroGateSunSetOffset() != null) {
-                //
-                // final BdaInt16 astroGateSunSetOffset = (BdaInt16)
-                // Iec61850DeviceService.this
-                // .getChildOfNodeWithConstraint(softwareConfiguration,
-                // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET,
-                // Fc.CF);
-                //
-                // LOGGER.info("Updating AstroGateSunSetOffset to {}",
-                // configuration.getAstroGateSunSetOffset());
-                //
-                // // Get the value and send the value to the device.
-                // astroGateSunSetOffset.setValue(configuration.getAstroGateSunSetOffset().shortValue());
-                // clientAssociation.setDataValues(astroGateSunSetOffset);
-                // }
-                //
-                // if (configuration.getLightType() != null) {
-                //
-                // final BdaVisibleString lightTypeValue = (BdaVisibleString)
-                // softwareConfiguration
-                // .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
-                //
-                // LOGGER.info("Updating LightType to {}",
-                // configuration.getLightType());
-                //
-                // // Get the value and send the value to the device.
-                // lightTypeValue.setValue(configuration.getLightType().name());
-                // clientAssociation.setDataValues(lightTypeValue);
-                // }
-                // }
+                if (!(configuration.getAstroGateSunRiseOffset() == null
+                        && configuration.getAstroGateSunSetOffset() == null && configuration.getLightType() == null)) {
+                    //
+                    final String swcfObjectReference = LogicalNodeAttributeDefinitons.LOGICAL_DEVICE
+                            + LogicalNodeAttributeDefinitons.LOGICAL_NODE_CSLC
+                            + LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIGURATION;
+
+                    final FcModelNode softwareConfiguration = Iec61850DeviceService.this.getNode(serverModel,
+                            swcfObjectReference, Fc.CF);
+
+                    // if (configuration.getAstroGateSunRiseOffset() != null) {
+                    //
+                    // final BdaInt16 astroGateSunRiseOffset = (BdaInt16)
+                    // Iec61850DeviceService.this
+                    // .getChildOfNodeWithConstraint(softwareConfiguration,
+                    // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNRISE,
+                    // Fc.CF);
+                    //
+                    // LOGGER.info("Updating AstroGateSunRiseOffset to {}",
+                    // configuration.getAstroGateSunRiseOffset());
+                    //
+                    // // Get the value and send the value to the device.
+                    // astroGateSunRiseOffset.setValue(configuration.getAstroGateSunRiseOffset().shortValue());
+                    // clientAssociation.setDataValues(astroGateSunRiseOffset);
+                    // }
+                    //
+                    // if (configuration.getAstroGateSunSetOffset() != null) {
+                    //
+                    // final BdaInt16 astroGateSunSetOffset = (BdaInt16)
+                    // Iec61850DeviceService.this
+                    // .getChildOfNodeWithConstraint(softwareConfiguration,
+                    // LogicalNodeAttributeDefinitons.PROPERTY_POSITION_OFFSET_SUNSET,
+                    // Fc.CF);
+                    //
+                    // LOGGER.info("Updating AstroGateSunSetOffset to {}",
+                    // configuration.getAstroGateSunSetOffset());
+                    //
+                    // // Get the value and send the value to the device.
+                    // astroGateSunSetOffset.setValue(configuration.getAstroGateSunSetOffset().shortValue());
+                    // clientAssociation.setDataValues(astroGateSunSetOffset);
+                    // }
+                    //
+                    if (configuration.getLightType() != null) {
+
+                        final BdaVisibleString lightTypeValue = (BdaVisibleString) softwareConfiguration
+                                .getChild(LogicalNodeAttributeDefinitons.PROPERTY_SOFTWARE_CONFIG_LIGHT_TYPE);
+
+                        LOGGER.info("Updating LightType to {}", configuration.getLightType());
+
+                        // Get the value and send the value to the device.
+                        lightTypeValue.setValue(configuration.getLightType().name());
+                        clientAssociation.setDataValues(lightTypeValue);
+                    }
+                }
 
                 // checking to see if all register values are null, so that we
                 // don't read the values for no reason
@@ -1894,4 +1901,5 @@ public class Iec61850DeviceService implements DeviceService {
                 date);
         return true;
     }
+
 }
