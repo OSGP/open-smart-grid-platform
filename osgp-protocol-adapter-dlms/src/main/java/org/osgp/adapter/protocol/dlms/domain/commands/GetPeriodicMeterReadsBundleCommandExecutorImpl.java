@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 
 @Component()
@@ -37,7 +37,7 @@ GetPeriodicMeterReadsBundleCommandExecutor {
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final PeriodicMeterReadsRequestDataDto periodicMeterReadsRequestDataDto) {
 
-        final PeriodicMeterReadsQueryDto periodicMeterReadsQueryDto = new PeriodicMeterReadsQueryDto(
+        final PeriodicMeterReadsRequestDto periodicMeterReadsQueryDto = new PeriodicMeterReadsRequestDto(
                 periodicMeterReadsRequestDataDto.getPeriodType(), periodicMeterReadsRequestDataDto.getBeginDate(),
                 periodicMeterReadsRequestDataDto.getEndDate());
 

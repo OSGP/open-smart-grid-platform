@@ -21,11 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 
 @Component
 public class GetSpecificConfigurationObjectCommandExecutor implements
-CommandExecutor<SpecificConfigurationObjectRequestDataDto, String> {
+CommandExecutor<SpecificConfigurationObjectRequestDto, String> {
 
     @Autowired
     private DlmsHelperService dlmsHelper;
@@ -34,7 +34,7 @@ CommandExecutor<SpecificConfigurationObjectRequestDataDto, String> {
 
     @Override
     public String execute(final ClientConnection conn, final DlmsDevice device,
-            final SpecificConfigurationObjectRequestDataDto requestData) throws ProtocolAdapterException {
+            final SpecificConfigurationObjectRequestDto requestData) throws ProtocolAdapterException {
 
         final ObisCode obisCode = new ObisCode(requestData.getObisCode().getA(), requestData.getObisCode().getB(),
                 requestData.getObisCode().getC(), requestData.getObisCode().getD(), requestData.getObisCode().getE(),

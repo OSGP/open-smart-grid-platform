@@ -16,12 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 
 @Component
 public class GetAssociationLnObjectsBundleCommandExecutorImpl extends
-BundleCommandExecutor<GetAssociationLnObjectsRequestDataDto, ActionResponseDto> implements
+BundleCommandExecutor<GetAssociationLnObjectsRequestDto, ActionResponseDto> implements
         GetAssociationLnObjectsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory
@@ -31,15 +31,15 @@ BundleCommandExecutor<GetAssociationLnObjectsRequestDataDto, ActionResponseDto> 
     private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
 
     public GetAssociationLnObjectsBundleCommandExecutorImpl() {
-        super(GetAssociationLnObjectsRequestDataDto.class);
+        super(GetAssociationLnObjectsRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetAssociationLnObjectsRequestDataDto getAssociationLnObjectsRequestDataDto) {
+            final GetAssociationLnObjectsRequestDto getAssociationLnObjectsRequestDataDto) {
 
         try {
-            return new AssociationLnObjectsResponseDataDto(this.getAssociationLnObjectsCommandExecutor.execute(conn,
+            return new AssociationLnObjectsResponseDto(this.getAssociationLnObjectsCommandExecutor.execute(conn,
                     device, null));
         } catch (final ProtocolAdapterException e) {
 

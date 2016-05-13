@@ -13,14 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
 public class RetrieveEventsBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
         RetrieveEventsBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsQueryDto object) throws ProtocolAdapterException {
+            final FindEventsRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

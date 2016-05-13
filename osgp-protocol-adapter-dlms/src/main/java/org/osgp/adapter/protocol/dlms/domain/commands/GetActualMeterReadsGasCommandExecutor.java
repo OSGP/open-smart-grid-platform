@@ -25,10 +25,10 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDto;
 
 @Component()
-public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<ActualMeterReadsQueryDto, MeterReadsGasDto> {
+public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<ActualMeterReadsQueryDto, MeterReadsGasResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsGasCommandExecutor.class);
 
@@ -45,7 +45,7 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MeterReadsGasDto execute(final ClientConnection conn, final DlmsDevice device,
+    public MeterReadsGasResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsRequest) throws ProtocolAdapterException {
 
         final ObisCode obisCodeMbusMasterValue = this.masterValueForChannel(actualMeterReadsRequest.getChannel());
@@ -78,7 +78,7 @@ public class GetActualMeterReadsGasCommandExecutor implements CommandExecutor<Ac
             throw new ProtocolAdapterException("Unexpected null/unspecified value for M-Bus Capture Time");
         }
 
-        return new MeterReadsGasDto(new Date(), consumption, captureTime);
+        return new MeterReadsGasResponseDto(new Date(), consumption, captureTime);
 
     }
 

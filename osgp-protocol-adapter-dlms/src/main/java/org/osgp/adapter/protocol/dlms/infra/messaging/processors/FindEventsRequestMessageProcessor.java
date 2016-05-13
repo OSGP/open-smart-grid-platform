@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsQueryMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 /**
@@ -39,6 +39,6 @@ public class FindEventsRequestMessageProcessor extends DeviceRequestMessageProce
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
 
-        return this.managementService.findEvents(conn, device, (FindEventsQueryMessageDataContainerDto) requestObject);
+        return this.managementService.findEvents(conn, device, (FindEventsRequestList) requestObject);
     }
 }

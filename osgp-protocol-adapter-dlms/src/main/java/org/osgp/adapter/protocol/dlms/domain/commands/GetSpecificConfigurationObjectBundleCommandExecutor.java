@@ -8,8 +8,8 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 
-public interface GetSpecificConfigurationObjectBundleCommandExecutor extends CommandExecutor<SpecificConfigurationObjectRequestDataDto, ActionResponseDto> {
+public interface GetSpecificConfigurationObjectBundleCommandExecutor extends CommandExecutor<SpecificConfigurationObjectRequestDto, ActionResponseDto> {
 
 }

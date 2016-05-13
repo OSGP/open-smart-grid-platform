@@ -22,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsQueryDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Service(value = "dlmsDeviceMonitoringService")
@@ -53,7 +53,7 @@ public class MonitoringService {
     // === REQUEST PERIODIC METER DATA ===
 
     public Serializable requestPeriodicMeterReads(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsQueryDto periodicMeterReadsQuery) throws ProtocolAdapterException {
+            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
         if (periodicMeterReadsQuery.isMbusQuery()) {
@@ -79,7 +79,7 @@ public class MonitoringService {
         return response;
     }
 
-    public AlarmRegisterDto requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto requestReadAlarmRegister(final ClientConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto readAlarmRegisterRequest) throws ProtocolAdapterException {
 
         return this.readAlarmRegisterCommandExecutor.execute(conn, device, readAlarmRegisterRequest);

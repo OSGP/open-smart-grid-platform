@@ -24,10 +24,10 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.CosemDateTimeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsResponseDto;
 
 @Component()
-public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQueryDto, MeterReadsDto> {
+public class GetActualMeterReadsCommandExecutor implements CommandExecutor<ActualMeterReadsQueryDto, MeterReadsResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetActualMeterReadsCommandExecutor.class);
 
@@ -79,7 +79,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
     private DlmsHelperService dlmsHelperService;
 
     @Override
-    public MeterReadsDto execute(final ClientConnection conn, final DlmsDevice device,
+    public MeterReadsResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final ActualMeterReadsQueryDto actualMeterReadsQuery) throws ProtocolAdapterException {
 
         if (actualMeterReadsQuery != null && actualMeterReadsQuery.isMbusQuery()) {
@@ -115,7 +115,7 @@ public class GetActualMeterReadsCommandExecutor implements CommandExecutor<Actua
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2),
                 getResultList.get(INDEX_ACTIVE_ENERGY_EXPORT_RATE_2_SCALER_UNIT), "Actual Energy Reads -A rate 2");
 
-        return new MeterReadsDto(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
+        return new MeterReadsResponseDto(time.toDate(), activeEnergyImport, activeEnergyExport, activeEnergyImportRate1,
                 activeEnergyImportRate2, activeEnergyExportRate1, activeEnergyExportRate2);
     }
 

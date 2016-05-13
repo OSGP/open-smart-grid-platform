@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnListTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 
 @Service(value = "dlmsAdhocService")
 public class AdhocService {
@@ -55,7 +55,7 @@ public class AdhocService {
     }
 
     public Serializable getSpecificConfigurationObject(final ClientConnection conn, final DlmsDevice device,
-            final SpecificConfigurationObjectRequestDataDto specificConfigurationObjectRequestDataDto)
+            final SpecificConfigurationObjectRequestDto specificConfigurationObjectRequestDataDto)
                     throws ProtocolAdapterException {
         return this.getSpecificConfigurationObjectCommandExecutor.execute(conn, device,
                 specificConfigurationObjectRequestDataDto);

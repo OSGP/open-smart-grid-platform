@@ -19,7 +19,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.KeySetDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.OsgpException;
 
 @Component
@@ -35,7 +35,7 @@ public class ReplaceKeysRequestMessageProcessor extends DeviceRequestMessageProc
     @Override
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws OsgpException, ProtocolAdapterException, SessionProviderException {
-        final KeySetDto keySet = (KeySetDto) requestObject;
+        final SetKeysRequestDto keySet = (SetKeysRequestDto) requestObject;
         this.configurationService.replaceKeys(conn, device, keySet);
 
         return null;

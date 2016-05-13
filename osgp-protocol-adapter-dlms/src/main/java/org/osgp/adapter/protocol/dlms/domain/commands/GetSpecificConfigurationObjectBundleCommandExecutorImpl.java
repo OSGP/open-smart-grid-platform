@@ -16,11 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SpecificConfigurationObjectRequestDto;
 
 @Component
 public class GetSpecificConfigurationObjectBundleCommandExecutorImpl extends
-        BundleCommandExecutor<SpecificConfigurationObjectRequestDataDto, ActionResponseDto> implements
+        BundleCommandExecutor<SpecificConfigurationObjectRequestDto, ActionResponseDto> implements
         GetSpecificConfigurationObjectBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory
@@ -30,12 +30,12 @@ public class GetSpecificConfigurationObjectBundleCommandExecutorImpl extends
     private GetSpecificConfigurationObjectCommandExecutor getSpecificConfigurationObjectCommandExecutorImpl;
 
     public GetSpecificConfigurationObjectBundleCommandExecutorImpl() {
-        super(SpecificConfigurationObjectRequestDataDto.class);
+        super(SpecificConfigurationObjectRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SpecificConfigurationObjectRequestDataDto specificConfigurationObjectRequestDataDto) {
+            final SpecificConfigurationObjectRequestDto specificConfigurationObjectRequestDataDto) {
 
         String resultString = null;
         try {

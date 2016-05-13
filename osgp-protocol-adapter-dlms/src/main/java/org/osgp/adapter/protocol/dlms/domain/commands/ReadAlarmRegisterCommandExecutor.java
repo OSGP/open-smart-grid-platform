@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Component
-public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAlarmRegisterRequestDto, AlarmRegisterDto> {
+public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAlarmRegisterRequestDto, AlarmRegisterResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAlarmRegisterCommandExecutor.class);
 
@@ -42,9 +42,9 @@ public class ReadAlarmRegisterCommandExecutor implements CommandExecutor<ReadAla
     private AlarmHelperService alarmHelperService;
 
     @Override
-    public AlarmRegisterDto execute(final ClientConnection conn, final DlmsDevice device,
+    public AlarmRegisterResponseDto execute(final ClientConnection conn, final DlmsDevice device,
             final ReadAlarmRegisterRequestDto object) throws ProtocolAdapterException {
-        return new AlarmRegisterDto(this.retrieveAlarmRegister(conn));
+        return new AlarmRegisterResponseDto(this.retrieveAlarmRegister(conn));
     }
 
     private Set<AlarmTypeDto> retrieveAlarmRegister(final ClientConnection conn) throws ProtocolAdapterException {

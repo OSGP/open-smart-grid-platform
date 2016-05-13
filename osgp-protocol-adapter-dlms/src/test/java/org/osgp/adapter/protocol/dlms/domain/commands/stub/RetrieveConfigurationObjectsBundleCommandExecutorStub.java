@@ -13,14 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDto;
 
 public class RetrieveConfigurationObjectsBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
         RetrieveConfigurationObjectsBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetConfigurationRequestDataDto object) throws ProtocolAdapterException {
+            final GetConfigurationRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

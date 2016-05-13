@@ -13,14 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 
 public class GetFirmwareVersionsBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
         GetFirmwareVersionsBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetFirmwareVersionRequestDataDto object) throws ProtocolAdapterException {
+            final GetFirmwareVersionRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 

@@ -13,14 +13,14 @@ import org.osgp.adapter.protocol.dlms.domain.entities.DlmsDevice;
 import org.osgp.adapter.protocol.dlms.exceptions.ProtocolAdapterException;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
 public class SynchronizeTimeBundleCommandExecutorStub extends AbstractCommandExecutorStub implements
         SynchronizeTimeBundleCommandExecutor {
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SynchronizeTimeRequestDataDto object) throws ProtocolAdapterException {
+            final SynchronizeTimeRequestDto object) throws ProtocolAdapterException {
         return this.doExecute(conn, device, object);
     }
 }

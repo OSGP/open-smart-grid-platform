@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -32,10 +32,10 @@ public class BundleService {
     @Autowired
     private CommandExecutorMap bundleCommandExecutorMap;
 
-    public BundleMessageDataContainerDto callExecutors(final ClientConnection conn, final DlmsDevice device,
-            final BundleMessageDataContainerDto bundleMessageDataContainerDto) {
+    public BundleMessagesRequestDto callExecutors(final ClientConnection conn, final DlmsDevice device,
+            final BundleMessagesRequestDto bundleMessagesRequest) {
 
-        final List<ActionDto> actionList = bundleMessageDataContainerDto.getActionList();
+        final List<ActionDto> actionList = bundleMessagesRequest.getActionList();
         for (final ActionDto actionDto : actionList) {
 
             // Only execute the request when there is no response available yet.
@@ -77,6 +77,6 @@ public class BundleService {
             }
         }
 
-        return bundleMessageDataContainerDto;
+        return bundleMessagesRequest;
     }
 }

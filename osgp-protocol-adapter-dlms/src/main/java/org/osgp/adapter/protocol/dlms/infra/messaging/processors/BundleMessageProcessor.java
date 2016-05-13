@@ -18,7 +18,7 @@ import org.osgp.adapter.protocol.dlms.infra.messaging.DeviceRequestMessageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 
 /**
  * Class for processing find events request messages
@@ -37,13 +37,13 @@ public class BundleMessageProcessor extends DeviceRequestMessageProcessor {
     protected Serializable handleMessage(final ClientConnection conn, final DlmsDevice device,
             final Serializable requestObject) throws ProtocolAdapterException {
 
-        if (!(requestObject instanceof BundleMessageDataContainerDto)) {
+        if (!(requestObject instanceof BundleMessagesRequestDto)) {
             throw new ProtocolAdapterException(
                     "Expected request object of type BundleMessageDataContainer. In stead of "
                             + requestObject.getClass());
         }
-        final BundleMessageDataContainerDto bundleMessageDataContainerDto = (BundleMessageDataContainerDto) requestObject;
+        final BundleMessagesRequestDto bundleMessagesRequest = (BundleMessagesRequestDto) requestObject;
 
-        return this.bundleService.callExecutors(conn, device, bundleMessageDataContainerDto);
+        return this.bundleService.callExecutors(conn, device, bundleMessagesRequest);
     }
 }
