@@ -47,7 +47,7 @@ public final class EncryptionService {
      */
     public static final String PROVIDER = "BC";
 
-    private final SecretKey cachedKey;
+    private final SecretKey key;
     private static final byte[] IVBYTES = new byte[16];
 
     static {
@@ -58,7 +58,7 @@ public final class EncryptionService {
 
     public EncryptionService(final String keyPath) {
         try {
-            this.cachedKey = new SecretKeySpec(Files.readAllBytes(new File(keyPath).toPath()), "AES");
+            this.key = new SecretKeySpec(Files.readAllBytes(new File(keyPath).toPath()), "AES");
         } catch (final IOException e) {
             LOGGER.error("Unexpected exception when reading key", e);
             throw new EncrypterException("Unexpected exception when reading key", e);
@@ -72,7 +72,7 @@ public final class EncryptionService {
 
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
-            cipher.init(Cipher.DECRYPT_MODE, this.cachedKey, new IvParameterSpec(IVBYTES));
+            cipher.init(Cipher.DECRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
             return cipher.doFinal(inputData);
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | BadPaddingException | NoSuchProviderException
@@ -88,7 +88,7 @@ public final class EncryptionService {
     public byte[] encrypt(final byte[] inputData) {
         try {
             final Cipher cipher = Cipher.getInstance(ALGORITHM, PROVIDER);
-            cipher.init(Cipher.ENCRYPT_MODE, this.cachedKey, new IvParameterSpec(IVBYTES));
+            cipher.init(Cipher.ENCRYPT_MODE, this.key, new IvParameterSpec(IVBYTES));
             return cipher.doFinal(inputData);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException
                 | BadPaddingException | NoSuchProviderException | InvalidAlgorithmParameterException e) {

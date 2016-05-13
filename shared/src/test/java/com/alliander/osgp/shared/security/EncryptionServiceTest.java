@@ -61,6 +61,17 @@ public class EncryptionServiceTest {
     @Test
     public void testOpenSslSecret() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
 
+        final byte[] enc = new EncryptionService(new File("src/test/resources/secret").getPath()).encrypt("testje"
+                .getBytes());
+
+        Assert.assertEquals("testje",
+                new String(new EncryptionService(new File("src/test/resources/secret").getPath()).decrypt(enc)));
+
+    }
+
+    @Test
+    public void testOpenSslEncrypted() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+
         // first external preparation....
         // DECRYPT EXISTING KEYS
         // - hex key from db - xxd -p -r <hex> <bin>
@@ -72,14 +83,14 @@ public class EncryptionServiceTest {
         // -f2|xxd -p -r > <aes128cbckey>
 
         // ENCRYPT KEYS AGAIN
-        // - openssl rsautl -decrypt -in <bin> -inkey devicekey_priv.der -out
-        // <decrypted> -keyform DER -raw
+        // - openssl enc -e -aes-128-cbc -in <plain> -out
+        // <encrypted> -iv 000102030405060708090a0b0c0d0e0f -K <secret bits in
+        // hex>
 
-        final byte[] enc = new EncryptionService(new File("src/test/resources/secret").getPath()).encrypt("testje"
-                .getBytes());
-
-        Assert.assertEquals("testje",
-                new String(new EncryptionService(new File("src/test/resources/secret").getPath()).decrypt(enc)));
+        final byte[] encrypted = Files.readAllBytes(new File("src/test/resources/plain.enc").toPath());
+        final byte[] decrypted = new EncryptionService(new File("src/test/resources/secret").getPath())
+                .decrypt(encrypted);
+        Assert.assertEquals("hallo", new String(decrypted));
 
     }
 }
