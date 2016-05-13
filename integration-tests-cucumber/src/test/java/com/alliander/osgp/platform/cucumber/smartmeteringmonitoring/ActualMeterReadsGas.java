@@ -77,8 +77,7 @@ public class ActualMeterReadsGas {
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
-                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
-                TEST_CASE_NAME_REQUEST);
+                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), TEST_CASE_NAME_REQUEST);
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();

@@ -1,4 +1,4 @@
-package com.alliander.osgp.platform.cucumber.smartmeteringmonitoring;
+package com.alliander.osgp.platform.cucumber.organisation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

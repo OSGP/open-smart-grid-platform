@@ -40,4 +40,21 @@ public class TestCaseRunner {
 
         return new TestCaseResult(wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest), wsdlTestCaseRunner);
     }
+
+    public TestCaseResult runWsdlTestCase(final TestCase testCase, final String deviceId, final String organisationId,
+            final String testCaseNameRequest) throws XmlException, IOException, SoapUIException {
+
+        final WsdlTestCase wsdlTestCase = (WsdlTestCase) testCase;
+        wsdlTestCase.setPropertyValue("DeviceIdentificationE", deviceId);
+        wsdlTestCase.setPropertyValue("OrganisationIdentification", organisationId);
+        final WsdlTestCaseRunner wsdlTestCaseRunner = new WsdlTestCaseRunner(wsdlTestCase, new PropertiesMap());
+
+        try {
+            Thread.sleep(25000);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+        return new TestCaseResult(wsdlTestCaseRunner.runTestStepByName(testCaseNameRequest), wsdlTestCaseRunner);
+    }
 }

@@ -48,7 +48,8 @@ public class PeriodicMeterReadsGas {
 
     private static final String SOAP_PROJECT_XML = "../cucumber/soap-ui-project/FLEX-OVL-V3---SmartMetering-soapui-project.xml";
     private static final String TEST_SUITE_XML = "SmartmeterMonitoring";
-    private static final String TEST_CASE_XML = "225 Retrieve periodic meter reads gas";
+    private static final String TEST_CASE_XML_225 = "225 Retrieve periodic meter reads gas";
+    private static final String TEST_CASE_XML_228 = "228 Retrieve interval values gas";
     private static final String TEST_CASE_NAME_REQUEST = "GetPeriodicMeterReadsGas - Request 1";
     private static final String TEST_CASE_NAME_RESPONSE = "GetPeriodicMeterReadsGasResponse - Request 1";
 
@@ -76,11 +77,10 @@ public class PeriodicMeterReadsGas {
     public void theGetPeriodicMeterReadsRequestIsReceived() throws Throwable {
         this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
-        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
+        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML_225);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
-                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
-                TEST_CASE_NAME_REQUEST);
+                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), TEST_CASE_NAME_REQUEST);
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
@@ -123,11 +123,10 @@ public class PeriodicMeterReadsGas {
     public void theGetIntervalMeterReadsRequestIsReceived() throws Throwable {
         this.correlationUidPattern = Pattern.compile(this.organisationId.getOrganisationId()
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
-        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
+        this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML_228);
 
         final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
-                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
-                TEST_CASE_NAME_REQUEST);
+                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), TEST_CASE_NAME_REQUEST);
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
