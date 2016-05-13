@@ -42,7 +42,7 @@ public class EncryptionServiceTest {
     }
 
     @Test
-    public void testEnDecrypt2() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+    public void testEnDecryptDifferentService() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
 
         final KeyGenerator keygen = KeyGenerator.getInstance("AES", "BC");
         keygen.init(128);
@@ -55,6 +55,31 @@ public class EncryptionServiceTest {
         final byte[] enc = new EncryptionService(temp.getPath()).encrypt("testje".getBytes());
 
         Assert.assertEquals("testje", new String(new EncryptionService(temp.getPath()).decrypt(enc)));
+
+    }
+
+    @Test
+    public void testOpenSslSecret() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+
+        // first external preparation....
+        // DECRYPT EXISTING KEYS
+        // - hex key from db - xxd -p -r <hex> <bin>
+        // - openssl rsautl -decrypt -in <bin> -inkey devicekey_priv.der -out
+        // <decrypted> -keyform DER -raw
+
+        // GENERATE AES SECRET
+        // - openssl enc -aes-128-cbc -k eduard -P -md sha1|grep key=|cut -d"="
+        // -f2|xxd -p -r > <aes128cbckey>
+
+        // ENCRYPT KEYS AGAIN
+        // - openssl rsautl -decrypt -in <bin> -inkey devicekey_priv.der -out
+        // <decrypted> -keyform DER -raw
+
+        final byte[] enc = new EncryptionService(new File("src/test/resources/secret").getPath()).encrypt("testje"
+                .getBytes());
+
+        Assert.assertEquals("testje",
+                new String(new EncryptionService(new File("src/test/resources/secret").getPath()).decrypt(enc)));
 
     }
 }

@@ -23,6 +23,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.bouncycastle.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +95,10 @@ public final class EncryptionService {
             LOGGER.error("Unexpected exception during encryption", e);
             throw new EncrypterException("Unexpected exception during encryption!", e);
         }
+    }
+
+    public static byte[] getIvbytes() {
+        return Arrays.clone(IVBYTES);
     }
 
 }
