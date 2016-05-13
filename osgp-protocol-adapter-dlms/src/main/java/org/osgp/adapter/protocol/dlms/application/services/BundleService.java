@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.BundleMessagesRequestDto;
 
 @Service(value = "dlmsBundleService")
 public class BundleService {
@@ -32,8 +32,8 @@ public class BundleService {
     @Autowired
     private CommandExecutorMap bundleCommandExecutorMap;
 
-    public BundleMessagesRequest callExecutors(final ClientConnection conn, final DlmsDevice device,
-            final BundleMessagesRequest bundleMessagesRequest) {
+    public BundleMessagesRequestDto callExecutors(final ClientConnection conn, final DlmsDevice device,
+            final BundleMessagesRequestDto bundleMessagesRequest) {
 
         final List<ActionDto> actionList = bundleMessagesRequest.getActionList();
         for (final ActionDto actionDto : actionList) {

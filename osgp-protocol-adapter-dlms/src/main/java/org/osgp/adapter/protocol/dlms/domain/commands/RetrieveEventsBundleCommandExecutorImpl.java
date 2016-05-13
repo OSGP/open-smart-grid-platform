@@ -20,11 +20,11 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
 @Component()
 public class RetrieveEventsBundleCommandExecutorImpl extends
-BundleCommandExecutor<FindEventsRequest, ActionResponseDto> implements RetrieveEventsBundleCommandExecutor {
+BundleCommandExecutor<FindEventsRequestDto, ActionResponseDto> implements RetrieveEventsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RetrieveEventsBundleCommandExecutorImpl.class);
 
@@ -35,12 +35,12 @@ BundleCommandExecutor<FindEventsRequest, ActionResponseDto> implements RetrieveE
     private DlmsHelperService dlmsHelperService;
 
     public RetrieveEventsBundleCommandExecutorImpl() {
-        super(FindEventsRequest.class);
+        super(FindEventsRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final FindEventsRequest findEventsQuery) {
+            final FindEventsRequestDto findEventsQuery) {
 
         List<EventDto> eventDtoList;
         try {

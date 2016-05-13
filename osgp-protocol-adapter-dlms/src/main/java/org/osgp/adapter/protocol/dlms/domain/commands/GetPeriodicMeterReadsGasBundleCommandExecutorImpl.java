@@ -16,12 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 
 @Component()
 public class GetPeriodicMeterReadsGasBundleCommandExecutorImpl extends
-BundleCommandExecutor<PeriodicMeterReadsGasRequest, ActionResponseDto> implements
+BundleCommandExecutor<PeriodicMeterReadsGasRequestDto, ActionResponseDto> implements
 GetPeriodicMeterReadsGasBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory
@@ -31,14 +31,14 @@ GetPeriodicMeterReadsGasBundleCommandExecutor {
     GetPeriodicMeterReadsGasCommandExecutor getPeriodicMeterReadsGasCommandExecutor;
 
     public GetPeriodicMeterReadsGasBundleCommandExecutorImpl() {
-        super(PeriodicMeterReadsGasRequest.class);
+        super(PeriodicMeterReadsGasRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsGasRequest periodicMeterReadsGasRequestDataDto) {
+            final PeriodicMeterReadsGasRequestDto periodicMeterReadsGasRequestDataDto) {
 
-        final PeriodicMeterReadsRequest periodicMeterReadsQueryDto = new PeriodicMeterReadsRequest(
+        final PeriodicMeterReadsRequestDto periodicMeterReadsQueryDto = new PeriodicMeterReadsRequestDto(
                 periodicMeterReadsGasRequestDataDto.getPeriodType(),
                 periodicMeterReadsGasRequestDataDto.getBeginDate(), periodicMeterReadsGasRequestDataDto.getEndDate(),
                 periodicMeterReadsGasRequestDataDto.getChannel());

@@ -35,11 +35,11 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.DlmsMeterValueDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseItemDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 
 @Component()
 public class GetPeriodicMeterReadsCommandExecutor implements
-CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsResponseDto> {
+CommandExecutor<PeriodicMeterReadsRequestDto, PeriodicMeterReadsResponseDto> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetPeriodicMeterReadsCommandExecutor.class);
 
@@ -87,7 +87,7 @@ CommandExecutor<PeriodicMeterReadsRequest, PeriodicMeterReadsResponseDto> {
 
     @Override
     public PeriodicMeterReadsResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsRequest periodicMeterReadsRequest) throws ProtocolAdapterException {
+            final PeriodicMeterReadsRequestDto periodicMeterReadsRequest) throws ProtocolAdapterException {
 
         final PeriodTypeDto periodType = periodicMeterReadsRequest.getPeriodType();
         final DateTime beginDateTime = new DateTime(periodicMeterReadsRequest.getBeginDate());

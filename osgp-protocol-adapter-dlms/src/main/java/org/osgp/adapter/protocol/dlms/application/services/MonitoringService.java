@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsQueryDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AlarmRegisterResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 
 @Service(value = "dlmsDeviceMonitoringService")
@@ -53,7 +53,7 @@ public class MonitoringService {
     // === REQUEST PERIODIC METER DATA ===
 
     public Serializable requestPeriodicMeterReads(final ClientConnection conn, final DlmsDevice device,
-            final PeriodicMeterReadsRequest periodicMeterReadsQuery) throws ProtocolAdapterException {
+            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery) throws ProtocolAdapterException {
 
         Serializable response = null;
         if (periodicMeterReadsQuery.isMbusQuery()) {

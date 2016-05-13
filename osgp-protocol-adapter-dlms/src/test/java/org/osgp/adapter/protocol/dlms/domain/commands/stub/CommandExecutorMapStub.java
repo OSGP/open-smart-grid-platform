@@ -13,19 +13,19 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ActivityCalendarDataDto
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActualMeterReadsDataGasDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AdministrativeStatusTypeDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GetAdministrativeStatusDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetConfigurationRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDataDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequest;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupAlarmRequestDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SpecialDaysRequestDataDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SynchronizeTimeRequestDto;
 
@@ -33,7 +33,7 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
 
     public CommandExecutorMapStub() {
 
-        this.addCommandExecutor(FindEventsRequest.class, new RetrieveEventsBundleCommandExecutorStub());
+        this.addCommandExecutor(FindEventsRequestDto.class, new RetrieveEventsBundleCommandExecutorStub());
         this.addCommandExecutor(ActualMeterReadsDataDto.class, new GetActualMeterReadsBundleCommandExecutorStub());
         this.addCommandExecutor(ActualMeterReadsDataGasDto.class, new GetActualMeterReadsBundleGasCommandExecutorStub());
         this.addCommandExecutor(SpecialDaysRequestDataDto.class, new SetSpecialDaysBundleCommandExecutorStub());
@@ -42,24 +42,24 @@ public class CommandExecutorMapStub extends CommandExecutorMap {
                 new GetAdministrativeStatusBundleCommandExecutorStub());
         this.addCommandExecutor(PeriodicMeterReadsRequestDataDto.class,
                 new GetPeriodicMeterReadsBundleCommandExecutorStub());
-        this.addCommandExecutor(PeriodicMeterReadsGasRequest.class,
+        this.addCommandExecutor(PeriodicMeterReadsGasRequestDto.class,
                 new GetPeriodicMeterReadsGasBundleCommandExecutorStub());
         this.addCommandExecutor(AdministrativeStatusTypeDataDto.class,
                 new SetAdministrativeStatusBundleCommandExecutorStub());
         this.addCommandExecutor(ActivityCalendarDataDto.class, new SetActivityCalendarBundleCommandExecutorStub());
         this.addCommandExecutor(GMeterInfoDto.class, new SetEncryptionKeyExchangeOnGMeterBundleCommandExecutorStub());
-        this.addCommandExecutor(SetAlarmNotificationsRequest.class,
+        this.addCommandExecutor(SetAlarmNotificationsRequestDto.class,
                 new SetAlarmNotificationsBundleCommandExecutorStub());
         this.addCommandExecutor(SetConfigurationObjectRequestDataDto.class,
                 new SetConfigurationObjectBundleCommandExecutorStub());
-        this.addCommandExecutor(SetPushSetupAlarmRequest.class, new SetPushSetupAlarmBundleCommandExecutorStub());
-        this.addCommandExecutor(SetPushSetupSmsRequest.class, new SetPushSetupSmsBundleCommandExecutorStub());
+        this.addCommandExecutor(SetPushSetupAlarmRequestDto.class, new SetPushSetupAlarmBundleCommandExecutorStub());
+        this.addCommandExecutor(SetPushSetupSmsRequestDto.class, new SetPushSetupSmsBundleCommandExecutorStub());
         this.addCommandExecutor(SynchronizeTimeRequestDto.class, new SynchronizeTimeBundleCommandExecutorStub());
-        this.addCommandExecutor(GetConfigurationRequest.class,
+        this.addCommandExecutor(GetConfigurationRequestDto.class,
                 new RetrieveConfigurationObjectsBundleCommandExecutorStub());
-        this.addCommandExecutor(GetFirmwareVersionRequest.class,
+        this.addCommandExecutor(GetFirmwareVersionRequestDto.class,
                 new GetFirmwareVersionsBundleCommandExecutorStub());
-        this.addCommandExecutor(GetAssociationLnObjectsRequest.class,
+        this.addCommandExecutor(GetAssociationLnObjectsRequestDto.class,
                 new GetAssociationLnObjectsBundleCommandExecutorStub());
     }
 }

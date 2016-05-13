@@ -18,23 +18,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 
 @Component
-public class ReplaceKeyBundleCommandExecutorImpl extends BundleCommandExecutor<SetKeysRequest, ActionResponseDto> implements
+public class ReplaceKeyBundleCommandExecutorImpl extends BundleCommandExecutor<SetKeysRequestDto, ActionResponseDto> implements
         ReplaceKeyBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplaceKeyBundleCommandExecutorImpl.class);
 
+    private static final String REPLACE_KEYS = "Replace keys for device: ";
+    private static final String WAS_SUCCESFULL = " was successful";
+    
     @Autowired
     ReplaceKeyCommandExecutor replaceKeyCommandExecutor;
 
     public ReplaceKeyBundleCommandExecutorImpl() {
-        super(SetKeysRequest.class);
+        super(SetKeysRequestDto.class);
     }
 
     @Override
-    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device, final SetKeysRequest keySetDto) {
+    public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySetDto) {
 
         // Add the // Change AUTHENTICATION key.
         LOGGER.info("Keys to set on the device {}: {}", device.getDeviceIdentification(), keySetDto);
@@ -51,11 +54,10 @@ public class ReplaceKeyBundleCommandExecutorImpl extends BundleCommandExecutor<S
                             SecurityKeyType.E_METER_ENCRYPTION));
             conn.changeClientGlobalEncryptionKey(keySetDto.getEncryptionKey());
         } catch (final ProtocolAdapterException e) {
-            LOGGER.error("Replace keys for device: " + device.getDeviceIdentification() + " was not successful");
-            return new ActionResponseDto(e, "Replace keys for device: " + device.getDeviceIdentification()
-                    + " was not successful");
+            LOGGER.error(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
+            return new ActionResponseDto(e, REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
         }
 
-        return new ActionResponseDto("Replace keys for device: " + device.getDeviceIdentification() + " was successful");
+        return new ActionResponseDto(REPLACE_KEYS + device.getDeviceIdentification() + WAS_SUCCESFULL);
     }
 }

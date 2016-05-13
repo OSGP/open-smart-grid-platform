@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestList;
 
 @Service(value = "dlmsManagementService")
@@ -49,7 +49,7 @@ public class ManagementService {
 
         LOGGER.info("findEvents setting up connection with meter {}", device.getDeviceIdentification());
 
-        for (final FindEventsRequest findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
+        for (final FindEventsRequestDto findEventsQuery : findEventsQueryMessageDataContainer.getFindEventsQueryList()) {
             LOGGER.info("findEventsQuery.eventLogCategory: {}, findEventsQuery.from: {}, findEventsQuery.until: {}",
                     findEventsQuery.getEventLogCategory().toString(), findEventsQuery.getFrom(),
                     findEventsQuery.getUntil());

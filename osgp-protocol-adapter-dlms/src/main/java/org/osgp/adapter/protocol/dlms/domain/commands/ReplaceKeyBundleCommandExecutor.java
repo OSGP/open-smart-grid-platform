@@ -8,8 +8,8 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 
-public interface ReplaceKeyBundleCommandExecutor extends CommandExecutor<SetKeysRequest, ActionResponseDto> {
+public interface ReplaceKeyBundleCommandExecutor extends CommandExecutor<SetKeysRequestDto, ActionResponseDto> {
 
 }

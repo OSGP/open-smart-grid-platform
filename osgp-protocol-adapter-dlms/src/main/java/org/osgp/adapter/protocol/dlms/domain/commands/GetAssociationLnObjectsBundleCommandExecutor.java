@@ -8,9 +8,9 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 
 public interface GetAssociationLnObjectsBundleCommandExecutor extends
-CommandExecutor<GetAssociationLnObjectsRequest, ActionResponseDto> {
+CommandExecutor<GetAssociationLnObjectsRequestDto, ActionResponseDto> {
 
 }

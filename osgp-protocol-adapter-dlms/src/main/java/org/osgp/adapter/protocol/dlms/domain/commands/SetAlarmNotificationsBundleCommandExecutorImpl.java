@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetAlarmNotificationsRequestDto;
 
 @Component()
 public class SetAlarmNotificationsBundleCommandExecutorImpl extends
-        BundleCommandExecutor<SetAlarmNotificationsRequest, ActionResponseDto> implements
+        BundleCommandExecutor<SetAlarmNotificationsRequestDto, ActionResponseDto> implements
         SetAlarmNotificationsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SetAlarmNotificationsBundleCommandExecutorImpl.class);
@@ -30,12 +30,12 @@ public class SetAlarmNotificationsBundleCommandExecutorImpl extends
     private SetAlarmNotificationsCommandExecutor setAlarmNotificationsCommandExecutor;
 
     public SetAlarmNotificationsBundleCommandExecutorImpl() {
-        super(SetAlarmNotificationsRequest.class);
+        super(SetAlarmNotificationsRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final SetAlarmNotificationsRequest alarmNotificationsRequestDataDto) {
+            final SetAlarmNotificationsRequestDto alarmNotificationsRequestDataDto) {
 
         AccessResultCode accessResultCode = null;
         try {

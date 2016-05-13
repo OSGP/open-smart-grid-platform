@@ -8,9 +8,9 @@
 package org.osgp.adapter.protocol.dlms.domain.commands;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetPushSetupSmsRequestDto;
 
 public interface SetPushSetupSmsBundleCommandExecutor extends
-        CommandExecutor<SetPushSetupSmsRequest, ActionResponseDto> {
+        CommandExecutor<SetPushSetupSmsRequestDto, ActionResponseDto> {
 
 }

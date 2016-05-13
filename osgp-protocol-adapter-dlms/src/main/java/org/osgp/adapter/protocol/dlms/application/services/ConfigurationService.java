@@ -45,7 +45,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationFlagsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ConfigurationObjectDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GMeterInfoDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.GprsOperationModeTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupAlarmDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PushSetupSmsDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.SetConfigurationObjectRequestDto;
@@ -266,13 +266,13 @@ public class ConfigurationService {
         return this.getFirmwareVersionCommandExecutor.execute(conn, device, null);
     }
 
-    public void replaceKeys(final ClientConnection conn, final DlmsDevice device, final SetKeysRequest keySet)
+    public void replaceKeys(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException {
 
         this.replaceKeySet(conn, device, keySet);
     }
 
-    private void replaceKeySet(final ClientConnection conn, final DlmsDevice device, final SetKeysRequest keySet)
+    private void replaceKeySet(final ClientConnection conn, final DlmsDevice device, final SetKeysRequestDto keySet)
             throws ProtocolAdapterException {
 
         try {

@@ -20,11 +20,11 @@ import org.springframework.stereotype.Component;
 import com.alliander.osgp.dto.valueobjects.FirmwareVersionDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.FirmwareVersionResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetFirmwareVersionRequestDto;
 
 @Component
 public class GetFirmwareVersionsBundleCommandExecutorImpl extends
-        BundleCommandExecutor<GetFirmwareVersionRequest, ActionResponseDto> implements
+        BundleCommandExecutor<GetFirmwareVersionRequestDto, ActionResponseDto> implements
         GetFirmwareVersionsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetFirmwareVersionsBundleCommandExecutorImpl.class);
@@ -33,12 +33,12 @@ public class GetFirmwareVersionsBundleCommandExecutorImpl extends
     private GetFirmwareVersionsCommandExecutor getFirmwareVersionsCommandExecutor;
 
     public GetFirmwareVersionsBundleCommandExecutorImpl() {
-        super(GetFirmwareVersionRequest.class);
+        super(GetFirmwareVersionRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetFirmwareVersionRequest getFirmwareVersionRequestDataDto) {
+            final GetFirmwareVersionRequestDto getFirmwareVersionRequestDataDto) {
 
         List<FirmwareVersionDto> resultList;
         try {

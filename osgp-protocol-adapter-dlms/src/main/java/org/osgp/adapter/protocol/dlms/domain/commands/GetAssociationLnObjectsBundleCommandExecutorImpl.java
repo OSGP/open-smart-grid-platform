@@ -17,11 +17,11 @@ import org.springframework.stereotype.Component;
 
 import com.alliander.osgp.dto.valueobjects.smartmetering.ActionResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.AssociationLnObjectsResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.GetAssociationLnObjectsRequestDto;
 
 @Component
 public class GetAssociationLnObjectsBundleCommandExecutorImpl extends
-BundleCommandExecutor<GetAssociationLnObjectsRequest, ActionResponseDto> implements
+BundleCommandExecutor<GetAssociationLnObjectsRequestDto, ActionResponseDto> implements
         GetAssociationLnObjectsBundleCommandExecutor {
 
     private static final Logger LOGGER = LoggerFactory
@@ -31,12 +31,12 @@ BundleCommandExecutor<GetAssociationLnObjectsRequest, ActionResponseDto> impleme
     private GetAssociationLnObjectsCommandExecutor getAssociationLnObjectsCommandExecutor;
 
     public GetAssociationLnObjectsBundleCommandExecutorImpl() {
-        super(GetAssociationLnObjectsRequest.class);
+        super(GetAssociationLnObjectsRequestDto.class);
     }
 
     @Override
     public ActionResponseDto execute(final ClientConnection conn, final DlmsDevice device,
-            final GetAssociationLnObjectsRequest getAssociationLnObjectsRequestDataDto) {
+            final GetAssociationLnObjectsRequestDto getAssociationLnObjectsRequestDataDto) {
 
         try {
             return new AssociationLnObjectsResponseDto(this.getAssociationLnObjectsCommandExecutor.execute(conn,
