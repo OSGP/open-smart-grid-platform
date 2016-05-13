@@ -51,7 +51,7 @@ public class Configuration implements Serializable {
 
     private Integer timeSyncFrequency;
 
-    private String deviceFixIpValue;
+    private DeviceFixedIp deviceFixedIp;
 
     private Boolean isDhcpEnabled;
 
@@ -137,12 +137,12 @@ public class Configuration implements Serializable {
         this.timeSyncFrequency = timeSyncFrequency;
     }
 
-    public String getDeviceFixIpValue() {
-        return this.deviceFixIpValue;
+    public DeviceFixedIp getDeviceFixedIp() {
+        return this.deviceFixedIp;
     }
 
-    public void setDeviceFixIpValue(final String deviceFixIpValue) {
-        this.deviceFixIpValue = deviceFixIpValue;
+    public void setDeviceFixedIp(final DeviceFixedIp deviceFixedIp) {
+        this.deviceFixedIp = deviceFixedIp;
     }
 
     public Boolean isDhcpEnabled() {

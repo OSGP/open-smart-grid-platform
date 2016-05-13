@@ -67,7 +67,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.SYNCHRONIZE_TIME.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(synchronizeTimeRequest).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -99,7 +99,7 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_CONFIGURATION_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
@@ -131,15 +131,15 @@ public class AdhocService {
                 SmartMeteringRequestMessageType.GET_ASSOCIATION_LN_OBJECTS.toString(), messagePriority, scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
         return correlationUid;
     }
 
-    public String enqueueSpecificConfigurationObjectRequest(final String organisationIdentification,
-            final String deviceIdentification,
+    public String enqueueSpecificConfigurationObjectRequest(@Identification final String organisationIdentification,
+            @Identification final String deviceIdentification,
             final com.alliander.osgp.domain.core.valueobjects.smartmetering.SpecificConfigurationObjectRequest request,
             final int messagePriority, final Long scheduleTime) throws FunctionalException {
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -159,7 +159,7 @@ public class AdhocService {
                 scheduleTime);
 
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
-                .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
+        .deviceMessageMetadata(deviceMessageMetadata).request(request).build();
 
         this.smartMeteringRequestMessageSender.send(message);
 
