@@ -88,6 +88,7 @@ public class SmartMeteringConfigurationEndpoint extends SmartMeteringEndpoint {
     private ConfigurationMapper configurationMapper;
 
     public SmartMeteringConfigurationEndpoint() {
+    	// Default constructor
     }
 
     @PayloadRoot(localPart = "SetAdministrativeStatusRequest", namespace = SMARTMETER_CONFIGURATION_NAMESPACE)
