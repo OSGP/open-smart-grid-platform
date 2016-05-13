@@ -71,25 +71,9 @@ public class EncryptionServiceTest {
 
     @Test
     public void testOpenSslEncrypted() throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
-
-        // first external preparation....
-        // DECRYPT EXISTING KEYS
-        // - hex key from db - xxd -p -r <hex> <bin>
-        // - openssl rsautl -decrypt -in <bin> -inkey devicekey_priv.der -out
-        // <decrypted> -keyform DER -raw
-
-        // GENERATE AES SECRET
-        // - openssl enc -aes-128-cbc -k eduard -P -md sha1|grep key=|cut -d"="
-        // -f2|xxd -p -r > <aes128cbckey>
-
-        // ENCRYPT KEYS AGAIN
-        // - openssl enc -e -aes-128-cbc -in <plain> -out
-        // <encrypted> -iv 000102030405060708090a0b0c0d0e0f -K <secret bits in
-        // hex>
-
         final byte[] encrypted = Files.readAllBytes(new File("src/test/resources/plain.enc").toPath());
         final byte[] decrypted = new EncryptionService(new File("src/test/resources/secret").getPath())
-                .decrypt(encrypted);
+        .decrypt(encrypted);
         Assert.assertEquals("hallo", new String(decrypted));
 
     }
