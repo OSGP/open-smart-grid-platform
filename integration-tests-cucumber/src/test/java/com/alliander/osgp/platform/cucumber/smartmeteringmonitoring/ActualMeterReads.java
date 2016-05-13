@@ -9,6 +9,7 @@
 package com.alliander.osgp.platform.cucumber.smartmeteringmonitoring;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +61,7 @@ public class ActualMeterReads {
     private static final String TEST_CASE_NAME_RESPONSE = "GetActualMeterReadsResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReads.class);
-    private static final HashMap<String, String> PROPERTIESMAP = new HashMap<>();
+    private static final Map<String, String> PROPERTIES_MAP = new HashMap<>();
 
     private Pattern correlationUidPattern;
     private Matcher correlationUidMatcher;
@@ -86,10 +87,10 @@ public class ActualMeterReads {
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML);
 
-        PROPERTIESMAP.put("DeviceIdentificationE", this.deviceId.getDeviceId());
-        PROPERTIESMAP.put("OrganisationIdentification", this.organisationId.getOrganisationId());
+        PROPERTIES_MAP.put("DeviceIdentificationE", this.deviceId.getDeviceId());
+        PROPERTIES_MAP.put("OrganisationIdentification", this.organisationId.getOrganisationId());
 
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIESMAP,
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_REQUEST);
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
@@ -107,9 +108,9 @@ public class ActualMeterReads {
     @Then("^the actual meter reads result should be returned$")
     public void theActualMeterReadsResultShouldBeReturned() throws Throwable {
 
-        PROPERTIESMAP.put("CorrelationUid", this.correlationUid);
+        PROPERTIES_MAP.put("CorrelationUid", this.correlationUid);
 
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIESMAP,
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIES_MAP,
                 TEST_CASE_NAME_RESPONSE);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();

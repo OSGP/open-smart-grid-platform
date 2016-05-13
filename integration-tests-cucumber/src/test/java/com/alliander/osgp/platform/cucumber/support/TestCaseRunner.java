@@ -10,7 +10,7 @@
 package com.alliander.osgp.platform.cucumber.support;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.xmlbeans.XmlException;
@@ -25,11 +25,11 @@ import com.eviware.soapui.support.SoapUIException;
 @Component
 public class TestCaseRunner {
 
-    public TestCaseResult runWsdlTestCase(final TestCase testCase, final HashMap<String, String> hash,
+    public TestCaseResult runWsdlTestCase(final TestCase testCase, final Map<String, String> propertiesMap,
             final String testCaseNameRequest) throws XmlException, IOException, SoapUIException {
         final WsdlTestCase wsdlTestCase = (WsdlTestCase) testCase;
 
-        for (final Entry<String, String> entry : hash.entrySet()) {
+        for (final Entry<String, String> entry : propertiesMap.entrySet()) {
             wsdlTestCase.setPropertyValue(entry.getKey(), entry.getValue());
         }
 
