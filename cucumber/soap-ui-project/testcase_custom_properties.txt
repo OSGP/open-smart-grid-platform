@@ -1,3 +1,4 @@
 DeviceIdentificationE=EXXXX001692675614
 OrganisationIdentification=LianderNetManagement
 CorrelationUid=
+DeviceIdentificationG=G00XX561204926013
