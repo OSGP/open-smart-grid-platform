@@ -34,10 +34,10 @@ import com.alliander.osgp.domain.core.valueobjects.smartmetering.ActionResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AdministrativeStatusTypeResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AlarmRegister;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.AssociationLnObjectsResponseData;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleResponseMessageDataContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponseContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationResponseContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.BundleMessagesResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FirmwareVersionResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.GetConfigurationResponse;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReads;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.MeterReadsGas;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsContainer;
@@ -77,14 +77,14 @@ public class ActionMapperResponseService {
     private void postConstruct() {
         CLASS_TO_MAPPER_MAP.put(MeterReads.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(MeterReadsGas.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(EventMessageDataContainer.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(EventMessagesResponse.class, this.managementMapper);
         CLASS_TO_MAPPER_MAP.put(ActionResponse.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(AlarmRegister.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeResponse.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainer.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(GetConfigurationResponseContainer.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponseContainer.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetConfigurationResponse.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponse.class, this.monitoringMapper);
         CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
     }
 
@@ -97,7 +97,7 @@ public class ActionMapperResponseService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponseData.class);
         CLASS_MAP.put(MeterReads.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsResponseData.class);
-        CLASS_MAP.put(EventMessageDataContainer.class,
+        CLASS_MAP.put(EventMessagesResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.management.FindEventsResponseData.class);
         CLASS_MAP.put(ActionResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.common.ActionResponseData.class);
@@ -110,9 +110,9 @@ public class ActionMapperResponseService {
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsResponseData.class);
         CLASS_MAP.put(PeriodicMeterReadsContainerGas.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.PeriodicMeterReadsGasResponseData.class);
-        CLASS_MAP.put(GetConfigurationResponseContainer.class,
+        CLASS_MAP.put(GetConfigurationResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.GetConfigurationResponseData.class);
-        CLASS_MAP.put(FirmwareVersionResponseContainer.class,
+        CLASS_MAP.put(FirmwareVersionResponse.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.configuration.GetFirmwareVersionResponseData.class);
         CLASS_MAP.put(AssociationLnObjectsResponseData.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.AssociationLnObjectsResponseData.class);
@@ -121,7 +121,7 @@ public class ActionMapperResponseService {
 
     public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {
 
-        final BundleResponseMessageDataContainer bundleResponseMessageDataContainer = (BundleResponseMessageDataContainer) actionList;
+        final BundleMessagesResponse bundleResponseMessageDataContainer = (BundleMessagesResponse) actionList;
         final AllResponses allResponses = new ObjectFactory().createAllResponses();
         final List<? extends ActionResponse> actionValueList = bundleResponseMessageDataContainer.getBundleList();
 

@@ -33,9 +33,9 @@ import com.alliander.osgp.domain.core.services.CorrelationIdProviderService;
 import com.alliander.osgp.domain.core.validation.Identification;
 import com.alliander.osgp.domain.core.valueobjects.DeviceFunction;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.Event;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQuery;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsQueryMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestDataList;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
@@ -72,7 +72,7 @@ public class ManagementService {
     }
 
     public String enqueueFindEventsRequest(final String organisationIdentification, final String deviceIdentification,
-            final List<FindEventsQuery> findEventsQueryList, final int messagePriority, final Long scheduleTime)
+            final List<FindEventsRequestData> findEventsQueryList, final int messagePriority, final Long scheduleTime)
             throws FunctionalException {
 
         final Organisation organisation = this.domainHelperService.findOrganisation(organisationIdentification);
@@ -82,7 +82,7 @@ public class ManagementService {
 
         LOGGER.info("findEvents called with organisation {}", organisationIdentification);
 
-        for (final FindEventsQuery findEventsQuery : findEventsQueryList) {
+        for (final FindEventsRequestData findEventsQuery : findEventsQueryList) {
             if (!findEventsQuery.getFrom().isBefore(findEventsQuery.getUntil())) {
                 throw new FunctionalException(FunctionalExceptionType.VALIDATION_ERROR,
                         ComponentType.WS_SMART_METERING, new Exception(
@@ -99,7 +99,7 @@ public class ManagementService {
         // @formatter:off
         final SmartMeteringRequestMessage message = new SmartMeteringRequestMessage.Builder()
                 .deviceMessageMetadata(deviceMessageMetadata)
-                .request(new FindEventsQueryMessageDataContainer(findEventsQueryList)).build();
+                .request(new FindEventsRequestDataList(findEventsQueryList)).build();
         // @formatter:on
 
         this.smartMeteringRequestMessageSender.send(message);
@@ -122,8 +122,8 @@ public class ManagementService {
         for (final MeterResponseData meterResponseData : meterResponseDataList) {
             final Serializable messageData = meterResponseData.getMessageData();
 
-            if (messageData instanceof EventMessageDataContainer) {
-                events.addAll(((EventMessageDataContainer) messageData).getEvents());
+            if (messageData instanceof EventMessagesResponse) {
+                events.addAll(((EventMessagesResponse) messageData).getEvents());
                 meterResponseDataToDeleteList.add(meterResponseData);
             } else {
                 /**

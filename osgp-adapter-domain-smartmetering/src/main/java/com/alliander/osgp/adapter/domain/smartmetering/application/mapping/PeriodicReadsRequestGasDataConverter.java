@@ -16,20 +16,20 @@ import com.alliander.osgp.domain.core.entities.SmartMeter;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.PeriodicMeterReadsGasRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ChannelDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDataDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsGasRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalExceptionType;
 
 @Component
 public class PeriodicReadsRequestGasDataConverter implements
-        CustomValueToDtoConverter<PeriodicMeterReadsGasRequestData, PeriodicMeterReadsGasRequestDataDto> {
+        CustomValueToDtoConverter<PeriodicMeterReadsGasRequestData, PeriodicMeterReadsGasRequestDto> {
 
     @Autowired
     private DomainHelperService domainHelperService;
 
     @Override
-    public PeriodicMeterReadsGasRequestDataDto convert(final PeriodicMeterReadsGasRequestData value,
+    public PeriodicMeterReadsGasRequestDto convert(final PeriodicMeterReadsGasRequestData value,
             final SmartMeter smartMeter) throws FunctionalException {
 
         final SmartMeter gasMeter = this.domainHelperService.findSmartMeter(value.getDeviceIdentification());
@@ -38,7 +38,7 @@ public class PeriodicReadsRequestGasDataConverter implements
                 && gasMeter.getGatewayDevice().getDeviceIdentification() != null
                 && gasMeter.getGatewayDevice().getDeviceIdentification().equals(smartMeter.getDeviceIdentification())) {
 
-            return new PeriodicMeterReadsGasRequestDataDto(PeriodTypeDto.valueOf(value.getPeriodType().name()),
+            return new PeriodicMeterReadsGasRequestDto(PeriodTypeDto.valueOf(value.getPeriodType().name()),
                     value.getBeginDate(), value.getEndDate(), ChannelDto.fromNumber(gasMeter.getChannel()));
         }
         /*

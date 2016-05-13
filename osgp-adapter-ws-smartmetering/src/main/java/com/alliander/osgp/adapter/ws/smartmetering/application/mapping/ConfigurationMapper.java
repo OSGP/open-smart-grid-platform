@@ -39,7 +39,7 @@ public class ConfigurationMapper extends ConfigurableMapper {
         // two fields)
         mapperFactory.getConverterFactory().registerConverter(new PushSetupAlarmConverter());
         mapperFactory.getConverterFactory().registerConverter(new PushSetupSmsConverter());
-
+        mapperFactory.getConverterFactory().registerConverter(new SetKeysRequestConverter());
         // These converters are necessary to enable correct mapping of dates and
         // times.
         mapperFactory.getConverterFactory().registerConverter(new CosemDateTimeConverter());

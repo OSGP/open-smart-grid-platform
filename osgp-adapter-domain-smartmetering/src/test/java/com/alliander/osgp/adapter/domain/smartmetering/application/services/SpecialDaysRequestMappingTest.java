@@ -35,7 +35,8 @@ public class SpecialDaysRequestMappingTest {
     public void testSpecialDaysRequestMappingNull() {
         final String deviceIdentification = "nr1";
         final SpecialDaysRequestData specialDaysRequestData = null;
-        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
@@ -53,7 +54,8 @@ public class SpecialDaysRequestMappingTest {
     public void testSpecialDaysRequestMappingEmptyList() {
         final String deviceIdentification = "nr1";
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().build();
-        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
@@ -75,7 +77,8 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDay specialDay = new SpecialDay(new CosemDate(year, month, dayOfMonth), dayId);
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().addSpecialDay(
                 specialDay).build();
-        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,
@@ -105,7 +108,8 @@ public class SpecialDaysRequestMappingTest {
         final SpecialDay specialDay = new SpecialDay(new CosemDate(), dayId);
         final SpecialDaysRequestData specialDaysRequestData = new SpecialDaysRequestDataBuilder().addSpecialDay(
                 specialDay).build();
-        final SpecialDaysRequest specialDaysRequestValueObject = new SpecialDaysRequest(deviceIdentification,
+        final SpecialDaysRequest specialDaysRequestValueObject = 
+                new SpecialDaysRequest(deviceIdentification,
                 specialDaysRequestData);
 
         final SpecialDaysRequestDto specialDaysRequestDto = this.configurationMapper.map(specialDaysRequestValueObject,

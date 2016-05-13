@@ -19,9 +19,9 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ManagementMapper;
-import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessageDataContainer;
+import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventMessagesResponse;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataContainerDto;
+import com.alliander.osgp.dto.valueobjects.smartmetering.EventMessageDataResponseDto;
 
 public class EventMessageDataContainerMappingTest {
 
@@ -31,10 +31,10 @@ public class EventMessageDataContainerMappingTest {
     @Test
     public void testWithNullList() {
         // build test data
-        final EventMessageDataContainerDto containerDto = new EventMessageDataContainerDto(null);
+        final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(null);
         // actual mapping
-        final EventMessageDataContainer container = this.managementMapper.map(containerDto,
-                EventMessageDataContainer.class);
+        final EventMessagesResponse container = this.managementMapper.map(containerDto,
+                EventMessagesResponse.class);
         // test mapping
         assertNotNull(container);
         assertNull(container.getEvents());
@@ -45,10 +45,10 @@ public class EventMessageDataContainerMappingTest {
     @Test
     public void testWithEmptyList() {
         // build test data
-        final EventMessageDataContainerDto containerDto = new EventMessageDataContainerDto(new ArrayList<EventDto>());
+        final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(new ArrayList<EventDto>());
         // actual mapping
-        final EventMessageDataContainer container = this.managementMapper.map(containerDto,
-                EventMessageDataContainer.class);
+        final EventMessagesResponse container = this.managementMapper.map(containerDto,
+                EventMessagesResponse.class);
         // test mapping
         assertNotNull(container);
         assertNotNull(container.getEvents());
@@ -63,10 +63,10 @@ public class EventMessageDataContainerMappingTest {
         final EventDto event = new EventDto(new DateTime(), new Integer(1), new Integer(2));
         final ArrayList<EventDto> events = new ArrayList<EventDto>();
         events.add(event);
-        final EventMessageDataContainerDto containerDto = new EventMessageDataContainerDto(events);
+        final EventMessageDataResponseDto containerDto = new EventMessageDataResponseDto(events);
         // actual mapping
-        final EventMessageDataContainer container = this.managementMapper.map(containerDto,
-                EventMessageDataContainer.class);
+        final EventMessagesResponse container = this.managementMapper.map(containerDto,
+                EventMessagesResponse.class);
         // test mapping
         assertNotNull(container);
         assertNotNull(container.getEvents());
