@@ -36,7 +36,7 @@ public class TestCaseRunner {
         final WsdlTestCaseRunner wsdlTestCaseRunner = new WsdlTestCaseRunner(wsdlTestCase, new PropertiesMap());
 
         try {
-            Thread.sleep(25000);
+            Thread.sleep(30000);
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
