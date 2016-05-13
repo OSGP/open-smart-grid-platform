@@ -69,29 +69,11 @@ public class ActionMapperResponseService {
     private CommonMapper commonMapper;
 
     private static Map<Class<? extends ActionResponse>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
-
-    /**
-     * Specifies which mapper to use for the core object class received.
-     */
-    @PostConstruct
-    private void postConstruct() {
-        CLASS_TO_MAPPER_MAP.put(MeterReads.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(MeterReadsGas.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(EventMessageDataContainer.class, this.managementMapper);
-        CLASS_TO_MAPPER_MAP.put(ActionResponse.class, this.commonMapper);
-        CLASS_TO_MAPPER_MAP.put(AlarmRegister.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeResponse.class, this.configurationMapper);
-        CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainer.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(GetConfigurationResponseContainer.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponseContainer.class, this.monitoringMapper);
-        CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
-    }
+    private static Map<Class<? extends ActionResponse>, Class<?>> CLASS_MAP = new HashMap<>();
 
     /**
      * Specifies to which core object the ws object needs to be mapped.
      */
-    private static Map<Class<? extends ActionResponse>, Class<?>> CLASS_MAP = new HashMap<>();
     static {
         CLASS_MAP.put(MeterReadsGas.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.monitoring.ActualMeterReadsGasResponseData.class);
@@ -117,6 +99,24 @@ public class ActionMapperResponseService {
         CLASS_MAP.put(AssociationLnObjectsResponseData.class,
                 com.alliander.osgp.adapter.ws.schema.smartmetering.adhoc.AssociationLnObjectsResponseData.class);
 
+    }
+
+    /**
+     * Specifies which mapper to use for the core object class received.
+     */
+    @PostConstruct
+    private void postConstruct() {
+        CLASS_TO_MAPPER_MAP.put(MeterReads.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(MeterReadsGas.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(EventMessageDataContainer.class, this.managementMapper);
+        CLASS_TO_MAPPER_MAP.put(ActionResponse.class, this.commonMapper);
+        CLASS_TO_MAPPER_MAP.put(AlarmRegister.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(AdministrativeStatusTypeResponse.class, this.configurationMapper);
+        CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainer.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(PeriodicMeterReadsContainerGas.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(GetConfigurationResponseContainer.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(FirmwareVersionResponseContainer.class, this.monitoringMapper);
+        CLASS_TO_MAPPER_MAP.put(AssociationLnObjectsResponseData.class, this.adhocMapper);
     }
 
     public BundleResponse mapAllActions(final Serializable actionList) throws FunctionalException {

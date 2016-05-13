@@ -68,11 +68,29 @@ public class ActionMapperResponseService {
     @Autowired
     private CommonMapper commonMapper;
 
+    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();  
+    private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
+    
+    /**
+     * Specifies to which core value object the DTO object needs to be mapped.
+     */
+    static {
+        classMap.put(EventMessageDataContainerDto.class, EventMessageDataContainer.class);
+        classMap.put(MeterReadsDto.class, MeterReads.class);
+        classMap.put(MeterReadsGasDto.class, MeterReadsGas.class);
+        classMap.put(ActionResponseDto.class, ActionResponse.class);
+        classMap.put(AlarmRegisterDto.class, AlarmRegister.class);
+        classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
+        classMap.put(PeriodicMeterReadsContainerDto.class, PeriodicMeterReadsContainer.class);
+        classMap.put(PeriodicMeterReadsContainerGasDto.class, PeriodicMeterReadsContainerGas.class);
+        classMap.put(GetConfigurationResponseDataDto.class, GetConfigurationResponseContainer.class);
+        classMap.put(FirmwareVersionResponseDataDto.class, FirmwareVersionResponseContainer.class);
+        classMap.put(AssociationLnObjectsResponseDataDto.class, AssociationLnObjectsResponseData.class);
+    }
+
     /**
      * Specifies which mapper to use for the DTO class received.
      */
-    private static Map<Class<? extends ActionResponseDto>, ConfigurableMapper> classToMapperMap = new HashMap<>();
-
     @PostConstruct
     private void postConstruct() {
         classToMapperMap.put(EventMessageDataContainerDto.class, this.managementMapper);
@@ -88,23 +106,7 @@ public class ActionMapperResponseService {
         classToMapperMap.put(AssociationLnObjectsResponseDataDto.class, this.commonMapper);
     }
 
-    /**
-     * Specifies to which core value object the DTO object needs to be mapped.
-     */
-    private static Map<Class<? extends ActionResponseDto>, Class<? extends ActionResponse>> classMap = new HashMap<>();
-    static {
-        classMap.put(EventMessageDataContainerDto.class, EventMessageDataContainer.class);
-        classMap.put(MeterReadsDto.class, MeterReads.class);
-        classMap.put(MeterReadsGasDto.class, MeterReadsGas.class);
-        classMap.put(ActionResponseDto.class, ActionResponse.class);
-        classMap.put(AlarmRegisterDto.class, AlarmRegister.class);
-        classMap.put(AdministrativeStatusTypeResponseDto.class, AdministrativeStatusTypeResponse.class);
-        classMap.put(PeriodicMeterReadsContainerDto.class, PeriodicMeterReadsContainer.class);
-        classMap.put(PeriodicMeterReadsContainerGasDto.class, PeriodicMeterReadsContainerGas.class);
-        classMap.put(GetConfigurationResponseDataDto.class, GetConfigurationResponseContainer.class);
-        classMap.put(FirmwareVersionResponseDataDto.class, FirmwareVersionResponseContainer.class);
-        classMap.put(AssociationLnObjectsResponseDataDto.class, AssociationLnObjectsResponseData.class);
-    }
+   
 
     public BundleResponseMessageDataContainer mapAllActions(
             final BundleMessageDataContainerDto bundleMessageDataContainerDto) throws FunctionalException {

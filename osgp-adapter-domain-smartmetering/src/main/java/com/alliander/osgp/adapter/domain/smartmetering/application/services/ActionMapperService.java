@@ -109,7 +109,32 @@ public class ActionMapperService {
 
     private static Map<Class<? extends ActionRequest>, ConfigurableMapper> CLASS_TO_MAPPER_MAP = new HashMap<>();
     private static Map<Class<? extends ActionRequest>, CustomValueToDtoConverter<? extends ActionRequest, ? extends ActionRequestDto>> CUSTOM_CONVERTER_FOR_CLASS = new HashMap<>();
-
+    private static Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP = new HashMap<>();
+    
+    /**
+     * Specifies to which DTO object the core object needs to be mapped.
+     */
+    static {
+        CLASS_MAP.put(PeriodicMeterReadsRequestData.class, PeriodicMeterReadsRequestDataDto.class);
+        CLASS_MAP.put(ActualMeterReadsRequestData.class, ActualMeterReadsDataDto.class);
+        CLASS_MAP.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
+        CLASS_MAP.put(ReadAlarmRegisterData.class, ReadAlarmRegisterDataDto.class);
+        CLASS_MAP.put(FindEventsQuery.class, FindEventsQueryDto.class);
+        CLASS_MAP.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
+        CLASS_MAP.put(AdministrativeStatusTypeData.class, AdministrativeStatusTypeDataDto.class);
+        CLASS_MAP.put(ActivityCalendarData.class, ActivityCalendarDataDto.class);
+        CLASS_MAP.put(SetAlarmNotificationsRequestData.class, SetAlarmNotificationsRequestDataDto.class);
+        CLASS_MAP.put(SetConfigurationObjectRequestData.class, SetConfigurationObjectRequestDataDto.class);
+        CLASS_MAP.put(SetPushSetupAlarmRequestData.class, SetPushSetupAlarmRequestDataDto.class);
+        CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDataDto.class);
+        CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDataDto.class);
+        CLASS_MAP.put(GetConfigurationRequestData.class, GetConfigurationRequestDataDto.class);
+        CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDataDto.class);
+        CLASS_MAP.put(KeySet.class, KeySetDto.class);
+        CLASS_MAP.put(SpecificConfigurationObjectRequestData.class, SpecificConfigurationObjectRequestDataDto.class);
+        CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDataDto.class);
+    }
+    
     /**
      * Specifies which mapper to use for the core class received.
      */
@@ -141,31 +166,6 @@ public class ActionMapperService {
         CLASS_TO_MAPPER_MAP.put(KeySet.class, this.configurationMapper);
         CLASS_TO_MAPPER_MAP.put(SpecificConfigurationObjectRequestData.class, this.commonMapper);
         CLASS_TO_MAPPER_MAP.put(GetAssociationLnObjectsRequestData.class, this.commonMapper);
-    }
-
-    /**
-     * Specifies to which DTO object the core object needs to be mapped.
-     */
-    private static Map<Class<? extends ActionRequest>, Class<? extends ActionRequestDto>> CLASS_MAP = new HashMap<>();
-    static {
-        CLASS_MAP.put(PeriodicMeterReadsRequestData.class, PeriodicMeterReadsRequestDataDto.class);
-        CLASS_MAP.put(ActualMeterReadsRequestData.class, ActualMeterReadsDataDto.class);
-        CLASS_MAP.put(SpecialDaysRequestData.class, SpecialDaysRequestDataDto.class);
-        CLASS_MAP.put(ReadAlarmRegisterData.class, ReadAlarmRegisterDataDto.class);
-        CLASS_MAP.put(FindEventsQuery.class, FindEventsQueryDto.class);
-        CLASS_MAP.put(GetAdministrativeStatusData.class, GetAdministrativeStatusDataDto.class);
-        CLASS_MAP.put(AdministrativeStatusTypeData.class, AdministrativeStatusTypeDataDto.class);
-        CLASS_MAP.put(ActivityCalendarData.class, ActivityCalendarDataDto.class);
-        CLASS_MAP.put(SetAlarmNotificationsRequestData.class, SetAlarmNotificationsRequestDataDto.class);
-        CLASS_MAP.put(SetConfigurationObjectRequestData.class, SetConfigurationObjectRequestDataDto.class);
-        CLASS_MAP.put(SetPushSetupAlarmRequestData.class, SetPushSetupAlarmRequestDataDto.class);
-        CLASS_MAP.put(SetPushSetupSmsRequestData.class, SetPushSetupSmsRequestDataDto.class);
-        CLASS_MAP.put(SynchronizeTimeRequestData.class, SynchronizeTimeRequestDataDto.class);
-        CLASS_MAP.put(GetConfigurationRequestData.class, GetConfigurationRequestDataDto.class);
-        CLASS_MAP.put(GetFirmwareVersionRequestData.class, GetFirmwareVersionRequestDataDto.class);
-        CLASS_MAP.put(KeySet.class, KeySetDto.class);
-        CLASS_MAP.put(SpecificConfigurationObjectRequestData.class, SpecificConfigurationObjectRequestDataDto.class);
-        CLASS_MAP.put(GetAssociationLnObjectsRequestData.class, GetAssociationLnObjectsRequestDataDto.class);
     }
 
     public BundleMessageDataContainerDto mapAllActions(final BundleMessageDataContainer bundleMessageDataContainer,
