@@ -8,6 +8,7 @@
  */
 package com.alliander.osgp.platform.cucumber.smartmeteringmonitoring;
 
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +55,7 @@ public class PeriodicMeterReadsGas {
     private static final String TEST_CASE_NAME_RESPONSE = "GetPeriodicMeterReadsGasResponse - Request 1";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActualMeterReads.class);
+    private static final HashMap<String, String> PROPERTIESMAP = new HashMap<>();
 
     private Pattern correlationUidPattern;
     private Matcher correlationUidMatcher;
@@ -79,9 +81,11 @@ public class PeriodicMeterReadsGas {
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML_225);
 
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
-                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), TEST_CASE_NAME_REQUEST);
+        PROPERTIESMAP.put("DeviceIdentificationE", this.deviceId.getDeviceId());
+        PROPERTIESMAP.put("OrganisationIdentification", this.organisationId.getOrganisationId());
 
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIESMAP,
+                TEST_CASE_NAME_REQUEST);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
@@ -96,8 +100,9 @@ public class PeriodicMeterReadsGas {
 
     @Then("^the periodic meter reads gas result should be returned$")
     public void thePeriodicMeterReadsResultShouldBeReturned() throws Throwable {
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
-                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
+        PROPERTIESMAP.put("CorrelationUid", this.correlationUid);
+
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIESMAP,
                 TEST_CASE_NAME_RESPONSE);
 
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
@@ -125,9 +130,11 @@ public class PeriodicMeterReadsGas {
                 + "\\|\\|\\|\\S{17}\\|\\|\\|\\S{17}");
         this.testCase = this.wsdlProjectFactory.createWsdlTestCase(SOAP_PROJECT_XML, TEST_SUITE_XML, TEST_CASE_XML_228);
 
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
-                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), TEST_CASE_NAME_REQUEST);
+        PROPERTIESMAP.put("DeviceIdentificationE", this.deviceId.getDeviceId());
+        PROPERTIESMAP.put("OrganisationIdentification", this.organisationId.getOrganisationId());
 
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIESMAP,
+                TEST_CASE_NAME_REQUEST);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
@@ -142,10 +149,10 @@ public class PeriodicMeterReadsGas {
 
     @Then("^the interval meter reads gas result should be returned$")
     public void theIntervalMeterReadsResultShouldBeReturned() throws Throwable {
-        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase,
-                this.deviceId.getDeviceId(), this.organisationId.getOrganisationId(), this.correlationUid,
-                TEST_CASE_NAME_RESPONSE);
+        PROPERTIESMAP.put("CorrelationUid", this.correlationUid);
 
+        final TestCaseResult runTestStepByName = this.testCaseRunner.runWsdlTestCase(this.testCase, PROPERTIESMAP,
+                TEST_CASE_NAME_RESPONSE);
         final TestStepResult runTestStepByNameResult = runTestStepByName.getRunTestStepByName();
         final WsdlTestCaseRunner wsdlTestCaseRunner = runTestStepByName.getResults();
         Assert.assertEquals(TestStepStatus.OK, runTestStepByNameResult.getStatus());
