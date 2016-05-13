@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.application.services;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +57,11 @@ public class NotificationService {
         try {
             this.sendNotificationServiceClient.sendNotification(organisationIdentification, notification,
                     this.notificationURL);
-        } catch (final Exception e) {
-            LOGGER.error("Notification exception", e);
+        } catch (final GeneralSecurityException e) {
+            LOGGER.error("GeneralSecurityException: {}", e);
+        } catch (final IOException e) {
+            LOGGER.error("IOException: {}", e);
         }
+
     }
 }

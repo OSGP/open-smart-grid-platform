@@ -7,6 +7,9 @@
  */
 package com.alliander.osgp.adapter.ws.smartmetering.infra.ws;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
 import ma.glasnost.orika.MapperFacade;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +37,7 @@ public class SendNotificationServiceClient {
      * @throws Exception
      */
     public void sendNotification(final String organisationIdentification, final Notification notification,
-            final String notificationURL) throws Exception {
+            final String notificationURL) throws GeneralSecurityException, IOException {
 
         final SendNotificationRequest sendNotificationRequest = new SendNotificationRequest();
 
@@ -46,5 +49,6 @@ public class SendNotificationServiceClient {
 
         // TODO return something
         // return new SaveDeviceResponse(OsgpResultType.OK, null);
+
     }
 }

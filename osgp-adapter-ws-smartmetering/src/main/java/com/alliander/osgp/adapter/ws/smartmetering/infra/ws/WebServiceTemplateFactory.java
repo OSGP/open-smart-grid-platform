@@ -65,7 +65,7 @@ public class WebServiceTemplateFactory {
     }
 
     public WebServiceTemplate getTemplate(final String organisationIdentification, final String userName,
-            final String notificationURL) throws Exception {
+            final String notificationURL) throws GeneralSecurityException, IOException {
 
         if (StringUtils.isEmpty(organisationIdentification)) {
             LOGGER.error("organisationIdentification is empty or null");
@@ -99,7 +99,7 @@ public class WebServiceTemplateFactory {
     }
 
     private WebServiceTemplate createTemplate(final String organisationIdentification, final String userName,
-            final String notificationUrl) throws Exception {
+            final String notificationUrl) throws GeneralSecurityException, IOException {
         final WebServiceTemplate webServiceTemplate = new WebServiceTemplate(this.messageFactory);
 
         webServiceTemplate.setDefaultUri(notificationUrl);
@@ -110,16 +110,17 @@ public class WebServiceTemplateFactory {
                 organisationIdentification, userName, this.applicationName, NAMESPACE,
                 ORGANISATION_IDENTIFICATION_HEADER, USER_NAME_HEADER, APPLICATION_NAME_HEADER) });
 
-        try {
-            webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
-        } catch (GeneralSecurityException | IOException e) {
-            LOGGER.warn("Security exception, cause: {}", e);
-            throw e;
-        }
+        webServiceTemplate.setMessageSender(this.webServiceMessageSender(organisationIdentification));
 
         return webServiceTemplate;
     }
 
+    /**
+     * @throws IOException
+     *             if something goes wrong when opening the keystore.
+     * @throws GeneralSecurityException
+     *             if something goes wrong when opening the keystore.
+     */
     private HttpComponentsMessageSender webServiceMessageSender(final String keystore) throws GeneralSecurityException,
             IOException {
 
