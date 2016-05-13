@@ -16,6 +16,13 @@ select keys from security_key, then for each line:
 
   store new keys
 
+
+# START SCRIPT
+
+
+openssl enc -aes-128-cbc -k eduard -P -md sha1|grep key=|cut -d"=" -f2 > secrethex
+xxd -p -r secrethex secret.aes
+
 psql -d osgp_adapter_protocol_dlms -U osp_admin -c \
  "select * from security_key where valid_to is null and char_length(security_key) > 15" | while read line
 do
