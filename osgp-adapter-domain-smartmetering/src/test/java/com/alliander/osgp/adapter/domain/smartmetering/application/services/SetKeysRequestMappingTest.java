@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.alliander.osgp.adapter.domain.smartmetering.application.mapping.ConfigurationMapper;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.SetKeysRequestData;
-import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.SetKeysRequestDto;
 
 public class SetKeysRequestMappingTest {
 
@@ -32,7 +32,7 @@ public class SetKeysRequestMappingTest {
         final SetKeysRequestData keySet = new SetKeysRequestData(authenthicationKey, encryptionKey);
 
         // actual mapping
-        final SetKeysRequest keySetDto = this.configurationMapper.map(keySet, SetKeysRequest.class);
+        final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
         assertNotNull(keySetDto);
@@ -49,7 +49,7 @@ public class SetKeysRequestMappingTest {
         final SetKeysRequestData keySet = new SetKeysRequestData(authenthicationKey, encryptionKey);
 
         // actual mapping
-        final SetKeysRequest keySetDto = this.configurationMapper.map(keySet, SetKeysRequest.class);
+        final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
         assertNotNull(keySetDto);
@@ -68,7 +68,7 @@ public class SetKeysRequestMappingTest {
         final SetKeysRequestData keySet = new SetKeysRequestData(authenthicationKey, encryptionKey);
 
         // actual mapping
-        final SetKeysRequest keySetDto = this.configurationMapper.map(keySet, SetKeysRequest.class);
+        final SetKeysRequestDto keySetDto = this.configurationMapper.map(keySet, SetKeysRequestDto.class);
 
         // check if mapping succeeded
         assertNotNull(keySetDto);

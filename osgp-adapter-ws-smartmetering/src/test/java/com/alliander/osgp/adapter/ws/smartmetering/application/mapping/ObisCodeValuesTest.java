@@ -50,8 +50,8 @@ public class ObisCodeValuesTest {
         Assert.assertEquals((short) 1, obisCodeValues2.getA());
         Assert.assertEquals((short) 2, obisCodeValues2.getB());
         Assert.assertEquals((short) 3, obisCodeValues2.getC());
-        Assert.assertEquals((short) -22, obisCodeValues2.getD());
+        Assert.assertEquals((short) 234, obisCodeValues2.getD());
         Assert.assertEquals((short) 5, obisCodeValues2.getE());
-        Assert.assertEquals((short) -1, obisCodeValues2.getF());
+        Assert.assertEquals((short) 255, obisCodeValues2.getF());
     }    
 }

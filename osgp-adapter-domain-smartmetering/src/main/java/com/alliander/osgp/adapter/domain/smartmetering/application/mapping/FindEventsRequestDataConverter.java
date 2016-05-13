@@ -13,12 +13,12 @@ import ma.glasnost.orika.metadata.Type;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.EventLogCategory;
 import com.alliander.osgp.domain.core.valueobjects.smartmetering.FindEventsRequestData;
 import com.alliander.osgp.dto.valueobjects.smartmetering.EventLogCategoryDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.FindEventsRequestDto;
 
-public class FindEventsRequestDataConverter extends BidirectionalConverter<FindEventsRequest, FindEventsRequestData> {
+public class FindEventsRequestDataConverter extends BidirectionalConverter<FindEventsRequestDto, FindEventsRequestData> {
 
     @Override
-    public FindEventsRequestData convertTo(final FindEventsRequest source, final Type<FindEventsRequestData> destinationType) {
+    public FindEventsRequestData convertTo(final FindEventsRequestDto source, final Type<FindEventsRequestData> destinationType) {
         if (source == null) {
             return null;
         }
@@ -29,7 +29,7 @@ public class FindEventsRequestDataConverter extends BidirectionalConverter<FindE
     }
 
     @Override
-    public FindEventsRequest convertFrom(final FindEventsRequestData source, final Type<FindEventsRequest> destinationType) {
+    public FindEventsRequestDto convertFrom(final FindEventsRequestData source, final Type<FindEventsRequestDto> destinationType) {
         if (source == null) {
             return null;
         }
@@ -37,7 +37,7 @@ public class FindEventsRequestDataConverter extends BidirectionalConverter<FindE
         final EventLogCategoryDto eventLogCategory = EventLogCategoryDto.valueOf(source.getEventLogCategory()
                 .toString());
 
-        return new FindEventsRequest(eventLogCategory, source.getFrom(), source.getUntil());
+        return new FindEventsRequestDto(eventLogCategory, source.getFrom(), source.getUntil());
     }
 
 }

@@ -30,12 +30,12 @@ BidirectionalConverter<ObisCodeValues, com.alliander.osgp.domain.core.valueobjec
             Type<ObisCodeValues> destinationType) {
         
         final ObisCodeValues result = new ObisCodeValues();
-        result.setA(source.getA());
-        result.setB(source.getB());
-        result.setC(source.getC());
-        result.setD(source.getD());
-        result.setE(source.getE());
-        result.setF(source.getF());
+        result.setA((short)(source.getA() & 0xFF));
+        result.setB((short)(source.getB() & 0xFF));
+        result.setC((short)(source.getC() & 0xFF));
+        result.setD((short)(source.getD() & 0xFF));
+        result.setE((short)(source.getE() & 0xFF));
+        result.setF((short)(source.getF() & 0xFF));
         return result;
     }
 

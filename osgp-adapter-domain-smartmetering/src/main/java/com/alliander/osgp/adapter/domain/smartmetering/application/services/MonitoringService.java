@@ -34,7 +34,7 @@ import com.alliander.osgp.dto.valueobjects.smartmetering.MeterReadsGasResponseDt
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodTypeDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsResponseDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadGasResponseDto;
-import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequest;
+import com.alliander.osgp.dto.valueobjects.smartmetering.PeriodicMeterReadsRequestDto;
 import com.alliander.osgp.dto.valueobjects.smartmetering.ReadAlarmRegisterRequestDto;
 import com.alliander.osgp.shared.exceptionhandling.ComponentType;
 import com.alliander.osgp.shared.exceptionhandling.FunctionalException;
@@ -92,7 +92,7 @@ public class MonitoringService {
                         ComponentType.DOMAIN_SMART_METERING, new AssertionError(
                                 "Meter for gas reads should have a channel configured."));
             }
-            final PeriodicMeterReadsRequest periodicMeterReadsQuery = new PeriodicMeterReadsRequest(
+            final PeriodicMeterReadsRequestDto periodicMeterReadsQuery = new PeriodicMeterReadsRequestDto(
                     PeriodTypeDto.valueOf(periodicMeterReadsValueQuery.getPeriodType().name()),
                     periodicMeterReadsValueQuery.getBeginDate(), periodicMeterReadsValueQuery.getEndDate(),
                     ChannelDto.fromNumber(smartMeter.getChannel()));
@@ -118,7 +118,7 @@ public class MonitoringService {
                     new RequestMessage(deviceMessageMetadata.getCorrelationUid(), deviceMessageMetadata
                             .getOrganisationIdentification(), deviceMessageMetadata.getDeviceIdentification(),
                             smartMeter.getIpAddress(), this.monitoringMapper.map(periodicMeterReadsValueQuery,
-                                    PeriodicMeterReadsRequest.class)), deviceMessageMetadata.getMessageType(),
+                                    PeriodicMeterReadsRequestDto.class)), deviceMessageMetadata.getMessageType(),
                                     deviceMessageMetadata.getMessagePriority(), deviceMessageMetadata.getScheduleTime());
         }
     }
