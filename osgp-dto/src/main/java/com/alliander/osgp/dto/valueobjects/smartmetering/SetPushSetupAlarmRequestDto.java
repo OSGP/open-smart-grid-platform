@@ -7,13 +7,13 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
-public class SetPushSetupAlarmRequestDataDto implements ActionRequestDto {
+public class SetPushSetupAlarmRequestDto implements ActionRequestDto {
 
     private static final long serialVersionUID = -1031557913336969599L;
 
     private PushSetupAlarmDto pushSetupAlarm;
 
-    public SetPushSetupAlarmRequestDataDto(final PushSetupAlarmDto pushSetupAlarm) {
+    public SetPushSetupAlarmRequestDto(final PushSetupAlarmDto pushSetupAlarm) {
         this.pushSetupAlarm = pushSetupAlarm;
     }
 

@@ -7,19 +7,19 @@
  */
 package com.alliander.osgp.dto.valueobjects.smartmetering;
 
+import java.io.Serializable;
 
-public class SynchronizeTimeRequestDataDto implements ActionRequestDto {
+public class SynchronizeTimeRequest implements Serializable {
 
-    private static final long serialVersionUID = 2569975731784782614L;
+    private static final long serialVersionUID = 9010035251411605847L;
 
-    private String deviceIdentification;
+    private final String deviceIdentification;
+
+    public SynchronizeTimeRequest(final String deviceIdentification) {
+        this.deviceIdentification = deviceIdentification;
+    }
 
     public String getDeviceIdentification() {
         return this.deviceIdentification;
     }
-
-    public void setDeviceIdentification(final String deviceIdentification) {
-        this.deviceIdentification = deviceIdentification;
-    }
-
 }

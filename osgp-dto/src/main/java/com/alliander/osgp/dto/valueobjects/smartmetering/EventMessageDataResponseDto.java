@@ -9,7 +9,7 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 
 import java.util.List;
 
-public class EventMessageDataContainerDto extends ActionResponseDto {
+public class EventMessageDataResponseDto extends ActionResponseDto {
 
     /**
      * Serial Version UID.
@@ -18,7 +18,7 @@ public class EventMessageDataContainerDto extends ActionResponseDto {
 
     private List<EventDto> events;
 
-    public EventMessageDataContainerDto(final List<EventDto> events) {
+    public EventMessageDataResponseDto(final List<EventDto> events) {
         this.events = events;
     }
 

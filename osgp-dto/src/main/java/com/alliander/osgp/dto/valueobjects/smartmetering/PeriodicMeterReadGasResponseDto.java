@@ -10,21 +10,21 @@ package com.alliander.osgp.dto.valueobjects.smartmetering;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PeriodicMeterReadsContainerDto extends ActionResponseDto {
+public class PeriodicMeterReadGasResponseDto extends ActionResponseDto {
 
     private static final long serialVersionUID = -156966569210717654L;
 
-    private final List<PeriodicMeterReadsDto> periodicMeterReads;
+    private final List<PeriodicMeterReadsGasResponseItemDto> meterReadsGas;
     private final PeriodTypeDto periodType;
 
-    public PeriodicMeterReadsContainerDto(final PeriodTypeDto periodType,
-            final List<PeriodicMeterReadsDto> periodicMeterReads) {
-        this.periodicMeterReads = new ArrayList<PeriodicMeterReadsDto>(periodicMeterReads);
+    public PeriodicMeterReadGasResponseDto(final PeriodTypeDto periodType,
+            final List<PeriodicMeterReadsGasResponseItemDto> meterReadsGas) {
+        this.meterReadsGas = new ArrayList<PeriodicMeterReadsGasResponseItemDto>(meterReadsGas);
         this.periodType = periodType;
     }
 
-    public List<PeriodicMeterReadsDto> getPeriodicMeterReads() {
-        return new ArrayList<PeriodicMeterReadsDto>(this.periodicMeterReads);
+    public List<PeriodicMeterReadsGasResponseItemDto> getMeterReadsGas() {
+        return new ArrayList<>(this.meterReadsGas);
     }
 
     public PeriodTypeDto getPeriodType() {
