@@ -23,7 +23,7 @@ import com.alliander.osgp.oslp.Oslp.SetConfigurationRequest;
 import com.google.protobuf.ByteString;
 
 public class ConfigurationToOslpSetConfigurationRequestConverter extends
-        CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
+CustomConverter<ConfigurationDto, Oslp.SetConfigurationRequest> {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ConfigurationToOslpSetConfigurationRequestConverter.class);
@@ -83,9 +83,9 @@ public class ConfigurationToOslpSetConfigurationRequestConverter extends
         if (source.getCommunicationTimeout() != null) {
             setConfigurationRequest.setCommunicationTimeout(source.getCommunicationTimeout());
         }
-        if (source.getDeviceFixIpValue() != null) {
+        if (source.getDeviceFixedIp() != null) {
             setConfigurationRequest.setDeviceFixIpValue(this.convertTextualIpAddressToByteString(source
-                    .getDeviceFixIpValue()));
+                    .getDeviceFixedIp().getIpAddress()));
         }
         if (source.isDhcpEnabled() != null) {
             setConfigurationRequest.setIsDhcpEnabled(source.isDhcpEnabled());
@@ -95,7 +95,7 @@ public class ConfigurationToOslpSetConfigurationRequestConverter extends
         }
         if (source.getOspgIpAddress() != null) {
             setConfigurationRequest
-                    .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
+            .setOspgIpAddress(this.convertTextualIpAddressToByteString(source.getOspgIpAddress()));
         }
         if (source.isRelayRefreshing() != null) {
             setConfigurationRequest.setRelayRefreshing(source.isRelayRefreshing());
@@ -144,15 +144,13 @@ public class ConfigurationToOslpSetConfigurationRequestConverter extends
     // @formatter:off
     /*
      * SummerTimeDetails/WinterTimeDetails string: MMWHHmi
-     *
-     * where: (note, north hemisphere summer begins at the end of march)
-     * MM: month
-     * W: day of the week (0- Monday, 6- Sunday)
-     * HH: hour of the changing time
-     * mi: minutes of the changing time
-     *
-     * Default value for summer time: 0360100
-     * Default value for summer time: 1060200
+     * 
+     * where: (note, north hemisphere summer begins at the end of march) MM:
+     * month W: day of the week (0- Monday, 6- Sunday) HH: hour of the changing
+     * time mi: minutes of the changing time
+     * 
+     * Default value for summer time: 0360100 Default value for summer time:
+     * 1060200
      */
     // @formatter:on
     private String convertSummerTimeWinterTimeDetails(final DateTime dateTime) {

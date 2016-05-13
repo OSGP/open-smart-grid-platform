@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alliander.osgp.dto.valueobjects.ConfigurationDto;
 import com.alliander.osgp.dto.valueobjects.DaliConfigurationDto;
+import com.alliander.osgp.dto.valueobjects.DeviceFixedIpDto;
 import com.alliander.osgp.dto.valueobjects.LightTypeDto;
 import com.alliander.osgp.dto.valueobjects.LinkTypeDto;
 import com.alliander.osgp.dto.valueobjects.LongTermIntervalTypeDto;
@@ -66,7 +67,8 @@ public class OslpGetConfigurationResponseToConfigurationConverter extends
         // Set the optional values using the set() functions.
         configuration.setTimeSyncFrequency(source.getTimeSyncFrequency());
         if (source.getDeviceFixIpValue() != null && !source.getDeviceFixIpValue().isEmpty()) {
-            configuration.setDeviceFixIpValue(this.convertIpAddress(source.getDeviceFixIpValue()));
+            DeviceFixedIpDto deviceFixedIp = new DeviceFixedIpDto(this.convertIpAddress(source.getDeviceFixIpValue()), "0.0.0.0", "0.0.0.0");
+            configuration.setDeviceFixedIp(deviceFixedIp);
         }
         configuration.setDhcpEnabled(source.getIsDhcpEnabled());
         configuration.setCommunicationTimeout(source.getCommunicationTimeout());
